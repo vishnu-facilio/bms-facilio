@@ -9,11 +9,15 @@ import java.util.stream.Collectors;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.forms.*;
+import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -21,11 +25,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormFactory;
-import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
-import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -53,6 +53,8 @@ import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class FormsAPI {
 
@@ -319,7 +321,16 @@ public class FormsAPI {
 			ApplicationContext app = (form.getAppLinkName() != null) ? ApplicationApi.getApplicationForLinkName(form.getAppLinkName()) : ApplicationApi.getApplicationForLinkName(ApplicationLinkNames.FACILIO_MAIN_APP);
 			form.setAppId(app.getId());
 		}
-		
+
+		long systemTime = System.currentTimeMillis();
+		User currentUser = AccountUtil.getCurrentUser();
+		form.setSysCreatedTime(systemTime);
+		form.setSysModifiedTime(systemTime);
+		if (currentUser != null) {
+			form.setSysCreatedBy(AccountUtil.getCurrentUser().getPeopleId());
+			form.setSysModifiedBy(AccountUtil.getCurrentUser().getPeopleId());
+		}
+
 		Map<String, Object> props = FieldUtil.getAsProperties(form);
 		FacilioModule formModule = ModuleFactory.getFormModule();
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -383,10 +394,7 @@ public class FormsAPI {
 				if (f.getSpan() == -1) {
 					f.setSpan(1);
 				}
-				if(f.getFieldId() != -1) {
-					f.setName(null);
-				}
-				else if(f.getName() == null) {	// Notes field
+				if(f.getName() == null) {	// Notes field
 					f.setName(f.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+","")+f.getSequenceNumber());
 				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(f);
@@ -418,6 +426,9 @@ public class FormsAPI {
 			List<Map<String, Object>> props = new ArrayList<>();
 			Map<Long, FormSection> sectionMap = new HashMap<>();
 			for (FormSection f: sections) {
+				if (StringUtils.isNotEmpty(f.getName())) {
+					f.setLinkName(f.getName().toLowerCase().replaceAll("[^a-zA-Z0-9_]+", ""));
+				}
 				f.setId(-1);
 				f.setFormId(formId);
 				f.setOrgId(orgId);
@@ -457,9 +468,9 @@ public class FormsAPI {
 	public static List<FormField> getFormFieldsFromSections(List<FormSection> sections) {
 		return sections.stream().map(section -> section.getFields() != null ? section.getFields() : new ArrayList<FormField>()).flatMap(List::stream).collect(Collectors.toList());
 	}
-	
+
 	public static int deleteFormFields(List<Long> fieldIds) throws Exception {
-		
+
 		FacilioModule module = ModuleFactory.getFormFieldsModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
@@ -467,7 +478,6 @@ public class FormsAPI {
 														;
 		return deleteBuilder.delete();
 	}
-	
 	public static int deleteFormSections(List<Long> sectionIds) throws Exception {
 		deleteSubforms(sectionIds);
 		FacilioModule module = ModuleFactory.getFormSectionModule();
@@ -491,8 +501,9 @@ public class FormsAPI {
 			for(Map<String,Object> prop : props) {
 				long subformId = (long) prop.get("subFormId");
 				FacilioChain deleteSubFormChain = TransactionChainFactory.getDeleteFormChain();
-				Context context = deleteSubFormChain.getContext();
+				FacilioContext context = deleteSubFormChain.getContext();
 				context.put(FacilioConstants.ContextNames.FORM_ID, subformId);
+				context.put(FormRuleAPI.FETCH_ONLY_SUB_FORM_RULES,true);
 				deleteSubFormChain.execute();
 			}
 		}
@@ -895,7 +906,7 @@ public class FormsAPI {
 			}
 		}
 		else {
-			formListBuilder.orderBy(formsColumnFieldMap.get("id").getCompleteColumnName()+" asc");
+			formListBuilder.orderBy(formsColumnFieldMap.get("sequenceNumber").getCompleteColumnName()+" asc ,"+formsColumnFieldMap.get("id").getCompleteColumnName()+" asc");
 		}
 		
 		List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
@@ -1858,7 +1869,112 @@ public class FormsAPI {
 		return formNameVsId;
 	}
 
-	public static <E> double setSequenceNumber(Map<String,Map<String,Object>> records,FacilioModule module,List<FacilioField> fieldList,Map<String,Long> fieldNameVsFieldValue,String fieldName, Class<E> classObj) throws Exception {
+    private static FormSection getFormSection(long formSectionId) throws Exception {
+
+        Map<String, FacilioField> sectionFieldMap = FieldFactory.getAsMap(FieldFactory.getFormSectionFields());
+        Criteria criteria = new Criteria();
+        if (formSectionId > 0) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(sectionFieldMap.get("id"), String.valueOf(formSectionId), StringOperators.IS));
+        }
+        List<FormSection> sectionList = getFormSection(criteria);
+
+        if (CollectionUtils.isNotEmpty(sectionList)) {
+            return sectionList.get(0);
+        }
+
+        return null;
+    }
+
+    private static FormSection getFormSection(String formSectionLinkName, long formId) throws Exception {
+
+        Map<String, FacilioField> sectionFieldMap = FieldFactory.getAsMap(FieldFactory.getFormSectionFields());
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(sectionFieldMap.get("linkName"), formSectionLinkName, StringOperators.IS));
+        if (formId > 0) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(sectionFieldMap.get("formId"), String.valueOf(formId), StringOperators.IS));
+        }
+        List<FormSection> sectionList = getFormSection(criteria);
+
+        if (CollectionUtils.isNotEmpty(sectionList)) {
+            return sectionList.get(0);
+        }
+
+        return null;
+    }
+
+    private static List<FormSection> getFormSection(Criteria criteria) throws Exception {
+
+        if (criteria == null) {
+            return new ArrayList<>();
+        }
+
+        FacilioModule sectionModule = ModuleFactory.getFormSectionModule();
+        List<FacilioField> sectionFields = FieldFactory.getFormSectionFields();
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(sectionModule.getTableName())
+                .select(sectionFields)
+                .andCriteria(criteria);
+        return FieldUtil.getAsBeanListFromMapList(selectRecordBuilder.get(), FormSection.class);
+
+    }
+
+	public static double getFormFieldSequenceNumber(long previousFormFieldId, long nextFormFieldId, long sectionId) throws Exception {
+
+		FormField nextFormField = (nextFormFieldId > 0) ? getFormFieldFromId(nextFormFieldId) : null;
+		FormField previousFormField = (previousFormFieldId > 0) ? getFormFieldFromId(previousFormFieldId) : null;
+
+		FacilioModule formFieldsModule = ModuleFactory.getFormFieldsModule();
+		List<FacilioField> fieldList = FieldFactory.getFormFieldsFields();
+
+		Map<String, Map<String, Object>> records = new HashMap<>();
+		records.put("previousRecord", FieldUtil.getAsProperties(previousFormField));
+		records.put("nextRecord", FieldUtil.getAsProperties(nextFormField));
+
+		Map<String, Long> fieldNameVsFieldValue = new HashMap<>();
+		fieldNameVsFieldValue.put("sectionId", sectionId);
+
+		return setSequenceNumber(records, formFieldsModule, fieldList, fieldNameVsFieldValue, FacilioConstants.FormContextNames.FORM_FIELD_SEQUENCE_NUMBER, FormField.class);
+
+	}
+
+	public static double getFormSectionSequenceNumber(long previousFormSectionId, long nextFormSectionId, long formId) throws Exception {
+
+		FormSection previousFormSection = (previousFormSectionId > 0) ? getFormSection(previousFormSectionId) : null;
+		FormSection nextFormSection = (nextFormSectionId > 0) ? getFormSection(nextFormSectionId) : null;
+
+		FacilioModule sectionModule = ModuleFactory.getFormSectionModule();
+		List<FacilioField> formSectionFields = FieldFactory.getFormSectionFields();
+
+		Map<String, Map<String, Object>> records = new HashMap<>();
+		records.put("previousRecord", FieldUtil.getAsProperties(previousFormSection));
+		records.put("nextRecord", FieldUtil.getAsProperties(nextFormSection));
+
+		Map<String, Long> fieldNameVsFieldValue = new HashMap<>();
+		fieldNameVsFieldValue.put("formId", formId);
+
+		return setSequenceNumber(records, sectionModule, formSectionFields, fieldNameVsFieldValue, FacilioConstants.FormContextNames.FORM_SECTION_SEQUENCE_NUMBER, FormSection.class);
+	}
+
+	public static double getFormSequenceNumber(long previousFormId, long nextFormId,long moduleId, long appId) throws Exception {
+
+		FacilioForm previousForm = (previousFormId>0)?getFormFromDB(previousFormId):null;
+		FacilioForm nextForm = (nextFormId>0)?getFormFromDB(nextFormId):null;
+
+		FacilioModule formModule = ModuleFactory.getFormModule();
+		List<FacilioField> formFields = FieldFactory.getFormFields();
+
+		Map<String, Map<String, Object>> records = new HashMap<>();
+		records.put("previousRecord", FieldUtil.getAsProperties(previousForm));
+		records.put("nextRecord", FieldUtil.getAsProperties(nextForm));
+
+		Map<String, Long> fieldNameVsFieldValue = new HashMap<>();
+		fieldNameVsFieldValue.put("moduleId", moduleId);
+		fieldNameVsFieldValue.put("appId", appId);
+
+		return setSequenceNumber(records, formModule, formFields, fieldNameVsFieldValue, FacilioConstants.FormContextNames.SEQUENCE_NUMBER, FacilioForm.class);
+	}
+
+	public static <E> double setSequenceNumber(Map<String,Map<String,Object>> records, FacilioModule module, List<FacilioField> fieldList, Map<String,Long> criteriaFieldVsValue, String sequenceNumberFieldName, Class<E> classObj) throws Exception {
 
 		double sequenceNumber = 0;
 		double newSequenceNumber = 0;
@@ -1866,21 +1982,27 @@ public class FormsAPI {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fieldList);
 		Map<String, Object> previousRecord = records.get("previousRecord");
 		Map<String, Object> nextRecord = records.get("nextRecord");
+
 		long recordId = -1;
 		String recordName = null;
-		for (Map.Entry<String, Long> recordEntry : fieldNameVsFieldValue.entrySet()) {
+
+		Criteria criteria = new Criteria();
+
+		for (Map.Entry<String, Long> recordEntry : criteriaFieldVsValue.entrySet()) {
 			recordId = recordEntry.getValue();
 			recordName = recordEntry.getKey();
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(recordName).getColumnName(), recordName, String.valueOf(recordId), NumberOperators.EQUALS));
 		}
+
 
 		if (MapUtils.isEmpty(previousRecord) && MapUtils.isEmpty(nextRecord)) {
 			return sequenceNumber + 10;
 		} else if (MapUtils.isNotEmpty(previousRecord) && MapUtils.isEmpty(nextRecord)) {
-			return (double) previousRecord.get(fieldName) + 10;
+			return (double) previousRecord.get(sequenceNumberFieldName) + 10;
 		}
 
-		double nextSequenceNumber = (nextRecord != null) ? (double) nextRecord.get(fieldName) : 0;
-		double previousSequenceNumber = (previousRecord != null) ? (double) previousRecord.get(fieldName) : 0;
+		double nextSequenceNumber = (nextRecord != null) && nextRecord.get(sequenceNumberFieldName) != null ? (double) nextRecord.get(sequenceNumberFieldName) : 0;
+		double previousSequenceNumber = (previousRecord != null) && previousRecord.get(sequenceNumberFieldName) != null ? (double) previousRecord.get(sequenceNumberFieldName) : 0;
 
 		double recordSequenceNumber = (nextSequenceNumber + previousSequenceNumber) / 2;
 
@@ -1896,8 +2018,8 @@ public class FormsAPI {
 			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 					.select(fieldList)
 					.table(module.getTableName())
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get(recordName).getColumnName(), recordName, String.valueOf(recordId), NumberOperators.EQUALS))
-					.orderBy(fieldMap.get(fieldName).getColumnName());
+					.andCriteria(criteria)
+					.orderBy(fieldMap.get(sequenceNumberFieldName).getColumnName());
 
 			List<E> dbRecords = FieldUtil.getAsBeanListFromMapList(selectRecordBuilder.get(), classObj);
 			List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
@@ -1907,7 +2029,7 @@ public class FormsAPI {
 				Map<String, Object> recordMap = FieldUtil.getAsProperties(record);
 				GenericUpdateRecordBuilder.BatchUpdateContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateContext();
 				updateVal.addWhereValue("id", recordMap.get("id"));
-				updateVal.addUpdateValue(fieldName, sequenceNumber);
+				updateVal.addUpdateValue(sequenceNumberFieldName, sequenceNumber);
 				batchUpdateList.add(updateVal);
 
 				if (MapUtils.isNotEmpty(previousRecord)) {
@@ -1925,11 +2047,67 @@ public class FormsAPI {
 
 			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
 					.table(module.getTableName())
-					.fields(Collections.singletonList(fieldMap.get(fieldName)));
+					.fields(Collections.singletonList(fieldMap.get(sequenceNumberFieldName)));
 			updateRecordBuilder.batchUpdate(whereFields, batchUpdateList);
 
 		}
 
 		return newSequenceNumber;
 	}
+
+	public static void addAuditLogs(Map<String, Object> props, String name, String action){
+		try {
+			long formId = -1;
+			String moduleName = null;
+			String appName = null;
+			String formDisplayName = null;
+			FacilioForm form;
+			if(Objects.equals(name, FacilioConstants.AuditLogRecordTypes.FORM) || Objects.equals(name, FacilioConstants.AuditLogRecordTypes.SUB_FORM)){
+				formId = (long) props.get("id");
+				if(Objects.equals(action,FacilioConstants.AuditLogRecordTypes.DELETED)){
+					formDisplayName = (String) props.get("displayName");
+					appName = (String) props.get("appLinkName");
+					moduleName =(String) ((Map<String,Object>)props.get("module")).get("displayName");
+				}
+			}else {
+				formId = (long) props.get("formId");
+			}
+			if(StringUtils.isEmpty(formDisplayName)){
+				form = getFormFromDB(formId,false);
+				moduleName = form.getModule().getDisplayName();
+				appName = form.getAppLinkName();
+				formDisplayName = form.getDisplayName();
+			}
+			String parentName = null;
+			String parentComponentName = null;
+			String ComponentDisplayName = Objects.equals(name,FacilioConstants.AuditLogRecordTypes.FORM_SECTION)?(String) props.get("name"):(String) props.get("displayName");
+			if(Objects.equals(name, FacilioConstants.AuditLogRecordTypes.FORM_FIELD) || Objects.equals(name, FacilioConstants.AuditLogRecordTypes.FORM_SECTION)){
+				parentName = formDisplayName;
+				parentComponentName = "form";
+
+			} else if (Objects.equals(name, FacilioConstants.AuditLogRecordTypes.FORM) || Objects.equals(name, FacilioConstants.AuditLogRecordTypes.SUB_FORM)) {
+				parentName = moduleName;
+				parentComponentName = "module";
+			}
+			String message = String.format("%s {%s} of %s %s has been %s", name,ComponentDisplayName,parentComponentName, parentName, action);
+			String description = String.format("%s %s of %s %s with app name '%s' has been %s",name,ComponentDisplayName,parentComponentName, parentName,appName, action);
+			AuditLogHandler.AuditLogContext auditLogContext = new AuditLogHandler.AuditLogContext(message, description,
+					AuditLogHandler.RecordType.SETTING, FacilioConstants.AuditLogRecordTypes.FORM, (long) props.get("id"));
+			String finalModuleName = moduleName;
+			long finalFormId = formId;
+			auditLogContext.setLinkConfig(((Function<Void, String>) o -> {
+				JSONArray array = new JSONArray();
+				JSONObject json = new JSONObject();
+				json.put("moduleName", finalModuleName);
+				json.put("id", finalFormId);
+				json.put("navigateTo", "formsEdit");
+				array.add(json);
+				return array.toJSONString();
+			}).apply(null));
+			AuditLogUtil.sendAuditLogs(auditLogContext);
+		} catch (Exception e){
+			LOGGER.log(Level.INFO, "Exception while adding auditlog" , e);
+		}
+	}
+
 }

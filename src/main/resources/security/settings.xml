@@ -1351,6 +1351,74 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v2/forms/reorder">
+        <requestbody type="object">
+            <property name="appId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="formId" type="number" mandatory="true"/>
+            <property name="nextFormId" type="number" mandatory="true"/>
+            <property name="previousFormId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/forms/fields/getSupportedFieldTypes"/>
+    <request path="/api/v2/forms/fields/addFormField">
+        <requestbody type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="formId" type="number" mandatory="true"/>
+            <property name="formSectionId" type="number" mandatory="true"/>
+            <property name="nextFormFieldId" type="number" mandatory="true"/>
+            <property name="previousFormFieldId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/forms/fields/deleteFormField">
+        <requestbody type="object">
+            <property name="formFieldId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/forms/fields/reorderFormFields">
+        <requestbody type="object">
+            <property name="previousFormFieldId" type="number" mandatory="true"/>
+            <property name="nextFormFieldId" type="number" mandatory="true"/>
+            <property name="formFieldId" type="number" mandatory="true"/>
+            <property name="formSectionId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/forms/sections/addSection">
+        <requestbody type="object">
+            <property name="formId" type="number" mandatory="true"/>
+            <property name="previousFormSectionId" type="number" mandatory="true"/>
+            <property name="nextFormSectionId" type="number" mandatory="true"/>
+            <property name="formSection" type="object" mandatory="true">
+                <property name="name" type="string" mandatory="true"/>
+                <property name="showLabel" type="boolean" mandatory="true"/>
+                <property name="fields" type="array" />
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/forms/sections/addSubForm">
+        <requestbody type="object">
+            <property name="subModuleName" type="string" mandatory="true"/>
+            <property name="parentFormId" type="number" mandatory="true"/>
+            <property name="previousFormSectionId" type="number" mandatory="true"/>
+            <property name="nextFormSectionId" type="number" mandatory="true"/>
+            <property name="subForm" type="object" mandatory="true">
+                <property name="displayName" type="string" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/forms/sections/deleteSection">
+        <requestbody type="object">
+            <property name="formSectionId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/forms/sections/reorderFormSections">
+        <requestbody type="object">
+            <property name="previousFormSectionId" type="number" mandatory="true"/>
+            <property name="nextFormSectionId" type="number" mandatory="true"/>
+            <property name="formId" type="number" mandatory="true"/>
+            <property name="formSectionId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
     <request path="/api/v2/forms/formSharing/getSharingList">
         <requestbody type="object">
             <property name="formId" type="number" mandatory="true"/>
@@ -1376,6 +1444,12 @@
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
+    </request>
+
+    <request path="/api/v2/form/getFromId">
+        <requestbody type="object">
+            <property name="formId" type="number" mandatory="true"/>
+        </requestbody>
     </request>
 
     <request path="/api/v1/setup/customPage/create">

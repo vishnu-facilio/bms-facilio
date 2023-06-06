@@ -7,6 +7,8 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 
+import java.util.Collections;
+
 public class ValidateFormFieldCommand extends FacilioCommand {
 
 	@Override
@@ -25,6 +27,7 @@ public class ValidateFormFieldCommand extends FacilioCommand {
 			formField.setDisplayName(baseField.getDisplayName());	
 			formField.setName(baseField.getName());	
 			context.put(FacilioConstants.ContextNames.MODULE_FIELD, baseField);
+			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(baseField));
 		}
 		else
 		{

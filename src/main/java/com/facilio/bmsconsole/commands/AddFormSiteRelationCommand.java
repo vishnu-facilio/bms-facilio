@@ -41,6 +41,7 @@ public class AddFormSiteRelationCommand extends FacilioCommand {
 				insertRecordBuilder.save();
 			}
 		}
+		context.put(FacilioConstants.ContextNames.FORM_OBJECT,FieldUtil.getAsProperties(form));
 		return false;
 	}
 

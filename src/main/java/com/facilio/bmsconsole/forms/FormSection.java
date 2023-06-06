@@ -180,6 +180,61 @@ public class FormSection {
 		this.lookupFieldName = lookupFieldName;
 	}
 
+	public double getFormSectionSequenceNumber() {
+		return formSectionSequenceNumber;
+	}
+
+	public void setFormSectionSequenceNumber(double formSectionSequenceNumber) {
+		this.formSectionSequenceNumber = formSectionSequenceNumber;
+	}
+
+	private double formSectionSequenceNumber;
+
+	public long getSysModifiedTime() {
+		return sysModifiedTime;
+	}
+
+	public void setSysModifiedTime(long sysModifiedTime) {
+		this.sysModifiedTime = sysModifiedTime;
+	}
+
+	public long getSysCreatedTime() {
+		return sysCreatedTime;
+	}
+
+	public void setSysCreatedTime(long sysCreatedTime) {
+		this.sysCreatedTime = sysCreatedTime;
+	}
+
+	public long getSysModifiedBy() {
+		return sysModifiedBy;
+	}
+
+	public void setSysModifiedBy(long sysModifiedBy) {
+		this.sysModifiedBy = sysModifiedBy;
+	}
+
+	public long getSysCreatedBy() {
+		return sysCreatedBy;
+	}
+
+	public void setSysCreatedBy(long sysCreatedBy) {
+		this.sysCreatedBy = sysCreatedBy;
+	}
+
+	public String getLinkName() {
+		return linkName;
+	}
+
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
+	}
+
+	private String linkName;
+	private long sysModifiedTime;
+	private long sysCreatedTime;
+	private long sysModifiedBy;
+	private long sysCreatedBy;
 	private int numberOfSubFormRecords = -1;
 	public int getNumberOfSubFormRecords() {
 		return numberOfSubFormRecords;

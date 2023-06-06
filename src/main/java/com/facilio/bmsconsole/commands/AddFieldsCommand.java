@@ -48,7 +48,7 @@ public class AddFieldsCommand extends FacilioCommand {
 			boolean changeDisplayName = (Boolean) context.getOrDefault(ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, false);
 			boolean isNewModules = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_NEW_MODULES, false);
 
-			boolean isSkipCounterfieldAdd = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_SKIP_COUNTER_FIELD_ADD, false);
+			boolean isSkipCounterFieldAdd = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_SKIP_COUNTER_FIELD_ADD, false);
 
 			boolean appendModuleName = (boolean) context.getOrDefault(ContextNames.APPEND_MODULE_NAME,true);
 
@@ -63,37 +63,38 @@ public class AddFieldsCommand extends FacilioCommand {
 					List<FacilioField> counterFields = new ArrayList<>();
 
 					for(FacilioField field : module.getFields()) {
-						try {
-							field.setModule(cloneMod);
-							setColumnName(field, existingColumns);
-							constructFieldName(field, module, changeDisplayName, existingNames, cloneMod.getName (),appendModuleName);
-							long fieldId = modBean.addField(field);
-							field.setFieldId(fieldId);
-							fieldIds.add(fieldId);
-							if (field instanceof NumberField) {
-								NumberField numberField = (NumberField) field;
-								if (numberField.isCounterField() && !isSkipCounterfieldAdd) {
-									NumberField deltaField = numberField.clone();
-									deltaField.setCounterField(null);
-									deltaField.setId(-1);
+						if(!(field.getFieldId()>0)) {    // for unused form field addition
+							try {
+								field.setModule(cloneMod);
+								setColumnName(field, existingColumns);
+								constructFieldName(field, module, changeDisplayName, existingNames, cloneMod.getName(), appendModuleName);
+								long fieldId = modBean.addField(field);
+								field.setFieldId(fieldId);
+								fieldIds.add(fieldId);
+								if (field instanceof NumberField) {
+									NumberField numberField = (NumberField) field;
+									if (numberField.isCounterField() && !isSkipCounterFieldAdd) {
+										NumberField deltaField = numberField.clone();
+										deltaField.setCounterField(null);
+										deltaField.setId(-1);
 
-									deltaField.setColumnName(null);
-									setColumnName(deltaField, existingColumns);
+										deltaField.setColumnName(null);
+										setColumnName(deltaField, existingColumns);
 
-									deltaField.setName(deltaField.getName() + "Delta");
-									deltaField.setDisplayName(deltaField.getDisplayName() + " Delta");
+										deltaField.setName(deltaField.getName() + "Delta");
+										deltaField.setDisplayName(deltaField.getDisplayName() + " Delta");
 
-									long deletaFieldId = modBean.addField(deltaField);
-									deltaField.setFieldId(deletaFieldId);
-									fieldIds.add(deletaFieldId);
+										long deletaFieldId = modBean.addField(deltaField);
+										deltaField.setFieldId(deletaFieldId);
+										fieldIds.add(deletaFieldId);
 
-									counterFields.add(deltaField);
+										counterFields.add(deltaField);
+									}
 								}
+							} catch (Exception e) {
+								LOGGER.error(MessageFormat.format("Error occurred while adding field {0}", field), e);
+								throw e;
 							}
-						}
-						catch (Exception e) {
-							LOGGER.error(MessageFormat.format("Error occurred while adding field {0}", field), e);
-							throw e;
 						}
 					}
 
@@ -130,12 +131,12 @@ public class AddFieldsCommand extends FacilioCommand {
 				V3Config v3Config = ChainUtil.getV3Config (field.getModule().getName ());
 				String newColumnName;
 				if (v3Config != null) {
-					FacilioUtil.throwIllegalArgumentException (v3Config.getCustomFieldsCount () == null, "No column available for the Field type");
+					FacilioUtil.throwIllegalArgumentException (v3Config.getCustomFieldsCount () == null, "Field limit exceeded for "+ dataType.name()+" field type.");
 					newColumnName = v3Config.getCustomFieldsCount ().getNewColumnNameForFieldType (dataType.getTypeAsInt (), existingColumnNames);
 				} else {
 					newColumnName = new ModuleCustomFieldCount50 ().getNewColumnNameForFieldType (dataType.getTypeAsInt (), existingColumnNames);
 				}
-				FacilioUtil.throwIllegalArgumentException (StringUtils.isEmpty (newColumnName), "No more column available for the Field type");
+				FacilioUtil.throwIllegalArgumentException (StringUtils.isEmpty (newColumnName),  "Field limit exceeded for "+ dataType.name()+" field type.");
 
 				field.setColumnName (newColumnName);
 			}

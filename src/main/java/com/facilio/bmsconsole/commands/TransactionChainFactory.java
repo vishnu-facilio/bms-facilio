@@ -6867,6 +6867,56 @@ public class TransactionChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getAddCustomFormFieldChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ValidateFormFieldCommand());
+		c.addCommand( new AddFieldsCommand());
+		c.addCommand(new AddCustomFormFieldCommand());
+		return c;
+	}
+
+	public static FacilioChain getDeleteFormFieldChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand( new GetFormFieldUsageCommand());
+		c.addCommand(new DeleteFormFieldCommand());
+		return c;
+	}
+
+	public static FacilioChain getReorderFieldsChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ReorderFieldsCommand());
+		return c;
+	}
+
+	public static FacilioChain getReorderSectionsChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ReorderFormSectionsCommand());
+		return c;
+	}
+
+
+	public static FacilioChain getAddFormSectionChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddFormSectionCommand());
+		return c;
+	}
+
+	public static FacilioChain getAddSubFormAndSectionChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ValidateSubFormRequestCommand());
+		c.addCommand(new GenerateSubformLinkNameCommand());
+		c.addCommand(getAddFormCommand());
+		c.addCommand(new GenerateFormSectionForSubFormCommand());
+		c.addCommand(new AddFormSectionCommand());
+		return c;
+	}
+
+	public static FacilioChain getDeleteFormSectionChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DeleteFormSectionCommand());
+		return c;
+	}
+
 	public static FacilioChain getAddOrUpdateFormSharingRolesChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddFormSharingCommand());
@@ -6876,6 +6926,12 @@ public class TransactionChainFactory {
 	public static FacilioChain getFormSharingRolesChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetFormSharingRolesCommand());
+		return c;
+	}
+
+	public static FacilioChain getReorderFormsChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ReorderFormsCommand());
 		return c;
 	}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.bmsconsole.util.ApplicationApi;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -63,6 +64,9 @@ public class AddFormCommand extends FacilioCommand {
 				}
 			}
 			if (defaultForm == null) {
+				if(form.getAppLinkName()==null && form.getAppId()>0){
+					form.setAppLinkName(ApplicationApi.getApplicationName(form.getAppId()));
+				}
 				defaultForm = FormsAPI.getDefaultForm(moduleName, form.getAppLinkName());
 			}
 			else {

@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
@@ -23,6 +25,15 @@ public class EditFormCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		FacilioForm editedForm = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
+
+		User currentUser = AccountUtil.getCurrentUser();
+		long systemTime = System.currentTimeMillis();
+		editedForm.setSysModifiedTime(systemTime);
+
+		if (currentUser != null) {
+			editedForm.setSysModifiedBy(AccountUtil.getCurrentUser().getPeopleId());
+		}
+
 		Map<String, Object> props = FieldUtil.getAsProperties(editedForm);
 		FacilioModule formModule = ModuleFactory.getFormModule();
 

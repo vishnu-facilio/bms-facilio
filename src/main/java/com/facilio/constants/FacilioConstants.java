@@ -258,6 +258,23 @@ public class FacilioConstants {
 		public static final String INFO = "info";
 	}
 
+	public static class FormContextNames {
+		public static final String SUB_FORM = "subForm";
+		public static final String SUB_FORM_MODULE_NAME = "subFormModuleName";
+		public static final String NEXT_FORM_FIELD_ID = "nextFormFieldId";
+		public static final String NEXT_FORM_ID = "nextFormId";
+		public static final String PREVIOUS_FORM_ID = "previousFormId";
+		public static final String FORM_RULE_USAGE = "formRuleUsage";
+		public static final String PREVIOUS_FORM_FIELD_ID = "previousFormFieldId";
+		public static final String FORM_SECTION_ID = "formSectionId";
+		public static final String PREVIOUS_FORM_SECTION_ID = "previousFormSectionId";
+		public static final String FORM_FIELD_SEQUENCE_NUMBER = "formFieldSequenceNumber";
+		public static final String FORM_SECTION_SEQUENCE_NUMBER = "formSectionSequenceNumber";
+		public static final String NEXT_FORM_SECTION_ID = "nextFormSectionId";
+		public static final String SEQUENCE_NUMBER = "sequenceNumber";
+	}
+
+
 	public static class ContextNames {
 		public static final String WORKFLOW_RULE_LOGS="workflowRuleLogs";
 		public static final String ONE_LEVEL_LOOKUP="oneLevelLookup";
@@ -838,6 +855,7 @@ public class FacilioConstants {
 		public static final String GET_ONLY_BASIC_VIEW_DETAILS = "getOnlyBasicViewDetails";
 
 		public static final String MODULE_NAME = "moduleName";
+		public static final String SUB_MODULE_NAME = "subModuleName";
 		public static final String DATA_MODULE_NAME = "dataModuleName";
 		public static final String SUMMARY_MODULE_NAME = "summaryModuleName";
 		public static final String MODULE_SETTING = "setting";
@@ -1737,10 +1755,12 @@ public class FacilioConstants {
 		public static final String PARENT_FORM_ID = "parentFormId";
 		public static final String SUB_FORM_ID = "subFormId";
 		public static final String FORM = "form";
+		public static final String SUB_FORM = "subForm";
 		public static final String FORMS_LIST = "formsList";
 		public static final String FORMS_RESPONSE_LIST = "formsResponseList";
 		public static final String FORMS = "forms";
 		public static final String FORM_FIELD = "formField";
+		public static final String FORM_FIELD_List = "formFieldList";
 		public static final String FORM_FIELD_ID = "formFieldId";
 		public static final String FORM_FIELDS = "formFields";
 		public static final String FORM_OBJECT = "formObject";
@@ -4004,6 +4024,16 @@ public class FacilioConstants {
 		public static final String VIEW_FOLDER = "ViewFolder";
 		public static final String VIEW = "View";
 		public static final String GLOBAL_SCOPE = "GlobalScope";
+		public static final String FORM = "Form";
+		public static final String SUB_FORM = "SubForm";
+		public static final String FORM_FIELD = "FormField";
+		public static final String FORM_SECTION = "FormSection";
+		public static final String FORM_RULE = "FormRule";
+		public static final String SUB_FORM_RULE = "SubFormRule";
+		public static final String DELETED = "Deleted";
+		public static final String CREATED = "Created";
+		public static final String UPDATED = "Updated";
+
 	}
 
 	public static class ColourPalette {

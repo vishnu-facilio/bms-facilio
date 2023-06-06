@@ -270,6 +270,55 @@ public class FacilioForm implements Serializable {
 		this.ignoreCustomFields = ignoreCustomFields;
 	}
 
+	public long getSequenceNumber() {
+		return sequenceNumber;
+	}
+
+	public void setSequenceNumber(long sequenceNumber) {
+		this.sequenceNumber = sequenceNumber;
+	}
+
+	private long sequenceNumber = -1;
+
+	public long getSysModifiedTime() {
+		return sysModifiedTime;
+	}
+
+	public void setSysModifiedTime(long sysModifiedTime) {
+		this.sysModifiedTime = sysModifiedTime;
+	}
+
+	private long sysModifiedTime;
+
+	public long getSysCreatedTime() {
+		return sysCreatedTime;
+	}
+
+	public void setSysCreatedTime(long sysCreatedTime) {
+		this.sysCreatedTime = sysCreatedTime;
+	}
+
+	private long sysCreatedTime;
+
+	public long getSysModifiedBy() {
+		return sysModifiedBy;
+	}
+
+	public void setSysModifiedBy(long sysModifiedBy) {
+		this.sysModifiedBy = sysModifiedBy;
+	}
+
+	private long sysModifiedBy;
+
+	public long getSysCreatedBy() {
+		return sysCreatedBy;
+	}
+
+	public void setSysCreatedBy(long sysCreatedBy) {
+		this.sysCreatedBy = sysCreatedBy;
+	}
+
+	private long sysCreatedBy;
 	public int getType() {
 		if (type != null) {
 			return type.getIntVal();

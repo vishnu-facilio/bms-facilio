@@ -2483,6 +2483,10 @@
 			<param name="permission">CREATE,ALL</param>
 			<param name="setupTab">SERVICE_CATALOGS,APPROVALS</param>	
 		</action>
+		<action name="reorder"
+				class="com.facilio.bmsconsole.actions.FormAction"
+				method="reorderForms" >
+		</action>
 		<action name="addSubForm"
 				class="com.facilio.bmsconsole.actions.FormAction" method="addSubForm">
 			<param name="permission">CREATE</param>
@@ -2539,12 +2543,44 @@
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="findFormFieldUsages">
 		</action>
+		<action name="getSupportedFieldTypes"
+				class="com.facilio.bmsconsole.actions.FormAction"
+				method="getSupportedFieldTypes">
+		</action>
+		<action name="addFormField"
+				class="com.facilio.bmsconsole.actions.FormAction"
+				method="addCustomFormField">
+		</action>
+		<action name="deleteFormField"
+				class="com.facilio.bmsconsole.actions.FormAction"
+				method="deleteFormField">
+		</action>
+		<action name="reorderFormFields"
+				class="com.facilio.bmsconsole.actions.FormAction"
+				method="reorderFormFields">
+		</action>
 	</package>
 	<package name="formSectionApiv2"
 		namespace="/api/v2/forms/sections" extends="v2Api">
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateSection">
+		</action>
+		<action name="addSection"
+				class="com.facilio.bmsconsole.actions.FormAction"
+				method="addFormSection">
+		</action>
+		<action name="deleteSection"
+				class="com.facilio.bmsconsole.actions.FormAction"
+				method="deleteFormSection">
+		</action>
+		<action name="addSubForm"
+				class="com.facilio.bmsconsole.actions.FormAction"
+				method="addSubFormWithSection">
+		</action>
+		<action name="reorderFormSections"
+				class="com.facilio.bmsconsole.actions.FormAction"
+				method="reorderFormSections">
 		</action>
 	</package>
 	

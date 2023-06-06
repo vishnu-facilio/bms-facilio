@@ -390,4 +390,49 @@ public class FormField implements Serializable {
 	public void setEmailValidation(){
 		addValidation("emailRegexPattern","^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$");
 	}
+
+	public double getFormFieldSequenceNumber() {
+		return formFieldSequenceNumber;
+	}
+	public void setFormFieldSequenceNumber(double formFieldSequenceNumber) {
+		this.formFieldSequenceNumber = formFieldSequenceNumber;
+	}
+	private double formFieldSequenceNumber;
+
+	public long getSysModifiedTime() {
+		return sysModifiedTime;
+	}
+
+	public void setSysModifiedTime(long sysModifiedTime) {
+		this.sysModifiedTime = sysModifiedTime;
+	}
+
+	public long getSysCreatedTime() {
+		return sysCreatedTime;
+	}
+
+	public void setSysCreatedTime(long sysCreatedTime) {
+		this.sysCreatedTime = sysCreatedTime;
+	}
+
+	public long getSysModifiedBy() {
+		return sysModifiedBy;
+	}
+
+	public void setSysModifiedBy(long sysModifiedBy) {
+		this.sysModifiedBy = sysModifiedBy;
+	}
+
+	public long getSysCreatedBy() {
+		return sysCreatedBy;
+	}
+
+	public void setSysCreatedBy(long sysCreatedBy) {
+		this.sysCreatedBy = sysCreatedBy;
+	}
+
+	private long sysModifiedTime;
+	private long sysCreatedTime;
+	private long sysModifiedBy;
+	private long sysCreatedBy;
 }

@@ -603,6 +603,11 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("isSystemForm", "IS_SYSTEM_FORM", module, FieldType.BOOLEAN));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getBooleanField("locked", "IS_LOCKED", module));
+        fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.DECIMAL));
+        fields.add(getField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("sysCreatedBy", "Created By", "SYS_CREATED_BY", module, FieldType.LOOKUP));
+        fields.add(getField("sysModifiedBy", "Modified By", "SYS_MODIFIED_BY", module, FieldType.LOOKUP));
+        fields.add(getField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME));
 
         return fields;
     }
@@ -1172,6 +1177,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("sectionId", "SECTIONID", module, FieldType.NUMBER));
 
         fields.add(getField("configStr", "CONFIG", module, FieldType.STRING));
+        fields.add(getField("formFieldSequenceNumber", "FIELD_SEQUENCE_NUMBER", module, FieldType.DECIMAL));
 
         FacilioField allowCreateOptions = new FacilioField();
         allowCreateOptions.setName("allowCreate");
@@ -1179,6 +1185,11 @@ public class FieldFactory extends BaseFieldFactory {
         allowCreateOptions.setColumnName("ALLOW_CREATE_OPTIONS");
         allowCreateOptions.setModule(module);
         fields.add(allowCreateOptions);
+
+        fields.add(getField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("sysCreatedBy", "Created By", "SYS_CREATED_BY", module, FieldType.LOOKUP));
+        fields.add(getField("sysModifiedBy", "Modified By", "SYS_MODIFIED_BY", module, FieldType.LOOKUP));
+        fields.add(getField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME));
 
 
         fields.add(span);
@@ -1191,6 +1202,7 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getIdField(module));
         fields.add(getNameField(module));
+        fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
         fields.add(getField("formId", "FORMID", module, FieldType.NUMBER));
         fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
         fields.add(getField("showLabel", "SHOW_LABEL", module, FieldType.BOOLEAN));
@@ -1201,6 +1213,11 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getField("lookupFieldId", "LOOKUP_FIELDID", module, FieldType.NUMBER));
         fields.add(getField("numberOfSubFormRecords", "NUMBER_OF_SUB_FORM_RECORDS", module, FieldType.NUMBER));
+        fields.add(getField("formSectionSequenceNumber", "SECTION_SEQUENCE_NUMBER", module, FieldType.DECIMAL));
+        fields.add(getField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("sysCreatedBy", "Created By", "SYS_CREATED_BY", module, FieldType.LOOKUP));
+        fields.add(getField("sysModifiedBy", "Modified By", "SYS_MODIFIED_BY", module, FieldType.LOOKUP));
+        fields.add(getField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME));
 
         return fields;
     }

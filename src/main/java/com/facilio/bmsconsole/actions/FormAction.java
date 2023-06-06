@@ -19,13 +19,14 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
+import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class FormAction extends FacilioAction {
-	
+
 	/**
 	 * 
 	 */
@@ -197,6 +198,103 @@ public class FormAction extends FacilioAction {
 		this.skipTemplatePermission = skipTemplatePermission;
 	}
 
+	public FacilioField getFacilioField() {
+		return facilioField;
+	}
+	public void setFacilioField(FacilioField facilioField) {
+		this.facilioField = facilioField;
+	}
+	public void setFieldJson(JSONObject fieldJson) throws Exception {
+		this.fieldJson = fieldJson;
+		setFacilioField(FieldUtil.parseFieldJson(this.fieldJson));
+	}
+
+	public long getFormSectionId() {
+		return formSectionId;
+	}
+
+	public void setFormSectionId(long formSectionId) {
+		this.formSectionId = formSectionId;
+	}
+
+	public long getPreviousFormFieldId() {
+		return previousFormFieldId;
+	}
+	public void setPreviousFormFieldId(long previousFormFieldId) {
+		this.previousFormFieldId = previousFormFieldId;
+	}
+
+	public long getNextFormFieldId() {
+		return nextFormFieldId;
+	}
+
+	public void setNextFormFieldId(long nextFormFieldId) {
+		this.nextFormFieldId = nextFormFieldId;
+	}
+
+	public FacilioForm getSubForm() {
+		return subForm;
+	}
+
+	public void setSubForm(FacilioForm subForm) {
+		this.subForm = subForm;
+	}
+
+	private FacilioForm subForm;
+
+	private long formSectionId;
+	private long previousFormFieldId;
+	private long nextFormFieldId;
+	private JSONObject fieldJson;
+	private long nextFormSectionId;
+	private long nextFormId;
+
+	public long getNextFormId() {
+		return nextFormId;
+	}
+
+	public void setNextFormId(long nextFormId) {
+		this.nextFormId = nextFormId;
+	}
+
+	public long getPreviousFormId() {
+		return previousFormId;
+	}
+
+	public void setPreviousFormId(long previousFormId) {
+		this.previousFormId = previousFormId;
+	}
+
+	private long previousFormId;
+	public long getNextFormSectionId() {
+		return nextFormSectionId;
+	}
+
+	public void setNextFormSectionId(long nextFormSectionId) {
+		this.nextFormSectionId = nextFormSectionId;
+	}
+
+	public long getPreviousFormSectionId() {
+		return previousFormSectionId;
+	}
+
+	public void setPreviousFormSectionId(long previousFormSectionId) {
+		this.previousFormSectionId = previousFormSectionId;
+	}
+
+	private long previousFormSectionId;
+	private FacilioField facilioField;
+
+	public String getSubModuleName() {
+		return subModuleName;
+	}
+
+	public void setSubModuleName(String subModuleName) {
+		this.subModuleName = subModuleName;
+	}
+
+	private String subModuleName;
+
 	private Boolean skipTemplatePermission = false;
 
 	private Boolean forCreate = false;
@@ -225,13 +323,16 @@ public class FormAction extends FacilioAction {
 	}
 	
 	public String updateForm() throws Exception {
-		Context context = new FacilioContext();
+
+		FacilioChain chain = TransactionChainFactory.getUpdateFormChain();
+		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.FORM, this.getForm());
-		
-		FacilioChain c = TransactionChainFactory.getUpdateFormChain();
-		c.execute(context);
-		
+
+		chain.execute();
 		setResult("result", "success");
+
+		Map<String, Object> props = (Map<String, Object>) context.get(ContextNames.FORM_OBJECT);
+//		FormsAPI.addAuditLogs(props,FacilioConstants.AuditLogRecordTypes.FORM,FacilioConstants.AuditLogRecordTypes.UPDATED);
 
 		return SUCCESS;
 	}
@@ -248,13 +349,19 @@ public class FormAction extends FacilioAction {
 	}
 	
 	public String updateFieldAndFormField() throws Exception {
-		Context formFieldcontext = new FacilioContext();
-		
-		formFieldcontext.put(FacilioConstants.ContextNames.FORM_FIELD, formField);
-		formFieldcontext.put(FacilioConstants.ContextNames.CHECK_FIELD_DISPLAY_NAME_DUPLICATION, true);
-		
-		FacilioChain c = TransactionChainFactory.getUpdateFormFieldAndModuleFieldChain();
-		c.execute(formFieldcontext);
+
+
+		FacilioChain chain = TransactionChainFactory.getUpdateFormFieldAndModuleFieldChain();
+
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.FORM_FIELD, formField);
+		context.put(FacilioConstants.ContextNames.CHECK_FIELD_DISPLAY_NAME_DUPLICATION, true);
+
+		chain.execute();
+
+		Map<String, Object> props = (Map<String, Object>) context.get(FacilioConstants.ContextNames.FORM_FIELD);
+		FormsAPI.addAuditLogs(props,FacilioConstants.AuditLogRecordTypes.FORM_FIELD,FacilioConstants.AuditLogRecordTypes.UPDATED);
+
 		setResult("result", "success");
 		
 		return SUCCESS;
@@ -336,6 +443,8 @@ public class FormAction extends FacilioAction {
 		FacilioContext context = chain.getContext();
 		context.put(ContextNames.FORM_FIELD_ID, this.formFieldId);
 		chain.execute();
+
+		setResult(FacilioConstants.FormContextNames.FORM_RULE_USAGE, context.get(FacilioConstants.FormContextNames.FORM_RULE_USAGE));
 		return  SUCCESS;
 	}
 
@@ -385,17 +494,21 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}
 	public String addForm() throws Exception {
-		Context context=new FacilioContext();
+
+		FacilioChain chain = TransactionChainFactory.getAddFormCommand();
+		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.FORM, form);
-		
-		TransactionChainFactory.getAddFormCommand().execute(context);
+		chain.execute();
 		
 		setFormName(form.getName());
 		
 		formSourceType = FormSourceType.FROM_BUILDER;
 		formDetails();
-		
+
+		Map<String, Object> props = (Map<String, Object>) context.get(ContextNames.FORM_OBJECT);
+		FormsAPI.addAuditLogs(props,FacilioConstants.AuditLogRecordTypes.FORM,FacilioConstants.AuditLogRecordTypes.CREATED);
+
 		return SUCCESS;
 	}
 	
@@ -481,25 +594,48 @@ public class FormAction extends FacilioAction {
 	}
 
 	public String updateSection() throws Exception {
-		Context context = new FacilioContext();
+
+		FacilioChain chain = TransactionChainFactory.getUpdateFormSectionChain();
+
+		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.FORM_SECTION, formSection);
 		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
-		
-		FacilioChain c = TransactionChainFactory.getUpdateFormSectionChain();
-		c.execute(context);
-		
+
+		chain.execute(context);
+
+		Map<String, Object> props = (Map<String, Object>) context.get(ContextNames.FORM_SECTION);
+		FormsAPI.addAuditLogs(props,FacilioConstants.AuditLogRecordTypes.FORM_SECTION,FacilioConstants.AuditLogRecordTypes.UPDATED);
+
 		setResult("result", "success");
 		
 		return SUCCESS;
 	}
+
+	public String deleteFormSection() throws Exception{
+
+		FacilioChain facilioChain = TransactionChainFactory.getDeleteFormSectionChain();
+
+		FacilioContext context = facilioChain.getContext();
+		context.put(FacilioConstants.FormContextNames.FORM_SECTION_ID,getFormSectionId());
+
+		facilioChain.execute();
+		return SUCCESS;
+	}
+
 	
 	public String deleteForm() throws Exception {
-		Context context = new FacilioContext();
+
+		FacilioChain chain = TransactionChainFactory.getDeleteFormChain();
+		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
-		
-		TransactionChainFactory.getDeleteFormChain().execute(context);
+		chain.execute();
+
 		setResult(ContextNames.ROWS_UPDATED, context.get(ContextNames.ROWS_UPDATED));
-		
+
+		FacilioForm facilioForm = (FacilioForm) context.get(ContextNames.FORM);
+		Map<String,Object> props = FieldUtil.getAsProperties(facilioForm);
+		FormsAPI.addAuditLogs(props,FacilioConstants.AuditLogRecordTypes.FORM,FacilioConstants.AuditLogRecordTypes.DELETED);
+
 		return SUCCESS;
 	}
 	
@@ -563,6 +699,140 @@ public String getServicePortalForms() throws Exception{
 		context.put(ContextNames.FORM_ID,getFormId());
 		facilioChain.execute();
 		setResult(ContextNames.FORM_SHARING, context.get(ContextNames.FORM_SHARING));
+
+		return SUCCESS;
+	}
+
+	public String getSupportedFieldTypes() throws Exception {
+
+		FacilioChain chain = ReadOnlyChainFactory.getSupportedFieldTypesChain();
+		FacilioContext context = chain.getContext();
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.FORM_FIELD_List, context.get(FacilioConstants.ContextNames.FORM_FIELD_List));
+		return SUCCESS;
+	}
+
+	public String addCustomFormField() throws Exception {
+
+		FacilioChain facilioChain = TransactionChainFactory.getAddCustomFormFieldChain();
+
+		FacilioContext context = facilioChain.getContext();
+		context.put(ContextNames.MODULE_NAME, getModuleName());
+		context.put(ContextNames.FORM_FIELD, getFormField());
+		context.put(FacilioConstants.FormContextNames.PREVIOUS_FORM_FIELD_ID, getPreviousFormFieldId());
+		context.put(FacilioConstants.FormContextNames.NEXT_FORM_FIELD_ID, getNextFormFieldId());
+		context.put(FacilioConstants.FormContextNames.FORM_SECTION_ID, getFormSectionId());
+		context.put(ContextNames.FORM_ID, getFormId());
+
+		facilioChain.execute();
+
+		Map<String, Object> props = (Map<String, Object>) context.get(FacilioConstants.ContextNames.FORM_FIELD);
+		FormsAPI.addAuditLogs(props,FacilioConstants.AuditLogRecordTypes.FORM_FIELD,FacilioConstants.AuditLogRecordTypes.CREATED);
+
+		return SUCCESS;
+	}
+
+	public String deleteFormField() throws Exception {
+
+		FacilioChain facilioChain = TransactionChainFactory.getDeleteFormFieldChain();
+
+		FacilioContext context = facilioChain.getContext();
+		context.put(ContextNames.FORM_FIELD_ID, getFormFieldId());
+
+		facilioChain.execute();
+
+		Map<String, Object> fieldProps = (Map<String, Object>) context.get(FacilioConstants.ContextNames.FORM_FIELD);
+
+		FormsAPI.addAuditLogs(fieldProps,FacilioConstants.AuditLogRecordTypes.FORM_FIELD,FacilioConstants.AuditLogRecordTypes.DELETED);
+		setResult(FacilioConstants.FormContextNames.FORM_RULE_USAGE, context.get(FacilioConstants.FormContextNames.FORM_RULE_USAGE));
+		return SUCCESS;
+	}
+
+	public String reorderFormFields() throws Exception {
+
+		FacilioChain facilioChain = TransactionChainFactory.getReorderFieldsChain();
+
+		FacilioContext context = facilioChain.getContext();
+		context.put(FacilioConstants.FormContextNames.PREVIOUS_FORM_FIELD_ID, getPreviousFormFieldId());
+		context.put(FacilioConstants.FormContextNames.NEXT_FORM_FIELD_ID, getNextFormFieldId());
+		context.put(ContextNames.FORM_FIELD_ID, getFormFieldId());
+		context.put(FacilioConstants.FormContextNames.FORM_SECTION_ID, getFormSectionId());
+
+		facilioChain.execute();
+
+		Map<String, Object> fieldProps = (Map<String, Object>) context.get(FacilioConstants.ContextNames.FORM_FIELD);
+		FormsAPI.addAuditLogs(fieldProps,FacilioConstants.AuditLogRecordTypes.FORM_FIELD,FacilioConstants.AuditLogRecordTypes.UPDATED);
+
+		return SUCCESS;
+	}
+
+	public String reorderFormSections() throws Exception {
+
+		FacilioChain facilioChain = TransactionChainFactory.getReorderSectionsChain();
+
+		FacilioContext context = facilioChain.getContext();
+		context.put(FacilioConstants.FormContextNames.PREVIOUS_FORM_SECTION_ID, getPreviousFormSectionId());
+		context.put(FacilioConstants.FormContextNames.NEXT_FORM_SECTION_ID, getNextFormSectionId());
+		context.put(ContextNames.FORM_ID, getFormId());
+		context.put(FacilioConstants.FormContextNames.FORM_SECTION_ID, getFormSectionId());
+
+		facilioChain.execute();
+		return SUCCESS;
+	}
+
+	public String addFormSection() throws Exception {
+
+		FacilioChain facilioChain = TransactionChainFactory.getAddFormSectionChain();
+
+		FacilioContext context = facilioChain.getContext();
+		context.put(ContextNames.FORM_SECTION, getFormSection());
+		context.put(ContextNames.PARENT_FORM_ID, getFormId());
+		context.put(FacilioConstants.FormContextNames.PREVIOUS_FORM_SECTION_ID, getPreviousFormSectionId());
+		context.put(FacilioConstants.FormContextNames.NEXT_FORM_SECTION_ID, getNextFormSectionId());
+
+		facilioChain.execute();
+
+		Map<String, Object> props = (Map<String, Object>) context.get(ContextNames.FORM_SECTION);
+		FormsAPI.addAuditLogs(props,FacilioConstants.AuditLogRecordTypes.FORM_SECTION,FacilioConstants.AuditLogRecordTypes.CREATED);
+
+		return SUCCESS;
+	}
+
+	public String addSubFormWithSection() throws Exception {
+
+		FacilioChain chain = TransactionChainFactory.getAddSubFormAndSectionChain();
+
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getSubModuleName());
+		context.put(FacilioConstants.ContextNames.FORM, getSubForm());
+		context.put(ContextNames.PARENT_FORM_ID, getParentFormId());
+		context.put(FacilioConstants.FormContextNames.PREVIOUS_FORM_SECTION_ID,getPreviousFormSectionId());
+		context.put(FacilioConstants.FormContextNames.NEXT_FORM_SECTION_ID,getNextFormSectionId());
+
+		chain.execute();
+		FacilioForm facilioForm = (FacilioForm) context.get(ContextNames.FORM);
+		Map<String, Object> props = FieldUtil.getAsProperties(facilioForm);
+		FormsAPI.addAuditLogs(props,FacilioConstants.AuditLogRecordTypes.SUB_FORM,FacilioConstants.AuditLogRecordTypes.CREATED);
+
+		return SUCCESS;
+	}
+
+	public String reorderForms() throws Exception {
+
+		FacilioChain chain = TransactionChainFactory.getReorderFormsChain();
+
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.FORM_ID,getFormId());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(FacilioConstants.FormContextNames.NEXT_FORM_ID, getNextFormId());
+		context.put(FacilioConstants.FormContextNames.PREVIOUS_FORM_ID, getPreviousFormId());
+		context.put(FacilioConstants.ContextNames.APP_ID, getAppId());
+
+		chain.execute();
+
+		Map<String, Object> props = (Map<String, Object>) context.get(ContextNames.FORM);
+		FormsAPI.addAuditLogs(props,FacilioConstants.AuditLogRecordTypes.FORM,FacilioConstants.AuditLogRecordTypes.UPDATED);
 
 		return SUCCESS;
 	}
