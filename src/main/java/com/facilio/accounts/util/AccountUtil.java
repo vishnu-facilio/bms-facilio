@@ -595,7 +595,8 @@ public class AccountUtil {
 		NEW_GROUP_INVITES(135,getExponentValue(8),LicenseMapping.GROUP3LICENSE),//2^8
 
 		COMMISSIONING(136,getExponentValue(9),LicenseMapping.GROUP3LICENSE),//2^9
-		BACKGROUND_ACTIVITY(137,getExponentValue(10),LicenseMapping.GROUP3LICENSE);//2^10
+		BACKGROUND_ACTIVITY(137,getExponentValue(10),LicenseMapping.GROUP3LICENSE),//2^10
+		PAGE_BUILDER(138, getExponentValue(11), LicenseMapping.GROUP3LICENSE);//2^11
 
 		public int featureId;
 		private long license;
