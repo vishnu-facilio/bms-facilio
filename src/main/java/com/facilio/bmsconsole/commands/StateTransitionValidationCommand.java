@@ -129,36 +129,38 @@ public class StateTransitionValidationCommand extends FacilioCommand {
     }
 
     private void validateGeoLocation(StateflowTransitionContext stateTransition, ModuleBaseWithCustomFields oldRecord, ModuleBean moduleBean,String locationValue, Map<String,Double> currentLocation) throws Exception {
-        if (stateTransition.getLocationFieldId() > 0){
+        if (stateTransition.getLocationFieldId() > 0) {
             Double[] coordinates = null;
             FacilioField locationField = moduleBean.getField(((StateflowTransitionContext) stateTransition).getLocationFieldId());
             Object value = FieldUtil.getValue(oldRecord, locationField);
-            if (locationField instanceof LookupField && value != null) {
-                if (stateTransition.getLocationLookupFieldId() > 0) {
-                    Object recordLocationValue = null;
-                    FacilioField locationLookUpField = moduleBean.getField(stateTransition.getLocationLookupFieldId());
-                    if (locationLookUpField instanceof LookupField) {
-                        Map<String, List<ModuleBaseWithCustomFields>> recordObject;
-                        if (value instanceof ModuleBaseWithCustomFields) {
-                            recordObject = Constants.getRecordMap(V3Util.getSummary(locationLookUpField.getModule().getName(), Collections.singletonList(((ModuleBaseWithCustomFields) value).getId())));
-                            recordLocationValue = recordObject.get(locationLookUpField.getModule().getName()) != null ? recordObject.get(locationLookUpField.getModule().getName()).get(0) : null;
-                        } else if (value instanceof Map) {
-                            recordObject = Constants.getRecordMap(V3Util.getSummary(locationLookUpField.getModule().getName(), Collections.singletonList((Long) ((Map) value).get("id"))));
-                            recordLocationValue = recordObject.get(locationLookUpField.getModule().getName()) != null ? recordObject.get(locationLookUpField.getModule().getName()).get(0) : null;
+            if (value != null) {
+                if (locationField instanceof LookupField) {
+                    if (stateTransition.getLocationLookupFieldId() > 0) {
+                        Object recordLocationValue = null;
+                        FacilioField locationLookUpField = moduleBean.getField(stateTransition.getLocationLookupFieldId());
+                        if (locationLookUpField instanceof LookupField) {
+                            Map<String, List<ModuleBaseWithCustomFields>> recordObject;
+                            if (value instanceof ModuleBaseWithCustomFields) {
+                                recordObject = Constants.getRecordMap(V3Util.getSummary(locationLookUpField.getModule().getName(), Collections.singletonList(((ModuleBaseWithCustomFields) value).getId())));
+                                recordLocationValue = recordObject.get(locationLookUpField.getModule().getName()) != null ? recordObject.get(locationLookUpField.getModule().getName()).get(0) : null;
+                            } else if (value instanceof Map) {
+                                recordObject = Constants.getRecordMap(V3Util.getSummary(locationLookUpField.getModule().getName(), Collections.singletonList((Long) ((Map) value).get("id"))));
+                                recordLocationValue = recordObject.get(locationLookUpField.getModule().getName()) != null ? recordObject.get(locationLookUpField.getModule().getName()).get(0) : null;
+                            }
+                            coordinates = getCoordinates(getValueFromRecord(recordLocationValue, locationLookUpField));
+                        } else {
+                            recordLocationValue = getValueFromRecord(value, locationLookUpField);
+                            coordinates = getCoordinateFromString((String) recordLocationValue);
                         }
-                        coordinates = getCoordinates(getValueFromRecord(recordLocationValue, locationLookUpField));
                     } else {
-                        recordLocationValue = getValueFromRecord(value, locationLookUpField);
-                        coordinates = getCoordinateFromString((String) recordLocationValue);
+                        coordinates = getCoordinates(value);
                     }
                 } else {
-                    coordinates = getCoordinates(value);
+                    coordinates = getCoordinateFromString((String) value);
                 }
-            } else {
-                coordinates = getCoordinateFromString((String) value);
+                Long radius = stateTransition.getRadius();
+                validateLocation(locationValue, currentLocation, coordinates, radius);
             }
-            Long radius = stateTransition.getRadius();
-            validateLocation(locationValue, currentLocation, coordinates, radius);
         }
     }
 
