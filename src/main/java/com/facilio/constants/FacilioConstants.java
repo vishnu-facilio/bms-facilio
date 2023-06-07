@@ -254,7 +254,7 @@ public class FacilioConstants {
 		public static final String CURRENCIES_LIST = "currencies";
 		public static final String SUPPLEMENTS = "supplements";
 		public static final String RELATED_LIST = "relatedList";
-
+		public static final String HAS_CURRENCY_FIELD_VALUE = "##currencyField##";
 		public static final String CUSTOM_BUTTON_ID = "customButtonId";
 		public static final String RELATED_MODULE_NAME = "relatedModuleName";
 		public static final String RELATED_FIELD_NAME = "relatedFieldName";

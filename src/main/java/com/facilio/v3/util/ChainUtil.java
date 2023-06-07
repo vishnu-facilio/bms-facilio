@@ -95,7 +95,7 @@ public class ChainUtil {
         //validating field permissions in the record data being sent
         nonTransactionChain.addCommand(new ValidateFieldPermissionCommand());
         nonTransactionChain.addCommand(new CheckContextTampering("getFetchRecordChain", "ValidateFieldPermissionCommand", moduleName));
-
+        nonTransactionChain.addCommand(new HandleCurrencyFields());
         return nonTransactionChain;
     }
 
