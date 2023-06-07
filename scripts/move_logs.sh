@@ -7,7 +7,7 @@ ipAddress=`hostname -I|awk '{$1=$1};1'`
 logsBucket=facilio-server-logs
 servername=`grep "mainapp.domain=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 logsBucket=`grep "logs.bucket" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
-
+identityBucket=`grep "identityBucket" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 isScheduler=`grep "schedulerServer=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 isMessageProcessor=`grep "messageProcessor=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 server_type=""
@@ -30,6 +30,11 @@ fi
 
 today=`date +%F`
 logDir=`date +%Y/%m/%d`
+
+if [ -f "$APP_HOME/logs/identity_auditlog" ]; then
+aws s3 cp $APP_HOME/logs/identity_auditlog "s3://$identityBucket/$logDir/$servername/$ipAddress/"
+fi
+
 for file in `ls $APP_HOME/logs`
 do
     if [ "$file" != "catalina.out" -a "$file" != "$curSerLog"  -a "$file" != "accesslog.$today" -a "$file" != "serverlog" -a "$file" != "resultset" -a "$file" != "l4jaccesslog"  -a "$file" != "useraccesslog"  -a "$file" != "clientlog"  -a "$file" != "userlogin"  -a "$file" != "sqlitelog" ]; then
