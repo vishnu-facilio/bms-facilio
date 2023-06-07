@@ -77,11 +77,11 @@ public class ImportHandler {
             this.afterProcessRowFunction = rowFunction;
             return this;
         }
-        public ImportHandlerBuilder lookupUniqueFieldsMap(String moduleName, List<String> fieldNames) {
+        public ImportHandlerBuilder lookupUniqueFieldsMap(String lookupFieldName, List<String> fieldNames) {
             if (lookupUniqueFieldsMap == null) {
                 lookupUniqueFieldsMap = new HashMap<>();
             }
-            lookupUniqueFieldsMap.put(moduleName, fieldNames);
+            lookupUniqueFieldsMap.put(lookupFieldName, fieldNames);
             return this;
         }
         public ImportHandlerBuilder loadLookUpExtraSelectFields(String moduleName, List<String> fieldNames) {

@@ -23,6 +23,10 @@ public class InsertMultiImportDataIntoLogCommand extends FacilioCommand {
         ImportDataDetails importDataDetails = (ImportDataDetails) context.get(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS);
         List<ImportRowContext> importRowContextList = (List<ImportRowContext>) context.get(FacilioConstants.ContextNames.IMPORT_ROW_CONTEXT_LIST);
         MultiImportApi.insertIntoMultiImportProcessLogTable(importRowContextList);
+
+        if(!importDataDetails.isHasErrorRecords() && importSheet.getProcessedRowCount()!=0){
+            importDataDetails.setHasErrorRecords(true);
+        }
         return false;
     }
 }

@@ -78,6 +78,13 @@ public class MultiImportConfigurations {
     public static Supplier<ImportConfig> getSpaceImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3SpaceContext.class)
                 .importHandler()
+                .lookupUniqueFieldsMap("floor",Arrays.asList("name","building","site"))
+                .lookupUniqueFieldsMap("building",Arrays.asList("name","site"))
+                .lookupUniqueFieldsMap("space1",Arrays.asList("name","site","*building","*floor"))
+                .lookupUniqueFieldsMap("space2",Arrays.asList("name","site","*building","*floor","space1"))
+                .lookupUniqueFieldsMap("space3",Arrays.asList("name","site","*building","*floor","space1","space2"))
+                .lookupUniqueFieldsMap("space4",Arrays.asList("name","site","*building","*floor","space1","space2","space3"))
+                .lookupUniqueFieldsMap("space5",Arrays.asList("name","site","*building","*floor","space1","space2","space3","space4"))
                 .afterProcessRowFunction((rowNumber, rowValue, prop, context) -> {
                     prop.put("spaceType", V3BaseSpaceContext.SpaceType.SPACE.getIntVal());
                     return null;
@@ -92,7 +99,7 @@ public class MultiImportConfigurations {
     public static Supplier<ImportConfig> getAssetImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3AssetContext.class)
                 .importHandler()
-                .lookupUniqueFieldsMap("basespace",Arrays.asList("name","site","*building","*floor","*space1","*space2","*space3","*space4","*space5"))
+                .lookupUniqueFieldsMap("space",Arrays.asList("name","site","*building","*floor","*space1","*space2","*space3","*space4","*space5"))
                 .loadLookUpExtraSelectFields(FacilioConstants.ContextNames.ASSET_CATEGORY,Arrays.asList("assetModuleID"))
                 .done()
                 .createHandler()
@@ -107,7 +114,7 @@ public class MultiImportConfigurations {
                 .importHandler()
                 .lookupUniqueFieldsMap("floor",Arrays.asList("name","building","site"))
                 .lookupUniqueFieldsMap("building",Arrays.asList("name","site"))
-                .lookupUniqueFieldsMap("basespace",Arrays.asList("name","site","*building","*floor","*space1","*space2","*space3","*space4","*space5"))
+                .lookupUniqueFieldsMap("space",Arrays.asList("name","site","*building","*floor","*space1","*space2","*space3","*space4","*space5"))
                 .afterProcessRowFunction((rowNumber, rowValue, prop, context) -> {
                     prop.put("spaceType", V3BaseSpaceContext.SpaceType.SPACE.getIntVal());
                     return null;
