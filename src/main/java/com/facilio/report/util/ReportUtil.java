@@ -4,24 +4,32 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Group;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.fs.FileInfo;
 import com.facilio.modules.*;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.ReportUserFilterContext;
+import com.facilio.services.filestore.PublicFileUtil;
+import com.facilio.services.pdf.PDFOptions;
+import com.facilio.services.pdf.PDFService;
+import com.facilio.services.pdf.PDFServiceFactory;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -59,6 +67,8 @@ import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class ReportUtil {
 	private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(ReportUtil.class.getName());
@@ -1768,5 +1778,71 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 			}
 		}
 		return reportFolders;
+	}
+	public  static JSONObject getPageParams(ReportContext report) throws Exception {
+		JSONObject pageParams = new JSONObject();
+		JSONObject dateRange = new JSONObject();
+		JSONObject filters = new JSONObject();
+		pageParams.put("reportId",report.getId());
+		if(report.getDateRange() != null){
+			dateRange.put("startTime",report.getDateRange().getStartTime());
+			dateRange.put("endTime", report.getDateRange().getEndTime());
+			dateRange.put("operatorId",20l);
+			pageParams.put("dateRange", ReportsUtil.encodeURIComponent(dateRange.toJSONString()));
+		}
+		if(CollectionUtils.isNotEmpty(report.getUserFilters())){
+			for(ReportUserFilterContext filter : report.getUserFilters()){
+				JSONObject userFilter = new JSONObject();
+				userFilter.put("operatorId",36l);
+				if(filter.getDefaultValues() != null){
+					userFilter.put("value",filter.getDefaultValues());
+				}
+				else {
+					userFilter.put("value",filter.getChooseValue().getValues());
+				}
+				filters.put(filter.getName(),userFilter);
+			}
+			pageParams.put("filters",ReportsUtil.encodeURIComponent(filters.toJSONString()));
+		}
+		return pageParams;
+	}
+	public static String getAppBaseURL() {
+		try {
+			HttpServletRequest req = ServletActionContext.getRequest();
+			if (req != null) {
+				return FacilioProperties.getAppProtocol() + "://" + req.getServerName();
+			}
+		} catch (Exception e) {}
+		return FacilioProperties.getAppProtocol() + "://" + FacilioProperties.getAppDomain();
+	}
+	public  static String getFileUrl(ReportContext report, FileInfo.FileFormat fileFormat, String fileName) throws Exception {
+		long fileId = 0;
+		String linkName = null;
+		String pageName;
+		if(report.getTypeEnum() == ReportContext.ReportType.WORKORDER_REPORT){
+			pageName = "modulereport";
+		}
+		else{
+			pageName = "readingReport";
+		}
+		Long appId = report.getAppId();
+		JSONObject pageParams = getPageParams(report);
+		Map<String, Object> result = new HashMap<>();
+		PDFOptions pdfOptions = FieldUtil.getAsBeanFromMap(result, PDFOptions.class);
+		if(appId != null && appId != -1 && appId != 0){
+			linkName = ApplicationApi.getApplicationForId(appId).getLinkName();
+		}
+		else {
+			linkName = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
+		}
+		if (fileFormat.equals(FileInfo.FileFormat.PDF)) {
+			fileId = PDFServiceFactory.getPDFService().exportPage(fileName, linkName, pageName, pageParams, PDFService.ExportType.PDF,pdfOptions);
+			LOGGER.info("fileId"+fileId);
+		}
+		else if (fileFormat.equals(FileInfo.FileFormat.IMAGE)) {
+			fileId = PDFServiceFactory.getPDFService().exportPage(fileName, linkName, pageName, pageParams, PDFService.ExportType.SCREENSHOT, pdfOptions);
+		}
+		return getAppBaseURL() + PublicFileUtil.createPublicFileUrl(fileId);
+
 	}
 }

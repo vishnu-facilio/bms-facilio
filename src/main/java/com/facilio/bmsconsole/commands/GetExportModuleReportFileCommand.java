@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.report.util.ReportUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,9 +66,13 @@ private ReportContext report;
 			fileUrl = ExportUtil.exportData(fileFormat, fileName, table, isS3Url);
 		}
 		else {
-			fileUrl = ReportExportUtil.exportPdf(module, fileFormat, report, isS3Url, fileName, context);
+			if(context.get(FacilioConstants.ContextNames.JOB_ID) != null){
+				fileUrl = ReportUtil.getFileUrl(report, fileFormat, fileName);
+			}
+			else{
+				fileUrl = ReportExportUtil.exportPdf(module, fileFormat, report, isS3Url, fileName, context);
+			}
 		}
-		
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);
 		context.put(FacilioConstants.ContextNames.FILE_NAME, fileName);
 		

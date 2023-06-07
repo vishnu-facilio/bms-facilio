@@ -47,6 +47,7 @@ public class ReportEmailScheduler extends FacilioJob {
 				Map<String, Object> prop = props.get(0);
 				
 				FacilioContext context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.JOB_ID,jobId);
 				FileFormat fileFormat = FileFormat.getFileFormat((int) prop.get("fileFormat"));
 				context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 				

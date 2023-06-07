@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.report.util.ReportUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -94,9 +95,13 @@ public class GetExportReportFileCommand extends FacilioCommand {
 			fileUrl = ExportUtil.exportData(fileFormat, fileName, table, isS3Url);
 		}
 		else {
-			fileUrl = ReportExportUtil.exportPdf(report.getDataPoints().get(0).getxAxis().getModule(), fileFormat, report, isS3Url, fileName, context);
+			if(context.get(FacilioConstants.ContextNames.JOB_ID) != null){
+				fileUrl = ReportUtil.getFileUrl(report, fileFormat, fileName);
+			}
+			else {
+				fileUrl = ReportExportUtil.exportPdf(report.getDataPoints().get(0).getxAxis().getModule(), fileFormat, report, isS3Url, fileName, context);
+			}
 		}
-		
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);
 		context.put(FacilioConstants.ContextNames.FILE_NAME, fileName);
 		

@@ -52,6 +52,9 @@ public class ReportContext {
 	public void setBuildingId(ArrayList buildingId) {
 		this.buildingId = buildingId;
 	}
+	private long appId = -1;
+	public long getAppId() { return appId; }
+	public void setAppId(long appId) { this.appId = appId; }
 	private ArrayList FilterSiteId;
 
 	public ArrayList getFilterSiteId() {
