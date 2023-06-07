@@ -8,6 +8,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.util.SummaryWidgetUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,8 +97,12 @@ public class AddOrUpdateSummaryWidgetGroupsCommand extends FacilioCommand {
     }
 
     private void setUniqueNameForWidgetGroup(SummaryWidgetGroup widgetGroup, List<String> nameList, boolean isSystem){
-        String name = widgetGroup.getDisplayName() != null ? widgetGroup.getDisplayName() : "summaryWidgetGroup";
+        String name = StringUtils.isNotEmpty(widgetGroup.getName()) ? widgetGroup.getName() :
+                StringUtils.isNotEmpty(widgetGroup.getDisplayName())? widgetGroup.getDisplayName(): "widgetGroup";
         name = CustomPageAPI.generateUniqueName(name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", ""), nameList,isSystem);
+        if(isSystem && StringUtils.isNotEmpty(widgetGroup.getName()) && !widgetGroup.getName().equalsIgnoreCase(name)) {
+            throw new IllegalArgumentException("linkName "+ widgetGroup.getName()+"  already exists, given linkName for widgetGroup is invalid");
+        }
         nameList.add(name);
         widgetGroup.setName(name);
     }

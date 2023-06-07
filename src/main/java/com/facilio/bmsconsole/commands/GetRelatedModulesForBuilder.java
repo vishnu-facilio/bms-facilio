@@ -13,6 +13,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -36,7 +37,12 @@ public class GetRelatedModulesForBuilder extends FacilioCommand {
                         .forEach(field -> {
                             Map<String, Object> fieldVsModuleMap = new HashMap<>();
                             fieldVsModuleMap.put("subModuleName", relatedModule.getName());
-                            fieldVsModuleMap.put("displayName", relatedModule.getDisplayName());
+                            if(StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
+                                fieldVsModuleMap.put("displayName", ((LookupField) field).getRelatedListDisplayName());
+                            }
+                            else {
+                                fieldVsModuleMap.put("displayName", relatedModule.getDisplayName());
+                            }
                             fieldVsModuleMap.put("subModuleId", relatedModule.getModuleId());
                             fieldVsModuleMap.put("fieldId", field.getFieldId());
                             fieldVsModuleMap.put("fieldName", field.getName());

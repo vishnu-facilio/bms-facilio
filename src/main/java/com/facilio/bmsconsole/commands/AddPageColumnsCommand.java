@@ -16,6 +16,7 @@ import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import java.math.BigDecimal;
 import java.util.*;
@@ -59,10 +60,14 @@ public class AddPageColumnsCommand extends FacilioCommand {
                 column.setWidth(width);
                 column.setSequenceNumber(sequenceNumber+=10);
 
-                String name = column.getDisplayName() != null ? column.getDisplayName() : "column";
-                name = CustomPageAPI.generateUniqueName(name, nameList, isSystem);
-                nameList.add(name);
+                String name = StringUtils.isNotEmpty(column.getName()) ? column.getName() :
+                        StringUtils.isNotEmpty(column.getDisplayName())? column.getDisplayName(): "column";;
+                name = CustomPageAPI.generateUniqueName(name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", ""), nameList,isSystem);
+                if((isSystem != null && isSystem) && StringUtils.isNotEmpty(column.getName()) && !column.getName().equalsIgnoreCase(name)) {
+                    throw new IllegalArgumentException("linkName already exists, given linkName for column is invalid");
+                }
 
+                nameList.add(name);
                 column.setName(name);
                 column.setSysCreatedBy(currentUser);
                 column.setSysCreatedTime(createdTime);

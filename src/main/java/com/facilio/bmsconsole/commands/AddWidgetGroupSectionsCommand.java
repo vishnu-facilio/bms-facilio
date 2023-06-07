@@ -15,6 +15,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +46,13 @@ public class    AddWidgetGroupSectionsCommand extends FacilioCommand {
                 section.setSysCreatedTime(System.currentTimeMillis());
 
                 Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
-                String name = section.getDisplayName()!=null?section.getDisplayName():"widgetGroupSection";
+                String name = StringUtils.isNotEmpty(section.getName()) ? section.getName() :
+                        StringUtils.isNotEmpty(section.getDisplayName())? section.getDisplayName(): "widgetGroupSection";;
                 name = name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
                 name = existingSectionName.get(section.getWidgetId())!=null?CustomPageAPI.generateUniqueName(name,existingSectionName.get(section.getWidgetId()),isSystem):name;
+                if((isSystem != null && isSystem) && StringUtils.isNotEmpty(section.getName()) && !section.getName().equalsIgnoreCase(name)) {
+                    throw new IllegalArgumentException("linkName already exists, given linkName for section is invalid");
+                }
                 section.setName(name);
 
                 if(existingSectionName.containsKey(section.getWidgetId())){

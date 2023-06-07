@@ -5600,6 +5600,10 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setTableName("Pages");
 		return module;
 	}
+
+	public static FacilioModule getPageSharingModule(){
+		return constructModule("pageSharing", "Page Sharing", "Page_Sharing");
+	}
 	public static FacilioModule getPageLayoutsModule() {
 		return constructModule("pageLayouts", "Page Layouts", "Page_Layouts");
 	}
@@ -5681,6 +5685,9 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return constructModule("widgetGroupWidgets","WidgetGroup Widgets","WidgetGroup_Widgets");
 	}
 
+	public static FacilioModule getPageRelationShipWidgetsModule(){
+		return constructModule("pageRelationShipsWidgets", "Page Relationship Widgets","Page_Relationship_Widgets");
+	}
 	public static FacilioModule getAttendanceSettingsPseudoModule() {
 		FacilioModule attendanceSettings = new FacilioModule();
 		attendanceSettings.setName("attendanceSettings");

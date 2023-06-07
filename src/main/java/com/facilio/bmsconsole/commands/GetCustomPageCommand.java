@@ -1,12 +1,16 @@
 package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PagesContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
+import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 
@@ -38,6 +42,11 @@ public class GetCustomPageCommand extends FacilioCommand {
             customPage.setIsSystemPage(true);
         }
 
+        boolean excludeTabs = (boolean) context.getOrDefault(FacilioConstants.CustomPage.EXCLUDE_TABS, false);
+        if(excludeTabs) {
+            customPage.setPageSharing(SharingAPI.getSharing(customPage.getId(), ModuleFactory.getPageSharingModule(),
+                    SingleSharingContext.class, FieldFactory.getPageSharingFields()));
+        }
         context.put(FacilioConstants.CustomPage.CUSTOM_PAGE,customPage);
         return false;
     }

@@ -3397,6 +3397,7 @@ public class FacilioConstants {
 	public static class WidgetNames {
 		public static final String MAIN_SUMMARY_WIDGET = "mainsummarywidget";
 		public static final String WIDGET_GROUP = "widgetGroup";
+		public static final String BULK_RELATION_SHIP_WIDGET = "bulkRelationShipWidget";
 	}
 
 	public static class Ticket {

@@ -102,7 +102,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddEventModuleCommand());					//eventModule.sql
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
-//			c.addCommand(new AddCommonModuleWidgetsCommand());
+			c.addCommand(new AddCommonModuleWidgetsCommand());
 			c.addCommand(new AddSignupDataCommandV3());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			c.addCommand(new AddDefaultBundleCommand());
@@ -6820,6 +6820,7 @@ public class TransactionChainFactory {
 	public static FacilioChain getCreateCustomPageChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddCustomPageCommand());
+		c.addCommand(new AddOrUpdatePageSharingCommand());
 		return c;
 	}
 	public static FacilioChain getAddPageTabsChain(){
@@ -6845,6 +6846,7 @@ public class TransactionChainFactory {
 	public static FacilioChain getPatchCustomPageChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new PatchCustomPageCommand());
+		c.addCommand(new AddOrUpdatePageSharingCommand());
 		return c;
 	}
 	public static FacilioChain getPatchPageTabsChain(){
@@ -6881,7 +6883,7 @@ public class TransactionChainFactory {
 	}
 	public static FacilioChain getReorderPageTabsChain(){
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new ValidatePageTabsReorderCommand());
+//		chain.addCommand(new ValidatePageTabsReorderCommand());
 		chain.addCommand(new ReorderPageComponentsCommand());
 		return chain;
 	}
@@ -6962,6 +6964,16 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getAddBulkRelationshipWidgetCommand(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddBulkRelationshipWidgetCommand());
+		return chain;
+	}
+	public static FacilioChain getUpdateBulkRelationshipWidgetCommand() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateBulkRelationshipWidgetCommand());
+		return chain;
+	}
 	public static FacilioChain getAddBulkRelatedListCommand() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddBulkRelatedListWidgetCommand());

@@ -18,4 +18,6 @@ public class PageTabContext {
     private Long sysModifiedBy;
     private Long sysModifiedTime;
     private List<PageColumnContext> columns;
+    private int featureLicense = -1;
+
 }

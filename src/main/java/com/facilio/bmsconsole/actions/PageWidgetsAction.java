@@ -43,7 +43,7 @@ public class PageWidgetsAction extends FacilioAction{
     }
 
     public String updateWidget() throws Exception {
-        FacilioContext context = WidgetConfigUtil.updateWidget(widget, widgetPositions);
+        FacilioContext context = WidgetConfigUtil.updateWidget(appId, moduleName, widget, widgetPositions);
 
         widget = (PageSectionWidgetContext) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET);
         setResult("result", SUCCESS);
@@ -51,7 +51,7 @@ public class PageWidgetsAction extends FacilioAction{
         return SUCCESS;
     }
     public String fetchWidget() throws Exception {
-        FacilioContext context = WidgetConfigUtil.fetchWidget(id);
+        FacilioContext context = WidgetConfigUtil.fetchWidget(appId, moduleName, id);
 
         if(onlyDetails) {
             PageSectionWidgetContext widgetDetail = (PageSectionWidgetContext) context.get(FacilioConstants.CustomPage.WIDGET_DETAIL);

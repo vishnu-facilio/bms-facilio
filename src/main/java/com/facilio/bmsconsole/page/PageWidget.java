@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.relation.context.RelationRequestContext;
+import lombok.Getter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -446,7 +448,7 @@ public class PageWidget {
 		ASSOCIATED_TERMS("associatedterms"),
 		TENANT_DETAIL_OVERVIEW("tenantdetailoverview"),
 		FAILURE_CLASS_DETAILS("failureclassdetails"),
-		FAILURE_REPORT("failurereports"),
+		FAILURE_REPORT("failurereports", AccountUtil.FeatureLicense.FAILURE_CODES.getFeatureId()),
 		WORK_ASSET("workAsset"),
 		SAFETYPLAY_HAZARD("safetyPlanHazards"),
 		WORKORDER_HAZARD_PRECAUTIONS("workorderHazardPrecautions"),
@@ -491,7 +493,7 @@ public class PageWidget {
 		SPACE_BOOKING_CARD_DETAILS("spaceBookingCardDetails"),
 		SPACE_BOOKING_SECONDARY_DETAILS("spaceBookingSecondaryDetails"),
 		SUMMARY_FIELDS_WIDGET("summaryFieldsWidget"),
-		CLASSIFICATION("classification"),
+		CLASSIFICATION("classification", AccountUtil.FeatureLicense.CLASSIFICATION.getFeatureId()),
 		NEW_RELATED_LIST("newRelatedList"),
 		MULTIRESOURCE("multiResource"),
 		JOBPLAN_PLANNER("jobPlanPlanner"),
@@ -516,13 +518,21 @@ public class PageWidget {
 		ENERGY_IMPACT("energyImpact"),
 		COST_IMPACT("costImpact"),
 		BULK_RELATED_LIST("bulkRelatedList"),
-		WIDGET_GROUP("widgetGroup");
+		WIDGET_GROUP("widgetGroup"),
+		BULK_RELATION_SHIP_WIDGET("bulkRelationShipWidget");
 
 		private String name;
+		@Getter
+		private int featureId = -1;
 
 		WidgetType(String name) {
 			this.name = name;
 		}
+		WidgetType(String name, int featureId) {
+			this.name = name;
+			this.featureId = featureId;
+		}
+
 
 		public String getName() {
 			return name;

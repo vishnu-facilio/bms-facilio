@@ -24,7 +24,7 @@ public class AddSummaryWidgetCommand extends FacilioCommand {
         ApplicationContext app = appId != null ? ApplicationApi.getApplicationForId(appId) : null;
 
         if (summaryWidget != null) {
-            if (app == null) {
+            if (app == null && summaryWidget.getAppId() <= 0) {
                 app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
                 appId = app.getId();
             }

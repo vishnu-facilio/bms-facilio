@@ -14,7 +14,7 @@ public class AddPageSummaryWidgetCommand extends FacilioCommand {
         Long summaryWidgetId = (Long) context.get(FacilioConstants.ContextNames.ID);
 
         Objects.requireNonNull(pageWidgetId, "Page section widget id can't be null");
-        Objects.requireNonNull(summaryWidgetId, "Summary widget id vcan't be null");
+        Objects.requireNonNull(summaryWidgetId, "Summary widget id can't be null");
         Long existingSummaryWidgetId = SummaryWidgetUtil.getSummaryWidgetIdForPageWidget(pageWidgetId);
 
         if(existingSummaryWidgetId == -1L) {

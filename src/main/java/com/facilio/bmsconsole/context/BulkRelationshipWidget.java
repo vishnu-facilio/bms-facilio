@@ -7,6 +7,6 @@ import java.util.List;
 
 @Getter
 @Setter
-public class BulkRelatedListContext extends PageSectionWidgetContext{
-    List<RelatedListWidgetContext> relatedList;
+public class BulkRelationshipWidget extends PageSectionWidgetContext{
+    List<RelationshipWidget> relationships;
 }

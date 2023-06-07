@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -13,7 +12,6 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.fields.FacilioField;
@@ -169,6 +167,7 @@ public class CustomPageAPI {
     public static void insertPageSectionWidgettoDB(PageSectionWidgetContext widget) throws Exception {
         if(widget != null) {
             Map<String, Object> prop = FieldUtil.getAsProperties(widget);
+            prop.replace("widgetParams", widget.getWidgetParamsAsString());
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getPageSectionWidgetsModule().getTableName())
                     .fields(FieldFactory.getPageSectionWidgetsFields())
@@ -184,15 +183,31 @@ public class CustomPageAPI {
         if(layoutType == null) {
             layoutType = PagesContext.PageLayoutType.WEB;
         }
+        GenericSelectRecordBuilder builder = getCustomPageBuilder(appId, moduleId, layoutType);
+        List<Map<String, Object>> props = builder.get();
+        if(CollectionUtils.isNotEmpty(props)) {
+            List<Long> pageIds = props.stream().filter(f->(Long)f.get("id") != null).map(f->(Long)f.get("id")).collect(Collectors.toList());
+            Map<Long, SharingContext<SingleSharingContext>> pageSharingMap = SharingAPI.getSharing(pageIds, ModuleFactory.getPageSharingModule(), SingleSharingContext.class, FieldFactory.getPageSharingFields());
+
+            props.forEach(f->{ if((Long)f.get("id") != null && pageSharingMap.get((Long)f.get("id")) != null)
+                                                    {
+                                                        f.put("pageSharing", pageSharingMap.get((Long)f.get("id")));
+                                                    }
+                               });
+        }
+        return props;
+    }
+
+    private static GenericSelectRecordBuilder getCustomPageBuilder(long appId, long moduleId, PagesContext.PageLayoutType layoutType) {
         FacilioModule pagesModule = ModuleFactory.getPagesModule();
         FacilioModule pageLayoutsModule = ModuleFactory.getPageLayoutsModule();
 
         List<FacilioField> fields = FieldFactory.getPagesFields();
         fields.add(FieldFactory.getNumberField("layoutId","ID",pageLayoutsModule));
         fields.add(FieldFactory.getStringField("layoutType","LAYOUT_TYPE",pageLayoutsModule));
-
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+
+        return new GenericSelectRecordBuilder()
                 .table(pagesModule.getTableName())
                 .select(fields)
                 .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("appId"), String.valueOf(appId)))
@@ -203,32 +218,25 @@ public class CustomPageAPI {
                 .on("Page_Layouts.PAGE_ID = Pages.ID")
                 .andCondition(CriteriaAPI.getCondition("LAYOUT_TYPE","layoutType", String.valueOf(layoutType), StringOperators.IS))
                 .orderBy("SEQUENCE_NUMBER, ID");
-        return builder.get();
     }
+
     public static List<PagesContext> getAllCustomPage(long appId, long moduleId, PagesContext.PageLayoutType layoutType) throws Exception {
-        if(layoutType == null) {
+        if (layoutType == null) {
             layoutType = PagesContext.PageLayoutType.WEB;
         }
-        FacilioModule module = ModuleFactory.getPagesModule();
-        FacilioModule pageLayoutsModule = ModuleFactory.getPageLayoutsModule();
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getPagesFields());
+        Map<String, FacilioField> sharingFieldMap = FieldFactory.getAsMap(FieldFactory.getPageSharingFields());
 
-        List<FacilioField> fields = FieldFactory.getPagesFields();
-        fields.add(FieldFactory.getNumberField("layoutId","ID",pageLayoutsModule));
-        fields.add(FieldFactory.getStringField("layoutType","LAYOUT_TYPE",pageLayoutsModule));
-        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+        Criteria pageSharingCriteria = new Criteria();
+        pageSharingCriteria.addAndCondition(CriteriaAPI.getCondition(sharingFieldMap.get("roleId"), String.valueOf(AccountUtil.getCurrentUser().getRoleId()), NumberOperators.EQUALS));
+        pageSharingCriteria.addOrCondition(CriteriaAPI.getCondition(sharingFieldMap.get("roleId"), CommonOperators.IS_EMPTY));
+        pageSharingCriteria.addOrCondition(CriteriaAPI.getCondition("IS_DEFAULT_PAGE", "isDefaultPage", String.valueOf(true), BooleanOperators.IS));
 
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(module.getTableName())
-                .select(fields)
-                .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("appId"), String.valueOf(appId)))
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("isTemplate"),String.valueOf(false)))
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(module), CommonOperators.IS_EMPTY))
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS))
-                .innerJoin(pageLayoutsModule.getTableName())
-                .on("Page_Layouts.PAGE_ID = Pages.ID")
-                .andCondition(CriteriaAPI.getCondition("LAYOUT_TYPE","layoutType", String.valueOf(layoutType), StringOperators.IS))
-                .orderBy("SEQUENCE_NUMBER, ID");
+        GenericSelectRecordBuilder builder = getCustomPageBuilder(appId, moduleId, layoutType);
+        builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS))
+               .leftJoin(ModuleFactory.getPageSharingModule().getTableName())
+                .on("Pages.ID =Page_Sharing.PARENT_ID")
+                .andCriteria(pageSharingCriteria);
 
         List<Map<String, Object>> props = builder.get();
         if (props != null && !props.isEmpty()) {
@@ -574,8 +582,6 @@ public class CustomPageAPI {
                 builder.update(prop);
 
                 updateSysModifiedFields(tab.getId(), getSysModifiedProps(), PageComponent.TAB);
-            } else {
-                LOGGER.info("No New Values To Get Updated In Page Tab");
             }
         }
 
@@ -739,11 +745,13 @@ public class CustomPageAPI {
     public static PageSectionWidgetContext parsePageWidgetDetails(PageWidget.WidgetType type, JSONObject widgetDetails) throws Exception {
         switch (type){
             case SUMMARY_FIELDS_WIDGET:
-                return  FieldUtil.getAsBeanFromMap(widgetDetails, SummaryWidget.class);
+                return  FieldUtil.getAsBeanFromJson(widgetDetails, SummaryWidget.class);
             case BULK_RELATED_LIST:
                 return FieldUtil.getAsBeanFromJson(widgetDetails, BulkRelatedListContext.class);
             case WIDGET_GROUP:
                 return FieldUtil.getAsBeanFromJson(widgetDetails, WidgetGroupContext.class);
+            case BULK_RELATION_SHIP_WIDGET:
+                return FieldUtil.getAsBeanFromJson(widgetDetails, BulkRelationshipWidget.class);
             default:
                 return null;
 

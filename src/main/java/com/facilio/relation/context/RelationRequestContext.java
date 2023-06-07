@@ -22,6 +22,7 @@ public class RelationRequestContext implements Serializable {
     private String toModuleName;
     private FacilioModule toModule;
     private String relationName;
+    private long relMappingId;
     private String forwardRelationLinkName;
     private String reverseRelationName;
     private String reverseRelationLinkName;

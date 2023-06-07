@@ -8,6 +8,7 @@ import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.bmsconsole.forms.FormField;
@@ -60,7 +61,7 @@ public class CustomPageAction extends FacilioAction {
         chain.execute();
 
         List<Map<String, Object>> customPages = (List<Map<String, Object>>) context.get(FacilioConstants.CustomPage.CUSTOM_PAGES);
-        setResult(FacilioConstants.CustomPage.CUSTOM_PAGES, customPages);
+        setResult(FacilioConstants.CustomPage.CUSTOM_PAGES, FieldUtil.getAsJSONArray(customPages, PagesContext.class));
         return SUCCESS;
     }
     public String fetchPageForRecord()throws Exception{
@@ -80,6 +81,8 @@ public class CustomPageAction extends FacilioAction {
     public String fetchCustomPage() throws Exception{
         FacilioChain chain = ReadOnlyChainFactory.getCustomPageChain();
         FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.APP_ID,getAppId());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,getModuleName());
         context.put(FacilioConstants.CustomPage.PAGE_ID,id);
         context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
         context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST,true);

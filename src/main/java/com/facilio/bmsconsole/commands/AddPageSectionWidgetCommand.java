@@ -14,7 +14,9 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -59,13 +61,20 @@ public class AddPageSectionWidgetCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Widget width exceeded the column limit");
             }
 
+            if(widget.getConfigType() == PageSectionWidgetContext.ConfigType.FLEXIBLE) {
+                widget.setWidth(-1);
+            }
             Long widgetConfigId = WidgetAPI.getWidgetConfigId(widget.getWidgetType(), widget.getWidth(), widget.getHeight(), widget.getConfigType());
             Objects.requireNonNull(widgetConfigId, "Widget Configuration does not exists");
             widget.setWidgetConfigId(widgetConfigId);
 
             Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
-            String name = widget.getDisplayName() != null ? widget.getDisplayName() : "widget";
+            String name = StringUtils.isNotEmpty(widget.getName()) ? widget.getName() :
+                    StringUtils.isNotEmpty(widget.getDisplayName())? widget.getDisplayName(): "widget";
             name = CustomPageAPI.getUniqueName(widgetsModule, criteria, sectionIdField, sectionId, name, isSystem);
+            if((isSystem != null && isSystem) && StringUtils.isNotEmpty(widget.getName()) && !widget.getName().equalsIgnoreCase(name)) {
+                throw new IllegalArgumentException("linkName already exists, given linkName for widget is invalid");
+            }
             widget.setName(name);
 
             widget.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
@@ -78,6 +87,7 @@ public class AddPageSectionWidgetCommand extends FacilioCommand {
                 context.put(FacilioConstants.CustomPage.WIDGET_DETAIL,
                         CustomPageAPI.parsePageWidgetDetails(widget.getWidgetType(), widget.getWidgetDetail()));
             }
+
         }
             return false;
     }

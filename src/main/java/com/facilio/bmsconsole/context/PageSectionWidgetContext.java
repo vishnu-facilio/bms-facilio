@@ -1,14 +1,16 @@
 package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
-import org.json.simple.JSONArray;
+
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.Map;
 
@@ -42,7 +44,30 @@ public class PageSectionWidgetContext {
     private Long sysCreatedTime;
     private Long sysModifiedBy;
     private Long sysModifiedTime;
+
+    public void setWidgetParams(JSONObject widgetParams){
+        this.widgetParams = widgetParams;
+    }
+    public void setWidgetParams(String widgetParams) throws Exception {
+        if (StringUtils.isNotEmpty(widgetParams)) {
+            this.widgetParams = (JSONObject) new JSONParser().parse(widgetParams);
+        }
+    }
+
+
+    public JSONObject getWidgetParams(){
+        return this.widgetParams;
+    }
+    @JsonIgnore
+    public String getWidgetParamsAsString(){
+        if(this.widgetParams != null) {
+            return widgetParams.toJSONString();
+        }
+        return null;
+    }
+    private JSONObject widgetParams;
     private JSONObject widgetDetail;
+    private Boolean hasLicenseEnabled;
 
     public enum ConfigType implements FacilioIntEnum {
         FIXED("fixed"),

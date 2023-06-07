@@ -55,5 +55,17 @@ public class APIWidgetConfig {
                 .build();
     }
 
+    @WidgetType(PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET)
+    public static Supplier<WidgetConfig> getRelationShipWidgetCRUD() {
+        return () ->  new WidgetConfig()
+                .create()
+                .saveCommand(TransactionChainFactory.getAddBulkRelationshipWidgetCommand())
+                .update()
+                .updateCommand(TransactionChainFactory.getUpdateBulkRelationshipWidgetCommand())
+                .summary()
+                .fetchCommand(ReadOnlyChainFactory.getBulkRelationShipWidgetChain())
+                .build();
+    }
+
 
 }

@@ -18,8 +18,10 @@ public class GetWidgetGroupWidgetsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<Long> widgetGroupSectionIds = (List<Long>) context.get(FacilioConstants.WidgetGroup.WIDGETGROUP_SECTION_IDS);
         WidgetGroupContext widgetGroup = (WidgetGroupContext) context.get(FacilioConstants.WidgetGroup.WIDGETGROUP);
+        Long appId = (Long) context.get(FacilioConstants.ContextNames.APP_ID);
+        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         if(CollectionUtils.isNotEmpty(widgetGroupSectionIds)){
-            Map<Long,List<WidgetGroupWidgetContext>> widgetMaps = WidgetGroupUtil.fetchWidgetGroupWidgets(widgetGroupSectionIds);
+            Map<Long,List<WidgetGroupWidgetContext>> widgetMaps = WidgetGroupUtil.fetchWidgetGroupWidgets(appId, moduleName, widgetGroupSectionIds);
             if(MapUtils.isNotEmpty(widgetMaps)) {
                 for(WidgetGroupSectionContext section : widgetGroup.getSections()) {
                     if(widgetMaps.get(section.getId()) != null ) {

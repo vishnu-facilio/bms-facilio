@@ -16,6 +16,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +46,13 @@ public class AddWidgetGroupWidgetsCommand extends FacilioCommand {
                 widget.setSysCreatedTime(System.currentTimeMillis());
 
                 Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
-                String name = widget.getDisplayName()!=null?widget.getDisplayName():"widgetGroupWidget";
+                String name = StringUtils.isNotEmpty(widget.getName()) ? widget.getName() :
+                        StringUtils.isNotEmpty(widget.getDisplayName())? widget.getDisplayName(): "widgetGroupWidget";
                 name = name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
                 name = existingWidgetName.get(widget.getSectionId())!=null?CustomPageAPI.generateUniqueName(name,existingWidgetName.get(widget.getSectionId()),isSystem):name;
+                if((isSystem != null && isSystem) && StringUtils.isNotEmpty(widget.getName()) && !widget.getName().equalsIgnoreCase(name)) {
+                    throw new IllegalArgumentException("linkName already exists, given linkName for widget is invalid");
+                }
                 widget.setName(name);
 
                 if (existingWidgetName.containsKey(widget.getSectionId())) {

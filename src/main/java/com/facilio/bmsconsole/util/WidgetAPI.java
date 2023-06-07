@@ -152,7 +152,7 @@ public class WidgetAPI {
 
     }
 
-    public static List<Map<String, Object>> getWidgetsForModule(long moduleId) throws Exception {
+    public static List<WidgetContext> getWidgetsForModule(long moduleId) throws Exception {
         FacilioModule module = ModuleFactory.getWidgetModuleModule();
 
         if(moduleId > 0){
@@ -166,7 +166,7 @@ public class WidgetAPI {
             List<Map<String, Object>> props = builder.get();
 
             if(CollectionUtils.isNotEmpty(props)){
-                return props;
+                return FieldUtil.getAsBeanListFromMapList(props, WidgetContext.class);
             }
         }
         return null;

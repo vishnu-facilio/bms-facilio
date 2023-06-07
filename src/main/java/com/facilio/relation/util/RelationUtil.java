@@ -333,6 +333,7 @@ public class RelationUtil {
         request.setToModuleId(mapping.getToModuleId());
         request.setToModuleName(toModule.getName());
         request.setRelationName(mapping.getRelationName());
+        request.setRelMappingId(mapping.getId());
         request.setForwardRelationLinkName(mapping.getMappingLinkName());
         request.setRelationType(mapping.getRelationTypeEnum());
         request.setPosition(mapping.getPositionEnum());

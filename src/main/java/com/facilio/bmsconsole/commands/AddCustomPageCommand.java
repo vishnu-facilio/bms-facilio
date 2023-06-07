@@ -17,6 +17,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Map;
@@ -115,8 +116,12 @@ public class AddCustomPageCommand extends FacilioCommand {
         }
 
         Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
-        String name = customPage.getDisplayName() != null ? customPage.getDisplayName() : "page";
+        String name = StringUtils.isNotEmpty(customPage.getName()) ? customPage.getName() :
+                StringUtils.isNotEmpty(customPage.getDisplayName())? customPage.getDisplayName(): "page";
         name = CustomPageAPI.getUniqueName(pagesModule, criteria, moduleIdField, moduleId, name, isSystem);
+        if((isSystem != null && isSystem) && StringUtils.isNotEmpty(customPage.getName()) && !customPage.getName().equalsIgnoreCase(name)) {
+            throw new IllegalArgumentException("linkName"+ customPage.getName()+" already exists, given linkName for customPage is invalid");
+        }
 
         customPage.setName(name);
         customPage.setSysCreatedBy(AccountUtil.getCurrentUser().getId());

@@ -31,15 +31,17 @@ public class WidgetConfigUtil {
         return context;
     }
 
-    public static FacilioContext updateWidget(PageSectionWidgetContext pageWidget) throws Exception {
-        return updateWidget(pageWidget, null);
+    public static FacilioContext updateWidget(Long appId, String moduleName, PageSectionWidgetContext pageWidget) throws Exception {
+        return updateWidget(appId, moduleName, pageWidget, null);
     }
 
-        public static FacilioContext updateWidget(PageSectionWidgetContext pageWidget, List<Map<String, Object>> widgetPositions) throws Exception {
+        public static FacilioContext updateWidget(Long appId, String moduleName, PageSectionWidgetContext pageWidget, List<Map<String, Object>> widgetPositions) throws Exception {
         FacilioChain updateChain = WidgetConfigChain.getUpdateChain(pageWidget.getWidgetType().name());
 
         FacilioContext context = updateChain.getContext();
 
+        context.put(FacilioConstants.ContextNames.APP_ID, appId);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET, pageWidget);
         context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGETS_POSITIONS, widgetPositions);
 
@@ -48,7 +50,7 @@ public class WidgetConfigUtil {
         return updateChain.getContext();
     }
 
-    public static FacilioContext fetchWidget(long pageWidgetId) throws Exception {
+    public static FacilioContext fetchWidget(Long appId, String moduleName, long pageWidgetId) throws Exception {
             PageSectionWidgetContext pageWidget = CustomPageAPI.getPageSectionWidget(pageWidgetId);
             Objects.requireNonNull(pageWidget, "Widget does not exists");
 
@@ -56,6 +58,8 @@ public class WidgetConfigUtil {
 
             FacilioContext context = fetchWidgetDetailChain.getContext();
 
+            context.put(FacilioConstants.ContextNames.APP_ID, appId);
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
             context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
             context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET, pageWidget);
 
@@ -68,7 +72,7 @@ public class WidgetConfigUtil {
             return context;
     }
 
-    public static void setWidgetDetailForWidgets(Map<Long, PageSectionWidgetContext> pageWidgetIdMap)throws Exception {
+    public static void setWidgetDetailForWidgets(long appId, String moduleName, Map<Long, PageSectionWidgetContext> pageWidgetIdMap)throws Exception {
         if (MapUtils.isNotEmpty(pageWidgetIdMap)) {
 
             for (Map.Entry<Long, PageSectionWidgetContext> entry : pageWidgetIdMap.entrySet()) {
@@ -77,6 +81,8 @@ public class WidgetConfigUtil {
 
                 FacilioContext context = fetchWidgetDetailChain.getContext();
 
+                context.put(FacilioConstants.ContextNames.APP_ID, appId);
+                context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
                 context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, entry.getValue().getId());
                 context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET, entry.getValue());
 

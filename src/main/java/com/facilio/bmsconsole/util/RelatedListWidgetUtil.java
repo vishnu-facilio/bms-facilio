@@ -19,6 +19,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,13 +95,22 @@ public class RelatedListWidgetUtil {
                 if (CollectionUtils.isNotEmpty(fields)) {
 
                     for(FacilioField field : fields ) {
+
+                        if(StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
+                            relList.setDisplayName(((LookupField) field).getRelatedListDisplayName());
+                        }
+                        else {
+                            relList.setDisplayName(((LookupField) field).getDisplayName());
+                        }
+                        relList.setSubModuleName(subModule.getName());
                         relList.setSubModuleId(subModule.getModuleId());
+                        relList.setFieldName(field.getName());
                         relList.setFieldId(field.getFieldId());
                         relLists.add(relList);
                     }
                 }
             }
-            bulkRelList.setRelatedLists(relLists);
+            bulkRelList.setRelatedList(relLists);
             widget.setWidgetDetail(FieldUtil.getAsJSON(bulkRelList));
         }
     }
@@ -108,7 +118,7 @@ public class RelatedListWidgetUtil {
         List<RelatedListWidgetContext> relLists = getRelatedListsOfWidgetId(pageWidgetId, true);
         if(CollectionUtils.isNotEmpty(relLists)) {
             BulkRelatedListContext bulkRelList = new BulkRelatedListContext();
-            bulkRelList.setRelatedLists(relLists);
+            bulkRelList.setRelatedList(relLists);
             return bulkRelList;
         }
         return null;
@@ -121,7 +131,8 @@ public class RelatedListWidgetUtil {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getPageRelatedListWidgetsModule().getTableName())
                 .select(FieldFactory.getPageRelatedListWidgetsFields())
-                .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("widgetId"), String.valueOf(pageWidgetId)));
+                .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("widgetId"), String.valueOf(pageWidgetId)))
+                .orderBy(fieldsMap.get("sequenceNumber").getCompleteColumnName()+","+fieldsMap.get("id").getColumnName());
         if(isBulkWidget) {
             builder.andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("status"), String.valueOf(Boolean.TRUE)));
         }
@@ -139,6 +150,8 @@ public class RelatedListWidgetUtil {
                     .peek(f-> {
                         FacilioField field = allModBeanFieldsMap.get(f.getFieldId());
                         f.setFieldName(field.getName());
+                        f.setField(field);
+                        f.setModule(field.getModule());
                     f.setDisplayName(field.getModule().getDisplayName());}).collect(Collectors.toList());
         }
         return null;

@@ -9,7 +9,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.util.FacilioUtil;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -28,14 +27,14 @@ public class AddBulkRelatedListWidgetCommand extends FacilioCommand {
         }
         List<RelatedListWidgetContext> existingRelListInWidget = RelatedListWidgetUtil.getRelatedListsOfWidgetId(pageWidgetId, false);
         if(CollectionUtils.isNotEmpty(existingRelListInWidget)) {
-            throw new IllegalArgumentException("Related list already exists, add call is Invalid");
+            throw new IllegalArgumentException("Related list already exists in the widget, add call is invalid");
         }
         BulkRelatedListContext bulkRelatedList = (BulkRelatedListContext) context.get(FacilioConstants.CustomPage.WIDGET_DETAIL);
 
         if(bulkRelatedList != null) {
             List<RelatedListWidgetContext> relLists = new ArrayList<>();
             double sequenceNumber = 0;
-            for(RelatedListWidgetContext relList : bulkRelatedList.getRelatedLists()) {
+            for(RelatedListWidgetContext relList : bulkRelatedList.getRelatedList()) {
                 FacilioUtil.throwIllegalArgumentException(relList.getId()>0, "Invalid relList id");
                 relList.setStatus(true);
                 relList.setSequenceNumber(sequenceNumber += 10);

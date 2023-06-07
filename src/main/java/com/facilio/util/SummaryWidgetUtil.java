@@ -46,12 +46,12 @@ public class SummaryWidgetUtil {
     }
 
     public static SummaryWidget getSummaryWidget(long appId, long widgetId, String widgetName, long moduleId) throws Exception {
-        if (appId < 0){
-            ApplicationContext application = AccountUtil.getCurrentApp();
-            if (application == null) {
-                application = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-            }
-            appId = application.getId();
+        if(widgetId <= 0 && appId <= 0) {
+                ApplicationContext application = AccountUtil.getCurrentApp();
+                if (application == null) {
+                    application = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+                }
+                appId = application.getId();
         }
 
         SummaryWidget summaryWidget = getCustomPageWidget(appId, widgetId, widgetName, moduleId);

@@ -62,9 +62,11 @@ public class PagesContext implements Serializable {
     private Long sysDeletedBy;
     private Long sysDeletedTime;
     private Map<String,List<PageTabContext>> layouts ;
+    private SharingContext<SingleSharingContext> pageSharing;
 
     public enum PageLayoutType implements FacilioStringEnum {
         WEB,
         MOBILE;
     }
+
 }

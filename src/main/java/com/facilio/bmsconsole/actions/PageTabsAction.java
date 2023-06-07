@@ -23,6 +23,8 @@ public class PageTabsAction extends FacilioAction{
     private long pageId;
     private long tabId;
     private String tabName;
+    private String moduleName;
+    private long appId;
     private PageTabContext tab;
     private Long layoutId;
     private PagesContext.PageLayoutType layoutType;
@@ -44,6 +46,8 @@ public class PageTabsAction extends FacilioAction{
         FacilioChain chain = ReadOnlyChainFactory.getPageTabChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ID,id);
+        context.put(FacilioConstants.ContextNames.APP_ID,getAppId());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,getModuleName());
         context.put(FacilioConstants.CustomPage.TAB_NAME,tabName);
         context.put(FacilioConstants.CustomPage.PAGE_ID, pageId);
         context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);

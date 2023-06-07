@@ -36,24 +36,25 @@ public class UpdateBulkRelatedListWidgetCommand extends FacilioCommand {
             List<RelatedListWidgetContext> newRelList = new ArrayList<>();
             List<RelatedListWidgetContext> updateRelList = new ArrayList<>();
             double sequenceNumber = 0;
-            for(RelatedListWidgetContext relList : bulkRelatedList.getRelatedLists()) {
-                relList.setStatus(true);
-                relList.setSequenceNumber(sequenceNumber+=10);
-                relList.setWidgetId(pageWidgetId);
+            if(CollectionUtils.isNotEmpty(bulkRelatedList.getRelatedList())) {
+                for (RelatedListWidgetContext relList : bulkRelatedList.getRelatedList()) {
+                    relList.setStatus(true);
+                    relList.setSequenceNumber(sequenceNumber += 10);
+                    relList.setWidgetId(pageWidgetId);
 
-                if(!(relList.getId() > 0)) {
-                    if(relList.getSubModuleId() == null) {
-                        FacilioModule subModule = modBean.getModule(relList.getSubModuleName());
-                        Objects.requireNonNull(subModule, "Invalid module name");
-                        relList.setSubModuleId(subModule.getModuleId());
+                    if (!(relList.getId() > 0)) {
+                        if (relList.getSubModuleId() == null) {
+                            FacilioModule subModule = modBean.getModule(relList.getSubModuleName());
+                            Objects.requireNonNull(subModule, "Invalid module name");
+                            relList.setSubModuleId(subModule.getModuleId());
+                        }
+
+                        Objects.requireNonNull(relList.getFieldId(), "FieldId can't be null");
+                        newRelList.add(relList);
+                    } else {
+                        existingRelListIds.remove(relList.getId());
+                        updateRelList.add(relList);
                     }
-                    
-                    Objects.requireNonNull(relList.getFieldId(), "FieldId can't be null");
-                    newRelList.add(relList);
-                }
-                else {
-                    existingRelListIds.remove(relList.getId());
-                    updateRelList.add(relList);
                 }
             }
 

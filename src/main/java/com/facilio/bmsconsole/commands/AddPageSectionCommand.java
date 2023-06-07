@@ -11,6 +11,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 public class AddPageSectionCommand extends FacilioCommand {
@@ -41,8 +42,13 @@ public class AddPageSectionCommand extends FacilioCommand {
 
 
             Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
-            String name = section.getDisplayName() != null ? section.getDisplayName() : "section";
+            String name = StringUtils.isNotEmpty(section.getName()) ? section.getName() :
+                    StringUtils.isNotEmpty(section.getDisplayName())? section.getDisplayName(): "section";
             name = CustomPageAPI.getUniqueName(sectionsModule, criteria, columnIdField, columnId, name, isSystem);
+            if((isSystem != null && isSystem) && StringUtils.isNotEmpty(section.getName()) && !section.getName().equalsIgnoreCase(name)) {
+                throw new IllegalArgumentException("linkName already exists, given linkName for section is invalid");
+            }
+
             section.setName(name);
 
             section.setSysCreatedBy(AccountUtil.getCurrentUser().getId());

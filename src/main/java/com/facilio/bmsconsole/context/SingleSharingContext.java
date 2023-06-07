@@ -11,6 +11,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import lombok.Getter;
+import lombok.Setter;
 
 public class SingleSharingContext implements Serializable {
 	
@@ -198,5 +200,9 @@ public class SingleSharingContext implements Serializable {
 	public void setAppType(int appType) {
 		this.appType = appType;
 	}
+
+	@Getter
+	@Setter
+	private long sharedBy = -1L;
 
 }

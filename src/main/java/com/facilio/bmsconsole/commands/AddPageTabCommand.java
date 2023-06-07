@@ -12,6 +12,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Objects;
@@ -47,8 +48,12 @@ public class AddPageTabCommand extends FacilioCommand {
             }
 
             Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
-            String name = tab.getDisplayName() != null ? tab.getDisplayName() : "tab";
+            String name = StringUtils.isNotEmpty(tab.getName()) ? tab.getName() :
+                    StringUtils.isNotEmpty(tab.getDisplayName())? tab.getDisplayName(): "tab";
             name = CustomPageAPI.getUniqueName(tabsModule, criteria, layoutIdField, layoutId, name, isSystem);
+            if((isSystem != null && isSystem) && StringUtils.isNotEmpty(tab.getName()) && !tab.getName().equalsIgnoreCase(name)) {
+                throw new IllegalArgumentException("linkName already exists, given linkName for tab is invalid");
+            }
 
             tab.setName(name);
             if(tab.getStatus() == null) {

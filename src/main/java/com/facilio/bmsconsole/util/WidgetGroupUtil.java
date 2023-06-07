@@ -70,7 +70,12 @@ public class WidgetGroupUtil {
     }
 
     public static void insertWidgetGroupWidgetsToDB(List<WidgetGroupWidgetContext> widgets) throws Exception {
-        List<Map<String, Object>> props = FieldUtil.getAsMapList(widgets, WidgetGroupWidgetContext.class);
+        List<Map<String, Object>> props = new ArrayList<>();
+        for(WidgetGroupWidgetContext widget : widgets) {
+            Map<String, Object> prop = FieldUtil.getAsProperties(widget);
+            prop.replace("widgetParams", widget.getWidgetParamsAsString());
+            props.add(prop);
+        }
 
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getWidgetGroupWidgetsModule().getTableName())
@@ -108,7 +113,7 @@ public class WidgetGroupUtil {
         return null;
     }
 
-    public static Map<Long,List<WidgetGroupWidgetContext>> fetchWidgetGroupWidgets(List<Long> sectionIds) throws Exception{
+    public static Map<Long,List<WidgetGroupWidgetContext>> fetchWidgetGroupWidgets(Long appId, String moduleName, List<Long> sectionIds) throws Exception{
         FacilioModule module = ModuleFactory.getWidgetGroupWidgetsModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getWidgetGroupWidgetsFields())
@@ -121,7 +126,7 @@ public class WidgetGroupUtil {
             Map<Long, PageSectionWidgetContext> widgetIdMap = widgets.stream()
                     .collect(Collectors.toMap(PageSectionWidgetContext::getId, Function.identity()));
 
-            WidgetConfigUtil.setWidgetDetailForWidgets(widgetIdMap);
+            WidgetConfigUtil.setWidgetDetailForWidgets(appId, moduleName, widgetIdMap);
         }
         return widgets.stream()
                 .collect(Collectors.groupingBy(WidgetGroupWidgetContext::getSectionId));

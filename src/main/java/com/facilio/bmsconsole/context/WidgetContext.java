@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -41,8 +43,15 @@ public class WidgetContext {
    private long id =-1;
    private String name;
    private String displayName;
+
+   public void setWidgetType(PageWidget.WidgetType widgetType) throws Exception {
+      this.widgetType = widgetType;
+      this.setWidgetTypeObj(FieldUtil.getAsProperties(widgetType));
+   }
+
    @JsonFormat(shape = JsonFormat.Shape.STRING)
    private PageWidget.WidgetType widgetType;
+   private Map<String, Object> widgetTypeObj;
    private String moduleName;
    @JsonIgnore
    private ModuleWidgets done;

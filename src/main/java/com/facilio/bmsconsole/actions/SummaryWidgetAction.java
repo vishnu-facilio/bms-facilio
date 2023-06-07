@@ -25,6 +25,7 @@ public class SummaryWidgetAction extends FacilioAction{
     private long id;
     private SummaryWidget summaryWidget;
     private long appId;
+    private long pageWidgetId;
     private String moduleName;
     private long formId;
     private long widgetId;
@@ -77,12 +78,13 @@ public class SummaryWidgetAction extends FacilioAction{
         FacilioChain chain;
         Objects.requireNonNull(summaryWidget, "Summary widget can't be null");
         if(summaryWidget.getId() > 0) {
-             chain = TransactionChainFactory.getUpdateSummaryWidgetChain();
+             chain = TransactionChainFactory.getUpdateSummaryWidgetChainInPage();
         }
         else {
-            chain = TransactionChainFactory.getAddSummaryWidgetChain();
+            chain = TransactionChainFactory.getAddSummaryWidgetChainInPage();
         }
         FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
         context.put(FacilioConstants.ContextNames.APP_ID, appId);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, summaryWidget);

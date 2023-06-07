@@ -1348,6 +1348,8 @@
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="excludeTabs" type="boolean"/>
+            <property name="moduleName" type="string"/>
+            <property name="appId" type="number"/>
         </requestbody>
     </request>
 
@@ -1416,6 +1418,8 @@
     <request path="/api/v2/customPage/tabs/fetch" >
         <requestbody type="object">
             <property name="id" type="number"/>
+            <property name="moduleName" type="string"/>
+            <property name="appId" type="number"/>
             <property name="excludeColumns" type="boolean"/>
             <property name="tabName" type="string"/>
             <property name="pageId" type="number"/>
@@ -1531,8 +1535,36 @@
         </requestbody>
     </request>
 
+    <request path="/api/v2/bulkRelationshipWidget/relationship/list">
+        <requestbody type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="pageWidgetId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/bulkRelationshipWidget/add">
+        <requestbody type="object">
+            <property name="pageWidgetId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/bulkRelationshipWidget/update">
+        <requestbody type="object">
+            <property name="pageWidgetId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/bulkRelationshipWidget/get">
+        <requestbody type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="pageWidgetId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
     <request path="/api/v2/customPage/widget/update">
         <requestbody type="object">
+            <property name="moduleName" type="string"/>
+            <property name="appId" type="number"/>
             <property name ="widget" type="object" mandatory="true">
                 <property name="id" type="number" mandatory="true"/>
                 <property name="displayName" type="string"/>
@@ -1545,6 +1577,8 @@
 
     <request path="/api/v2/customPage/widget/get">
         <requestbody type="object">
+            <property name="moduleName" type="string"/>
+            <property name="appId" type="number"/>
             <property name="id" type="number" mandatory="true"/>
         </requestbody>
     </request>
