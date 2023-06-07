@@ -27,6 +27,10 @@ public class GetDBViewCommand extends FacilioCommand {
             view = ViewAPI.getView(viewId);
         } else if (StringUtils.isNotEmpty(viewName) && StringUtils.isNotEmpty(moduleName)) {
             view = ViewAPI.getView(viewName, moduleName, AccountUtil.getCurrentOrg().getOrgId(), -1);
+            if (view == null) {
+                context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, true);
+                return false;
+            }
         }
 
         if (view == null) {

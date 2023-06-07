@@ -29,6 +29,11 @@ public class CheckEditAccessCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.EXISTING_CV);
         Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
+        boolean skipValidation = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_VALIDATION, false);
+
+        if (skipValidation) {
+            return false;
+        }
 
         User currentUser = AccountUtil.getCurrentUser();
         Boolean isSuperAdmin = currentUser.isSuperAdmin();
