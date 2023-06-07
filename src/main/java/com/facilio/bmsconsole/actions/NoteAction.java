@@ -188,8 +188,18 @@ public class NoteAction extends FacilioAction {
 		else if(moduleName.equals(FacilioConstants.ContextNames.PURCHASE_ORDER_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.PURCHASE_ORDER_ACTIVITY);
 		}
+
 		else if (moduleName.equals(FacilioConstants.Meter.METER_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.Meter.METER_ACTIVITY);
+		}
+		else if(moduleName.equals(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_ACTIVITY);
+		}
+		else if(moduleName.equals(FacilioConstants.UTILITY_INTEGRATION_BILL_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.UTILITY_INTEGRATION_BILL_ACTIVITY);
+		}
+		else if(moduleName.equals(FacilioConstants.UTILITY_DISPUTE_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.UTILITY_DISPUTE_ACTIVITY);
 		}
 		else {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

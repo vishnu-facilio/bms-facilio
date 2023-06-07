@@ -77,7 +77,11 @@ import com.facilio.permission.commands.AddOrUpdatePermissionSet;
 import com.facilio.permission.commands.DeletePermissionSetCommand;
 import com.facilio.permission.commands.FetchPermissionSetCommand;
 import com.facilio.permission.commands.UpdatePermissionsForPermissionSetCommand;
+
 import com.facilio.readingrule.command.*;
+
+import com.facilio.utility.commands.*;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -3433,7 +3437,8 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
-    public static FacilioChain getPmV2ResourcePlannerAfterCreateChain() {
+    public static FacilioChain getPmV2ResourcePlannerAfterCreateChain(){
+
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchPMDetailsFromPmResourcePlanner());
         c.addCommand(new DeletePPMPreOpenWorkorders());
@@ -3482,8 +3487,9 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ValidateRotatingAssetPMResource());
         return c;
     }
+    
+    public static FacilioChain addSensorRuleNsChain(){
 
-    public static FacilioChain addSensorRuleNsChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ConstructNsFieldsCommand());
         c.addCommand(new SetParentIdForNamespaceCommand());
@@ -3513,18 +3519,64 @@ public class TransactionChainFactoryV3 {
         c.addCommand(getAddCategoryReadingChain());
         return c;
     }
-
-
     public static FacilioChain getPivotModulesList() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetPivotModulesListCommand());
         return c;
     }
 
-    public static FacilioChain fetchConnectedCategoryStatusChain() {
+
+    public  static FacilioChain fetchConnectedCategoryStatusChain() {
+
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new FetchAssetCategoryLevelStatusCommand());
         return chain;
+    }
+
+    public static FacilioChain createUtilityAccountChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CreateUtilityAccountCommand());
+        c.addCommand(new AddActivitiesCommand(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_ACTIVITY));
+        return c;
+    }
+
+    public static FacilioChain getUtilityDataForReferralChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UtilityDataForReferralCommand());
+        c.addCommand(new AddActivitiesCommand(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_ACTIVITY));
+        return c;
+    }
+
+    public static FacilioChain getActivateMeterChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ActivateMetersCommand());
+        return c;
+    }
+
+    public static FacilioChain scheduleOngoingMonitoringChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ScheduleOngoingMonitoringCommand());
+        return c;
+    }
+
+    public static FacilioChain getUtilityBillsChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UtilityBillsCommand());
+        return c;
+    }
+
+    public static FacilioChain getUtilityDisputeChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UtilityDisputeResolveCommand());
+        c.addCommand(new AddActivitiesCommand(FacilioConstants.UTILITY_DISPUTE_ACTIVITY));
+        return c;
+    }
+
+    public static FacilioChain getAssociateMeterChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AssociateMeterCommand());
+        return c;
+
     }
 
     public static FacilioChain getWorkflowVersionHistoryBeforeSaveCommand() {

@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.ModuleWidgets;
 import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.context.WidgetConfigContext;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.annotation.Config;
 
 import java.util.function.Supplier;
@@ -66,5 +67,21 @@ public class APIModuleWidgets {
     public static Supplier<ModuleWidgets> getAssetWidgets() {
         return ModuleWidgets::new;
 
+    }
+    @WidgetsForModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER)
+    public static Supplier<ModuleWidgets> getUtilityCustomerWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("meterWidget" , "Meter Connections",PageWidget.WidgetType.METER_WIDGET)
+                //.addWidgetConfig("webMeterWidget-10*12","Full Width Meter Connections  Widget - 10*12", WidgetConfigContext.ConfigType.FIXED,65,12,PagesContext.PageLayoutType.WEB)
+                .addFixedWidgetConfig("webMeterWidget-10*12", "Full Width Meter Connections  Widget - 10*12",20,12, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+
+    @WidgetsForModule(FacilioConstants.UTILITY_INTEGRATION_BILLS)
+    public static Supplier<ModuleWidgets> getUtilityBillWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("billSummaryWidget" , "null",PageWidget.WidgetType.BILL_SUMMARY_WIDGET)
+                .addFixedWidgetConfig("webBillSummaryWidget_65_12", "Full Width Bill Summary  Widget - 65-12",65,12, PagesContext.PageLayoutType.WEB)
+                .done();
     }
 }

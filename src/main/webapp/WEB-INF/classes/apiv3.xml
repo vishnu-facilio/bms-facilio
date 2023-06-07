@@ -234,6 +234,14 @@
 
     </package>
     <package name="buttons" namespace="/api/v3/module" extends="v3Api">
+
+        <action name="utilityDispute/*/systemButton/*" class="com.facilio.utility.UtilityAction" method="updateDisputeStatus">
+            <param name="moduleName">utilityDispute</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">{2}</param>
+            <param name="buttonPermission">true</param>
+        </action>
         <action name="*/*/systemButton/*">
             <param name="moduleName">{1}</param>
             <param name="recordId">{2}</param>
@@ -1797,6 +1805,7 @@
        <action name="migrateTabs" class="com.facilio.bmsconsoleV3.actions.MigrationAction" method="oldAppMigration"/>
        <action name="appRedirection" class="com.facilio.bmsconsoleV3.actions.MigrationAction" method="getProperRedirectUrl"/>
    </package>
+
     <package name="workorderBulkUpdate" extends="v3Api" namespace="/api/v3/bulkupdate/workorder">
         <action name="update"
                 class="com.facilio.bulkUpdateV2.WorkorderBulkUpdateAction"
@@ -1851,12 +1860,27 @@
         </action>
     </package>
 
+
     <package name="virtualMeterTemplate" namespace="/api/v3/virtualMeterTemplate" extends="v3Api">
         <action name="publish" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="publishVMTemplate"></action>
     </package>
+
 
     <package name="pmv1Migration" extends="v3Api" namespace="/api/v3/pmv1Migration">
         <action name="tasks" class="com.facilio.bmsconsoleV3.actions.WorkorderAction" method="tasksToJobPlan">
         </action>
     </package>
+
+    <package name="utilityIntegrationApiV3" namespace="/api/v3/utilityIntegration" extends="v3Api">
+        <action name="createUtilityAccounts" class="com.facilio.utility.UtilityAction" method="createUtilityAccounts"/>
+        <action name="fetchUtilityCustomerAndMeter"
+                class="com.facilio.utility.UtilityAction"
+                method="fetchUtilityCustomerAndMeter"/>
+        <action name="activateMeters" class="com.facilio.utility.UtilityAction" method="activateMeters"/>
+        <action name="ongoingMonitoring" class="com.facilio.utility.UtilityAction" method="ongoingMonitoring"/>
+        <action name="fetchBills" class="com.facilio.utility.UtilityAction" method="fetchBills"/>
+        <action name="associateMeter" class="com.facilio.utility.UtilityAction" method="associateMeter"/>
+    </package>
+
+
 </struts>

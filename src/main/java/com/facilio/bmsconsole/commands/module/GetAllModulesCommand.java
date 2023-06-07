@@ -95,10 +95,18 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.BMS_ALARM,
 			ContextNames.SPACE_BOOKING,
 			ContextNames.ROOMS,
+
 			FacilioConstants.Calendar.CALENDAR_MODULE_NAME,
 			FacilioConstants.Calendar.EVENT_MODULE_NAME,
 			FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,
-			FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME
+			FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,
+
+
+			FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,
+			FacilioConstants.UTILITY_INTEGRATION_BILLS,
+			FacilioConstants.UTILITY_INTEGRATION_TARIFF,
+			FacilioConstants.UTILITY_INTEGRATION_TARIFF_SLAB,
+			FacilioConstants.UTILITY_DISPUTE
 
 	});
 

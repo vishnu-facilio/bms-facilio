@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
 import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -13,10 +14,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.lang3.StringUtils;
@@ -116,7 +114,8 @@ public class MetersAPI {
 	public static Double calculateMeterConsumption(long meterId, long startTime, long endTime) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if( meterId > 0L ) {
-			V3MeterContext meter = (V3MeterContext) V3Util.getRecord(FacilioConstants.Meter.METER, meterId, null);
+			//V3MeterContext meter = (V3MeterContext) V3Util.getRecord(FacilioConstants.Meter.METER, meterId, null);
+			V3MeterContext meter = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(V3RecordAPI.getRecord(FacilioConstants.Meter.METER,meterId)),V3MeterContext.class);
 			V3UtilityTypeContext utilityType = meter.getUtilityType();
 			if(utilityType.getName() != null && utilityType.getName().equals("Electricity Meter")) {
 				FacilioModule readingModule = modBean.getModule(FacilioConstants.Meter.ELECTRICITY_DATA_READING);

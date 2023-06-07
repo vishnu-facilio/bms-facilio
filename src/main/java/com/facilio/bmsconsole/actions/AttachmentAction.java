@@ -178,6 +178,15 @@ public class AttachmentAction  extends FacilioAction {
 		}else if (module.equals(FacilioConstants.Meter.METER_ATTACHMENTS)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.Meter.METER_ACTIVITY);
 		}
+		else if (module.equals(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_ATTACHMENTS)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_ACTIVITY);
+		}
+		else if (module.equals(FacilioConstants.UTILITY_INTEGRATION_BILL_ATTACHMENTS)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.UTILITY_INTEGRATION_BILL_ACTIVITY);
+		}
+		else if (module.equals(FacilioConstants.UTILITY_DISPUTE_ATTACHMENTS)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.UTILITY_DISPUTE_ACTIVITY);
+		}
 		else {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule parentModule = modBean.getModule(parentModuleName);

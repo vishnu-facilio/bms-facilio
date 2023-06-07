@@ -415,9 +415,11 @@ classes:
 
   #sensorRuleModule
   - com.facilio.alarms.sensor.signup.AddSensorRuleModules #Sensor
+
    #agentDataLog Module
 #  - com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataLoggerModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataProcessingLoggerModule
+
   
   #Adding Meter Modules
   - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityTypeModule
@@ -439,6 +441,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.BTUDataReadingModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VMTemplateModule
 
+
   #calendarModule
   - com.facilio.bmsconsoleV3.signup.calendar.AddCalendarModule
   #eventModule
@@ -455,5 +458,33 @@ classes:
   - com.facilio.bmsconsoleV3.signup.controlAction.ControlActionModule
 
 
+
   #Adding Flow log modules
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddFlowExecutionLogModules
+
+    #Adding Utility Integration Modules
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationCustomerModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationTariffModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationTariffSlabModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationMeterModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationBillsModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationLineItemModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationTierItemModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationSupplierLineItemModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationTOUModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationDemandModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationPowerModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationCustomerActivityModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationCustomerNotesModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationCustomerAttachmentsModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationBillActivityModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationBillNotesModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationBillAttachmentModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityDisputeModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityDisputeActivityModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityDisputeNotesModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityDisputeAttachmentModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationMeterActivityModule
+
+
+

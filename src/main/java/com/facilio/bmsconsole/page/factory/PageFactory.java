@@ -33,6 +33,9 @@ import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.util.SummaryWidgetUtil;
+import com.facilio.utility.context.UtilityDisputeContext;
+import com.facilio.utility.context.UtilityIntegrationBillContext;
+import com.facilio.utility.context.UtilityIntegrationCustomerContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -496,10 +499,18 @@ public class PageFactory {
 				return SpaceBookingPageFactory.getSpaceBookingPage((V3SpaceBookingContext) record, module);
 			case ContextNames.ROUTES:
 				return RoutePageFactory.getRoutePage((RoutesContext) record, module);
+
 			case FacilioConstants.Meter.METER:
 				return MeterPageFactory.getMeterPage((V3MeterContext) record);
 			case FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE:
 				return VirtualMeterTemplatePageFactory.getVirtualMeterTemplatePage((VirtualMeterTemplateContext) record);
+
+			case FacilioConstants.UTILITY_INTEGRATION_CUSTOMER:
+				return UtilityIntegrationCustomerPageFactory.getUtilityCustomerPage((UtilityIntegrationCustomerContext) record, module);
+			case FacilioConstants.UTILITY_INTEGRATION_BILLS:
+				return UtilityIntegrationBillPageFactory.getUtilityBillPage((UtilityIntegrationBillContext) record, module);
+			case FacilioConstants.UTILITY_DISPUTE:
+				return UtilityDisputePageFactory.getUtilityDisputePage((UtilityDisputeContext) record, module);
 		}
 		if (module.getExtendModule() == null) {    // temp
 			// etisalat changes will be changed to standard method

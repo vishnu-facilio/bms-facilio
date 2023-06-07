@@ -363,8 +363,10 @@ enums:
   - name: BaseMailConversionTypeState
     enumClassName: com.facilio.bmsconsoleV3.context.BaseMailMessageContext$BaseMailConversionType
 
+
   - name: VirtualMeterTemplateStatus
     enumClassName: com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext$VMTemplateStatus
+
 
 
   - name: BacnetPointInstanceType
@@ -421,10 +423,30 @@ enums:
   - name: CommandActionType
     enumClassName: com.facilio.bmsconsoleV3.context.controlActions.V3CommandsContext$CommandActionType
 
-
-
   - name: FlowStatus
     enumClassName: com.facilio.flowLog.moduleFlowLog.enums.FlowStatus
 
   - name: FlowLogType
     enumClassName: com.facilio.flowLog.moduleFlowLog.enums.FlowLogType
+
+  - name: UtilityProviders
+    enumClassName: com.facilio.utility.context.UtilityIntegrationTariffContext$UtilityProviders
+
+  - name: UtilityType
+    enumClassName: com.facilio.utility.context.UtilityIntegrationTariffContext$UtilityType
+
+  - name: BillStatus
+    enumClassName: com.facilio.utility.context.UtilityDisputeContext$BillStatus
+
+  - name: Type
+    enumClassName: com.facilio.utility.context.UtilityIntegrationCustomerContext$Type
+
+  - name: MeterState
+    enumClassName: com.facilio.utility.context.UtilityIntegrationMeterContext$MeterState
+
+  - name: UtilityDisputeType
+    enumClassName: com.facilio.utility.UtilityDisputeType
+
+  - name: UtilityBillStatus
+    enumClassName: com.facilio.utility.context.UtilityIntegrationBillContext$UtilityBillStatus
+

@@ -179,9 +179,9 @@ public class RelatedListWidgetUtil {
     };
 
     /**
-    This moduleTypes are fetched in RelatedList for both Builder and for pageCreation,
-    to support new moduleType for specific modules add the moduleType in the switch case
-    **/
+     This moduleTypes are fetched in RelatedList for both Builder and for pageCreation,
+     to support new moduleType for specific modules add the moduleType in the switch case
+     **/
     public static List<FacilioModule.ModuleType> getSubModuleTypesToFetchForRelatedList(FacilioModule module) throws Exception{
         List<FacilioModule.ModuleType> moduleTypes = new ArrayList<>(Arrays.asList(FacilioModule.ModuleType.BASE_ENTITY,
                 FacilioModule.ModuleType.Q_AND_A_RESPONSE,
@@ -205,6 +205,11 @@ public class RelatedListWidgetUtil {
      **/
     public static void addOrRemoveModulesFromRelatedLists(FacilioModule module, List<String> modulesToAdd, List<String> modulesToRemove) {
         switch (module.getName()) {
+            case "utilityIntegrationCustomer":
+                modulesToRemove.add("utilityIntegrationMeter");
+                modulesToRemove.add("utilityDispute");
+
+                break;
             default:
         }
     }

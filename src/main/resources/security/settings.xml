@@ -2624,7 +2624,6 @@
         </requestbody>
     </request>
     <request path="/api/setup/portalUsersList" method="GET" />
-
     <request path="/api/v3/requestForQuotation/convertPrToRfq" method="GET">
         <requestbody type="object"/>
     </request>
@@ -3117,6 +3116,7 @@
         </requestbody>
     </request>
 
+
     <request path="/api/v3/readingrule/historical/run" method="POST">
         <requestbody type="object">
             <property name="assetIds" type="array" mandatory="true">
@@ -3137,6 +3137,7 @@
             <property name="readingFieldId" type="number" mandatory="true"/>
         </urlparams>
     </request>
+
 
 
     <!--Kpi analytics page-->
@@ -3184,6 +3185,7 @@
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
     </request>
+
     <request path="/api/v3/point/list" method="POST">
         <requestbody type="object">
             <property name="controllerType" type="number" mandatory="true"/>
@@ -3238,6 +3240,7 @@
             <property name="endTime" type="number"></property>
         </requestbody>
     </request>
+
     <request path="/api/v2/systemButton/getAvailableButtonsForList" method="GET">
        <requestbody type="object">
         <property name="recordIds" type="array">
@@ -3246,5 +3249,44 @@
          <property name="moduleName" type="string"/>
          <property name="positionType" type="number"/>
        </requestbody>
+    </request>
+
+
+
+    <request path="/api/v3/utilityIntegration/fetchUtilityCustomerAndMeter">
+        <requestbody type="object">
+            <property name="referral" type="string" mandatory="true"/>
+            <property name="state" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/utilityIntegration/activateMeters">
+        <requestbody type="object">
+            <property name="meterID" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/utilityIntegration/ongoingMonitoring">
+        <requestbody type="object">
+            <property name="meterID" type="number" mandatory="true"/>
+            <property name="frequency" type="string" mandatory="true"/>
+            <property name="prepay" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/utilityIntegration/fetchBills">
+        <requestbody type="object">
+            <property name="meterID" type="number" mandatory="true"/>
+            <property name="startTime" type="string" mandatory="true"/>
+            <property name="endTime" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/utilityIntegration/createUtilityAccounts">
+        <requestbody type="object">
+        </requestbody>
+    </request>
+    <request path="/api/v3/utilityIntegration/associateMeter">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="meterIds" type="array" mandatory="true"/>
+
+        </requestbody>
     </request>
 </config>

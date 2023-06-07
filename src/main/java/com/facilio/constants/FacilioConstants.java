@@ -3198,6 +3198,9 @@ public class FacilioConstants {
 			classMap.put(SpaceBooking.SPACE_BOOKING, V3SpaceBookingContext.class);
 			classMap.put(INVENTORY_RESERVATION, InventoryReservationContext.class);
 			classMap.put(VENDOR_QUOTES_ACTIVITY, ActivityContext.class);
+			classMap.put(UTILITY_INTEGRATION_CUSTOMER_ACTIVITY,ActivityContext.class);
+			classMap.put(UTILITY_INTEGRATION_BILL_ACTIVITY,ActivityContext.class);
+			classMap.put(UTILITY_DISPUTE_ACTIVITY,ActivityContext.class);
 
 			classMap.put(Meter.METER, V3MeterContext.class);
 			classMap.put(Meter.ELECTRICITY_METER, V3ElectricityUtilityMeterContext.class);
@@ -4284,7 +4287,6 @@ public class FacilioConstants {
         public static final String IS_CLONE_PAGE = "isClonePage";
     }
 
-
 	public static class Widget{
 		public static final String MODULE_NAME = "moduleName";
         public static final String WIDGETS = "widgets";
@@ -4292,7 +4294,6 @@ public class FacilioConstants {
 		public static final String WIDGET_MODULE = "widgetToModule";
 		public static final String WIDGET_CONFIGS = "widgetConfigs";
 	}
-
 	public static class UserPeopleKeys {
 		public static final String TAB_NAME="tabName";
 		public static final String VENDOR = "VENDOR";
@@ -4343,6 +4344,7 @@ public class FacilioConstants {
 		public  static final String SENSOR_RULE_TABLE_NAME = "Sensor_Readings";
 
 	}
+
 	public static class Calendar{
 		public static final String CALENDAR_MODULE_NAME = "calendar";
 		public static final String EVENT_MODULE_NAME = "calendarEvent";
@@ -4372,4 +4374,59 @@ public class FacilioConstants {
 		public static final String CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME = "controlActionTemplateActivity";
 		public static final String CONTROL_ACTION_NOTES_MODULE_NAME = "controlActionNotes";
 	}
+
+	public static final String UTILITY_INTEGRATION_CUSTOMER = "utilityIntegrationCustomer";
+
+	public static final String UTILITY_INTEGRATION_METER = "utilityIntegrationMeter";
+	public static final String UTILITY_INTEGRATION_LINE_ITEMS = "utilityIntegrationLineItems";
+
+	public static final String UTILITY_INTEGRATION_TIER_ITEMS = "utilityIntegrationTierItems";
+	public static final String UTILITY_INTEGRATION_SUPPLIER_LINE_ITEMS = "utilityIntegrationSupplierLineItems";
+
+	public static final String UTILITY_INTEGRATION_TOU = "utilityIntegrationTou";
+
+	public static final String UTILITY_INTEGRATION_DEMAND = "utilityIntegrationDemand";
+
+	public static final String UTILITY_INTEGRATION_POWER = "utilityIntegrationPower";
+
+	public static final String UTILITY_INTEGRATION_BILLS = "utilityIntegrationBills";
+
+	public static final String REFERRALS = "referrals";
+
+	public static final String FREQUENCY = "frequency";
+
+	public static final String PREPAY = "prepay";
+
+	public static final String UTILITY_INTEGRATION_CUSTOMER_ACTIVITY = "utilityIntegrationCustomerActivity";
+	public static final String UTILITY_INTEGRATION_METER_ACTIVITY = "utilityIntegrationMeterActivity";
+
+	public static final String UTILITY_INTEGRATION_CUSTOMER_LIST = "utilityIntegrationCustomerList";
+
+	public static final String UTILITY_INTEGRATION_METER_LIST = "utilityIntegrationMeterList";
+
+	public static final String UTILITY_INTEGRATION_CUSTOMER_NOTES = "utilityIntegrationCustomerNotes";
+
+	public static final String UTILITY_INTEGRATION_CUSTOMER_ATTACHMENTS = "utilityIntegrationCustomerAttachments";
+
+	public static final String  UTILITY_INTEGRATION_BILL_ACTIVITY = "utilityIntegrationBillActivity";
+
+	public static final String UTILITY_INTEGRATION_BILL_NOTES = "utilityIntegrationBillNotes";
+
+	public static final String UTILITY_INTEGRATION_BILL_ATTACHMENTS = "utilityIntegrationBillAttachments";
+
+	public static final String CUSTOMER_TYPE = "customerType";
+	
+	public static final String STATE = "state";
+
+	public static final String UTILITY_INTEGRATION_TARIFF = "utilityIntegrationTariff";
+	public static final String UTILITY_INTEGRATION_TARIFF_SLAB = "utilityIntegrationTariffSlab";
+	public static final String UTILITY_DISPUTE = "utilityDispute";
+	public static final String UTILITY_DISPUTE_NOTES = "utilityDisputeNotes";
+	public static final String UTILITY_DISPUTE_ATTACHMENTS = "utilityDisputeAttachments";
+	public static final String UTILITY_DISPUTE_ACTIVITY = "utilityDisputeActivity";
+	public static final String UNDER_DISPUTE = "underDispute";
+	public static final String RESOLVE_DISPUTE = "resolveDispute";
+	public static final String UTILITY_DISPUTE_STATUS = "utilityDisputeStatus";
+
+
 }

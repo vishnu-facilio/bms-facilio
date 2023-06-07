@@ -24,6 +24,9 @@ public class PageBuilderConfigUtil {
             List<FacilioModule> moduleList = modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true);
             moduleList.add(modBean.getModule("serviceRequest"));
             moduleList.add(modBean.getModule("workorder"));
+            moduleList.add(modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER));
+            moduleList.add(modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_BILLS));
+            moduleList.add(modBean.getModule(FacilioConstants.UTILITY_DISPUTE));
 
             if (CollectionUtils.isNotEmpty(moduleList)) {
                 List<Long> moduleIds = moduleList.stream().filter(Objects::nonNull).map(FacilioModule::getModuleId).collect(Collectors.toList());

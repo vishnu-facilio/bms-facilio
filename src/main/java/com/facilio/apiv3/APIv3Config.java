@@ -243,6 +243,8 @@ import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.faultimpact.FaultImpactNameSpaceFieldContext;
 import com.facilio.relation.context.RelationDataContext;
 import com.facilio.util.FacilioUtil;
+import com.facilio.utility.commands.*;
+import com.facilio.utility.context.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -254,7 +256,11 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.workflowlog.context.WorkflowLogContext;
+
 import com.facilio.workflowlog.context.WorkflowVersionHistoryContext;
+
+
+import org.apache.commons.chain.Command;
 
 import org.apache.commons.chain.Context;
 
@@ -3199,8 +3205,6 @@ public class APIv3Config {
                 .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
-
-
     @Module(FacilioConstants.ContextNames.AGENT_DATA_LOGGER)
     public static Supplier<V3Config> getAgentData() {
         return () -> new V3Config(DataLogContextV3.class, null)
@@ -3358,6 +3362,7 @@ public class APIv3Config {
                 .afterFetch(new GetWorkflowRuleActionLogs())
                 .build();
     }
+
     @Module(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME)
     public static Supplier<V3Config> getControlAction(){
         return () -> new V3Config(V3ControlActionContext.class,null)
@@ -3402,8 +3407,8 @@ public class APIv3Config {
                 .build();
     }
     @Module(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME)
-    public static Supplier<V3Config> getControlActionTemplate(){
-        return () -> new V3Config(V3ControlActionTemplateContext.class,null)
+    public static Supplier<V3Config> getControlActionTemplate() {
+        return () -> new V3Config(V3ControlActionTemplateContext.class, null)
                 .create()
                 .afterSave(TransactionChainFactoryV3.getControlActionTemplateAfterSaveChain())
                 .afterTransaction(new CallToControlActionGenerationCommand())
@@ -3413,10 +3418,135 @@ public class APIv3Config {
                 .delete().markAsDeleteByPeople()
                 .beforeDelete(TransactionChainFactoryV3.getControlActionTemplateBeforeDeleteChain())
                 .summary()
+                .build();
+    }
+
+
+    @Module(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER)
+    public static Supplier<V3Config> getUtilityCustomer() {
+        return () -> new V3Config(UtilityIntegrationCustomerContext.class, null)
+                .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_ACTIVITY))
+                .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_ACTIVITY))
+                .list()
+                .summary()
+                .build();
+    }
+    @Module(FacilioConstants.UTILITY_INTEGRATION_METER)
+    public static Supplier<V3Config> getUtilityMeters() {
+        return () -> new V3Config(UtilityIntegrationMeterContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.UTILITY_INTEGRATION_METER_ACTIVITY))
+                .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.UTILITY_INTEGRATION_METER_ACTIVITY))
+                .list()
+                .beforeFetch( new LoadUtilityIntegrationMeterExtraFieldsCommandV3())
+                .summary()
+                .build();
+    }
+    @Module(FacilioConstants.UTILITY_INTEGRATION_BILLS)
+    public static Supplier<V3Config> getUtilityBills() {
+        return () -> new V3Config(UtilityIntegrationBillContext.class, null)
+                .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3())
+                .afterTransaction(new CheckAndRaiseDisputeCommand(),new AddActivitiesCommand(FacilioConstants.UTILITY_INTEGRATION_BILL_ACTIVITY))
+                .update()
+                .afterSave(new ConstructAddCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.UTILITY_INTEGRATION_BILL_ACTIVITY))
+                .list()
+                .summary()
+                .afterFetch(new FetchUtilityIntegrationDetailsCommandV3())
+                .build();
+    }
+    @Module(FacilioConstants.UTILITY_INTEGRATION_LINE_ITEMS)
+    public static Supplier<V3Config> getUtilityLineItems() {
+        return () -> new V3Config(UtilityIntegrationLineItemContext.class, new ModuleCustomFieldCount30())
+
                 .list()
                 .build();
     }
 
 
+    @Module(FacilioConstants.UTILITY_INTEGRATION_TIER_ITEMS)
+    public static Supplier<V3Config> getUtilityTierItems() {
+        return () -> new V3Config(UtilityIntegrationTierItemContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .build();
+    }
+
+    @Module(FacilioConstants.UTILITY_INTEGRATION_SUPPLIER_LINE_ITEMS)
+    public static Supplier<V3Config> getUtilitySupplierItems() {
+        return () -> new V3Config(UtilityIntegrationSupplierLineItemContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .build();
+    }
+
+    @Module(FacilioConstants.UTILITY_INTEGRATION_TOU)
+    public static Supplier<V3Config> getUtilityTOU() {
+        return () -> new V3Config(UtilityIntegrationTOUContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .build();
+    }
+    @Module(FacilioConstants.UTILITY_INTEGRATION_POWER)
+    public static Supplier<V3Config> getUtilityPower() {
+        return () -> new V3Config(UtilityIntegrationPowerContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .build();
+    }
+    @Module(FacilioConstants.UTILITY_INTEGRATION_DEMAND)
+    public static Supplier<V3Config> getUtilityDemand() {
+        return () -> new V3Config(UtilityIntegrationDemandContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .build();
+    }
+    @Module(FacilioConstants.UTILITY_INTEGRATION_TARIFF)
+    public static Supplier<V3Config> getUtilityTariff() {
+        return () -> new V3Config(UtilityIntegrationTariffContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new ValidateUtilityIntegrationTariffCommandV3())
+                .update()
+                .beforeSave(new ValidateUtilityIntegrationTariffCommandV3())
+                .summary()
+                .afterFetch(new FetchUtilityIntegrationTariffDetailsCommandV3())
+                .delete()
+                .list()
+                .build();
+    }
+    @Module(FacilioConstants.UTILITY_INTEGRATION_TARIFF_SLAB)
+    public static Supplier<V3Config> getUtilityTariffSlab() {
+        return () -> new V3Config(UtilityIntegrationTariffSlabContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(new ValidateUtilityIntegrationTariffSlabCommandV3())
+                .update()
+                .beforeSave(new ValidateUtilityIntegrationTariffSlabCommandV3())
+                .summary()
+                .delete()
+                .list()
+                .build();
+    }
+    @Module(FacilioConstants.UTILITY_DISPUTE)
+    public static Supplier<V3Config> getUtilityDispute() {
+        return () -> new V3Config(UtilityDisputeContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.UTILITY_DISPUTE_ACTIVITY))
+                .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.UTILITY_DISPUTE_ACTIVITY))
+                .list()
+                .beforeFetch( new LoadUtilityDisputeExtraFieldsCommandV3())
+                .fetchSupplement(FacilioConstants.UTILITY_DISPUTE, "account")
+                .fetchSupplement(FacilioConstants.UTILITY_DISPUTE, "utilityBill")
+                .beforeFetch(new LoadUtilityDisputeExtraFieldsCommandV3())
+                .summary()
+                .fetchSupplement(FacilioConstants.UTILITY_DISPUTE, "account")
+                .fetchSupplement(FacilioConstants.UTILITY_DISPUTE, "utilityBill")
+                .build();
+    }
 
 }

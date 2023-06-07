@@ -600,11 +600,13 @@ public class AccountUtil {
 		COMMISSIONING(136,getExponentValue(9),LicenseMapping.GROUP3LICENSE),//2^9
 		BACKGROUND_ACTIVITY(137,getExponentValue(10),LicenseMapping.GROUP3LICENSE),//2^10
 		PAGE_BUILDER(138, getExponentValue(11), LicenseMapping.GROUP3LICENSE),//2^11
+
 		DISABLE_EDIT_SUB_FORM_DATA(139, getExponentValue(12), LicenseMapping.GROUP3LICENSE),//2^12
 
 		CALENDAR_VIEW(140, getExponentValue(13), LicenseMapping.GROUP3LICENSE),//2^13
 		WORK_ORDER_FEATURE_SETTINGS(141,getExponentValue(14),LicenseMapping.GROUP3LICENSE),//2^14
 		DASHBOARD_V2(142, getExponentValue(15), LicenseMapping.GROUP3LICENSE),//2^15
+
 		ODATA_API(143,getExponentValue(16),LicenseMapping.GROUP3LICENSE),//2^16
 		FIELD_LIST_PERMISSION(144,getExponentValue(17),LicenseMapping.GROUP3LICENSE),//2^17
 		AGENT_INTERVAL(145,getExponentValue(18),LicenseMapping.GROUP3LICENSE),//2^18
@@ -615,7 +617,11 @@ public class AccountUtil {
 		SENSOR_RULE(150,getExponentValue(23),new String[]{ContextNames.SENSOR_ROLLUP_ALARM},LicenseMapping.GROUP3LICENSE),//2^23
 		WEAVE(151,getExponentValue(24),LicenseMapping.GROUP3LICENSE),//2^24
 		METER(152, getExponentValue(25), new String[]{FacilioConstants.Meter.METER,FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE}, LicenseMapping.GROUP3LICENSE),//2^25
-		WIZARD_RESOURCE_FILTER(153,getExponentValue(26),LicenseMapping.GROUP3LICENSE);//2^26
+		WIZARD_RESOURCE_FILTER(153,getExponentValue(26),LicenseMapping.GROUP3LICENSE),//2^26
+		UTILITY_INTEGRATION(154,getExponentValue(27),new String[]{FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,FacilioConstants.UTILITY_INTEGRATION_BILLS,FacilioConstants.UTILITY_INTEGRATION_TARIFF,FacilioConstants.UTILITY_DISPUTE}, LicenseMapping.GROUP3LICENSE);//2^25
+
+
+
 
 		public int featureId;
 		private long license;
