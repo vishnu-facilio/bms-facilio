@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.util.FacilioUtil;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
@@ -14,6 +15,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
+@Log4j
 public class VerifyApprovalCommand extends FacilioCommand {
 
 	@Override
@@ -48,10 +50,12 @@ public class VerifyApprovalCommand extends FacilioCommand {
 					if (record.getApprovalFlowId() == -99 || (record.getApprovalFlowId() > 0 && record.getApprovalStatus() != null)) {
 						if (!skipChecking) {
 							FacilioStatus status = TicketAPI.getStatus(record.getApprovalStatus().getId());
+							logRecordIdAndParentModuleId(record.getId(), stateContext.getParentModuleId());
 							FacilioUtil.throwIllegalArgumentException(status.isRequestedState(), "In Approval process, cannot edit meanwhile");
 						}
 					}
  					else if ((stateContext.isRecordLocked())) {
+						logRecordIdAndParentModuleId(record.getId(), stateContext.getParentModuleId());
  						FacilioUtil.throwIllegalArgumentException(cannotEdit, "Record with lock cannot be updated");
 					}
 				}
@@ -59,5 +63,9 @@ public class VerifyApprovalCommand extends FacilioCommand {
 		}
 		
 		return false;
+	}
+	private void logRecordIdAndParentModuleId(long recordId, long parentModuleId){
+		LOGGER.info("Record ID: " + recordId);
+		LOGGER.info("Parent Module ID: " + parentModuleId);
 	}
 }

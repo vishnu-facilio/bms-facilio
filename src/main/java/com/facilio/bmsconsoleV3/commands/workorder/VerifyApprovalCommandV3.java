@@ -13,11 +13,13 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class VerifyApprovalCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -60,6 +62,7 @@ public class VerifyApprovalCommandV3 extends FacilioCommand {
                         if (!skipChecking) {
                             FacilioStatus status = TicketAPI.getStatus(record.getApprovalStatus().getId());
                             if (status.isRequestedState()) {
+                                logRecordIdAndParentModuleId(record.getId(), stateContext.getParentModuleId());
 //                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Record " + record.getId() + " of Module " + module.getDisplayName() + " is in Approval process, cannot edit meanwhile");
                                 throw new RESTException(ErrorCode.VALIDATION_ERROR, "Record is in Approval process, cannot edit meanwhile");
                             }
@@ -67,6 +70,7 @@ public class VerifyApprovalCommandV3 extends FacilioCommand {
                     }
                     else if ((stateContext.isRecordLocked())) {
                         if (cannotEdit) {
+                            logRecordIdAndParentModuleId(record.getId(), stateContext.getParentModuleId());
 //                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Record " + record.getId() + " of Module " + module.getDisplayName() + " is locked, cannot be updated");
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Record is locked, cannot be updated");
                         }
@@ -76,5 +80,9 @@ public class VerifyApprovalCommandV3 extends FacilioCommand {
         }
 
         return false;
+    }
+    private void logRecordIdAndParentModuleId(long recordId, long parentModuleId){
+        LOGGER.info("Record ID: " + recordId);
+        LOGGER.info("Parent Module ID: " + parentModuleId);
     }
 }
