@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.actions.report;
 import java.util.*;
 import java.util.function.Function;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.SingleSharingContext;
@@ -232,6 +233,7 @@ public class V3ReportAction extends V3Action {
     private void updateModuleReportContext() throws Exception
     {
         reportContext.setChartState(chartState);
+        reportContext.setAppId(AccountUtil.getCurrentApp().getId());
         reportContext.setTabularState(tabularState);
         reportContext.setType(ReportType.WORKORDER_REPORT);
         reportContext.setModuleType(moduleType);

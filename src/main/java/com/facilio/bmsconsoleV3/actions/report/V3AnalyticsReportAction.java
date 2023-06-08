@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.actions.report;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -204,6 +205,7 @@ public class V3AnalyticsReportAction extends V3Action {
     }
 
     private void setAnalyticsReportContext(FacilioContext context) throws Exception {
+        reportContext.setAppId(AccountUtil.getCurrentApp().getId());
         if (reportContext.getTemplate() != null) {
             setTemplate(reportContext.getReportTemplate());
         }
