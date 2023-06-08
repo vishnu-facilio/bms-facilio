@@ -17,12 +17,12 @@ import org.apache.log4j.Logger;
 public class WorkpermitPageFactory extends PageFactory {
 	private static final Logger LOGGER = LogManager.getLogger(WorkpermitPageFactory.class.getName());
 
-	public static Page getWorkPermitPage(WorkPermitContext workpermit) throws Exception {
+	public static Page getWorkPermitPage(WorkPermitContext workpermit,FacilioModule module) throws Exception {
 
 		if (AccountUtil.getCurrentUser().isPortalUser()) {
 			return getWorkPermitPortalPage(workpermit);
 		}
-		return getMainAppWorkPermitPage(workpermit);
+		return getMainAppWorkPermitPage(workpermit,module);
 	}
 
 	private static Page getWorkPermitPortalPage(WorkPermitContext workpermit) throws Exception {
@@ -44,7 +44,7 @@ public class WorkpermitPageFactory extends PageFactory {
 		return page;
 	}
 
-	public static Page getMainAppWorkPermitPage(WorkPermitContext record) throws Exception {
+	public static Page getMainAppWorkPermitPage(WorkPermitContext record, FacilioModule module) throws Exception {
 		Page page = new Page();
 
 		Page.Tab tab1 = page.new Tab("summary");
@@ -80,6 +80,14 @@ public class WorkpermitPageFactory extends PageFactory {
 		activityWidget.addToLayoutParams(tab4Sec1, 24, 3);
 		activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY);
 		tab4Sec1.addWidget(activityWidget);
+
+		Page.Tab tab5 = page.new Tab("Related");
+		page.addTab(tab5);
+		addRelationshipSection(page, tab5, module.getModuleId());
+		Page.Section tab5Sec1 = getRelatedListSectionObj(page);
+		tab4.addSection(tab5Sec1);
+
+		addRelatedListWidgets(tab5Sec1,module.getModuleId());
 
 		return page;
 	}

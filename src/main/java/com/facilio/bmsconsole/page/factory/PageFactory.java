@@ -351,7 +351,7 @@ public class PageFactory {
 			case ContextNames.AGENT_ALARM:
 				return AgentAlarmPageFactory.getAgentAlarmPage((BaseAlarmContext) record);
 			case ContextNames.WorkPermit.WORKPERMIT:
-				return WorkpermitPageFactory.getWorkPermitPage((WorkPermitContext) record);
+				return WorkpermitPageFactory.getWorkPermitPage((WorkPermitContext) record,module);
 			case ContextNames.VENDORS:
 				return VendorPageFactory.getVendorPage((VendorContext) record);
 			case ContextNames.SHIFT:
