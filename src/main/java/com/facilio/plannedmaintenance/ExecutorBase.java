@@ -32,6 +32,9 @@ public abstract class ExecutorBase implements Executor {
 
     	PlannedMaintenance plannedMaintenance = (PlannedMaintenance) context.get(FacilioConstants.PM_V2.PM_V2_MODULE_NAME);
     	PMPlanner pmPlanner = (PMPlanner) context.get(FacilioConstants.PM_V2.PM_V2_PLANNER);
+        if(plannedMaintenance == null){
+            throw new IllegalArgumentException("Deleted Planner from Executor Base - "+pmPlanner._getId());
+        }
         if(pmPlanner != null) {
             LOGGER.debug("pmPlanner - " + pmPlanner.toString());
         }
