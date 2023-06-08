@@ -404,9 +404,9 @@ public class ScopeInterceptor extends AbstractInterceptor {
                                     String authorisationReq = ActionContext.getContext().getParameters().get("authorise").getValue();
                                     if (StringUtils.isEmpty(authorisationReq) || authorisationReq.equals("true")) {
                                         LOGGER.info("API Permission missing for " + request.getRequestURI());
-                                        if (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
-                                            return logAndReturn("unauthorized", null, startTime, request);
-                                        }
+//                                        if (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise() || (FacilioProperties.getEnvironment() != null && FacilioProperties.getEnvironment().equals("stage2")))) {
+//                                            return logAndReturn("unauthorized", null, startTime, request);
+//                                        }
                                     }
                                 }
                             }
