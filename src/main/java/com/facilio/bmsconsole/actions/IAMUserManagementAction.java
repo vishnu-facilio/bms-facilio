@@ -53,6 +53,7 @@ public class IAMUserManagementAction extends FacilioAction{
     private int offset;
     private List<PeopleUserContext> users = null;
     private Boolean fetchCount;
+    private Boolean isUserVerified=null;
     public Boolean getFetchCount() {
         if (fetchCount == null) {
             return false;
@@ -164,7 +165,7 @@ public class IAMUserManagementAction extends FacilioAction{
             throw new IllegalArgumentException("Invalid App Domain");
         }
 
-        List<User>  iamUserList = IdentityClient.getDefaultInstance().getUserBean().getUserList(orgId,appDomainObj.getIdentifier(), search,  userStatus, inviteStatus,withMFA,orderBy,  isAscending,  offset,5000);
+        List<User>  iamUserList = IdentityClient.getDefaultInstance().getUserBean().getUserList(orgId,appDomainObj.getIdentifier(), search,  userStatus, inviteStatus,isUserVerified,withMFA,orderBy,  isAscending,  offset,5000);
 
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.IAM_USERS,iamUserList);
