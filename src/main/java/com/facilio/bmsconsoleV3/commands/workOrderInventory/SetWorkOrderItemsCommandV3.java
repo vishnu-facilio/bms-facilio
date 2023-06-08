@@ -97,8 +97,8 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                     }
                 }
                 else if(workorderItem.getParentTransactionId() > 0) {
-                    if(!InventoryRequestAPI.checkQuantityForWoItem(workorderItem.getParentTransactionId(), workorderItem.getQuantity(), workorderItem.getRemainingQuantity())){
-                        throw new IllegalArgumentException("Please check the quantity issued");
+                    if(workorderItem.getQuantity() > workorderItem.getRemainingQuantity()){
+                        throw new IllegalArgumentException("Quantity is greater than the remaining quantity");
                     }
                 }
                 if (workorderItem.getId() > 0) {
