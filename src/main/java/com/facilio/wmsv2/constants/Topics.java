@@ -42,7 +42,7 @@ public interface Topics {
     }
 
     interface Agent {
-        String agentPointAlarm = "__agent__/point/alarm";
+        String agentPointAlarm = "__agent__/point/alarm/org/";
     }
 
 }

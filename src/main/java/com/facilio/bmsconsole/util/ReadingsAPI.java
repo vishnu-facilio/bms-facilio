@@ -1404,7 +1404,7 @@ public class ReadingsAPI {
 		if(props!=null && !props.isEmpty()) {
 			parentValuesMap = new HashMap<>();
 			for(Map<String, Object> prop: props) {
-				if(!prop.containsKey("rdmId")){
+				if(!prop.containsKey("idx")){
 					continue;
 				}
 				long parentId = (long) prop.get("pointId");

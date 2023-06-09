@@ -40,6 +40,7 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.wmsv2.endpoint.SessionManager;
+import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.constants.Topics;
 import org.apache.commons.collections4.MapUtils;
@@ -625,11 +626,17 @@ public class AgentUtilV2
     }
 
     public static boolean sendClearPointAlarm(FacilioAgent agent) {
+        long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
+
         JSONObject content = new JSONObject();
         content.put(AgentConstants.AGENT, agent.getName());
-        SessionManager.getInstance().sendMessage(new Message()
-                .setTopic(Topics.Agent.agentPointAlarm)
-                .setContent(content));
+        if(orgId > 0L){
+            WmsBroadcaster.getBroadcaster().sendMessage(new Message()
+                    .setTopic(Topics.Agent.agentPointAlarm + orgId + "/" + agent.getId())
+                    .setOrgId(orgId)
+                    .setContent(content)
+            );
+        }
         return true;
     }
 

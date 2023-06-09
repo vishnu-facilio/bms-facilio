@@ -26,7 +26,7 @@ groups:
       - { topic: resource-decommission, handler: com.facilio.wmsv2.handler.ResourceDecommissioningHandler,recordTimeout: 60,isLiveMessage: false }
       - { topic: decommission-log, handler: com.facilio.wmsv2.handler.CommissioningLogHandler,recordTimeout: 60,isLiveMessage: false }
       - { topic: __newweather__/#, handler: com.facilio.wmsv2.handler.NewWeatherJobHandler, recordTimeout: 30, isLiveMessage: false }
-      - { topic: __agent__/point/alarm, handler: com.facilio.wmsv2.handler.agent.ClearPointAlarmHandler, isLiveMessage: false }
+      - { topic: __agent__/point/alarm/org/#, handler: com.facilio.wmsv2.handler.agent.ClearPointAlarmHandler, isLiveMessage: false }
 
   - group: receive-mail
     sendToAll: false
