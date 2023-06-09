@@ -23,6 +23,7 @@ import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.message.Message;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -362,14 +363,20 @@ public class PlannedMaintenanceAPI {
             LOGGER.info("Batch ID == " + i++ + "Count of WorkOrder Records Fetched for this batch == " + workOrderContextList.size());
             workOrderIdsToBeDeleted.add(workOrderContextList.stream().map(V3WorkOrderContext::getId).collect(Collectors.toList()));
         }
-        for (List<Long> workOrderIds : workOrderIdsToBeDeleted) {
-            LOGGER.info("Pre open WorkOrder Id's to be deleted === " + workOrderIds);
-            DeleteRecordBuilder<V3WorkOrderContext> workOrderContextDeleteRecordBuilder = new DeleteRecordBuilder<V3WorkOrderContext>()
-                    .module(workOrderModule)
-                    .skipModuleCriteria();
-            int workOrderDeletedCount = workOrderContextDeleteRecordBuilder.batchDeleteById(workOrderIds);
-            LOGGER.info("COUNT OF DELETED PRE OPEN WORKORDERS ===  " + workOrderDeletedCount + " for template ID === ");
+        List<Long> woIds = new ArrayList<>();
+        if(CollectionUtils.isEmpty(workOrderIdsToBeDeleted)){
+            LOGGER.info("WorkOrder List is Empty");
         }
+        for (List<Long> workOrderIds : workOrderIdsToBeDeleted) {
+            woIds.addAll(workOrderIds);
+        }
+        LOGGER.info("Pre open WorkOrder Id's to be deleted === " + woIds);
+        DeleteRecordBuilder<V3WorkOrderContext> workOrderContextDeleteRecordBuilder = new DeleteRecordBuilder<V3WorkOrderContext>()
+                .module(workOrderModule)
+                .recordsPerBatch(5000)
+                .skipModuleCriteria();
+        int workOrderDeletedCount = workOrderContextDeleteRecordBuilder.batchMarkAsDeleteById(woIds);
+        LOGGER.info("COUNT OF DELETED PRE OPEN WORKORDERS ===  " + workOrderDeletedCount + " for template ID === ");
     }
     public static List<PMResourcePlanner> getPMResourcePlannerListFromJobPlanId(long jobPlanId) throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
