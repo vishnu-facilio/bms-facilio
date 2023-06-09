@@ -82,13 +82,15 @@ public class WorkpermitPageFactory extends PageFactory {
 		tab4Sec1.addWidget(activityWidget);
 
 		Page.Tab tab5 = page.new Tab("Related");
-		page.addTab(tab5);
-		addRelationshipSection(page, tab5, module.getModuleId());
+		boolean isRelationshipNeeded = addRelationshipSection(page, tab5, module.getModuleId());
 		Page.Section tab5Sec1 = getRelatedListSectionObj(page);
-		tab4.addSection(tab5Sec1);
+		tab5.addSection(tab5Sec1);
 
-		addRelatedListWidgets(tab5Sec1,module.getModuleId());
+		addRelatedListWidgets(tab5Sec1, module.getModuleId());
 
+		if ((tab5Sec1.getWidgets() != null && !tab5Sec1.getWidgets().isEmpty()) || isRelationshipNeeded) {
+			page.addTab(tab5);
+		}
 		return page;
 	}
 
