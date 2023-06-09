@@ -40,7 +40,7 @@ public class GetAllWebTabForApplicationCommand extends FacilioCommand {
             if (webTabs != null && !webTabs.isEmpty()) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 if(!fetchSetupTabs) {
-                    webTabs = webTabs.stream().filter(webtab -> webtab.getTypeEnum().getTabType().equals(filterSetUpTab ? WebTabContext.TabType.SETUP : WebTabContext.TabType.NORMAL))
+                    webTabs = webTabs.stream().filter(webtab -> webtab.getTypeEnum() != null && webtab.getTypeEnum().getTabType().equals(filterSetUpTab ? WebTabContext.TabType.SETUP : WebTabContext.TabType.NORMAL))
                             .collect(Collectors.toList());
                 }
                 for (WebTabContext webtab : webTabs) {
