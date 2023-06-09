@@ -42,7 +42,7 @@
         }
 
         // set csrf token cookie
-        FacilioCookie.setCSRFTokenCookie(request, response, false);
+        FacilioCookie.setCSRFTokenCookie(request, response, true);
 
         JSONObject copyrightInfo = new JSONObject();
         copyrightInfo.put("name", copyrightName);
