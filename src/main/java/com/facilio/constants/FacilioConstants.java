@@ -129,6 +129,7 @@ public class FacilioConstants {
 		public static final String PM_V2_PLANNER = "pmPlanner";
 		public static final String PLANNER_LIST = "pmPlannerList";
 		public static final String AVAILABLE_TRIGGER_FREQUENCIES = "availableTriggerFrequncies";
+		public static final String PM_V2_SITES = "plannedMaintenanceSite";
 	}
 	public static class JOB_PLAN {
 		public static final String JOB_PLAN_ID = "jobPlanId";
