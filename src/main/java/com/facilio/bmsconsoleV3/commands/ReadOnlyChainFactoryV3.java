@@ -11,6 +11,8 @@ import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsComman
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.LoadPeopleAnnouncementLookupCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.UserScopingForAnnouncements;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.addAnnouncementDefaultFields;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.LoadNeighbourHoodFixedFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.decommission.FetchDependentResourceDataCommand;
 import com.facilio.bmsconsoleV3.commands.decommission.FetchResourceDependentModuleListCommand;
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
@@ -546,6 +548,13 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new LoadPeopleAnnouncementLookupCommand());
         c.addCommand(new UserScopingForAnnouncements());
         c.addCommand(new addAnnouncementDefaultFields());
+        return c;
+    }
+    public static FacilioChain getNeighbourhoodBeforeFetchChain()
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new NeighbourhoodFillLookupFieldsCommand());
+        c.addCommand(new LoadNeighbourHoodFixedFieldsCommand());
         return c;
     }
 }

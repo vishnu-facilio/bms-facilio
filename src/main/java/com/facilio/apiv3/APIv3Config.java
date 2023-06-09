@@ -1418,7 +1418,7 @@ public class APIv3Config {
                 .beforeFetch(new NeighbourhoodFillLookupFieldsCommand())
                 .afterFetch(new FillNeighbourhoodSharingInfoCommand())
                 .list()
-                .beforeFetch(new NeighbourhoodFillLookupFieldsCommand())
+                .beforeFetch(ReadOnlyChainFactoryV3.getNeighbourhoodBeforeFetchChain())
                 .build();
     }
 
