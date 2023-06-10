@@ -698,6 +698,14 @@ public class AddPmV2ModuleAndFields extends SignUpData {
                 FacilioField.FieldDisplayType.TEXTBOX, false, true, true, true, orgId);
         fields.add(optionsField);
 
+        NumberField sectionSequence = SignupUtil.getNumberField(module, "sectionSequence", "Section Sequence",
+                "SECTION_SEQUENCE", FacilioField.FieldDisplayType.NUMBER, true, false, true, orgId);
+        fields.add(sectionSequence);
+
+        NumberField taskSequence = SignupUtil.getNumberField(module, "taskSequence", "Task Sequence",
+                "TASK_SEQUENCE", FacilioField.FieldDisplayType.NUMBER, true, false, true, orgId);
+        fields.add(taskSequence);
+
         module.setFields(fields);
         return module;
     }

@@ -114,14 +114,16 @@ public class HandleTasksImportCommand extends FacilioCommand {
     }
 
     private void createSectionAndTasks(JobPlanContext jobPlan, Map<String, List<Map<String, Object>>> recordsClassifiedBySection) throws Exception {
-        int seqNumber = 0;
         for (Map.Entry<String, List<Map<String, Object>>> entry : recordsClassifiedBySection.entrySet()) {
             String sectionName = entry.getKey();
             List<Map<String, Object>> recList = entry.getValue();
 
             Map<String, Object> firstRecord = recList.get(0);
-
-            JobPlanTaskSectionContext section = createSection(jobPlan, sectionName, ++seqNumber, firstRecord);
+            Double sequence = (Double) firstRecord.get("sectionSequence");
+            if(sequence == null){
+                throw new IllegalArgumentException("Section Sequence Number is mandatory");
+            }
+            JobPlanTaskSectionContext section = createSection(jobPlan, sectionName, sequence.intValue(), firstRecord);
             createTasks(jobPlan, section, recList);
         }
     }
@@ -166,12 +168,16 @@ public class HandleTasksImportCommand extends FacilioCommand {
 
     private void createTasks(JobPlanContext jobPlan, JobPlanTaskSectionContext section, List<Map<String, Object>> recList) throws Exception {
 
-        int seq = 0;
         List<JobPlanTasksContext> tasks = new ArrayList<>();
         List<TaskInputOptionsContext> allTaskInputOptions = new ArrayList<>();
 
         for (Map<String, Object> rec : recList) {
-            JobPlanTasksContext jpTask = Util.createJobPlanTask(jobPlan, section, rec, ++seq);
+            Double sequence = (Double) rec.get("taskSequence");
+            if(sequence == null){
+                throw new IllegalArgumentException("Task Sequence Number is mandatory");
+            }
+
+            JobPlanTasksContext jpTask = Util.createJobPlanTask(jobPlan, section, rec, sequence.intValue());
 
 
             // setting task scope
