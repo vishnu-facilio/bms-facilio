@@ -665,6 +665,9 @@
 /admin/deleteSecretFile
 /admin/disableagent
 /admin/disableAgent
+/admin/metaMigration
+/admin/dataMigration
+/admin/featureLock
 /api/agent/downloads/file
 /api/agent/download/downloadAgent
 /api/v2/agent/list

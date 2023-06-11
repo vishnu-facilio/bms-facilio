@@ -97,7 +97,6 @@ public class MetaMigrationAPI {
         if (componentsToMigrate.contains(ComponentsEnum.MODULES_AND_FIELDS.getIndex())) {
             List<FacilioModule> oldSystemModules = sourceModuleBean.getModuleList(getModuleFetchCriteria(false));
             List<FacilioModule> newSystemModules = targetModuleBean.getModuleList(getModuleFetchCriteria(false));
-            FacilioUtil.throwIllegalArgumentException(oldSystemModules.size() != newSystemModules.size(), "System Modules are not present properly");
 
             List<FacilioModule> newCustomModules = new ArrayList<>();
             Map<Long, Long> oldVsNewCustomModuleIds = new HashMap<>();
@@ -154,8 +153,7 @@ public class MetaMigrationAPI {
         }
 
         LOGGER.info("####MetaMigration - Completed adding custom modules");
-        FacilioUtil.throwIllegalArgumentException(oldCustomModules.size() != newCustomModules.size(), "Custom Modules are not migrated properly");
-        
+
         return result;
     }
 

@@ -9,4 +9,184 @@
 <!--            <property name="formData" type="formData"/>-->
 <!--        </requestbody>-->
 <!--    </request>-->
+
+    <!-- Relationship -->
+    <request path="/api/v3/modules/:moduleName/:id/relationship/:relationName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="relationName" type="string" mandatory="true"/>
+            <property name="viewName" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="withCount" type="boolean"/>
+            <property name="unAssociated" type="boolean"/>
+            <property name="includeParentFilter" type="boolean"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/:moduleName/:id/relationship/:relationName" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="relationName" type="string" mandatory="true"/>
+        </urlparams>
+<!--        <requestbody type="object">-->
+<!--            <property name="data" type="object" mandatory="false"/>-->
+<!--        </requestbody>-->
+    </request>
+    <request path="/api/v3/modules/:moduleName/:id/relationship/:relationName" method="PATCH">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="relationName" type="string" mandatory="true"/>
+        </urlparams>
+<!--        <requestbody type="object">-->
+<!--            <property name="data" type="object" mandatory="false"/>-->
+<!--        </requestbody>-->
+    </request>
+
+    <!-- Relationship / RelatedList -->
+    <request path="/api/v3/modules/:moduleName/:id/relatedList/:relatedModuleName/:relatedFieldName" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="relatedModuleName" type="string" mandatory="true"/>
+            <property name="relatedFieldName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="withCount" type="boolean"/>
+            <property name="includeParentFilter" type="boolean"/>
+        </urlparams>
+    </request>
+
+    <!-- Modules Setup -->
+    <request path="/api/v1/setup/modules/add" method="POST">
+        <urlparams>
+            <property name="description" type="string" mandatory="true"/>
+            <property name="moduleDisplayName" type="string" mandatory="true"/>
+            <property name="stateFlowEnabled" type="boolean" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/modules/update" method="POST">
+        <urlparams>
+            <property name="description" type="string" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="moduleDisplayName" type="string" mandatory="true"/>
+            <property name="stateFlowEnabled" type="boolean" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/lists/:moduleType" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/modules/lists/:moduleType/count" method="GET">
+        <urlparams>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/forms" method="GET">
+        <urlparams>
+            <property name="appId" type="number" mandatory="false"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="fetchDisabledForms" type="boolean" mandatory="false"/>
+            <property name="skipTemplatePermission" type="boolean" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/:tabName" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/modules/:tabName/count" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/summary" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/setting" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/getFieldForms" method="GET">
+        <urlparams>
+            <property name="fieldId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <!-- Calendar View -->
+    <request path="/api/v3/modules/data/calendarView/get">
+        <requestbody type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="calendarViewRequest" type="object">
+                <property name="endTime" type="number"/>
+                <property name="startTime" type="number" mandatory="true"/>
+                <property name="calendarViewType" type="number" mandatory="true"/>
+                <property name="maxResultPerCell" type="number"/>
+                <property name="dateAggregateOperator" type="number" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/modules/data/calendarView/list">
+        <requestbody type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="calendarViewRequest" type="object">
+                <property name="endTime" type="number"/>
+                <property name="startTime" type="number" mandatory="true"/>
+                <property name="dateAggregateOperator" type="number" mandatory="true"/>
+            </property>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+        </requestbody>
+    </request>
+
+    <!-- Calendar View V2 -->
+    <request path="/api/v3/modules/calendarData/:moduleName/view/:viewName/get" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="calendarViewRequest" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/calendarData/:moduleName/view/:viewName/list" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="calendarViewRequest" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+        </urlparams>
+    </request>
 </config>

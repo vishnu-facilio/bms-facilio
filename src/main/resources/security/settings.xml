@@ -1218,25 +1218,29 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/multicurrency/addCurrency">
+    <!-- MultiCurrency -->
+    <request path="/api/v2/multicurrency/list" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/multicurrency/list/count" method="GET">
+        <urlparams>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/multicurrency/list/filter" method="GET">
+    </request>
+    <request path="/api/v2/multicurrency/getBaseCurrency" method="GET">
+    </request>
+    <request path="/api/v2/multicurrency/addOrUpdate">
         <requestbody type="object">
             <property name="currency" type="object">
                 <property name="currencyCode" type="string" mandatory="true"/>
-                <property name="displaySymbol" type="string" mandatory="true"/>
                 <property name="exchangeRate" type="number"/>
                 <property name="decimalPlace" type="number"/>
-                <property name="isBaseCurrency" type="boolean"/>
-            </property>
-        </requestbody>
-    </request>
-    <request path="/api/v2/multicurrency/updateCurrency">
-        <requestbody type="object">
-            <property name="currency" type="object">
-                <property name="id" type="number" mandatory="true"/>
-                <property name="currencyCode" type="string" mandatory="true"/>
-                <property name="displaySymbol" type="string" mandatory="true"/>
-                <property name="exchangeRate" type="number" mandatory="true"/>
-                <property name="decimalPlace" type="number" mandatory="true"/>
             </property>
         </requestbody>
     </request>
@@ -1248,6 +1252,48 @@
             </property>
         </requestbody>
     </request>
+
+    <!-- Feature Lock -->
+    <request path="/admin/updateFeatureLock" method="POST">
+        <requestbody type="object">
+            <property name="ids" type="array" mandatory="true"/>
+            <property name="orgId" type="number" mandatory="true"/>
+            <property name="feature" type="number" mandatory="true"/>
+            <property name="locked" type="boolean" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <!-- Meta Migration -->
+    <request path="/admin/runMetaMigration" method="POST">
+        <requestbody type="object">
+            <property name="sourceOrgId" type="number" mandatory="true"/>
+            <property name="targetOrgId" type="number" mandatory="true"/>
+            <property name="components" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <!-- Data Migration -->
+    <request path="/admin/runDataMigration" method="POST">
+        <requestbody type="object">
+            <property name="sourceOrgId" type="number" mandatory="true"/>
+            <property name="targetOrgId" type="number" mandatory="true"/>
+            <property name="siteScoped" type="boolean" mandatory="false"/>
+            <property name="dataMigrationId" type="number" mandatory="false"/>
+            <property name="transactionTimeout" type="number" mandatory="false"/>
+            <property name="skipModuleNames" type="string" mandatory="false"/>
+            <property name="logModuleNames" type="string" mandatory="false"/>
+            <property name="runOnlyForModules" type="string" mandatory="false"/>
+            <property name="moduleSequence" type="string" mandatory="false"/>
+            <property name="siteIdMapping" type="object" mandatory="false"/>
+            <property name="userIdMapping" type="object" mandatory="false"/>
+            <property name="groupIdMapping" type="object" mandatory="false"/>
+            <property name="roleIdMapping" type="object" mandatory="false"/>
+            <property name="stateFlowMapping" type="object" mandatory="false"/>
+            <property name="slaMapping" type="object" mandatory="false"/>
+            <property name="formMapping" type="object" mandatory="false"/>
+        </requestbody>
+    </request>
+
     <request path="/api/v3/pickList/modules/:moduleName" method="GET">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
