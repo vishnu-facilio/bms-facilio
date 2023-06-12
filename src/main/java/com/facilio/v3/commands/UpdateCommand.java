@@ -11,11 +11,12 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
-
+@Log4j
 public class UpdateCommand extends FacilioCommand {
 
     private FacilioModule module;
@@ -113,6 +114,7 @@ public class UpdateCommand extends FacilioCommand {
 
     private void addSupplements (UpdateRecordBuilder updateRecordBuilder, SaveOptions options) {
         Collection<SupplementRecord> supplementFields = options == null ? null : options.getSupplements();
+        LOGGER.info("Update Command - Supplement Field - "+supplementFields);
         if (CollectionUtils.isNotEmpty(supplementFields)) {
             updateRecordBuilder.updateSupplements(supplementFields);
         }

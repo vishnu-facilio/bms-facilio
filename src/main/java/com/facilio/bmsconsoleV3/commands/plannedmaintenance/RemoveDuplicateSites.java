@@ -5,6 +5,7 @@ import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -12,7 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-
+import java.util.logging.Logger;
+@Log4j
 public class RemoveDuplicateSites extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -28,7 +30,9 @@ public class RemoveDuplicateSites extends FacilioCommand {
                 LinkedHashSet<V3SiteContext> siteSet = new LinkedHashSet<>(siteList);
                 plannedMaintenance.setSites(new ArrayList<>(siteSet));
             }
+            LOGGER.info("PM_v2_Sites_Data -----> PM - #"+plannedMaintenance+" sites - "+plannedMaintenance.getSites());
         }
+
         recordMap.put(FacilioConstants.ContextNames.PLANNEDMAINTENANCE,plannedmaintenanceList);
         context.put(FacilioConstants.ContextNames.RECORD_MAP,recordMap);
         return false;
