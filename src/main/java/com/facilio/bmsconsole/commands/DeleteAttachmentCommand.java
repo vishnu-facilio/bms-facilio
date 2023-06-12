@@ -54,6 +54,7 @@ public class DeleteAttachmentCommand extends FacilioCommand implements PostTrans
 			if (attachments != null && !attachments.isEmpty()) {
 				Set<Long> parentIds = attachments.stream().map(AttachmentContext::getParentId).collect(Collectors.toSet());
 				idsToUpdateCount = parentIds;
+				context.put(FacilioConstants.ContextNames.PARENT_ID_LIST,parentIds);
 			}
 			
 			// TODO mark file as deleted if no reference for that file is available for all modules

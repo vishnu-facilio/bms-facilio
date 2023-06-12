@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.IAMUserManagement.*;
 import com.facilio.bmsconsole.commands.form.HandleFormFieldsCommand;
+import com.facilio.bmsconsole.enums.OfflineUpdateType;
 import com.facilio.bmsconsoleV3.commands.shift.AssignShiftToUserCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.GetScheduledWoCommandV3;
 import com.facilio.command.FacilioCommand;
@@ -404,6 +405,8 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 //		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
 		c.addCommand(new AddActivitiesCommand());
+		c.addCommand(new SendNotificationOnOfflineTaskUpdate(OfflineUpdateType.TASK));
+
 		return c;
 	}
 	
@@ -1035,6 +1038,8 @@ public class FacilioChainFactory {
 		c.addCommand(new ForkChainToInstantJobCommand(false)
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION))
 		);
+		c.addCommand(new SendNotificationOnOfflineAttachmentUpdate(OfflineUpdateType.ATTACHMENT));
+
 		return c;
 	}
 	
@@ -1154,6 +1159,7 @@ public class FacilioChainFactory {
 	public static FacilioChain getDeleteAttachmentChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new DeleteAttachmentCommand());
+		c.addCommand(new SendNotificationOnOfflineAttachmentUpdate(OfflineUpdateType.ATTACHMENT));
 //		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
 		return c;
 	}

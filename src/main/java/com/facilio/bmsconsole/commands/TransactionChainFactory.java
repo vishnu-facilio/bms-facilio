@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.commands.people.UpdateScopingForPeopleCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
+import com.facilio.bmsconsole.enums.OfflineUpdateType;
 import com.facilio.bmsconsole.localization.translation.AddOrUpdateTranslationCommand;
 import com.facilio.bmsconsole.workflow.rule.GetOfflineStateTransitionCommand;
 import com.facilio.bmsconsole.workflow.rule.GetRegisterOrUnRegisterOfflineRecordCommand;
@@ -1529,6 +1530,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddActivitiesCommand());
 			c.addCommand(new UpdateRdmWithLatestInputUnit());
 			c.addCommand(new SiUnitConversionToEnteredReadingUnit());
+			c.addCommand(new SendNotificationOnOfflineTaskUpdate(OfflineUpdateType.TASK));
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			return c;
 		}
@@ -1537,7 +1539,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new DeleteAttachmentCommand());
 			c.addCommand(new AddActivitiesCommand());
-
+			c.addCommand(new SendNotificationOnOfflineAttachmentUpdate(OfflineUpdateType.ATTACHMENT));
 
 			return c;
 		}

@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPicklist;
+import com.facilio.bmsconsole.enums.OfflineUpdateType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
@@ -541,7 +542,9 @@ public class ChainUtil {
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
 
         addIfNotNull(transactionChain, afterSaveCommand);
-        transactionChain.addCommand(new SendNotificationForOfflineRecordUpdate());
+        transactionChain.addCommand(new SendNotificationForOfflineRecordUpdate(OfflineUpdateType.RECORD));
+
+
         updateWorkflowChain(transactionChain);
         // execute custom button action if the custom button id is sent
         transactionChain.addCommand(new ExecuteSpecificWorkflowsCommand(WorkflowRuleContext.RuleType.CUSTOM_BUTTON));

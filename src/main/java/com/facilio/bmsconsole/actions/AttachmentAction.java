@@ -14,6 +14,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import org.apache.log4j.LogManager;
@@ -116,6 +117,10 @@ public class AttachmentAction  extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachmentContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
 
+		if(this.parentModuleName != null) {
+			context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
+		}
+
 		if (module.equals(FacilioConstants.ContextNames.ITEM_TYPES_ATTACHMENTS)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
 		}else if (module.equals(FacilioConstants.ContextNames.TOOL_TYPES_ATTACHMENTS)) {
@@ -168,6 +173,7 @@ public class AttachmentAction  extends FacilioAction {
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, customModuleAttachment);
 			}
 		}
+
 		FacilioChain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
 		addAttachmentChain.execute(context);
 		
@@ -266,6 +272,14 @@ public class AttachmentAction  extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
+
+		if(this.parentModuleName != null) {
+			context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, this.parentModuleName);
+		}
+
+		if(this.recordId != -1){
+			context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
+		}
  		
 		FacilioChain deleteAttachmentChain = FacilioChainFactory.getDeleteAttachmentChain();
 		deleteAttachmentChain.execute(context);
