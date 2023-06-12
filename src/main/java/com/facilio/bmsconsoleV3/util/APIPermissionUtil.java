@@ -4,9 +4,7 @@ import com.facilio.security.requestvalidator.retree.Matcher;
 import com.facilio.security.requestvalidator.retree.URLReTree;
 import com.facilio.util.FacilioUtil;
 import com.facilio.util.ValidatePermissionUtil;
-import com.opensymphony.xwork2.ActionContext;
 import lombok.extern.log4j.Log4j;
-import org.apache.struts2.dispatcher.Parameter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,7 +24,7 @@ public class APIPermissionUtil {
             List<String> skipPermissionUrls = new ArrayList<>();
             String url;
             while ((url = reader.readLine()) != null) {
-                skipPermissionUrls.add(url);
+                skipPermissionUrls.add(url.trim());
             }
             String[] stringList = new String[skipPermissionUrls.size()];
             skipPermissionUrls.toArray(stringList);

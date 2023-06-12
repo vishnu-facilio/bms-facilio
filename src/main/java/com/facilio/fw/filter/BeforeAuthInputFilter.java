@@ -101,7 +101,7 @@ public class BeforeAuthInputFilter implements Filter {
 
         Matcher matcher = this.urlReTree.matcher(httpServletRequest.getRequestURI());
         Matcher exclution = this.execlutionUrlReTree.matcher(httpServletRequest.getRequestURI());
-        if (!matcher.isMatch()) {
+        if (!(matcher.isMatch() && config.getRequestConfig(httpServletRequest.getMethod(),matcher.getMatchedPattern())!=null)) {
             if(!httpServletRequest.getRequestURI().startsWith("/api")) {
                 filterChain.doFilter(servletRequest, servletResponse);
                return;
@@ -139,7 +139,11 @@ public class BeforeAuthInputFilter implements Filter {
             }
             securityRequestWrapper.setAttribute("executor", executor);
         } catch (Exception ex) {
-            log(securityRequestWrapper, ex.getMessage());
+            if(StringUtils.isEmpty(ex.getMessage())){
+                log(securityRequestWrapper, "Error validating for "+httpServletRequest.getRequestURI()+" of validating pattern: "+matcher.getMatchedPattern()+" "+ex.toString());
+            }else {
+                log(securityRequestWrapper, "Error validating for " + httpServletRequest.getRequestURI()+" of validating pattern: "+matcher.getMatchedPattern()+ " " + ex.getMessage());
+            }
             if (isAllowed()) {
                 Map<String, String> errorMap = new HashMap<>();
                 errorMap.put("message", "Error validating");
