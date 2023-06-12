@@ -2322,7 +2322,13 @@ public class ModuleFactory {
 		reportScheduleInfo.setTableName("Report_Schedule_Info1");
 		return reportScheduleInfo;
 	}
-
+	public static FacilioModule getReportScheduleInfoRel() {
+		FacilioModule reportScheduleInfo = new FacilioModule();
+		reportScheduleInfo.setName("reportScheduleInfoRel");
+		reportScheduleInfo.setDisplayName("Report Schedule Info Rel");
+		reportScheduleInfo.setTableName("Report_Schedule_Info1_Rel");
+		return reportScheduleInfo;
+	}
 	public static FacilioModule getCalendarColorModule() {
 		FacilioModule calendarColor = new FacilioModule();
 		calendarColor.setName("calendarColor");

@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.report.V3ScheduledReportRelContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldUtil;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.util.ReportUtil;
 import org.apache.commons.chain.Context;
@@ -47,6 +51,9 @@ public class ScheduleV2ReportCommand extends FacilioCommand {
 		props.put("moduleId", reportModule.getModuleId());
 		props.put("fileFormat", fileFormat.getIntVal());
 		props.put("templateId", emailTemplate.getId());
+		if(reportInfo.getScheduled_report_name() != null){
+			props.put("scheduled_report_name", reportInfo.getScheduled_report_name());
+		}
 		ReportContext reportContext = ReportUtil.getReport(reportInfo.getReportId());
 		if(reportContext != null)
 		{
@@ -81,7 +88,10 @@ public class ScheduleV2ReportCommand extends FacilioCommand {
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, count);
 		}
-		
+		if(reportInfo.getSelected_reportIds() != null && reportInfo.getSelected_reportIds().size() > 0)
+		{
+			insertScheduledRelatedRel(reportInfo.getSelected_reportIds() , jobId, type);
+		}
 		long startTime = reportInfo.getStartTime();
 		ScheduleInfo scheduleInfo = reportInfo.getScheduleInfo();
 		long endTime = reportInfo.getEndTime();
@@ -95,4 +105,32 @@ public class ScheduleV2ReportCommand extends FacilioCommand {
 		return false;
 	}
 
+	private void insertScheduledRelatedRel(List<Long> selected_report_ids, Long scheduled_id, EventType type)throws Exception
+	{
+		if(type == EventType.EDIT && scheduled_id > 0)
+		{
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(ModuleFactory.getReportScheduleInfoRel().getTableName())
+					.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", AccountUtil.getCurrentOrg().getId() +"", NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition("SCHEDULED_ID", "scheduled_id", scheduled_id +"", NumberOperators.EQUALS));
+			deleteBuilder.delete();
+		}
+		if(scheduled_id != null && scheduled_id > 0)
+		{
+			V3ScheduledReportRelContext scheduledRelContext = null;
+			for(Long reportId : selected_report_ids)
+			{
+				scheduledRelContext = new V3ScheduledReportRelContext();
+				scheduledRelContext.setScheduled_id(scheduled_id);
+				scheduledRelContext.setReportId(reportId);
+				scheduledRelContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+
+				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getReportScheduleInfoRel().getTableName())
+						.fields(FieldFactory.getReportScheduleInfo1RelFields());
+
+				insertBuilder.insert(FieldUtil.getAsProperties(scheduledRelContext));
+			}
+		}
+	}
 }

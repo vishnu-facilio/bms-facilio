@@ -6966,7 +6966,16 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("templateId", "TEMPLATEID", module, FieldType.NUMBER));
         fields.add(getField("printParams", "PRINT_PARAMS", module, FieldType.STRING));
         fields.add(getField("reportType", "REPORT_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("scheduled_report_name", "NAME", module, FieldType.STRING));
 
+        return fields;
+    }
+    public static List<FacilioField> getReportScheduleInfo1RelFields() {
+        FacilioModule module = ModuleFactory.getReportScheduleInfoRel();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
+        fields.add(getField("scheduled_id", "SCHEDULED_ID", module, FieldType.NUMBER));
         return fields;
     }
 

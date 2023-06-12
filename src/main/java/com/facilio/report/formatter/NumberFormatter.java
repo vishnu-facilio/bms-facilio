@@ -7,6 +7,7 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import org.json.simple.JSONObject;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -89,10 +90,14 @@ public class NumberFormatter extends Formatter {
         }
         Double result = Double.valueOf(value.toString());
         String unit = null;
-
         NumberField numberField = (NumberField) getField();
         if(!isNullOrEmpty(numberField) && numberField.getDisplayType() == FacilioField.FieldDisplayType.DURATION)
         {
+            if(value != null && value instanceof BigDecimal)
+            {
+                BigDecimal bigDecimal_value = (BigDecimal) value;
+                value = bigDecimal_value.longValue();
+            }
             return relativeTime(Long.parseLong((((Long)value)*1000)+""));
         }
         else if (!isNullOrEmpty(numberField.getUnitId(), getDisplayUnit())) {

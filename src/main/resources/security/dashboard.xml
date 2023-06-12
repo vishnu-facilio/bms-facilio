@@ -390,5 +390,13 @@
             <property name="orderType" type="string" mandatory="true"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/report/list" method="GET">
+        <urlparams>
+            <property name="isPivot" type="boolean"></property>
+            <property name="appId" type="number"></property>
+            <property name="webTabId" type="number" ></property>
+            <property name="moduleName" type="string"></property>
+        </urlparams>
+    </request>
 
 </config>

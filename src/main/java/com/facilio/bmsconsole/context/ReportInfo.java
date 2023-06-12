@@ -10,6 +10,8 @@ import com.facilio.services.email.EmailClient;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.taskengine.job.JobContext;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class ReportInfo {
@@ -171,5 +173,24 @@ public class ReportInfo {
 	public void setJob(JobContext job) {
 		this.job = job;
 	}
-	
+
+	public List<Long> getSelected_reportIds() {
+		return selected_reportIds;
+	}
+
+	public void setSelected_reportIds(List<Long> selected_reportIds) {
+		this.selected_reportIds = selected_reportIds;
+	}
+
+	public List<Long> selected_reportIds = new ArrayList<>();
+
+	public String getScheduled_report_name() {
+		return scheduled_report_name;
+	}
+
+	public void setScheduled_report_name(String scheduled_report_name) {
+		this.scheduled_report_name = scheduled_report_name;
+	}
+
+	public String scheduled_report_name;
 }

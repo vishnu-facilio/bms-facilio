@@ -692,9 +692,6 @@ public class FetchReportDataCommand extends FacilioCommand {
                     }
                 }
                 newSelectBuilder.fetchSupplements(customLookupFields);
-                if(dp.getxAxis().getField() != null && dp.getxAxis().getField().getCompleteColumnName() != null) {
-                    newSelectBuilder.having(dp.getxAxis().getField().getCompleteColumnName() + " IS NOT NULL");
-                }
             }
 //            String query = newSelectBuilder.constructQueryString();
             if (reportType == ReportType.PIVOT_REPORT && globalContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA) != null) {

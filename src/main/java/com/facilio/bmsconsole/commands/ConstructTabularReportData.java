@@ -41,7 +41,8 @@ public class ConstructTabularReportData extends FacilioCommand {
     private FacilioModule module;
     private LinkedHashMap<String, String> tableAlias = new LinkedHashMap<String, String>();
     private Context globalContext;
-    private Boolean isDataColumnSort=false;
+    private int maxLimit = 2000;
+//    private Boolean isDataColumnSort=false;
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -201,9 +202,9 @@ public class ConstructTabularReportData extends FacilioCommand {
                 List<String> orderBy = new ArrayList<>();
                 orderBy.add(xField.getCompleteColumnName());
                 dataPointContext.setOrderBy(orderBy);
-                dataPointContext.setLimit(((Number) sortBy.get("limit")).intValue());
+                dataPointContext.setLimit(((Number) maxLimit).intValue());
             }else if(sortBy.get("limit") != null){
-                dataPointContext.setLimit(((Number) sortBy.get("limit")).intValue());
+                dataPointContext.setLimit(((Number) maxLimit).intValue());
             }
         }
         if (firstRow.getModuleName() != null) {
@@ -243,17 +244,18 @@ public class ConstructTabularReportData extends FacilioCommand {
             yField.setTableAlias(getAndSetTableAlias(yField.getModule().getName()));
             if (data.getAlias() != null) {
                 yAxis.setAlias(data.getAlias());
-                if (data.getAlias().equals(sortBy.get("alias")) || isDataColumnSort) {
-                    isDataColumnSort = true;
+                if (data.getAlias().equals(sortBy.get("alias"))) {
+
                     dataPointContext.setOrderByFunc(OrderByFunction.valueOf(((Number) sortBy.get("order")).intValue()));
                     List<String> orderBy = new ArrayList<>();
                     orderBy.add(getAggrCompleteColumnName(yField.getCompleteColumnName(), yAggr));
                     orderBy.add(xField.getCompleteColumnName());
                     dataPointContext.setOrderBy(orderBy);
-                    dataPointContext.setLimit(((Number) sortBy.get("limit")).intValue());
+                    dataPointContext.setLimit(((Number) maxLimit).intValue());
                     dataPointContext.setDefaultSortPoint(true);
-                }else if(sortBy.get("limit") != null){
-                    dataPointContext.setLimit(((Number) sortBy.get("limit")).intValue());
+                }
+                else if(sortBy.get("limit") != null){
+                    dataPointContext.setLimit(((Number) maxLimit).intValue());
                 }
             }
             Criteria criteria = data.getCriteria();
@@ -467,7 +469,7 @@ public class ConstructTabularReportData extends FacilioCommand {
                         List<String> orderBy = new ArrayList<>();
                         orderBy.add(gField.getCompleteColumnName());
                         dataPointContext.setOrderBy(orderBy);
-                        dataPointContext.setLimit(((Number) sortBy.get("limit")).intValue());
+                        dataPointContext.setLimit(((Number) maxLimit ).intValue());
                     }
                 }
                 groupByField.setField(groupByModule, gField);

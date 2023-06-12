@@ -910,6 +910,10 @@
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="reportListView">
         </action>
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
+                method="reportList">
+        </action>
         <action name="fields"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="getFields">
@@ -961,10 +965,14 @@
         <action name="scheduled/create"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="createOrUpdateScheduledReport">
+                <param name="checkTabPermission">true</param>
+                <param name="permission">POST:SCHEDULE</param>
         </action>
         <action name="scheduled/update"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="createOrUpdateScheduledReport">
+                <param name="checkTabPermission">true</param>
+                <param name="permission">POST:SCHEDULE</param>
         </action>
         <action name="scheduled/delete"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"

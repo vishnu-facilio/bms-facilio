@@ -3334,4 +3334,33 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new MarkPMAsDeactivatedCommand());
         return c;
     }
+
+    public static FacilioChain getReportListAsOptionChain()
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetReportsAsOptionCommand());
+        return c;
+    }
+
+    public static FacilioChain getReporsForDownloadChain(boolean isNotImageOrPDF, boolean isPivot, boolean isModuleReport)
+    {
+        FacilioChain c = getDefaultChain();
+        if(isPivot){
+            c.addCommand(TransactionChainFactory.getExportpivotReportFileChain());
+        }
+        else if(isModuleReport){
+            c.addCommand(TransactionChainFactory.getExportModuleReportFileChain(isNotImageOrPDF));
+        }
+        else{
+            c.addCommand(TransactionChainFactory.getExportReportFileChain());
+        }
+        return c;
+    }
+
+    public static FacilioChain getSendReportsAsMailChain()throws Exception
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SendMultipleReportAsMailCommand());
+        return c;
+    }
 }

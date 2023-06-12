@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsoleV3.context.report.V3ScheduledReportRelContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.db.criteria.operators.*;
@@ -1844,5 +1845,33 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		}
 		return getAppBaseURL() + PublicFileUtil.createPublicFileUrl(fileId);
 
+	}
+
+	public static void getScheduledInfo1Rel(List<ReportInfo> reportInfo)throws Exception
+	{
+		if(reportInfo != null && reportInfo.size() > 0)
+		{
+			GenericSelectRecordBuilder select = null;
+
+			for(ReportInfo report_info : reportInfo)
+			{
+				select = new GenericSelectRecordBuilder()
+						.select(FieldFactory.getReportScheduleInfo1RelFields())
+						.table(ModuleFactory.getReportScheduleInfoRel().getTableName())
+						.andCondition(CriteriaAPI.getCondition("SCHEDULED_ID", "scheduled_id", report_info.getId() + "", NumberOperators.EQUALS));
+				List<Map<String, Object>> lists = select.get();
+				if(lists != null && lists.size() > 0)
+				{
+					for(Map<String, Object> prop : lists)
+					{
+						V3ScheduledReportRelContext scheduledRelContext = FieldUtil.getAsBeanFromMap(prop, V3ScheduledReportRelContext.class);
+						if(scheduledRelContext != null && scheduledRelContext.getReportId() > 0) {
+							report_info.getSelected_reportIds().add(scheduledRelContext.getReportId());
+						}
+					}
+				}
+
+			}
+		}
 	}
 }

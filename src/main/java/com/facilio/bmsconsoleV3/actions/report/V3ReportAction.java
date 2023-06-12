@@ -895,5 +895,19 @@ public class V3ReportAction extends V3Action {
         setData("moduleList", context.get(FacilioConstants.ContextNames.MODULE_LIST));
         return SUCCESS;
     }
+    public String reportList()throws Exception
+    {
+            FacilioChain chain = TransactionChainFactoryV3.getReportListAsOptionChain();
+            FacilioContext context = chain.getContext();
+            context.put("searchText", searchText);
+            context.put("webTabId", webTabId);
+            context.put("appId", appId);
+            context.put("isPivot", isPivot);
+            context.put("moduleName", moduleName);
+            chain.execute();
+            JSONArray reports = (JSONArray) context.get("reports");
+            setData("reports", reports);
+        return SUCCESS;
+    }
 
 }

@@ -9,7 +9,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsoleV3.context.report.V3ScheduledReportRelContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.report.util.ReportUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -108,6 +110,10 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 				//				report.setEmailTemplate(FieldUtil.getAsBeanFromMap(prop, EMailTemplate.class));
 				reportInfoIds.add(reportInfo.getId());
 				reportsMap.put(reportInfo.getId(), reportInfo);
+				if(reportInfo.getScheduled_report_name() != null)
+				{
+					reportInfo.setName(reportInfo.getScheduled_report_name());
+				}
 			}
 		}
 
@@ -133,6 +139,7 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 			}
 		}
 		List<ReportInfo> reports = reportsMap.values().stream().collect(Collectors.toList());
+		ReportUtil.getScheduledInfo1Rel(reports);
 		context.put(FacilioConstants.ContextNames.REPORT_LIST, reports);
 
 		return false;
