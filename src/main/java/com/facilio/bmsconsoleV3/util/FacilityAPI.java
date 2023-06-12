@@ -440,6 +440,17 @@ public class FacilityAPI {
                 .fetchSupplement((LookupField) fieldsAsMap.get("slot"));
 
         List<BookingSlotsContext> list = builder.get();
+        try {
+            Collections.sort(list, new Comparator<BookingSlotsContext>() {
+                @Override
+                public int compare(BookingSlotsContext obj1, BookingSlotsContext obj2) {
+                    return Long.compare(obj1.getSlot().getSlotStartTime(), obj2.getSlot().getSlotStartTime());
+                }
+            });
+        }catch (Exception e)
+        {
+
+        }
         return  list;
     }
 

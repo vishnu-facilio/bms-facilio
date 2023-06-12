@@ -151,4 +151,14 @@ public class V3FacilityBookingContext extends V3Context {
     public void setBookingRequestedBy(User bookingRequestedBy) {
         this.bookingRequestedBy = bookingRequestedBy;
     }
+
+    public Boolean getCanShowCancel() {
+        return canShowCancel;
+    }
+
+    public void setCanShowCancel(Boolean canShowCancel) {
+        this.canShowCancel = canShowCancel;
+    }
+
+    private Boolean canShowCancel;
 }

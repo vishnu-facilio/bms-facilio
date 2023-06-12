@@ -1,5 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.facility;
 
+import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
+import com.facilio.bmsconsoleV3.context.facilitybooking.SlotContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
@@ -24,6 +26,11 @@ public class FillFacilityBookingDetailsCommandV3 extends FacilioCommand {
                 if (booking != null) {
                     booking.setSlotList(FacilityAPI.getBookingSlots(booking.getId()));
                     booking.setFacilityBookingExternalAttendee(FacilityAPI.getExternalAttendees(booking.getId()));
+                    if(CollectionUtils.isNotEmpty(booking.getSlotList()))
+                    {
+                        BookingSlotsContext firstSlot = booking.getSlotList().get(0);
+                        booking.setCanShowCancel(firstSlot.getSlot().getSlotStartTime() > System.currentTimeMillis() && !booking.isCancelled());
+                    }
                 }
             }
         }
