@@ -25,6 +25,8 @@ import org.reflections.util.ClasspathHelper;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ModuleSettingConfigUtil {
 
@@ -180,4 +182,115 @@ public class ModuleSettingConfigUtil {
         setting.setId(moduleConfigurationId);
 
     }
+
+    public static List<ModuleSettingContext> getModuleConfigDetailsForConfigName(String configName) throws Exception {
+
+        FacilioModule moduleConfigurationModule = ModuleFactory.getModuleConfigurationModule();
+        List<FacilioField> moduleConfigurationFields = FieldFactory.getModuleConfigurationFields();
+
+        GenericSelectRecordBuilder moduleConfigurationBuilder = new GenericSelectRecordBuilder()
+                .table(moduleConfigurationModule.getTableName())
+                .select(moduleConfigurationFields)
+                .andCondition(CriteriaAPI.getCondition("CONFIGURATION_NAME", "configurationName", configName, StringOperators.IS));
+
+        List<Map<String, Object>> moduleConfigProps = moduleConfigurationBuilder.get();
+
+        if (CollectionUtils.isNotEmpty(moduleConfigProps)) {
+            return FieldUtil.getAsBeanListFromMapList(moduleConfigProps, ModuleSettingContext.class);
+        }
+        return null;
+    }
+
+    public static List<FacilioModule> getConfigEnabledModules(String configName) throws Exception {
+        FacilioModule moduleConfigurationModule = ModuleFactory.getModuleConfigurationModule();
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getModuleConfigurationFields());
+
+        GenericSelectRecordBuilder moduleConfigurationBuilder = new GenericSelectRecordBuilder()
+                .table(moduleConfigurationModule.getTableName())
+                .select(Arrays.asList(fieldsMap.get("moduleId")))
+                .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("status"), String.valueOf(true)))
+                .andCondition(CriteriaAPI.getCondition("CONFIGURATION_NAME", "configurationName", configName, StringOperators.IS));
+
+        List<Map<String, Object>> moduleConfigProps = moduleConfigurationBuilder.get();
+
+        if (CollectionUtils.isNotEmpty(moduleConfigProps)) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            return moduleConfigProps.stream().map(f-> {
+                try {
+                    return modBean.getModule((long)f.get("moduleId"));
+                } catch (Exception e) {
+                    throw new RuntimeException(e.getMessage(), e);
+                }
+            }).collect(Collectors.toList());
+        }
+        return null;
+    }
+    public static void updateSettingContext(List<ModuleSettingContext> updateSettings) throws Exception {
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getModuleConfigurationFields());
+        List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
+
+
+        for (ModuleSettingContext setting : updateSettings) {
+
+            GenericUpdateRecordBuilder.BatchUpdateContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateContext();
+            updateVal.addWhereValue("moduleId", setting.getModuleId());
+            updateVal.addUpdateValue("status", setting.isStatus());
+            batchUpdateList.add(updateVal);
+        }
+
+        FacilioField moduleIdField = fieldsMap.get("moduleId");
+        List<FacilioField> whereFields = new ArrayList<>();
+        whereFields.add(moduleIdField);
+
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getModuleConfigurationModule().getTableName())
+                .fields(Collections.singletonList(fieldsMap.get("status")))
+                .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("configurationName"), FacilioConstants.SettingConfigurationContextNames.PAGE_BUILDER));
+        updateRecordBuilder.batchUpdate(whereFields, batchUpdateList);
+    }
+
+    public static void insertSettingContext(List<ModuleSettingContext> newSettings) throws Exception{
+        if(CollectionUtils.isNotEmpty(newSettings)) {
+            List<Map<String, Object>> props = FieldUtil.getAsMapList(newSettings, ModuleSettingContext.class);
+
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getModuleConfigurationModule().getTableName())
+                    .fields(FieldFactory.getModuleConfigurationFields())
+                    .addRecords(props);
+            builder.save();
+        }
+    }
+
+    public static boolean isConfigEnabledForModule(String moduleName, String configName) throws Exception {
+        ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modbean.getModule(moduleName);
+        boolean status = false;
+
+        if(module != null) {
+            Map<Long, ModuleSettingContext> settingContextMap = getModuleListConfigDetailsForConfigName(Collections.singletonList(module.getModuleId()), configName);
+            status = settingContextMap != null && settingContextMap.get(module.getModuleId()) != null && settingContextMap.get(module.getModuleId()).isStatus();
+
+        }
+        return status;
+    }
+    public static Map<Long, ModuleSettingContext> getModuleListConfigDetailsForConfigName(List<Long> moduleIds, String configName) throws Exception {
+
+        FacilioModule moduleConfigurationModule = ModuleFactory.getModuleConfigurationModule();
+        List<FacilioField> moduleConfigurationFields = FieldFactory.getModuleConfigurationFields();
+
+        GenericSelectRecordBuilder moduleConfigurationBuilder = new GenericSelectRecordBuilder()
+                .table(moduleConfigurationModule.getTableName())
+                .select(moduleConfigurationFields)
+                .andCondition(CriteriaAPI.getConditionFromList("MODULE_ID", "moduleId", moduleIds, NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("CONFIGURATION_NAME", "configurationName", configName, StringOperators.IS));
+
+        List<Map<String, Object>> moduleConfigProps = moduleConfigurationBuilder.get();
+
+        if(CollectionUtils.isNotEmpty(moduleConfigProps)) {
+            List<ModuleSettingContext> settingContexts = FieldUtil.getAsBeanListFromMapList(moduleConfigProps, ModuleSettingContext.class);
+            return settingContexts.stream().collect(Collectors.toMap(ModuleSettingContext::getModuleId, Function.identity(), (oldValue, newValue) -> newValue));
+        }
+        return null;
+    }
+
 }

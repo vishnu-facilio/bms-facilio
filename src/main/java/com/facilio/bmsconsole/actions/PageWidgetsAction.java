@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.PageTabContext;
+import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.context.WidgetConfigContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -31,11 +33,12 @@ public class PageWidgetsAction extends FacilioAction{
     private long widgetId;
     private PageSectionWidgetContext widget;
     private boolean onlyDetails;
+    private PagesContext.PageLayoutType layoutType;
     private PageWidget.WidgetType widgetType;
     private List<Map<String, Object>> widgetPositions;
 
     public String createWidget() throws Exception{
-        FacilioContext context = WidgetConfigUtil.createWidget(appId, moduleName, sectionId, widget, widgetPositions);
+        FacilioContext context = WidgetConfigUtil.createWidget(appId, moduleName, sectionId, widget, widgetPositions, layoutType);
 
         id = (long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
         setResult(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, id);

@@ -1351,7 +1351,27 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/create">
+    <request path="/api/v2/moduleSetting/status/pageBuilder/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/moduleSetting/pageBuilder/modules"/>
+
+    <request path="/api/v1/setup/customPage/criteria/fields/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/moduleSetting/pageBuilder">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/customPage/create">
         <requestbody type="object">
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="appId" type="number"/>
@@ -1362,7 +1382,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/patch">
+    <request path="/api/v1/setup/customPage/patch">
         <requestbody type="object">
             <property name="customPage" type="object" mandatory="true">
                 <property name="id" type="number" mandatory="true"/>
@@ -1371,14 +1391,14 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/changeStatus">
+    <request path="/api/v1/setup/customPage/changeStatus">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="status" type="boolean" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/reorder">
+    <request path="/api/v1/setup/customPage/reorder">
         <requestbody type="object">
             <property name="previousId" type="number"/>
             <property name="id" type="number" mandatory="true"/>
@@ -1386,7 +1406,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/fetch" >
+    <request path="/api/v1/setup/customPage/fetch" >
         <urlparams>
             <property name="layoutType" type="string"/>
             <property name="tabName" type="string"/>
@@ -1411,7 +1431,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/list">
+    <request path="/api/v1/setup/customPage/list">
         <urlparams>
             <property name="layoutType" type="string"/>
             <property name="moduleName" type="string" mandatory="true"/>
@@ -1419,13 +1439,13 @@
         </urlparams>
     </request>
 
-    <request path="/api/v2/customPage/delete">
+    <request path="/api/v1/setup/customPage/delete">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/tabs/add">
+    <request path="/api/v1/setup/customPage/tabs/add">
         <urlparams>
             <property name="layoutType" type="string"/>
         </urlparams>
@@ -1437,7 +1457,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/tabs/patch">
+    <request path="/api/v1/setup/customPage/tabs/patch">
         <requestbody type="object">
             <property name="tab" type="object" mandatory="true">
                 <property name="id" type="number" mandatory="true"/>
@@ -1446,14 +1466,14 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/tabs/changeStatus">
+    <request path="/api/v1/setup/customPage/tabs/changeStatus">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="status" type="boolean" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/tabs/reorder">
+    <request path="/api/v1/setup/customPage/tabs/reorder">
         <requestbody type="object">
             <property name="previousId" type="number"/>
             <property name="id" type="number" mandatory="true"/>
@@ -1461,7 +1481,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/tabs/fetch" >
+    <request path="/api/v1/setup/customPage/tabs/fetch" >
         <requestbody type="object">
             <property name="id" type="number"/>
             <property name="moduleName" type="string"/>
@@ -1472,13 +1492,24 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/tabs/delete">
+    <request path="api/v2/customPage/tabs/fetch" >
+        <requestbody type="object">
+            <property name="id" type="number"/>
+            <property name="moduleName" type="string"/>
+            <property name="appId" type="number"/>
+            <property name="excludeColumns" type="boolean"/>
+            <property name="tabName" type="string"/>
+            <property name="pageId" type="number"/>
+        </requestbody>
+    </request>`
+
+    <request path="/api/v1/setup/customPage/tabs/delete">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/columns/add">
+    <request path="/api/v1/setup/customPage/columns/add">
         <requestbody type="object">
             <property name="tabId" type="number" mandatory="true"/>
             <property name ="widths" type="array" mandatory="true">
@@ -1487,13 +1518,13 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/columns/get" >
+    <request path="/api/v1/setup/customPage/columns/get" >
         <requestbody type="object">
             <property name="id" type="number"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/columns/patch">
+    <request path="/api/v1/setup/customPage/columns/patch">
         <requestbody type="object">
             <property name="column" type="object" mandatory="true">
                 <property name="id" type="number" mandatory="true"/>
@@ -1502,7 +1533,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/section/add">
+    <request path="/api/v1/setup/customPage/section/add">
         <requestbody type="object">
             <property name="columnId" type="number" mandatory="true"/>
             <property name ="section" type="object" mandatory="true">
@@ -1512,13 +1543,13 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/section/get" >
+    <request path="/api/v1/setup/customPage/section/get" >
         <requestbody type="object">
             <property name="id" type="number"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/section/patch">
+    <request path="/api/v1/setup/customPage/section/patch">
         <requestbody type="object">
             <property name="section" type="object" mandatory="true">
                 <property name="id" type="number" mandatory="true"/>
@@ -1528,7 +1559,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/section/reorder">
+    <request path="/api/v1/setup/customPage/section/reorder">
         <requestbody type="object">
             <property name="previousId" type="number"/>
             <property name="id" type="number" mandatory="true"/>
@@ -1536,13 +1567,13 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/section/delete">
+    <request path="/api/v1/setup/customPage/section/delete">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/widget/add">
+    <request path="/api/v1/setup/customPage/widget/add">
         <requestbody type="object">
             <property name="appId" type="number"/>
             <property name="moduleName" type="string"/>
@@ -1556,58 +1587,58 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/bulkRelatedList/relatedModules/list">
+    <request path="/api/v1/setup/bulkRelatedList/relatedModules/list">
         <requestbody type="object">
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="pageWidgetId" type="number" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/bulkRelatedList/add">
+    <request path="/api/v1/setup/bulkRelatedList/add">
         <requestbody type="object">
             <property name="pageWidgetId" type="number" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/bulkRelatedList/update">
+    <request path="/api/v1/setup/bulkRelatedList/update">
         <requestbody type="object">
             <property name="pageWidgetId" type="number" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/bulkRelatedList/get">
+    <request path="/api/v1/setup/bulkRelatedList/get">
         <requestbody type="object">
             <property name="pageWidgetId" type="number" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/bulkRelationshipWidget/relationship/list">
-        <requestbody type="object">
-            <property name="moduleName" type="string" mandatory="true"/>
-            <property name="pageWidgetId" type="number" mandatory="true"/>
-        </requestbody>
-    </request>
-
-    <request path="/api/v2/bulkRelationshipWidget/add">
-        <requestbody type="object">
-            <property name="pageWidgetId" type="number" mandatory="true"/>
-        </requestbody>
-    </request>
-
-    <request path="/api/v2/bulkRelationshipWidget/update">
-        <requestbody type="object">
-            <property name="pageWidgetId" type="number" mandatory="true"/>
-        </requestbody>
-    </request>
-
-    <request path="/api/v2/bulkRelationshipWidget/get">
+    <request path="/api/v1/setup/bulkRelationshipWidget/relationship/list">
         <requestbody type="object">
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="pageWidgetId" type="number" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/widget/update">
+    <request path="/api/v1/setup/bulkRelationshipWidget/add">
+        <requestbody type="object">
+            <property name="pageWidgetId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/bulkRelationshipWidget/update">
+        <requestbody type="object">
+            <property name="pageWidgetId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/bulkRelationshipWidget/get">
+        <requestbody type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="pageWidgetId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/customPage/widget/update">
         <requestbody type="object">
             <property name="moduleName" type="string"/>
             <property name="appId" type="number"/>
@@ -1621,7 +1652,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/widget/get">
+    <request path="/api/v1/setup/customPage/widget/get">
         <requestbody type="object">
             <property name="moduleName" type="string"/>
             <property name="appId" type="number"/>
@@ -1629,38 +1660,38 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/widget/rearrange">
+    <request path="/api/v1/setup/customPage/widget/rearrange">
         <requestbody type="object">
             <property name="widgetPositions" type="object" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/widget/delete">
+    <request path="/api/v1/setup/customPage/widget/delete">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="widgetPositions" type="object" mandatory="true"/>
         </requestbody>
     </request>
-    <request path="/api/v2/moduleWidgets/list">
+    <request path="/api/v1/setup/moduleWidgets/list">
         <urlparams>
             <property name="moduleName" type="string"/>
         </urlparams>
     </request>
 
-    <request path="/api/v2/moduleWidgets/configs">
+    <request path="/api/v1/setup/moduleWidgets/configs">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/summaryWidget/addOrUpdate">
+    <request path="/api/v1/setup/summaryWidget/addOrUpdate">
         <requestbody type="object">
             <property name="appId" type="number"/>
             <property name="moduleName" type="string" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/summaryWidget/get" >
+    <request path="/api/v1/setup/summaryWidget/get" >
         <requestbody type="object">
             <property name="appId" type="number"/>
             <property name="id" type="number" mandatory="true"/>

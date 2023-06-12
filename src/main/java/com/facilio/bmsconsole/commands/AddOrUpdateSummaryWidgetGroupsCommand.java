@@ -19,7 +19,6 @@ public class AddOrUpdateSummaryWidgetGroupsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long summaryWidgetId = (Long) context.get(FacilioConstants.ContextNames.ID);
-        Objects.requireNonNull(summaryWidgetId, "Summary widget id can't be null");
 
         List<SummaryWidgetGroup> summaryWidgetGroups = (List<SummaryWidgetGroup>) context.get(FacilioConstants.SummaryWidget.SUMMARY_WIDGET_GROUPS);
         List<SummaryWidgetGroup> existingSummaryWidgetGroups = (List<SummaryWidgetGroup>) context.get(FacilioConstants.SummaryWidget.EXISTING_SUMMARY_WIDGET_GROUPS);
@@ -29,69 +28,71 @@ public class AddOrUpdateSummaryWidgetGroupsCommand extends FacilioCommand {
 
         List<String> nameList = new ArrayList<>();
         int sequenceNumber = 0;
-        if (CollectionUtils.isEmpty(existingSummaryWidgetGroups)) {
+        if(CollectionUtils.isNotEmpty(summaryWidgetGroups)) {
+            Objects.requireNonNull(summaryWidgetId, "Summary widget id can't be null");
+            if (CollectionUtils.isEmpty(existingSummaryWidgetGroups)) {
 
-            if (CollectionUtils.isNotEmpty(summaryWidgetGroups)) {
-                List<SummaryWidgetGroupFields> summaryGroupFields = new ArrayList<>();
+                if (CollectionUtils.isNotEmpty(summaryWidgetGroups)) {
+                    List<SummaryWidgetGroupFields> summaryGroupFields = new ArrayList<>();
+
+                    for (SummaryWidgetGroup widgetGroup : summaryWidgetGroups) {
+
+                        SummaryWidgetUtil.widgetGroupRowSpanValidator(widgetGroup);
+                        widgetGroup.setSequenceNumber(sequenceNumber += 10);
+
+                        setUniqueNameForWidgetGroup(widgetGroup, nameList, isSystem);
+                        addWidgetGroupToDBAndAddWidgetGroupFields(summaryWidgetId, widgetGroup, summaryGroupFields);
+                    }
+
+                    context.put(FacilioConstants.SummaryWidget.SUMMARY_WIDGET_GROUP_FIELDS, summaryGroupFields);
+                }
+            } else {
+                List<Long> existingSummaryWidgetGroupFieldIds = existingSummaryWidgetGroups.stream()
+                        .map(f -> f.getFields()
+                                .stream()
+                                .map(SummaryWidgetGroupFields::getId)
+                                .collect(Collectors.toList()))
+                        .flatMap(List::stream)
+                        .collect(Collectors.toList());
+
+                List<SummaryWidgetGroup> newSummaryWidgetGroup = new ArrayList<>();
+                List<Long> deletableGroupIds = existingSummaryWidgetGroups
+                        .stream()
+                        .map(SummaryWidgetGroup::getId)
+                        .collect(Collectors.toList());
+
+                List<SummaryWidgetGroupFields> newSummaryWidgetGroupFields = new ArrayList<>();
+                List<SummaryWidgetGroupFields> updatableSummaryWidgetGroupFields = new ArrayList<>();
+
 
                 for (SummaryWidgetGroup widgetGroup : summaryWidgetGroups) {
 
                     SummaryWidgetUtil.widgetGroupRowSpanValidator(widgetGroup);
-                    widgetGroup.setSequenceNumber(sequenceNumber+=10);
+                    widgetGroup.setSequenceNumber(sequenceNumber += 10);
 
                     setUniqueNameForWidgetGroup(widgetGroup, nameList, isSystem);
-                    addWidgetGroupToDBAndAddWidgetGroupFields(summaryWidgetId, widgetGroup, summaryGroupFields);
+                    if (widgetGroup.getId() > 0) {
+                        updateWidgetGroupInDBAndAddWidgetGroupFields(widgetGroup, newSummaryWidgetGroupFields, updatableSummaryWidgetGroupFields);
+                        deletableGroupIds.remove(widgetGroup.getId());
+                    } else {
+                        newSummaryWidgetGroup.add(widgetGroup);
+                    }
+
                 }
 
-                context.put(FacilioConstants.SummaryWidget.SUMMARY_WIDGET_GROUP_FIELDS, summaryGroupFields);
-            }
-        } else {
-            List<Long> existingSummaryWidgetGroupFieldIds = existingSummaryWidgetGroups.stream()
-                                               .map(f->f.getFields()
-                                                       .stream()
-                                                       .map(SummaryWidgetGroupFields::getId)
-                                                       .collect(Collectors.toList()))
-                                               .flatMap(List::stream)
-                                               .collect(Collectors.toList());
-
-            List<SummaryWidgetGroup> newSummaryWidgetGroup = new ArrayList<>();
-            List<Long> deletableGroupIds = existingSummaryWidgetGroups
-                    .stream()
-                    .map(SummaryWidgetGroup::getId)
-                    .collect(Collectors.toList());
-
-            List<SummaryWidgetGroupFields> newSummaryWidgetGroupFields = new ArrayList<>();
-            List<SummaryWidgetGroupFields> updatableSummaryWidgetGroupFields = new ArrayList<>();
-
-
-            for (SummaryWidgetGroup widgetGroup : summaryWidgetGroups) {
-
-                SummaryWidgetUtil.widgetGroupRowSpanValidator(widgetGroup);
-                widgetGroup.setSequenceNumber(sequenceNumber+=10);
-
-                setUniqueNameForWidgetGroup(widgetGroup, nameList, isSystem);
-                if(widgetGroup.getId() > 0) {
-                    updateWidgetGroupInDBAndAddWidgetGroupFields(widgetGroup, newSummaryWidgetGroupFields, updatableSummaryWidgetGroupFields);
-                    deletableGroupIds.remove(widgetGroup.getId());
-                }
-                else {
-                    newSummaryWidgetGroup.add(widgetGroup);
+                if (CollectionUtils.isNotEmpty(deletableGroupIds)) {
+                    SummaryWidgetUtil.deleteSummaryWidgetGroup(deletableGroupIds);
                 }
 
-            }
-
-            if(CollectionUtils.isNotEmpty(deletableGroupIds)) {
-                SummaryWidgetUtil.deleteSummaryWidgetGroup(deletableGroupIds);
-            }
-
-            for (SummaryWidgetGroup widgetGroup : newSummaryWidgetGroup){
+                for (SummaryWidgetGroup widgetGroup : newSummaryWidgetGroup) {
                     addWidgetGroupToDBAndAddWidgetGroupFields(summaryWidgetId, widgetGroup, newSummaryWidgetGroupFields);
+                }
+
+                context.put(FacilioConstants.SummaryWidget.SUMMARY_WIDGET_GROUP_FIELDS, newSummaryWidgetGroupFields);
+                context.put(FacilioConstants.SummaryWidget.UPDATABLE_SUMMARY_WIDGET_GROUP_FIELDS, updatableSummaryWidgetGroupFields);
+                context.put(FacilioConstants.SummaryWidget.EXISTING_SUMMARY_WIDGET_GROUP_FIELD_IDS, existingSummaryWidgetGroupFieldIds);
+
             }
-
-            context.put(FacilioConstants.SummaryWidget.SUMMARY_WIDGET_GROUP_FIELDS, newSummaryWidgetGroupFields);
-            context.put(FacilioConstants.SummaryWidget.UPDATABLE_SUMMARY_WIDGET_GROUP_FIELDS, updatableSummaryWidgetGroupFields);
-            context.put(FacilioConstants.SummaryWidget.EXISTING_SUMMARY_WIDGET_GROUP_FIELD_IDS, existingSummaryWidgetGroupFieldIds);
-
         }
         return false;
     }

@@ -15,6 +15,7 @@ import java.util.List;
 public class UpdateBulkRelationshipWidgetCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         long pageWidgetId = (long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
         if(pageWidgetId <= 0) {
             throw new IllegalArgumentException("Invalid PageSectionWidget id to create relationship widget");
@@ -56,6 +57,8 @@ public class UpdateBulkRelationshipWidgetCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(existingRelMappingIdInWidget)) {
             RelationshipWidgetUtil.deleteRelationshipsOfWidget(pageWidgetId, existingRelMappingIdInWidget);//deleting relShip
         }
+
+        context.put(FacilioConstants.WidgetNames.BULK_RELATION_SHIP_WIDGET, RelationshipWidgetUtil.getBulkRelationShipsWithDetails(moduleName, pageWidgetId));
         return false;
     }
 }

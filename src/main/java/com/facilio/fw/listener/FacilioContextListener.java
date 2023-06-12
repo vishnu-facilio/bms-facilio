@@ -24,7 +24,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.facilio.bmsconsole.ModuleWidget.ModuleWidgetsUtil;
-import com.facilio.bmsconsole.widgetConfig.WidgetConfig;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
 import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.FacilioProperties;

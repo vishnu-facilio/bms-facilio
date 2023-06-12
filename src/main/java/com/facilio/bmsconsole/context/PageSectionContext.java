@@ -1,10 +1,19 @@
 package com.facilio.bmsconsole.context;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 @Getter
 @Setter
 public class PageSectionContext {
+    public PageSectionContext(){
+    }
     private long id = -1;
     private long orgId = -1;
     private long columnId = -1;
@@ -17,4 +26,30 @@ public class PageSectionContext {
     private Long sysModifiedBy;
     private Long sysModifiedTime;
     private List<PageSectionWidgetContext> widgets;
+
+    public PageSectionContext(String name, String displayName, Double sequenceNumber, String description) {
+        this.name = name;
+        this.displayName = displayName;
+        this.sequenceNumber = sequenceNumber;
+        this.description = description;
+    }
+
+    public PageSectionWidgetContext addWidget(String name, String displayName, PageWidget.WidgetType widgetType,String configName, long positionX, long positionY, JSONObject widgetParams, JSONObject widgetDetail) throws Exception{
+
+        double sequenceNumber = CollectionUtils.isNotEmpty(this.getWidgets()) ? ((this.getWidgets().size()+1) * 10D ) : 10; //(number of widget in section incremented by one * 10) to get sequence number
+        PageSectionWidgetContext widget = new PageSectionWidgetContext(name, displayName, widgetType, configName, sequenceNumber, positionX, positionY, widgetParams, widgetDetail);
+        if(this.getWidgets() == null) {
+            this.setWidgets(new ArrayList<>(Arrays.asList(widget)));
+        }
+        else {
+            this.getWidgets().add(widget);
+        }
+        widget.setParentContext(this);
+        return widget;
+    }
+    @JsonIgnore
+    private PageColumnContext parentContext;
+    public PageColumnContext sectionDone() {
+        return this.parentContext;
+    }
 }

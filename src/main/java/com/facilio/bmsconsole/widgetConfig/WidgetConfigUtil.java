@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.widgetConfig;
 
 import com.facilio.bmsconsole.context.PageSectionWidgetContext;
+import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.chain.FacilioChain;
@@ -15,7 +16,7 @@ import java.util.Objects;
 
 public class WidgetConfigUtil {
 
-    public static FacilioContext createWidget(Long appId, String moduleName, long sectionId, PageSectionWidgetContext widget, List<Map<String, Object>> widgetPositions) throws Exception {
+    public static FacilioContext createWidget(Long appId, String moduleName, long sectionId, PageSectionWidgetContext widget, List<Map<String, Object>> widgetPositions, PagesContext.PageLayoutType layoutType) throws Exception {
         FacilioChain createChain = WidgetConfigChain.getCreateChain(widget.getWidgetType().name());
 
         FacilioContext context = createChain.getContext();
@@ -23,6 +24,7 @@ public class WidgetConfigUtil {
         context.put(FacilioConstants.ContextNames.APP_ID, appId);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.CustomPage.SECTION_ID, sectionId);
+        context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
         context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET, widget);
         context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGETS_POSITIONS, widgetPositions);
 

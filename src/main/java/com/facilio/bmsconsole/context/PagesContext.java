@@ -1,13 +1,18 @@
 package com.facilio.bmsconsole.context;
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioStringEnum;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Getter
 @Setter
 public class PagesContext implements Serializable {
@@ -15,11 +20,9 @@ public class PagesContext implements Serializable {
     public PagesContext() {
     }
 
-    public PagesContext(long appId, String name, String displayName, String moduleName, String description, Criteria criteria, Boolean isTemplate, Boolean isDefaultPage, Boolean status){
-        this.appId = appId;
+    public PagesContext(String name, String displayName, String description, Criteria criteria, Boolean isTemplate, Boolean isDefaultPage, Boolean status){
         this.name = name;
         this.displayName = displayName;
-        this.moduleName = moduleName;
         this.description = description;
         this.criteria = criteria;
         this.isTemplate = isTemplate;
@@ -61,6 +64,8 @@ public class PagesContext implements Serializable {
     private Long sysModifiedTime;
     private Long sysDeletedBy;
     private Long sysDeletedTime;
+    private List<Long> appDomainTypes;
+    private long appDomainType;
     private Map<String,List<PageTabContext>> layouts ;
     private SharingContext<SingleSharingContext> pageSharing;
 
@@ -69,4 +74,62 @@ public class PagesContext implements Serializable {
         MOBILE;
     }
 
+    public PagesContext shareTemplateToFacilioDomain() throws Exception {
+        return this.addDomainSharingTemplatePage(true, false);
+    }
+
+    public PagesContext shareTemplateToNonFacilioDomains() throws Exception {
+        return this.addDomainSharingTemplatePage(false, true);
+    }
+
+    public PagesContext shareTemplateToDomains(AppDomain.AppDomainType...domains) throws Exception {
+        return this.addDomainSharingTemplatePage(false, false, domains);
+    }
+
+    private PagesContext addDomainSharingTemplatePage(boolean isFacilioDomainAlone, boolean isNonFacilioDomains, AppDomain.AppDomainType...domains) {
+        if(this.getIsTemplate() != null && this.getIsTemplate()) {
+            if(isFacilioDomainAlone) {
+                this.setAppDomainTypes(Arrays.asList(Long.valueOf(AppDomain.AppDomainType.FACILIO.getIndex())));
+            }
+            else if(isNonFacilioDomains) {
+                this.setAppDomainTypes(Arrays.asList(-1L));
+            }
+            else {
+                this.setAppDomainTypes(Arrays.stream(domains).map(f->Long.valueOf(f.getIndex())).collect(Collectors.toList()));
+            }
+        }
+        return this;
+    }
+
+    public PageTabContext addWebTab(String name, String displayName, Boolean status, AccountUtil.FeatureLicense featureLicense) {
+        int featureId = featureLicense != null ? featureLicense.getFeatureId() : -1;
+        return addTab(PageLayoutType.WEB.name(), name, displayName, status, featureId);
+    }
+    public PageTabContext addMobileTab(String name, String displayName, Boolean status, AccountUtil.FeatureLicense featureLicense) {
+        int featureId = featureLicense != null ? featureLicense.getFeatureId() : -1;
+        return addTab(PageLayoutType.MOBILE.name(), name, displayName, status, featureId);
+    }
+
+    private PageTabContext addTab(String layoutType, String name, String displayName, Boolean status, int featureLicense) {
+        if(this.getLayouts() == null ) {
+            this.setLayouts(new HashMap<String, List<PageTabContext>>());
+        }
+
+        double sequenceNumber = CollectionUtils.isNotEmpty(this.getLayouts().get(layoutType)) ? ((this.getLayouts().get(layoutType).size()+1) * 10D ) : 10; //(number of tabs incremented by one * 10) to get sequence number
+        PageTabContext tab = new PageTabContext(name, displayName, sequenceNumber, status, featureLicense);
+
+        if(this.getLayouts().get(layoutType) == null) {
+            this.getLayouts().put(layoutType, new ArrayList<>(Arrays.asList(tab)));
+        }
+        else {
+            this.getLayouts().get(layoutType).add(tab);
+        }
+        tab.setParentContext(this);
+        return tab;
+    }
+    @JsonIgnore
+    private ModulePages parentContext;
+    public ModulePages pageDone() {
+        return this.parentContext;
+    }
 }

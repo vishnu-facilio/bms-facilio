@@ -12,12 +12,26 @@ public class WidgetConfigContext {
     public WidgetConfigContext(){
 
     }
-    public WidgetConfigContext(ConfigType configType, long minHeight, long minWidth){
+    public WidgetConfigContext(String name, String displayName, long minHeight, PagesContext.PageLayoutType layoutType) {
+        this(name, displayName, ConfigType.FLEXIBLE, minHeight, -1, layoutType);
+    }
+    public WidgetConfigContext(String name, String displayName, long minHeight, long width, PagesContext.PageLayoutType layoutType) {
+        this(name, displayName, ConfigType.FIXED, minHeight, width, layoutType);
+    }
+    public WidgetConfigContext(String name, String displayName, ConfigType configType, long minHeight, long minWidth, PagesContext.PageLayoutType layoutType){
+        this.name = name;
+        this.displayName = displayName;
         this.configType = configType;
         this.minHeight = minHeight;
         this.minWidth = minWidth;
+        this.layoutType = layoutType;
     }
+
     private long id =-1;
+    private String name;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private PagesContext.PageLayoutType layoutType = PagesContext.PageLayoutType.WEB;
+    private String displayName;
     private long widgetId =-1;
     private long minHeight =-1;
     private long maxHeight = -1;

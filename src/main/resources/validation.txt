@@ -11,6 +11,7 @@
 /api/v2/integ/logout
 /api/v2/integ/pdf/create
 /internal/addFromMail
+/admin/addPageBuilderModuleConfig
 /internal/testSoapRequest
 /internal/migration
 /internal/moduleMigration

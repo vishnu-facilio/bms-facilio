@@ -1,11 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.SummaryWidget;
+import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.util.SummaryWidgetUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class GetSummaryWidgetCommand extends FacilioCommand {
     @Override
@@ -22,6 +26,13 @@ public class GetSummaryWidgetCommand extends FacilioCommand {
         }
         else if(StringUtils.isNotEmpty(name)){
             summaryWidget = SummaryWidgetUtil.getSummaryWidgetByName(appId, name);
+        }
+
+        if(summaryWidget != null) {
+            //this is to fetch displayType of field in response of JSONObject as getAsJSON ignore displayType in FacilioField
+            summaryWidget.getGroups().stream()
+                    .map(SummaryWidgetGroup::getFields).collect(Collectors.toList())
+                    .stream().flatMap(List::stream).forEach(f->f.setDisplayType(f.getField().getDisplayType()));
         }
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, summaryWidget);
         return false;

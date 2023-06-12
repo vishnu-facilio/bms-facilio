@@ -3298,6 +3298,11 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getCriteriaFieldsForPageBuilderChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetCriteriaFieldsForModuleCommand());
+		return chain;
+	}
 	public static FacilioChain getAllCustomPageChain(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllCustomPageCommand());

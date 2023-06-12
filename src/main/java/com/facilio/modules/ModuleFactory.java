@@ -5627,6 +5627,9 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return module;
 	}
 
+	public static FacilioModule getTemplatePageAppDomainModule() {
+		return constructModule("templatePageAppDomain", "TemplatePage AppDomain", "TemplatePage_AppDomain");
+	}
 	public static FacilioModule getPageSharingModule(){
 		return constructModule("pageSharing", "Page Sharing", "Page_Sharing");
 	}

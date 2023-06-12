@@ -11,6 +11,7 @@ public class SummaryWidgetGroupFields {
     private long orgId;
     private String name;
     private String displayName;
+    private FacilioField.FieldDisplayType displayType;
     private long widgetId;
     private long widgetGroupId;
     private long fieldId;

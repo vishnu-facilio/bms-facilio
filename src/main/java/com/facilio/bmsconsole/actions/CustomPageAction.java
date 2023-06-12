@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.ModuleSettingConfig.impl.PageBuilderConfigUtil;
+import com.facilio.bmsconsole.ModuleSettingConfig.util.ModuleSettingConfigUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -19,6 +22,8 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 @Getter
@@ -35,6 +40,7 @@ public class CustomPageAction extends FacilioAction {
     private PagesContext customPage;
     private String tabName;
     private Boolean status;
+    private Boolean approval = false;
     private PagesContext.PageLayoutType layoutType;
     private Boolean excludeTabs = false;
 
@@ -65,17 +71,39 @@ public class CustomPageAction extends FacilioAction {
         return SUCCESS;
     }
     public String fetchPageForRecord()throws Exception{
-        FacilioChain chain = ReadOnlyChainFactory.getPageForRecordChain();
-        FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.ContextNames.APP_ID,getAppId());
-        context.put(FacilioConstants.ContextNames.RECORD_ID,getRecordId());
-        context.put(FacilioConstants.ContextNames.MODULE_NAME,getModuleName());
-        context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
-        context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST,false);
-        context.put(FacilioConstants.CustomPage.TAB_NAME,getTabName());
-        chain.execute();
-        customPage = (PagesContext) context.get(FacilioConstants.CustomPage.CUSTOM_PAGE);
-        setResult(FacilioConstants.CustomPage.CUSTOM_PAGE,customPage);
+
+        boolean isNewPage = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PAGE_BUILDER) &&
+                ModuleSettingConfigUtil.isConfigEnabledForModule(moduleName, FacilioConstants.SettingConfigurationContextNames.PAGE_BUILDER);
+        if(isNewPage) {
+            FacilioChain chain = ReadOnlyChainFactory.getPageForRecordChain();
+            FacilioContext context = chain.getContext();
+            context.put(FacilioConstants.ContextNames.APP_ID, getAppId());
+            context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+            context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
+            context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, false);
+            context.put(FacilioConstants.CustomPage.TAB_NAME, getTabName());
+            chain.execute();
+            customPage = (PagesContext) context.get(FacilioConstants.CustomPage.CUSTOM_PAGE);
+            setResult("isNewPage", true);
+            setResult(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
+        }
+
+        if(!isNewPage || customPage == null) {
+            if(layoutType == PagesContext.PageLayoutType.WEB) {
+                FacilioChain chain = ReadOnlyChainFactory.getPageChain();
+                FacilioContext context = chain.getContext();
+                context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+                context.put(FacilioConstants.ContextNames.ID, id);
+                context.put(FacilioConstants.ContextNames.IS_APPROVAL, approval);
+                context.put(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, true);
+                chain.execute();
+
+                setResult(FacilioConstants.ContextNames.PAGE, context.get(FacilioConstants.ContextNames.PAGE));
+                setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
+            }
+            setResult("isNewPage", false);
+        }
         return SUCCESS;
     }
     public String fetchCustomPage() throws Exception{
@@ -148,6 +176,37 @@ public class CustomPageAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.ID,id);
         chain.execute();
         setResult("result",SUCCESS);
+        return SUCCESS;
+    }
+
+    //Temp handlings
+    public String getPageCriteriaFieldsForModule() throws Exception{
+        FacilioChain chain = ReadOnlyChainFactory.getCriteriaFieldsForPageBuilderChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        chain.execute();
+        List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS);
+        setResult("fields", FieldUtil.getAsJSONArray(fields, FacilioField.class));
+        return SUCCESS;
+    }
+
+    public String checkPageBuilderEnabled() throws Exception {
+        status = false;
+        if(StringUtils.isNotEmpty(moduleName)) {
+            try {
+                status = ModuleSettingConfigUtil.isConfigEnabledForModule(moduleName, FacilioConstants.SettingConfigurationContextNames.PAGE_BUILDER);
+            }
+            catch (Exception e) {
+                throw new IllegalArgumentException(e.getMessage(), e);
+            }
+        }
+        setResult("status", status);
+        return SUCCESS;
+    }
+
+    public String fetchPageBuilderEnabledModules() throws Exception {
+        List<String> moduleNames = CustomPageAPI.getPageBuilderEnabledModules();
+        setResult("modules", moduleNames);
         return SUCCESS;
     }
 }

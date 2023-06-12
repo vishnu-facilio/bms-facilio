@@ -1,7 +1,11 @@
 package com.facilio.relation.util;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.BulkRelationshipWidget;
 import com.facilio.bmsconsole.context.RelationshipWidget;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -26,7 +30,7 @@ public class RelationshipWidgetUtil {
     public static Map<Long, RelationRequestContext> getRelationsAsMapOfMappingId(FacilioModule module) throws Exception {
         List<RelationRequestContext> relationRequests = RelationUtil.getAllRelations(module);
         if (CollectionUtils.isNotEmpty(relationRequests)) {
-            return relationRequests.stream().collect(Collectors.toMap(RelationRequestContext::getRelMappingId, Function.identity()));
+            return relationRequests.stream().collect(Collectors.toMap(RelationRequestContext::getRelMappingId, Function.identity(), (oldValue, newValue) -> newValue));
         }
         return null;
     }
@@ -122,5 +126,16 @@ public class RelationshipWidgetUtil {
             return bulkRelShip;
         }
         return null;
+    }
+
+    public static BulkRelationshipWidget getBulkRelationShipsWithDetails(String moduleName, long pageWidgetId) throws Exception {
+
+        FacilioChain chain = ReadOnlyChainFactory.getBulkRelationShipWidgetChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+        chain.execute();
+
+        return (BulkRelationshipWidget) context.get(FacilioConstants.CustomPage.WIDGET_DETAIL);
     }
 }

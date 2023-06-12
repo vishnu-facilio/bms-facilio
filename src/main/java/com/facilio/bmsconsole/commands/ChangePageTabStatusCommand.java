@@ -13,8 +13,8 @@ public class ChangePageTabStatusCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Long id = (Long) context.get(FacilioConstants.ContextNames.ID);
         if (id <= 0) {
-            LOGGER.error("Invalid Id");
-            throw new IllegalArgumentException("Invalid Id");
+            LOGGER.error("Invalid id");
+            throw new IllegalArgumentException("Invalid id");
         }
 
         Boolean status = (Boolean) context.get(FacilioConstants.ContextNames.STATUS);
@@ -23,10 +23,7 @@ public class ChangePageTabStatusCommand extends FacilioCommand {
             throw new IllegalArgumentException("Invalid status");
         }
 
-        PageTabContext tab = new PageTabContext();
-        tab.setId(id);
-        tab.setStatus(status);
-        CustomPageAPI.patchPageTab(tab);
+        CustomPageAPI.updateTabStatus(id, status);
         return false;
     }
 }

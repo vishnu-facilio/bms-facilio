@@ -21,11 +21,11 @@ public class RemoveBuilderUsedRelatedModules extends FacilioCommand {
             List<RelatedListWidgetContext> usedRelListOfWidget = RelatedListWidgetUtil.getRelatedListsOfWidgetId(pageWidgetId, false);
 
             if(usedRelListOfWidget != null) {
-                List<Long> usedRelListModuleId = usedRelListOfWidget.stream()
-                        .map(RelatedListWidgetContext::getSubModuleId)
+                List<Long> usedRelListFieldId = usedRelListOfWidget.stream()
+                        .map(RelatedListWidgetContext::getFieldId)
                         .collect(Collectors.toList());
 
-                relatedFieldsVsModulesMap.removeIf(relFieldModule -> usedRelListModuleId.contains((Long) (relFieldModule.get("fieldId"))));
+                relatedFieldsVsModulesMap.removeIf(relFieldModule -> usedRelListFieldId.contains((Long) (relFieldModule.get("fieldId"))));
 
             }
 

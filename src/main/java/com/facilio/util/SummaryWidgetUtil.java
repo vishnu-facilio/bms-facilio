@@ -470,8 +470,7 @@ public class SummaryWidgetUtil {
 
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(fields)
-                .table(ModuleFactory.getCustomPageWidgetModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(app.getId()), NumberOperators.EQUALS));
+                .table(ModuleFactory.getCustomPageWidgetModule().getTableName());
 
         if (moduleId > 0) {
             selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"),String.valueOf(moduleId), NumberOperators.EQUALS));
@@ -480,7 +479,8 @@ public class SummaryWidgetUtil {
         if (widgetId > 0) {
             selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"),String.valueOf(widgetId), NumberOperators.EQUALS));
         } else if (org.apache.commons.lang.StringUtils.isNotEmpty(widgetName)) {
-            selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), widgetName, StringOperators.IS));
+            selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), widgetName, StringOperators.IS))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), String.valueOf(app.getId()), NumberOperators.EQUALS));
         }
 
         pageWidgets = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), SummaryWidget.class);

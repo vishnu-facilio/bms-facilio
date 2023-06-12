@@ -69,6 +69,8 @@ public class UpdateBulkRelatedListWidgetCommand extends FacilioCommand {
             if(CollectionUtils.isNotEmpty(existingRelListInWidget)) {
                 RelatedListWidgetUtil.deleteRelatedLists(existingRelListIds);//deleting relList
             }
+
+            context.put(FacilioConstants.WidgetNames.BULK_RELATED_LIST_WIDGET, RelatedListWidgetUtil.getBulkRelatedListOfWidgetId(pageWidgetId));
         }
         return false;
     }

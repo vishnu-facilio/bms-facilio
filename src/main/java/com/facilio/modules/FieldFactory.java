@@ -11531,6 +11531,16 @@ public class FieldFactory extends BaseFieldFactory {
         return  fields;
     }
 
+    public static List<FacilioField> getTemplatePageAppDomainFields() {
+        List<FacilioField> fields=new ArrayList<>();
+        FacilioModule module=ModuleFactory.getTemplatePageAppDomainModule();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("pageId", "PAGE_ID", module));
+        fields.add(getNumberField("appDomainType", "APP_DOMAIN", module));
+        return fields;
+    }
+
     public static List<FacilioField> getPageSharingFields(){
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getPageSharingModule();
@@ -11643,12 +11653,15 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getWidgetConfigsModule();
         fields.add(getIdField(module));
+        fields.add(getStringField("name", "NAME", module));
+        fields.add(getStringField("displayName","DISPLAY_NAME",module));
         fields.add(getNumberField("widgetId","WIDGETID",module));
         fields.add(getStringField("configType","CONFIG_TYPE",module));
         fields.add(getNumberField("minHeight","MIN_HEIGHT",module));
         fields.add(getNumberField("maxHeight","MAX_HEIGHT",module));
         fields.add(getNumberField("minWidth","MIN_WIDTH",module));
         fields.add(getNumberField("maxWidth","MAX_WIDTH",module));
+        fields.add(getStringField("layoutType","LAYOUT_TYPE", module));
         return fields;
     }
     public static List<FacilioField> getPageSummaryWidgetFields() {

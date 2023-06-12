@@ -140,11 +140,20 @@ public class RelatedListWidgetUtil {
 
         if(CollectionUtils.isNotEmpty(props)) {
             List<RelatedListWidgetContext> relLists =  FieldUtil.getAsBeanListFromMapList(props, RelatedListWidgetContext.class);
-            List<Long> relListFieldId = relLists.stream().map(RelatedListWidgetContext::getFieldId).collect(Collectors.toList());
+            List<Long> relListFieldIds = relLists.stream().map(RelatedListWidgetContext::getFieldId).collect(Collectors.toList());
+            List<Long> relListModuleIds = relLists.stream().map(RelatedListWidgetContext::getSubModuleId).collect(Collectors.toList());
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            List<FacilioField> allModBeanFields = modBean.getFields(relListFieldId);
-            Map<Long, FacilioField> allModBeanFieldsMap = allModBeanFields.stream().collect(Collectors.toMap(FacilioField::getFieldId, Function.identity()));
+            List<FacilioField> allModBeanFields = modBean.getFields(relListFieldIds);
+            Map<Long, FacilioField> allModBeanFieldsMap = allModBeanFields.stream().collect(Collectors.toMap(FacilioField::getFieldId, Function.identity(), (oldValue, newValue) -> newValue));
+
+            Map<Long, String> relListSubModules = relListModuleIds.stream().map(f-> {
+                try {
+                    return modBean.getModule(f);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toMap(FacilioModule::getModuleId,FacilioModule::getDisplayName, (oldValue, newValue) -> newValue));
 
             return relLists.stream()
                     .peek(f-> {
@@ -152,7 +161,13 @@ public class RelatedListWidgetUtil {
                         f.setFieldName(field.getName());
                         f.setField(field);
                         f.setModule(field.getModule());
-                    f.setDisplayName(field.getModule().getDisplayName());}).collect(Collectors.toList());
+                        if(StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
+                            f.setDisplayName(((LookupField) field).getRelatedListDisplayName());
+                        }
+                        else {
+                            f.setDisplayName(relListSubModules.get(f.getSubModuleId()));
+                        }
+                    }).collect(Collectors.toList());
         }
         return null;
     }

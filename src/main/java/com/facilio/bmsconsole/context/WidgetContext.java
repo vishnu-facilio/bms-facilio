@@ -60,8 +60,20 @@ public class WidgetContext {
       this.widgetType = PageWidget.WidgetType.valueOf(widgetType);
    }
 
-   public WidgetContext addWidgetConfigs(WidgetConfigContext.ConfigType configType, long minHeight, long minWidth) {
-      this.getWidgetConfigs().add(new WidgetConfigContext(configType, minHeight, minWidth));
+   public WidgetContext addWidgetConfigs(String name, String displayName, long minHeight, PagesContext.PageLayoutType layoutType) {
+      layoutType = layoutType != null? layoutType: PagesContext.PageLayoutType.WEB;
+      if(this.getWidgetConfigs() == null) {
+         this.setWidgetConfigs(new ArrayList<>());
+      }
+      this.getWidgetConfigs().add(new WidgetConfigContext(name, displayName, minHeight, layoutType));
+      return this;
+   }
+   public WidgetContext addWidgetConfigs(String name, String displayName, long minHeight, long minWidth, PagesContext.PageLayoutType layoutType) {
+      layoutType = layoutType != null? layoutType: PagesContext.PageLayoutType.WEB;
+      if(this.getWidgetConfigs() == null) {
+         this.setWidgetConfigs(new ArrayList<>());
+      }
+      this.getWidgetConfigs().add(new WidgetConfigContext(name, displayName, WidgetConfigContext.ConfigType.FIXED, minHeight, minWidth, layoutType));
       return this;
    }
    public ModuleWidgets done() {

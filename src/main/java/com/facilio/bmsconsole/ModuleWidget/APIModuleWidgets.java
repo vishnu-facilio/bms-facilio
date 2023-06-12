@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 @Config
 public class APIModuleWidgets {
 
+
     /*
     @WidgetsForModule("moduleName")
     public static Supplier<ModuleWidgets> getModuleWidgets() {
@@ -24,6 +25,19 @@ public class APIModuleWidgets {
 
     }
     */
+
+    /*
+  Naming Conventions to be followed for Widget Config Name and Display Name
+
+  configType-Flexible
+         Name --> (layoutType)+(widgetTypeName)+(-minHeight)           //"websummaryfieldswidget-4
+         DisplayName --> Full Width+(widgetTypeName) +(-4)         //"Full Width Summary Fields Widget - 4"
+
+  configType-Fixed
+         Name --> (layoutType)+(widgetTypeName)+(-minHeight)*(minWidth)         //websummaryfieldswidget-4*4
+         DisplayName -->(widgetTypeName) +(- minHeight*minWidth)   //Summary Fields Widget - 4*4
+
+ */
     @WidgetsForModule("asset")
     public static Supplier<ModuleWidgets> getAssetWidgets() {
         return ModuleWidgets::new;

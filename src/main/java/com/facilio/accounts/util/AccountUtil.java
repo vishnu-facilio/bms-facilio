@@ -3,12 +3,10 @@ package com.facilio.accounts.util;
 import com.facilio.accounts.bean.*;
 import com.facilio.accounts.dto.*;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleBean;
 import com.facilio.beans.UserScopeBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.PortalInfoContext;
-import com.facilio.bmsconsole.context.ScopingConfigContext;
-import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.cache.CacheUtil;
@@ -31,10 +29,13 @@ import com.facilio.service.FacilioServiceUtil;
 import com.facilio.util.RequestUtil;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 @Log4j
 public class AccountUtil {
 
@@ -747,6 +748,8 @@ public class AccountUtil {
 		}
 		return features;
 	}
+
+
 	
 	public static PortalInfoContext getPortalInfo() throws Exception {
 		FacilioModule module = ModuleFactory.getServicePortalModule();

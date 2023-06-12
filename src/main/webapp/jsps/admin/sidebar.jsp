@@ -222,6 +222,14 @@ if (buildinfo == null) {
                     <span class="nav-title">Feature Lock</span>
                 </a>
             </li>
+            <li>
+                <a href="pageBuilder">
+                <span class="nav-icon">
+                <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+                    <span class="nav-title">Page Builder</span>
+                </a>
+            </li>
+
              <li>
                 <a href="mlService">
                 <span class="nav-icon">

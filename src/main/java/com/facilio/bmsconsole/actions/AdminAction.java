@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.websocket.EncodeException;
 
 import com.facilio.auth.actions.PasswordHashUtil;
+import com.facilio.bmsconsole.ModuleSettingConfig.impl.PageBuilderConfigUtil;
 import com.facilio.bmsconsole.util.MLServiceUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -197,6 +198,18 @@ public class AdminAction extends ActionSupport {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+		return SUCCESS;
+	}
+
+
+	public String addModulePageBuilderConfig() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String[] selectedModules = request.getParameterValues("selected");
+		Long orgId = Long.parseLong(request.getParameter("orgid"));
+
+		if(selectedModules != null) {
+			PageBuilderConfigUtil.updatePageBuilderModuleSettings(orgId, selectedModules);
 		}
 		return SUCCESS;
 	}

@@ -37,7 +37,7 @@ public class RelatedListWidgetsAction extends FacilioAction {
         context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, bulkRelatedList);
         chain.execute();
-        setResult("result",SUCCESS);
+        setResult(FacilioConstants.CustomPage.WIDGET_DETAIL, FieldUtil.getAsJSON(context.get(FacilioConstants.WidgetNames.BULK_RELATED_LIST_WIDGET)));
         return SUCCESS;
     }
     public String updateBulkRelatedList() throws Exception {
@@ -47,7 +47,7 @@ public class RelatedListWidgetsAction extends FacilioAction {
         context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, bulkRelatedList);
         chain.execute();
-        setResult("result",SUCCESS);
+        setResult(FacilioConstants.CustomPage.WIDGET_DETAIL, FieldUtil.getAsJSON(context.get(FacilioConstants.WidgetNames.BULK_RELATED_LIST_WIDGET)));
         return SUCCESS;
     }
     public String fetchBulkRelatedList() throws Exception {

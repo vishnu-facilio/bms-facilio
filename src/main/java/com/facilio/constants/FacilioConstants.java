@@ -250,6 +250,7 @@ public class FacilioConstants {
 
 	public static class SettingConfigurationContextNames {
 		public static final String STATE_FLOW = "stateflow";
+		public static final String PAGE_BUILDER = "pageBuilder";
 	}
 
 	public static class ContextNames {
@@ -3432,6 +3433,7 @@ public class FacilioConstants {
 		public static final String MAIN_SUMMARY_WIDGET = "mainsummarywidget";
 		public static final String WIDGET_GROUP = "widgetGroup";
 		public static final String BULK_RELATION_SHIP_WIDGET = "bulkRelationShipWidget";
+		public static final String BULK_RELATED_LIST_WIDGET = "bulkRelationShipWidget";
 	}
 
 	public static class Ticket {

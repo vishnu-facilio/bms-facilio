@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PageSectionWidgetContext;
+import com.facilio.bmsconsole.context.PagesContext;
+import com.facilio.bmsconsole.context.WidgetConfigContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.bmsconsole.util.WidgetAPI;
 import com.facilio.command.FacilioCommand;
@@ -12,6 +14,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,17 +24,18 @@ import org.json.simple.JSONObject;
 import java.util.*;
 
 public class AddPageSectionWidgetCommand extends FacilioCommand {
-    private static final Logger LOGGER = Logger.getLogger(AddPageSectionWidgetCommand.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long sectionId = (Long) context.get(FacilioConstants.CustomPage.SECTION_ID);
         if(sectionId<=0){
-            LOGGER.error("Invalid Section Id For Creating Page_Section_Widget");
             throw new IllegalArgumentException("Invalid section id for creating Page_Section_Widget");
         }
 
         PageSectionWidgetContext widget = (PageSectionWidgetContext) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET);
         FacilioModule widgetsModule = ModuleFactory.getPageSectionWidgetsModule();
+
+        PagesContext.PageLayoutType layoutType = (PagesContext.PageLayoutType) context.get(FacilioConstants.CustomPage.LAYOUT_TYPE);
+        layoutType = layoutType!=null? layoutType: PagesContext.PageLayoutType.WEB;
 
         if(widget != null) {
 
@@ -46,39 +50,27 @@ public class AddPageSectionWidgetCommand extends FacilioCommand {
                 widget.setSequenceNumber(sequenceNumber + 10);
             }
 
-            if (widget.getWidgetType() == null ) {
-                LOGGER.error("WidgetType Should be Defined");
-                throw new IllegalArgumentException("WidgetType should be defined");
-            }
+            FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == null, "widgetType can't be null");
 
-            if (widget.getConfigType() == null) {
-                LOGGER.error("Widget ConfigType should be defined");
-                throw new IllegalArgumentException("Widget ConfigType should be defined for widgets");
-            }
+            WidgetConfigContext config = WidgetAPI.getWidgetConfiguration(widget.getWidgetType(), widget.getWidgetConfigId(),  widget.getWidgetConfigName(), layoutType);
+            Objects.requireNonNull(config, "widget configuration does not exists for configId -- " +widget.getWidgetConfigId() +" or configName -- " +widget.getWidgetConfigName()
+            +" for layoutType -- "+layoutType);
 
-            if (widget.getConfigType() == PageSectionWidgetContext.ConfigType.FIXED && !(widget.getWidth() + widget.getPositionX() <= getColumnWidth(sectionId))) {
-                LOGGER.error("Widget Width Exceeded the Column Limit");
-                throw new IllegalArgumentException("Widget width exceeded the column limit");
-            }
-
-            if(widget.getConfigType() == PageSectionWidgetContext.ConfigType.FLEXIBLE) {
-                widget.setWidth(-1);
-            }
-            Long widgetConfigId = WidgetAPI.getWidgetConfigId(widget.getWidgetType(), widget.getWidth(), widget.getHeight(), widget.getConfigType());
-            Objects.requireNonNull(widgetConfigId, "Widget Configuration does not exists");
-            widget.setWidgetConfigId(widgetConfigId);
+            widget.setWidgetConfigId(config.getId());
+            widget.setConfigType(config.getConfigType());
+            widget.setWidth(config.getMinWidth());
+            widget.setHeight(config.getMinHeight());
+            widget.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
+            widget.setSysCreatedTime(System.currentTimeMillis());
 
             Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
             String name = StringUtils.isNotEmpty(widget.getName()) ? widget.getName() :
                     StringUtils.isNotEmpty(widget.getDisplayName())? widget.getDisplayName(): "widget";
             name = CustomPageAPI.getUniqueName(widgetsModule, criteria, sectionIdField, sectionId, name, isSystem);
             if((isSystem != null && isSystem) && StringUtils.isNotEmpty(widget.getName()) && !widget.getName().equalsIgnoreCase(name)) {
-                throw new IllegalArgumentException("linkName already exists, given linkName for widget is invalid");
+                throw new IllegalArgumentException("linkName already exists or given linkName for widget is invalid");
             }
             widget.setName(name);
-
-            widget.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
-            widget.setSysCreatedTime(System.currentTimeMillis());
 
             CustomPageAPI.insertPageSectionWidgettoDB(widget);
             context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, widget.getId());

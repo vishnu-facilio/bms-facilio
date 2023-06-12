@@ -8,12 +8,20 @@ import lombok.Setter;
 @Getter
 @Setter
 public class WidgetGroupConfigContext {
+    public WidgetGroupConfigContext(){
+
+    }
+
     private long widgetId;
     private ConfigType configType;
 
+    public WidgetGroupConfigContext(ConfigType configType) {
+        this.configType = configType;
+    }
+
     public enum ConfigType implements FacilioStringEnum {
-        TAB("tab"),
-        CAROUSEL("carousel");
+        TAB("tab");
+//        CAROUSEL("carousel");
         private final String name;
         ConfigType(String name){
             this.name = name;

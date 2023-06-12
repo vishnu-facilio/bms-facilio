@@ -1291,7 +1291,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddSubModulesSystemFieldsCommad());
 			c.addCommand(new CreateDefaultViewCommand());
 			c.addCommand(commonAddModuleChain());
-//			c.addCommand(new CreateDefaultAndTemplatePageCommand());
+			c.addCommand(new CreateDefaultPageCommand());
 //			c.addCommand(new CreateCustomModuleDefaultSubModuleCommand());
 			return c;
 		}

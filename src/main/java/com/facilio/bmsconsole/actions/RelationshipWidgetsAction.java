@@ -38,7 +38,7 @@ public class RelationshipWidgetsAction extends FacilioAction {
         context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, bulkRelationShipWidget);
         chain.execute();
-        setResult("result",SUCCESS);
+        setResult(FacilioConstants.CustomPage.WIDGET_DETAIL, FieldUtil.getAsJSON(context.get(FacilioConstants.WidgetNames.BULK_RELATION_SHIP_WIDGET)));
         return SUCCESS;
     }
 
@@ -49,7 +49,7 @@ public class RelationshipWidgetsAction extends FacilioAction {
         context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, bulkRelationShipWidget);
         chain.execute();
-        setResult("result",SUCCESS);
+        setResult(FacilioConstants.CustomPage.WIDGET_DETAIL, FieldUtil.getAsJSON(context.get(FacilioConstants.WidgetNames.BULK_RELATION_SHIP_WIDGET)));
         return SUCCESS;
     }
 

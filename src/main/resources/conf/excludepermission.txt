@@ -20,6 +20,7 @@
 /admin/wms
 /admin/updateUser
 /admin/statusLog
+/admin/addPageBuilderModuleConfig
 /admin/addLicense
 /admin/anomalyconsole
 /admin/sqlconsole

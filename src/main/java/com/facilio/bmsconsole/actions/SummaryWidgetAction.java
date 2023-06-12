@@ -89,8 +89,7 @@ public class SummaryWidgetAction extends FacilioAction{
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, summaryWidget);
         chain.execute();
-        id = (long) context.getOrDefault(FacilioConstants.ContextNames.ID, -1L);
-        setResult(FacilioConstants.ContextNames.ID, id);
+        setResult(FacilioConstants.CustomPage.WIDGET_DETAIL, FieldUtil.getAsJSON(context.get(FacilioConstants.CustomPage.WIDGET_DETAIL)));
         return SUCCESS;
     }
 

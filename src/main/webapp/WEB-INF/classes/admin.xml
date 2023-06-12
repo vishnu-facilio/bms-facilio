@@ -57,6 +57,11 @@
 			<result type="tiles">adminpage/featureLock.jsp</result>
 		</action>
 
+		<action name="pageBuilder" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/pageBuilder.jsp</result>
+			<param name="permission">READ, CREATE, UPDATE</param>
+		</action>
+
 		<action name="jobs" class="com.facilio.bmsconsole.actions.AdminAction"
 				method="jobs">
 			<result name="success">/jsps/adminjobs.jsp</result>
@@ -113,6 +118,10 @@
 
 		<action name="addLicense" class="com.facilio.bmsconsole.actions.AdminAction" method = "addLicense">
 			<result name="success" type="tiles">adminpage/orginfo.jsp</result>
+		</action>
+
+		<action name="addOrUpdatePageBuilderModuleConfig" class="com.facilio.bmsconsole.actions.AdminAction" method = "addModulePageBuilderConfig">
+			<result name="success" type="tiles">adminpage/pageBuilder.jsp</result>
 		</action>
 
 		<action name="anomalyconsole" class="com.facilio.bmsconsole.actions.AdminAction">

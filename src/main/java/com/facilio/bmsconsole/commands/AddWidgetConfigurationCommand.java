@@ -5,8 +5,10 @@ import com.facilio.bmsconsole.context.WidgetConfigContext;
 import com.facilio.bmsconsole.util.WidgetAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -27,7 +29,7 @@ public class AddWidgetConfigurationCommand extends FacilioCommand {
             for (WidgetConfigContext config : configs){
                 if(config.getConfigType() == WidgetConfigContext.ConfigType.FIXED){
                     if(!(config.getMinHeight() > 0 && config.getMinWidth() > 0)){
-                        LOGGER.error("Min height and min width should be valid for widget of widgetId --"+config.getWidgetId());
+                        LOGGER.error("Min height and min width should be valid for widget --"+config.getDisplayName());
                         throw new IllegalArgumentException("Invalid widget configuration");
                     }
                 }
@@ -35,10 +37,13 @@ public class AddWidgetConfigurationCommand extends FacilioCommand {
                 if(config.getConfigType() == WidgetConfigContext.ConfigType.FLEXIBLE){
                     config.setMinWidth(-1);
                     if(!(config.getMinHeight() > 0 )){
-                        LOGGER.error("Min height should be valid for widget of widgetId --"+config.getWidgetId());
+                        LOGGER.error("Min height should be valid for widget --"+config.getDisplayName());
                         throw new IllegalArgumentException("Invalid widget configuration");
                     }
                 }
+
+                FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(config.getName()) || StringUtils.isEmpty(config.getDisplayName()),
+                        "name and displayName should be defined for widget config");
             }
 
             WidgetAPI.addWidgetConfigs(configs);

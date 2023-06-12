@@ -2,10 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.PageSectionWidgetContext;
-import com.facilio.bmsconsole.context.WidgetConfigContext;
-import com.facilio.bmsconsole.context.WidgetContext;
-import com.facilio.bmsconsole.context.WidgetToModulesContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -23,6 +20,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -172,7 +170,33 @@ public class WidgetAPI {
         return null;
     }
 
-    public static Long getWidgetConfigId(PageWidget.WidgetType widgetType, long width, long height, PageSectionWidgetContext.ConfigType configType) throws Exception {
+    public static WidgetConfigContext getWidgetConfiguration(PageWidget.WidgetType widgetType, Long id, String configName, PagesContext.PageLayoutType layoutType) throws Exception {
+        FacilioModule configsModule = ModuleFactory.getWidgetConfigsModule();
+        List<FacilioField> fields = FieldFactory.getWidgetConfigFields();
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+
+        FacilioModule widgetListModule = ModuleFactory.getWidgetListModule();
+        Map<String, FacilioField> widgetListFieldsMap = FieldFactory.getAsMap(FieldFactory.getWidgetListFields());
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(configsModule.getTableName())
+                .select(fields)
+                .innerJoin(widgetListModule.getTableName())
+                .on(widgetListFieldsMap.get("id").getCompleteColumnName() +"="+fieldsMap.get("widgetId").getCompleteColumnName())
+                .andCondition(CriteriaAPI.getEqualsCondition(widgetListFieldsMap.get("widgetType"), widgetType.name()));
+
+        if(id != null && id > 0) {
+            builder.andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("id"), String.valueOf(id)));
+        }else if(StringUtils.isNotBlank(configName)){
+            builder.andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("name"), configName))
+                    .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("layoutType"), layoutType.name()));
+        }
+
+        List<Map<String, Object>> props = builder.get();
+        return CollectionUtils.isEmpty(props)? null : FieldUtil.getAsBeanFromMap(props.get(0), WidgetConfigContext.class);
+    }
+
+    public static Long getWidgetConfigId(PageWidget.WidgetType widgetType, long width, long height, WidgetConfigContext.ConfigType configType) throws Exception {
         FacilioModule configsModule = ModuleFactory.getWidgetConfigsModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(configsModule.getTableName())
@@ -183,7 +207,7 @@ public class WidgetAPI {
                 .andCondition(CriteriaAPI.getCondition("CONFIG_TYPE","configType", configType.name(), StringOperators.IS))
                 .andCondition(CriteriaAPI.getCondition("MIN_HEIGHT","minHeight", String.valueOf(height), NumberOperators.EQUALS));
 
-        if(configType.equals(PageSectionWidgetContext.ConfigType.FIXED)) {
+        if(configType.equals(WidgetConfigContext.ConfigType.FIXED)) {
                 builder.andCondition(CriteriaAPI.getCondition("MIN_WIDTH","minWidth", String.valueOf(width),NumberOperators.EQUALS));
         }
         Map<String, Object> prop = builder.fetchFirst();
@@ -205,5 +229,18 @@ public class WidgetAPI {
             return FieldUtil.getAsBeanListFromMapList(props,WidgetConfigContext.class);
         }
         return null;
+    }
+
+    public static boolean checkIfWidgetConfigExistsWithLayoutType() throws Exception {
+
+        FacilioModule module = ModuleFactory.getWidgetConfigsModule();
+
+        GenericSelectRecordBuilder withLayoutTypeBuilder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(FieldFactory.getWidgetConfigFields())
+                .andCondition(CriteriaAPI.getCondition("LAYOUT_TYPE","layoutType", "WEB, MOBILE", StringOperators.IS));
+        List<Map<String, Object>> withLayoutTypeProps = withLayoutTypeBuilder.get();
+
+        return CollectionUtils.isNotEmpty(withLayoutTypeProps);
     }
 }

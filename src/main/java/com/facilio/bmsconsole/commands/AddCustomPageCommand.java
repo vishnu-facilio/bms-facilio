@@ -16,9 +16,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+
 
 import java.util.Map;
 import java.util.Objects;
@@ -52,23 +55,27 @@ public class AddCustomPageCommand extends FacilioCommand {
             moduleId = customPage.getModuleId();
         }
 
+        Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
         Long appId = (Long) context.get(FacilioConstants.ContextNames.APP_ID);
-        ApplicationContext app = appId == null || appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
-        if (app == null) {
-            app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-        }
-        appId = app.getId();
-        customPage.setAppId(appId);
-
         Boolean isTemplate = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_TEMPLATE,false);
         customPage.setIsTemplate(isTemplate);
 
-        PagesContext defaultPage = CustomPageAPI.getDefaultPage(appId, moduleId);
-        Boolean isDefaultPage = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_DEFAULT_PAGE,false);
+        if(!customPage.getIsTemplate()) {
+            ApplicationContext app = appId == null || appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
+            if (app == null) {
+                app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+            }
+            appId = app.getId();
 
-        customPage.setStatus(Boolean.FALSE);
+            customPage.setAppId(appId);
+            long pageCount = CustomPageAPI.getPageCountForModuleInApp(moduleId, appId);
+            long maxLimitForPage = 6L;  // maximum page allowed is limited to 6 excluding default page
+            if(pageCount >= maxLimitForPage) {
+                throw new IllegalArgumentException("New page creation can't be permitted as maximum limit attained");
+            }
 
-        if(!isTemplate) {
+            PagesContext defaultPage = CustomPageAPI.getDefaultPage(appId, moduleId);
+            Boolean isDefaultPage = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_DEFAULT_PAGE,false);
             if (defaultPage == null && !isDefaultPage) {
                 isDefaultPage = true;
             }
@@ -83,10 +90,16 @@ public class AddCustomPageCommand extends FacilioCommand {
                 }
             }
             customPage.setIsDefaultPage(isDefaultPage);
+
+            double sequenceNumber = CustomPageAPI.getSequenceNumberForNewPage(defaultPage, appId, moduleId);
+            customPage.setSequenceNumber(sequenceNumber);
+            LOGGER.info("Sequence Number For Custom Page named --" + customPage.getDisplayName() + " is " + customPage.getSequenceNumber());
         }
-        else{
+        else {
+            appId = -1L;
+            customPage.setAppId(-1);
             customPage.setStatus(Boolean.FALSE);
-            customPage.setIsDefaultPage(Boolean.FALSE);
+            customPage.setStatus(isSystem != null && isSystem);
         }
 
 
@@ -109,18 +122,11 @@ public class AddCustomPageCommand extends FacilioCommand {
         criteria.addAndCondition(CriteriaAPI.getEqualsCondition(appIdField,String.valueOf(appId)));
         criteria.addAndCondition(CriteriaAPI.getEqualsCondition(moduleIdField, String.valueOf(moduleId)));
 
-        if(!customPage.getIsTemplate()) {
-            double sequenceNumber = CustomPageAPI.getSequenceNumberForNewPage(defaultPage, appId, moduleId);
-            customPage.setSequenceNumber(sequenceNumber);
-            LOGGER.info("Sequence Number For Custom Page named --" + customPage.getDisplayName() + " is " + customPage.getSequenceNumber());
-        }
-
-        Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
         String name = StringUtils.isNotEmpty(customPage.getName()) ? customPage.getName() :
                 StringUtils.isNotEmpty(customPage.getDisplayName())? customPage.getDisplayName(): "page";
         name = CustomPageAPI.getUniqueName(pagesModule, criteria, moduleIdField, moduleId, name, isSystem);
         if((isSystem != null && isSystem) && StringUtils.isNotEmpty(customPage.getName()) && !customPage.getName().equalsIgnoreCase(name)) {
-            throw new IllegalArgumentException("linkName"+ customPage.getName()+" already exists, given linkName for customPage is invalid");
+            throw new IllegalArgumentException("linkName "+ customPage.getName()+" already exists, given linkName for customPage is invalid");
         }
 
         customPage.setName(name);
@@ -128,15 +134,22 @@ public class AddCustomPageCommand extends FacilioCommand {
         customPage.setSysCreatedTime(System.currentTimeMillis());
 
         CustomPageAPI.insertCustomPageToDB(customPage);
+
+        if(customPage.getIsTemplate() != null && customPage.getIsTemplate()) {
+            FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(customPage.getAppDomainTypes()),"appDomains must be defined for template page");
+            CustomPageAPI.insertTemplatePageAppDomains(customPage.getId(), customPage.getAppDomainTypes());
+        }
         Map<String, Long> layoutMap = CustomPageAPI.createLayoutsForPage(customPage.getId());
 
-        if (isSystem == null || !isSystem) {
-            PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), PagesContext.PageLayoutType.WEB);
-            PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), PagesContext.PageLayoutType.MOBILE);
+
+
+        if ((isSystem == null || !isSystem) && (customPage.getIsTemplate() == null || !customPage.getIsTemplate())) {
+            PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), null);
+//            PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), PagesContext.PageLayoutType.MOBILE);
         }
         context.put(FacilioConstants.CustomPage.PAGE_ID,customPage.getId());
         context.put(FacilioConstants.CustomPage.LAYOUT_IDS, layoutMap);
-        LOGGER.info("Custom page named --"+customPage.getName()+" has been created");
+        LOGGER.info("Custom page named -- "+customPage.getName()+" has been created");
 
 
         return false;

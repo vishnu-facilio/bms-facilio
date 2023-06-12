@@ -1,8 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.PageSectionWidgetContext;
+import com.facilio.bmsconsole.context.PagesContext;
+import com.facilio.bmsconsole.context.WidgetConfigContext;
 import com.facilio.bmsconsole.context.WidgetGroupWidgetContext;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.CustomPageAPI;
+import com.facilio.bmsconsole.util.WidgetAPI;
 import com.facilio.bmsconsole.util.WidgetGroupUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -21,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class AddWidgetGroupWidgetsCommand extends FacilioCommand {
     @Override
@@ -29,6 +35,10 @@ public class AddWidgetGroupWidgetsCommand extends FacilioCommand {
         List<Long> sectionIds = (List<Long>) context.get(FacilioConstants.WidgetGroup.WIDGETGROUP_SECTION_IDS);
 
         FacilioModule module = ModuleFactory.getWidgetGroupWidgetsModule();
+
+        PagesContext.PageLayoutType layoutType = (PagesContext.PageLayoutType) context.get(FacilioConstants.CustomPage.LAYOUT_TYPE);
+        layoutType = layoutType!=null? layoutType: PagesContext.PageLayoutType.WEB;
+
         if (CollectionUtils.isNotEmpty(widgets)) {
             FacilioField widgetGroupSectionIdField = FieldFactory.getNumberField("sectionId", "SECTION_ID", module);
             Criteria criteria = new Criteria();
@@ -40,9 +50,19 @@ public class AddWidgetGroupWidgetsCommand extends FacilioCommand {
                 if(sequenceNumber <= 0) {
                     widget.setSequenceNumber(sequenceNumber+=10);
                 }
-                FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == null, "WidgetType can't be null");
 
+                FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == null, "widgetType can't be null");
                 FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == PageWidget.WidgetType.WIDGET_GROUP, "widegtGroup's widgetType can't be 'WIDGET_GROUP'");
+
+                WidgetConfigContext config = WidgetAPI.getWidgetConfiguration(widget.getWidgetType(), widget.getWidgetConfigId(),  widget.getWidgetConfigName(), layoutType);
+                Objects.requireNonNull(config, "widgetGroup's  widget configuration does not exists for configId -- " +widget.getWidgetConfigId() +" or configName -- " +widget.getWidgetConfigName()
+                        +" for layoutType -- "+layoutType);
+
+                widget.setWidgetConfigId(config.getId());
+                widget.setConfigType(config.getConfigType());
+                widget.setWidth(config.getMinWidth());
+                widget.setHeight(config.getMinHeight());
+                widget.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
                 widget.setSysCreatedTime(System.currentTimeMillis());
 
                 Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
@@ -51,7 +71,7 @@ public class AddWidgetGroupWidgetsCommand extends FacilioCommand {
                 name = name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
                 name = existingWidgetName.get(widget.getSectionId())!=null?CustomPageAPI.generateUniqueName(name,existingWidgetName.get(widget.getSectionId()),isSystem):name;
                 if((isSystem != null && isSystem) && StringUtils.isNotEmpty(widget.getName()) && !widget.getName().equalsIgnoreCase(name)) {
-                    throw new IllegalArgumentException("linkName already exists, given linkName for widget is invalid");
+                    throw new IllegalArgumentException("linkName already exists or given linkName for widget is invalid");
                 }
                 widget.setName(name);
 

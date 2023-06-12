@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,12 +17,37 @@ import java.util.Map;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PageSectionWidgetContext {
+    public PageSectionWidgetContext() {
+    }
+
     private long id = -1;
     private long orgId = -1;
     private long sectionId = -1;
     private String name;
     private String displayName;
     private Long widgetConfigId;
+    private String widgetConfigName;
+
+    public PageSectionWidgetContext(String name, String displayName, PageWidget.WidgetType widgetType, Double sequenceNumber, long positionX, long positionY, JSONObject widgetParams, JSONObject widgetDetail) {
+        this.name = name;
+        this.displayName = displayName;
+        this.widgetType = widgetType;
+        this.sequenceNumber = sequenceNumber;
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.widgetParams = widgetParams;
+        this.widgetDetail = widgetDetail;
+    }
+
+    public PageSectionWidgetContext(String name, String displayName, PageWidget.WidgetType widgetType, String configName, Double sequenceNumber, long positionX, long positionY, JSONObject widgetParams, JSONObject widgetDetail) {
+        this(name, displayName, widgetType, sequenceNumber, positionX, positionY, widgetParams, widgetDetail);
+        this.setWidgetConfigName(configName);
+    }
+
+    public PageSectionWidgetContext(String name, String displayName, PageWidget.WidgetType widgetType, long widgetConfigId, Double sequenceNumber, long positionX, long positionY, JSONObject widgetParams, JSONObject widgetDetail) {
+        this(name, displayName, widgetType, sequenceNumber, positionX, positionY, widgetParams, widgetDetail);
+        this.setWidgetConfigId(widgetConfigId);
+    }
 
     public void setWidgetType(PageWidget.WidgetType widgetType) throws Exception {
         this.widgetType = widgetType;
@@ -34,7 +58,7 @@ public class PageSectionWidgetContext {
     private PageWidget.WidgetType widgetType;
     private Map<String, Object> widgetTypeObj;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private ConfigType configType;
+    private WidgetConfigContext.ConfigType configType;
     private Double sequenceNumber = -1D;
     private long positionX = -1;
     private long positionY = -1;
@@ -69,22 +93,10 @@ public class PageSectionWidgetContext {
     private JSONObject widgetDetail;
     private Boolean hasLicenseEnabled;
 
-    public enum ConfigType implements FacilioIntEnum {
-        FIXED("fixed"),
-        FLEXIBLE("flexible");
-        private final String name;
-        ConfigType(String name){
-            this.name = name;
-        }
-        public String getName() {
-            return name;
-        }
-        public static ConfigType valueOf (int value) {
-            if (value > 0 && value <= values().length) {
-                return values() [value - 1];
-            }
-            return null;
-        }
+    @JsonIgnore
+    private PageSectionContext parentContext;
+    public PageSectionContext widgetDone() {
+        return this.parentContext;
     }
 }
 

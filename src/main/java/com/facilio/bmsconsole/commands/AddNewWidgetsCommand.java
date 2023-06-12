@@ -2,14 +2,17 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.context.WidgetConfigContext;
 import com.facilio.bmsconsole.context.WidgetContext;
 import com.facilio.bmsconsole.context.WidgetToModulesContext;
+import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.WidgetAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -107,8 +110,33 @@ public class AddNewWidgetsCommand extends FacilioCommand {
         }
 
         if(CollectionUtils.isNotEmpty(widget.getWidgetConfigs())){
-            widget.getWidgetConfigs().forEach(f->f.setWidgetId(id));
+
+            widget.getWidgetConfigs().forEach(f->{f.setWidgetId(id);
+                try {
+                    validateWidgetConfig(f.getName(), widget.getWidgetType(), f.getLayoutType());
+                } catch (Exception e) {
+                    throw new IllegalArgumentException(e.getMessage());
+                }
+            });
+
             configs.addAll(widget.getWidgetConfigs());
         }
+    }
+
+    private void setAndValidateLinkNameForConfig(WidgetConfigContext config, PageWidget.WidgetType widgetType) throws Exception{
+        String name = null;
+        if(config.getConfigType() == WidgetConfigContext.ConfigType.FLEXIBLE) {
+            name = (config.getLayoutType().name()+widgetType.name()).toLowerCase().replaceAll("[^a-zA-Z0-9]+", "")+"-"+ config.getMinHeight();
+        } else if (config.getConfigType() == WidgetConfigContext.ConfigType.FIXED){
+            name = (config.getLayoutType().name()+widgetType.name()).toLowerCase().replaceAll("[^a-zA-Z0-9]+", "")+"-"+ config.getMinWidth()+"*"+ config.getMinHeight();
+        }
+        validateWidgetConfig(name, widgetType, config.getLayoutType());
+        config.setName(name);
+    }
+
+    private void validateWidgetConfig(String name, PageWidget.WidgetType widgetType, PagesContext.PageLayoutType layoutType) throws Exception {
+        FacilioUtil.throwIllegalArgumentException(StringUtils.isBlank(name), "widget configuration name cannot be empty for widgetType -- "+ widgetType+" of layouType-- "+layoutType);
+        WidgetConfigContext config = WidgetAPI.getWidgetConfiguration(widgetType, -1L, name, layoutType);
+        FacilioUtil.throwIllegalArgumentException(config != null, "configuration for widgetType -- "+widgetType+"  already exists for layoutType -- "+layoutType);
     }
 }

@@ -55,6 +55,8 @@ public class AddBulkRelatedListWidgetCommand extends FacilioCommand {
             }
         }
 
+        context.put(FacilioConstants.WidgetNames.BULK_RELATED_LIST_WIDGET, RelatedListWidgetUtil.getBulkRelatedListOfWidgetId(pageWidgetId));
+
         return false;
     }
 }

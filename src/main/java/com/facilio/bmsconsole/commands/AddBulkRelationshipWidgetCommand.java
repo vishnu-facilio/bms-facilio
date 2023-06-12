@@ -16,6 +16,7 @@ public class AddBulkRelationshipWidgetCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
+        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         Long pageWidgetId = (Long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
         if(pageWidgetId == null || pageWidgetId <= 0) {
             throw new IllegalArgumentException("Invalid PageSectionWidget id to create relationship widget");
@@ -40,6 +41,8 @@ public class AddBulkRelationshipWidgetCommand extends FacilioCommand {
                 RelationshipWidgetUtil.insertRelationshipWidgetsToDB(relShips);//add newRelationships
             }
         }
+
+        context.put(FacilioConstants.WidgetNames.BULK_RELATION_SHIP_WIDGET, RelationshipWidgetUtil.getBulkRelationShipsWithDetails(moduleName, pageWidgetId));
 
         return false;
     }

@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.signup.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.TemplatePages.TemplatePageUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -36,7 +37,6 @@ public class PagesUtil {
             long appId = app.getId();
 
             for (PagesContext templatePage : entry.getValue()) {
-                templatePage.getName().concat("template");
                 templatePage.setIsTemplate(true);
                 templatePage.setIsDefaultPage(false);
                 templatePage.setAppId(appId);
@@ -127,7 +127,7 @@ public class PagesUtil {
     }
     public static void addLayouts(long appId, String moduleName, boolean isSystem, long pageId, Map<String,List<PageTabContext>> layouts) throws Exception {
         for (Map.Entry<String, List<PageTabContext>> layout : layouts.entrySet()) {
-            Objects.requireNonNull(layout.getValue(), "Tabs can't be empty for layout "+layout.getKey()+"of page "+pageId);
+            Objects.requireNonNull(layout.getValue(), "Tabs can't be empty for layout "+layout.getKey()+"of page --"+pageId);
 
             LOGGER.info("---- Started adding tabs for layout "+layout.getKey()+" for pageId "+pageId);
             for(PageTabContext tab : layout.getValue()) {
@@ -153,12 +153,12 @@ public class PagesUtil {
         for(PageColumnContext column : tab.getColumns()) {
             columnWidths.add(column.getWidth());
         }
-        LOGGER.info("------ Started adding columns for tab ------ "+tabId);
-        addColumns(appId, moduleName, isSystem, tabId, columnWidths, tab.getColumns());
-        LOGGER.info("------ Completed adding columns for tab ------ "+tabId);
+        LOGGER.info("------ Started adding columns for tab ------ "+tab.getName());
+        addColumns(appId, moduleName, isSystem, tabId, layoutType, columnWidths, tab.getColumns());
+        LOGGER.info("------ Completed adding columns for tab ------ "+tab.getName());
     }
 
-    private static void addColumns(long appId, String moduleName, boolean isSystem, long tabId, List<Long> widths, List<PageColumnContext> columns) throws Exception {
+    private static void addColumns(long appId, String moduleName, boolean isSystem, long tabId,  PagesContext.PageLayoutType layoutType, List<Long> widths, List<PageColumnContext> columns) throws Exception {
         FacilioChain columnsChain = TransactionChainFactory.getAddPageColumnsChain();
         FacilioContext columnsChainContext = columnsChain.getContext();
         columnsChainContext.put(FacilioConstants.CustomPage.COLUMN_WIDTHS,widths);
@@ -177,13 +177,13 @@ public class PagesUtil {
             Objects.requireNonNull(column.getSections(), "Sections should be defined for column ---signUp error");
             for(PageSectionContext section : column.getSections()) {
                 LOGGER.info("-------- Started adding section for column -------- " + widthVsColumnIdMap.get(column.getWidth()));
-                addSection(appId, moduleName,isSystem, widthVsColumnIdMap.get(column.getWidth()), section);
+                addSection(appId, moduleName,isSystem, widthVsColumnIdMap.get(column.getWidth()), layoutType, section);
                 LOGGER.info("-------- Completed adding columns for column -------- " + widthVsColumnIdMap.get(column.getWidth()));
             }
         }
     }
 
-    private static void addSection(long appId, String moduleName,boolean isSystem, long columnId, PageSectionContext section) throws Exception{
+    private static void addSection(long appId, String moduleName,boolean isSystem, long columnId,  PagesContext.PageLayoutType layoutType, PageSectionContext section) throws Exception{
         FacilioChain sectionChain = TransactionChainFactory.getAddPageSectionChain();
         FacilioContext sectionChainContext = sectionChain.getContext();
         sectionChainContext.put(FacilioConstants.CustomPage.SECTION,section);
@@ -194,17 +194,18 @@ public class PagesUtil {
 
         Objects.requireNonNull(section.getWidgets(), "Widgets should be defined for section ---signUp error");
         for(PageSectionWidgetContext widget :section.getWidgets()) {
-            LOGGER.info("-------- Started adding widget for section -------- " + sectionId);
-            addWidget(appId, moduleName, isSystem, sectionId, widget);
-            LOGGER.info("-------- Completed adding widget for section -------- " + sectionId);
+            LOGGER.info("-------- Started adding widget for section -------- " + section.getName());
+            addWidget(appId, moduleName, isSystem, sectionId, layoutType, widget);
+            LOGGER.info("-------- Completed adding widget for section -------- " + section.getName());
         }
     }
-    private static void addWidget(long appId, String moduleName,boolean isSystem, long sectionId, PageSectionWidgetContext widget) throws Exception {
+    private static void addWidget(long appId, String moduleName,boolean isSystem, long sectionId,  PagesContext.PageLayoutType layoutType, PageSectionWidgetContext widget) throws Exception {
         FacilioChain createChain = WidgetConfigChain.getCreateChain(widget.getWidgetType().name());
         FacilioContext context = createChain.getContext();
         context.put(FacilioConstants.ContextNames.APP_ID, appId);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.CustomPage.IS_SYSTEM, isSystem);
+        context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
         context.put(FacilioConstants.CustomPage.SECTION_ID, sectionId);
         context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET, widget);
 
@@ -214,26 +215,35 @@ public class PagesUtil {
     public static void cloneTemplateToPage(long appId, long moduleId, long pageId, PagesContext.PageLayoutType layoutType) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleId);
+        ApplicationContext app = ApplicationApi.getApplicationForId(appId);
+        Objects.requireNonNull(app, "Invalid appId to getTemplatePage");
 
-        PagesContext templatePage = CustomPageAPI.getTemplatePage(appId, moduleId, layoutType.name());
+        PagesContext templatePage = CustomPageAPI.getTemplatePageFromDB(app, moduleId, layoutType!=null?layoutType.name() : null);
+        if (templatePage == null) {
+            templatePage = TemplatePageUtil.getTemplatePageFromFactory(module, app);
+            if(templatePage != null) {addLayouts(appId, module.getName(), false, pageId, templatePage.getLayouts());}
 
-        if(templatePage != null) {
-            FacilioChain chain = ReadOnlyChainFactory.fetchPageTabsForLayoutChain();
-            FacilioContext context = chain.getContext();
-            context.put(FacilioConstants.ContextNames.APP_ID,appId);
-            context.put(FacilioConstants.ContextNames.MODULE_NAME,module.getName());
-            context.put(FacilioConstants.ContextNames.PAGE_ID, templatePage.getId());
-            context.put(FacilioConstants.CustomPage.CUSTOM_PAGE, templatePage);
-            context.put(FacilioConstants.CustomPage.IS_FETCH_FOR_CLONE, true);
-            context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, true);
-            context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
-            context.put(FacilioConstants.CustomPage.EXCLUDE_COLUMNS, false);
-            chain.execute();
-            List<PageTabContext> tabs = (List<PageTabContext>) context.get(FacilioConstants.CustomPage.PAGE_TABS);
+        } else {
+            Map<String, List<PageTabContext>> layouts = new HashMap<>();
+            for(PagesContext.PageLayoutType type : PagesContext.PageLayoutType.values()) {
+                FacilioChain chain = ReadOnlyChainFactory.fetchPageTabsForLayoutChain();
+                FacilioContext context = chain.getContext();
+                context.put(FacilioConstants.ContextNames.APP_ID, appId);
+                context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+                context.put(FacilioConstants.ContextNames.PAGE_ID, templatePage.getId());
+                context.put(FacilioConstants.CustomPage.CUSTOM_PAGE, templatePage);
+                context.put(FacilioConstants.CustomPage.IS_FETCH_FOR_CLONE, true);
+                context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, true);
+                context.put(FacilioConstants.CustomPage.EXCLUDE_COLUMNS, false);
+                context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, type);
+                chain.execute();
+                List<PageTabContext> tabs = (List<PageTabContext>) context.get(FacilioConstants.CustomPage.PAGE_TABS);
+                layouts.put(type.name(), tabs);
+            }
 
-            addLayouts(appId, module.getName(), false, pageId,  new HashMap<String, List<PageTabContext>>() {{
-                put(layoutType.name(), tabs);
-            }});
+            addLayouts(appId, module.getName(), false, pageId, layouts);
         }
+
+
     }
 }
