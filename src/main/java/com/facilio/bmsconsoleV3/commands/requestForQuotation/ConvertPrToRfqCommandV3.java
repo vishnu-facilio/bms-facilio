@@ -86,6 +86,7 @@ public class ConvertPrToRfqCommandV3 extends FacilioCommand {
             rfqLineItem.setUnitPrice(prLineItem.getUnitPrice());
             rfqLineItem.setQuantity(prLineItem.getQuantity());
             rfqLineItem.setUnitOfMeasure(prLineItem.getUnitOfMeasure());
+            rfqLineItem.setTax(prLineItem.getTax());
 
             rfqLineItems.add(rfqLineItem);
         }

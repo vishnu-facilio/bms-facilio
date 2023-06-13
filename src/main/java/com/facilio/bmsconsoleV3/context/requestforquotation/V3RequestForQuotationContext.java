@@ -3,7 +3,10 @@ package com.facilio.bmsconsoleV3.context.requestforquotation;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.modules.FacilioStringEnum;
 import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -172,4 +175,18 @@ public class V3RequestForQuotationContext extends V3Context {
     public void setRecordIds(List<Long> recordIds) {
         this.recordIds = recordIds;
     }
+    public enum RfqTypes implements FacilioStringEnum {
+        OPEN_BID("Open Bid"),
+        CLOSED_BID("Closed Bid");
+        private final String displayName;
+        RfqTypes(String displayName){
+            this.displayName = displayName;
+        }
+        @Override
+        public String getValue() {
+            return displayName;
+        }
+    }
+    @Getter @Setter
+    private V3RequestForQuotationContext.RfqTypes rfqType;
 }

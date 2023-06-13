@@ -2,14 +2,14 @@ package com.facilio.bmsconsoleV3.commands.requestForQuotation;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
+import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -23,7 +23,6 @@ import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +41,7 @@ public class AwardVendorsCommandV3 extends FacilioCommand {
                 if (lineItem.getAwardedPrice() == null) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Vendor has not quoted unit price");
                 }
-                Double totalCost = lineItem.getQuantity() * lineItem.getAwardedPrice();
+                Double totalCost = calculateTotalCost(lineItem);
 
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 String moduleName = FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_LINE_ITEMS;
@@ -80,8 +79,21 @@ public class AwardVendorsCommandV3 extends FacilioCommand {
         }
         return false;
     }
-    private Long getVendorQuoteLineItem(Long rfqId, Long rfqLineItemId, Long vendorId) throws Exception{
 
+    private static Double calculateTotalCost(V3RequestForQuotationLineItemsContext lineItem) throws Exception {
+        Double amount = lineItem.getQuantity() * lineItem.getAwardedPrice();
+        Double taxAmount = 0.00;
+        if(lineItem.getTax() != null){
+            TaxContext taxDetails = QuotationAPI.getTaxDetails(lineItem.getTax().getId());
+            if(taxDetails != null){
+                taxAmount = taxDetails.getRate() * amount/100;
+            }
+        }
+        Double totalCost = amount + taxAmount;
+        return totalCost;
+    }
+
+    private Long getVendorQuoteLineItem(Long rfqId, Long rfqLineItemId, Long vendorId) throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String lineItemModuleName = FacilioConstants.ContextNames.VENDOR_QUOTES_LINE_ITEMS;
         List<FacilioField> lineItemFields = modBean.getAllFields(FacilioConstants.ContextNames.VENDOR_QUOTES_LINE_ITEMS);

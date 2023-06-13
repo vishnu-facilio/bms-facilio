@@ -73,7 +73,6 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.wmsv2.handler.AuditLogHandler;
-import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -3104,6 +3103,7 @@ public class FacilioConstants {
 
 		public static final List<String> MONTH_LIST = Arrays.asList("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC");
 	}
+
 
 	public static class Inspection {
 		public static final String INSPECTION_TEMPLATE = "inspectionTemplate";

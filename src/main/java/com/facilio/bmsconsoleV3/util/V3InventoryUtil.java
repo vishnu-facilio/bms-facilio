@@ -1,11 +1,14 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsoleV3.context.V3ServiceContext;
-import com.facilio.bmsconsoleV3.context.V3VendorContactContext;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
+import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
+import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
+import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
+import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -22,7 +25,6 @@ import java.util.*;
 
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
-import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.modules.*;
@@ -30,6 +32,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import org.apache.commons.lang3.ObjectUtils;
 import org.json.simple.JSONObject;
 
 import java.util.List;
@@ -321,6 +324,73 @@ public class V3InventoryUtil {
                 V3Util.updateBulkRecords(FacilioConstants.ContextNames.INVENTORY_REQUEST, rawRecord, Collections.singletonList(invReqId), iRBodyParams, null,false);
             }
         }
+    }
+    public static List<V3VendorQuotesLineItemsContext> getVendorQuoteLineItems(V3VendorQuotesContext vendorQuote) throws Exception {
+        Long vendorQuoteId = vendorQuote.getId();
+        String lineItemModuleName = FacilioConstants.ContextNames.VENDOR_QUOTES_LINE_ITEMS;
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(lineItemModuleName);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+        fields = checkAndRemoveCounterPrice(vendorQuote, fields, fieldsAsMap);
+
+        SelectRecordsBuilder<V3VendorQuotesLineItemsContext> builder = new SelectRecordsBuilder<V3VendorQuotesLineItemsContext>()
+                .moduleName(lineItemModuleName)
+                .select(fields)
+                .beanClass(V3VendorQuotesLineItemsContext.class)
+                .andCondition(CriteriaAPI.getCondition("VENDOR_QUOTE_ID", "vendorQuotes", String.valueOf(vendorQuoteId), NumberOperators.EQUALS))
+                .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"), (LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service"),(LookupField) fieldsAsMap.get("requestForQuotationLineItem")));
+        List<V3VendorQuotesLineItemsContext> lineItems = builder.get();
+        setTaxAmount(lineItems);
+        return lineItems;
+    }
+
+    private static void setTaxAmount(List<V3VendorQuotesLineItemsContext> lineItems) throws Exception {
+        List<Long> uniqueTaxIds = lineItems.stream().filter(lineItem -> lookupValueIsNotEmpty(lineItem.getTax())).map(lineItem -> lineItem.getTax().getId()).distinct().collect(Collectors.toList());
+        List<TaxContext> taxList = QuotationAPI.getTaxesForIdList(uniqueTaxIds);
+        Map<Long, Double> taxIdVsRateMap = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(taxList)) {
+            taxList.forEach(tax -> taxIdVsRateMap.put(tax.getId(), tax.getRate()));
+        }
+        if(CollectionUtils.isNotEmpty(lineItems)){
+            for (V3VendorQuotesLineItemsContext lineItem: lineItems) {
+                if(!ObjectUtils.allNotNull(lineItem,lineItem.getTax(),lineItem.getQuantity(),lineItem.getCounterPrice(),taxIdVsRateMap)){
+                    continue;
+                }
+                Double taxRate = taxIdVsRateMap.get(lineItem.getTax().getId());
+                if(taxRate == null) {
+                    continue;
+                }
+                Double taxAmount = taxRate * (lineItem.getQuantity() * lineItem.getCounterPrice())/100;
+                lineItem.setTaxAmount(taxAmount);
+            }
+        }
+    }
+
+    public static List<FacilioField> checkAndRemoveCounterPrice(V3VendorQuotesContext vendorQuote, List<FacilioField> fields, Map<String, FacilioField> fieldsAsMap) throws Exception {
+        if(canHideCounterPrice(vendorQuote)){
+            List<String> fieldsToRemove = Arrays.asList("counterPrice", "tax","remarks");
+            for (String field:fieldsToRemove) {
+                if (fieldsAsMap.containsKey(field)){
+                    fieldsAsMap.remove(field);
+                }
+            }
+            fields = fieldsAsMap.values().stream().collect(Collectors.toList());
+        }
+        return fields;
+    }
+    private static Boolean canHideCounterPrice(V3VendorQuotesContext vendorQuote) throws Exception {
+        V3RequestForQuotationContext rfq = vendorQuote.getRequestForQuotation();
+        if(vendorQuote.getVendor() != null && V3InventoryUtil.hasVendorPortalAccess(vendorQuote.getVendor().getId()) && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)){
+            Boolean hideDetailsForClosedBid = rfq.getRfqType() != null && rfq.getRfqType() == V3RequestForQuotationContext.RfqTypes.CLOSED_BID && !rfq.getIsQuoteReceived();
+            if(hideDetailsForClosedBid || !vendorQuote.getIsFinalized()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean lookupValueIsNotEmpty(ModuleBaseWithCustomFields context) {
+        return context != null && context.getId() > 0;
     }
 
 }

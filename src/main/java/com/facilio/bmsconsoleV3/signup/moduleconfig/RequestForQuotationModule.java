@@ -254,6 +254,8 @@ public class RequestForQuotationModule extends BaseModuleConfig{
         requestForQuotationModuleFormDefaultFields.add(new FormField("requiredDate", FacilioField.FieldDisplayType.DATE, "Required Date", FormField.Required.OPTIONAL, 4, 3));
         requestForQuotationModuleFormDefaultFields.add(new FormField("expectedReplyDate", FacilioField.FieldDisplayType.DATE, "Expected Reply Date", FormField.Required.OPTIONAL, 5, 2));
         requestForQuotationModuleFormDefaultFields.add(new FormField("requestedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Requested By", FormField.Required.OPTIONAL, "people", 5, 3));
+        requestForQuotationModuleFormDefaultFields.add(new FormField("rfqType", FacilioField.FieldDisplayType.SELECTBOX, "RFQ Type", FormField.Required.REQUIRED, 6, 1));
+
         //fields.add(new FormField("billToAddress", FieldDisplayType.SADDRESS, "BILLING ADDRESS", Required.OPTIONAL, 6, 1));
 
         List<FormField> shippingAddressFields = new ArrayList<>();

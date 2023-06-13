@@ -54,6 +54,9 @@ public class ConvertVendorQuoteToPoCommandV3  extends FacilioCommand {
                 if(vendorQuotesLineItem.getDescription()!=null){
                     purchaseOrderLineItem.setDescription(vendorQuotesLineItem.getDescription());
                 }
+                if(vendorQuotesLineItem.getTax() != null){
+                    purchaseOrderLineItem.setTax(vendorQuotesLineItem.getTax());
+                }
                 if(vendorQuotesLineItem.getInventoryType().equals(V3RequestForQuotationLineItemsContext.InventoryTypeRfq.ITEM.getIndex())){
                     purchaseOrderLineItem.setItemType(vendorQuotesLineItem.getItemType());
                 }

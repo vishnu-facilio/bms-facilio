@@ -17,7 +17,6 @@ import org.apache.commons.collections4.MapUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class VendorQuoteBeforeUpdateCommandV3  extends FacilioCommand {
     @Override
@@ -68,6 +67,7 @@ public class VendorQuoteBeforeUpdateCommandV3  extends FacilioCommand {
         recordMap.put(moduleName, vendorQuotes);
         return false;
     }
+
 
     private void checkIsRfqSubmissionClosed(V3RequestForQuotationContext requestForQuotation) throws RESTException {
         if(requestForQuotation.getIsQuoteReceived()){

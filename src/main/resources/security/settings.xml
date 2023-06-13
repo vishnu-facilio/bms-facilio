@@ -2132,6 +2132,11 @@
             <property name="perPage" type="number" mandatory="false" />
         </requestbody>
     </request>
+    <request path="/api/v3/requestForQuotation/convertVendorQuoteToPo">
+        <urlparams>
+            <property name="vendorQuote" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
 
 
     <request path="/api/v1/setup/iamuser/:addorupdateuser" method="POST">
@@ -2371,4 +2376,8 @@
         </requestbody>
     </request>
     <request path="/api/setup/portalUsersList" method="GET" />
+
+    <request path="/api/v3/requestForQuotation/convertPrToRfq" method="GET">
+        <requestbody type="object"/>
+    </request>
 </config>

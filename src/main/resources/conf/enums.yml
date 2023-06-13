@@ -326,3 +326,6 @@ enums:
 
   - name: Notification_Type_Enum
     enumClassName: com.facilio.bmsconsoleV3.context.PeopleNotificationSettings$Notification_Types
+
+  - name: RfqTypes
+    enumClassName: com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext$RfqTypes

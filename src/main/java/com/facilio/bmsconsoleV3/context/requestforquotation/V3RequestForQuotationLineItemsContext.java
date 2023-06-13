@@ -4,8 +4,14 @@ import com.facilio.bmsconsoleV3.context.V3ServiceContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
+import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
+import com.facilio.bmsconsoleV3.context.quotation.TaxSplitUpContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 public class V3RequestForQuotationLineItemsContext extends V3Context {
     private static final long serialVersionUID = 1L;
@@ -23,6 +29,12 @@ public class V3RequestForQuotationLineItemsContext extends V3Context {
     private V3VendorContext awardedTo;
     private String remarks;
     private Double totalCost;
+
+    @Getter @Setter
+    private TaxContext tax;
+    @Getter @Setter
+    private Double taxAmount;
+
 
     public V3RequestForQuotationContext getRequestForQuotation() {
         return requestForQuotation;
