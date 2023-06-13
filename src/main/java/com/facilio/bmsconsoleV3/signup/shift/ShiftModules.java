@@ -40,8 +40,8 @@ public class ShiftModules extends SignUpData {
         Shift defaultShift = new Shift();
         defaultShift.setOrgId(orgID);
         defaultShift.setName("Default");
-        defaultShift.setStartTime(32400L);
-        defaultShift.setEndTime(64800L);
+        defaultShift.setStartTime(32400000L);
+        defaultShift.setEndTime(64800000L);
         defaultShift.setDefaultShift(true);
         defaultShift.setIsActive(true);
         defaultShift.setWeekend("{\"1\":[6,7],\"2\":[6,7],\"3\":[6,7],\"4\":[6,7],\"5\":[6,7]}");
