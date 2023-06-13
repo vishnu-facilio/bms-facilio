@@ -32,4 +32,3 @@ artifacts:
     - scripts/validate_health.sh
     - deployment-files/*
   discard-paths: yes
-
