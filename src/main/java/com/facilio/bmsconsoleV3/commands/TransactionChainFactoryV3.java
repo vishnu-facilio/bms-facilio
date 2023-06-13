@@ -55,7 +55,6 @@ import com.facilio.bmsconsoleV3.commands.workorder.multi_import.AddWorkOrderComm
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.LoadMultiResourceExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.context.spacebooking.*;
-import com.facilio.bmsconsoleV3.plannedmaintenance.ValidatePmResourcePlannerResource;
 import com.facilio.command.PostTransactionCommand;
 import com.facilio.plannedmaintenance.FetchPlannerDetails;
 import com.facilio.plannedmaintenance.PreCreateWorkOrderRecord;
@@ -3362,12 +3361,6 @@ public class TransactionChainFactoryV3 {
     {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SendMultipleReportAsMailCommand());
-        return c;
-    }
-    public static FacilioChain getPmV2ResourcePlannerBeforeSaveCommand(){
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new PMResourcePlannerBeforeSaveCommand());
-        c.addCommand(new ValidatePmResourcePlannerResource());
         return c;
     }
 }

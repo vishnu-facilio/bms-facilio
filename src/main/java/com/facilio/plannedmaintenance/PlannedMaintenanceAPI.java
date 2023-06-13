@@ -8,10 +8,7 @@ import com.facilio.bmsconsole.context.PMTriggerV2;
 import com.facilio.bmsconsole.context.PlannedMaintenance;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
-import com.facilio.bmsconsoleV3.util.V3SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -275,8 +272,6 @@ public class PlannedMaintenanceAPI {
                 .beanClass(PlannedMaintenance.class)
                 .andCondition(CriteriaAPI.getIdCondition(pmV2Id,plannedMaintenanceModule));
         PlannedMaintenance plannedMaintenance = plannedMaintenanceSelectRecordsBuilder.fetchFirst();
-        List<V3SiteContext> sites = getPmV2SitesFromPMv2Id(pmV2Id);
-        plannedMaintenance.setSites(sites);
         return plannedMaintenance;
     }
     public static PMPlanner getPmPlannerFromId(long plannerId) throws Exception {
@@ -444,25 +439,5 @@ public class PlannedMaintenanceAPI {
                 break;
         }
         return frequency;
-    }
-    public static List<V3SiteContext> getPmV2SitesFromPMv2Id(long pmId)throws Exception{
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule plannedMaintenanceSite = modBean.getModule(FacilioConstants.PM_V2.PM_V2_SITES);
-        List<FacilioField> plannedMaintenanceSiteFields = modBean.getAllFields(FacilioConstants.PM_V2.PM_V2_SITES);
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(plannedMaintenanceSiteFields);
-
-       GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-               .table(plannedMaintenanceSite.getTableName())
-               .select(plannedMaintenanceSiteFields)
-               .andCondition(CriteriaAPI.getCondition(fieldMap.get("left"),String.valueOf(pmId),NumberOperators.EQUALS));
-       List<Map<String,Object>> prop =  builder.get();
-        List<V3SiteContext> sites = new ArrayList<>();
-       if(CollectionUtils.isEmpty(prop)){
-           return sites;
-       }
-       for(Map<String,Object> map : prop){
-           sites.add(V3SpaceAPI.getSiteSpace((Long)map.get("right")));
-       }
-       return sites;
     }
 }

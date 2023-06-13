@@ -85,7 +85,7 @@ public class PlannedMaintenanceV3Config {
                 .update()
                 .beforeSave(new PMResourcePlannerBeforeSaveCommand())
                 .create()
-                .beforeSave(TransactionChainFactoryV3.getPmV2ResourcePlannerBeforeSaveCommand())
+                .beforeSave(new PMResourcePlannerBeforeSaveCommand())
                 .afterSave(TransactionChainFactoryV3.getPmV2ResourcePlannerAfterCreateChain())
                 .delete()
                 .list()
