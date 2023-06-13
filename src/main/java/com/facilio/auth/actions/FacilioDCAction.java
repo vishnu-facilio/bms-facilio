@@ -88,7 +88,7 @@ public class FacilioDCAction extends V3Action {
 		return SUCCESS;
 	}
 
-	public String deleteDevicePasscode() throws Exception {
+	public String deleteDevicePassCode() throws Exception {
 		FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() ->  DevicesUtil.deleteDevicePasscode(getDeviceCode()));
 		setData("result", "success");
 		return SUCCESS;
