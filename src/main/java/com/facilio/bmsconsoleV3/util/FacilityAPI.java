@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.V3PhotosContext;
@@ -22,6 +23,8 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.V3Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -30,6 +33,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class FacilityAPI {
+    private static Logger log = LogManager.getLogger(FacilityAPI.class.getName());
 
     public static void setFacilityWeekDayAvailability(FacilityContext facility) throws Exception {
 
@@ -449,7 +453,7 @@ public class FacilityAPI {
             });
         }catch (Exception e)
         {
-
+            log.info("Error occurred in fetching and sorting slots"+ e);
         }
         return  list;
     }
