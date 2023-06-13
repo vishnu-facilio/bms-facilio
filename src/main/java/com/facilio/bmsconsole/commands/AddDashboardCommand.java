@@ -26,25 +26,22 @@ public class AddDashboardCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
-		if(dashboard != null) {
-
-			Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(AccountUtil.getCurrentOrg().getId(), "DASHBOARD_PUBLISHING_MIG");
-			if(orgInfo != null && orgInfo.containsKey("name") && orgInfo.get("name") != null && orgInfo.get("name").equals("DASHBOARD_PUBLISHING_MIG")){
-				if (dashboard.getClientMetaJsonString() != null)
-				{
-					JSONParser parser = new JSONParser();
-					JSONObject client_meta_json = (JSONObject) parser.parse(dashboard.getClientMetaJsonString());
-					if (client_meta_json != null && !client_meta_json.containsKey("isShow")) {
-						client_meta_json.put("isShow", true);
-						dashboard.setClientMetaJsonString(client_meta_json.toJSONString());
-					}
+		if(dashboard != null)
+		{
+			if (dashboard.getClientMetaJsonString() != null)
+			{
+				JSONParser parser = new JSONParser();
+				JSONObject client_meta_json = (JSONObject) parser.parse(dashboard.getClientMetaJsonString());
+				if (client_meta_json != null && !client_meta_json.containsKey("isShow")) {
+					client_meta_json.put("isShow", true);
+					dashboard.setClientMetaJsonString(client_meta_json.toJSONString());
 				}
-				else
-				{
-					JSONObject temp = new JSONObject();
-					temp.put("isShow", true);
-					dashboard.setClientMetaJsonString(temp.toJSONString());
-				}
+			}
+			else
+			{
+				JSONObject temp = new JSONObject();
+				temp.put("isShow", true);
+				dashboard.setClientMetaJsonString(temp.toJSONString());
 			}
 			dashboard.setPublishStatus(DashboardPublishStatus.NONE.ordinal());
 			dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());

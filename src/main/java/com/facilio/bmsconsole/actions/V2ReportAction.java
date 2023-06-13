@@ -2755,7 +2755,7 @@ public class V2ReportAction extends FacilioAction {
                 if (sort_alias != null && order != null) {
                     HashMap<String, FacilioField> pivotVs_Alias = (HashMap<String, FacilioField>) context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD);
                     if (pivotVs_Alias != null && pivotVs_Alias.containsKey(sort_alias)) {
-                        if (pivotVs_Alias.get(sort_alias) != null && (pivotVs_Alias.get(sort_alias) instanceof LookupField || sort_alias.contains("formula_"))) {
+                        if (pivotVs_Alias.get(sort_alias) != null && (pivotVs_Alias.get(sort_alias) instanceof LookupField)) {
                             Collections.sort(records_list, new HashMapValueComparator(sort_alias, true, order));
                         } else {
                             Collections.sort(records_list, new HashMapValueComparator(sort_alias, false, order));
