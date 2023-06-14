@@ -408,7 +408,6 @@ public class FieldUtil {
                     "ticket",
                     "workorder",
                     "workorderrequest",
-                    "task",
                     "readingalarm",
                     "inventory",
                     "tenant",

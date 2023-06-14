@@ -24,6 +24,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class JobPlanAPI {
@@ -407,7 +408,8 @@ public class JobPlanAPI {
 
                         List<V3TaskContext> tasks = new ArrayList<>();
 
-                        for (JobPlanTasksContext jobPlanTask : sectionContext.getTasks()) {
+                        List<JobPlanTasksContext> jobPlanTasks = orderTaskBySequenceNumber(sectionContext.getTasks());
+                        for (JobPlanTasksContext jobPlanTask : jobPlanTasks) {
 
                             List<ResourceContext> taskResourceList = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(jobPlanTask.getJobPlanTaskCategoryEnum(), Collections.singletonList(sectionContext.getResource().getId()), jobPlanTask.getSpaceCategory() == null ? null :  jobPlanTask.getSpaceCategory().getId(), jobPlanTask.getAssetCategory() == null ? null :  jobPlanTask.getAssetCategory().getId(), null, null, false);
 
@@ -532,5 +534,18 @@ public class JobPlanAPI {
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("group"),String.valueOf(groupId),NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobPlanVersion"),String.valueOf(version),NumberOperators.EQUALS));
         return builder.fetchFirst().getId();
+    }
+    public static List<JobPlanTasksContext> orderTaskBySequenceNumber(List<JobPlanTasksContext> taskList) {
+        List<JobPlanTasksContext> orderedJobPlanTaskList = new ArrayList<>();
+        if(CollectionUtils.isEmpty(taskList)){
+            return orderedJobPlanTaskList;
+        }
+        Map<Integer, JobPlanTasksContext> taskMap = taskList.stream().collect(Collectors.toMap(JobPlanTasksContext::getSequence, Function.identity()));
+        List<Integer> sequenceNumberList = taskMap.keySet().stream().collect(Collectors.toList());
+        Collections.sort(sequenceNumberList);
+        for(int sequenceNumber : sequenceNumberList){
+            orderedJobPlanTaskList.add(taskMap.get(sequenceNumber));
+        }
+        return orderedJobPlanTaskList;
     }
 }

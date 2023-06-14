@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.commands.tasks;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
@@ -18,10 +20,11 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * FetchJobPlanSectionAndTaskInputOptions fetches the JobPlan's
@@ -58,7 +61,7 @@ public class FetchJobPlanSectionAndTaskInputOptions extends FacilioCommand {
                         }
                     }
 
-                    List<JobPlanTasksContext> taskList = section.getTasks();
+                    List<JobPlanTasksContext> taskList = JobPlanAPI.orderTaskBySequenceNumber(section.getTasks());
                     if (taskList != null && !taskList.isEmpty()) {
 
                         // jobPlan task level
