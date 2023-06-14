@@ -257,7 +257,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         if (report.getTypeEnum() == ReportType.PIVOT_REPORT) {
             for (ReportDataPointContext point : dataPointList) {
                 if (point.getyAxis().getModule() != null) {
-                    if (point.getyAxis().getModule().getTypeEnum() == ModuleType.READING) {
+                    if (point.getyAxis().getModule().getTypeEnum() == ModuleType.READING || point.getyAxis().getModule().getTypeEnum() == ModuleType.READING_RULE) {
                         applyReadingResourceJoin(point, selectBuilder, fields, addedModules);
                     } else {
                         handleJoin(point.getyAxis(), selectBuilder, addedModules);
@@ -1334,9 +1334,11 @@ public class FetchReportDataCommand extends FacilioCommand {
             return false;
         } else {
             FacilioField facilioField = dataPoint.getyAxis().getField().clone();
-            if(reportType == ReportType.PIVOT_REPORT && dataPoint.getyAxis().getModule().getTypeEnum() != ModuleType.READING) {
+            if(reportType == ReportType.PIVOT_REPORT && dataPoint.getyAxis().getModule().getTypeEnum() != ModuleType.READING
+            && dataPoint.getyAxis().getModule().getTypeEnum() != ModuleType.READING_RULE) {
                 facilioField.setTableAlias(getAndSetModuleAlias(facilioField.getModule().getName()));
-            } else if(reportType == ReportType.PIVOT_REPORT && dataPoint.getyAxis().getModule().getTypeEnum() == ModuleType.READING) {
+            } else if(reportType == ReportType.PIVOT_REPORT && (dataPoint.getyAxis().getModule().getTypeEnum() == ModuleType.READING
+                    || dataPoint.getyAxis().getModule().getTypeEnum() == ModuleType.READING_RULE)) {
                 facilioField.setTableAlias(getAndSetModuleAlias(dataPoint.getyAxis().getModuleName()));
 //                facilioField.setTableAlias(null);
             }
@@ -1564,7 +1566,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                 }
                 prevModule = poll;
             }
-        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId()) && module.getTypeEnum() != ModuleType.READING && module.getTypeEnum() != ModuleType.SYSTEM_SCHEDULED_FORMULA) {
+        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId()) && module.getTypeEnum() != ModuleType.READING && module.getTypeEnum() != ModuleType.SYSTEM_SCHEDULED_FORMULA && module.getTypeEnum() != ModuleType.READING_RULE) {
             FacilioField dataField = null;
 
             List<FacilioField> facilioFields = modBean.getAllFields(module.getName());
@@ -1631,7 +1633,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
         }
 
-        if(module.getTypeEnum() == ModuleType.READING || module.getTypeEnum() == ModuleType.SYSTEM_SCHEDULED_FORMULA){
+        if(module.getTypeEnum() == ModuleType.READING || module.getTypeEnum() == ModuleType.SYSTEM_SCHEDULED_FORMULA || module.getTypeEnum() == ModuleType.READING_RULE){
             FacilioField facilioField = (FacilioField) pivotField.get("field");
             FacilioField moduleField = modBean.getField(facilioField.getFieldId()).clone();
 
@@ -1651,8 +1653,18 @@ public class FetchReportDataCommand extends FacilioCommand {
             joinField.setTableAlias(getAndSetModuleAlias(facilioModule.getName()));
 
             String joinString = joinField.getCompleteColumnName() + " = " + resourceModule.getTableName() + ".ID";
+
+            String resourceModuleAlias = getAndSetModuleAlias(resourceModule.getName());
+            StringBuilder AND_ORGID_CRT= null;
+            if(resourceModuleAlias != null && tableAlias != null)
+            {
+                AND_ORGID_CRT = new StringBuilder().append(" AND ").append(tableAlias).append(".ORGID").append(" = ").append(resourceModuleAlias).append(".ORGID");
+            }
+
+            if(joinString != null && AND_ORGID_CRT != null){
+                joinString = new StringBuilder(joinString).append(AND_ORGID_CRT).toString();
+            }
             String tableName = facilioModule.getTableName()+ " " + tableAlias;
-//            selectBuilder.addJoinModules(Collections.singletonList(facilioModule));
             if(dp.getOtherCriteria() == null && !sm_pivot_reading_joins.contains(tableName))
             {
                 selectBuilder.innerJoin(tableName).on(joinString);
@@ -1660,6 +1672,21 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
             else if(dp.getOtherCriteria() != null){
                 selectBuilder.innerJoin(tableName).on(joinString);
+            }else {
+                Field field = selectBuilder.getClass().getDeclaredField("joinBuilder");
+                if(field != null)
+                {
+                    field.setAccessible(true);
+                    Object value = field.get(selectBuilder);
+                    if(value != null)
+                    {
+                        String join_builder = value.toString();
+                        if(!join_builder.contains(tableName))
+                        {
+                            selectBuilder.innerJoin(tableName).on(joinString);
+                        }
+                    }
+                }
             }
         }
     }

@@ -48,7 +48,6 @@ public class ScheduleV2ReportCommand extends FacilioCommand {
 		Map<String, Object> props=new HashMap<String,Object>();
 		props.put("reportId", reportInfo.getReportId());
 		props.put("orgId", AccountUtil.getCurrentOrg().getId());
-		props.put("moduleId", reportModule.getModuleId());
 		props.put("fileFormat", fileFormat.getIntVal());
 		props.put("templateId", emailTemplate.getId());
 		if(reportInfo.getScheduled_report_name() != null){
@@ -58,6 +57,7 @@ public class ScheduleV2ReportCommand extends FacilioCommand {
 		if(reportContext != null)
 		{
 			props.put("reportType" , reportContext.getTypeEnum().getValue());
+			props.put("moduleId", reportContext.getModuleId());
 		}
 		FacilioModule module = ModuleFactory.getReportScheduleInfo();
 		List<FacilioField> fields = FieldFactory.getReportScheduleInfo1Fields();

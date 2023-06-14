@@ -275,7 +275,7 @@ public class ConstructTabularReportData extends FacilioCommand {
             if (reportContext.getTypeEnum() == ReportType.PIVOT_REPORT) {
                 if(data.getBaselineLabel() != null && ((data.getDateFieldId() > 0 && data.getDatePeriod() > 0) || (data.getReadingField() != null && data.getModuleType() != null && data.getModuleType().equals("2")))){
                     FacilioField dateField = null;
-                    if(yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING)
+                    if(yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING || yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING_RULE)
                         dateField = FieldFactory.getDateField("ttime", "TTIME", yField.getModule()).clone();
                     else
                         dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName()).clone();
@@ -362,7 +362,7 @@ public class ConstructTabularReportData extends FacilioCommand {
                     otherCrit.addAndCondition(newCond);
                     dataPointContext.setOtherCriteria(otherCrit);
                 } else if (startTime > 0 && endTime > 0
-                        && yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING && dateFieldId > 0 && !data.isExcludeFromTimelineFilter() ) {
+                        && (yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING || yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING_RULE) && dateFieldId > 0 && !data.isExcludeFromTimelineFilter() ) {
                     FacilioField dateField = FieldFactory
                             .getDateField("ttime", "TTIME", yField.getModule()).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
@@ -372,7 +372,7 @@ public class ConstructTabularReportData extends FacilioCommand {
                     otherCrit.addAndCondition(newCond);
                     dataPointContext.setOtherCriteria(otherCrit);
                 } else if (data.getDatePeriod() > 0
-                        && yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING) {
+                        && (yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING || yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING_RULE)) {
                     FacilioField dateField = FieldFactory
                             .getDateField("ttime", "TTIME", yField.getModule()).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));

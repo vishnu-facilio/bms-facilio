@@ -43,7 +43,7 @@ public class ScheduledV2ReportListCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleToFetch = modBean.getModule(moduleName);
 		List<Long> moduleIds = new ArrayList<>();
-		if(!moduleName.equals("pivot")){
+		if(moduleName != null && !"".equals(moduleName) && !moduleName.equals("pivot")){
 			String name = AccountUtil.getCurrentApp().getLinkName();
 			if(name.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
 				if(moduleName != null && moduleName.equals("custom")){

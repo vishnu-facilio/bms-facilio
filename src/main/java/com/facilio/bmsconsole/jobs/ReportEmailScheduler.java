@@ -104,14 +104,17 @@ public class ReportEmailScheduler extends FacilioJob {
 			ReportContext reportContext = ReportUtil.getReport(reportId);
 			if (reportContext.getTypeEnum() == ReportType.WORKORDER_REPORT) {
 				chain = TransactionChainFactoryV3.getReporsForDownloadChain(fileFormat != FileFormat.IMAGE && fileFormat != FileFormat.PDF, false, true);
+				context = chain.getContext();
 			}
 			else if(reportContext.getTypeEnum() == ReportType.PIVOT_REPORT) {
-				ReportUtil.Constructpivot(context , jobId);
 				chain = TransactionChainFactoryV3.getReporsForDownloadChain(fileFormat != FileFormat.IMAGE && fileFormat != FileFormat.PDF, true, false);
+				context = chain.getContext();
+				ReportUtil.Constructpivot(context , jobId);
 			} else {
 				chain = TransactionChainFactoryV3.getReporsForDownloadChain(fileFormat != FileFormat.IMAGE && fileFormat != FileFormat.PDF, false, false);
+				context = chain.getContext();
 			}
-			context = chain.getContext();
+//			context = chain.getContext();
 			context.put(FacilioConstants.ContextNames.JOB_ID,jobId);
 			context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 			context.put("isS3Url", true);
