@@ -6,12 +6,16 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.EmployeeContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.PeopleUserContext;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.ShiftAPI;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
@@ -39,6 +43,7 @@ public class AddPeopleCommand extends FacilioCommand {
             employee.setLanguage(user.getUser().getLanguage());
             employee.setTimezone(user.getUser().getTimezone());
             employee.setMobile(user.getUser().getMobile());
+            employee.setUser(true);
 
             FacilioChain c = TransactionChainFactory.addEmployeeChain();
             c.getContext().put(FacilioConstants.ContextNames.VERIFY_USER, false);
@@ -57,6 +62,8 @@ public class AddPeopleCommand extends FacilioCommand {
             user.getUser().setInvitedBy(AccountUtil.getCurrentUser().getUid());
         }
         else{
+            existingPeople.setUser(true);
+            RecordAPI.updateRecord(FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(existingPeople), PeopleContext.class), Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE), Constants.getModBean().getAllFields(FacilioConstants.ContextNames.PEOPLE));
             user.setPeopleId(existingPeople.getId());
             user.setPeople(existingPeople);
             user.getUser().setName(existingPeople.getName());

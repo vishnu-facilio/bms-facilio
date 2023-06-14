@@ -4,6 +4,11 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsoleV3.context.V3ClientContactContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContactContext;
+import com.facilio.bmsconsoleV3.context.V3VendorContactContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -16,6 +21,7 @@ import com.facilio.identity.client.IdentityClient;
 import com.facilio.identity.client.dto.User;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import java.util.*;
@@ -149,9 +155,34 @@ public class ApplicationUserUtil {
                 for (Map<String, Object> record : records) {
                     orgUserId = (long) record.get("ouid");
                 }
+                user.setOrgUserId(orgUserId);
+                updateOrgUser(user);
+                updateOrgAppUser(user);
+
+            } else if(AccountUtil.getCurrentOrg() != null) {
+
+                user.getUser().setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+                orgUserId = checkIfExistsInOrgUsers(user.getUid(), user.getUser().getOrgId());
+                if(orgUserId > 0){
+                    user.setOrgUserId(orgUserId);
+                    addOrgUserApps(user);
+                }
+
             }
-        user.setOrgUserId(orgUserId);
-        updateOrgAppUser(user);
+    }
+
+    private static void updateOrgUser(PeopleUserContext user) throws Exception{
+        FacilioField people = FieldFactory.getNumberField("peopleId","PEOPLE_ID",AccountConstants.getAppOrgUserModule());
+            GenericUpdateRecordBuilder updatOrgUserBuilder = new GenericUpdateRecordBuilder()
+                    .table(AccountConstants.getAppOrgUserModule().getTableName())
+                    .fields(Collections.singletonList(people))
+                    .andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouid", String.valueOf(user.getOrgUserId()), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("USERID", "uid", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+
+            Map<String, Object> updateMap = new HashMap<>();
+            updateMap.put("peopleId", user.getPeopleId());
+            updatOrgUserBuilder.update(updateMap);
+
     }
 
     private static void updateOrgAppUser(PeopleUserContext user) throws Exception{
@@ -172,18 +203,21 @@ public class ApplicationUserUtil {
     }
 
     public static void deleteUser(long orgId, long userId) throws Exception {
-        IdentityClient.getDefaultInstance().getUserBean().deleteUser(orgId,userId);
-        List<Long> orgUserIds = new ArrayList<>();
-        List<Map<String, Object>> records = getOrgAppUsers(userId,null);
-        if(CollectionUtils.isNotEmpty(records)){
+        User existingUser = IdentityClient.getDefaultInstance().getUserBean().getUser(orgId,userId);
+        if(existingUser != null) {
+            IdentityClient.getDefaultInstance().getUserBean().deleteUser(orgId, userId);
+            List<Long> orgUserIds = new ArrayList<>();
+            List<Map<String, Object>> records = getOrgAppUsers(userId, null);
+            if (CollectionUtils.isNotEmpty(records)) {
 
-            for (Map<String, Object> record : records) {
-                orgUserIds.add((Long) record.get("ouid"));
+                for (Map<String, Object> record : records) {
+                    orgUserIds.add((Long) record.get("ouid"));
+                }
+
             }
-
-        }
-       if(CollectionUtils.isNotEmpty(orgUserIds)){
-           deleteOrgAppUsers(userId,orgUserIds,null);
+            if (CollectionUtils.isNotEmpty(orgUserIds)) {
+                deleteOrgAppUsers(userId, orgUserIds, null);
+            }
         }
     }
 
@@ -244,4 +278,39 @@ public class ApplicationUserUtil {
 
         return props;
     }
+
+    public static void deletePortalAccess(V3PeopleContext people) throws Exception {
+
+        FacilioField isOccupantPortalAccess = Constants.getModBean().getField("isOccupantPortalAccess",FacilioConstants.ContextNames.PEOPLE);
+        FacilioField employeePortalAccess = Constants.getModBean().getField("employeePortalAccess",FacilioConstants.ContextNames.PEOPLE);
+        people.setIsOccupantPortalAccess(false);
+        people.setIsEmployeePortalAccess(false);
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(isOccupantPortalAccess);
+        fields.add(employeePortalAccess);
+        ModuleBean modBean = Constants.getModBean();
+        V3RecordAPI.updateRecord(people, modBean.getModule(FacilioConstants.ContextNames.PEOPLE), fields);
+
+        switch (people.getPeopleTypeEnum()){
+            case TENANT_CONTACT:
+                FacilioField isTenantPortalAccess = Constants.getModBean().getField("isTenantPortalAccess",FacilioConstants.ContextNames.TENANT_CONTACT);
+                V3TenantContactContext tc = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(people),V3TenantContactContext.class);
+                tc.setIsTenantPortalAccess(false);
+                V3RecordAPI.updateRecord(tc, modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT), Collections.singletonList(isTenantPortalAccess));
+                break;
+            case VENDOR_CONTACT:
+                FacilioField isVendorPortalAccess = Constants.getModBean().getField("isVendorPortalAccess",FacilioConstants.ContextNames.VENDOR_CONTACT);
+                V3VendorContactContext vc = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(people),V3VendorContactContext.class);
+                vc.setIsVendorPortalAccess(false);
+                V3RecordAPI.updateRecord(vc, modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT), Collections.singletonList(isVendorPortalAccess));
+                break;
+            case CLIENT_CONTACT:
+                FacilioField isClientPortalAccess = Constants.getModBean().getField("isClientPortalAccess",FacilioConstants.ContextNames.CLIENT_CONTACT);
+                V3ClientContactContext cc = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(people),V3ClientContactContext.class);
+                cc.setIsClientPortalAccess(false);
+                V3RecordAPI.updateRecord(cc, modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT), Collections.singletonList(isClientPortalAccess));
+                break;
+        }
+    }
+
 }

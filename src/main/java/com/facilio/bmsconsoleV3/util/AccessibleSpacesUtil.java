@@ -113,7 +113,7 @@ public class AccessibleSpacesUtil {
     public static void addAccessibleSpace(Long uid, Long peopleId, List<Long> accessibleSpace) throws Exception {
 
         Long existingSpaces = AccessibleSpacesUtil.getAccessibleSpaceCount(uid,peopleId,null);
-        if(existingSpaces != null && accessibleSpace.size() > (100L - existingSpaces)){
+        if((existingSpaces != null && accessibleSpace.size() > (100L - existingSpaces)) || (accessibleSpace.size() > 100L)){
             throw new RESTException(ErrorCode.VALIDATION_ERROR,"Accessible spaces addition cancelled - breach of max limit");
         }
 

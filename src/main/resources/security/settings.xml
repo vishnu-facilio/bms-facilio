@@ -1740,6 +1740,13 @@
             <property name="perPage" type="number"/>
         </urlparams>
     </request>
+    <request path="/api/v1/setup/userScoping/userList" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
     <request path="/api/v1/setup/userScoping/addOrUpdate">
         <requestbody type="object">
             <property name="userScoping" type="object">
@@ -2134,9 +2141,15 @@
             <property name="user" type="object">
                 <property name="people" type="object">
                     <property name="id" type="number"/>
-                    <property name="accessibleSpace" type="array"/>
-                    <property name="groups" type="array"/>
-                    <property name="permissionSets" type="array"/>
+                    <property name="accessibleSpace" type="array">
+                        <items type="number"/>
+                    </property>
+                    <property name="groups" type="array">
+                        <items type="number"/>
+                    </property>
+                    <property name="permissionSets" type="array">
+                        <items type="number"/>
+                    </property>
                     <property name="scopingId" type="number"/>
                 </property>
                 <property name="roleId" type="number" mandatory="true"/>
@@ -2216,7 +2229,9 @@
             <property name="appId" type="number"/>
             <property name="appLinkName" type="string"/>
             <property name="sendInvitation" type="boolean"/>
-            <property name="peopleIds" type="array"/>
+            <property name="peopleIds" type="array">
+                <items type="number"/>
+            </property>
             <property name="user" type="object">
                 <property name="roleId" type="number" mandatory="true"/>
                 <property name="user" type="object">
@@ -2227,7 +2242,9 @@
     </request>
     <request path="/api/v1/setup/iamuser/activateordeactivateusers" method="POST">
         <requestbody type="object">
-            <property name="userIds" type="array"/>
+            <property name="userIds" type="array">
+                <items type="number"/>
+            </property>
             <property name="userStatus" type="boolean"/>
         </requestbody>
     </request>
@@ -2235,15 +2252,21 @@
         <requestbody type="object">
             <property name="isPortal" type="boolean"/>
             <property name="appLinkName" type="string"/>
-            <property name="peopleIds" type="array"/>
-            <property name="userIds" type="array"/>
+            <property name="peopleIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="userIds" type="array">
+                <items type="number"/>
+            </property>
 
         </requestbody>
     </request>
     <request path="/api/v1/setup/iamuser/updatesecuritypolicy" method="POST">
         <requestbody type="object">
             <property name="securityPolicyId" type="number"/>
-            <property name="userIds" type="array"/>
+            <property name="userIds" type="array">
+                <items type="number"/>
+            </property>
         </requestbody>
     </request>
 
@@ -2256,12 +2279,16 @@
     </request>
     <request path="/api/v1/setup/iamuser/bulkResetMFA" method="POST">
         <requestbody type="object">
-            <property name="userIds" type="array"/>
+            <property name="userIds" type="array">
+                <items type="number"/>
+            </property>
         </requestbody>
     </request>
     <request path="/api/v1/setup/iamuser/bulkinvite" method="POST">
         <requestbody type="object">
-            <property name="userIds" type="array"/>
+            <property name="userIds" type="array">
+                <items type="number"/>
+            </property>
             <property name="user" type="object">
                 <property name="applicationId" type="number"/>
             </property>
@@ -2283,13 +2310,19 @@
             <property name="appId" type="number"/>
             <property name="isPortal" type="boolean"/>
             <property name="appLinkName" type="string"/>
-            <property name="peopleIds" type="array"/>
-            <property name="userIds" type="array"/>
+            <property name="peopleIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="userIds" type="array">
+                <items type="number"/>
+            </property>
         </requestbody>
     </request>
     <request path="/api/v1/setup/iamuser/bulkresetpassword" method="POST">
         <requestbody type="object">
-            <property name="userIds" type="array"/>
+            <property name="userIds" type="array">
+                <items type="number"/>
+            </property>
         </requestbody>
     </request>
     <request path="/api/v3/workOrderItem/getWorkorderItem">

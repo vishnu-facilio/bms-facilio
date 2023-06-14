@@ -2569,7 +2569,13 @@ public class FacilioChainFactory {
 	public static FacilioChain deleteUserChain(){
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new DeleteIAMUserCommand());
-		c.addCommand(new UpdatePortalAccessCommand());
+		c.addCommand(new DeletePortalAccessCommand());
+		return c;
+	}
+	public static FacilioChain bulkUserDeleteChain(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeleteIAMUserCommand());
+		c.addCommand(new BulkPortalAccessDeleteCommand());
 		return c;
 	}
 	public static FacilioChain addOrUpdatePortalUserChain(){

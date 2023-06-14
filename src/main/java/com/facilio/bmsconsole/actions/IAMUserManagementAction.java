@@ -13,12 +13,14 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.identity.client.IdentityClient;
 import com.facilio.identity.client.dto.User;
 import com.facilio.identity.client.dto.UserMFA;
+import com.facilio.modules.FieldUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
@@ -231,8 +233,11 @@ public class IAMUserManagementAction extends FacilioAction{
         context.put(FacilioConstants.ContextNames.PEOPLE_IDS,peopleIds);
         context.put(FacilioConstants.ContextNames.IS_PORTAL,getPortal());
         context.put(FacilioConstants.ContextNames.IS_PORTAL_ACCESS,false);
-
-        FacilioChain bulKDeleteUserChain = FacilioChainFactory.deleteUserChain();
+        if(CollectionUtils.isNotEmpty(peopleIds)) {
+            List<V3PeopleContext> peopleList = FieldUtil.getAsBeanListFromMapList(FieldUtil.getAsMapList(V3RecordAPI.getRecordsList(FacilioConstants.ContextNames.PEOPLE, peopleIds),PeopleContext.class),V3PeopleContext.class);
+            context.put(FacilioConstants.ContextNames.RECORD_LIST,peopleList);
+        }
+        FacilioChain bulKDeleteUserChain = FacilioChainFactory.bulkUserDeleteChain();
         bulKDeleteUserChain.execute(context);
 
         return SUCCESS;
