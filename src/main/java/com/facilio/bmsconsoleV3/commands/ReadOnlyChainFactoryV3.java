@@ -13,6 +13,8 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.UserScop
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.addAnnouncementDefaultFields;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.LoadNeighbourHoodFixedFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.NeighbourhoodFillLookupFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.DealsAndOffersFillLookupFields;
+import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.LoadDealsAndOffersFixedFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.decommission.FetchDependentResourceDataCommand;
 import com.facilio.bmsconsoleV3.commands.decommission.FetchResourceDependentModuleListCommand;
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
@@ -555,6 +557,13 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new NeighbourhoodFillLookupFieldsCommand());
         c.addCommand(new LoadNeighbourHoodFixedFieldsCommand());
+        return c;
+    }
+    public static FacilioChain getDealsAndOffersBeforeFetchChain()
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DealsAndOffersFillLookupFields());
+        c.addCommand(new LoadDealsAndOffersFixedFieldsCommand());
         return c;
     }
 }

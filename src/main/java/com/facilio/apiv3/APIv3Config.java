@@ -1435,7 +1435,7 @@ public class APIv3Config {
                 .beforeFetch(new DealsAndOffersFillLookupFields())
                 .afterFetch(new FillDealsAndOffersSharingInfoCommand())
                 .list()
-                .beforeFetch(new DealsAndOffersFillLookupFields())
+                .beforeFetch(ReadOnlyChainFactoryV3.getDealsAndOffersBeforeFetchChain())
                 .build();
     }
 
