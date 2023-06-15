@@ -31,6 +31,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -312,13 +313,10 @@ public abstract class FileStore {
 	public String encodeFileToBase64Binary(String namespace, long fileId) throws Exception {
 
 
-		FileInfo fileInfo = getFileInfo(namespace, fileId);
-
 		InputStream inputStream = null;
 		try {
-			inputStream = readFile(fileInfo);
-			byte[] bytes = new byte[(int) fileInfo.getFileSize()];
-			inputStream.read(bytes);
+			inputStream = readFile(fileId,true);
+			byte[] bytes = IOUtils.toByteArray(inputStream);
 			String encodedfile = Base64.encodeBase64String(bytes);
 			return encodedfile;
 		} catch (Exception e) {
