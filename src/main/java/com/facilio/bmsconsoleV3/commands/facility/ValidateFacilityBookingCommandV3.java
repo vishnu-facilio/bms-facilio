@@ -70,6 +70,12 @@ public class ValidateFacilityBookingCommandV3 extends FacilioCommand {
                         }
                         SlotContext slot = (SlotContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.SLOTS, bookingSlot.getSlot().getId(), SlotContext.class);
                         if (slot != null) {
+                            long validBookingTime = DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis(), false) +  ((facility.getBookingAdvancePeriodInDays()+1) * 1000 * 60 * 60 * 24) - 1;
+                            if(slot.getSlotStartTime()> validBookingTime)
+                            {
+                                String timeUnit = facility.getBookingAdvancePeriodInDays() > 1 ? "days" : "day";
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Booking can be done only before "+facility.getBookingAdvancePeriodInDays()+" "+timeUnit );
+                            }
                             if (facility.getBookingAdvancePeriodInDays() != null) {
                                 Long slotStartDayTime = DateTimeUtil.getDayStartTimeOf(slot.getSlotStartTime());
                                 Long currentTimeStartDayTime = DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis());

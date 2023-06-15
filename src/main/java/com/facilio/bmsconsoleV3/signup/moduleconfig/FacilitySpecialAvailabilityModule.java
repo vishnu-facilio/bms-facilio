@@ -31,15 +31,16 @@ public class FacilitySpecialAvailabilityModule extends BaseModuleConfig{
         facilitySpecialAvailabilityForm.setName("default_"+ FacilioConstants.ContextNames.FacilityBooking.FACILITY_SPECIAL_AVAILABILITY +"_web");
         facilitySpecialAvailabilityForm.setModule(facilitySpecialAvailabilityModule);
         facilitySpecialAvailabilityForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        facilitySpecialAvailabilityForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        facilitySpecialAvailabilityForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> facilitySpecialAvailabilityFormFields = new ArrayList<>();
         facilitySpecialAvailabilityFormFields.add(new FormField("remarks", FacilioField.FieldDisplayType.TEXTBOX, "Remarks", FormField.Required.REQUIRED,1, 1));
-        facilitySpecialAvailabilityFormFields.add(new FormField("startDate", FacilioField.FieldDisplayType.DATE, "Start Date", FormField.Required.REQUIRED,"user",2, 2));
-        facilitySpecialAvailabilityFormFields.add(new FormField("endDate", FacilioField.FieldDisplayType.DATE, "End Date", FormField.Required.REQUIRED,2, 3));
+        facilitySpecialAvailabilityFormFields.add(new FormField("startDate", FacilioField.FieldDisplayType.DATE, "Date", FormField.Required.REQUIRED,2, 1));
+//        facilitySpecialAvailabilityFormFields.add(new FormField("endDate", FacilioField.FieldDisplayType.DATE, "End Date", FormField.Required.REQUIRED,2, 3));
         facilitySpecialAvailabilityFormFields.add(new FormField("startTime", FacilioField.FieldDisplayType.TIME, "Start Time", FormField.Required.REQUIRED,3, 2));
-        facilitySpecialAvailabilityFormFields.add(new FormField("endTime", FacilioField.FieldDisplayType.TIME, "End Time", FormField.Required.REQUIRED,3, 3));
+        facilitySpecialAvailabilityFormFields.add(new FormField("endTime", FacilioField.FieldDisplayType.TIME, "End Time", FormField.Required.REQUIRED,3, 2));
         facilitySpecialAvailabilityFormFields.add(new FormField("cost", FacilioField.FieldDisplayType.NUMBER, "Cost", FormField.Required.OPTIONAL,4, 2));
+        facilitySpecialAvailabilityFormFields.add(new FormField("cancelOnCostChange", FacilioField.FieldDisplayType.DECISION_BOX, "Cancel Booking On Cost Change", FormField.Required.OPTIONAL,4, 3));
         facilitySpecialAvailabilityFormFields.add(new FormField("specialType", FacilioField.FieldDisplayType.SELECTBOX, "Type", FormField.Required.REQUIRED,4, 3));
 //        facilitySpecialAvailabilityForm.setFields(facilitySpecialAvailabilityFormFields);
 

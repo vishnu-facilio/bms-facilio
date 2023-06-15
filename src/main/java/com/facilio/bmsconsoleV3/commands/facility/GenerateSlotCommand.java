@@ -9,6 +9,8 @@ import com.facilio.taskengine.job.JobContext;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,7 +32,7 @@ public class GenerateSlotCommand extends FacilioJob {
             long startTime = DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis(), false) ;
             long endTime = startTime +  (facility.getBookingAdvancePeriodInDays() * 1000 * 60 * 60 * 24);
             LOGGER.log(Level.FINE, "Generating slots for Facility: " + facility.getId());
-            createSlots(facility, startTime, endTime);
+            createSlots(facility, startTime, endTime,true);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Exception creating slot for facility " + facility.getId());
             throw e;

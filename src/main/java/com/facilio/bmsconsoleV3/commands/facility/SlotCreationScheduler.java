@@ -28,7 +28,7 @@ public class SlotCreationScheduler extends FacilioJob {
                 Long startTime = DateTimeUtil.getDayStartTimeOf(lastGeneratedTime, false) + (1000 * 60 * 60 * 24);
                 Long endTime = DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis(), false)  + (facility.getBookingAdvancePeriodInDays() * 1000 * 60 * 60 * 24);
                 LOGGER.log(Level.FINE, "Generating slots for Facility: " + facility.getId());
-                createSlots(facility, startTime, endTime);
+                createSlots(facility, startTime, endTime,true);
 
             }
         }

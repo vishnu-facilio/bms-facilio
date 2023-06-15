@@ -35,7 +35,7 @@ public class FacilitySpecialAvailabilityContext extends V3Context {
     }
 
     public static enum SpecialType implements FacilioIntEnum {
-        SPECIAL_COST("Special Cost"),
+//        SPECIAL_COST("Special Cost"), removing this as we are not supporting now
         SPECIAL_AVAILABILITY("Special Availability"),
         SPECIAL_UNAVAILABILITY("Special Unavailability");
 
@@ -186,4 +186,24 @@ public class FacilitySpecialAvailabilityContext extends V3Context {
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
+
+    public Boolean getCancelOnCostChange() {
+        return cancelOnCostChange;
+    }
+
+    public void setCancelOnCostChange(Boolean cancelOnCostChange) {
+        this.cancelOnCostChange = cancelOnCostChange;
+    }
+
+    private Boolean cancelOnCostChange=false;
+
+    public Long getBookingCanceledCount() {
+        return bookingCanceledCount;
+    }
+
+    public void setBookingCanceledCount(Long bookingCanceledCount) {
+        this.bookingCanceledCount = bookingCanceledCount;
+    }
+
+    private Long bookingCanceledCount;
 }

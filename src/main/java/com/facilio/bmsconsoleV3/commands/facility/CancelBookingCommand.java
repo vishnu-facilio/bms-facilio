@@ -81,6 +81,12 @@ public class CancelBookingCommand extends FacilioCommand {
                     JSONObject json = new JSONObject();
                     json.put("cancel", true);
                     Constants.setBodyParams(patchContext, json);
+                    if(MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("skipCancelBookingValidation"))
+                    {
+                        if ((Boolean) bodyParams.get("skipCancelBookingValidation") == true && !bodyParams.containsKey("cancel")) {
+                            patchContext.put(FacilioConstants.ContextNames.SKIP_APPROVAL,true);
+                        }
+                    }
 
                     Constants.setModuleName(patchContext, FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
                     Constants.setBulkRawInput(patchContext, (Collection) jsonList);

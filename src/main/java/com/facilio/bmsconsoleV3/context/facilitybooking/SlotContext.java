@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 public class SlotContext extends V3Context {
 
     private Long slotStartTime;
-    private Double slotCost;
+    private Double slotCost= (double) 0;
     private Long slotEndTime;
 
     public Long getSlotStartTime() {
@@ -65,4 +65,14 @@ public class SlotContext extends V3Context {
     public void setBookingCount(Integer bookingCount) {
         this.bookingCount = bookingCount;
     }
+
+    public Long getSpecialAvailabilityId() {
+        return specialAvailabilityId;
+    }
+
+    public void setSpecialAvailabilityId(Long specialAvailabilityId) {
+        this.specialAvailabilityId = specialAvailabilityId;
+    }
+
+    private Long specialAvailabilityId;
 }

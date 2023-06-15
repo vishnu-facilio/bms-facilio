@@ -18,6 +18,16 @@ public class FacilityContext extends V3Context {
     private Long parentId;
     private BaseSpaceContext location;
 
+    public Long getBookingCanceledCount() {
+        return bookingCanceledCount;
+    }
+
+    public void setBookingCanceledCount(Long bookingCanceledCount) {
+        this.bookingCanceledCount = bookingCanceledCount;
+    }
+
+    private Long bookingCanceledCount;
+
     private FacilityType facilityType;
     public Integer getFacilityType() {
         if (facilityType != null) {
@@ -65,7 +75,7 @@ public class FacilityContext extends V3Context {
 
     private Integer category;
     private Integer usageCapacity;
-    private Long slotDuration;
+    private Long slotDuration=-1l;
     private Long maxSlotBookingAllowed;
     private Boolean isChargeable;
 

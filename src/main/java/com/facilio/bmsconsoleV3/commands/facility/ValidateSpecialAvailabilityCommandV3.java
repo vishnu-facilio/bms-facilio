@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.facility;
 
+import com.facilio.bmsconsoleV3.context.facilitybooking.WeekDayAvailability;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilityContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.FacilitySpecialAvailabilityContext;
@@ -14,7 +15,9 @@ import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Map;
 
@@ -30,15 +33,42 @@ public class ValidateSpecialAvailabilityCommandV3 extends FacilioCommand {
                 if (splAvailability.getFacility() != null) {
                     FacilityContext facility = (FacilityContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.FacilityBooking.FACILITY, splAvailability.getFacility().getId(), FacilityContext.class);
                     if (facility != null) {
-                        if (splAvailability.getStartDate() != null && splAvailability.getEndDate() != null && splAvailability.getStartTime() != null && splAvailability.getEndTime() != null) {
-                            if (splAvailability.getStartDate() > splAvailability.getEndDate()) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please enter valid dates.");
-                            }
-                            if (splAvailability.getStartDate() <= facility.getSlotGeneratedUpto() || splAvailability.getEndDate() <= facility.getSlotGeneratedUpto()) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slots are already created for the selected dates. Please select a date after " + formatter.format(DateTimeUtil.getDateTime(facility.getSlotGeneratedUpto())));
+                        if(splAvailability.getEndDate() == null) {
+                            splAvailability.setEndDate(FacilityAPI.getEndTimeOfTheDay(splAvailability.getStartDate()));
+                        }
+                        if(splAvailability.getSpecialType() == null) {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Availability Type is a mandatory field");
+                        }
+                        else if(splAvailability.getEndDate()>FacilityAPI.getEndTimeOfTheDay(splAvailability.getStartDate())){
+                            //need to remove this check if we need to support Special Availability for multiple days
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Special Availability is supported for a single day");
+                        }
+                        if (splAvailability.getStartDate() != null && splAvailability.getStartTime() != null && splAvailability.getEndTime() != null) {
+                            if (splAvailability.getActualStartTime() > splAvailability.getActualEndTime()) {
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please enter valid time.");
                             }
                         } else {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please enter all the mandatory fields.");
+                        }
+                        if(splAvailability.getCost()<0 && splAvailability.getSpecialType().equals(FacilitySpecialAvailabilityContext.SpecialType.SPECIAL_AVAILABILITY.getIndex()) && splAvailability.getCancelOnCostChange())
+                        {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cost is Mandatory if you want to cancel the booking for cost change.");
+                        }
+                        if(splAvailability.getCost()<0 && splAvailability.getSpecialType().equals(FacilitySpecialAvailabilityContext.SpecialType.SPECIAL_AVAILABILITY.getIndex()))
+                        {
+                            ZonedDateTime cal = DateTimeUtil.getDateTime(splAvailability.getStartDate());
+                            int day = cal.get(ChronoField.DAY_OF_WEEK);
+
+                            List<WeekDayAvailability> weekDayList = FacilityAPI.getWeekDayAvailabilityForDay(facility.getId(), day);
+                            if(CollectionUtils.isNotEmpty(weekDayList))
+                            {
+                                WeekDayAvailability dayAvailability = weekDayList.get(0);
+                                splAvailability.setCost(dayAvailability.getCost());
+                            }
+                        }
+                        if(splAvailability.getCost()<0)
+                        {
+                            splAvailability.setCost((double) 0);
                         }
                     }
                 }

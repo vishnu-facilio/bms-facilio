@@ -23,6 +23,12 @@ public class ValidateCancelBookingCommandV3 extends FacilioCommand {
 
         Map<String, Object> bodyParams = Constants.getBodyParams(context);
         String moduleName = Constants.getModuleName(context);
+        if(MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("skipCancelBookingValidation"))
+        {
+            if ((Boolean) bodyParams.get("skipCancelBookingValidation") == true && !bodyParams.containsKey("cancel")) {
+            return false;
+            }
+        }
         if (MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("cancelBooking")) {
             if ((Boolean) bodyParams.get("cancelBooking") == true && !bodyParams.containsKey("cancel")) {
                 Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);

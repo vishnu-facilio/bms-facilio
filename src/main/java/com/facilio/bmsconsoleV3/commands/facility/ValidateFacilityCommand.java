@@ -24,6 +24,10 @@ public class ValidateFacilityCommand extends FacilioCommand {
                 if(facility.getSlotDuration() == null || facility.getSlotDuration() <= 0) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot duration is mandatory for a facility");
                 }
+                if(facility.getSlotDuration() != null && facility.getSlotDuration() >= 86400) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Slot duration should be in hours and minutes only");
+                }
+
                 if(facility.getBookingAdvancePeriodInDays() == null || facility.getBookingAdvancePeriodInDays() <= 0){
                     facility.setBookingAdvancePeriodInDays(30l);
                 }
