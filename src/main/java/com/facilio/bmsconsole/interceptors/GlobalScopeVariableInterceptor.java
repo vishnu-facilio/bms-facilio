@@ -46,7 +46,10 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Error at compute scope variable");
+            LOGGER.error("Error at compute scope variable",e);
+            if(ServletActionContext.getRequest() != null) {
+                LOGGER.error("x-switch-value -> " + ServletActionContext.getRequest().getHeader("X-Switch-Value"));
+            }
         }
         return invocation.invoke();
     }
