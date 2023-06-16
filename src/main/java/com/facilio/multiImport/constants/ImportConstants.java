@@ -74,8 +74,14 @@ public class ImportConstants{
     public static ImportFileSheetsContext getImportSheet(Context context){
         return (ImportFileSheetsContext)  context.get(IMPORT_SHEET);
     }
+    public static void setImportSheet(Context context,ImportFileSheetsContext importSheet){
+        context.put(IMPORT_SHEET,importSheet);
+    }
     public static ImportDataDetails getImportDataDetails(Context context){
         return (ImportDataDetails) context.get(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS);
+    }
+    public static void setImportDataDetails(Context context,ImportDataDetails importDataDetails){
+        context.put(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS,importDataDetails);
     }
     public static void setImportFields(Context context, List<FacilioField> fields){
         context.put(IMPORT_FIELDS,fields);

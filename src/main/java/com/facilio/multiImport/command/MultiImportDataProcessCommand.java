@@ -143,7 +143,7 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             LOGGER.info(i + "/" + splitSize + " batch started------start time:"+System.currentTimeMillis());
             LOGGER.info("currentRecordsInChunk:" + currentRecordsInChunk);
 
-            FacilioChain chain = MultiImportChainUtil.getImportChain(moduleName,importSheet.getImportSettingEnum());        //import the sheet data
+            FacilioChain chain = MultiImportChainUtil.getImportProcessChain(moduleName);        //import the sheet data
             ImportConfig importConfig = MultiImportChainUtil.getMultiImportConfig(moduleName);
             Class beanClass = MultiImportChainUtil.getBeanClass(importConfig, module);
 

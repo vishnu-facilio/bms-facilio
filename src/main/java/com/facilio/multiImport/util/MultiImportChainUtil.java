@@ -113,7 +113,7 @@ public class MultiImportChainUtil {
         return chain;
     }
 
-    public static FacilioChain getImportChain(String moduleName, MultiImportSetting setting) throws Exception {
+    public static FacilioChain getImportProcessChain(String moduleName) throws Exception {
         ImportConfig importConfig = getMultiImportConfig(moduleName);
 
         Command beforeImportCommand = null;
@@ -142,9 +142,7 @@ public class MultiImportChainUtil {
         FacilioChain chain = getDefaultChain();
         addIfNotNull(chain, beforeImportCommand);
         chain.addCommand(new V3ProcessMultiImportCommand());
-        chain.addCommand(new FilterMultiImportDataCommand());
         addIfNotNull(chain,afterDataProcessCommand);
-        addCreateAndPatchChainsBySettings(chain,setting,moduleName);
         chain.addCommand(new UpdateRowStatusCommand());
         addIfNotNull(chain, afterImportCommand);
 
@@ -155,7 +153,12 @@ public class MultiImportChainUtil {
         context.put(MultiImportApi.ImportProcessConstants.LOAD_LOOK_UP_EXTRA_SELECT_FIELDS_MAP,loadLookUpExtraSelectFields);
         return chain;
     }
-
+    public static FacilioChain getImportChain(String moduleName, MultiImportSetting setting) throws Exception {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new FilterMultiImportDataCommand());
+        addCreateAndPatchChainsBySettings(chain,setting,moduleName);
+        return chain;
+    }
     private static void addIfNotNull(FacilioChain chain, Command command) {
         if (command != null) {
             chain.addCommand(command);

@@ -4,6 +4,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.multiImport.annotations.RowFunction;
 import org.apache.commons.chain.Command;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,6 @@ public class ImportHandler {
     public Map<String, List<String>> getLookupUniqueFieldsMap() {
         return lookupUniqueFieldsMap;
     }
-
     public ImportHandler(ImportHandlerBuilder importHandlerBuilder) {
         this.beforeImportCommand = importHandlerBuilder.beforeImportCommand;
         this.afterImportCommand = importHandlerBuilder.afterImportCommand;
