@@ -159,13 +159,13 @@ public class BaseAlarmContext extends V3Context {
 		return posList;
 	}
 
-	private Boolean isNewReadingRule;
+	private boolean isNewReadingRule;
 
-    public void setNewReadingRule(Boolean isNewReadingRule) {
+    public void setNewReadingRule(boolean isNewReadingRule) {
         this.isNewReadingRule = isNewReadingRule;
     }
 
-    public Boolean getIsNewReadingRule() {
+    public boolean getIsNewReadingRule() {
         return isNewReadingRule;
     }
 

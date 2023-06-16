@@ -26,14 +26,12 @@ public class ReadingAlarm extends BaseAlarmContext {
         if(rule == null) {
             return;
         }
-        if(getIsNewReadingRule()!=null) {
-            if (getIsNewReadingRule()) {
-                NewReadingRuleContext ruleContext = new NewReadingRuleContext();
-                ruleContext.setId(rule.getId());
-                this.rule = ruleContext;
-            } else {
-                this.rule = rule;
-            }
+        if(getIsNewReadingRule()) {
+            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+            ruleContext.setId(rule.getId());
+            this.rule = ruleContext;
+        } else {
+            this.rule = rule;
         }
     }
 
