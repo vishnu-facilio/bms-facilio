@@ -139,7 +139,11 @@ public class ServiceRequestModule extends BaseModuleConfig{
         serviceRequestFormFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 1, 1));
         serviceRequestFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         serviceRequestFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 3, 1));
-        serviceRequestFormFields.add(new FormField("requester", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Requester", FormField.Required.REQUIRED, "people" , 4, 1));
+        FormField requesterField = new FormField("requester", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Requester", FormField.Required.REQUIRED, "people" , 4, 1);
+        requesterField.setAllowCreateOptions(true);
+        requesterField.addToConfig("canShowLookupWizard",true);
+        requesterField.addToConfig("canShowQuickCreate",true);
+        serviceRequestFormFields.add(requesterField);
         serviceRequestFormFields.add(new FormField("resource", FacilioField.FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", FormField.Required.OPTIONAL, 5, 1));
         serviceRequestFormFields.add(new FormField("assignment", FacilioField.FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", FormField.Required.OPTIONAL, 6, 1));
         serviceRequestFormFields.add(new FormField("urgency", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Urgency", FormField.Required.OPTIONAL, "servicerequestpriority", 7, 1));

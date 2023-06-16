@@ -65,17 +65,15 @@ public class PeopleModule extends BaseModuleConfig{
         peopleForm.setName("default_people_web");
         peopleForm.setModule(peopleModule);
         peopleForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        peopleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        peopleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> peopleFormFields = new ArrayList<>();
         peopleFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         peopleFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.OPTIONAL, 2, 1));
-        peopleFormFields.add(new FormField("timezone", FacilioField.FieldDisplayType.TIMEZONE, "Time Zone", FormField.Required.OPTIONAL, 3, 3));
-        peopleFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.TEXTBOX, "Phone", FormField.Required.OPTIONAL, 4, 1));
-        peopleFormFields.add(new FormField("mobile", FacilioField.FieldDisplayType.TEXTBOX, "Mobile", FormField.Required.OPTIONAL, 5, 1));
-        peopleFormFields.add(new FormField("isOccupantPortalAccess", FacilioField.FieldDisplayType.DECISION_BOX, "Occupant Portal Access", FormField.Required.OPTIONAL, 6, 1));
-        peopleFormFields.add(new FormField("peopleType", FacilioField.FieldDisplayType.SELECTBOX, "People Type", FormField.Required.OPTIONAL, 7, 1));
-//        peopleForm.setFields(peopleFormFields);
+        peopleFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.NUMBER, "Phone", FormField.Required.OPTIONAL, 3, 3));
+        peopleFormFields.add(new FormField("mobile", FacilioField.FieldDisplayType.NUMBER, "Mobile", FormField.Required.OPTIONAL, 4, 3));
+        peopleFormFields.add(new FormField("timezone", FacilioField.FieldDisplayType.TIMEZONE, "Time Zone", FormField.Required.OPTIONAL, 5, 3));
+        peopleFormFields.add(new FormField("language",FacilioField.FieldDisplayType.LANGUAGE,"Language",FormField.Required.OPTIONAL,6,3));
 
         FormSection section = new FormSection("Default", 1, peopleFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
