@@ -518,7 +518,8 @@ public class PageWidget {
 		COST_IMPACT("costImpact"),
 		BULK_RELATED_LIST("bulkRelatedList"),
 		WIDGET_GROUP("widgetGroup"),
-		BULK_RELATION_SHIP_WIDGET("bulkRelationShipWidget");
+		BULK_RELATION_SHIP_WIDGET("bulkRelationShipWidget"),
+		COMMANDS_WIDGET("commandsWidget");
 
 		private String name;
 		@Getter

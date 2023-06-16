@@ -139,12 +139,9 @@ public class AssetPageFactory extends PageFactory {
 			addReadingWidget(tab3Sec1);
 
 			if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTROL_ACTIONS)) {
-				Section tab3Sec2 = page.new Section("commands");
-				addCommandWidget(tab3Sec2, asset.getId());
-
-				if (CollectionUtils.isNotEmpty(tab3Sec2.getWidgets())) {
-					tab3.addSection(tab3Sec2);
-				}
+				Section tab3Sec2 = page.new Section();
+				tab3.addSection(tab3Sec2);
+				addCommandsWidget(tab3Sec2);
 			}
 
 			Tab tab4 = page.new Tab("performance");
@@ -403,6 +400,11 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addReadingWidget(Section section) {
 		PageWidget readingsWidget = new PageWidget(WidgetType.LIST, "readings");
+		readingsWidget.addToLayoutParams(section, 24, 10);
+		section.addWidget(readingsWidget);
+	}
+	private static void addCommandsWidget(Section section) {
+		PageWidget readingsWidget = new PageWidget(WidgetType.COMMANDS_WIDGET);
 		readingsWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(readingsWidget);
 	}
