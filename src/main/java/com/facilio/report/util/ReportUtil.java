@@ -1722,7 +1722,7 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 				List<Long> newList = moduleIds.stream().distinct().collect(Collectors.toList());
 				for(long moduleId : newList)
 				{
-					if(moduleIds_list != null && moduleIds_list.contains(moduleId)) {
+					if(moduleIds_list != null) {
 						reportFolders.addAll(ReportUtil.getReportsFoldersNew(moduleId, searchText, false, isPivot, appId));
 					}
 				}
