@@ -97,12 +97,14 @@ public class ReadingEventContext extends BaseEventContext {
         if(rule == null) {
             return;
         }
-        if (isNewReadingRule) {
-            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
-            ruleContext.setId(rule.getId());
-            this.rule = ruleContext;
-        } else {
-            this.rule = rule;
+        if(getIsNewReadingRule()!=null) {
+            if (getIsNewReadingRule()) {
+                NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+                ruleContext.setId(rule.getId());
+                this.rule = ruleContext;
+            } else {
+                this.rule = rule;
+            }
         }
     }
 
@@ -113,13 +115,14 @@ public class ReadingEventContext extends BaseEventContext {
         if(subRule == null) {
             return;
         }
-
-        if (isNewReadingRule) {
-            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
-            ruleContext.setId(subRule.getId());
-            this.subRule = ruleContext;
-        } else {
-            this.subRule = subRule;
+        if(getIsNewReadingRule()!=null) {
+            if (isNewReadingRule) {
+                NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+                ruleContext.setId(subRule.getId());
+                this.subRule = ruleContext;
+            } else {
+                this.subRule = subRule;
+            }
         }
     }
 
@@ -188,13 +191,13 @@ public class ReadingEventContext extends BaseEventContext {
         }
     }
 
-    private boolean isNewReadingRule;
+    private Boolean isNewReadingRule;
 
-    public void setNewReadingRule(boolean isNewReadingRule) {
+    public void setNewReadingRule(Boolean isNewReadingRule) {
         this.isNewReadingRule = isNewReadingRule;
     }
 
-    public boolean getIsNewReadingRule() {
+    public Boolean getIsNewReadingRule() {
         return isNewReadingRule;
     }
 
