@@ -2760,6 +2760,18 @@ public class V2ReportAction extends FacilioAction {
                         } else {
                             Collections.sort(records_list, new HashMapValueComparator(sort_alias, false, order));
                         }
+                        if(records_list != null && records_list.size() > 0){
+                            int counter=1;
+                           for(LinkedHashMap<String, HashMap> record : records_list)
+                           {
+                               if(record != null && record.containsKey("number"))
+                               {
+                                   JSONObject formatted_val = new JSONObject();
+                                   formatted_val.put("formattedValue", counter++);
+                                   record.put("number", formatted_val);
+                               }
+                           }
+                        }
                     }
                 }
                 if (records_list != null && records_list.size() > limit) {

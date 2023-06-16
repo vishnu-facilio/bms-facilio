@@ -72,7 +72,7 @@
                 </property>
                 <property name="kpi" type="object">
                     <property name="kpiId" type="number"/>
-                    <property name="id" type="number"/>
+                    <property name="id" type="string"/>
                 </property>
                 <property name="viewParams" type="object">
                     <property name="assetCategoryId" type="number"/>
@@ -80,7 +80,7 @@
                     <property name="readingModule" type="string"/>
                 </property>
                 <property name="reading" type="object">
-                    <property name="yAggr" type="string"/>
+                    <property name="fieldName" type="string"/>
                 </property>
                 <property name="trend" type="object">
                     <property name="yAggr" type="number"/>
@@ -141,7 +141,7 @@
                         <property name="label" type="string"/>
                         <property name="moduleName" type="string"/>
                         <property name="type" type="string"/>
-                        <property name="width" type="string"/>
+                        <property name="width" type="number"/>
                         <property name="operatorId" type="number"/>
                     </items>
                 </property>
@@ -212,7 +212,7 @@
                         <property name="secondaryTextColor" type="string"/>
                         <property name="arrowDownColor" type="string"/>
                         <property name="arrowUpColor" type="string"/>
-                        <property name="decimalPlace" type="string"/>
+                        <property name="decimalPlace" type="number"/>
                         <property name="group_row_fieldName" type="string"/>
                         <property name="showCriteria" type="boolean"/>
                         <property name="columnAction" type="number"/>
@@ -337,6 +337,11 @@
         </urlparams>
     </request>
     <request path="/api/v3/dashboard/rule/:dashboard_rule_id" method="GET">
+        <urlparams>
+            <property name="dashboard_rule_id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/dashboard/rule/widgets/:dashboard_rule_id" method="GET">
         <urlparams>
             <property name="dashboard_rule_id" type="number" mandatory="true"/>
         </urlparams>

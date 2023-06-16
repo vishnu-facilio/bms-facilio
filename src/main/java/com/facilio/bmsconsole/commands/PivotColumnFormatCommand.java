@@ -16,6 +16,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class PivotColumnFormatCommand extends FacilioCommand {
@@ -320,6 +321,11 @@ public class PivotColumnFormatCommand extends FacilioCommand {
                     if(data.get(actualKey) instanceof Integer){
                         Integer value = (Integer) data.get(actualKey);
                         tempMap.put("formattedValue", formatter.format(value == 0 ? Boolean.FALSE : Boolean.TRUE));
+                    }else if(data.get(actualKey) instanceof BigDecimal){
+                        Double value = Double.valueOf(data.get(actualKey).toString());
+                        tempMap.put("formattedValue", value);
+                    }else if(data.get(actualKey) instanceof Boolean){
+                        tempMap.put("formattedValue", formatter.format(data.get(actualKey)));
                     }
                 }
                 else if (formatter != null && data.get(actualKey) != null && !data.get(actualKey).equals("")) {

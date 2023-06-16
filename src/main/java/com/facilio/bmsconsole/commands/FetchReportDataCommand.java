@@ -1002,14 +1002,22 @@ public class FetchReportDataCommand extends FacilioCommand {
 
         if (!isAlreadyAdded(addedModules, resourceModule)) {
             selectBuilder.addJoinModules(Collections.singletonList(resourceModule));
+            StringBuilder join_criteria = new StringBuilder(resourceModule.getTableName()).append(".ID = ").append(field.getCompleteColumnName());
+            if(field.getModule() != null && field.getModule().getTableName() != null){
+                join_criteria.append(" AND ").append(resourceModule.getTableName()).append(".ORGID = ").append(field.getModule().getTableName()).append(".ORGID");
+            }
+
             selectBuilder.innerJoin(resourceModule.getTableName())
-                    .on(resourceModule.getTableName() + ".ID = " + field.getCompleteColumnName());
+                    .on(join_criteria.toString());
             addedModules.add(resourceModule);
         }
 
         selectBuilder.addJoinModules(Collections.singletonList(baseSpaceModule));
+
+        StringBuilder space_join_criteria = new StringBuilder(resourceModule.getTableName()).append(".SPACE_ID = ").append(baseSpaceModule.getTableName()).append(".ID");
+        space_join_criteria.append(" AND ").append(resourceModule.getTableName()).append(".ORGID = ").append(baseSpaceModule.getTableName()).append(".ORGID");
         selectBuilder.innerJoin(baseSpaceModule.getTableName())
-                .on(resourceModule.getTableName() + ".SPACE_ID = " + baseSpaceModule.getTableName() + ".ID");
+                .on(space_join_criteria.toString());
         addedModules.add(baseSpaceModule);
 
         FacilioField spaceField = null;
