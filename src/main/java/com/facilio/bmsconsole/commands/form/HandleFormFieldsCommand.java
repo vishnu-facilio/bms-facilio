@@ -190,7 +190,7 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 
         formField.addToFilters(type, operator);
     }
-	
+
 	private void handleFloorPlanConfig(FormField formField) {
 		if (formField.getField() != null && formField.getField().getDataTypeEnum() == FieldType.LOOKUP) {
 			FacilioModule module = ((LookupField)formField.getField()).getLookupModule();
