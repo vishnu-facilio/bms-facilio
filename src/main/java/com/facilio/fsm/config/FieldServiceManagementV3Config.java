@@ -1,7 +1,7 @@
 package com.facilio.fsm.config;
 
 
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15;
 import com.facilio.fsm.context.WorkTypeContext;
 import com.facilio.fsm.context.WorkTypeItemsContext;
 import com.facilio.fsm.context.WorkTypeServicesContext;
@@ -17,7 +17,7 @@ public class FieldServiceManagementV3Config {
 
     @Module("workType")
     public static Supplier<V3Config> getWorkType() {
-        return () -> new V3Config(WorkTypeContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(WorkTypeContext.class, new ModuleCustomFieldCount15())
                 .create()
                 .update()
                 .list()
@@ -27,7 +27,7 @@ public class FieldServiceManagementV3Config {
     }
     @Module("workTypeItems")
     public static Supplier<V3Config> getWorkTypeItems() {
-        return () -> new V3Config(WorkTypeItemsContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(WorkTypeItemsContext.class, new ModuleCustomFieldCount15())
                 .create()
                 .update()
                 .list()
@@ -37,7 +37,7 @@ public class FieldServiceManagementV3Config {
     }
     @Module("workTypeTools")
     public static Supplier<V3Config> getWorkTypeTools() {
-        return () -> new V3Config(WorkTypeToolsContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(WorkTypeToolsContext.class, new ModuleCustomFieldCount15())
                 .create()
                 .update()
                 .list()
@@ -47,7 +47,7 @@ public class FieldServiceManagementV3Config {
     }
     @Module("workTypeServices")
     public static Supplier<V3Config> getWorkTypeServices() {
-        return () -> new V3Config(WorkTypeServicesContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(WorkTypeServicesContext.class, new ModuleCustomFieldCount15())
                 .create()
                 .update()
                 .list()
@@ -57,7 +57,7 @@ public class FieldServiceManagementV3Config {
     }
     @Module("serviceSkills")
     public static Supplier<V3Config> getServiceSkills() {
-        return () -> new V3Config(WorkTypeServicesContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(WorkTypeServicesContext.class, new ModuleCustomFieldCount15())
                 .create()
                 .update()
                 .list()

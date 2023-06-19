@@ -2858,7 +2858,14 @@ public class FacilioConstants {
 			public static final String MODULE_FORM_ID = "moduleFormId";
 
 		}
-
+		public static class FieldServiceManagement {
+			public static final String SERVICE_SKILL = "serviceSkill";
+			public static final String WORK_TYPE = "workType";
+			public static final String WORK_TYPE_ITEMS = "workTypeItems";
+			public static final String WORK_TYPE_TOOLS = "workTypeTools";
+			public static final String WORK_TYPE_SERVICE = "workTypeServices";
+			public static final String WORK_TYPE_SKILLS = "workTypeSkills";
+		}
 		// etisalat changes
 		public static final String BILL_ALERT = "custom_alert";
 		public static final String BILL_INVOICE = "custom_invoices";

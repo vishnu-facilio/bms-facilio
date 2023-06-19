@@ -8,9 +8,7 @@ public class WorkTypeToolsContext extends V3Context {
 
     private WorkTypeContext workType;
     private V3ToolTypesContext toolType;
-    private Double rate;
     private Double quantity;
-    private Double duration;
 
     public WorkTypeContext getWorkType() {
         return workType;
@@ -28,27 +26,11 @@ public class WorkTypeToolsContext extends V3Context {
         this.toolType = toolType;
     }
 
-    public Double getRate() {
-        return rate;
-    }
-
-    public void setRate(Double rate) {
-        this.rate = rate;
-    }
-
     public Double getQuantity() {
         return quantity;
     }
 
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
-    }
-
-    public Double getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Double duration) {
-        this.duration = duration;
     }
 }

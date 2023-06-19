@@ -2,7 +2,7 @@ package com.facilio.fsm.context;
 
 import com.facilio.v3.context.V3Context;
 
-public class WorkTypeServiceSkillsContext extends V3Context {
+public class WorkTypeSkillsContext extends V3Context {
     private WorkTypeContext left;
     private ServiceSkillsContext right;
 

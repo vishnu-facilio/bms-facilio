@@ -528,3 +528,7 @@ classes:
   - com.facilio.remotemonitoring.signup.AddFlaggedEventClosureConfigModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmFilterRuleCriteriaModuleConfig
   - com.facilio.bmsconsoleV3.signup.moduleconfig.FlaggedEventActionModuleConfig
+
+  #FSM Modules
+  - com.facilio.fsm.signup.ServiceSkillModule
+  - com.facilio.fsm.signup.WorkTypeModule

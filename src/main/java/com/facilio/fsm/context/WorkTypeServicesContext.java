@@ -8,9 +8,7 @@ public class WorkTypeServicesContext extends V3Context {
 
     private WorkTypeContext workType;
     private V3ServiceContext service;
-    private Double unitPrice;
     private Double quantity;
-    private Double duration;
 
     public WorkTypeContext getWorkType() {
         return workType;
@@ -28,27 +26,11 @@ public class WorkTypeServicesContext extends V3Context {
         this.service = service;
     }
 
-    public Double getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(Double unitPrice) {
-        this.unitPrice = unitPrice;
-    }
-
     public Double getQuantity() {
         return quantity;
     }
 
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
-    }
-
-    public Double getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Double duration) {
-        this.duration = duration;
     }
 }
