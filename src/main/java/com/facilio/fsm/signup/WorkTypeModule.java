@@ -10,13 +10,10 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.v3.context.Constants;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class WorkTypeModule extends BaseModuleConfig {
 
@@ -31,7 +28,7 @@ public class WorkTypeModule extends BaseModuleConfig {
     }
 
     private void addWorkTypeModule() throws Exception{
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.WORK_TYPE, "Work Type", "Work_Type", FacilioModule.ModuleType.BASE_ENTITY);
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.WORK_TYPE, "Work Type", "Work_Type", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> fields = new ArrayList<>();
 
@@ -40,29 +37,13 @@ public class WorkTypeModule extends BaseModuleConfig {
         fields.add(name);
         fields.add(FieldFactory.getDefaultField("description","Description","DESCRIPTION",FieldType.STRING, FacilioField.FieldDisplayType.TEXTAREA));
         fields.add(FieldFactory.getDefaultField("estimatedDuration","Estimated Duration","ESTIMATED_DURATION",FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION));
-        fields.add(FieldFactory.getDefaultField("localId","Local Id","LOCAL_ID",FieldType.NUMBER));
         module.setFields(fields);
         addModule(module);
-    }
-    private FacilioModule constructWorkTypeSkillsModule() throws Exception {
-        ModuleBean bean = Constants.getModBean();
-
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.WORK_TYPE_SKILLS, "Work Type Skills", "Work_Type_Skills", FacilioModule.ModuleType.SUB_ENTITY);
-
-        List<FacilioField> fields = new ArrayList<>();
-        LookupField item = FieldFactory.getDefaultField("left","Work Type","WORK_TYPE",FieldType.LOOKUP);
-        item.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.WORK_TYPE),"Work Type module doesn't exist."));
-        fields.add(item);
-        LookupField skill = FieldFactory.getDefaultField("right","Skill","SKILL",FieldType.LOOKUP,true);
-        skill.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_SKILL),"Service Skill module doesn't exist."));
-        fields.add(skill);
-        module.setFields(fields);
-        return module;
     }
     private void addWorkTypeSkillsField() throws Exception {
         ModuleBean bean = Constants.getModBean();
         FacilioModule workType = bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.WORK_TYPE);
-        FacilioModule workTypeSkillsRelMod = constructWorkTypeSkillsModule();
+        FacilioModule workTypeSkillsRelMod = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.WORK_TYPE_SKILLS, "Work Type Skills", "Work_Type_Skills", FacilioModule.ModuleType.SUB_ENTITY);
         FacilioModule skillsMod = Constants.getModBean().getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_SKILL);
 
         MultiLookupField skillsMultiLookup = FieldFactory.getDefaultField("skills","Skills","SKILLS", FieldType.MULTI_LOOKUP);
@@ -77,10 +58,8 @@ public class WorkTypeModule extends BaseModuleConfig {
         bean.addField(skillsMultiLookup);
     }
     private void addModule(FacilioModule module) throws Exception{
-        List<FacilioModule> modules = new ArrayList<>();
-        modules.add(module);
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
-        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.execute();
     }

@@ -2861,9 +2861,7 @@ public class FacilioConstants {
 		public static class FieldServiceManagement {
 			public static final String SERVICE_SKILL = "serviceSkill";
 			public static final String WORK_TYPE = "workType";
-			public static final String WORK_TYPE_ITEMS = "workTypeItems";
-			public static final String WORK_TYPE_TOOLS = "workTypeTools";
-			public static final String WORK_TYPE_SERVICE = "workTypeServices";
+			public static final String WORK_TYPE_LINE_ITEMS = "workTypeLineItems";
 			public static final String WORK_TYPE_SKILLS = "workTypeSkills";
 		}
 		// etisalat changes

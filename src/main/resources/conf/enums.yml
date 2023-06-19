@@ -490,3 +490,6 @@ enums:
 
   - name: ConnectedResourceAssignmentType
     enumClassName: com.facilio.connected.ResourceType
+
+  - name: WorkTypeInventoryType
+    enumClassName: com.facilio.fsm.context.WorkTypeLineItemsContext$WorkTypeInventoryType

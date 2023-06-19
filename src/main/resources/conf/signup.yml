@@ -532,3 +532,4 @@ classes:
   #FSM Modules
   - com.facilio.fsm.signup.ServiceSkillModule
   - com.facilio.fsm.signup.WorkTypeModule
+  - com.facilio.fsm.signup.WorkTypeLineItemsModule

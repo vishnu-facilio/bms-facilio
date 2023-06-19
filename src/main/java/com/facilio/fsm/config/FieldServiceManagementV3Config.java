@@ -2,10 +2,7 @@ package com.facilio.fsm.config;
 
 
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15;
-import com.facilio.fsm.context.WorkTypeContext;
-import com.facilio.fsm.context.WorkTypeItemsContext;
-import com.facilio.fsm.context.WorkTypeServicesContext;
-import com.facilio.fsm.context.WorkTypeToolsContext;
+import com.facilio.fsm.context.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -25,39 +22,9 @@ public class FieldServiceManagementV3Config {
                 .delete()
                 .build();
     }
-    @Module("workTypeItems")
-    public static Supplier<V3Config> getWorkTypeItems() {
-        return () -> new V3Config(WorkTypeItemsContext.class, new ModuleCustomFieldCount15())
-                .create()
-                .update()
-                .list()
-                .summary()
-                .delete()
-                .build();
-    }
-    @Module("workTypeTools")
-    public static Supplier<V3Config> getWorkTypeTools() {
-        return () -> new V3Config(WorkTypeToolsContext.class, new ModuleCustomFieldCount15())
-                .create()
-                .update()
-                .list()
-                .summary()
-                .delete()
-                .build();
-    }
-    @Module("workTypeServices")
-    public static Supplier<V3Config> getWorkTypeServices() {
-        return () -> new V3Config(WorkTypeServicesContext.class, new ModuleCustomFieldCount15())
-                .create()
-                .update()
-                .list()
-                .summary()
-                .delete()
-                .build();
-    }
-    @Module("serviceSkills")
+    @Module("serviceSkill")
     public static Supplier<V3Config> getServiceSkills() {
-        return () -> new V3Config(WorkTypeServicesContext.class, new ModuleCustomFieldCount15())
+        return () -> new V3Config(ServiceSkillsContext.class, new ModuleCustomFieldCount15())
                 .create()
                 .update()
                 .list()

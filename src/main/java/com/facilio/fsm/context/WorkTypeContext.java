@@ -11,6 +11,7 @@ public class WorkTypeContext extends V3Context {
     private String description;
     private Double estimatedDuration;
     private List<WorkTypeSkillsContext> skills;
+    private List<WorkTypeLineItemsContext> workTypeLineItems;
 
     public String getName() {
         return name;
@@ -42,5 +43,13 @@ public class WorkTypeContext extends V3Context {
 
     public void setSkills(List<WorkTypeSkillsContext> skills) {
         this.skills = skills;
+    }
+
+    public List<WorkTypeLineItemsContext> getWorkTypeLineItems() {
+        return workTypeLineItems;
+    }
+
+    public void setWorkTypeLineItems(List<WorkTypeLineItemsContext> workTypeLineItems) {
+        this.workTypeLineItems = workTypeLineItems;
     }
 }

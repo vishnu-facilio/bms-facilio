@@ -10,6 +10,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ServiceSkillModule  extends BaseModuleConfig {
@@ -22,17 +23,14 @@ public class ServiceSkillModule  extends BaseModuleConfig {
     public void addData() throws Exception {
         FacilioModule serviceSkillModule = constructServiceSkillModule();
 
-        List<FacilioModule> modules = new ArrayList<>();
-        modules.add(serviceSkillModule);
-
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
-        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(serviceSkillModule));
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.execute();
     }
 
     private FacilioModule constructServiceSkillModule(){
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_SKILL, "Skills", "Sevice_Skills", FacilioModule.ModuleType.BASE_ENTITY);
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_SKILL, "Skills", "Sevice_Skills", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> fields = new ArrayList<>();
 
@@ -41,7 +39,6 @@ public class ServiceSkillModule  extends BaseModuleConfig {
         fields.add(name);
         fields.add(FieldFactory.getDefaultField("description","Description","DESCRIPTION",FieldType.STRING, FacilioField.FieldDisplayType.TEXTAREA));
         fields.add(FieldFactory.getDefaultField("ratePerHour","Rate Per Hour","RATE_PER_HOUR",FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION));
-        fields.add(FieldFactory.getDefaultField("localId","Local Id","LOCAL_ID",FieldType.NUMBER));
         module.setFields(fields);
 
         return module;
