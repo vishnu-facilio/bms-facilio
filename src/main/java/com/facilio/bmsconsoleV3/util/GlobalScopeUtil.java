@@ -26,6 +26,7 @@ import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.util.ValueGeneratorUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -398,9 +399,12 @@ public class GlobalScopeUtil {
             JSONArray arrayList = (JSONArray) switchMap.get(linkName);
             if (arrayList != null && !arrayList.isEmpty()) {
                 List<Long> list = new ArrayList<>();
-                for (Object id : arrayList) {
-                    Long recordId = Long.parseLong(String.valueOf(id));
-                    list.add(recordId);
+                for (Object value : arrayList) {
+                    String idStr = String.valueOf(value);
+                    Long id = getNumberValue(idStr);
+                    if(id != null) {
+                        list.add(id);
+                    }
                 }
                 return list;
             }
@@ -408,7 +412,13 @@ public class GlobalScopeUtil {
         return null;
     }
 
-
+    private static Long getNumberValue(String id) {
+        try {
+            Long recordId = Long.parseLong(id);
+            return recordId;
+        }catch (NumberFormatException e) {}
+        return null;
+    }
     private static List<Long> getEvaluatedValuesForGlobalScopeVariable(String linkName) {
         Map<String, GlobalScopeVariableEvaluationContext> variableEvaluationMap = AccountUtil.getGlobalScopeVariableValues();
         if (MapUtils.isNotEmpty(variableEvaluationMap)) {
