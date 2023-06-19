@@ -165,7 +165,7 @@ public class AccessibleSpacesUtil {
                 .table("ORG_Users")
                 .select(userFields)
                 .innerJoin("Accessible_Space")
-                .on("ORG_Users.ORG_USERID = Accessible_Space.ORG_USER_ID")
+                .on("ORG_Users.PEOPLE_ID = Accessible_Space.PEOPLE_ID")
                 .innerJoin("ORG_User_Apps")
                 .on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID")
                 .groupBy("ORG_Users.USERID")

@@ -297,15 +297,6 @@ public class AssetPageFactory extends PageFactory {
 
 			addHistoryWidget(tab10Sec1);
 
-			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.COMMISSIONING)) {
-				Tab tab12 = page.new Tab("Commissioning Log", "commissioningLog");
-				page.addTab(tab12);
-
-				Section tab12Sec1 = page.new Section();
-				tab12.addSection(tab12Sec1);
-
-				addCommissioningWidget(tab12Sec1);
-			}
 		}
 		if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) {
 			Tab tab11 = page.new Tab("Related");

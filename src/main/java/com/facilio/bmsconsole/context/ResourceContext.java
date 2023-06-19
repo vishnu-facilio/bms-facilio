@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @NoArgsConstructor
-@Getter@Setter
+@Getter @Setter
 public class ResourceContext extends ModuleBaseWithCustomFields {
 	/**
 	 * 
@@ -243,8 +244,17 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 	public boolean isDecommission() {
 		return decommission != null && decommission.booleanValue();
 	}
+	public boolean getDecommission() {
+		return decommission != null && decommission.booleanValue();
+	}
 
 	private Boolean decommission;
 	private  long decommissionedTime;
+	private User decommissionedBy;
+	public Boolean getViewRecommissionedBtn() {
+		return viewRecommissionedBtn != null && viewRecommissionedBtn.booleanValue();
+	}
+	private Boolean viewRecommissionedBtn;
+
 
 }

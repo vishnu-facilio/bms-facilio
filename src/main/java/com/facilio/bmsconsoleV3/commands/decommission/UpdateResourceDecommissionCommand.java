@@ -16,6 +16,7 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import com.facilio.modules.fields.LookupField;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ public class UpdateResourceDecommissionCommand extends FacilioCommand {
 
         DecommissionContext decommissionContext = (DecommissionContext) context.get(FacilioConstants.ContextNames.DECOMMISSION);
         List<V3ResourceContext> dependentResourcesData = (List<V3ResourceContext>) context.get(FacilioConstants.ContextNames.DEPENDENT_RESOURCES_DATA);
-
+        Long currentResourceId = decommissionContext.getResourceId();
         List<Long> dependentResourceIds = dependentResourcesData.stream().map(V3ResourceContext::getId).collect(Collectors.toList());
         String currentResourceModuleName = decommissionContext.getModuleName();
         Boolean decommission = decommissionContext.getDecommission();
@@ -45,15 +46,18 @@ public class UpdateResourceDecommissionCommand extends FacilioCommand {
         int userCount = userList != null ?  userList.values().stream().mapToInt(i -> Math.toIntExact(i)).sum() : 0;
         FacilioUtil.throwIllegalArgumentException(userCount > 0 ,"User  is associated as Accessible space with the resource");
 
-        Long tenantUnitCount = DecommissionUtil.getTenantUnitSpaceCount(dependentResourceIds);
+        Long tenantUnitCount = DecommissionUtil.getTenantsCountOccupiedUnits(dependentResourceIds);
         FacilioUtil.throwIllegalArgumentException(tenantUnitCount > 0 ,"Tenant Unit  is associated with the resource");
 
         //UPDATING RESOURCES
 
         FacilioModule resourceModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.RESOURCE);
         List<FacilioField> fields = new ArrayList<>();
-            fields.add(FieldFactory.getField(FacilioConstants.ContextNames.DECOMMISSION, "IS_DECOMMISSIONED", ModuleFactory.getResourceModule(), FieldType.BOOLEAN));
-            fields.add(FieldFactory.getField(FacilioConstants.ContextNames.COMMISSION_TIME, "DECOMMISSIONED_TIME", ModuleFactory.getResourceModule(), FieldType.NUMBER));
+            fields.add(FieldFactory.getField(FacilioConstants.ContextNames.DECOMMISSION, "IS_DECOMMISSIONED", resourceModule, FieldType.BOOLEAN));
+            fields.add(FieldFactory.getField(FacilioConstants.ContextNames.COMMISSION_TIME, "DECOMMISSIONED_TIME", resourceModule, FieldType.NUMBER));
+            LookupField userField = (LookupField) FieldFactory.getField("decommissionedBy", "Decommissioned By","DECOMMISSIONED_BY", resourceModule, FieldType.LOOKUP);
+            userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+            fields.add(userField);
 
         UpdateRecordBuilder<V3ResourceContext> builder = new UpdateRecordBuilder<V3ResourceContext>()
                 .module(resourceModule)
@@ -64,8 +68,17 @@ public class UpdateResourceDecommissionCommand extends FacilioCommand {
         Map<String, Object> props = new HashMap<>();
         props.put(FacilioConstants.ContextNames.DECOMMISSION, decommission);
         long decommissionTime = System.currentTimeMillis();
-        props.put(FacilioConstants.ContextNames.COMMISSION_TIME, decommissionTime);
+        props.put(FacilioConstants.ContextNames.COMMISSION_TIME,  decommissionTime );
+        props.put(FacilioConstants.ContextNames.DECOMMISSIONED_BY , decommission ? AccountUtil.getCurrentUser() : null);
         builder.update(FieldUtil.getAsBeanFromMap(props, V3ResourceContext.class));
+
+        List<V3ResourceContext> childWithDecommissionedResource = DecommissionUtil.getChildResources(currentResourceId , currentResourceModuleName ,null,false,null);
+        List<Long> childWithDecommissionedResourcesIds = childWithDecommissionedResource.stream().map(V3ResourceContext::getId).collect(Collectors.toList());
+        DecommissionUtil.updateRecommissionButtonVisibility(childWithDecommissionedResourcesIds , false);
+
+        if(decommission) {
+            DecommissionUtil.updateRecommissionButtonVisibility(Collections.singletonList(currentResourceId), true);
+        }
 
         context.put(FacilioConstants.ContextNames.COMMISSION_TIME,decommissionTime);
 

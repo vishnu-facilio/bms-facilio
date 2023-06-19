@@ -231,6 +231,7 @@ public class FacilioConstants {
 		public static final String DEFAULT_ID_LIST = "defaultIdList";
 		public static final String SECONDARY_FIELD = "secondaryField";
 		public static final String SUBMODULE_FIELD ="subModuleField";
+		public static final String FOURTH_FIELD = "fourthField";
 		public static final String LOCAL_SEARCH = "localSearch";
 	}
 
@@ -270,7 +271,13 @@ public class FacilioConstants {
 		public static final String CUSTOM_KIOSK_DATA= "customKiosk";
 		public static final String SUMMARY_CONTEXT= "summaryContext";
 		public static  final String DECOMMISSION = "decommission";
+		public static final String ERROR_MODULE_DATA = "errorModuleData";
+		public static final String AVATAR_URL = "avatarUrl";
+		public static final String IS_TO_FETCH_DECOMMISSIONED_RESOURCE="isToFetchDecommissionedResource";
         public static final String COMMISSION_TIME = "commissionedTime";
+		public static final String DECOMMISSIONED_BY = "decommissionedBy";
+		public static final String COMMISSIONED_BY = "commissionedBy";
+		public static final String VIEW_RECOMMISSION_BTN = "viewRecommissionedBtn";
 		public static final String REMARKS = "remarks";
 		public static final String DECOMMISSION_LOG = "decommissionLog";
 		public static final String LOG_CONTEXT = "logContext";
@@ -1793,6 +1800,7 @@ public class FacilioConstants {
 		public static final String STORE_ROOM_COUNT = "storeRoomCount";
 
 		public static final String TENANT = "tenant";
+		public static final String TENANT_ID = "tenantIds";
 		public static final String TENANT_LIST = "tenants";
 		public static final String TENANT_SPACES = "tenantspaces";
 		public static final String TENANT_UTILITY_IDS = "utilityIds";
@@ -2217,6 +2225,7 @@ public class FacilioConstants {
 		public static final String FILL_CATALOG_FORM = "fillCatalogForm";
 
 		public static final String CLIENT = "client";
+		public static final String CLIENT_IDS = "clientIds";
 		public static final String CLIENTS = "clients";
 
 		public static final String SPACE_RATING = "spaceRating";

@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.actions;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.chain.FacilioChain;
@@ -22,6 +21,7 @@ public class V3ResourceAction extends V3Action {
     String moduleName;
 
     List<Long> ids;
+
 
     public String getResourceFromQR () throws Exception {
 

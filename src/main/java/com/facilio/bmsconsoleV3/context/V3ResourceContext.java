@@ -1,13 +1,10 @@
 package com.facilio.bmsconsoleV3.context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.enums.SourceType;
-import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceivableContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.v3.context.V3Context;
@@ -160,5 +157,10 @@ public class V3ResourceContext extends V3Context {
 	}
 	private Boolean decommission;
 	private  long commissionedTime;
+	private User decommissionedBy;
+	public Boolean getViewRecommissionedBtn() {
+		return viewRecommissionedBtn != null && viewRecommissionedBtn.booleanValue();
+	}
+    private Boolean viewRecommissionedBtn;
 
 }

@@ -6,6 +6,7 @@ public interface PickListBuilder {
     PickListBuilder beforeFetch(Command criteriaCommand);
     PickListBuilder afterFetch(Command afterFetchCommand);
     PickListBuilder setSecondaryField(String moduleName, String fieldName);
+    PickListBuilder setFourthField(String moduleName, String fieldName);
     PickListBuilder setMainField(String moduleName, String fieldName);
     PickListBuilder setSubmoduleType(String moduleName, String fieldName);
     UpdateBuilder update();

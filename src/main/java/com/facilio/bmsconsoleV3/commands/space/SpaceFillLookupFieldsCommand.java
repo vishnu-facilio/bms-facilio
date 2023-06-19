@@ -32,6 +32,7 @@ public class SpaceFillLookupFieldsCommand extends FacilioCommand {
         fetchLookupsList.add((LookupField) fieldsAsMap.get("space3"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("space4"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("space5"));
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("decommissionedBy"));
 
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);

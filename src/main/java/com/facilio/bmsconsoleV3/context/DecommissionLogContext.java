@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,4 +14,5 @@ public class DecommissionLogContext extends V3Context {
     private long commissionedTime;
     private String logValue;
     private String remarks;
+    private User commissionedBy;
 }

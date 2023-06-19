@@ -167,16 +167,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 	    activityWidget.addToLayoutParams(tab2Sec1, 24, 3);
 	    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.BUILDING_ACTIVITY);
 	    tab2Sec1.addWidget(activityWidget);
-		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.COMMISSIONING)) {
-			Page.Tab tab3 = page.new Tab("Commissioning Log");
-			page.addTab(tab3);
-			Page.Section tab3Sec1 = page.new Section();
-			tab3.addSection(tab3Sec1);
-			PageWidget commissionActivityWidget = new PageWidget(PageWidget.WidgetType.COMMISSIONING);
-			commissionActivityWidget.addToLayoutParams(tab3Sec1, 24, 3);
-			commissionActivityWidget.addToWidgetParams("commissionActivityModuleName", FacilioConstants.ContextNames.COMMISSIONING_ACTIVITY);
-			tab3Sec1.addWidget(commissionActivityWidget);
-		}
+
 		}
 
 		return page;
@@ -222,16 +213,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 	    activityWidget.addToLayoutParams(tab3Sec1, 24, 3);
 	    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.FLOOR_ACTIVITY);
 	    tab3Sec1.addWidget(activityWidget);
-		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.COMMISSIONING)) {
-			Page.Tab tab4 = page.new Tab("Commissioning Log");
-			page.addTab(tab4);
-			Page.Section tab4Sec1 = page.new Section();
-			tab4.addSection(tab4Sec1);
-			PageWidget commissionActivityWidget = new PageWidget(PageWidget.WidgetType.COMMISSIONING);
-			commissionActivityWidget.addToLayoutParams(tab4Sec1, 24, 3);
-			commissionActivityWidget.addToWidgetParams("commissionActivityModuleName", FacilioConstants.ContextNames.COMMISSIONING_ACTIVITY);
-			tab4Sec1.addWidget(commissionActivityWidget);
-		}
+
 		}
 
 
@@ -305,16 +287,7 @@ public class SpaceManagementPageFactory extends PageFactory {
 	    activityWidget.addToLayoutParams(tab3Sec1, 24, 3);
 	    activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SPACE_ACTIVITY);
 	    tab3Sec1.addWidget(activityWidget);
-		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.COMMISSIONING)) {
-			Page.Tab tab4 = page.new Tab("Commissioning Log");
-			page.addTab(tab4);
-			Page.Section tab4Sec1 = page.new Section();
-			tab4.addSection(tab4Sec1);
-			PageWidget commissionActivityWidget = new PageWidget(PageWidget.WidgetType.COMMISSIONING);
-			commissionActivityWidget.addToLayoutParams(tab4Sec1, 24, 3);
-			commissionActivityWidget.addToWidgetParams("commissionActivityModuleName", FacilioConstants.ContextNames.COMMISSIONING_ACTIVITY);
-			tab4Sec1.addWidget(commissionActivityWidget);
-		}
+
 		}
 
 		return page;

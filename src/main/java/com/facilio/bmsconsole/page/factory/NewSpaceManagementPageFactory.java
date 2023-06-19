@@ -75,17 +75,6 @@ public class NewSpaceManagementPageFactory extends PageFactory {
         activityWidget.addToLayoutParams(tab5Sec1, 24, 3);
         activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.SITE_ACTIVITY);
         tab5Sec1.addWidget(activityWidget);
-
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.COMMISSIONING)) {
-                Page.Tab tab6 = page.new Tab("Commissioning Log");
-                page.addTab(tab6);
-                Page.Section tab6Sec1 = page.new Section();
-                tab6.addSection(tab6Sec1);
-                PageWidget commissionActivityWidget = new PageWidget(PageWidget.WidgetType.COMMISSIONING);
-                commissionActivityWidget.addToLayoutParams(tab6Sec1, 24, 3);
-                commissionActivityWidget.addToWidgetParams("commissionActivityModuleName", FacilioConstants.ContextNames.COMMISSIONING_ACTIVITY);
-                tab6Sec1.addWidget(commissionActivityWidget);
-            }
         }
         return page;
     }

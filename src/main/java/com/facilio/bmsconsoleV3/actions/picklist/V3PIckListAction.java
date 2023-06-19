@@ -7,13 +7,16 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
 import com.facilio.v3.V3Action;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.Arrays;
 import java.util.List;
 
-
+@Getter @Setter
 public class V3PIckListAction extends V3Action {
-
+    Boolean isToFetchDecommissionedResource;
     public String pickList() throws Exception {
         if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
             List<String> localSearchDisabled = Arrays.asList(FacilioConstants.ContextNames.USERS,FacilioConstants.ContextNames.READING_RULE_MODULE);
@@ -35,6 +38,7 @@ public class V3PIckListAction extends V3Action {
             }
 
             FacilioContext pickListContext =  new FacilioContext();
+            pickListContext.put(FacilioConstants.ContextNames.IS_TO_FETCH_DECOMMISSIONED_RESOURCE, BooleanUtils.isTrue(isToFetchDecommissionedResource));
             PickListUtil.populatePicklistContext(pickListContext, getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getViewName(), getPage(), getPerPage());
             pickListContext = PickListUtil.fetchPickListData(pickListContext);
 

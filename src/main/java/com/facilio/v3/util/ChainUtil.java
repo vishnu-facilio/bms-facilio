@@ -195,6 +195,7 @@ public class ChainUtil {
         FacilioField mainField = null;
         FacilioField secondaryField = null;
         FacilioField subModuleField = null;
+        FacilioField fouthField = null;
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         FacilioContext context = nonTransactionChain.getContext();
@@ -208,6 +209,7 @@ public class ChainUtil {
                 mainField = pickListHandler.getMainField();
                 secondaryField = pickListHandler.getSecondaryField();
                 subModuleField = pickListHandler.getSubModuleField();
+                fouthField = pickListHandler.getFourthField();
             }
         }
 
@@ -221,6 +223,9 @@ public class ChainUtil {
 
         if (subModuleField != null) {
             context.put(FacilioConstants.PickList.SUBMODULE_FIELD, subModuleField);
+        }
+        if(fouthField != null ){
+            context.put(FacilioConstants.PickList.FOURTH_FIELD,fouthField);
         }
 
         nonTransactionChain.addCommand(new LoadMainFieldCommand());

@@ -8,7 +8,6 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.util.FacilioUtil;
-import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
 

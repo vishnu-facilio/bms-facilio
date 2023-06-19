@@ -46,6 +46,11 @@
 			selectFields.add(subModuleField);
 		}
 
+		FacilioField fouthField = (FacilioField) context.get(FacilioConstants.PickList.FOURTH_FIELD);
+		if(fouthField != null){
+			selectFields.add(fouthField);
+		}
+
 		if (CollectionUtils.isNotEmpty(supplements)) {
 			context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplements);
 		}

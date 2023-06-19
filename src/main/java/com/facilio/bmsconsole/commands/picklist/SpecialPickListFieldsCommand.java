@@ -6,10 +6,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.V3Builder.V3Config;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SpecialPickListFieldsCommand extends FacilioCommand {
@@ -30,6 +32,11 @@ public class SpecialPickListFieldsCommand extends FacilioCommand {
         if (secondaryField != null) {
             context.put(FacilioConstants.PickList.SECONDARY_FIELD, secondaryField);
             addField(secondaryField, selectFields, supplements);
+        }
+        FacilioField fouthField = getFourthField(moduleName , modBean);
+        if(fouthField != null){
+            context.put(FacilioConstants.PickList.FOURTH_FIELD, fouthField);
+            selectFields.add(fouthField);
         }
         if (CollectionUtils.isNotEmpty(supplements)) {
             context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST, supplements);
@@ -53,5 +60,12 @@ public class SpecialPickListFieldsCommand extends FacilioCommand {
             default:
                 return null;
         }
+    }
+    public FacilioField getFourthField(String moduleName , ModuleBean modBean) throws Exception{
+        List<String> resourceModules = Arrays.asList("site", "building","floor", "space", "asset", "resource", "basespace");
+        if(resourceModules.contains(moduleName)){
+            return modBean.getField(FacilioConstants.ContextNames.DECOMMISSION , moduleName);
+        }
+        return null;
     }
 }

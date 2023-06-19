@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class FieldOption <Value> {
     private Value value;
-    private String label, secondaryLabel, subModule;
+    private String label, secondaryLabel,fourthLabel, subModule;
 
     public FieldOption(Value value, Object label) {
         this(value, label, null);
@@ -20,6 +20,13 @@ public class FieldOption <Value> {
         this.secondaryLabel = secondaryLabel == null ? null : Objects.toString(secondaryLabel);
         this.subModule = subModule;
     }
+    public FieldOption(Value value, Object label, Object secondaryLabel,Object fourthLabel ,String subModule){
+        this.value = value;
+        this.label = label == null ? null : Objects.toString(label);
+        this.secondaryLabel = secondaryLabel == null ? null : Objects.toString(secondaryLabel);
+        this.fourthLabel = fourthLabel == null ? null : Objects.toString(fourthLabel);
+        this.subModule = subModule;
+    }
 
     public String getLabel() {
         return label;
@@ -27,6 +34,7 @@ public class FieldOption <Value> {
     public String getSecondaryLabel() {
         return secondaryLabel;
     }
+    public String getFourthLabel(){ return fourthLabel;}
     public Value getValue() {
         return value;
     }

@@ -16,6 +16,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -66,6 +67,13 @@ public class FetchResourceDependentModuleListCommand extends FacilioCommand {
         //PORTFOLIO DEPENDENCIES
         resourceDependentModuleList.put(FacilioConstants.ContextNames.RESOURCE,DecommissionUtil.getPortfolioDependency(dependentResourcesData,currentResourceModuleName));
 
+        Map<String ,List<Long>> errorModuleData = new HashMap<>();
+        errorModuleData.put(FacilioConstants.ContextNames.TENANT_ID , DecommissionUtil.getTenantsIdsOccupiedUnits(dependentResourceIds));
+        if(currentResourceModuleName.equals(FacilioConstants.ContextNames.SITE)){
+            errorModuleData.put(FacilioConstants.ContextNames.CLIENT_IDS ,DecommissionUtil.getClientIdOfDependentUnits(currentResourceId));
+        }
+        //TENANT DETAILS
+        resourceDependentModuleList.put(FacilioConstants.ContextNames.ERROR_MODULE_DATA,errorModuleData);
 
         context.put(FacilioConstants.ContextNames.RESOURCE_LIST, resourceDependentModuleList);
 

@@ -1,15 +1,21 @@
 package com.facilio.bmsconsoleV3.actions.picklist;
 
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FieldOption;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
@@ -67,8 +73,12 @@ public class PickListUtil {
     }
 
     public static void populatePicklistContext (FacilioContext context, String moduleName, String filters, String search, Criteria clientCriteria, String clientCriteriaStr, String defaultIds, String viewName, int page, int perPage) throws Exception {
-        context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, clientCriteria);
-
+        Boolean isToFetchDecommissionedResource = (Boolean) context.get(FacilioConstants.ContextNames.IS_TO_FETCH_DECOMMISSIONED_RESOURCE);
+        List<String> resourceModules = Arrays.asList("site", "building","floor", "space", "asset", "resource", "basespace");
+        if(!BooleanUtils.isTrue(isToFetchDecommissionedResource) && resourceModules.contains(moduleName)) {
+                clientCriteria = clientCriteria !=null ? clientCriteria : new Criteria();
+                clientCriteria.addOrCondition(CriteriaAPI.getCondition("Resources.IS_DECOMMISSIONED", FacilioConstants.ContextNames.DECOMMISSION, "false", BooleanOperators.IS));
+        }
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         if (search != null) {
             context.put(FacilioConstants.ContextNames.SEARCH, search);
@@ -94,9 +104,13 @@ public class PickListUtil {
             String[] ids = FacilioUtil.splitByComma(defaultIds);
             List<Long> defaultIdList = Arrays.stream(ids).map(Long::parseLong).collect(Collectors.toList());
             context.put(FacilioConstants.PickList.DEFAULT_ID_LIST, defaultIdList);
+            if(resourceModules.contains(moduleName) && CollectionUtils.isNotEmpty(defaultIdList) && !BooleanUtils.isTrue(isToFetchDecommissionedResource)) {
+                clientCriteria.addOrCondition(CriteriaAPI.getCondition("Resources.ID", AgentConstants.ID, StringUtils.join(defaultIdList, ","), NumberOperators.EQUALS));
+            }
         }
         if (StringUtils.isNotEmpty(viewName)) {
             context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
         }
+        context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, clientCriteria);
     }
 }

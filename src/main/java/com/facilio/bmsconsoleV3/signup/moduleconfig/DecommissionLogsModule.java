@@ -46,6 +46,11 @@ public class DecommissionLogsModule extends SignUpData {
         DateField decommissionTImeField = (DateField) FieldFactory.getDefaultField("commissionedTime","commissioned Time","DECOMMISSIONED_TIME",FieldType.DATE_TIME);
         fields.add(decommissionTImeField);
 
+        LookupField userField = (LookupField) FieldFactory.getDefaultField("commissionedBy","Commissione By","COMMISSIONED_BY",module, FieldType.LOOKUP);
+        userField.setDisplayType(11);
+        userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+        fields.add(userField);
+
         StringField logJsonField = FieldFactory.getDefaultField("logValue","Log Value","LOG_VALUE",FieldType.STRING);
         fields.add(logJsonField);
 

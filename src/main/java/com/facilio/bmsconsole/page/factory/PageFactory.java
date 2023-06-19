@@ -596,11 +596,7 @@ public class PageFactory {
 		historyWidget.addToLayoutParams(section, 24, 3);
 		section.addWidget(historyWidget);
 	}
-	protected static void addCommissioningWidget(Section section) {
-		PageWidget commissioningWidget = new PageWidget(WidgetType.COMMISSIONING);
-		commissioningWidget.addToLayoutParams(section, 24, 3);
-		section.addWidget(commissioningWidget);
-	}
+
 
 	protected static PageWidget getCountModuleWidget(String module) {
 		PageWidget widget = new PageWidget();

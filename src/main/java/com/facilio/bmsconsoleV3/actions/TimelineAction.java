@@ -4,7 +4,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsoleV3.actions.picklist.PickListUtil;
@@ -13,9 +12,9 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
@@ -29,6 +28,8 @@ import com.facilio.v3.util.V3Util;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -63,6 +64,7 @@ public class TimelineAction extends RESTAPIHandler {
 				setMeta("localSearch", !localSearchDisabled.contains(getModuleName()));
 			} else {
 				FacilioContext pickListContext = new FacilioContext();
+				pickListContext.put(FacilioConstants.ContextNames.IS_TO_FETCH_DECOMMISSIONED_RESOURCE, BooleanUtils.isFalse(isToFetchDecommissionedResource)? isToFetchDecommissionedResource : true);
 				PickListUtil.populatePicklistContext(pickListContext, getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getViewName(), getPage(), getPerPage());
 
 				Criteria serverCriteria = new Criteria();
@@ -197,7 +199,7 @@ public class TimelineAction extends RESTAPIHandler {
 		setData(timelineRequest.getModuleName(), context.get(FacilioConstants.ContextNames.TIMELINE_CUSTOMIZATONDATA_MAP));
 		return SUCCESS;
 	}
-
+    private Boolean isToFetchDecommissionedResource;
 	private TimelineRequest timelineRequest;
 	public TimelineRequest getTimelineRequest() {
 		return timelineRequest;
