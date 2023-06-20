@@ -45,7 +45,7 @@ public class WorkTypeLineItemsModule extends BaseModuleConfig {
 
         List<FacilioField> fields = new ArrayList<>();
 
-        LookupField parent = FieldFactory.getDefaultField("workType","Work Type","WORK_TYPE",FieldType.LOOKUP);
+        LookupField parent = FieldFactory.getDefaultField("workType","Work Type","WORK_TYPE",FieldType.LOOKUP,true);
         parent.setLookupModule(workTypeModule);
         fields.add(parent);
 

@@ -30,7 +30,7 @@ public class ServiceSkillModule  extends BaseModuleConfig {
     }
 
     private FacilioModule constructServiceSkillModule(){
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_SKILL, "Skills", "Sevice_Skills", FacilioModule.ModuleType.BASE_ENTITY,true);
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_SKILL, "Skill", "Service_Skills", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> fields = new ArrayList<>();
 
@@ -38,7 +38,7 @@ public class ServiceSkillModule  extends BaseModuleConfig {
         name.setRequired(true);
         fields.add(name);
         fields.add(FieldFactory.getDefaultField("description","Description","DESCRIPTION",FieldType.STRING, FacilioField.FieldDisplayType.TEXTAREA));
-        fields.add(FieldFactory.getDefaultField("ratePerHour","Rate Per Hour","RATE_PER_HOUR",FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION));
+        fields.add(FieldFactory.getDefaultField("ratePerHour","Rate Per Hour","RATE_PER_HOUR",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
         module.setFields(fields);
 
         return module;

@@ -122,7 +122,7 @@ public class V3ModuleAPI {
         UTILITY_INTEGRATION_CUSTOMER(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         UTILITY_INTEGRATION_BILLS(FacilioConstants.UTILITY_INTEGRATION_BILLS, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         UTILITY_INTEGRATION_TARIFF(FacilioConstants.UTILITY_INTEGRATION_TARIFF, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        UTILITY_DISPUTE(FacilioConstants.UTILITY_DISPUTE, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        UTILITY_DISPUTE(FacilioConstants.UTILITY_DISPUTE, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
 
 //        RAW_ALARM(RawAlarmModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
 //        ALARM_REGEX_MATCHING(AlarmDefinitionMappingModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
@@ -134,6 +134,10 @@ public class V3ModuleAPI {
 //        FILTERED_ALARM_RULES(AlarmFilterRuleModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
 //        FLAGGED_EVENTS(FlaggedEventModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
 //        FLAGGED_EVENT_RULES(FlaggedEventRuleModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        SERVICE_SKILL(ContextNames.FieldServiceManagement.SERVICE_SKILL,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        WORK_TYPE(ContextNames.FieldServiceManagement.WORK_TYPE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        WORK_TYPE_LINE_ITEMS(ContextNames.FieldServiceManagement.WORK_TYPE_LINE_ITEMS,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        SERVICE_TASK(ContextNames.FieldServiceManagement.SERVICE_TASK,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         private String moduleName;
         private List<String> applicationLinkNames;

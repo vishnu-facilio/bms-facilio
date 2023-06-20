@@ -2863,8 +2863,9 @@ public class FacilioConstants {
 			public static final String WORK_TYPE = "workType";
 			public static final String WORK_TYPE_LINE_ITEMS = "workTypeLineItems";
 			public static final String WORK_TYPE_SKILLS = "workTypeSkills";
-
 			public static final String SERVICE_ORDER = "serviceOrder";
+			public static final String SERVICE_TASK = "serviceTask";
+			public static final String SERVICE_TASK_SKILLS = "serviceTaskSkills";
 		}
 		// etisalat changes
 		public static final String BILL_ALERT = "custom_alert";
