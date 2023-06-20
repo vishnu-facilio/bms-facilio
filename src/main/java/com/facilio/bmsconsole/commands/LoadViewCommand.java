@@ -129,12 +129,20 @@ public class LoadViewCommand extends FacilioCommand {
 						LOGGER.info("ViewEditAccess - LoadViewCommand -- Error occurred in ", e);
 					}
 
-					// Add calendar view only if request is from builder
-					if (isFromBuilder && view.getCalendarViewContext() == null) {
-						CalendarViewContext calendarView = CalendarViewUtil.getCalendarView(view.getId());
-						if (calendarView != null) {
-							ViewAPI.setCalendarViewFieldObjects(calendarView, modBean);
-							view.setCalendarViewContext(calendarView);
+					// Add calendar view, view fields & sort fields always if request isFromBuilder
+					if (isFromBuilder) {
+						if (view.getCalendarViewContext() == null) {
+							CalendarViewContext calendarView = CalendarViewUtil.getCalendarView(view.getId());
+							if (calendarView != null) {
+								ViewAPI.setCalendarViewFieldObjects(calendarView, modBean);
+								view.setCalendarViewContext(calendarView);
+							}
+						}
+						if (CollectionUtils.isEmpty(view.getFields())) {
+							view.setSortFields(ViewAPI.getSortFields(view.getId(), view.getModuleName()));
+						}
+						if (CollectionUtils.isEmpty(view.getSortFields())) {
+							view.setFields(ViewAPI.getViewColumns(view.getId()));
 						}
 					}
 				}

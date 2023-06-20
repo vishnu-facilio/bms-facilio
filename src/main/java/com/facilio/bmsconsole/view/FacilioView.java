@@ -78,7 +78,7 @@ public class FacilioView {
 		if (isListView != null) {
 			return isListView;
 		}
-		return false;
+		return true;
 	}
 	public Boolean getIsListView() {
 		return isListView;

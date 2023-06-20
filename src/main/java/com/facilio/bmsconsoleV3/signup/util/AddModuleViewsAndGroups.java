@@ -114,6 +114,7 @@ public class AddModuleViewsAndGroups {
                         view.setAppId(appId);
                         view.setDefault(true);
                         view.setLocked(false);
+                        view.setIsListView(true);
                         view.setGroupId(groupId);
                         view.setOwnerId(orgUserId);
                         view.setModuleName(moduleName);

@@ -23,10 +23,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.LookupOperator;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -160,10 +157,8 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 	}
 
 		public static List<FacilioView> getAllViews(Long appId, long moduleId, ViewType type, boolean getOnlyBasicValues, String... moduleName) throws Exception {
-		//List<FacilioView> views = new ArrayList<>();
 		Map<Long, FacilioView> viewMap = new HashMap<>();
-		List<Long> viewIds = new ArrayList<>();
-		try 
+		try
 		{
 			FacilioModule module = ModuleFactory.getViewsModule();
 			List<FacilioField> fields = FieldFactory.getViewFields();
@@ -172,7 +167,6 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 													.select(fields)
 													.table(module.getTableName())
 													.andCondition(CriteriaAPI.getCondition(fieldsMap.get("type"), String.valueOf(type.getIntVal()),NumberOperators.EQUALS))
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.orderBy("SEQUENCE_NUMBER");
 			
 			if (moduleId != -1) {
@@ -193,6 +187,14 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 			}
 			builder.andCriteria(appCriteria);
 
+			boolean calendarViewEnabled = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CALENDAR_VIEW);
+			if (!calendarViewEnabled) {
+				Criteria calendarViewCriteria = new Criteria();
+				calendarViewCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("isListView"), Boolean.TRUE.toString(), BooleanOperators.IS));
+				calendarViewCriteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("isCalendarView"), Boolean.FALSE.toString(), BooleanOperators.IS));
+				builder.andCriteria(calendarViewCriteria);
+			}
+
 			List<Map<String, Object>> viewProps = builder.get();
 			List<FacilioView> views = getAllViewDetails(viewProps, module.getOrgId(), getOnlyBasicValues);
 
@@ -203,34 +205,6 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 					viewMap.put(view.getId(), view);
 				}
 			}
-			/*
-			List<Long> criteriaIds = new ArrayList<>();
-			for(Map<String, Object> viewProp : viewProps) 
-			{
-				//views.add(FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class));
-				FacilioView view = FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class);
-				viewMap.put(view.getId(), view);
-				viewIds.add(view.getId());
-				if (StringUtils.isEmpty(view.getModuleName()) && view.getModuleId() > 0) {
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					view.setModuleName(modBean.getModule(view.getModuleId()).getName());
-				}
-				if (view.getCriteriaId() > 0) {
-					criteriaIds.add(view.getCriteriaId());
-				}
-			}
-			
-			if (!criteriaIds.isEmpty() && criteriaIds != null) {
-				Map<Long, Criteria> criteriaValueMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
-				for (FacilioView view : viewMap.values())  {
-					if (view.getCriteriaId() > 0 && criteriaValueMap.get(view.getCriteriaId()) != null) {
-						view.setCriteria(criteriaValueMap.get(view.getCriteriaId()));
-					}
-				}
-			}
-			*/
-
-			
 		} 
 		catch (Exception e) 
 		{
@@ -319,8 +293,13 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 				}
 			}
 			List<FacilioView> views = new ArrayList<>();
-			Map<Long, CalendarViewContext> calendarViewContextMap = CollectionUtils.isNotEmpty(calendarViewIds)
-																? CalendarViewUtil.getAllCalendarViews(calendarViewIds) : new HashMap<>();
+
+			boolean calendarViewEnabled = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CALENDAR_VIEW);
+			Map<Long, CalendarViewContext> calendarViewContextMap = new HashMap<>();
+			if (calendarViewEnabled && CollectionUtils.isNotEmpty(calendarViewIds)) {
+				calendarViewContextMap = CalendarViewUtil.getAllCalendarViews(calendarViewIds);
+			}
+
 			Map<ViewType, Map<Long, Map<String, Object>>> typeBasedValues = (getOnlyBasicValues) ? null : getDependentTableValues(viewTypeMap);
 			for(Map viewDetail : viewPropList){
 				int viewTypeInt = (int) viewDetail.get("type");
@@ -343,14 +322,15 @@ public static void customizeViewGroups(List<ViewGroups> viewGroups) throws Excep
 							break;
 						default:
 							view = FieldUtil.getAsBeanFromMap(viewDetail, FacilioView.class);
-							//sortFields are available only for table list view
-							view.setSortFields(getSortFields(view.getId(), view.getModuleName()));
-							//TODO fetch View Columns only when view.isListView()
-							List<ViewField> columns = getViewColumns(view.getId());
-							view.setFields(columns);
+
+							// add view fields & sort fields
+							if (view.isListView()) {
+								view.setSortFields(getSortFields(view.getId(), view.getModuleName()));
+								view.setFields(getViewColumns(view.getId()));
+							}
 
 							// add calendar view context
-							if (view.isCalendarView()) {
+							if (calendarViewEnabled && view.isCalendarView()) {
 								if (MapUtils.isNotEmpty(calendarViewContextMap) && calendarViewContextMap.containsKey(viewId)) {
 									CalendarViewContext calendarViewContext = calendarViewContextMap.get(viewId);
 									setCalendarViewFieldObjects(calendarViewContext, modBean);
