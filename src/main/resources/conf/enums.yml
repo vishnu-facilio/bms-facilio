@@ -509,5 +509,11 @@ enums:
   - name: ServiceOrderSourceType
     enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderSourceType
 
+  - name: ServiceOrderPrerequisiteStatus
+    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderPrerequisiteStatus
+
+  - name: ServiceOrderStatus
+    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderStatus
+
   - name: ServiceTaskStatus
     enumClassName: com.facilio.fsm.context.ServiceTaskContext$ServiceTaskStatus

@@ -2470,6 +2470,7 @@ public class FacilioConstants {
 
 		public static final String TENANT_CONTACTS = "tenantcontacts";
 
+		public static final String SERVICE_ORDER = "serviceOrder";
 		public static final String CLIENT_CONTACT = "clientcontact";
 		public static final String CLIENT_CONTACTS = "clientcontacts";
 
