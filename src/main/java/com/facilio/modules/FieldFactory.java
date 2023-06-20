@@ -3413,6 +3413,7 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+
     public static List<FacilioField> getFlowFields(){
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getFlowModule();

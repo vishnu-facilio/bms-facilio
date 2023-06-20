@@ -26,6 +26,7 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 		}
 		return -1;
 	}
+
 	public void setType(int type) {
 		this.type = AssetCategoryType.STATE_MAP.get(type);
 	}

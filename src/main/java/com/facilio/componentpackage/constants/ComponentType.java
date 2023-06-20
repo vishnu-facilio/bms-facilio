@@ -27,20 +27,17 @@ public enum ComponentType implements FacilioIntEnum {
     FORM_SECTION(FormSectionPackageBeanImpl.class, FORM, false),
     FORM_FIELDS(FormFieldPackageBeanImpl.class, FORM, false),
     VIEW(ViewPackageBeanImpl.class, MODULE, false),
-
+    ASSET_CATEGORY(AssetCategoryPackageBeanImpl.class,MODULE,false),
+    ASSET_DEPARTMENT(AssetDepartmentPackageBeanImpl.class, MODULE, false),
+    ASSET_TYPE(AssetTypePackageBeanImpl.class, MODULE, false),
+    TICKET_CATEGORY(TicketCategoryPackageBeanImpl.class, MODULE, false),
+    TICKET_TYPE(TicketTypePackageBeanImpl.class, MODULE, false),
+    TICKET_PRIORITY(TicketPriorityPackageBeanImpl.class, MODULE, false),
+    SPACE_TYPE(null, null, false),
 
     USER(null, APP, false),
     TEAM(null, APP, false),
     SITE(null, null, false),
-    TICKET_CATEGORY(null, null, false),
-    TICKET_STATUS(null, null, false),
-    TICKET_PRIORITY(null, null, false),
-    ASSET_CATEGORY(null, null, false),
-    ASSET_DEPARTMENT(null, null, false),
-    ASSET_TYPE(null, null, false),
-    SPACE_TYPE(null, null, false),
-
-
 
     FUNCTION_NAMESPACE(FunctionNameSpacePackageBeanImpl.class, null, false),
     FUNCTION(FunctionPackageBeanImpl.class, FUNCTION_NAMESPACE, true),
@@ -68,10 +65,15 @@ public enum ComponentType implements FacilioIntEnum {
             add(USER);
             add(TEAM);
             add(MODULE);
+            add(ASSET_CATEGORY);
+            add(ASSET_DEPARTMENT);
+            add(ASSET_TYPE);
+            add(TICKET_CATEGORY);
+            add(TICKET_TYPE);
+            add(TICKET_PRIORITY);
             add(FIELD);
             add(SITE);
             add(TICKET_CATEGORY);
-            add(TICKET_STATUS);
             add(TICKET_PRIORITY);
             add(ASSET_CATEGORY);
             add(ASSET_DEPARTMENT);

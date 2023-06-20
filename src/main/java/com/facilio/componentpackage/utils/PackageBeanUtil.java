@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
@@ -523,5 +524,31 @@ public class PackageBeanUtil {
             }
         }
         return actionContextList;
+    }
+    public static List<?> getContextListsForIds( Collection<Long> ids, FacilioModule module, Class<?> clazz) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
+                .table(module.getTableName())
+                .module(module)
+                .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
+                .select(moduleBean.getAllFields(module.getName()))
+                .andCondition(CriteriaAPI.getIdCondition(ids, module));
+        return builder.get();
+    }
+    public static List<?> getContextIdVsParentId( Criteria criteria,FacilioModule module ,Class<?> clazz) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordBuilder = new SelectRecordsBuilder<>()
+                .table(module.getTableName())
+                .module(module)
+                .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
+                .select(moduleBean.getAllFields(module.getName()));
+
+        if (criteria!=null && !criteria.isEmpty()) {
+            selectRecordBuilder.andCriteria(criteria);
+        }
+
+        List<ModuleBaseWithCustomFields> propsList = selectRecordBuilder.get();
+
+        return propsList;
     }
 }

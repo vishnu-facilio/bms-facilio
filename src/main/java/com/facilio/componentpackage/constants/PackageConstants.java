@@ -35,6 +35,8 @@ public class PackageConstants {
     public static final String USE_LINKNAME_FROM_CONTEXT = "useLinkNameFromContext";
     public static final String DOWNLOAD_URL = "downloadUrl";
 
+    public static final String TYPE_STRING = "typeString";
+    public static final String CONSTANT = "constant";
 
     public static final List<String> ALLOWED_EXTN = new ArrayList<>();
 
@@ -106,6 +108,8 @@ public class PackageConstants {
         public static final String MODULE_LIST = "Modules_List";
         public static final String SPEICAL_MODULES = "Special_Modules";
         public static final String FEATURE_LICENSE = "FeatureLicense";
+
+
     }
 
     public static class FormXMLComponents {
@@ -284,5 +288,87 @@ public class PackageConstants {
         public static final String IS_LOG_NEEDED = "Is_LogNeeded";
         public static final String IS_V2 = "Is_V2Script";
         public static final String RUN_AS_ADMIN = "Run_AsAdmin";
+    }
+    public static class EmailConstants {
+        public static final String NAME = "name";
+        public static final String SUBJECT = "subject";
+        public static final String MESSAGE = "message";
+        public static final String HTML = "html";
+        public static final String DRAFT = "draft";
+        public static final String WORKFLOW = "workflow";
+        public static final String USER_WORKFLOW = "userWorkflow";
+        public static final String IS_V2_SCRIPT = "isV2Script";
+        public static final String WORKFLOW_V2_STRING = "workflowV2String";
+        public static final String ATTACHMENT_LIST = "attachmentList";
+
+    }
+    public static class WorkFlowConstants{
+        public static final String PARAMETERS = "parameters";
+        public static final String PARAMETER = "parameter";
+        public static final String EXPRESSIONS = "expressions";
+        public static final String EXPRESSION = "expression";
+
+    }
+    public static class AssetCategoryConstants{
+        public static final String ASSET_CATEGORY_NAME = "asset_category_name";
+        public static final String ASSET_TYPE = "asset_type";
+        public static final String DISPLAY_NAME = "display_name";
+        public static final String PARENT_CATEGORY_NAME = "parent_category_name";
+        public static final String ASSET_MODULE_NAME = "asset_module_name";
+        public static final String IS_DEFAULT = "Is_Default";
+
+    }
+    public static class AssetDepartmentConstants{
+        public static final String ASSET_DEPARTMENT_NAME = "asset_department_name";
+
+    }
+    public static class AssetTypeConstants{
+        public static final String ASSET_TYPE_NAME = "asset_type_name";
+        public static final String IS_MOVABLE = "isMovable";
+
+    }
+    public static class TicketCategoryConstants{
+        public static final String TICKET_CATEGORY_NAME = "ticket_category_name";
+        public static final String TICKET_DISPLAY_NAME = "ticket_display_name";
+        public static final String DESCRIPTION = "description";
+
+    }
+    public static class TicketTypeConstants{
+        public static final String TICKET_TYPE_NAME = "asset_type_name";
+        public static final String DESCRIPTION = "description";
+
+    }
+    public static class TicketPriorityConstants{
+        public static final String PRIORITY = "priority";
+        public static final String SEQUENCE_NUMBER = "sequence_number";
+        public static final String COLOUR = "colour";
+        public static final String DISPLAY_NAME = "display_name";
+        public static final String DESCRIPTION = "description";
+        public static final String IS_DEFAULT = "Is_Default";
+    }
+    public static class RelationRequestConstants{
+        public static final String NAME = "name";
+        public static final String DESCRIPTION = "description";
+        public static final String LINK_NAME = "link_name";
+        public static final String FROM_MODULE_NAME = "from_module_name";
+        public static final String TO_MODULE_NAME = "display_name";
+        public static final String FORWARD_RELATION_NAME = "relation_name";
+        public static final String REVERSE_RELATION_NAME = "reverse_relation_name";
+        public static final String RELATION_TYPE = "relation_type";
+    }
+    public static class SitePackageConstants{
+        public static final String NAME = "name";
+        public static final String DESCRIPTION = "description";
+        public static final String MANAGED_BY = "managed_by";
+        public static final String SITE_TYPE = "site_type";
+        public static final String GROSS_FLOOR_AREA = "gross_floor_area";
+        public static final String AREA = "area";
+        public static final String CDD_BASE_TEMPERATURE = "cdd_base_temperature";
+        public static final String HDD_BASE_TEMPERATURE = "hdd_base_temperature";
+        public static final String WDD_BASE_TEMPERATURE = "wdd_base_temperature";
+        public static final String TIMEZONE = "timezone";
+        public static final String BOUNDARY_RADIUS = "boundary_radius";
+        public static final String FAILURE_CLASS = "failure_class";
+        public static final String FORM_NAME = "form_name";
     }
 }

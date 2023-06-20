@@ -33,7 +33,6 @@ public class V3AssetCategoryContext extends V3Context {
         }
         return -1;
     }
-
     public String getTypeVal() {
         if(type != null) {
             return type.getStringVal();
@@ -122,6 +121,7 @@ public class V3AssetCategoryContext extends V3Context {
         public String getStringVal() {
             return strVal;
         }
+
 
         public static AssetCategoryType getType(Integer val) {
             return STATE_MAP.get(val);
