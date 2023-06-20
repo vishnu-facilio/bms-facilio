@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+
+<struts>
+    <package name="fsmBaseApi" strict-method-invocation="false"
+             extends="struts-default,json-default">
+        <result-types>
+            <result-type name="json"
+                         class="com.facilio.bmsconsole.interceptors.CacheResult" />
+        </result-types>
+
+        <global-results>
+            <result name="login" type="httpheader">
+                <param name="status">401</param>
+            </result>
+            <result name="unauthorized" type="httpheader">
+                <param name="status">403</param>
+            </result>
+            <result name="invalid" type="httpheader">
+                <param name="status">400</param>
+            </result>
+            <result name="usernotinapp" type="httpheader">
+                <param name="status">409</param>
+            </result>
+            <result name="resourcenotfound" type="httpheader">
+                <param name="status">404</param>
+            </result>
+            <result name="orgsetup" type="httpheader">
+                <param name="status">202</param>
+            </result>
+            <result name="error" type="json">
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">responseCode, message</param>
+            </result>
+            <result name="exception" type="chain">
+                <param name="actionName">handleException</param>
+                <param name="namespace">/v3/exception</param>
+            </result>
+            <result name="cachedResponse" type="chain">
+                <param name="actionName">cachedResponse</param>
+                <param name="namespace">/v2/cachedResponse</param>
+            </result>
+            <result name="success" type="json">
+                <param name="excludeNullProperties">true</param>
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
+            </result>
+            <result name="error" type="json">
+                <param name="excludeNullProperties">true</param>
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">^message.*,^code.*,^data.*,^stackTrace.*</param>
+            </result>
+            <result name="sessionexpired" type="httpheader">
+                <param name="status">440</param>
+            </result>
+            <result name="sessiontimeout" type="httpheader">
+                <param name="status">408</param>
+            </result>
+        </global-results>
+
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception"
+                               result="exception" />
+        </global-exception-mappings>
+
+    </package>
+    <package name="fsmApi" namespace="/api/fsm" extends="v3BaseApi">
+        <interceptors>
+            <interceptor name="cacheinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+            <interceptor name="scopeinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+            <interceptor name="validationinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
+            <interceptor name="datasourceinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
+            <interceptor name="authinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+            <interceptor name="oauth2interceptor"
+                         class="com.facilio.bmsconsole.interceptors.Oauth2Interceptor"/>
+            <interceptor name="globalscopevariableinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor" />
+            <interceptor name="permissionSetInterceptor"
+                         class="com.facilio.bmsconsole.interceptors.PermissionSetInterceptor" />
+            <interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor" />
+            <interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor" />
+            <interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor" />
+            <interceptor-stack name="defaultInterceptor">
+                <interceptor-ref name="defaultStack" />
+                <interceptor-ref name="authinterceptor" />
+                <interceptor-ref name="exceptionHandlingInterceptor" />
+                <interceptor-ref name="datasourceinterceptor" />
+                <interceptor-ref name="oauth2interceptor" />
+                <interceptor-ref name="apiKeyInterceptor" />
+                <interceptor-ref name="scopeinterceptor" />
+                <interceptor-ref name="malwareInterceptor" />
+                <interceptor-ref name="globalscopevariableinterceptor" />
+                <interceptor-ref name="cacheinterceptor" />
+                <interceptor-ref name="permissionSetInterceptor" />
+                <interceptor-ref name="json">
+                    <param name="enableSMD">true</param>
+                </interceptor-ref>
+                <interceptor-ref name="validationinterceptor"/>
+            </interceptor-stack>
+        </interceptors>
+
+        <default-interceptor-ref name="defaultInterceptor" />
+    </package>
+</struts>
