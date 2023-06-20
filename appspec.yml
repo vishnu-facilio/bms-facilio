@@ -40,7 +40,7 @@ files:
   - source: /awsprops-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-ae-kafka.properties
-    destination: /home/facilio/deployment-files/    
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-ae-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-kafka.properties
@@ -52,13 +52,13 @@ files:
   - source: /awsprops-azure-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-azure-processor.properties
-    destination: /home/facilio/deployment-files/    
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-azure-test-user.properties
     destination: /home/facilio/deployment-files/
   - source: /imsTopicInfo-azure.yml
-    destination: /home/facilio/deployment-files/    
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-azure-test-scheduler.properties
-    destination: /home/facilio/deployment-files/            
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-stage.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-team.properties
@@ -68,6 +68,8 @@ files:
   - source: /awsprops-stage2.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-preprod-stage2.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-stage-dispatcher.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-user.properties
     destination: /home/facilio/deployment-files/
@@ -82,6 +84,8 @@ files:
   - source: /log4j-preprod.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-stage.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-dispatcher-stage.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-stage2.properties
     destination: /home/facilio/deployment-files/
@@ -132,7 +136,7 @@ files:
   - source: /log4j-sp-kafka.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-sp-kafka.properties
-    destination: /home/facilio/deployment-files/    
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-sp-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-sp-user.properties
