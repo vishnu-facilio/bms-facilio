@@ -49,7 +49,11 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
             for (BaseAlarmContext alarm : alarms) {
                 if (alarm instanceof ReadingAlarm) {
                     ReadingAlarm readingAlarm = (ReadingAlarm) alarm;
-                    if (readingAlarm.getIsNewReadingRule()) {
+
+                    LOGGER.debug("Alarm is NewReadingRule or OldRule "+ readingAlarm.getIsNewReadingRule()!=null
+                            ?readingAlarm.getIsNewReadingRule():null);
+
+                    if (readingAlarm.getIsNewReadingRule()!=null && readingAlarm.getIsNewReadingRule()) {
                         newReadingAlarms.add(readingAlarm);
                     } else {
                         readingAlarms.add(readingAlarm);
@@ -81,7 +85,6 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
             if (CollectionUtils.isNotEmpty(newRuleIds)) {
                 Map<Long, Map<String, Object>> ruleMap = NewReadingRuleAPI.getReadingRuleNameAndImpactByIds(newRuleIds);
                 newReadingAlarms.stream().filter(readingAlarm -> readingAlarm.getIsNewReadingRule() && readingAlarm.getRule()!=null).forEach(alarm -> {
-                    LOGGER.info("alarmId"+alarm.getId()+"alarmRule"+alarm.getRule());
                     NewReadingRuleContext rule = (NewReadingRuleContext) alarm.getRule();
                     Map<String, Object> prop = ruleMap.get(rule.getId());
                     rule.setName((String) prop.get("name"));

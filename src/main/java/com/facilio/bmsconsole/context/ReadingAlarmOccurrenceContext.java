@@ -29,14 +29,15 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
         if(rule == null) {
             return;
         }
-        if (isNewReadingRule) {
-            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
-            ruleContext.setId(rule.getId());
-            this.rule = ruleContext;
-        } else {
-            this.rule = rule;
+        if(getIsNewReadingRule()!=null) {
+            if (isNewReadingRule) {
+                NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+                ruleContext.setId(rule.getId());
+                this.rule = ruleContext;
+            } else
+                this.rule = rule;
+            }
         }
-    }
 
     @JsonDeserialize(as = ReadingRuleContext.class)
     private ReadingRuleInterface subRule;
@@ -45,12 +46,14 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
         if(subRule == null) {
             return;
         }
-        if (getIsNewReadingRule()) {
-            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
-            ruleContext.setId(subRule.getId());
-            this.subRule = ruleContext;
-        } else {
-            this.subRule = subRule;
+        if(getIsNewReadingRule()!=null) {
+            if (getIsNewReadingRule()) {
+                NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+                ruleContext.setId(subRule.getId());
+                this.subRule = ruleContext;
+            } else {
+                this.subRule = subRule;
+            }
         }
     }
 
