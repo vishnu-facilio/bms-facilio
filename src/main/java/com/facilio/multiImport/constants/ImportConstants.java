@@ -27,7 +27,7 @@ public class ImportConstants{
     public static final String UPDATE_RECORDS_COUNT = "updateRecordsCount";
     public static final String SKIP_RECORDS_COUNT = "skipRecordsCount";
     public static final String IMPORT_FIELDS="importFields";
-
+    public static final String BATCH_COLLECT_MAP= "batchCollectMap";
     public static Collection<Pair<Long,Map<String,Object>>> getInsertRecords(Context context) {
         return (Collection<Pair<Long,Map<String,Object>>>) context.get(INSERT_RECORDS);
     }
@@ -88,5 +88,8 @@ public class ImportConstants{
     }
     public static List<FacilioField> getImportFields(Context context){
         return (List<FacilioField>) context.get(IMPORT_FIELDS);
+    }
+    public static  Map<String,Object> getBatchCollectMap(Context context){
+        return (Map<String,Object>) context.get(ImportConstants.BATCH_COLLECT_MAP);
     }
 }

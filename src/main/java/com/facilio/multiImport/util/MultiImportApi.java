@@ -753,6 +753,9 @@ public class MultiImportApi {
         List<Map<String, Object>> result = selectRecordBuilder.get();
         batchRecords = FieldUtil.getAsBeanListFromMapList(result, ImportRowContext.class);
 
+        if(batchRecords == null){
+            batchRecords = new ArrayList<>();
+        }
         return batchRecords;
     }
 
@@ -1171,6 +1174,9 @@ public class MultiImportApi {
         public static final String AFTER_PROCESS_ROW_FUNCTION = "afterProcessRowFunction";
         public static final String LOOKUP_UNIQUE_FIELDS_MAP = "lookupUniqueFieldsMap";
         public static final String LOAD_LOOK_UP_EXTRA_SELECT_FIELDS_MAP = "loadLookUpExtraSelectFields";
+        public static final String BATCH_COLLECT_FIELD_NAMES= "batchCollectFieldNames";
+        public static final String BATCH_COLLECT_MAP= "batchCollectMap";
+        public static final String BATCH_ROWS= "batchRows";
         public static final String INSERT_RECORDS = "insertRecords";
         public static final String UPDATE_RECORDS = "updateRecords";
         public static final String OLD_RECORDS = "oldRecords";

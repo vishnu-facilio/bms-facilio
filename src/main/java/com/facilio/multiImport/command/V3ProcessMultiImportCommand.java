@@ -57,13 +57,11 @@ import java.util.stream.Collectors;
 public class V3ProcessMultiImportCommand extends FacilioCommand {
 
     private static final Logger LOGGER = Logger.getLogger(V3ProcessMultiImportCommand.class.getName());
-    private static final String VALUES_SEPERATOR = "##";
-    int chunkLimit = 0;
+    private static final String VALUES_SEPARATOR = "##";
     Long importId = null;
     ImportDataDetails importDataDetails = null;
     ImportFileSheetsContext importSheet = null;
     Long importSheetId = null;
-    Long lastRowIdTaken = null;
 
     Map<String, ImportFieldMappingContext> sheetColumnNameVsFieldMapping = null;
     Map<Long, String> fieldIdVsSheetColumnNameMap = null;
@@ -87,6 +85,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
     Context context = null;
 
     List<ImportRowContext> batchRows = null;
+    Map<String,Object> batchCollectMap = null;
     int pointer=0;
     boolean ignoreProgressSendingToClient;
     int one_percentage_records;
@@ -118,7 +117,6 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         moduleName = importSheet.getModuleName();
         module = Constants.getModBean().getModule(moduleName);
         importSheetId = importSheet.getId();
-        lastRowIdTaken = importSheet.getLastRowIdTaken();
 
         //importSheetFields info
         sheetColumnNameVsFieldMapping = importSheet.getSheetColumnNameVsFieldMapping();
@@ -134,22 +132,17 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         beforeProcessRowFunction = (RowFunction) context.get(MultiImportApi.ImportProcessConstants.BEFORE_PROCESS_ROW_FUNCTION);
         afterProcessRowFunction = (RowFunction) context.get(MultiImportApi.ImportProcessConstants.AFTER_PROCESS_ROW_FUNCTION);
 
-        chunkLimit = (int) context.get(FacilioConstants.ContextNames.CHUNK_LIMIT);
-        batchRows = MultiImportApi.getRowsByBatch(importSheetId, lastRowIdTaken, chunkLimit);
+        batchRows = (List<ImportRowContext>) context.get(MultiImportApi.ImportProcessConstants.BATCH_ROWS);
+        batchCollectMap = (Map<String,Object>) context.getOrDefault(MultiImportApi.ImportProcessConstants.BATCH_COLLECT_MAP,new HashMap<>());
 
         requiredFields = (ArrayList<FacilioField>) context.get(ImportAPI.ImportProcessConstants.REQUIRED_FIELDS);
         if (CollectionUtils.isEmpty(requiredFields)) {
             requiredFields = MultiImportApi.getRequiredFields(moduleName);
         }
 
-        if (isSiteIdFieldPresent()) {
-            sitesMap = getSiteMap();
-        }
-        if(isStateFlowIdFieldPresent()){
-            Set<Long> stateFlowIds = getAllRecordStateFlowIds();
-            List<StateFlowRuleContext> stateFlowRuleContextList = StateFlowRulesAPI.getStateFlowBaseDetails(new ArrayList<>(stateFlowIds));
-            stateFlowIdVsStateFlowContext = stateFlowRuleContextList.stream().collect(Collectors.toMap(StateFlowRuleContext::getId,Function.identity()));
-        }
+        sitesMap = getSiteMap();
+        stateFlowIdVsStateFlowContext = getStateFlows();
+
         lookupMap = loadLookupMap(batchRows);
         one_percentage_records = MultiImportApi.getOnePercentageRecordsCount(importDataDetails);
         if(module!=null){
@@ -221,14 +214,9 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         FacilioChain importChain =  MultiImportChainUtil.getImportChain(moduleName,importSheet.getImportSettingEnum());
 
         FacilioContext importContext = importChain.getContext();
+        importContext.putAll(context);
 
         ImportConstants.setRowContextList(importContext, recordsToBeAdded);
-        ImportConstants.setImportDataDetails(importContext,importDataDetails);
-        importContext.put(FacilioConstants.ContextNames.IMPORT_ID,importId);
-        ImportConstants.setImportSheet(importContext,importSheet);
-        importContext.put(ImportAPI.ImportProcessConstants.REQUIRED_FIELDS,requiredFields);
-        importContext.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
-        importContext.put(Constants.BEAN_CLASS,beanClass);
 
         importChain.execute();
 
@@ -276,7 +264,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 String lookUpValueKey = getLookUKeyValueFromSheet(lookupField,uniqueFields,rowContext, true);
 
                 if (!lookUpValueKey.isEmpty()) {
-                    name = name + VALUES_SEPERATOR + lookUpValueKey;
+                    name = name + VALUES_SEPARATOR + lookUpValueKey;
                 }
                 sameModuleRecordCacheLookupMap.get(lookupField).remove(name);
             }catch (ImportFieldValueMissingException e){
@@ -304,7 +292,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 String lookUpValueKey = getLookUKeyValueFromSheet(lookupField,uniqueFields,rowContext, true);
 
                 if (!lookUpValueKey.isEmpty()) {
-                    name = name + VALUES_SEPERATOR + lookUpValueKey;
+                    name = name + VALUES_SEPARATOR + lookUpValueKey;
                 }
                 sameModuleRecordCacheLookupMap.get(lookupField).add(name);
             }catch (ImportFieldValueMissingException e){
@@ -333,7 +321,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 String lookUpValueKey = getLookUKeyValueFromSheet(baseLookupField,uniqueFields,rowContext, true);
 
                 if (!lookUpValueKey.isEmpty()) {
-                    name = name + VALUES_SEPERATOR + lookUpValueKey;
+                    name = name + VALUES_SEPARATOR + lookUpValueKey;
                 }
                 Object value = nameVsIds.get(name); //DP record
 
@@ -367,6 +355,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         HashMap<String, Object> props = new LinkedHashMap<>();   // processed prop
         Map<String, Object> rowVal = rowContext.getRawRecordMap(); // un processed prop
         long rowNo = rowContext.getRowNumber();
+
 
         // adding source_type and source_id in the props
         props.put(FacilioConstants.ContextNames.SOURCE_TYPE, SourceType.IMPORT.getIndex());
@@ -525,7 +514,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                     String lookUpValueKey = getLookUKeyValueFromSheet((BaseLookupField) field,uniqueFields,rowContext, true);
 
                     if (!lookUpValueKey.isEmpty()) {
-                        name = name + VALUES_SEPERATOR + lookUpValueKey;
+                        name = name + VALUES_SEPARATOR + lookUpValueKey;
                     }
                     Object value = nameVsIds.get(name);
 
@@ -547,7 +536,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 String lookUpValueKey = getLookUKeyValueFromSheet((BaseLookupField) field,uniqueFields,rowContext, true);
                 String name = cellValue.toString().trim();
                 if (!lookUpValueKey.isEmpty()) {
-                    name = name + VALUES_SEPERATOR + lookUpValueKey;
+                    name = name + VALUES_SEPARATOR + lookUpValueKey;
                 }
                 Object value = nameVsIds.get(name);
 
@@ -604,6 +593,16 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 props.put(field.getName(), id);
                 break;
             }
+            case STRING:{
+                if(cellValue instanceof Double){
+                    String cellValueString = cellValue.toString();
+                    Long number = (long) Double.parseDouble(cellValueString);
+                    props.put(field.getName(), number.toString());
+                }else {
+                    props.put(field.getName(), cellValue);
+                }
+                break;
+            }
             default: {
                 if (!props.containsKey(field.getName())) {
                     props.put(field.getName(), cellValue);
@@ -643,7 +642,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
             if (i == uniqueFields.size() - 1) {
                 break;
             }
-            keyValue.append(VALUES_SEPERATOR);
+            keyValue.append(VALUES_SEPARATOR);
         }
         return keyValue.toString();
     }
@@ -704,7 +703,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
 
                 for (String value : values) {
                     if (!keyValue.isEmpty()) {
-                        value = value + VALUES_SEPERATOR + keyValue;
+                        value = value + VALUES_SEPARATOR + keyValue;
                     }
                     numberIdPairList.put(value.trim(), null);
                 }
@@ -813,7 +812,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
             if (i == uniqueFields.size() - 1) {
                 break;
             }
-            uniqueKey.append(VALUES_SEPERATOR);
+            uniqueKey.append(VALUES_SEPARATOR);
 
         }
         return uniqueKey.toString();
@@ -844,7 +843,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         Set<String> set = new HashSet<>();
 
         for (String uniqueValues : nameIdMap.keySet()) {
-            String name = uniqueValues.split(VALUES_SEPERATOR)[0];
+            String name = uniqueValues.split(VALUES_SEPARATOR)[0];
             set.add(name.replace(",", StringOperators.DELIMITED_COMMA));
         }
 
@@ -877,7 +876,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
             tableAlias.append("_").append(field.getName());
 
             for (String uniqueValues : nameIdMap.keySet()) {
-                String uniqueValue = uniqueValues.split(VALUES_SEPERATOR)[i];
+                String uniqueValue = uniqueValues.split(VALUES_SEPARATOR)[i];
 
                 if (uniqueValue.equals("null")) {
                     continue;
@@ -1015,7 +1014,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
     }
 
     private Map<String, SiteContext> getSiteMap() throws Exception {
-        Set<String> siteNames = getAllRecordSiteNames();
+        Set<String> siteNames = (Set<String>) batchCollectMap.get("siteId");
 
         if (CollectionUtils.isEmpty(siteNames)) {
             return Collections.EMPTY_MAP;
@@ -1029,21 +1028,18 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         }
         return sitesMap;
     }
+    private  Map<Long,StateFlowRuleContext> getStateFlows() throws Exception {
+        Map<Long,StateFlowRuleContext> stateFlowIdVsStateFlowContext = null;
+        Set<Long> stateFlowIds = (Set<Long>) batchCollectMap.get("stateFlowId");
 
-    public boolean isSiteIdFieldPresent() throws Exception {
-        FacilioField siteIdField = Constants.getModBean().getField("siteId", moduleName);
-
-        if (siteIdField == null) {
-            return false;
+        if(CollectionUtils.isEmpty(stateFlowIds)){
+            return Collections.EMPTY_MAP;
         }
 
-        String siteSheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(importSheet, siteIdField);
+        List<StateFlowRuleContext> stateFlowRuleContextList = StateFlowRulesAPI.getStateFlowBaseDetails(new ArrayList<>(stateFlowIds));
+        stateFlowIdVsStateFlowContext = stateFlowRuleContextList.stream().collect(Collectors.toMap(StateFlowRuleContext::getId,Function.identity()));
 
-        if (siteSheetColumnName == null) {
-            return false;
-        }
-
-        return true;
+        return stateFlowIdVsStateFlowContext;
     }
 
     public Set<String> getAllRecordSiteNames() throws Exception {
@@ -1059,21 +1055,6 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
             }
         }
         return siteNames;
-    }
-    public boolean isStateFlowIdFieldPresent() throws Exception {
-        FacilioField siteIdField = Constants.getModBean().getField("stateFlowId", moduleName);
-
-        if (siteIdField == null) {
-            return false;
-        }
-
-        String siteSheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(importSheet, siteIdField);
-
-        if (siteSheetColumnName == null) {
-            return false;
-        }
-
-        return true;
     }
     public Set<Long> getAllRecordStateFlowIds() throws Exception {
         FacilioField stateFlowIdField = Constants.getModBean().getField("stateFlowId", moduleName);

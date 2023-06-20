@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.*;
 
 public class ImportHandler {
     private Command beforeImportCommand;
@@ -15,8 +16,10 @@ public class ImportHandler {
     private Command afterDataProcessCommand;
     private RowFunction beforeProcessRowFunction;
     private RowFunction afterProcessRowFunction;
-    public Map<String, List<String>> lookupUniqueFieldsMap;
-    public Map<String,List<String>> loadLookUpExtraSelectFields;
+    private  Map<String, List<String>> lookupUniqueFieldsMap;
+    private  Map<String,List<String>> loadLookUpExtraSelectFields;
+    private  Set<String> batchCollectFieldNames;
+
     public Command getBeforeImportCommand() {
         return beforeImportCommand;
     }
@@ -38,6 +41,8 @@ public class ImportHandler {
     public Map<String, List<String>> getLookupUniqueFieldsMap() {
         return lookupUniqueFieldsMap;
     }
+    public Set<String> getBatchCollectFieldNames() {return batchCollectFieldNames;}
+
     public ImportHandler(ImportHandlerBuilder importHandlerBuilder) {
         this.beforeImportCommand = importHandlerBuilder.beforeImportCommand;
         this.afterImportCommand = importHandlerBuilder.afterImportCommand;
@@ -46,6 +51,7 @@ public class ImportHandler {
         this.afterProcessRowFunction = importHandlerBuilder.afterProcessRowFunction;
         this.lookupUniqueFieldsMap = importHandlerBuilder.lookupUniqueFieldsMap;
         this.loadLookUpExtraSelectFields = importHandlerBuilder.loadLookUpExtraSelectFields;
+        this.batchCollectFieldNames = importHandlerBuilder.batchCollectFieldNames;
     }
 
     public static class ImportHandlerBuilder extends NesterBuilder<ImportConfig.ImportConfigBuilder> {
@@ -55,6 +61,7 @@ public class ImportHandler {
         private RowFunction beforeProcessRowFunction;
         private RowFunction afterProcessRowFunction;
         private Map<String, List<String>> lookupUniqueFieldsMap;
+        private Set<String> batchCollectFieldNames;
 
         private Map<String, List<String>> loadLookUpExtraSelectFields;
         public ImportHandlerBuilder beforeImportCommand(Command... command) {
@@ -89,6 +96,13 @@ public class ImportHandler {
                 loadLookUpExtraSelectFields = new HashMap<>();
             }
             loadLookUpExtraSelectFields.put(moduleName, fieldNames);
+            return this;
+        }
+        public ImportHandlerBuilder setBatchCollectFieldNames(List<String> fieldNames){
+            if(batchCollectFieldNames == null){
+                batchCollectFieldNames = new HashSet<>();
+            }
+            batchCollectFieldNames.addAll(fieldNames);
             return this;
         }
         public ImportHandlerBuilder(ImportConfig.ImportConfigBuilder parent) {

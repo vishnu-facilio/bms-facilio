@@ -379,4 +379,53 @@ public class V3RecordAPI {
         }
         return null;
     }
+    public static <T extends ModuleBaseWithCustomFields> int batchUpdateRecordsWithHandlingLookup (String moduleName, Collection<T> records, List<FacilioField> updateFields) throws Exception {
+        // Use with caution. Should be used only for system update. Default system fields and all aren't updated here
+        FacilioUtil.throwRunTimeException(CollectionUtils.isEmpty(records), "Records cannot be empty for batch update");
+        FacilioUtil.throwRunTimeException(CollectionUtils.isEmpty(updateFields), "Update fields cannot be empty for batch update");
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = Objects.requireNonNull(modBean.getModule(moduleName), "Invalid module specified for batch update of records");
+        FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
+        FacilioField idField = FieldFactory.getIdField(module);
+
+        List<FacilioField> whereFields = new ArrayList<>(2);
+        whereFields.add(moduleIdField);
+        whereFields.add(idField);
+
+        List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateRecords = records.stream()
+                .map(r -> constructBatchUpdate(module, moduleIdField, idField, r,updateFields))
+                .collect(Collectors.toList());
+
+        return DBUtil.getUpdateBuilderWithJoin(module, updateFields)
+                .batchUpdate(whereFields, batchUpdateRecords);
+    }
+    @SneakyThrows
+    private static <T extends ModuleBaseWithCustomFields> GenericUpdateRecordBuilder.BatchUpdateContext constructBatchUpdate (FacilioModule module, FacilioField moduleIdField, FacilioField idField, T record,List<FacilioField> updateFields) {
+        GenericUpdateRecordBuilder.BatchUpdateContext batchUpdateRec = new GenericUpdateRecordBuilder.BatchUpdateContext();
+        Map<String,Object> moduleProps = FieldUtil.getAsProperties(record);
+        handleLookupFields(moduleProps,updateFields);
+        batchUpdateRec.setUpdateValue(Objects.requireNonNull(moduleProps, "Record cannot be null for batch update"));
+        batchUpdateRec.addWhereValue(moduleIdField.getName(), module.getModuleId());
+        batchUpdateRec.addWhereValue(idField.getName(), record.getId());
+
+        return batchUpdateRec;
+    }
+    private static void handleLookupFields(Map<String, Object> moduleProps, List<FacilioField> fields) throws Exception {
+        for(FacilioField field : fields) {
+            if(field.getDataTypeEnum() == FieldType.LOOKUP) {
+                Map<String, Object> lookupProps = (Map<String, Object>) moduleProps.get(field.getName());
+                if(lookupProps != null && !lookupProps.isEmpty()) {
+                    if(lookupProps.get("id") != null) {
+                        moduleProps.put(field.getName(), lookupProps.get("id"));
+                    } else  {
+                        moduleProps.put(field.getName(), null);
+                    }
+                }
+                else {
+                    moduleProps.put(field.getName(), null);
+                }
+            }
+        }
+    }
+
 }

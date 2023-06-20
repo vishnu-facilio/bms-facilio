@@ -8,6 +8,10 @@ import com.facilio.bmsconsoleV3.commands.building.multi_import.CreateBuildingAft
 import com.facilio.bmsconsoleV3.commands.floor.multi_import.CreateFloorAfterSaveImport;
 import com.facilio.bmsconsoleV3.commands.site.multi_import.CreateSiteAfterSaveImport;
 import com.facilio.bmsconsoleV3.commands.space.multi_import.CreateSpaceAfterSaveImport;
+import com.facilio.bmsconsoleV3.commands.tenant.multi_import.AddTenantUserImportCommand;
+import com.facilio.bmsconsoleV3.commands.tenant.multi_import.BeforeTenantImportProcessCommand;
+import com.facilio.bmsconsoleV3.commands.tenant.multi_import.UpdateTenantUserImportCommand;
+import com.facilio.bmsconsoleV3.commands.tenant.multi_import.ValidatePeopleEmailBeforeAddOrUpdateImportCommand;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.constants.FacilioConstants;
@@ -36,7 +40,7 @@ public class MultiImportConfigurations {
     public static Supplier<ImportConfig> getSiteImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3SiteContext.class)
                 .importHandler()
-                .afterProcessRowFunction((rowNumber, rowValue, prop, context) -> {
+                .afterProcessRowFunction((rowContext, rowValue, prop, context) -> {
                     prop.put("spaceType", V3BaseSpaceContext.SpaceType.SITE.getIntVal());
                     return null;
                 })
@@ -50,7 +54,7 @@ public class MultiImportConfigurations {
     public static Supplier<ImportConfig> getBuildingImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3BuildingContext.class)
                 .importHandler()
-                .afterProcessRowFunction((rowNumber, rowValue, prop, context) -> {
+                .afterProcessRowFunction((rowContext, rowValue, prop, context) -> {
                     prop.put("spaceType", V3BaseSpaceContext.SpaceType.BUILDING.getIntVal());
                     return null;
                 })
@@ -64,7 +68,7 @@ public class MultiImportConfigurations {
     public static Supplier<ImportConfig> getFloorImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3FloorContext.class)
                 .importHandler()
-                .afterProcessRowFunction((rowNumber, rowValue, prop, context) -> {
+                .afterProcessRowFunction((rowContext, rowValue, prop, context) -> {
                     prop.put("spaceType", V3BaseSpaceContext.SpaceType.FLOOR.getIntVal());
                     return null;
                 })
@@ -85,7 +89,7 @@ public class MultiImportConfigurations {
                 .lookupUniqueFieldsMap("space3",Arrays.asList("name","site","*building","*floor","space1","space2"))
                 .lookupUniqueFieldsMap("space4",Arrays.asList("name","site","*building","*floor","space1","space2","space3"))
                 .lookupUniqueFieldsMap("space5",Arrays.asList("name","site","*building","*floor","space1","space2","space3","space4"))
-                .afterProcessRowFunction((rowNumber, rowValue, prop, context) -> {
+                .afterProcessRowFunction((rowContext, rowValue, prop, context) -> {
                     prop.put("spaceType", V3BaseSpaceContext.SpaceType.SPACE.getIntVal());
                     return null;
                 })
@@ -115,13 +119,30 @@ public class MultiImportConfigurations {
                 .lookupUniqueFieldsMap("floor",Arrays.asList("name","building","site"))
                 .lookupUniqueFieldsMap("building",Arrays.asList("name","site"))
                 .lookupUniqueFieldsMap("space",Arrays.asList("name","site","*building","*floor","*space1","*space2","*space3","*space4","*space5"))
-                .afterProcessRowFunction((rowNumber, rowValue, prop, context) -> {
+                .afterProcessRowFunction((rowContext, rowValue, prop, context) -> {
                     prop.put("spaceType", V3BaseSpaceContext.SpaceType.SPACE.getIntVal());
                     return null;
                 })
                 .done()
                 .createHandler()
                 .afterSaveCommand(new CreateSpaceAfterSaveImport())
+                .done()
+                .build();
+    }
+    @ImportModule("tenant")
+    public static Supplier<ImportConfig> getTenantImportConfig(){
+        return () -> new ImportConfig.ImportConfigBuilder(V3TenantContext.class)
+                .importHandler()
+                .setBatchCollectFieldNames(Arrays.asList("primaryContactEmail"))
+                .beforeImportCommand(new BeforeTenantImportProcessCommand())
+                .done()
+                .createHandler()
+                .beforeSaveCommand(new SetLocalIdCommandV3(),new ValidatePeopleEmailBeforeAddOrUpdateImportCommand())
+                .afterSaveCommand(new AddTenantUserImportCommand())
+                .done()
+                .updateHandler()
+                .beforeUpdateCommand(new ValidatePeopleEmailBeforeAddOrUpdateImportCommand())
+                .afterUpadteCommand(new UpdateTenantUserImportCommand())
                 .done()
                 .build();
     }

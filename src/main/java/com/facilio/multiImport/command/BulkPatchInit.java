@@ -1,6 +1,8 @@
 package com.facilio.multiImport.command;
 
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.multiImport.constants.ImportConstants;
@@ -68,6 +70,7 @@ public class BulkPatchInit extends FacilioCommand {
 
         ImportConstants.setUpdateRecordMap(context, updateRecordMap);
         Constants.setRecordMap(context,recordMap);
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
         return false;
     }
 }

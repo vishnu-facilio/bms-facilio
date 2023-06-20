@@ -111,6 +111,31 @@ public class V3PeopleAPI {
         return records;
 
     }
+    public static List<V3TenantContactContext> getTenantContacts(Set<Long> tenantIds, boolean fetchOnlyPrimaryContact, boolean fetchOnlyWithAccess) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
+        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT);
+
+        SelectRecordsBuilder<V3TenantContactContext> builder = new SelectRecordsBuilder<V3TenantContactContext>()
+                .module(module)
+                .beanClass(V3TenantContactContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenant", StringUtils.join(tenantIds,","), NumberOperators.EQUALS));
+
+        if(fetchOnlyPrimaryContact) {
+            builder.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS));
+        }
+
+        if(fetchOnlyWithAccess) {
+            builder.andCondition(CriteriaAPI.getCondition("TENANT_PORTAL_ACCESS", "isTenantPortalAccess", "true", BooleanOperators.IS));
+        }
+        List<V3TenantContactContext> records;
+
+        records = builder.get();
+
+        return records;
+
+    }
 
     public static List<V3ClientContactContext> getClientContacts(Long clientId, boolean fetchOnlyPrimaryContact) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -199,6 +224,31 @@ public class V3PeopleAPI {
         }
 
     }
+    public static void addParentPrimaryContactAsPeople(V3PeopleContext tc,V3PeopleContext primaryContactForParent,List<V3PeopleContext> addPeopleList,List<V3PeopleContext> updatePeopleList) throws Exception {
+        if(primaryContactForParent != null) {
+            if(StringUtils.isNotEmpty(tc.getEmail())) {
+                if(StringUtils.isEmpty(primaryContactForParent.getEmail())) {
+                    tc.setId(primaryContactForParent.getId());
+                    updatePeopleList.add(tc);
+                }
+                else if(primaryContactForParent.getEmail().equals(tc.getEmail())) {
+                    tc.setId(primaryContactForParent.getId());
+                    updatePeopleList.add(tc);
+                }
+                else {
+                    addPeopleList.add(tc);
+                }
+            }
+            else {
+                tc.setId(primaryContactForParent.getId());
+                updatePeopleList.add(tc);
+            }
+        }
+        else {
+           addPeopleList.add(tc);
+        }
+
+    }
 
     private static void updateStateForPrimaryContact(V3PeopleContext ppl) throws Exception {
         FacilioChain c = FacilioChain.getTransactionChain();
@@ -258,6 +308,23 @@ public class V3PeopleAPI {
         }
 
         V3PeopleContext records = builder.fetchFirst();
+        return records;
+    }
+    public static List<V3PeopleContext> getPeoples(Set<String> emails) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+        SelectRecordsBuilder<V3PeopleContext> builder = new SelectRecordsBuilder<V3PeopleContext>()
+                .module(module)
+                .beanClass(V3PeopleContext.class)
+                .select(fields)
+                ;
+
+        if(CollectionUtils.isNotEmpty(emails)) {
+            builder.andCondition(CriteriaAPI.getCondition("EMAIL", "email", StringUtils.join(emails,","), StringOperators.IS));
+        }
+
+        List<V3PeopleContext> records = builder.get();
         return records;
     }
 

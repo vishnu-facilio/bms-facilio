@@ -1,7 +1,6 @@
 package com.facilio.multiImport.util;
 
 
-import com.facilio.bmsconsole.commands.ExecuteStateFlowCommand;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -125,6 +124,7 @@ public class MultiImportChainUtil {
         RowFunction afterProcessRowFunction = null;
         Map<String, List<String>> lookupUniqueFieldsMap = null;
         Map<String,List<String>> loadLookUpExtraSelectFields = null;
+        Set<String> batchCollectFieldNames = null;
 
         if (importConfig != null) {
             ImportHandler importHandler = importConfig.getImportHandler();
@@ -136,10 +136,12 @@ public class MultiImportChainUtil {
                 afterProcessRowFunction = importHandler.getAfterProcessRowFunction();
                 lookupUniqueFieldsMap = importHandler.getLookupUniqueFieldsMap();
                 loadLookUpExtraSelectFields = importHandler.getLoadLookUpExtraSelectFields();
+                batchCollectFieldNames = importHandler.getBatchCollectFieldNames();
             }
         }
 
         FacilioChain chain = getDefaultChain();
+        chain.addCommand(new ImportInItCommand());
         addIfNotNull(chain, beforeImportCommand);
         chain.addCommand(new V3ProcessMultiImportCommand());
         addIfNotNull(chain,afterDataProcessCommand);
@@ -151,6 +153,7 @@ public class MultiImportChainUtil {
         context.put(MultiImportApi.ImportProcessConstants.AFTER_PROCESS_ROW_FUNCTION, afterProcessRowFunction);
         context.put(MultiImportApi.ImportProcessConstants.LOOKUP_UNIQUE_FIELDS_MAP, lookupUniqueFieldsMap);
         context.put(MultiImportApi.ImportProcessConstants.LOAD_LOOK_UP_EXTRA_SELECT_FIELDS_MAP,loadLookUpExtraSelectFields);
+        context.put(MultiImportApi.ImportProcessConstants.BATCH_COLLECT_FIELD_NAMES,batchCollectFieldNames);
         return chain;
     }
     public static FacilioChain getImportChain(String moduleName, MultiImportSetting setting) throws Exception {

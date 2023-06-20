@@ -2281,6 +2281,8 @@ public class FacilioConstants {
 		public static final String EMPLOYEES = "employees";
 
 		public static final String TENANT_CONTACT = "tenantcontact";
+		public static final String TENANT_ID_VS_PRIMARY_TENANT_CONTACT = "tenantIdVsPrimaryTenantContactMap";
+
 		public static final String TENANT_CONTACTS = "tenantcontacts";
 
 		public static final String CLIENT_CONTACT = "clientcontact";
@@ -2290,6 +2292,7 @@ public class FacilioConstants {
 		public static final String VENDOR_CONTACTS = "vendorcontacts";
 
 		public static final String PEOPLE = "people";
+		public static final String EMAIL_VS_PEOPLE_MAP = "emailVsPeopleMap";
 		public static final String PEOPLE_TYPE_LIST = "peopleTypeList";
 		public static final String PEOPLE_ID = "peopleId";
 
