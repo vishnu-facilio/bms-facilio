@@ -493,3 +493,15 @@ enums:
 
   - name: WorkTypeInventoryType
     enumClassName: com.facilio.fsm.context.WorkTypeLineItemsContext$WorkTypeInventoryType
+
+  - name: ServiceOrderMaintenanceType
+    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderMaintenanceType
+
+  - name: ServiceOrderCategory
+    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderCategory
+
+  - name: ServiceOrderPriority
+    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderPriority
+
+  - name: ServiceOrderSourceType
+    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderSourceType

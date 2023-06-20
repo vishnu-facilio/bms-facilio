@@ -32,4 +32,15 @@ public class FieldServiceManagementV3Config {
                 .delete()
                 .build();
     }
+
+    @Module("serviceOrder")
+    public static Supplier<V3Config> getServiceOrder() {
+        return () -> new V3Config(ServiceOrderContext.class, new ModuleCustomFieldCount15())
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
 }

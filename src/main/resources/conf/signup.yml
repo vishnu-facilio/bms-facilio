@@ -533,3 +533,4 @@ classes:
   - com.facilio.fsm.signup.ServiceSkillModule
   - com.facilio.fsm.signup.WorkTypeModule
   - com.facilio.fsm.signup.WorkTypeLineItemsModule
+  - com.facilio.fsm.signup.ServiceOrderModule
