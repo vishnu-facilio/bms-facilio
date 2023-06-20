@@ -166,7 +166,7 @@ public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
         // TODO - Find impact of deleting RELATED_APPLICATION_ID
     }
 
-    public static Map<Long, Long> getAppIdVsParentId(boolean fetchSystem) throws Exception {
+    private Map<Long, Long> getAppIdVsParentId(boolean fetchSystem) throws Exception {
         List<Long> applicationIds = ApplicationApi.getAllApplicationIds(fetchSystem);
 
         Map<Long, Long> appIdVsParentId = new HashMap<>();
@@ -176,7 +176,7 @@ public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
         return appIdVsParentId;
     }
 
-    public static long add(ApplicationContext application) throws Exception {
+    private long add(ApplicationContext application) throws Exception {
         ApplicationContext dbApplication = ApplicationApi.getApplicationForLinkName(application.getLinkName());
         if (dbApplication != null) {
             application.setId(dbApplication.getId());
@@ -190,7 +190,7 @@ public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
         return builder.insert(props);
     }
 
-    public static void update(ApplicationContext application) throws Exception {
+    private void update(ApplicationContext application) throws Exception {
         FacilioModule applicationModule = ModuleFactory.getApplicationModule();
         Map<String, Object> props = FieldUtil.getAsProperties(application);
 

@@ -1,6 +1,7 @@
 package com.facilio.beans;
 import com.facilio.bmsconsole.context.*;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface WebTabBean {
@@ -43,6 +44,6 @@ public interface WebTabBean {
 
     public void deleteTabForGroupCommand(long groupId) throws Exception;
 
-    public void deleteWebTabWebGroupForTabId(long webTabId) throws Exception;
+    public void deleteWebTabWebGroupForTabId(long webTabId, Collection<Long> webTabGroupIds) throws Exception;
 
 }

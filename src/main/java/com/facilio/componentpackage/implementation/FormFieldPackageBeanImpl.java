@@ -174,7 +174,7 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
         }
     }
 
-    public Map<Long, Long> getFormFieldIdVsFormId() throws Exception {
+    private Map<Long, Long> getFormFieldIdVsFormId() throws Exception {
         Map<Long, Long> formFieldIdVsFormId = new HashMap<>();
         FacilioModule formFieldsModule = ModuleFactory.getFormFieldsModule();
 
@@ -199,7 +199,7 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
         return formFieldIdVsFormId;
     }
 
-    public static FormField constructFormFieldFromBuilder(XMLBuilder formFieldElement, ModuleBean moduleBean) throws Exception {
+    private FormField constructFormFieldFromBuilder(XMLBuilder formFieldElement, ModuleBean moduleBean) throws Exception {
         String formFieldName, displayName, formName, sectionName, moduleName, facilioFieldName, displayTypeStr, defaultValue, config;
         boolean requiredBool, hideField, isDisabled, allowCreate;
         long formId, moduleId, sectionId, fieldId;
@@ -247,7 +247,7 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
         return formField;
     }
 
-    public static long checkAndAddFormField(FormField formField) throws Exception {
+    private long checkAndAddFormField(FormField formField) throws Exception {
         long formFieldId = PackageBeanUtil.getFormFieldId(formField);
 
         if (formFieldId < 0) {
@@ -260,7 +260,7 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
         return formFieldId;
     }
 
-    public static long addFormField(FormField formField) throws Exception {
+    private long addFormField(FormField formField) throws Exception {
         FacilioModule module = ModuleFactory.getFormFieldsModule();
         Map<String, Object> props = FieldUtil.getAsProperties(formField);
 
@@ -271,7 +271,7 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
         return builder.insert(props);
     }
 
-    public static void updateFormField(FormField formField) throws Exception {
+    private void updateFormField(FormField formField) throws Exception {
         FacilioModule module = ModuleFactory.getFormFieldsModule();
         Map<String, Object> props = FieldUtil.getAsProperties(formField);
 

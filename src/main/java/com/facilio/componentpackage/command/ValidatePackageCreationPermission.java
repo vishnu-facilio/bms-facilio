@@ -43,7 +43,7 @@ public class ValidatePackageCreationPermission extends FacilioCommand {
         AccountUtil.cleanCurrentAccount();
         AccountUtil.setCurrentAccount(sourceOrgId);
 
-        String displayName = "package_" + sourceOrgId + "_" + targetOrgId;
+        String displayName = "package_" + sourceOrgId + "_" + targetOrgId + "_" + System.currentTimeMillis();
         context.put(PackageConstants.DISPLAY_NAME, displayName);
 
         return false;

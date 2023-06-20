@@ -1,5 +1,6 @@
 package com.facilio.componentpackage.command;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.PackageConstants;
@@ -32,7 +33,9 @@ public class DeployPackageCommand extends FacilioCommand {
 		PackageContext packageContext = PackageUtil.getPackageByName(packageUniqueName, type);
 		long currentUserId = (long) context.getOrDefault(PackageConstants.CREATED_USER_ID, -1l);
 		if (currentUserId <= 0) {
-			currentUserId = AccountUtil.getCurrentUser().getId();
+			User currentUser = AccountUtil.getCurrentUser();
+			currentUserId = currentUser != null ? currentUser.getOuid() :
+					AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId()).getOuid();
 		}
 		double existingVersion;
 

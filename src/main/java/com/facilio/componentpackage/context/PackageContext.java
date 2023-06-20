@@ -24,7 +24,7 @@ public class PackageContext {
     @AllArgsConstructor
     public enum PackageType implements FacilioIntEnum {
         SANDBOX,
-        PRODUCTION_TO_SANDBOX,
+//        PRODUCTION_TO_SANDBOX,
         ;
 
         @Override

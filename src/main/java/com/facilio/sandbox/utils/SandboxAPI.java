@@ -27,9 +27,9 @@ import java.util.Map;
 public class SandboxAPI {
 
     public static SandboxConfigContext getSandboxById(long sandboxId) throws Exception {
-        FacilioModule sandboxModule = ModuleFactory.getSandboxModule();
+        FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .select(FieldFactory.getSandboxFields())
+                .select(FieldFactory.getFacilioSandboxFields())
                 .table(sandboxModule.getTableName())
                 .andCondition(CriteriaAPI.getIdCondition(sandboxId, sandboxModule));
         Map<String, Object> props = selectBuilder.fetchFirst();
@@ -42,9 +42,9 @@ public class SandboxAPI {
     }
 
     public static List<SandboxConfigContext> getAllSandbox(int page, int perPage, String search) throws Exception {
-        FacilioModule sandboxModule = ModuleFactory.getSandboxModule();
+        FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .select(FieldFactory.getSandboxFields())
+                .select(FieldFactory.getFacilioSandboxFields())
                 .table(sandboxModule.getTableName());
 
         if(!"".equals(search)) {
@@ -71,7 +71,7 @@ public class SandboxAPI {
 
     public static void changeSandboxStatus(SandboxConfigContext sandboxConfig) throws Exception {
         List<FacilioField> fields = new ArrayList<>();
-        Map<String, FacilioField> sandboxFieldMap = FieldFactory.getAsMap(FieldFactory.getSandboxFields());
+        Map<String, FacilioField> sandboxFieldMap = FieldFactory.getAsMap(FieldFactory.getFacilioSandboxFields());
         fields.add(sandboxFieldMap.get("id"));
         fields.add(sandboxFieldMap.get("status"));
 
@@ -79,7 +79,7 @@ public class SandboxAPI {
     }
 
     public static int updateSandboxConfig(SandboxConfigContext sandboxConfig, List<FacilioField> updateFields) throws Exception {
-        FacilioModule sandboxModule = ModuleFactory.getSandboxModule();
+        FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .fields(updateFields)
                 .table(sandboxModule.getTableName())

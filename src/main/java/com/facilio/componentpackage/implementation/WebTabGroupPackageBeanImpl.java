@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.interfaces.PackageBean;
+import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -87,7 +88,7 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
 
     @Override
     public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
-        Map<String, Long> appNameVsAppId = getAppNameVsAppId();
+        Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
 
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         WebTabGroupContext webTabGroupContext;
@@ -97,7 +98,7 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
             XMLBuilder tabGroupElement = idVsData.getValue();
             webTabGroupContext = getWebTabGroupContextFromXMLBuilder(tabGroupElement, appNameVsAppId);
 
-            webTabGroupId = checkRouteAlreadyFound(webTabGroupContext);
+            webTabGroupId = ApplicationApi.getTabGroupIdForRoute(webTabGroupContext);
 
             if (webTabGroupId > 0) {
                 uniqueIdentifierVsComponentId.put(idVsData.getKey(), webTabGroupId);
@@ -109,7 +110,7 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
 
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
-        Map<String, Long> appNameVsAppId = getAppNameVsAppId();
+        Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
 
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         WebTabGroupContext webTabGroupContext;
@@ -120,7 +121,7 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
             webTabGroupContext = getWebTabGroupContextFromXMLBuilder(tabGroupElement, appNameVsAppId);
 
             // check and add
-            webTabGroupId = checkRouteAlreadyFound(webTabGroupContext);
+            webTabGroupId = ApplicationApi.getTabGroupIdForRoute(webTabGroupContext);
             if (webTabGroupId > 0) {
                 webTabGroupContext.setId(webTabGroupId);
             }
@@ -135,7 +136,7 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
 
     @Override
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
-        Map<String, Long> appNameVsAppId = getAppNameVsAppId();
+        Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
         WebTabGroupContext webTabGroupContext;
 
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
@@ -153,7 +154,7 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
         }
     }
 
-    public static Map<Long, Long> getWebTabGroupIdVsLayoutId() throws Exception {
+    private Map<Long, Long> getWebTabGroupIdVsLayoutId() throws Exception {
         FacilioModule webTabGroupModule = ModuleFactory.getWebTabGroupModule();
         List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
             add(FieldFactory.getIdField(webTabGroupModule));
@@ -190,18 +191,8 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
 
         return webTabGroups;
     }
-    
-    public static Map<String, Long> getAppNameVsAppId() throws Exception {
-        List<ApplicationContext> applicationContexts = ApplicationApi.getAllApplicationsWithOutFilter();
-        Map<String, Long> appNameVsAppId = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(applicationContexts)) {
-            appNameVsAppId = applicationContexts.stream().collect(Collectors.toMap(ApplicationContext::getLinkName, ApplicationContext::getId));
-        }
-        
-        return appNameVsAppId;
-    }
 
-    public static WebTabGroupContext getWebTabGroupContextFromXMLBuilder(XMLBuilder tabGroupElement, Map<String, Long> appNameVsAppId) throws Exception {
+    private WebTabGroupContext getWebTabGroupContextFromXMLBuilder(XMLBuilder tabGroupElement, Map<String, Long> appNameVsAppId) throws Exception {
         String name, route, iconTypeString, appType, appLinkName, deviceTypeStr;
         ApplicationLayoutContext.LayoutDeviceType layoutDeviceType;
         long featureLicense, layoutId = -1, applicationId;
@@ -237,7 +228,7 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
         return webTabGroupContext;
     }
 
-    public long addOrUpdateTabGroup(WebTabGroupContext webTabGroupContext) throws Exception {
+    private long addOrUpdateTabGroup(WebTabGroupContext webTabGroupContext) throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
 
         FacilioContext context = chain.getContext();
@@ -250,34 +241,10 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
         return groupId;
     }
 
-    public static void deleteTabGroup(long groupId) throws Exception {
+    private void deleteTabGroup(long groupId) throws Exception {
         FacilioChain chain = TransactionChainFactory.getDeleteTabGroupChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ID, groupId);
         chain.execute();
-    }
-
-    public static long checkRouteAlreadyFound(WebTabGroupContext tabGroup) throws Exception {
-        if (StringUtils.isEmpty(tabGroup.getRoute())) {
-            throw new IllegalArgumentException("Route cannot be empty");
-        }
-
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getWebTabGroupModule().getTableName())
-                .select(FieldFactory.getWebTabGroupFields())
-                .andCondition(CriteriaAPI.getCondition("ROUTE", "route", tabGroup.getRoute(), StringOperators.IS));
-
-        if (tabGroup.getId() > 0) {
-            builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(tabGroup.getId()), NumberOperators.NOT_EQUALS));
-        }
-
-        if (tabGroup.getLayoutId() > 0) {
-            builder.andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", String.valueOf(tabGroup.getLayoutId()), NumberOperators.EQUALS));
-        } else {
-            builder.andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", "", CommonOperators.IS_EMPTY));
-        }
-
-        Map<String, Object> map = builder.fetchFirst();
-        return MapUtils.isNotEmpty(map) ? (long) map.get("id") : -1;
     }
 }

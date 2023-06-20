@@ -10,12 +10,13 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
+import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -25,14 +26,9 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
     // TODO - Handle WEb Tab Permission
@@ -98,7 +94,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
             }
         }
 
-        List<Map<String, Object>> tabGroupsForTabId = getTabGroupsForTabId(component);
+        List<Map<String, Object>> tabGroupsForTabId = ApplicationApi.getTabGroupsForTabId(component);
         if (CollectionUtils.isNotEmpty(tabGroupsForTabId)) {
             XMLBuilder webTabGroupsListElement = webTabElement.element(PackageConstants.AppXMLConstants.WEBTAB_GROUPS_LIST);
             for (Map<String, Object> tabGroup : tabGroupsForTabId) {
@@ -129,7 +125,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
 
     @Override
     public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
-        Map<String, Long> appNameVsAppId = getAppNameVsAppId();
+        Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
 
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         WebTabContext webTabContext;
@@ -139,7 +135,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
             XMLBuilder webTabElement = idVsData.getValue();
             webTabContext = getWebTabContextFromXMLBuilder(webTabElement, appNameVsAppId, true);
 
-            webTabId = checkRouteAlreadyFound(webTabContext);
+            webTabId = ApplicationApi.getTabIdForRoute(webTabContext);
 
             if (webTabId > 0) {
                 uniqueIdentifierVsComponentId.put(idVsData.getKey(), webTabId);
@@ -151,7 +147,8 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
 
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
-        Map<String, Long> appNameVsAppId = getAppNameVsAppId();
+        Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
+        Map<String, Long> webTabGroupUidVsCompIdMap = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.WEBTAB_GROUP);
 
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         WebTabContext webTabContext;
@@ -161,7 +158,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
             XMLBuilder webTabElement = idVsData.getValue();
             webTabContext = getWebTabContextFromXMLBuilder(webTabElement, appNameVsAppId, false);
 
-            webTabId = checkRouteAlreadyFound(webTabContext);
+            webTabId = ApplicationApi.getTabIdForRoute(webTabContext);
             if (webTabId > 0) {
                 webTabContext.setId(webTabId);
             }
@@ -175,7 +172,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
                 List<XMLBuilder> tabGroupElementsElementList = webTabGroupElements.getElementList(PackageConstants.AppXMLConstants.WEBTAB_GROUP);
                 List<WebtabWebgroupContext> webTabWebGroupContextList = getWebTabWebGroupContextFromBuilder(tabGroupElementsElementList, appNameVsAppId, webTabId);
 
-                associateTabsAndGroup(webTabId, webTabWebGroupContextList);
+                associateTabsAndGroup(webTabId, webTabWebGroupContextList, webTabGroupUidVsCompIdMap.values());
             }
         }
 
@@ -184,7 +181,8 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
 
     @Override
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
-        Map<String, Long> appNameVsAppId = getAppNameVsAppId();
+        Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
+        Map<String, Long> webTabGroupUidVsCompIdMap = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.WEBTAB_GROUP);
         WebTabContext webTabContext;
 
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
@@ -200,7 +198,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
                 List<XMLBuilder> tabGroupElementsElementList = webTabGroupElements.getElementList(PackageConstants.AppXMLConstants.WEBTAB_GROUP);
                 List<WebtabWebgroupContext> webTabWebGroupContextList = getWebTabWebGroupContextFromBuilder(tabGroupElementsElementList, appNameVsAppId, webTabId);
 
-                associateTabsAndGroup(webTabId, webTabWebGroupContextList);
+                associateTabsAndGroup(webTabId, webTabWebGroupContextList, webTabGroupUidVsCompIdMap.values());
             }
         }
     }
@@ -213,7 +211,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
         }
     }
 
-    public static Map<Long, Long> getWebTabIdVsAppId() throws Exception {
+    private Map<Long, Long> getWebTabIdVsAppId() throws Exception {
         FacilioModule facilioModule = ModuleFactory.getWebTabModule();
         List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
             add(FieldFactory.getIdField(facilioModule));
@@ -240,7 +238,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
         return webTabIdVsAppId;
     }
 
-    public static List<WebTabContext> getWebTabs(List<Long> ids) throws Exception {
+    private List<WebTabContext> getWebTabs(List<Long> ids) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getWebTabModule().getTableName())
                 .select(FieldFactory.getWebTabFields())
@@ -273,7 +271,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
         return webTabs;
     }
 
-    public static WebTabContext getWebTabContextFromXMLBuilder(XMLBuilder webTabElement, Map<String, Long> appNameVsAppId, boolean getBasicDetails) throws Exception {
+    private WebTabContext getWebTabContextFromXMLBuilder(XMLBuilder webTabElement, Map<String, Long> appNameVsAppId, boolean getBasicDetails) throws Exception {
         String name, route, config, iconTypeString, appLinkName, typeString;
         int iconTypeInt, featureLicense;
         WebTabContext webTabContext;
@@ -327,7 +325,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
         return webTabContext;
     }
 
-    public static List<WebtabWebgroupContext> getWebTabWebGroupContextFromBuilder(List<XMLBuilder> tabGroupElementsElementList, Map<String, Long> appNameVsAppId, long webTabId) throws Exception {
+    private List<WebtabWebgroupContext> getWebTabWebGroupContextFromBuilder(List<XMLBuilder> tabGroupElementsElementList, Map<String, Long> appNameVsAppId, long webTabId) throws Exception {
         List<WebtabWebgroupContext> webtabWebgroupContextList = new ArrayList<>();
 
         ApplicationLayoutContext.LayoutDeviceType layoutDeviceType;
@@ -361,7 +359,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
                 webTabGroupContext.setLayoutId(layoutId);
                 webTabGroupContext.setRoute(groupRoute);
 
-                tabGroupId = WebTabGroupPackageBeanImpl.checkRouteAlreadyFound(webTabGroupContext);
+                tabGroupId = ApplicationApi.getTabGroupIdForRoute(webTabGroupContext);
             }
 
             if (tabGroupId > 0) {
@@ -376,17 +374,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
         return webtabWebgroupContextList;
     }
 
-    public static Map<String, Long> getAppNameVsAppId() throws Exception {
-        List<ApplicationContext> applicationContexts = ApplicationApi.getAllApplicationsWithOutFilter();
-        Map<String, Long> appNameVsAppId = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(applicationContexts)) {
-            appNameVsAppId = applicationContexts.stream().collect(Collectors.toMap(ApplicationContext::getLinkName, ApplicationContext::getId));
-        }
-
-        return appNameVsAppId;
-    }
-
-    public long addOrUpdateTab(WebTabContext webTabContext) throws Exception {
+    private long addOrUpdateTab(WebTabContext webTabContext) throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabChain();
 
         FacilioContext context = chain.getContext();
@@ -400,50 +388,12 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
         return tabId;
     }
 
-    public static long checkRouteAlreadyFound(WebTabContext webTab) throws Exception {
-        if (StringUtils.isEmpty(webTab.getRoute())) {
-            throw new IllegalArgumentException("Route cannot be empty");
-        }
-
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getWebTabModule().getTableName())
-                .select(FieldFactory.getWebTabFields())
-                .andCondition(CriteriaAPI.getCondition("ROUTE", "route", webTab.getRoute(), StringOperators.IS))
-                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(webTab.getApplicationId()), NumberOperators.EQUALS));
-
-        Map<String, Object> map = builder.fetchFirst();
-        return MapUtils.isNotEmpty(map) ? (long) map.get("id") : -1;
-    }
-
-    public static List<Map<String, Object>> getTabGroupsForTabId(WebTabContext webTabContext) throws Exception {
-        FacilioModule groupModule = ModuleFactory.getWebTabGroupModule();
-        FacilioModule layoutModule = ModuleFactory.getApplicationLayoutModule();
-        FacilioModule webTabWebGroupModule = ModuleFactory.getWebTabWebGroupModule();
-
-        List<FacilioField> selectableFields = new ArrayList<FacilioField>(){{
-            add(FieldFactory.getStringField("route", "ROUTE", groupModule));
-            add(FieldFactory.getNumberField("order", "TAB_ORDER", webTabWebGroupModule));
-            add(FieldFactory.getStringField("appType", "APP_TYPE", layoutModule));
-            add(FieldFactory.getNumberField("layoutDeviceType", "DEVICE_TYPE", layoutModule));
-        }};
-
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getWebTabGroupModule().getTableName())
-                .select(selectableFields)
-                .innerJoin(ModuleFactory.getWebTabWebGroupModule().getTableName())
-                .on("WebTab_Group.ID = WebTab_WebGroup.WEBTAB_GROUP_ID")
-                .innerJoin(ModuleFactory.getApplicationLayoutModule().getTableName())
-                .on("WebTab_Group.LAYOUT_ID = Application_Layout.ID")
-                .andCondition(CriteriaAPI.getCondition("WebTab_WebGroup.WEBTAB_ID", "webTabId", String.valueOf(webTabContext.getId()), NumberOperators.EQUALS));
-
-        return builder.get();
-    }
-
-    public static void associateTabsAndGroup(long webTabId, List<WebtabWebgroupContext> webTabWebGroupContexts) throws Exception {
+    private void associateTabsAndGroup(long webTabId, List<WebtabWebgroupContext> webTabWebGroupContexts, Collection<Long> webTabGroupIds) throws Exception {
         FacilioChain createAndAssociateTabGroupChain = TransactionChainFactory.getUpdateWebTabWebGroupChain();
 
         FacilioContext chainContext = createAndAssociateTabGroupChain.getContext();
         chainContext.put(FacilioConstants.ContextNames.WEB_TAB_ID, webTabId);
+        chainContext.put(PackageConstants.AppXMLConstants.WEB_TAB_GROUP_IDS, webTabGroupIds);
         chainContext.put(FacilioConstants.ContextNames.WEB_TAB_WEB_GROUP, webTabWebGroupContexts);
 
         createAndAssociateTabGroupChain.execute();

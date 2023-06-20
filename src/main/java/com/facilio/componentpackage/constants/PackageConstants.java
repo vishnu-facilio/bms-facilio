@@ -33,6 +33,8 @@ public class PackageConstants {
     public static final String PREVIOUS_VERSION = "previousVersion";
     public static final String PACKAGE_CONFIG_XML = "packageConfigXML";
     public static final String USE_LINKNAME_FROM_CONTEXT = "useLinkNameFromContext";
+    public static final String DOWNLOAD_URL = "downloadUrl";
+
 
     public static final List<String> ALLOWED_EXTN = new ArrayList<>();
 
@@ -70,7 +72,7 @@ public class PackageConstants {
         public static final String DISPLAY_TYPE = "Display_Type";
         public static final String ENUM_FIELD_VALUE = "EnumField_Value";
         public static final String ENUM_FIELD_VALUES = "EnumField_Values";
-        public static final String DUPLICATE_FIELD_ERROR = "FIELD with name already present";
+        public static final String DUPLICATE_FIELD_ERROR = "Field with name already present";
 
     }
 
@@ -92,6 +94,8 @@ public class PackageConstants {
         public static final String VERSION_NUMBER = "VersionNumber";
         public static final String WEBTAB_GROUP = "WebTabGroup";
         public static final String WEBTAB_GROUPS_LIST = "WebTabGroupsList";
+        public static final String WEB_TAB_GROUP_IDS = "webTabGroupIds";
+
         public static final String ROUTE = "Route";
         public static final String TAB_TYPE = "TabType";
         public static final String LAYOUT_ID = "LayoutId";
@@ -137,6 +141,7 @@ public class PackageConstants {
         public static final String LOOKUP_FIELD_NAME = "Lookup_Field_Name";
         public static final String SUB_FORM_DEFAULT_VALUE = "Sub_Form_Default_Value";
         public static final String NUMBER_OF_SUB_FORM_RECORDS = "Number_Of_Sub_Form_Records";
+        public static final String DUPLICATE_FORM_ERROR = "Form with name already present";
     }
 
     public static class ViewConstants {
@@ -218,5 +223,9 @@ public class PackageConstants {
         public static final String GROUP_NAME = "Group_Name";
         public static final String FACILIODOMAINNAME = "Facilio_Domain_Name";
         public static final String ALLOW_USER_TIMEZONE = "Allow_User_Timezone";
+        public static final String FEATURE_LICENSE = "Feature_License";
+        public static final String FEATURE_LICENSE_KEY = "Feature_License_Key";
+        public static final String FEATURE_LICENSE_VALUE = "Feature_License_Value";
+        public static final String FEATURE_LICENSE_LIST = "Feature_License_List";
     }
 }

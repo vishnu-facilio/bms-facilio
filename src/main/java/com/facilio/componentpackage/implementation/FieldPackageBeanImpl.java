@@ -14,6 +14,7 @@ import com.facilio.field.validation.date.DateValidatorType;
 import com.facilio.db.criteria.operators.StringOperators;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.xml.builder.XMLBuilder;
@@ -31,6 +32,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
+    private static final List<String> SYSTEM_FIELD_NAMES_WITH_CUSTOM_CONFIGURATION = Arrays.asList("textContent", "htmlContent");
 
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
@@ -148,13 +150,13 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
             XMLBuilder fieldElement = idVsData.getValue();
             String fieldName = fieldElement.getElement(PackageConstants.NAME).getText();
             String moduleName = fieldElement.getElement(PackageConstants.MODULENAME).getText();
-            boolean isDefault = Boolean.parseBoolean(fieldElement.getElement(FieldXMLConstants.IS_DEFAULT).getText());
 
-            if (isDefault) {
-                FacilioField field = moduleBean.getField(fieldName, moduleName);
-                if (field != null) {
-                    uniqueIdentifierVsFieldId.put(uniqueIdentifier, field.getFieldId());
-                }
+            FacilioField field = moduleBean.getField(fieldName, moduleName);
+            if (fieldName.equals("id") || fieldName.equals("siteId")) {
+                field = getFieldFromDB(moduleName, fieldName);
+            }
+            if (field != null) {
+                uniqueIdentifierVsFieldId.put(uniqueIdentifier, field.getFieldId());
             }
         }
         return uniqueIdentifierVsFieldId;
@@ -242,11 +244,10 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         }
     }
 
-    public static Map<Long, Long> getFieldIds(boolean fetchCustom) throws Exception {
+    private Map<Long, Long> getFieldIds(boolean fetchCustom) throws Exception {
         Map<Long, Long> fieldIdVsModuleId = new HashMap<>();
         FacilioModule fieldsModule = ModuleFactory.getFieldsModule();
 
-        String[] systemFieldNamesWithCustomConfiguration = {"textContent", "htmlContent"};
         List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
             add(FieldFactory.getModuleIdField(fieldsModule));
             add(FieldFactory.getNumberField("fieldId", "FIELDID", fieldsModule));
@@ -260,12 +261,10 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
                 ;
 
         if (!fetchCustom) {
-            selectBuilder.andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", Boolean.TRUE.toString(), BooleanOperators.IS))
-                    .orCondition(CriteriaAPI.getCondition("Fields.NAME", "name", StringUtils.join(systemFieldNamesWithCustomConfiguration, ","), StringOperators.IS))
-                    .orCriteria(additionalCriteria());
+            selectBuilder.andCriteria(additionalCriteria());
         } else {
             selectBuilder.andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", Boolean.FALSE.toString(), BooleanOperators.IS))
-                    .andCondition(CriteriaAPI.getCondition("Fields.NAME", "name", StringUtils.join(systemFieldNamesWithCustomConfiguration, ","), StringOperators.ISN_T))
+                    .andCondition(CriteriaAPI.getCondition("Fields.NAME", "name", StringUtils.join(SYSTEM_FIELD_NAMES_WITH_CUSTOM_CONFIGURATION, ","), StringOperators.ISN_T))
                     .andCustomWhere("(COLUMN_NAME IS NULL OR COLUMN_NAME LIKE '%_CF%')");
         }
 
@@ -283,19 +282,21 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         return fieldIdVsModuleId;
     }
 
-    public static Criteria additionalCriteria() {
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", Boolean.FALSE.toString(), BooleanOperators.IS));
-
+    private Criteria additionalCriteria() {
         Criteria columnNameCriteria = new Criteria();
+        columnNameCriteria.addAndCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", Boolean.FALSE.toString(), BooleanOperators.IS));
         columnNameCriteria.addAndCondition(CriteriaAPI.getCondition("COLUMN_NAME", "columnName", "", CommonOperators.IS_NOT_EMPTY));
         columnNameCriteria.addAndCondition(CriteriaAPI.getCondition("COLUMN_NAME", "columnName", "_CF", StringOperators.DOESNT_CONTAIN));
-        criteria.andCriteria(columnNameCriteria);
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", Boolean.TRUE.toString(), BooleanOperators.IS));
+        criteria.addOrCondition(CriteriaAPI.getCondition("Fields.NAME", "name", StringUtils.join(SYSTEM_FIELD_NAMES_WITH_CUSTOM_CONFIGURATION, ","), StringOperators.IS));
+        criteria.orCriteria(columnNameCriteria);
 
         return criteria;
     }
 
-    public List<FacilioField> createFields(FacilioModule module, List<FacilioField> newFields) throws Exception {
+    private List<FacilioField> createFields(FacilioModule module, List<FacilioField> newFields) throws Exception {
         FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
         FacilioContext addFieldsContext = addFieldsChain.getContext();
         addFieldsContext.put(FacilioConstants.ContextNames.MODULE, module);
@@ -306,7 +307,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         return newFields;
     }
 
-    public void updateField(FacilioField field) throws Exception {
+    private void updateField(FacilioField field) throws Exception {
         FacilioChain updateFieldChain = FacilioChainFactory.getUpdateFieldChain();
 
         FacilioContext context = updateFieldChain.getContext();
@@ -315,7 +316,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         updateFieldChain.execute();
     }
 
-    public static FacilioField getFieldFromXMLComponent(XMLBuilder fieldElement) throws Exception {
+    private FacilioField getFieldFromXMLComponent(XMLBuilder fieldElement) throws Exception {
         Map<String, Object> fieldProp = new HashMap<>();
         fieldProp.put("name", fieldElement.getElement(PackageConstants.NAME).getText());
         fieldProp.put("moduleName", fieldElement.getElement(PackageConstants.MODULENAME).getText());
@@ -330,7 +331,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         return facilioField;
     }
 
-    public static Map<String, Object> fetchAdditionalFieldProps(FacilioField oldField) throws Exception {
+    private Map<String, Object> fetchAdditionalFieldProps(FacilioField oldField) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
 
         Map<String, Object> fieldProps = new HashMap<>();
@@ -414,7 +415,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         return fieldProps;
     }
 
-    public static List<Map<String, Object>> getEnumFieldValuesProps(List<EnumFieldValue<Integer>> enumFieldValues) {
+    private List<Map<String, Object>> getEnumFieldValuesProps(List<EnumFieldValue<Integer>> enumFieldValues) {
         if (CollectionUtils.isEmpty(enumFieldValues)) {
             return null;
         }
@@ -433,7 +434,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         return propsList;
     }
 
-    public static List<Map<String, Object>> getDaysOfWeekProps(List<DayOfWeek> values) {
+    private List<Map<String, Object>> getDaysOfWeekProps(List<DayOfWeek> values) {
         if (CollectionUtils.isEmpty(values)) {
             return null;
         }
@@ -448,7 +449,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         return propsList;
     }
 
-    public static FacilioField setAdditionalFieldProps(Map<String, Object> fieldProp, XMLBuilder fieldElement) throws Exception {
+    private FacilioField setAdditionalFieldProps(Map<String, Object> fieldProp, XMLBuilder fieldElement) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         int dataTypeInt = (int) (fieldProp.get("dataType"));
         FacilioField facilioField;
@@ -586,7 +587,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         return facilioField;
     }
 
-    public static List<EnumFieldValue<Integer>> getEnumFieldValues(XMLBuilder valuesBuilder) {
+    private List<EnumFieldValue<Integer>> getEnumFieldValues(XMLBuilder valuesBuilder) {
         if (valuesBuilder == null) {
             return null;
         }
@@ -607,7 +608,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         return enumFieldValues;
     }
 
-    public static List<DayOfWeek> getDaysOfWeek(XMLBuilder valuesBuilder) {
+    private List<DayOfWeek> getDaysOfWeek(XMLBuilder valuesBuilder) {
         if (valuesBuilder == null) {
             return null;
         }
@@ -622,5 +623,24 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         }
 
         return dayOfWeeks;
+    }
+
+    private FacilioField getFieldFromDB(String moduleName, String fieldName) throws Exception {
+        FacilioModule module = Constants.getModBean().getModule(moduleName);
+        List<Long> extendedModuleIds = module.getExtendedModuleIds();
+        FacilioModule fieldsModule = ModuleFactory.getFieldsModule();
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .table(fieldsModule.getTableName())
+                .select(Collections.singleton(FieldFactory.getNumberField("fieldId", "FIELDID", fieldsModule)))
+                .andCondition(CriteriaAPI.getCondition("NAME", "name", fieldName, StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
+
+        Map<String, Object> fieldObj = selectBuilder.fetchFirst();
+
+        if (MapUtils.isNotEmpty(fieldObj)) {
+            return FieldUtil.getAsBeanFromMap(fieldObj, FacilioField.class);
+        }
+        return null;
     }
 }

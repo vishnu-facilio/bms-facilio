@@ -89,7 +89,6 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         viewElement.element(PackageConstants.DISPLAY_NAME).text(view.getDisplayName());
         viewElement.element(PackageConstants.IS_DEFAULT).text(String.valueOf(view.isDefault()));
         viewElement.element(PackageConstants.ViewConstants.VIEW_TYPE).text(String.valueOf(view.getType()));
-        viewElement.element(PackageConstants.ViewConstants.IS_HIDDEN).text(String.valueOf(view.isHidden()));
         viewElement.element(PackageConstants.AppXMLConstants.APP_LINK_NAME).text(application.getLinkName());
         viewElement.element(PackageConstants.ViewConstants.IS_LOCKED).text(String.valueOf(view.isLocked()));
         viewElement.element(PackageConstants.SEQUENCE_NUMBER).text(String.valueOf(view.getSequenceNumber()));
@@ -212,7 +211,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
             XMLBuilder formElement = idVsData.getValue();
             facilioView = constructViewFromXMLBuilder(formElement, appNameVsAppId, moduleBean);
 
-            long viewId = checkAndAddView(facilioView);
+            long viewId = ViewAPI.addView(facilioView, facilioView.getOrgId());
             uniqueIdentifierVsComponentId.put(idVsData.getKey(), viewId);
         }
 
@@ -247,7 +246,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         }
     }
 
-    public static Map<String, Map<String, Map<String, Long>>> getBasicViewDetails() throws Exception {
+    private Map<String, Map<String, Map<String, Long>>> getBasicViewDetails() throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule viewsModule = ModuleFactory.getViewsModule();
         List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
@@ -295,7 +294,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         return moduleNameVsAppLinkNameVsViewName;
     }
 
-    public Map<Long, Long> getViewIdVsModuleId(boolean fetchSystem) throws Exception {
+    private Map<Long, Long> getViewIdVsModuleId(boolean fetchSystem) throws Exception {
         Map<Long, Long> viewIdVsModuleId = new HashMap<>();
         FacilioModule viewsModule = ModuleFactory.getViewsModule();
 
@@ -319,7 +318,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         return viewIdVsModuleId;
     }
 
-    public static List<Map<String, Object>> getViewProps(List<FacilioField> selectableFields, Criteria criteria) throws Exception {
+    private List<Map<String, Object>> getViewProps(List<FacilioField> selectableFields, Criteria criteria) throws Exception {
         FacilioModule viewsModule = ModuleFactory.getViewsModule();
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
@@ -335,7 +334,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         return propsList;
     }
 
-    public static List<FacilioView> getViewsFromIds(List<Long> viewIds) throws Exception {
+    private List<FacilioView> getViewsFromIds(List<Long> viewIds) throws Exception {
         FacilioModule module = ModuleFactory.getViewsModule();
         List<FacilioField> fields = FieldFactory.getViewFields();
 
@@ -350,7 +349,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         return views;
     }
 
-    public static FacilioView constructViewFromXMLBuilder(XMLBuilder viewElement, Map<String, Long> appNameVsAppId, ModuleBean moduleBean) throws Exception {
+    private FacilioView constructViewFromXMLBuilder(XMLBuilder viewElement, Map<String, Long> appNameVsAppId, ModuleBean moduleBean) throws Exception {
         // Criteria will be constructed only for custom views
 
         boolean isDefault, isHidden, isLocked, isListView, isCalendarView, excludeModuleCriteria;
@@ -368,7 +367,6 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         sequenceNumber = StringUtils.isNotEmpty(sequenceNumberStr) ? Integer.parseInt(sequenceNumberStr) : -1;
         viewTypeInt = Integer.parseInt(viewElement.getElement(PackageConstants.ViewConstants.VIEW_TYPE).getText());
         isLocked = Boolean.parseBoolean(viewElement.getElement(PackageConstants.ViewConstants.IS_LOCKED).getText());
-        isHidden = Boolean.parseBoolean(viewElement.getElement(PackageConstants.ViewConstants.IS_HIDDEN).getText());
         isListView = Boolean.parseBoolean(viewElement.getElement(PackageConstants.ViewConstants.IS_LIST_VIEW).getText());
         isCalendarView = Boolean.parseBoolean(viewElement.getElement(PackageConstants.ViewConstants.IS_CALENDAR_VIEW).getText());
         excludeModuleCriteria = Boolean.parseBoolean(viewElement.getElement(PackageConstants.ViewConstants.EXCLUDE_MODULE_CRITERIA).getText());
@@ -382,7 +380,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         moduleId = module.getModuleId();
 
         // View
-        FacilioView view = new FacilioView(viewName, displayName, viewType, moduleName, moduleId, appId, isDefault, isHidden,
+        FacilioView view = new FacilioView(viewName, displayName, viewType, moduleName, moduleId, appId, isDefault,
                                         ownerId, sequenceNumber, isLocked, isListView, isCalendarView, excludeModuleCriteria);
         view.setOrgId(orgId);
 
@@ -489,25 +487,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         return view;
     }
 
-    public static long checkAndAddView(FacilioView view) throws Exception {
-        long viewId;
-        FacilioView dbView = ViewAPI.getView(view.getName(), view.getModuleId(), view.getModuleName(), view.getOrgId(), view.getAppId());
-
-        if (dbView != null) {
-            viewId = dbView.getId();
-
-            view.setId(viewId);
-            if (view.isCalendarView()) view.getCalendarViewContext().setId(viewId);
-
-            ViewAPI.updateView(viewId, view);
-        } else {
-            viewId = ViewAPI.addView(view, view.getOrgId());
-        }
-
-        return viewId;
-    }
-
-    public static long checkAndAddViewGroup(ViewGroups viewGroup) throws Exception {
+    private long checkAndAddViewGroup(ViewGroups viewGroup) throws Exception {
         long viewGroupId;
         ViewGroups dbViewGroup = ViewAPI.getViewGroup(viewGroup.getName(), viewGroup.getModuleName(), viewGroup.getModuleId(), viewGroup.getAppId());
         if (dbViewGroup != null) {

@@ -1,6 +1,7 @@
 package com.facilio.componentpackage.implementation;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
@@ -62,7 +63,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
         if (MapUtils.isNotEmpty(rolesAppsMapping)) {
             List<RoleApp> roleAppList = rolesAppsMapping.get(role.getRoleId());
             List<Long> appIds = roleAppList.stream().map(RoleApp::getApplicationId).collect(Collectors.toList());
-            appIdVsLinkName = getAppLinkNamesForIds(appIds);
+            appIdVsLinkName = ApplicationApi.getAppLinkNamesForIds(appIds);
         }
 
         roleElement.element(PackageConstants.NAME).text(role.getName());
@@ -162,7 +163,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
         }
     }
 
-    public Map<Long, Long> getRoleIdVsAppId() throws Exception {
+    private Map<Long, Long> getRoleIdVsAppId() throws Exception {
         Map<Long, Long> roleIdVsParentId = new HashMap<>();
         FacilioModule module = AccountConstants.getRoleModule();
         List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
@@ -183,30 +184,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
         return roleIdVsParentId;
     }
 
-    public static Map<Long,String> getAppLinkNamesForIds(List<Long> appIds) throws Exception {
-        Map<Long,String> appIdVsLinkName = new HashMap<>();
-        FacilioModule module = ModuleFactory.getApplicationModule();
-        List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
-            FieldFactory.getIdField(module);
-            add(FieldFactory.getStringField("linkName", "LINK_NAME", module));
-        }};
-
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(module.getTableName())
-                .select(selectableFields)
-                .andCondition(CriteriaAPI.getIdCondition(appIds, ModuleFactory.getApplicationModule()));
-
-        List<Map<String, Object>> propsList = builder.get();
-
-        if (CollectionUtils.isNotEmpty(propsList)) {
-            for (Map<String, Object> prop : propsList) {
-                appIdVsLinkName.put((Long) prop.get("id"), (String) prop.get("linkName"));
-            }
-        }
-        return appIdVsLinkName;
-    }
-
-    public List<Role> getRolesForIds(Collection<Long> ids) throws Exception {
+    private List<Role> getRolesForIds(Collection<Long> ids) throws Exception {
         FacilioModule module = AccountConstants.getRoleModule();
         List<FacilioField> fields = AccountConstants.getRoleFields();
 
@@ -219,7 +197,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
         return FieldUtil.getAsBeanListFromMapList(props, Role.class);
     }
 
-    public static Role constructRoleFromBuilder(XMLBuilder roleElement) {
+    private Role constructRoleFromBuilder(XMLBuilder roleElement) {
         String name = roleElement.getElement(PackageConstants.NAME).getText();
         String description = roleElement.getElement(PackageConstants.DESCRIPTION).getText();
         boolean isSuperAdmin = Boolean.parseBoolean(roleElement.getElement(PackageConstants.RoleConstants.IS_SUPER_ADMIN).getText());
@@ -234,7 +212,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
         return role;
     }
 
-    public static List<RoleApp> constructRoleAppsFromBuilder(XMLBuilder roleElement, Map<String, Long> appNameVsAppId) {
+    private List<RoleApp> constructRoleAppsFromBuilder(XMLBuilder roleElement, Map<String, Long> appNameVsAppId) {
         List<RoleApp> roleAppList = null;
         XMLBuilder roleAppElement = roleElement.getElement(PackageConstants.RoleConstants.ROLE_APP_MAPPING);
         if (roleAppElement != null) {
@@ -252,7 +230,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
         return roleAppList;
     }
 
-    public long addRole(Role role, List<Permissions> permission, List<RoleApp> roleAppList) throws Exception {
+    private long addRole(Role role, List<Permissions> permission, List<RoleApp> roleAppList) throws Exception {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.ROLE, role);
         context.put(FacilioConstants.ContextNames.PERMISSIONS, permission);
@@ -265,7 +243,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
         return roleId;
     }
 
-    public void updateRole(Role role, List<Permissions> permission, List<RoleApp> roleAppList) throws Exception {
+    private void updateRole(Role role, List<Permissions> permission, List<RoleApp> roleAppList) throws Exception {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.ROLE, role);
         context.put(FacilioConstants.ContextNames.PERMISSIONS, permission);

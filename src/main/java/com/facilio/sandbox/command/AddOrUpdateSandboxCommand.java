@@ -21,8 +21,8 @@ public class AddOrUpdateSandboxCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         SandboxConfigContext sandboxConfig = (SandboxConfigContext) context.get(SandboxConstants.SANDBOX);
 
-        FacilioModule sandboxModule = ModuleFactory.getSandboxModule();
-        List<FacilioField> sandboxFields = FieldFactory.getSandboxFields();
+        FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
+        List<FacilioField> sandboxFields = FieldFactory.getFacilioSandboxFields();
         if(sandboxConfig.getId() <= 0) {
             Map<String, Object> sandboxProps = FieldUtil.getAsProperties(sandboxConfig);
 
@@ -34,7 +34,7 @@ public class AddOrUpdateSandboxCommand extends FacilioCommand {
             insert.save();
             sandboxConfig.setId((long) sandboxProps.get("id"));
         } else {
-            SandboxAPI.updateSandboxConfig(sandboxConfig, FieldFactory.getSandboxUpdatableFields());
+            SandboxAPI.updateSandboxConfig(sandboxConfig, FieldFactory.getFacilioSandboxUpdatableFields());
         }
 
         return false;

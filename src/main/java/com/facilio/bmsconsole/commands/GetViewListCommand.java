@@ -16,7 +16,6 @@ import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.command.FacilioCommand;
-import com.facilio.componentpackage.implementation.FieldPackageBeanImpl;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
@@ -42,8 +41,6 @@ public class GetViewListCommand extends FacilioCommand {
 	private static final Logger LOGGER = Logger.getLogger(GetViewListCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		FieldPackageBeanImpl.getFieldIds(false);
-		FieldPackageBeanImpl.getFieldIds(true);
 		// TODO Auto-generated method stub
         Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

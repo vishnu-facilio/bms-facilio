@@ -3,11 +3,13 @@ package com.facilio.bmsconsole.context;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+@Log4j
 public class ViewField{
 	private long id = -1;
 	public long getId() {
@@ -105,8 +107,8 @@ public class ViewField{
 		this.columnDisplayName = displayName;
 		try {
 			this.customization = FacilioUtil.parseJson(customization);
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
+		} catch (Exception e) {
+			LOGGER.info("#### Error occurred while parsing customization json" + e);
 		}
 	}
 

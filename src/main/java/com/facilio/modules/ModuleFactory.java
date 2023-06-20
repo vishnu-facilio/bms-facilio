@@ -5253,6 +5253,14 @@ public class ModuleFactory {
         return module;
     }
 
+	public static FacilioModule getFacilioSandboxModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("facilioSandbox");
+		module.setDisplayName("FacilioSandbox");
+		module.setTableName("Facilio_Sandbox");
+		return module;
+	}
+
 	public static FacilioModule getSandboxSharingModule() {
 		FacilioModule sandboxSharing = new FacilioModule();
 		sandboxSharing.setName("sandboxSharing");

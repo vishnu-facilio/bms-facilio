@@ -28,6 +28,7 @@ import java.util.*;
 public class PackageUtil {
 
     private static ThreadLocal<Boolean> isInstallThread = new ThreadLocal<>();
+    private static ThreadLocal<Map<ComponentType, Map<String, Long>>> COMPONENTS_UID_VS_COMPONENT_ID = ThreadLocal.withInitial(HashMap::new);
 
     public static void setInstallThread() throws Exception {
         isInstallThread.set(true);
@@ -39,6 +40,33 @@ public class PackageUtil {
 
     public static void clearInstallThread() throws Exception {
         isInstallThread.remove();
+        COMPONENTS_UID_VS_COMPONENT_ID.remove();
+    }
+
+    public static Map<ComponentType, Map<String, Long>> getComponentsUIdVsComponentId() {
+        return COMPONENTS_UID_VS_COMPONENT_ID.get();
+    }
+
+    public static Map<String, Long> getComponentsUIdVsComponentIdForComponent(ComponentType componentType) {
+        return getComponentsUIdVsComponentId().computeIfAbsent(componentType, k -> new HashMap<>());
+    }
+
+    public static void addComponentsUIdVsComponentId(ComponentType componentType, Map<String, Long> uniqueIdVsComponentId) {
+        Map<String, Long> currComponentsUniqueIdVsComponentId = getComponentsUIdVsComponentIdForComponent(componentType);
+        currComponentsUniqueIdVsComponentId.putAll(uniqueIdVsComponentId);
+    }
+
+    public static long getParentComponentId(ComponentType childComponentType, String uniqueIdentifier) {
+        Long parentId = null;
+        ComponentType parentComponentType = childComponentType.getParentComponentType();
+        if (parentComponentType != null) {
+            parentId = getComponentsUIdVsComponentIdForComponent(parentComponentType).get(uniqueIdentifier);
+        }
+        return parentId != null ? parentId : -1;
+    }
+
+    public static void clearComponentsUniqueIdVsComponentId() throws Exception {
+        COMPONENTS_UID_VS_COMPONENT_ID.remove();
     }
 
     public static PackageContext getPackage(Organization organization) throws Exception {

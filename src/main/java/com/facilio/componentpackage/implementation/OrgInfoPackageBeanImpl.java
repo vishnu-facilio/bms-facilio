@@ -9,6 +9,7 @@ import com.facilio.iam.accounts.bean.IAMOrgBean;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.time.TimeFormat;
 import com.facilio.xml.builder.XMLBuilder;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -53,15 +54,22 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
         element.element(PackageConstants.OrgConstants.TIMEZONE).text(organization.getTimezone());
         element.element(PackageConstants.OrgConstants.DATE_FORMAT).text(organization.getDateFormat());
         element.element(PackageConstants.OrgConstants.LANGUAGE).text(organization.getLanguage());
-        element.element(PackageConstants.OrgConstants.GROUP_NAME).text(organization.getGroupName());
         element.element(PackageConstants.OrgConstants.FACILIODOMAINNAME).text(organization.getDomain());
         element.element(PackageConstants.OrgConstants.TIME_FORMAT)
                 .text(organization.getTimeFormatEnum() != null ? organization.getTimeFormatEnum().name() : null);
-        element.element(PackageConstants.OrgConstants.LOGGER_LEVEL).text(String.valueOf(organization.getLoggerLevel()));
         element.element(PackageConstants.OrgConstants.BUSINESS_HOUR).text(String.valueOf(organization.getBusinessHour()));
         element.element(PackageConstants.OrgConstants.ALLOW_USER_TIMEZONE)
                 .text(organization.getAllowUserTimeZone() != null ? String.valueOf(organization.getAllowUserTimeZone()) : Boolean.FALSE.toString());
 
+        Map<String, Long> featureLicenseMap = AccountUtil.getOrgBean().getFeatureLicense();
+        if (MapUtils.isNotEmpty(featureLicenseMap)) {
+            XMLBuilder featureLicenseList = element.element(PackageConstants.OrgConstants.FEATURE_LICENSE_LIST);
+            for (String licenseKey : featureLicenseMap.keySet()) {
+                XMLBuilder featureLicenseElement = featureLicenseList.element(PackageConstants.OrgConstants.FEATURE_LICENSE);
+                featureLicenseElement.element(PackageConstants.OrgConstants.FEATURE_LICENSE_KEY).text(licenseKey);
+                featureLicenseElement.element(PackageConstants.OrgConstants.FEATURE_LICENSE_VALUE).text(String.valueOf(featureLicenseMap.get(licenseKey)));
+            }
+        }
     }
 
     @Override
@@ -98,7 +106,29 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
             XMLBuilder element = uniqueIdentifierVsComponent.getValue();
             Organization organization = constructOrgFromBuilder(element);
 
+            // Update Org
             orgBean.updateOrgv2(orgId, organization);
+
+            // Update FeatureLicense
+            XMLBuilder featureLicenseList = element.getElement(PackageConstants.OrgConstants.FEATURE_LICENSE_LIST);
+            if (featureLicenseList != null) {
+                Map<String, Long> licenseMapFromBuilder = new HashMap<>();
+                List<XMLBuilder> featureLicenseElements = featureLicenseList.getFirstLevelElementListForTagName(PackageConstants.OrgConstants.FEATURE_LICENSE);
+                for (XMLBuilder featureLicense : featureLicenseElements) {
+                    String licenseKey = featureLicense.getElement(PackageConstants.OrgConstants.FEATURE_LICENSE_KEY).getText();
+                    long license = Long.parseLong(featureLicense.getElement(PackageConstants.OrgConstants.FEATURE_LICENSE_VALUE).getText());
+                    licenseMapFromBuilder.put(licenseKey, license);
+                }
+
+                Map<AccountUtil.LicenseMapping, Long> licenseMap = new HashMap<>();
+                for (AccountUtil.LicenseMapping licenseMapping : AccountUtil.LicenseMapping.values()) {
+                    if (licenseMapFromBuilder.containsKey(licenseMapping.getLicenseKey())) {
+                        licenseMap.put(licenseMapping, licenseMapFromBuilder.get(licenseMapping.getLicenseKey()));
+                    }
+                }
+
+                AccountUtil.getTransactionalOrgBean(AccountUtil.getCurrentOrg().getOrgId()).addLicence(licenseMap);
+            }
         }
     }
 
@@ -107,7 +137,7 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
 
     }
 
-    public static Organization constructOrgFromBuilder(XMLBuilder element) {
+    private Organization constructOrgFromBuilder(XMLBuilder element) {
         String orgName = element.getElement(PackageConstants.OrgConstants.ORGNAME).getText();
         String phone = element.getElement(PackageConstants.OrgConstants.PHONE).getText();
         String mobile = element.getElement(PackageConstants.OrgConstants.MOBILE).getText();
@@ -121,10 +151,8 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
         String timeZone = element.getElement(PackageConstants.OrgConstants.TIMEZONE).getText();
         String dateFormat = element.getElement(PackageConstants.OrgConstants.DATE_FORMAT).getText();
         String language = element.getElement(PackageConstants.OrgConstants.LANGUAGE).getText();
-        String groupName = element.getElement(PackageConstants.OrgConstants.GROUP_NAME).getText();
         String facilioDomainName = element.getElement(PackageConstants.OrgConstants.FACILIODOMAINNAME).getText();
         String timeFormatStr = element.getElement(PackageConstants.OrgConstants.TIME_FORMAT).getText();
-        int loggerLevel = Integer.parseInt(element.getElement(PackageConstants.OrgConstants.LOGGER_LEVEL).getText());
         long businessHour = Long.parseLong(element.getElement(PackageConstants.OrgConstants.BUSINESS_HOUR).getText());
         boolean allowUserTimeZone = Boolean.parseBoolean(element.getElement(PackageConstants.OrgConstants.ALLOW_USER_TIMEZONE).getText());
 
@@ -142,9 +170,7 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
         organization.setTimezone(timeZone);
         organization.setDateFormat(dateFormat);
         organization.setLanguage(language);
-        organization.setGroupName(groupName);
         organization.setDomain(facilioDomainName);
-        organization.setLoggerLevel(loggerLevel);
         organization.setBusinessHour(businessHour);
         organization.setAllowUserTimeZone(allowUserTimeZone);
         if (StringUtils.isNotEmpty(timeFormatStr)) {

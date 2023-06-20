@@ -312,6 +312,92 @@ public class ApplicationApi {
         return applicationLayouts;
     }
 
+    public static long getTabIdForRoute(WebTabContext webTab) throws Exception {
+        if (StringUtils.isEmpty(webTab.getRoute())) {
+            throw new IllegalArgumentException("Route cannot be empty");
+        }
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabModule().getTableName())
+                .select(FieldFactory.getWebTabFields())
+                .andCondition(CriteriaAPI.getCondition("ROUTE", "route", webTab.getRoute(), StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(webTab.getApplicationId()), NumberOperators.EQUALS));
+
+        Map<String, Object> map = builder.fetchFirst();
+        return MapUtils.isNotEmpty(map) ? (long) map.get("id") : -1;
+    }
+
+    public static long getTabGroupIdForRoute(WebTabGroupContext tabGroup) throws Exception {
+        if (StringUtils.isEmpty(tabGroup.getRoute())) {
+            throw new IllegalArgumentException("Route cannot be empty");
+        }
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabGroupModule().getTableName())
+                .select(FieldFactory.getWebTabGroupFields())
+                .andCondition(CriteriaAPI.getCondition("ROUTE", "route", tabGroup.getRoute(), StringOperators.IS));
+
+        if (tabGroup.getId() > 0) {
+            builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(tabGroup.getId()), NumberOperators.NOT_EQUALS));
+        }
+
+        if (tabGroup.getLayoutId() > 0) {
+            builder.andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", String.valueOf(tabGroup.getLayoutId()), NumberOperators.EQUALS));
+        } else {
+            builder.andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", "", CommonOperators.IS_EMPTY));
+        }
+
+        Map<String, Object> map = builder.fetchFirst();
+        return MapUtils.isNotEmpty(map) ? (long) map.get("id") : -1;
+    }
+
+    public static Map<Long,String> getAppLinkNamesForIds(List<Long> appIds) throws Exception {
+        Map<Long,String> appIdVsLinkName = new HashMap<>();
+        FacilioModule module = ModuleFactory.getApplicationModule();
+        List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
+            FieldFactory.getIdField(module);
+            add(FieldFactory.getStringField("linkName", "LINK_NAME", module));
+        }};
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(selectableFields)
+                .andCondition(CriteriaAPI.getIdCondition(appIds, ModuleFactory.getApplicationModule()));
+
+        List<Map<String, Object>> propsList = builder.get();
+
+        if (CollectionUtils.isNotEmpty(propsList)) {
+            for (Map<String, Object> prop : propsList) {
+                appIdVsLinkName.put((Long) prop.get("id"), (String) prop.get("linkName"));
+            }
+        }
+        return appIdVsLinkName;
+    }
+
+    public static List<Map<String, Object>> getTabGroupsForTabId(WebTabContext webTabContext) throws Exception {
+        FacilioModule groupModule = ModuleFactory.getWebTabGroupModule();
+        FacilioModule layoutModule = ModuleFactory.getApplicationLayoutModule();
+        FacilioModule webTabWebGroupModule = ModuleFactory.getWebTabWebGroupModule();
+
+        List<FacilioField> selectableFields = new ArrayList<FacilioField>(){{
+            add(FieldFactory.getStringField("route", "ROUTE", groupModule));
+            add(FieldFactory.getNumberField("order", "TAB_ORDER", webTabWebGroupModule));
+            add(FieldFactory.getStringField("appType", "APP_TYPE", layoutModule));
+            add(FieldFactory.getNumberField("layoutDeviceType", "DEVICE_TYPE", layoutModule));
+        }};
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabGroupModule().getTableName())
+                .select(selectableFields)
+                .innerJoin(ModuleFactory.getWebTabWebGroupModule().getTableName())
+                .on("WebTab_Group.ID = WebTab_WebGroup.WEBTAB_GROUP_ID")
+                .innerJoin(ModuleFactory.getApplicationLayoutModule().getTableName())
+                .on("WebTab_Group.LAYOUT_ID = Application_Layout.ID")
+                .andCondition(CriteriaAPI.getCondition("WebTab_WebGroup.WEBTAB_ID", "webTabId", String.valueOf(webTabContext.getId()), NumberOperators.EQUALS));
+
+        return builder.get();
+    }
+
     public static List<WebTabContext> getWebTabsForWebGroup(long webTabGroupId) throws Exception {
         List<FacilioField> fields = FieldFactory.getWebTabFields();
         fields.add(

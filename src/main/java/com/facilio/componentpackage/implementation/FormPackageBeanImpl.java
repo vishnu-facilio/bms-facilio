@@ -105,7 +105,42 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
 
     @Override
     public Map<String, String> validateComponentToCreate(List<XMLBuilder> components) throws Exception {
-        return null;
+        Map<String, Map<String, String>> moduleNameVsFormNameVsDisplayNameMap = new HashMap<>();
+        Map<String, List<String>> moduleNameVsFormNamesMap = new HashMap<>();
+        Map<String, String> formNameVsErrorMessage = new HashMap<>();
+        ModuleBean moduleBean = Constants.getModBean();
+
+        for (XMLBuilder formElement : components) {
+            String moduleName = formElement.getElement(PackageConstants.MODULENAME).getText();
+            String displayName = formElement.getElement(PackageConstants.DISPLAY_NAME).getText();
+            String formName = formElement.getElement(PackageConstants.FormXMLComponents.FORM_NAME).getText();
+
+            if (!moduleNameVsFormNamesMap.containsKey(moduleName)) {
+                moduleNameVsFormNamesMap.put(moduleName, new ArrayList<>());
+            }
+            moduleNameVsFormNamesMap.get(moduleName).add(formName);
+            if (!moduleNameVsFormNameVsDisplayNameMap.containsKey(moduleName)) {
+                moduleNameVsFormNameVsDisplayNameMap.put(moduleName, new HashMap<>());
+            }
+            moduleNameVsFormNameVsDisplayNameMap.get(moduleName).put(formName, displayName);
+        }
+
+        for (Map.Entry<String, List<String>> entry : moduleNameVsFormNamesMap.entrySet()) {
+            String moduleName = entry.getKey();
+            List<String> formNames = entry.getValue();
+            FacilioModule module = moduleBean.getModule(moduleName);
+            Map<String, Long> formIdsFromNames = PackageBeanUtil.getFormIdsFromNames(formNames, module.getModuleId());
+            Map<String, String> formNameVsDisplayName = moduleNameVsFormNameVsDisplayNameMap.get(moduleName);
+
+            if (MapUtils.isNotEmpty(formIdsFromNames)) {
+                for (String formName : formIdsFromNames.keySet()) {
+                    String displayName = formNameVsDisplayName.get(formName);
+                    formNameVsErrorMessage.put(displayName + " - " + moduleName, PackageConstants.FormXMLComponents.DUPLICATE_FORM_ERROR);
+                }
+            }
+        }
+
+        return formNameVsErrorMessage;
     }
 
     @Override
@@ -212,7 +247,7 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
         }
     }
 
-    public Map<Long, Long> getFormIdVsModuleId (boolean fetchSystem) throws Exception {
+    private Map<Long, Long> getFormIdVsModuleId (boolean fetchSystem) throws Exception {
         Map<Long, Long> formIdVsModuleId = new HashMap<>();
         FacilioModule formsModule = ModuleFactory.getFormModule();
 
@@ -237,7 +272,7 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
         return formIdVsModuleId;
     }
 
-    public static FacilioForm constructFormFromXMLBuilder(XMLBuilder formElement, Map<String, Long> appNameVsAppId, ModuleBean moduleBean) throws Exception {
+    private FacilioForm constructFormFromXMLBuilder(XMLBuilder formElement, Map<String, Long> appNameVsAppId, ModuleBean moduleBean) throws Exception {
         String formName, moduleName, displayName, description, appLinkName, typeString, labelPositionStr;
         boolean isLocked, showInWeb, hideInList, primaryForm, showInMobile, isSystemForm;
         FacilioForm.LabelPosition labelPosition;
@@ -280,7 +315,7 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
         return form;
     }
 
-    public static long checkAndAddForm(FacilioForm form) throws Exception {
+    private long checkAndAddForm(FacilioForm form) throws Exception {
         String formName = form.getName();
         long moduleId = form.getModuleId();
         long formId = PackageBeanUtil.getFormIdFromName(formName, moduleId);
@@ -295,7 +330,7 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
         return formId;
     }
 
-    public static void updateForm(FacilioForm form) throws Exception {
+    private void updateForm(FacilioForm form) throws Exception {
         FacilioModule formModule = ModuleFactory.getFormModule();
         Map<String, Object> props = FieldUtil.getAsProperties(form);
 
@@ -307,7 +342,7 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
         formUpdateBuilder.update(props);
     }
 
-    public static void addFormSharing(FacilioForm facilioForm) throws Exception {
+    private void addFormSharing(FacilioForm facilioForm) throws Exception {
         FacilioModule formSharingModule = ModuleFactory.getFormSharingModule();
         List<FacilioField> formSharingFields = FieldFactory.getFormSharingFields();
         SharingAPI.addSharing(facilioForm.getFormSharing(), formSharingFields, facilioForm.getId(), formSharingModule);

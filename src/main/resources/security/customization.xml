@@ -189,4 +189,13 @@
             <property name="includeParentFilter" type="boolean"/>
         </urlparams>
     </request>
+
+    <!-- Sandbox - Copy Configuration (admin tool) -->
+    <request path="/api/v3/sandbox/package/create" method="POST">
+        <requestbody type="object">
+            <property name="sourceOrgId" type="number" mandatory="true"/>
+            <property name="targetOrgId" type="number" mandatory="true"/>
+            <property name="fromAdminTool" type="boolean"/>
+        </requestbody>
+    </request>
 </config>

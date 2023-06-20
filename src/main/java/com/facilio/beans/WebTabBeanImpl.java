@@ -18,10 +18,7 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WebTabBeanImpl implements WebTabBean{
     @Override
@@ -219,10 +216,14 @@ public class WebTabBeanImpl implements WebTabBean{
     }
 
     @Override
-    public void deleteWebTabWebGroupForTabId(long webTabId) throws Exception {
+    public void deleteWebTabWebGroupForTabId(long webTabId, Collection<Long> webTabGroupIds) throws Exception {
         GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
                 .table(ModuleFactory.getWebTabWebGroupModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition("WEBTAB_ID", "webTabId", String.valueOf(webTabId), NumberOperators.EQUALS));
+
+        if (CollectionUtils.isNotEmpty(webTabGroupIds)) {
+            builder.andCondition(CriteriaAPI.getCondition("WEBTAB_GROUP_ID", "tab_groupId", StringUtils.join(webTabGroupIds, ","), NumberOperators.EQUALS));
+        }
 
         builder.delete();
     }

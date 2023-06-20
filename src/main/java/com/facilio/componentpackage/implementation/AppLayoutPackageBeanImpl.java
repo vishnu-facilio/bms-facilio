@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -70,7 +71,7 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
 
     @Override
     public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
-        Map<String, Long> appNameVsAppId = getAppNameVsAppId();
+        Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
 
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         ApplicationLayoutContext layoutContext;
@@ -94,7 +95,7 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
 
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
-        Map<String, Long> appNameVsAppId = getAppNameVsAppId();
+        Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
 
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         ApplicationLayoutContext layoutContext;
@@ -122,7 +123,7 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
 
     @Override
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
-        Map<String, Long> appNameVsAppId = getAppNameVsAppId();
+        Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
 
         ApplicationLayoutContext layoutContext;
 
@@ -141,18 +142,8 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
     public void deleteComponentFromXML(List<Long> ids) throws Exception {
 
     }
-
-    public static Map<String, Long> getAppNameVsAppId() throws Exception {
-        List<ApplicationContext> applicationContexts = ApplicationApi.getAllApplicationsWithOutFilter();
-        Map<String, Long> appNameVsAppId = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(applicationContexts)) {
-            appNameVsAppId = applicationContexts.stream().collect(Collectors.toMap(ApplicationContext::getLinkName, ApplicationContext::getId));
-        }
-
-        return appNameVsAppId;
-    }
     
-    public static Map<Long, Long> getAllLayoutIds(boolean fetchSystem) throws Exception {
+    private Map<Long, Long> getAllLayoutIds(boolean fetchSystem) throws Exception {
         Map<Long, Long> layoutIdVsAppId = null;
         List<Long> applicationIds = ApplicationApi.getAllApplicationIds(fetchSystem);
 
@@ -170,7 +161,7 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
         return layoutIdVsAppId;
     }
     
-    public static void updateApplicationLayoutCommand(ApplicationLayoutContext layoutContext) throws Exception {
+    private void updateApplicationLayoutCommand(ApplicationLayoutContext layoutContext) throws Exception {
         FacilioModule module = ModuleFactory.getApplicationLayoutModule();
         List<FacilioField> fields = FieldFactory.getApplicationLayoutFields();
         
@@ -182,7 +173,7 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
         builder.update(FieldUtil.getAsProperties(layoutContext));
     }
 
-    public static ApplicationLayoutContext getLayoutFromXMLComponent(XMLBuilder layoutElement, Map<String, Long> appNameVsAppId) {
+    private ApplicationLayoutContext getLayoutFromXMLComponent(XMLBuilder layoutElement, Map<String, Long> appNameVsAppId) {
         String appType, appLinkName, layoutTypeStr, deviceTypeStr;
         ApplicationLayoutContext.LayoutDeviceType layoutDeviceType;
         ApplicationLayoutContext.AppLayoutType layoutType;

@@ -1,6 +1,7 @@
 package com.facilio.componentpackage.command;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
@@ -22,7 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Log4j
-public class DeployPackageComponentCommand extends FacilioCommand {
+public class DeployPackageComponentCommand extends FacilioCommand implements PostTransactionCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -36,16 +37,17 @@ public class DeployPackageComponentCommand extends FacilioCommand {
 		double previousVersion = (double) context.get(PackageConstants.PREVIOUS_VERSION);
 		XMLBuilder packageConfigXML = (XMLBuilder) context.get(PackageConstants.PACKAGE_CONFIG_XML);
 
-		List<XMLBuilder> allComponents = packageConfigXML.getElement(PackageConstants.PackageXMLConstants.COMPONENTS).getElementList(PackageConstants.PackageXMLConstants.COMPONENT);
+		List<XMLBuilder> allComponents = packageConfigXML.getElement(PackageConstants.PackageXMLConstants.COMPONENTS)
+									.getFirstLevelElementListForTagName(PackageConstants.PackageXMLConstants.COMPONENT);
 		PackageFolderContext componentsFolder = rootFolder.getFolder(PackageConstants.COMPONENTS_FOLDER_NAME);
-		Map<ComponentType, Map<String, Long>> componentsUniqueIdVsComponentId = new HashMap<>();
 
 		for(XMLBuilder component : allComponents) {
 			ComponentType componentType = ComponentType.valueOf(component.getAttribute(PackageConstants.PackageXMLConstants.COMPONENT_TYPE));
 			if(componentType.getComponentClass() == null) {
 				continue;
 			}
-			Map<String, Long> uniqueIdVsComponentIdList = componentsUniqueIdVsComponentId.computeIfAbsent(componentType, k -> new HashMap<>());
+			LOGGER.info("####Sandbox - Started Deploying ComponentType - " + componentType.name());
+			Map<String, Long> uniqueIdVsComponentIdList = PackageUtil.getComponentsUIdVsComponentIdForComponent(componentType);
 
 			String componentTypeFilePath = component.getText();
 			PackageFileContext componentXMLContext = componentsFolder.getFile(componentTypeFilePath);
@@ -77,8 +79,7 @@ public class DeployPackageComponentCommand extends FacilioCommand {
 				long parentId = -1l;
 				String parentComponentIdAttr = componentXML.getAttribute(PackageConstants.PackageXMLConstants.PARENT_COMPONENT_ID);
 				if(StringUtils.isNotEmpty(parentComponentIdAttr)) {
-					Long parentIdFromPackage = Long.parseLong(parentComponentIdAttr);
-					parentId = componentsUniqueIdVsComponentId.get(componentType.getParentComponentType()).get(parentIdFromPackage);
+					parentId = PackageUtil.getParentComponentId(componentType, parentComponentIdAttr);
 				}
 
 				PackageChangeSetMappingContext mapping = new PackageChangeSetMappingContext();
@@ -91,6 +92,7 @@ public class DeployPackageComponentCommand extends FacilioCommand {
 				if(previousVersion == 0.0D && createdVersion.equals(modifiedVersion) && status.equals(PackageChangeSetMappingContext.ComponentStatus.UPDATED)) {
 					idsToFetch.put(uniqueIdentifier, componentXML);
 					mapping.setCreatedVersion(packageVersion);
+					mapping.setModifiedVersion(packageVersion);
 					mappingToAdd.put(uniqueIdentifier, mapping);
 				} else {
 					switch(status) {
@@ -125,15 +127,14 @@ public class DeployPackageComponentCommand extends FacilioCommand {
 				for(Map.Entry<String, XMLBuilder> updateXMLs : idsToFetch.entrySet()) {
 					updateComponentList.put(systemComponentIds.get(updateXMLs.getKey()), updateXMLs.getValue());
 				}
-				componentsUniqueIdVsComponentId.get(componentType).putAll(systemComponentIds);
 			}
 
 			//Create
 			Map<String, Long> createdComponentIds = componentType.getPackageComponentClassInstance().createComponentFromXML(createComponentList);
-			componentsUniqueIdVsComponentId.get(componentType).putAll(createdComponentIds);
 			if(MapUtils.isNotEmpty(systemComponentIds)) {
 				createdComponentIds.putAll(systemComponentIds);
 			}
+			PackageUtil.addComponentsUIdVsComponentId(componentType, createdComponentIds);
 			computeAndAddPackageChangeset(mappingToAdd, createdComponentIds);
 
 			//Update
@@ -143,10 +144,11 @@ public class DeployPackageComponentCommand extends FacilioCommand {
 			}
 
 			//Delete
-			if(CollectionUtils.isEmpty(deleteIdList)) {
+			if(CollectionUtils.isNotEmpty(deleteIdList)) {
 				componentType.getPackageComponentClassInstance().deleteComponentFromXML(deleteIdList);
 			}
 
+			LOGGER.info("####Sandbox - Completed Deploying ComponentType - " + componentType.name());
 		}
 
 		PackageUtil.clearInstallThread();
@@ -161,6 +163,16 @@ public class DeployPackageComponentCommand extends FacilioCommand {
 				.collect(Collectors.toList())
 				;
 		PackageUtil.addPackageMappingChangesets(mappings);
+	}
+
+	@Override
+	public boolean postExecute() throws Exception {
+		return false;
+	}
+
+	@Override
+	public void onError() throws Exception {
+		PackageUtil.clearInstallThread();
 	}
 
 }

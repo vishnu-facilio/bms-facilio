@@ -164,7 +164,7 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
         }
     }
 
-    public Map<Long, Long> getSectionIdVsFormId() throws Exception {
+    private Map<Long, Long> getSectionIdVsFormId() throws Exception {
         Map<Long, Long> sectionIdVsFormId = new HashMap<>();
         FacilioModule sectionModule = ModuleFactory.getFormSectionModule();
 
@@ -189,7 +189,7 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
         return sectionIdVsFormId;
     }
 
-    public static FormSection constructSectionFromBuilder(XMLBuilder sectionElement, ModuleBean moduleBean) throws Exception {
+    private FormSection constructSectionFromBuilder(XMLBuilder sectionElement, ModuleBean moduleBean) throws Exception {
         String moduleName, sectionName, formName, sectionTypeStr, subFormDefaultValue;
         long formId, moduleId, lookupFieldId = -1, subFormId = -1;
         int sequenceNumber, noOfSubFormRecords;
@@ -232,7 +232,7 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
         return formSection;
     }
 
-    public static long checkAndAddSection(FormSection section) throws Exception {
+    private long checkAndAddSection(FormSection section) throws Exception {
         long formId = section.getFormId();
         String sectionName = section.getName();
         long sectionId = PackageBeanUtil.getSectionIdFromName(formId, sectionName);
@@ -247,7 +247,7 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
         return sectionId;
     }
 
-    public static long addFormSection(FormSection section) throws Exception {
+    private long addFormSection(FormSection section) throws Exception {
         FacilioModule module = ModuleFactory.getFormSectionModule();
         Map<String, Object> props = FieldUtil.getAsProperties(section);
 
@@ -258,7 +258,7 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
         return builder.insert(props);
     }
 
-    public static void updateFormSection(FormSection section) throws Exception {
+    private void updateFormSection(FormSection section) throws Exception {
         FacilioModule module = ModuleFactory.getFormSectionModule();
         Map<String, Object> props = FieldUtil.getAsProperties(section);
 

@@ -2764,7 +2764,6 @@
 /api/v1/setup/sandbox/list
 /api/v1/setup/sandbox/update
 /api/v1/setup/sandbox/changeStatus
-/api/v3/weather/migrateWeatherStation
 /api/v3/weather/allWeatherFields
 /api/v1/setup/permissionSet/:module/getGroupItems
 /api/v3/plannedmaintenance/publish

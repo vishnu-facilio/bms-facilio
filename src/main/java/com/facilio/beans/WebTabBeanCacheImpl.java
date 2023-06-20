@@ -7,6 +7,7 @@ import com.facilio.fw.cache.FWLRUCaches;
 import com.facilio.fw.cache.FacilioCache;
 import com.facilio.fw.cache.LRUCache;
 
+import java.util.Collection;
 import java.util.List;
 
 public class WebTabBeanCacheImpl extends WebTabBeanImpl implements WebTabBean {
@@ -117,6 +118,19 @@ public class WebTabBeanCacheImpl extends WebTabBeanImpl implements WebTabBean {
         super.deleteTabForGroupCommand(groupId);
         tabsCache.remove(key);
         tabGroupCache.remove(CacheUtil.ORG_APP_LAYOUT_KEY(AccountUtil.getCurrentOrg().getId(), tabGroupContext.getLayoutId()));
+    }
+
+    @Override
+    public void deleteWebTabWebGroupForTabId(long webTabId, Collection<Long> webTabGroupIds) throws Exception {
+        FacilioCache<String, List<WebTabCacheContext>> tabsCache = LRUCache.getWebTabsCache();
+        FacilioCache<String, List<WebTabGroupCacheContext>> tabGroupCache = LRUCache.getWebTabGroupCache();
+        super.deleteWebTabWebGroupForTabId(webTabId, webTabGroupIds);
+
+        for (long groupId : webTabGroupIds) {
+            WebTabGroupContext tabGroupContext = getWebTabGroup(groupId);
+            tabsCache.remove(CacheUtil.ORG_TAB_GROUP_KEY(AccountUtil.getCurrentOrg().getId(), groupId));
+            tabGroupCache.remove(CacheUtil.ORG_APP_LAYOUT_KEY(AccountUtil.getCurrentOrg().getId(), tabGroupContext.getLayoutId()));
+        }
     }
 
     @Override

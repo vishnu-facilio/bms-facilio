@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
