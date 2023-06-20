@@ -13,11 +13,12 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.scriptengine.annotation.ScriptModule;
+import com.facilio.scriptengine.context.ScriptContext;
 
 @ScriptModule(moduleName = FacilioConstants.ContextNames.ITEM_TRANSACTIONS)
 public class FacilioItemTransactionFunctions extends FacilioModuleFunctionImpl {
 
-	public void addOrUpdateItemTransactions(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public void addOrUpdateItemTransactions(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		Map<String, Object> itemsRaw = (Map<String, Object>) objects.get(1);
 		

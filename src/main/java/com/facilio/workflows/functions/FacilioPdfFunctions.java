@@ -8,6 +8,7 @@ import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.services.filestore.FileStoreFactory;
 import com.facilio.services.pdf.PDFOptions;
@@ -25,7 +26,7 @@ import java.util.List;
 public class FacilioPdfFunctions {
 
     public static final List<String> reportsName = Arrays.asList("readingReport","modulereport","alarmReport");
-    public Object pageToPDF(Map<String, Object> globalParam, Object... objects) throws Exception {
+    public Object pageToPDF(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
         checkParam(objects);
 
@@ -69,7 +70,7 @@ public class FacilioPdfFunctions {
         return fileUrl;
     }
 
-    public Object pageToScreenshot(Map<String, Object> globalParam, Object... objects) throws Exception {
+    public Object pageToScreenshot(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
         checkParam(objects);
 

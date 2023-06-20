@@ -9,6 +9,7 @@ import java.util.Map;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.fw.BeanFactory;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.v3.util.V3Util;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -45,24 +46,24 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 
 	private static final Logger LOGGER = LogManager.getLogger(FacilioWorkOrderModuleFunctions.class.getName());
 
-	public List<Map<String, Object>> getAvgResolutionTime(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+	public List<Map<String, Object>> getAvgResolutionTime(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		return WorkOrderAPI.getTopNCategoryOnAvgCompletionTime(String.valueOf(objects.get(0).toString()), Long.valueOf(objects.get(1).toString()), Long.valueOf(objects.get(2).toString()));
 	}
 
-	public List<Map<String, Object>> getWorkOrdersByCompletionTime(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+	public List<Map<String, Object>> getWorkOrdersByCompletionTime(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		return WorkOrderAPI.getWorkOrderStatusPercentageForWorkflow(String.valueOf(objects.get(0)), Long.valueOf(objects.get(1).toString()), Long.valueOf(objects.get(2).toString()));
 	}
 
-	public List<Map<String, Object>> getTopNTechnicians(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+	public List<Map<String, Object>> getTopNTechnicians(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		return WorkOrderAPI.getTopNTechnicians(objects.get(0).toString(), Long.valueOf(objects.get(1).toString()), Long.valueOf(objects.get(2).toString()));
 	}
 
-	public List<Map<String, Object>> getTopNBuildings(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+	public List<Map<String, Object>> getTopNBuildings(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		return WorkOrderAPI.getTopNBuildings(Integer.parseInt(objects.get(1).toString()), Long.valueOf(objects.get(2).toString()), Long.valueOf(objects.get(3).toString()), Long.valueOf(objects.get(4).toString()));
 	}
 
 	@Override
-	public void add(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+	public void add(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 
 		Object insertObject = objects.get(1);
 
@@ -72,6 +73,7 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 
 			long id = addWorkOrderContext(wo);
 			woMap.put("id", id);
+			scriptContext.incrementTotalInsertCount();
 		} else if (insertObject instanceof Collection) {
 
 			List<Object> insertList = (List<Object>) insertObject;
@@ -81,6 +83,7 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 				WorkOrderContext wo = FieldUtil.getAsBeanFromMap(woMap, WorkOrderContext.class);
 				long id = addWorkOrderContext(wo);
 				woMap.put("id", id);
+				scriptContext.incrementTotalInsertCount();
 			}
 		}
 		
@@ -95,7 +98,7 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 
 	}
 	
-	public void addTask(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public void addTask(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		Long woId = Long.parseLong(objects.get(1).toString());
 		
@@ -124,7 +127,7 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 	}
 	
 	@Override
-	public Map<String, Object> addTemplateData(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public Map<String, Object> addTemplateData(Map<String,Object> globalParams,List<Object> objects , ScriptContext scriptContext) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
@@ -237,11 +240,11 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		
 		addWoDataChain.execute();
-		
+		scriptContext.incrementTotalInsertCount();
 		return workorder.getData();
 	}
 	
-	public Map<String, Object> addTemplateDataInternal(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public Map<String, Object> addTemplateDataInternal(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
@@ -357,7 +360,7 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 
 		addWOChain.execute();
-		
+		scriptContext.incrementTotalInsertCount();
 		return workorder.getData();
 	}
 	

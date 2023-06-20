@@ -493,6 +493,7 @@ public class WorkflowRuleAPI {
 	}
 
 	public static Map<Long, WorkflowRuleContext> getWorkflowRulesAsMap (List<Long> ids, boolean fetchChildren, boolean fetchExtended) throws Exception {
+		if(CollectionUtils.isEmpty(ids)) return null;
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table("Workflow_Rule")

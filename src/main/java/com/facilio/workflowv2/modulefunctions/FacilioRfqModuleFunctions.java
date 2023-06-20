@@ -16,6 +16,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.scriptengine.annotation.ScriptModule;
 import com.facilio.scriptengine.context.DBParamContext;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
@@ -30,7 +31,7 @@ import java.util.*;
 public class FacilioRfqModuleFunctions  extends FacilioModuleFunctionImpl {
     private static final Logger LOGGER = LogManager.getLogger(FacilioRfqModuleFunctions.class.getName());
     @Override
-    public void update(Map<String,Object> globalVariable,List<Object> objects) throws Exception {
+    public void update(Map<String,Object> globalVariable, List<Object> objects, ScriptContext scriptContext) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -78,6 +79,7 @@ public class FacilioRfqModuleFunctions  extends FacilioModuleFunctionImpl {
             CommonCommandUtil.handleLookupFormData(modBean.getAllFields(module.getName()), updateMap);
 
             FacilioContext context = V3Util.updateBulkRecords(module.getName(), updateMap,ids,bodyParam,null, true);
+            scriptContext.incrementTotalUpdateCount();
         }
         else {
             if (LookupSpecialTypeUtil.isSpecialType(module.getName())) {
@@ -87,7 +89,7 @@ public class FacilioRfqModuleFunctions  extends FacilioModuleFunctionImpl {
                         .fields(modBean.getAllFields(module.getName()))
                         .andCriteria(criteria);
                 updateRecordBuilder.update(updateMap);
-
+                scriptContext.incrementTotalUpdateCount();
             }
             else {
 
@@ -105,6 +107,7 @@ public class FacilioRfqModuleFunctions  extends FacilioModuleFunctionImpl {
                 }
                 updateRecordBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
                 updateRecordBuilder.updateViaMap(updateMap);
+                scriptContext.incrementTotalUpdateCount();
 
                 try {
                     Map<Long, List<UpdateChangeSet>> recordChanges = updateRecordBuilder.getChangeSet();

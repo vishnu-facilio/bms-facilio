@@ -10,6 +10,7 @@ import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
 import com.facilio.bmsconsoleV3.context.VisitorLogContextV3;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 
@@ -17,7 +18,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.RESOURCE_FUNCTION)
 public class FacilioResourceFunction {
-	public Object getResourceName(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getResourceName(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -48,28 +49,28 @@ public class FacilioResourceFunction {
 		}
 	}
 
-	public Object getVisitorLog(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getVisitorLog(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		VisitorLogContextV3 vLog = V3VisitorManagementAPI.getVisitorLogTriggers(Long.valueOf(objects[0].toString()), null, false);
 		return vLog;
 
 	}
 
-	public Object getVisitorInvite(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getVisitorInvite(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		InviteVisitorContextV3 invite = V3VisitorManagementAPI.getVisitorInviteTriggers(Long.valueOf(objects[0].toString()), null, false);
 		return invite;
 
 	}
 
-	public Object getVendor(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getVendor(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		VendorContext vendor = InventoryApi.getVendor(Long.valueOf(objects[0].toString()));
 		return vendor;
 
 	}
 
-	public Object getBaseSpace(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getBaseSpace(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		BaseSpaceContext baseSpaceContext = SpaceAPI.getBaseSpace(Long.valueOf(objects[0].toString()));
 		return baseSpaceContext;

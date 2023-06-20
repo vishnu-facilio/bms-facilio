@@ -2,6 +2,7 @@ package com.facilio.workflows.functions;
 
 import com.facilio.modules.FieldUtil;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.wmsv2.endpoint.SessionManager;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.WMS_FUNCTION)
 public class FacilioWMSFunctions {
-	public Object sendMessageToUser(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object sendMessageToUser(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -37,7 +38,7 @@ public class FacilioWMSFunctions {
 		return null;
 	}
 
-	public Object sendMessageToOrg(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object sendMessageToOrg(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -61,7 +62,7 @@ public class FacilioWMSFunctions {
 		return null;
 	}
 
-	public Object sendMessage(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object sendMessage(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 

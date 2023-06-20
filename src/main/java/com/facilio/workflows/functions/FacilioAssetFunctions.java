@@ -10,6 +10,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.ASSET_FUNCTION)
 public class FacilioAssetFunctions {
-	public Object getAssetsFromSpaceId(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getAssetsFromSpaceId(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		if(objects.length > 1) {
 
@@ -45,7 +46,7 @@ public class FacilioAssetFunctions {
 		}
 	}
 
-	public Object getAssetCategoryFields(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getAssetCategoryFields(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		long assetCategoryID = -1;
 		if(objects[0] instanceof String) {

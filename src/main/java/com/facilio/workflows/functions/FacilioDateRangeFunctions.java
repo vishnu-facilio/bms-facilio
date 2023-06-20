@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.BaseLineContext.AdjustType;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.time.DateRange;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.DATE_RANGE_FUNCTION)
 public class FacilioDateRangeFunctions {
-	public Object getStartTime(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getStartTime(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -23,7 +24,7 @@ public class FacilioDateRangeFunctions {
 		return dateRange.getStartTime();
 	}
 
-	public Object getEndTime(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getEndTime(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -34,7 +35,7 @@ public class FacilioDateRangeFunctions {
 		return dateRange.getEndTime();
 	}
 
-	public Object create(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object create(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 

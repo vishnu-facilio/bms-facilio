@@ -22,12 +22,13 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.scriptengine.annotation.ScriptModule;
+import com.facilio.scriptengine.context.ScriptContext;
 
 @ScriptModule(moduleName = FacilioConstants.Induction.INDUCTION_TEMPLATE)
 public class FacilioInductionTemplateModuleFunctions extends FacilioModuleFunctionImpl {
 
 	
-	public Object addInductions(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public Object addInductions(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		

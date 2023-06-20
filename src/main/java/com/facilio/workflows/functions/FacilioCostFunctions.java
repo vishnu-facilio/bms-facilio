@@ -1,6 +1,7 @@
 package com.facilio.workflows.functions;
 
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.workflows.util.FunctionUtil;
@@ -9,7 +10,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.COST_FUNCTION)
 public class FacilioCostFunctions {
-	public Object getCostFromKwh(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getCostFromKwh(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 

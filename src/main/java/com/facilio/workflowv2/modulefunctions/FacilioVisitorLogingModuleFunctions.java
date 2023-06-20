@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.scriptengine.context.ScriptContext;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -19,7 +20,7 @@ import com.facilio.scriptengine.annotation.ScriptModule;
 public class FacilioVisitorLogingModuleFunctions extends FacilioModuleFunctionImpl {
 
 	@Override
-	public void add(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+	public void add(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		Object insertObject = objects.get(1);
 		
@@ -53,6 +54,7 @@ public class FacilioVisitorLogingModuleFunctions extends FacilioModuleFunctionIm
 			c.getContext().put(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, visitorLoggingContexts);
 				
 			c.execute();
+			scriptContext.incrementTotalInsertCount();
 		}
 	}
 }

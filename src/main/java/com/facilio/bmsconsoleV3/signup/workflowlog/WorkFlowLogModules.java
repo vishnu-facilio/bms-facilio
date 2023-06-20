@@ -132,6 +132,18 @@ public class WorkFlowLogModules extends SignUpData{
 
 		fields.add(FieldFactory.getDefaultField("recordModuleId","Module ID","RECORD_MODULE_ID",FieldType.NUMBER));
 
+		fields.add(FieldFactory.getDefaultField("totalSelectCount","Total Select Count","TOTAL_SELECT_COUNT",FieldType.NUMBER));
+		fields.add(FieldFactory.getDefaultField("totalInsertCount","Total Insert Count","TOTAL_INSERT_COUNT",FieldType.NUMBER));
+		fields.add(FieldFactory.getDefaultField("totalUpdateCount","Total Update Count","TOTAL_UPDATE_COUNT",FieldType.NUMBER));
+		fields.add(FieldFactory.getDefaultField("totalDeleteCount","Total Delete Count","TOTAL_DELETE_COUNT",FieldType.NUMBER));
+		fields.add(FieldFactory.getDefaultField("totalStatementCount","Total Statement Count","TOTAL_STATEMENT_COUNT",FieldType.NUMBER));
+		fields.add(FieldFactory.getDefaultField("totalApiRequestCount","Total External API Request Count","TOTAL_EXTERNAL_API_REQUEST_SIZE",FieldType.NUMBER));
+		fields.add(FieldFactory.getDefaultField("totalApiResponseCount","Total External API Response Count","TOTAL_EXTERNAL_API_RESPONSE_SIZE",FieldType.NUMBER));
+		fields.add(FieldFactory.getDefaultField("totalEmailCount","Total Email Notification Count","TOTAL_EMAIL_COUNT",FieldType.NUMBER));
+		fields.add(FieldFactory.getDefaultField("totalPushNotficationCount","Total Push Notification Count","TOTAL_PUSH_NOTIFICATION_COUNT",FieldType.NUMBER));
+		fields.add(FieldFactory.getDefaultField("threadName","Thread Name","THREAD_NAME",FieldType.STRING));
+
+
 		module.setFields(fields);
 		return module;
 	}

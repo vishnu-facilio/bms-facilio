@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.scriptengine.context.ScriptContext;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -19,7 +20,7 @@ import com.facilio.scriptengine.annotation.ScriptModule;
 public class FacilioContactModuleFunctions extends FacilioModuleFunctionImpl {
 
 	@Override
-	public void add(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public void add(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		Object insertObject = objects.get(1);
 		
@@ -41,6 +42,7 @@ public class FacilioContactModuleFunctions extends FacilioModuleFunctionImpl {
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, contacts);
 			c.execute();
+			scriptContext.incrementTotalInsertCount();
 		}
 	}
 }

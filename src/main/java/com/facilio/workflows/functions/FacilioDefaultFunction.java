@@ -14,6 +14,7 @@ import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -86,7 +87,7 @@ import com.facilio.workflowv2.util.WorkflowV2Util;
 ;@Log4j
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.DEFAULT_FUNCTION)
 public class FacilioDefaultFunction  {
-		public Object allMatch(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object allMatch(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			checkParam(objects);
 
@@ -100,7 +101,7 @@ public class FacilioDefaultFunction  {
 			return allEqual;
 		}
 
-		public Object getMainEnergyMeter(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getMainEnergyMeter(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			if(objects.length <= 0) {
 				throw new FunctionParamException("Required Object is null");
@@ -124,7 +125,7 @@ public class FacilioDefaultFunction  {
 			return energyMeterContexts.get(0).getId();
 		};
 
-		public Object stringEquals(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object stringEquals(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects.length < 2) {
 				return false;
@@ -132,7 +133,7 @@ public class FacilioDefaultFunction  {
 			return (objects[0] == null ? objects[1] == null : objects[0].toString().equals(objects[1].toString()));
 		}
 
-		public Object stringContains(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object stringContains(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects.length < 2) {
 				return false;
@@ -140,7 +141,7 @@ public class FacilioDefaultFunction  {
 			return (objects[0] == null ? objects[1] == null : objects[0].toString().contains(objects[1].toString()));
 		}
 
-		public Object convertUnit(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object convertUnit(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects.length < 3) {
 				return null;
@@ -166,7 +167,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object getFilePrivateUrl(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getFilePrivateUrl(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			FileStore fs = FacilioFactory.getFileStore();
 
@@ -184,7 +185,7 @@ public class FacilioDefaultFunction  {
 			return url;
 		}
 
-		public Object getFileName(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getFileName(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			FileStore fs = FacilioFactory.getFileStore();
 
@@ -196,7 +197,7 @@ public class FacilioDefaultFunction  {
 			return fs.getFileInfo(fileId).getFileName();
 		}
 
-		public Object fetchData(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object fetchData(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects.length < 2) {
 				return false;
@@ -229,7 +230,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object getUnit(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getUnit(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects.length < 1) {
 				return false;
@@ -259,7 +260,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object sumData(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object sumData(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects == null || objects.length < 2) {
 				return false;
@@ -346,7 +347,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object picklist(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object picklist(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects == null || objects.length < 1) {
 				return null;
@@ -379,7 +380,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object getPermaLinkUrl(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getPermaLinkUrl(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects == null || objects.length < 1) {
 				return null;
@@ -394,7 +395,7 @@ public class FacilioDefaultFunction  {
 			return permalLinkURL;
 		}
 
-		public Object getMaintenancePermaLinkUrl(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getMaintenancePermaLinkUrl(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects == null || objects.length < 1) {
 				return null;
@@ -423,17 +424,17 @@ public class FacilioDefaultFunction  {
 			}
 			return permalLinkURL;
 		}
-		public Object getUserName(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getUserName(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			User user = AccountUtil.getCurrentUser();
 			return user.getName();
 		}
-		public Object getUserEmail(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getUserEmail(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			User user = AccountUtil.getCurrentUser();
 			return user.getEmail();
 		}
-		public Object getRecord(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getRecord(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(objects[0].toString());
@@ -460,7 +461,7 @@ public class FacilioDefaultFunction  {
 
 		}
 
-		public Object mergeJson(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object mergeJson(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			Map json1 = (Map) objects[0];
 			Map json2 = (Map) objects[1];
@@ -483,21 +484,21 @@ public class FacilioDefaultFunction  {
 			}
 			return null;
 		}
-		public Object exportURL(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object exportURL(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			String url = (String) objects[0];
 			String fileName = PdfUtil.exportUrlAsPdf(url.toString(), true, null, FileFormat.PDF);
 			return fileName;
 		}
 
-		public Object exportURLWithFileReturn(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object exportURLWithFileReturn(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			String url = (String) objects[0];
 			Long fileId = PdfUtil.exportUrlAsPDF(url.toString(), null,null, FileFormat.PDF);
 			return fileId;
 		}
 
-		public Object getOrgFileUrl(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getOrgFileUrl(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 
 			FileStore fs = FacilioFactory.getFileStore();
@@ -505,7 +506,7 @@ public class FacilioDefaultFunction  {
 			return fs.getOrgiFileUrl(fileId);
 		}
 
-		public Object getOrgDownloadUrl(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getOrgDownloadUrl(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 
 			FileStore fs = FacilioFactory.getFileStore();
@@ -513,7 +514,7 @@ public class FacilioDefaultFunction  {
 			return fs.getOrgiDownloadUrl(fileId);
 		}
 
-		public Object encodeFileToBase64Binary(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object encodeFileToBase64Binary(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 
 			FileStore fs = FacilioFactory.getFileStore();
@@ -525,7 +526,7 @@ public class FacilioDefaultFunction  {
 		}
 
 
-		public Object getTinyUrl(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getTinyUrl(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 
 			String longUrl = objects[0].toString();
@@ -534,7 +535,7 @@ public class FacilioDefaultFunction  {
 
 		}
 
-		public Object getTransitionPermaLink(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getTransitionPermaLink(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects == null || objects.length < 1) {
 				return null;
@@ -596,7 +597,7 @@ public class FacilioDefaultFunction  {
 
 		}
 
-		public Object getApprovalPermaLink(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getApprovalPermaLink(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects == null || objects.length < 1) {
 				return null;
@@ -656,7 +657,7 @@ public class FacilioDefaultFunction  {
 
 		}
 
-		public Object getTimeIntervals(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getTimeIntervals(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 
 			long startTime = (long) Double.parseDouble(objects[0].toString());
@@ -666,7 +667,7 @@ public class FacilioDefaultFunction  {
 			return DateTimeUtil.getTimeIntervals(startTime, endTime, interval);
 		}
 
-		public Object getPermaLinkToken(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getPermaLinkToken(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 
 			FacilioChain chain = FacilioChainFactory.getPermaLinkTokenChain();
@@ -692,14 +693,14 @@ public class FacilioDefaultFunction  {
 
 		}
 
-		public Object getOrgInfo(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getOrgInfo(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			String[] names = objects[0].toString().split(",");
 			return CommonCommandUtil.getOrgInfo(names);
 
 		}
 
-		public Object getPublicFileUrl(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getPublicFileUrl(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			if(objects[0] != null) {
 //				FileStore fs = FacilioFactory.getFileStore();
 //		    	FileInfo fileInfo = fs.getFileInfo((long)objects[0]);
@@ -712,7 +713,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object getUserNameForId(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getUserNameForId(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			User user = AccountUtil.getUserBean().getUser((Long) objects[0], false);
 			if (user != null) {
@@ -721,7 +722,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object isUserInSiteScope(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object isUserInSiteScope(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			Long siteId = (Long) objects[0];
 			Long assignedToId = (Long) objects[1];
 			User assignedTo = AccountUtil.getUserBean().getUser(assignedToId, true);
@@ -744,7 +745,7 @@ public class FacilioDefaultFunction  {
 			return  true;
 		}
 
-		public Object getFromObject(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getFromObject(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			if(objects[0] != null) {
 				Map<String, Object> map = FieldUtil.getAsProperties(objects[0]);
 				return map.get(objects[1]);
@@ -752,7 +753,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object getLatLngForSite(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getLatLngForSite(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			if(objects[0] != null) {
 				ResourceContext resource = ResourceAPI.getResource((long)objects[0]);
 				if(resource != null) {
@@ -767,21 +768,21 @@ public class FacilioDefaultFunction  {
 		}
 
 
-		public Object encodeUrl(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object encodeUrl(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			if(objects[0] != null) {
 				return (URLEncoder.encode((String)objects[0], "UTF-8").replace("+", "%20"));
 			}
 			return null;
 		}
 
-		public Object exportURLAsFile(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object exportURLAsFile(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			String url = (String) objects[0];
 			long fileId = PdfUtil.exportUrlAsFileId(url.toString(), null, FileFormat.PDF);
 			return fileId;
 		}
 
-		public Object updateStatus(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object updateStatus(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -805,7 +806,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object updateOrgInfo(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object updateOrgInfo(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			String name = (String) objects[0];
 			String value = String.valueOf(objects[1]);
@@ -815,7 +816,7 @@ public class FacilioDefaultFunction  {
 
 		}
 
-		public Object updateVendorPortalAccess(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object updateVendorPortalAccess(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			VendorContactContext contact = (VendorContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, Long.valueOf(objects[0].toString()));
 			contact.setIsVendorPortalAccess(true);
@@ -832,7 +833,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object revokeVendorPortalAccess(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object revokeVendorPortalAccess(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 
 			VendorContactContext contact = (VendorContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, Long.valueOf(objects[0].toString()));
@@ -850,7 +851,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object updateTenantPortalAccess(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object updateTenantPortalAccess(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			TenantContactContext contact = (TenantContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, Long.valueOf(objects[0].toString()));
 			contact.setIsTenantPortalAccess(true);
@@ -867,7 +868,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object revokeTenantPortalAccess(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object revokeTenantPortalAccess(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 
 			TenantContactContext contact = (TenantContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.TENANT_CONTACT, Long.valueOf(objects[0].toString()));
@@ -885,7 +886,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object addInviteRecordViaV3Chain(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object addInviteRecordViaV3Chain(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 			List records = (List) objects[1];
 			List<InviteVisitorContextV3> inviteRecords = new ArrayList<>();
 			for(Object rec:records) {
@@ -970,7 +971,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object tagAssetAsRotating(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object tagAssetAsRotating(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			V3AssetContext asset =  V3RecordAPI.getRecord(FacilioConstants.ContextNames.ASSET, Long.valueOf(objects[0].toString()),V3AssetContext.class);
 			List<V3AssetContext> assets = new ArrayList<>();
@@ -982,7 +983,7 @@ public class FacilioDefaultFunction  {
 			return null;
 		}
 
-		public Object getBlobFile(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getBlobFile(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			if(objects.length <= 0) {
 				throw new FunctionParamException("Required Object is null");
@@ -999,7 +1000,7 @@ public class FacilioDefaultFunction  {
 			return FacilioHttpUtils.doHttpGetWithFileResponse(url, headers, params, fileName, type);
 		}
 
-		public Object getDelegations(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getDelegations(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 
 			FacilioChain chain = ReadOnlyChainFactory.getAllMyDelegationChain();
@@ -1019,7 +1020,7 @@ public class FacilioDefaultFunction  {
 
 		}
 
-		public Object postWithFiles(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object postWithFiles(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			checkParam(objects);
 
@@ -1059,7 +1060,7 @@ public class FacilioDefaultFunction  {
 		};
 
 
-		public Object calculateHistoryForFormula(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object calculateHistoryForFormula(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			checkParam(objects);
 
@@ -1077,7 +1078,7 @@ public class FacilioDefaultFunction  {
 			return "Formula calculation scheduled";
 		};
 
-		public Object getAudiencePeople(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getAudiencePeople(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			checkParam(objects);
 			Object ids = objects[0];
@@ -1103,7 +1104,7 @@ public class FacilioDefaultFunction  {
 			return "No People";
 		}
 
-		public Object getPortalDomainUrl(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object getPortalDomainUrl(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			checkParam(objects);
 

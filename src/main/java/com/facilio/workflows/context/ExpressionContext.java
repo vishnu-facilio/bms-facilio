@@ -254,7 +254,7 @@ public class ExpressionContext implements WorkflowExpression {
 		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = null;
 		if(isCustomFunctionResultEvaluator) {
-			return WorkflowUtil.evalSystemFunctions(workflowContext.getGlobalParameters(),defaultFunctionContext,variableToExpresionMap);
+			return WorkflowUtil.evalSystemFunctions(workflowContext.getGlobalParameters(),defaultFunctionContext,variableToExpresionMap, workflowContext);
 		}
 		if(getConstant() != null) {
 			return getConstant();

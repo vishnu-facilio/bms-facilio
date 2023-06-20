@@ -13,7 +13,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONArray;
@@ -381,6 +383,18 @@ public class WorkflowContext extends ScriptContext{
 				try {
 					WorkflowV2Parser parser = getParser(this.getWorkflowV2String());
 			        ParseTree tree = parser.parse();
+			        
+			        try {
+			        	int statementCount=((ParserRuleContext) tree).getStop().getLine();
+						if(statementCount > 0){
+							statementCount-= 2; // Doing this to skip function wrapper appended in script
+						}
+						this.setTotalStatementCount(statementCount);
+			        }
+			        catch(Exception e) {
+			        	LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			        };
+
 			        if(!getErrorListener().hasErrors()) {
 			        	WorkflowFunctionVisitor visitor = new WorkflowFunctionVisitor();
 			        	visitor.setScriptContext(this);

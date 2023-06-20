@@ -33,10 +33,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import com.facilio.scriptengine.context.ScriptContext;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.NOTIFICATION_FUNCTION)
 public class FacilioNotificationFunctions {
-	public Object sendMail(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object sendMail(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -62,11 +63,11 @@ public class FacilioNotificationFunctions {
 		}else {
 			FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(WorkflowV2Util.getAsJSONObject(sendMailMap));
 		}
-
+		scriptContext.incrementTotalEmailCount();
 		return null;
 	}
 
-	public Object sendSms(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object sendSms(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -85,7 +86,7 @@ public class FacilioNotificationFunctions {
 	}
 
 
-		public Object sendPushNotification(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object sendPushNotification(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			checkParam(objects);
 
@@ -112,7 +113,7 @@ public class FacilioNotificationFunctions {
 		}
 
 
-	public Object sendNotification(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object sendNotification(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -129,11 +130,11 @@ public class FacilioNotificationFunctions {
 		context.put(FacilioConstants.ContextNames.NOTIFICATION_OBJECT, WorkflowV2Util.getAsJSONObject(sendMailMap));
 
 		FacilioTimer.scheduleInstantJob("default","SendNotificationJob", context);
-
+		scriptContext.incrementTotalNotificationCount();
 		return null;
 	}
 
-	public Object makeCall(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object makeCall(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -152,7 +153,7 @@ public class FacilioNotificationFunctions {
 		return null;
 	}
 
-	public Object sendDirectMailTemp(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object sendDirectMailTemp(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 

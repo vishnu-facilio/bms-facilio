@@ -8,6 +8,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.scriptengine.context.DBParamContext;
+import com.facilio.scriptengine.context.ScriptContext;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
 import com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl;
 
@@ -42,13 +44,15 @@ public class WorkflowModuleDataContext extends WorkflowDataParent {
 	@Override
 	public Object fetchResult(WorkflowFunctionVisitor visitor) throws Exception {
 		
+		ScriptContext scriptContext = visitor.getScriptContext();
+		
 		List<Object> params = new ArrayList<>();
 		params.add(getModule());
 		params.add(getDbParam());
 		
 		FacilioModuleFunctionImpl functions = new FacilioModuleFunctionImpl();
 		
-		Object result = functions.fetch(visitor.getGlobalParam(), params);
+		Object result = functions.fetch(visitor.getGlobalParam(), params,scriptContext);
 		
 		if(isSingleParent() && result instanceof List) {
 			List<Object> resultList = (List<Object>)result;

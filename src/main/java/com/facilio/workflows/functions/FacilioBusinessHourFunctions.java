@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.BusinessHourContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.time.DateTimeUtil;
 
@@ -14,7 +15,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.BUSINESS_HOUR_FUNCTION)
 public class FacilioBusinessHourFunctions {
-	public Object get(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object get(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 
 		Object businessObjectRef = objects[0];
@@ -53,7 +54,7 @@ public class FacilioBusinessHourFunctions {
 		}
 	}
 
-	public Object addHours(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object addHours(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 
 		BusinessHoursContext bussBusinessHoursContext = (BusinessHoursContext)objects[0];
@@ -65,7 +66,7 @@ public class FacilioBusinessHourFunctions {
 		return BusinessHoursAPI.addSecondsToBusinessHours(bussBusinessHoursContext, fromTime, hourInt*60*60);
 	}
 
-	public Object addMins(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object addMins(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 
 		BusinessHoursContext bussBusinessHoursContext = (BusinessHoursContext)objects[0];
@@ -77,7 +78,7 @@ public class FacilioBusinessHourFunctions {
 		return BusinessHoursAPI.addSecondsToBusinessHours(bussBusinessHoursContext, fromTime, minInt*60);
 	}
 
-	public Object getHoursBetween(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getHoursBetween(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 
 		BusinessHoursContext bussBusinessHoursContext = (BusinessHoursContext)objects[0];
@@ -86,7 +87,7 @@ public class FacilioBusinessHourFunctions {
 		return BusinessHoursAPI.getSecondsBetween(bussBusinessHoursContext, fromTime, toTime)/60/60;
 	}
 
-	public Object getMinsBetween(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getMinsBetween(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 
 		BusinessHoursContext bussBusinessHoursContext = (BusinessHoursContext)objects[0];
@@ -95,7 +96,7 @@ public class FacilioBusinessHourFunctions {
 		return BusinessHoursAPI.getSecondsBetween(bussBusinessHoursContext, fromTime, toTime)/60;
 	}
 
-	public Object isTimeBetween(Map<String, Object> map, Object... objects) throws Exception {
+	public Object isTimeBetween(ScriptContext scriptContext, Map<String, Object> map, Object... objects) throws Exception {
 		BusinessHoursContext bussBusinessHoursContext = (BusinessHoursContext)objects[0];
 		long time=(long) Double.parseDouble(objects[1].toString());
 		return BusinessHoursAPI.isTimeBetweenBusinessHours(bussBusinessHoursContext,time);

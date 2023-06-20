@@ -2,6 +2,7 @@ package com.facilio.workflows.functions;
 
 import com.facilio.bmsconsole.util.ConsumptionAPI;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 
@@ -9,7 +10,7 @@ import java.util.*;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.CONSUMPTION_FUNCTION)
 public class FacilioConsumptionFunctions {
-	public Object getEnergyDataByBuilding(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getEnergyDataByBuilding(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Map<String,Object> totalConsumptionByBuilding = ConsumptionAPI.getTotalConsumptionBySites(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()), "energydata","totalEnergyConsumptionDelta");
 
@@ -52,14 +53,14 @@ public class FacilioConsumptionFunctions {
 
 	}
 
-	public Object getWaterDataByBuilding(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getWaterDataByBuilding(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Map<String,Object> totalConsumptionByBuilding = ConsumptionAPI.getTotalConsumptionBySites(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()), "waterreading","waterConsumptionDelta");
 		return totalConsumptionByBuilding;
 
 	}
 
-	public Object getDataBySites(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getDataBySites(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Map<String,Object> totalEnergyConsumptionBySites = ConsumptionAPI.getTotalConsumptionBySites(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()), "energydata", "totalEnergyConsumptionDelta");
 		Map<String,Object> totalWaterConsumptionBySites = ConsumptionAPI.getTotalConsumptionBySites(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()), "waterreading", "waterConsumptionDelta");

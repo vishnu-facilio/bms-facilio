@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FieldUtil;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.services.factory.FacilioFactory;
@@ -20,7 +21,7 @@ import java.util.Map.Entry;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.CONNECTION_FUNCTION)
 public class FacilioConnectionFunctions {
-	public Object get(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object get(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -48,7 +49,7 @@ public class FacilioConnectionFunctions {
 		return res;
 	}
 
-	public Object post(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object post(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -79,7 +80,7 @@ public class FacilioConnectionFunctions {
 		return res;
 	}
 
-	public Object postWithFiles(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object postWithFiles(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -123,7 +124,7 @@ public class FacilioConnectionFunctions {
 		return res;
 	}
 
-	public Object getAccessToken(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getAccessToken(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -135,7 +136,7 @@ public class FacilioConnectionFunctions {
 		return connectionContext.getAccessToken();
 	}
 
-	public Object asMap(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object asMap(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 

@@ -15,6 +15,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.time.DateTimeUtil;
@@ -27,7 +28,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.ORG_SPECIFIC_FUNCTION)
 public class FacilioOrgSpecificFunctions {
-	public Object etisalat_supplierActivePayments(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object etisalat_supplierActivePayments(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Long supplierId = (long) Double.parseDouble(objects[0].toString());
 		Long startTime = (long) Double.parseDouble(objects[1].toString());

@@ -11,7 +11,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.facilio.modules.*;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.services.factory.FacilioFactory;
+import com.facilio.workflows.context.WorkflowContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -81,7 +83,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	private static final String RESULT_STRING = "result";
 	
 	@Override
-	public Map<String, Object> addTemplateData(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public Map<String, Object> addTemplateData(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
@@ -128,11 +130,12 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		moduleData.parseFormData();
 		
 		addModuleDataChain.execute();
+		scriptContext.incrementTotalInsertCount();
 		
 		return moduleData.getData();
 	}
 	
-	public void v3Add(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public void v3Add(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
@@ -156,10 +159,11 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			FacilioContext context = V3Util.createRecord(module, rawData);
 			ModuleBaseWithCustomFields record = Constants.getRecordMap(context).get(module.getName()).get(0);
 			rawData.put("id", record.getId());
+			scriptContext.incrementTotalInsertCount();
 		}
 	}
 	@Override
-	public void add(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public void add(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		// TODO Auto-generated method stub
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
@@ -190,7 +194,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
 			
 			addReadingChain.execute();
-			
+			scriptContext.incrementTotalInsertCount();
 		}
 		else {
 			
@@ -218,6 +222,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				FacilioContext context = V3Util.createRecord(module, dataList, true, null, null,true);
 				
 				List<ModuleBaseWithCustomFields> records = Constants.getRecordList(context);
+				scriptContext.incrementTotalInsertCount();
 				
 				for(int i=0;i<records.size();i++) {
 					dataList.get(i).put("id", records.get(i).getId());
@@ -273,6 +278,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 						insertObjectMap = (Map<String, Object>) insertList.get(i++);
 					}
 					insertObjectMap.put("id", moduleData.getId());
+					scriptContext.incrementTotalInsertCount();
 				}
 			}
 		}
@@ -280,7 +286,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	}
 
 	@Override
-	public void update(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public void update(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -326,6 +332,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			CommonCommandUtil.handleLookupFormData(modBean.getAllFields(module.getName()), updateMap);
 
 			FacilioContext context = V3Util.updateBulkRecords(module.getName(), updateMap,ids, true,true);
+			scriptContext.incrementTotalUpdateCount();
 		}
 		else {
 			if (LookupSpecialTypeUtil.isSpecialType(module.getName())) {
@@ -335,7 +342,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 						.fields(modBean.getAllFields(module.getName()))
 						.andCriteria(criteria);
 				updateRecordBuilder.update(updateMap);
-				
+				scriptContext.incrementTotalUpdateCount();
 			}
 			else {
 				
@@ -353,6 +360,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				}
 				updateRecordBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
 				updateRecordBuilder.updateViaMap(updateMap);
+				scriptContext.incrementTotalUpdateCount();
 
 				try {
 					Map<Long, List<UpdateChangeSet>> recordChanges = updateRecordBuilder.getChangeSet();
@@ -382,7 +390,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	}
 
 	@Override
-	public void delete(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public void delete(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
@@ -425,6 +433,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			deleteObj.put(module.getName(), ids);
 			
 			FacilioContext context = V3Util.deleteRecords(module.getName(), deleteObj, null,null, true);
+			scriptContext.incrementTotalDeleteCount();
 		}
 		else {
 			DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>()
@@ -445,14 +454,14 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			else {
 				delete.delete();
 			}
+			scriptContext.incrementTotalDeleteCount();
 		}
 	}
 	
 	@Override
-	public Object fetchFirst(Map<String,Object> globalParams,List<Object> objects) throws Exception {
-		
-		Object result = fetch(globalParams,objects);
-		
+	public Object fetchFirst(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
+		Object result = fetch(globalParams,objects,scriptContext);
+
 		if(result instanceof List && !((List)result).isEmpty()) {
 			return ((List)result).get(0);
 		}
@@ -460,12 +469,12 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	}
 
 	@Override
-	public Object fetchAttachment(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+	public Object fetchAttachment(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		return null;
 	}
 
 	@Override
-	public Object fetch(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public Object fetch(Map<String,Object> globalParams, List<Object> objects, ScriptContext workflowContext) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
@@ -745,9 +754,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		}
 		LOGGER.debug("selectBuilder -- "+selectBuilder);
 		LOGGER.debug("selectBuilder result -- "+props);
+
 		
 		if(props != null && !props.isEmpty()) {
-			
+			workflowContext.incrementTotalSelectCount(props.size());
 			if(dbParamContext.getFieldCriteria() != null) {
 				List<Map<String, Object>> passedData = new ArrayList<>();
 
@@ -831,7 +841,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	}
 
 	@Override
-	public String export(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public String export(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		// TODO Auto-generated method stub
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
@@ -853,7 +863,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	}
 	
 	@Override
-	public long exportAsFileId(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+	public long exportAsFileId(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
@@ -871,13 +881,13 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 
 
 	@Override
-	public Map<String, Object> asMap(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public Map<String, Object> asMap(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		FacilioModule module = (FacilioModule) objects.get(0);
 		return FieldUtil.getAsProperties(module);
 	}
 
 	@Override
-	public Criteria getViewCriteria(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public Criteria getViewCriteria(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
@@ -901,12 +911,12 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		return null;
 	}
 	@Override
-	public Long getId(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+	public Long getId(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		FacilioModule module = (FacilioModule) objects.get(0);
 		return module.getModuleId();
 	}
 	@Override
-	public List<Map<String, Object>> getAllStates(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+	public List<Map<String, Object>> getAllStates(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		// TODO Auto-generated method stub
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
@@ -915,7 +925,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	}
 	
 	@Override
-	public void addNote(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+	public void addNote(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		// TODO Auto-generated method stub
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
@@ -946,7 +956,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	}
 	
 	@Override
-	public void addAttachments(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+	public void addAttachments(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		// TODO Auto-generated method stub
 
 		FacilioModule module = (FacilioModule) objects.get(0);

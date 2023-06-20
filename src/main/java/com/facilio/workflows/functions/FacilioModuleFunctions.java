@@ -6,6 +6,7 @@ import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.MultiEnumField;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.util.FacilioUtil;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.MODULE_FUNCTION)
 public class FacilioModuleFunctions {
-	public Object getModule(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getModule(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -36,7 +37,7 @@ public class FacilioModuleFunctions {
 		}
 	}
 
-	public Object getField(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getField(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -70,7 +71,7 @@ public class FacilioModuleFunctions {
 		return null;
 	}
 
-	public Object getEnumFieldValue(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getEnumFieldValue(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 

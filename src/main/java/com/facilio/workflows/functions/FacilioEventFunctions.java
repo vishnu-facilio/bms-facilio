@@ -9,6 +9,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import org.apache.commons.chain.Chain;
@@ -19,7 +20,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.EVENT_FUNCTION)
 public class FacilioEventFunctions {
-	public Object add(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object add(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 
 		String moduleName = (String) objects[0];

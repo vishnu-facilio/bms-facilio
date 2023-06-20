@@ -11,11 +11,12 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.scriptengine.annotation.ScriptModule;
+import com.facilio.scriptengine.context.ScriptContext;
 
 @ScriptModule(moduleName = FacilioConstants.ContextNames.BASE_SPACE)
 public class FacilioBaseSpaceModuleFunctions extends FacilioModuleFunctionImpl {
 
-	public List<Long> getSubordinates(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public List<Long> getSubordinates(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		List<Long> spaceIds;
 		if(!(objects.get(1) instanceof List)) {

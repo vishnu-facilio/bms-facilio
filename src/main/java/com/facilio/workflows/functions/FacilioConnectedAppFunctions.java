@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.VariableContext;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 
 import com.facilio.modules.FieldUtil;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.CONNECTED_APP_FUNCTION)
 public class FacilioConnectedAppFunctions {
-	public Object getVariable(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getVariable(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		if(objects.length < 2) {
 			throw new FunctionParamException("Required params is empty. eg: getVariable(connectedAppLinkName, variableName)");
@@ -35,7 +36,7 @@ public class FacilioConnectedAppFunctions {
 		}
 
 
-		public Object setVariable(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object setVariable(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			if(objects.length < 3) {
 				throw new FunctionParamException("Required params is empty. eg: setVariable(connectedAppLinkName, variableName, value)");
@@ -54,7 +55,7 @@ public class FacilioConnectedAppFunctions {
 
 
 
-		public Object exportAsPDF(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object exportAsPDF(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			if(objects.length < 3) {
 				throw new FunctionParamException("Required params is empty. eg: exportAsPDF(fileName, connectedAppLinkName, widgetLinkName, options, context)");
@@ -79,7 +80,7 @@ public class FacilioConnectedAppFunctions {
 		}
 
 
-		public Object exportAsImage(Map<String, Object> globalParam, Object... objects) throws Exception {
+		public Object exportAsImage(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 			if (objects.length < 3) {
 				throw new FunctionParamException("Required params is empty. eg: exportAsImage(fileName, connectedAppLinkName, widgetLinkName, options, context)");

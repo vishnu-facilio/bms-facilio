@@ -18,12 +18,13 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.qa.command.QAndATransactionChainFactory;
 import com.facilio.scriptengine.annotation.ScriptModule;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.v3.context.Constants;
 
 @ScriptModule(moduleName = FacilioConstants.Inspection.INSPECTION_TEMPLATE)
 public class FacilioInspectionTemplateModuleFunctions extends FacilioModuleFunctionImpl {
 	
-	public Object addInspections(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public Object addInspections(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 
 		String inspectionTemplateName = new String();
 		long inspectionTemplateId = -1;

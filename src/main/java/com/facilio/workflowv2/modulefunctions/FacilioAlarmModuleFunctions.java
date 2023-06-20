@@ -18,11 +18,12 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.annotation.ScriptModule;
+import com.facilio.scriptengine.context.ScriptContext;
 
 @ScriptModule(moduleName = FacilioConstants.ContextNames.ALARM_OCCURRENCE)
 public class FacilioAlarmModuleFunctions extends FacilioModuleFunctionImpl {
 	
-	public List<Map<String, Object>> getTopNAlarms(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public List<Map<String, Object>> getTopNAlarms(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		String moduleName = (String)objects.get(1);
 		int limit = Double.valueOf(objects.get(2).toString()).intValue();

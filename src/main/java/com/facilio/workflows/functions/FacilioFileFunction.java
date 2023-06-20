@@ -5,6 +5,7 @@ import com.facilio.fs.FileInfo;
 import com.facilio.ftp.SFTPUtil;
 import com.facilio.modules.FieldUtil;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.FILE_FUNCTION)
 public class FacilioFileFunction {
-	public Object getFileContent(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getFileContent(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Long fileId = (long) Double.parseDouble(objects[0].toString());
 		FileStore fs = FacilioFactory.getFileStore();
@@ -30,7 +31,7 @@ public class FacilioFileFunction {
 		}
 	}
 
-	public Object putFileToRemoteFileServer(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object putFileToRemoteFileServer(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		String stringContent = objects[5].toString();
 
@@ -42,7 +43,7 @@ public class FacilioFileFunction {
 		return null;
 	}
 
-	public Object getFileFromRemoteFileServer(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getFileFromRemoteFileServer(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		String filePath = objects[4].toString();
 
@@ -55,7 +56,7 @@ public class FacilioFileFunction {
 		return fileId;
 	}
 
-	public Object getFileInfo(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getFileInfo(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Long fileId = (long) Double.parseDouble(objects[0].toString());
 		FileStore fs = FacilioFactory.getFileStore();

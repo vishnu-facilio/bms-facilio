@@ -3,6 +3,7 @@ package com.facilio.workflows.functions;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 
@@ -11,7 +12,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.ENERGYMETER_FUNCTION)
 public class FacilioEnergyMeterFunction {
-	public Object getPhysicalMeterCount(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getPhysicalMeterCount(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -30,7 +31,7 @@ public class FacilioEnergyMeterFunction {
 		return meters.size();
 	}
 
-	public Object getVirtualMeterCount(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getVirtualMeterCount(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 

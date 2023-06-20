@@ -2,6 +2,7 @@ package com.facilio.workflowlog.context;
 
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +32,16 @@ public class WorkflowLogContext extends V3Context {
 	private String workflowRuleName;
 	private boolean logAvailable;
 	private boolean exceptionAvailable;
+	private int totalStatementCount=0;
+	private int totalSelectCount=0;
+	private int totalInsertCount=0;
+	private int totalUpdateCount=0;
+	private int totalDeleteCount=0;
+	private int totalApiRequestCount=0;
+	private int totalApiResponseCount=0;
+	private int totalEmailCount=0;
+	private int totalPushNotficationCount=0;
+	private String threadName;
 
 	public void setLogAvailable(boolean value){
 		logAvailable = value;

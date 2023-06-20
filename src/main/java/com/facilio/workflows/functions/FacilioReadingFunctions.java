@@ -28,6 +28,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
 import com.facilio.scriptengine.context.DBParamContext;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.context.WorkflowReadingContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
@@ -35,6 +36,7 @@ import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -42,7 +44,7 @@ import java.util.*;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.READINGS_FUNCTION)
 public class FacilioReadingFunctions {
-	public Object getEnergyReading(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getEnergyReading(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Long baseSpaceId = Long.parseLong(objects[0].toString());
 		int dateOperator = Integer.parseInt(objects[1].toString());
@@ -101,7 +103,7 @@ public class FacilioReadingFunctions {
 		return null;
 	}
 
-	public Object getLastValue(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getLastValue(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Criteria criteria = new Criteria();
@@ -124,11 +126,12 @@ public class FacilioReadingFunctions {
 		params.add(dbParamContext);
 
 		FacilioModuleFunctionImpl functions = new FacilioModuleFunctionImpl();
+		WorkflowContext workflowContext=new WorkflowContext();
 
-		return functions.fetch(globalParam,params);
+		return functions.fetch(globalParam,params,workflowContext);
 	}
 
-	public Object get(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object get(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
 
 		DBParamContext dbParamContext = null;
@@ -168,11 +171,12 @@ public class FacilioReadingFunctions {
 		params.add(dbParamContext);
 
 		FacilioModuleFunctionImpl functions = new FacilioModuleFunctionImpl();
+		WorkflowContext workflowContext=new WorkflowContext();
 
-		return functions.fetch(globalParam,params);
+		return functions.fetch(globalParam,params,workflowContext);
 	}
 
-	public Object getEnumMap(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getEnumMap(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -200,7 +204,7 @@ public class FacilioReadingFunctions {
 		return enumMap;
 	}
 
-	public Object getRDM(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getRDM(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -210,7 +214,7 @@ public class FacilioReadingFunctions {
 		return FieldUtil.getAsProperties(ReadingsAPI.getReadingDataMeta(workflowReadingContext.getParentId(), field));
 	}
 
-	public Object add(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object add(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -255,7 +259,7 @@ public class FacilioReadingFunctions {
 		return null;
 	}
 
-	public Object update(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object update(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
 
 		Map<String,Object> readingProps = (Map<String,Object>)objects[1];
@@ -284,7 +288,7 @@ public class FacilioReadingFunctions {
 		return null;
 	}
 
-	public Object convertToInputUnitFromDisplayUnit(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object convertToInputUnitFromDisplayUnit(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
 
 		Object readingVal = objects[1];
@@ -317,7 +321,7 @@ public class FacilioReadingFunctions {
 		return readingVal;
 	}
 
-	public Object addAll(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object addAll(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -351,7 +355,7 @@ public class FacilioReadingFunctions {
 		return null;
 	}
 
-	public Object addList(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object addList(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		List<Map<String, Object>> readings = (List<Map<String, Object>>) objects[0];
@@ -402,7 +406,7 @@ public class FacilioReadingFunctions {
 		return null;
 	}
 
-	public Object getAllReadingFieldsForAssetCategory(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getAllReadingFieldsForAssetCategory(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		long categoryId;
 		if(objects[0] instanceof String) {
@@ -433,7 +437,7 @@ public class FacilioReadingFunctions {
 		return fieldMap;
 	}
 
-	public Object getAllReadingFieldsForSpaceCategory(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getAllReadingFieldsForSpaceCategory(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		SpaceType spaceType = BaseSpaceContext.SpaceType.getModuleMap().get(objects[0].toString());
 

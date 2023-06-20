@@ -5,13 +5,14 @@ import java.util.Map;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.scriptengine.annotation.ScriptModule;
+import com.facilio.scriptengine.context.ScriptContext;
 
 @ScriptModule(moduleName = FacilioConstants.ContextNames.SPACE)
 public class FacilioSpaceModuleFunctions extends FacilioModuleFunctionImpl {
 	
 	@Override
-	public void add(Map<String, Object> globalParams, List<Object> objects) throws Exception {
-		v3Add(globalParams, objects);
+	public void add(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
+		v3Add(globalParams, objects, scriptContext);
 	}
 
 }

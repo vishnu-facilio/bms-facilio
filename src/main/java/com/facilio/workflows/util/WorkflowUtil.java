@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -2029,7 +2030,7 @@ public class WorkflowUtil {
 	}
 	
 	// for v1
-	public static Object evalSystemFunctions(Map<String, Object> globalParams,WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {		
+	public static Object evalSystemFunctions(Map<String, Object> globalParams,WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap, WorkflowContext workflowContext) throws Exception {
 
 		String functionName = workflowFunctionContext.getFunctionName();
 		String nameSpace = workflowFunctionContext.getNameSpace();
@@ -2064,9 +2065,9 @@ public class WorkflowUtil {
 			}
 			Object nameSpaceObject = ScriptUtil.getNameSpaceInstanceOf(nameSpace);
 			if (nameSpaceObject != null) {
-				Method method = nameSpaceObject.getClass().getMethod(functionName, Map.class,Object[].class);
+				Method method = nameSpaceObject.getClass().getMethod(functionName, ScriptContext.class, Map.class,Object[].class);
 				if (method != null) {
-					return method.invoke(nameSpaceObject,globalParams,objects);
+					return method.invoke(nameSpaceObject, workflowContext, globalParams,objects);
 				}else {
 					LOGGER.info("Method is empty : "+ functionName);
 				}
@@ -2376,7 +2377,6 @@ public class WorkflowUtil {
 		long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
 		
         if (orgId > 0L && workflowContext.getId() > 0 && workflowContext.getParentId() > 0 && workflowContext.getLogType() != null) {
-        	
         	WorkflowLogContext workflowlogcontext = new WorkflowLogContext();
         	workflowlogcontext.setOrgId(orgId);
         	workflowlogcontext.setRecordId(workflowContext.getRecordId());
@@ -2388,6 +2388,22 @@ public class WorkflowUtil {
         	workflowlogcontext.setLogValue(logs);
         	workflowlogcontext.setStatus(statusId.getStatusId());
         	workflowlogcontext.setCreatedTime(System.currentTimeMillis());
+        	
+        	try {
+        		workflowlogcontext.setThreadName(Thread.currentThread().getName());
+    			workflowlogcontext.setTotalStatementCount(workflowContext.getTotalStatementCount());
+    			workflowlogcontext.setTotalSelectCount(workflowContext.getTotalSelectCount());
+    			workflowlogcontext.setTotalInsertCount(workflowContext.getTotalInsertCount());
+    			workflowlogcontext.setTotalUpdateCount(workflowContext.getTotalUpdateCount());
+    			workflowlogcontext.setTotalDeleteCount(workflowContext.getTotalDeleteCount());
+    			workflowlogcontext.setTotalApiRequestCount(workflowContext.getTotalApiRequestCount());
+    			workflowlogcontext.setTotalApiResponseCount(workflowContext.getTotalApiResponseCount());
+    			workflowlogcontext.setTotalEmailCount(workflowContext.getTotalEmailCount());
+    			workflowlogcontext.setTotalPushNotficationCount(workflowContext.getTotalPushNotficationCount());
+        	}
+        	catch(Exception e) {
+        		LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        	}
         		
         	JSONObject json= FieldUtil.getAsJSON(workflowlogcontext);
         	

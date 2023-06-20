@@ -21,6 +21,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -39,7 +40,7 @@ public class FacilioSystemFunctions {
 	 * @param resourceId Resource ID
 	 * @return Comma separated EMails of Role Members
 	 */
-	public Object getRoleEmails(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getRoleEmails(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 
 		LOGGER.debug("Role Mail params : "+Arrays.toString(objects));
@@ -66,7 +67,7 @@ public class FacilioSystemFunctions {
 	 * @param resourceId Resource ID
 	 * @return Comma separated Phone numbers of Role Members
 	 */
-	public Object getRolePhone(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getRolePhone(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 
 		if ( !checkParams(objects) ) {
@@ -95,7 +96,7 @@ public class FacilioSystemFunctions {
 	 * @param resourceId Resource ID
 	 * @return Comma separated OUIDs of Role Members
 	 */
-	public Object getRoleOuids(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getRoleOuids(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 		if ( !checkParams(objects) ) {
 			return "";
@@ -111,11 +112,11 @@ public class FacilioSystemFunctions {
 		return "";
 	}
 
-	public Object getAsMap(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getAsMap(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		return FieldUtil.getAsProperties(objects[0]);
 	}
 
-	public Object getAudienceEmail(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getAudienceEmail(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 
 		if ( !checkParams(objects) ) {
@@ -165,7 +166,7 @@ public class FacilioSystemFunctions {
 		return "";
 	}
 
-	public Object getAnnouncementAttachmentUrls(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getAnnouncementAttachmentUrls(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 
 		if ( !checkParams(objects) ) {
@@ -188,7 +189,7 @@ public class FacilioSystemFunctions {
 		return "";
 	}
 
-	public Object getAnnouncementAttachmentNames(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getAnnouncementAttachmentNames(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 
 		if ( !checkParams(objects) ) {

@@ -11,6 +11,7 @@ import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.relation.util.RelationshipDataUtil;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.v3.context.Constants;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.RELATIONSHIP_FUNCTION)
 public class FacilioRelationshipFunctions {
-	public Object getRelationships(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getRelationships(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		String moduleName = (String)objects[0];
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<RelationRequestContext> relations = RelationUtil.getAllRelations(modBean.getModule(moduleName));
@@ -36,7 +37,7 @@ public class FacilioRelationshipFunctions {
 		return FieldUtil.getAsJSONArray(relations, RelationRequestContext.class);
 	}
 
-	public Object getRelatedRecords(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getRelatedRecords(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		String moduleName = (String)objects[0];
 		String relationLinkName = (String)objects[1];
 		Long parentId = Long.parseLong(objects[2].toString());
@@ -55,7 +56,7 @@ public class FacilioRelationshipFunctions {
 		return Constants.getJsonRecordMap(listContext).get(moduleName);
 	}
 
-	public Object associate(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object associate(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		String moduleName = (String)objects[0];
 		String relationLinkName = (String)objects[1];
 		Long parentId = Long.parseLong(objects[2].toString());
@@ -72,7 +73,7 @@ public class FacilioRelationshipFunctions {
 		return result;
 	}
 
-	public Object dissociate(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object dissociate(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		String moduleName = (String)objects[0];
 		String relationLinkName = (String)objects[1];
 		Long parentId = Long.parseLong(objects[2].toString());

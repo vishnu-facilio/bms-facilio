@@ -100,7 +100,9 @@ public class LoadWorkflowLogFieldNamesCommandV3 extends FacilioCommand {
     }
 
     private Map<Long, ActionRule> getQandARuleContext(Set<Long> qandaRuleIds, Set<Long> questionsIds) throws Exception {
-
+       if(CollectionUtils.isEmpty(qandaRuleIds)){
+           return null;
+       }
         FacilioModule qandaRuleModule = com.facilio.qa.rules.Constants.ModuleFactory.qandaRuleModule();
 
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
@@ -125,6 +127,9 @@ public class LoadWorkflowLogFieldNamesCommandV3 extends FacilioCommand {
     }
 
     private Map<Long, QuestionContext> getQandAQuestions(Set<Long> questionsIds) throws Exception {
+        if(CollectionUtils.isEmpty(questionsIds)) {
+            return null;
+        }
         FacilioModule module = Constants.getModBean().getModule("qandaQuestion");
         SelectRecordsBuilder<QuestionContext> builder = new SelectRecordsBuilder<QuestionContext>()
                 .select(Constants.getModBean().getModuleFields(module.getName()))
@@ -141,7 +146,9 @@ public class LoadWorkflowLogFieldNamesCommandV3 extends FacilioCommand {
 
 
     private Map<Long,ScheduledWorkflowContext> getScheduledWorkflowContext(Set<Long> scheduledWorkflowIds) throws Exception {
-
+        if(CollectionUtils.isEmpty(scheduledWorkflowIds)) {
+            return null;
+        }
         FacilioModule scheduledWoModule = ModuleFactory.getScheduledWorkflowModule();
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getScheduledWorkflowFields())

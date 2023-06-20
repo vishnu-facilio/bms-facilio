@@ -5,6 +5,7 @@ import com.facilio.cb.context.ChatBotExecuteContext;
 import com.facilio.cb.context.ChatBotParamContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import org.json.simple.JSONObject;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.CHAT_BOT_FUNCTION)
 public class FacilioChatBotFunctions {
-	public Object param(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object param(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -53,7 +54,7 @@ public class FacilioChatBotFunctions {
 		return params;
 	}
 
-	public Object confirm(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object confirm(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -76,7 +77,7 @@ public class FacilioChatBotFunctions {
 		return params;
 	}
 
-	public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object execute(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 //			checkParam(objects);
 

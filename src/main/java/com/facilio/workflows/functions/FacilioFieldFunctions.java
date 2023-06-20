@@ -3,6 +3,7 @@ package com.facilio.workflows.functions;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 
@@ -10,7 +11,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.FIELD_FUNCTION)
 public class FacilioFieldFunctions {
-	public Object id(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object id(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 
@@ -22,7 +23,7 @@ public class FacilioFieldFunctions {
 		return field.getId();
 	}
 
-	public Object asMap(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object asMap(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 

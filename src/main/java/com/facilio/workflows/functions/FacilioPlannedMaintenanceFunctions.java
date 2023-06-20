@@ -9,6 +9,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.scriptengine.util.ScriptUtil;
 
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 
 @ScriptNameSpace(nameSpace = FacilioConstants.ContextNames.PLANNEDMAINTENANCE)
 public class FacilioPlannedMaintenanceFunctions {
-    public Object updatePPMDetails(Map<String, Object> globalParam, Object... objects) throws Exception{
+    public Object updatePPMDetails(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule plannedMaintenanceModule = modBean.getModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
         if(objects.length != 2){

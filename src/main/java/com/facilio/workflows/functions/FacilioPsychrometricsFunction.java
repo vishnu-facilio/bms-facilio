@@ -2,6 +2,7 @@ package com.facilio.workflows.functions;
 
 import com.facilio.bmsconsole.util.PsychrometricUtil;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 
@@ -9,7 +10,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.PSYCHROMETRICS_FUNCTION)
 public class FacilioPsychrometricsFunction {
-	public Object getMoistAirEnthalpy(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getMoistAirEnthalpy(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 		if(objects == null || objects.length <2 || objects[0] == null || objects[1] == null || objects[2] == null) {
@@ -22,7 +23,7 @@ public class FacilioPsychrometricsFunction {
 		return PsychrometricUtil.getMoistAirEnthalpy(dryBulbTemperature, pressure, relativeHumidity);
 	}
 
-	public Object getDewPointTemperature(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getDewPointTemperature(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 		if(objects == null || objects.length <2 || objects[0] == null || objects[1] == null || objects[2] == null) {
@@ -35,7 +36,7 @@ public class FacilioPsychrometricsFunction {
 		return PsychrometricUtil.getDewPointTemperatureFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
 	}
 
-	public Object getWetBulbTemperature(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getWetBulbTemperature(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		checkParam(objects);
 		if(objects == null || objects.length <2 || objects[0] == null || objects[1] == null || objects[2] == null) {

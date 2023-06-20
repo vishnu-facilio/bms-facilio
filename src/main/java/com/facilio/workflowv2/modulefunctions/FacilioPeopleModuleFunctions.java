@@ -13,6 +13,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.scriptengine.annotation.ScriptModule;
 
+import com.facilio.scriptengine.context.ScriptContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 @ScriptModule(moduleName = FacilioConstants.ContextNames.PEOPLE)
 public class FacilioPeopleModuleFunctions extends FacilioModuleFunctionImpl {
 
-    public Object getPeopleWithRoles(Map<String, Object> globalParams, List<Object> objects) throws Exception {
+    public Object getPeopleWithRoles(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 
         if(CollectionUtils.isNotEmpty(objects) && objects.size() > 1) {
             FacilioChain chain = ReadOnlyChainFactory.getPeopleDetailsChain();
@@ -41,7 +42,7 @@ public class FacilioPeopleModuleFunctions extends FacilioModuleFunctionImpl {
         return null;
     }
 
-    public List<Map<String, Object>> getPeopleForRoles(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+    public List<Map<String, Object>> getPeopleForRoles(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
         List<Long> roleIds = (List<Long>) objects.get(1);
         if(CollectionUtils.isNotEmpty(roleIds)) {
             List<Map<String, Object>> peopleProps = PeopleAPI.getPeopleForRoles(roleIds);
@@ -52,7 +53,7 @@ public class FacilioPeopleModuleFunctions extends FacilioModuleFunctionImpl {
         return Collections.EMPTY_LIST;
     }
 
-    public String updateScopingForPeople(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+    public String updateScopingForPeople(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
         String linkName = (String) objects.get(1);
         List<Long> peopleIds = (List<Long>) objects.get(2);
         Long scopingId = null;
@@ -71,7 +72,7 @@ public class FacilioPeopleModuleFunctions extends FacilioModuleFunctionImpl {
         return "UPDATED";
     }
 
-    public String updatePermissionSetsForPeople(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+    public String updatePermissionSetsForPeople(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
         PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
         List<String> linkNames = (List<String>) objects.get(1);
         List<Long> peopleIds = (List<Long>) objects.get(2);
@@ -91,8 +92,8 @@ public class FacilioPeopleModuleFunctions extends FacilioModuleFunctionImpl {
     }
 
     @Override
-    public void add(Map<String,Object> globalParams, List<Object> objects) throws Exception {
-        v3Add(globalParams, objects);
+    public void add(Map<String,Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
+        v3Add(globalParams, objects, scriptContext);
     }
 
 }

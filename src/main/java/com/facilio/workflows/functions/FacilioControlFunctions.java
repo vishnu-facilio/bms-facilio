@@ -8,13 +8,14 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 
 import java.util.*;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.CONTROLS_FUNCTION)
 public class FacilioControlFunctions {
-	public Object setValue(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object setValue(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 
 		Map<String, Object> value = new HashMap<>();
@@ -27,12 +28,12 @@ public class FacilioControlFunctions {
 		return null;
 	}
 
-	public Object setValues(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object setValues(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		setValues((List<Map<String, Object>>) objects[0], null, true);
 		return null;
 	}
 
-	public Object auto(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object auto(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Map<String, Object> value = new HashMap<>();
 		value.put(AgentConstants.RESOURCE_ID, objects[0]);
@@ -44,7 +45,7 @@ public class FacilioControlFunctions {
 		return null;
 	}
 
-	public Object emergencyAuto(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object emergencyAuto(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Map<String, Object> value = new HashMap<>();
 		value.put(AgentConstants.RESOURCE_ID, objects[0]);
@@ -56,7 +57,7 @@ public class FacilioControlFunctions {
 		return null;
 	}
 
-	public Object override(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object override(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Map<String, Object> value = new HashMap<>();
 		value.put(AgentConstants.RESOURCE_ID, objects[0]);
@@ -71,7 +72,7 @@ public class FacilioControlFunctions {
 		return null;
 	}
 
-	public Object emergencyOverride(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object emergencyOverride(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Map<String, Object> value = new HashMap<>();
 		value.put(AgentConstants.RESOURCE_ID, objects[0]);

@@ -6,6 +6,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldUtil;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import org.apache.commons.collections.Predicate;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.CRITERIA_FUNCTION)
 public class FacilioCriteriaFunctions {
-	public Object get(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object get(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Criteria criteria = null;
 		if(objects[0] instanceof JSONObject) {
@@ -30,7 +31,7 @@ public class FacilioCriteriaFunctions {
 		return criteria;
 	}
 
-	public Object evaluate(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object evaluate(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Criteria criteria = (Criteria)objects[0];
 
@@ -43,7 +44,7 @@ public class FacilioCriteriaFunctions {
 		return false;
 	}
 
-	public Object and(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object and(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Criteria criteria = (Criteria)objects[0];
 
@@ -53,7 +54,7 @@ public class FacilioCriteriaFunctions {
 		return criteria;
 	}
 
-	public Object or(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object or(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		Criteria criteria = (Criteria)objects[0];
 
@@ -63,7 +64,7 @@ public class FacilioCriteriaFunctions {
 		return criteria;
 	}
 
-	public Object getContainsCriteria(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getContainsCriteria(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		String fieldName = (String)objects[0];
 		String value = (String)objects[1];

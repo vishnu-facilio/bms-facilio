@@ -3,6 +3,7 @@ package com.facilio.workflows.functions;
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.util.MLUtil;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.util.FacilioUtil;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.ML_FUNCTION)
 public class MLFunctions {
-	public Object isPredictionValid(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object isPredictionValid(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 		checkParam(2, objects);
 		long mlForecastingId = FacilioUtil.parseLong(objects[0]);

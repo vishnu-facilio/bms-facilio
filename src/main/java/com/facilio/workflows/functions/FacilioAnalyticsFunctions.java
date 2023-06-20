@@ -6,6 +6,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 
@@ -14,7 +15,7 @@ import java.util.Map;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.ANALYTICS_FUNCTION)
 public class FacilioAnalyticsFunctions {
-	public Object getData(Map<String, Object> globalParam, Object... objects) throws Exception {
+	public Object getData(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
 		HashMap<String,Object> dataObjectMap = (HashMap<String,Object>)objects[0];
 

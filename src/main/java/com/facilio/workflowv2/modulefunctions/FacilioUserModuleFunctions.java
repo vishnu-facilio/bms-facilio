@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.scriptengine.context.ScriptContext;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
@@ -27,7 +28,7 @@ import com.facilio.services.filestore.FileStore;
 @ScriptModule(moduleName = FacilioConstants.ContextNames.USERS)
 public class FacilioUserModuleFunctions extends FacilioModuleFunctionImpl {
 	
-	public List<Map<String, Object>> getMyTeams(Map<String,Object> globalParams,List<Object> objects) throws Exception{
+	public List<Map<String, Object>> getMyTeams(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception{
 		long ouid = AccountUtil.getCurrentUser().getId();
 		if (objects.size() > 1) {
 			ouid = Long.valueOf(objects.get(1).toString());
@@ -53,7 +54,7 @@ public class FacilioUserModuleFunctions extends FacilioModuleFunctionImpl {
     }
 	
 	@Override
-	public void add(Map<String,Object> globalParams,List<Object> objects) throws Exception {
+	public void add(Map<String,Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		
 		Object insertObject = objects.get(1);
 		
@@ -118,6 +119,7 @@ public class FacilioUserModuleFunctions extends FacilioModuleFunctionImpl {
 			try {
 					context.put(FacilioConstants.ContextNames.USER, user);
 					addUser.execute();
+					scriptContext.incrementTotalInsertCount();
 			}
 			catch (Exception e) {
 				if (e instanceof AccountException) {

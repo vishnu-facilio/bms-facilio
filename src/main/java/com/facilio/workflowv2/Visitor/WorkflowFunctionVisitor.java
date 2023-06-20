@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import com.facilio.scriptengine.context.*;
 import com.facilio.scriptengine.systemfunctions.FacilioDBFunction;
 import com.facilio.scriptengine.systemfunctions.FacilioDatabaseConnection;
 
@@ -35,11 +36,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.autogens.WorkflowV2Parser;
 import com.facilio.scriptengine.autogens.WorkflowV2Parser.Recursive_expressionContext;
-import com.facilio.scriptengine.context.DBParamContext;
-import com.facilio.scriptengine.context.Value;
-import com.facilio.scriptengine.context.WorkflowFunctionContext;
-import com.facilio.scriptengine.context.WorkflowNamespaceContext;
-import com.facilio.scriptengine.context.WorkflowReadingContext;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.scriptengine.visitor.FunctionVisitor;
@@ -204,11 +200,11 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
         				FacilioModule module = (FacilioModule) value.asObject();
         				
         				Object moduleFunctionObject = ScriptUtil.getModuleInstanceOf(module);
-            			Method method = moduleFunctionObject.getClass().getMethod(functionName, Map.class,List.class);
+            			Method method = moduleFunctionObject.getClass().getMethod(functionName, Map.class,List.class, ScriptContext.class);
             			
             			List<Object> params = ScriptUtil.getParamList(functionCall,true,this,value);
             			
-            			Object result = method.invoke(moduleFunctionObject, getGlobalParam(),params);
+            			Object result = method.invoke(moduleFunctionObject, getGlobalParam(), params, (ScriptContext) this.getScriptContext());
             			value =  new Value(result);
                 	}
     				else if(value.asObject() instanceof WorkflowModuleDataContext) {
@@ -224,9 +220,9 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
     					FacilioModule module = moduleDataContext.getModule();
         				
         				Object moduleFunctionObject = ScriptUtil.getModuleInstanceOf(module);
-            			Method method = moduleFunctionObject.getClass().getMethod(functionName, Map.class,List.class);
+            			Method method = moduleFunctionObject.getClass().getMethod(functionName, Map.class,List.class,ScriptContext.class);
             			
-            			Object result = method.invoke(moduleFunctionObject, getGlobalParam(),params);
+            			Object result = method.invoke(moduleFunctionObject, getGlobalParam(),params, (ScriptContext) this.getScriptContext());
             			
             			if(moduleDataContext.isSingleParent() && result instanceof List) {
             				List<Object> resultList = (List<Object>) result;
@@ -328,14 +324,14 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
 						}
 
 						Object nameSpaceObject = ScriptUtil.getNameSpaceInstanceOf(wfFunctionContext.getNameSpace());
-						Method method = nameSpaceObject.getClass().getMethod(functionName, Map.class,Object[].class);
+						Method method = nameSpaceObject.getClass().getMethod(functionName,  ScriptContext.class, Map.class, Object[].class);
 
 						List<Object> params = ScriptUtil.getParamList(functionCall,isDataTypeSpecificFunction,this,value);
 						Object[] objects = new Object[params.size()];
 						for (int j=0;j< params.size();j++){
 							objects[j] = params.get(j);
 						}
-						Object result = method.invoke(nameSpaceObject, getGlobalParam(),objects);
+						Object result = method.invoke(nameSpaceObject, (ScriptContext)this.getScriptContext(), getGlobalParam(), objects);
 						value =  new Value(result);
             		}
     			}
