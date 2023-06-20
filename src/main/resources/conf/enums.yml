@@ -70,6 +70,9 @@ enums:
   - name: PeopleType
     enumClassName: com.facilio.bmsconsole.context.PeopleContext$PeopleType
 
+  - name: PeopleStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.V3PeopleContext$Status
+
   - name: DepreciationType
     enumClassName: com.facilio.bmsconsole.context.AssetDepreciationContext$DepreciationType
 

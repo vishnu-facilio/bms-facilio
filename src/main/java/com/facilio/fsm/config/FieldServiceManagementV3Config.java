@@ -43,4 +43,15 @@ public class FieldServiceManagementV3Config {
                 .delete()
                 .build();
     }
+    @Module("timeOff")
+    public static Supplier<V3Config> getTimeOff(){
+        return () -> new V3Config(TimeOffContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .pickList()
+                .delete()
+                .build();
+    }
 }

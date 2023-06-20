@@ -1,11 +1,10 @@
 package com.facilio.bmsconsoleV3.context;
 
-import com.facilio.accounts.dto.RoleApp;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
+import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
 import com.facilio.modules.FacilioIntEnum;
-import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +12,7 @@ import lombok.Setter;
 import java.util.List;
 import java.util.Map;
 
+@Getter@Setter
 public class V3PeopleContext extends V3Context {
     private static final long serialVersionUID = 1L;
 
@@ -20,94 +20,8 @@ public class V3PeopleContext extends V3Context {
     private String email;
     private String phone;
     private String language;
-    @Getter @Setter
     private String mobile;
-    @Getter @Setter
     private String timezone;
-
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public String getPhone() {
-        return phone;
-    }
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    private V3PeopleContext.PeopleType peopleType;
-    public Integer getPeopleType() {
-        if (peopleType != null) {
-            return peopleType.getIndex();
-        }
-        return null;
-    }
-    public void setPeopleType(Integer peopleType) {
-        if(peopleType != null) {
-            this.peopleType = V3PeopleContext.PeopleType.valueOf(peopleType);
-        }
-    }
-    public V3PeopleContext.PeopleType getPeopleTypeEnum() {
-        return peopleType;
-    }
-
-    public static enum PeopleType implements FacilioIntEnum {
-        TENANT_CONTACT ("Tenant Contact"),
-        VENDOR_CONTACT ("Vendor Contact"),
-        EMPLOYEE ("Employee"),
-        CLIENT_CONTACT ("Client Contact"),
-        OCCUPANT ("Occupant"),
-        DEFAULT ("Default"),
-        OTHERS ("Others");
-
-        String name;
-
-        PeopleType(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public Integer getIndex() {
-            return ordinal() + 1;
-        }
-
-        @Override
-        public String getValue() {
-            return this.name;
-        }
-
-        public static V3PeopleContext.PeopleType valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
-    }
 
     private BaseSpaceContext locatedSpace;
 
@@ -217,19 +131,129 @@ public class V3PeopleContext extends V3Context {
 		}
 		return false;
 	}
-
-    @Setter @Getter
     private Long scopingId;
-    @Getter @Setter
     private List<Long> permissionSets;
-    @Getter@Setter
     private List<Long> accessibleSpace;
-    @Getter@Setter
     private List<Long> groups;
-    @Getter@Setter
     private Long shiftId;
     @Getter@Setter
     boolean isSuperAdmin = false; // for client purpose only
     @Getter@Setter
     boolean isCurrentUser = false; // for client purpose only
+    private boolean dispatchable;
+    private LocationContextV3 startLocation;
+    private LocationContextV3 endLocation;
+    private String currentLocation;
+    private Long lastSyncTime;
+    private Double currentFreeCapacity;
+    private PeopleType peopleType;
+    public Integer getPeopleType() {
+        if (peopleType != null) {
+            return peopleType.getIndex();
+        }
+        return null;
+    }
+    public void setPeopleType(Integer peopleType) {
+        if(peopleType != null) {
+            this.peopleType = PeopleType.valueOf(peopleType);
+        }
+    }
+    public PeopleType getPeopleTypeEnum() {
+        return peopleType;
+    }
+
+    public enum PeopleType implements FacilioIntEnum {
+        TENANT_CONTACT ("Tenant Contact"),
+        VENDOR_CONTACT ("Vendor Contact"),
+        EMPLOYEE ("Employee"),
+        CLIENT_CONTACT ("Client Contact"),
+        OCCUPANT ("Occupant"),
+        DEFAULT ("Default"),
+        OTHERS ("Others");
+
+        String name;
+
+        PeopleType(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return this.name;
+        }
+
+        public static PeopleType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
+
+    private Status status;
+    public Integer getStatus() {
+        if (status != null) {
+            return status.getIndex();
+        }
+        return null;
+    }
+    public void setStatus(Integer status) {
+        if(status != null) {
+            this.status = Status.valueOf(status);
+        }
+    }
+    public Status getStatusEnum() {
+        return status;
+    }
+
+    public enum Status implements FacilioIntEnum {
+        AVAILABLE ("Available"),
+        EN_ROUTE ("En Route"),
+        ON_SITE("On Site"),
+        NOT_AVAILABLE("Not Available");
+
+        String name;
+
+        Status(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return this.name;
+        }
+
+        public static Status valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
 }

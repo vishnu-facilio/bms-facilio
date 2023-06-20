@@ -534,3 +534,4 @@ classes:
   - com.facilio.fsm.signup.WorkTypeModule
   - com.facilio.fsm.signup.WorkTypeLineItemsModule
   - com.facilio.fsm.signup.ServiceOrderModule
+  - com.facilio.fsm.signup.TimeOffModule
