@@ -231,6 +231,7 @@ public class NewPermissionUtil {
         settingsTabType.put("COMMISSIONING", 17179869184L);
 		settingsTabType.put("FEEDBACK_AND_COMPLAINTS", 34359738368L);
 		settingsTabType.put("SMART_CONTROLS", 68719476736L);
+        settingsTabType.put("DISPATCHER_BOARD", 137438953472L);
 
         return settingsTabType;
     }

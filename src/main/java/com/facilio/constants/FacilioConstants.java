@@ -4559,4 +4559,15 @@ public class FacilioConstants {
     public static class Relationship {
 		public static final String INCLUDE_HIDDEN_RELATIONS = "includeHiddenRelations";
 	}
+	public static class Dispatcher{
+		public static final String DISPATCHER_CONFIG = "dispatcherConfig";
+		public static final String DISPATCHER ="dispatcher";
+		public static final String DISPATCHER_ID ="dispatcherId";
+		public static final String DISPATCHER_LIST ="dispatcherList";
+
+
+	}
+	public static class TimeOff{
+		public static final String TIME_OFF = "timeOff";
+	}
 }

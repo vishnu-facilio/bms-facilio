@@ -3156,6 +3156,12 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
 
+            webTabGroups.add(new WebTabGroupContext("Dispatcher","dispatcher",layout.getId(),203,groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Dispatcher Board","dispatcherboard",WebTabContext.Type.DISPATCHER_BOARD,null,appId,null));
+
+            groupNameVsWebTabsMap.put("dispatcher",webTabs);
+
 
 //            webTabGroups.add(new WebTabGroupContext("Developer Space", "developerspace", layout.getId(), 3, groupOrder++));
 //            webTabs = new ArrayList<>();
@@ -3275,6 +3281,12 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Sandbox","sandbox", WebTabContext.Type.SANDBOX,null,appId,null,AccountUtil.FeatureLicense.SANDBOX.getFeatureId()));
 
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
+
+            webTabGroups.add(new WebTabGroupContext("Dispatcher","dispatcher",layout.getId(),203,groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Dispatcher Board","dispatcherboard",WebTabContext.Type.DISPATCHER_BOARD,null,appId,null));
+
+            groupNameVsWebTabsMap.put("dispatcher",webTabs);
 
 
             for (WebTabGroupContext webTabGroupContext : webTabGroups) {
@@ -3408,6 +3420,11 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
 
+            webTabGroups.add(new WebTabGroupContext("Dispatcher","dispatcher",layout.getId(),203,groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Dispatcher Board","dispatcherboard",WebTabContext.Type.DISPATCHER_BOARD,null,appId,null));
+
+            groupNameVsWebTabsMap.put("dispatcher",webTabs);
 
 
             for (WebTabGroupContext webTabGroupContext : webTabGroups) {

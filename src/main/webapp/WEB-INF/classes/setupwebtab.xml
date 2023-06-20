@@ -840,4 +840,11 @@
         <action name="update" class="com.facilio.bmsconsoleV3.actions.QuotationSettingAction" method="updateQuotationSetting"/>
         <action name="delete" class="com.facilio.bmsconsoleV3.actions.QuotationSettingAction" method="deleteQuoteSetting"/>
     </package>
+    <package name="dispatcher" namespace="/api/v1/setup/dispatcher" extends="v2Api">
+        <action name="addDispatcherConfig" class="com.facilio.bmsconsole.actions.DispatcherAction" method="addDispatcherConfig" />
+        <action name="updateDispatcherConfig" class="com.facilio.bmsconsole.actions.DispatcherAction" method="updateDispatcherConfig" />
+        <action name="fetchDispatcherConfig" class="com.facilio.bmsconsole.actions.DispatcherAction" method="fetchDispatcherConfig" />
+        <action name="list" class="com.facilio.bmsconsole.actions.DispatcherAction" method="fetchDispatcherBoardList" />
+        <action name="delete" class="com.facilio.bmsconsole.actions.DispatcherAction" method="deleteDispatcherBoard" />
+    </package>
 </struts>

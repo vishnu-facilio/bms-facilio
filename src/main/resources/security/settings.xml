@@ -3557,7 +3557,7 @@
 
     <request path="/api/v3/switchVariable/getSwitchVariable" method="GET"/>
     <request path="/api/v3/unrelated/serviceRequest/fetchAll/emailConversationThreading" method="GET" />
-    
+
     <!--    pdf Builder -->
     <request path="/api/v1/setup/pdftemplates/list" method="GET">
         <requestbody type="object">
@@ -3592,4 +3592,33 @@
     </request>
 
 
+
+    <request path="/api/v1/setup/dispatcher/:updateDispatcherConfig" method="POST">
+        <requestbody type="object">
+            <property name="dispatcherConfig" type="object">
+                <property name="id" type="number"/>
+                <property name="name" type="string"/>
+                <property name="description" type="string"/>
+                <property name="isMapView" type="boolean"/>
+                <property name="startTimeFieldId" type="number"/>
+                <property name="endTimeFieldId" type="number"/>
+                <property name="defaultStartDay" type="number"/>
+                <property name="defaultCalendarView" type="number"/>
+                <property name="workorderConfigJson" type="string"/>
+                <property name="resourceConfigJson" type="string"/>
+                <property name="eventConfigJson" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/dispatcher/fetchDispatcherConfig" method="GET">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/dispatcher/list" method="GET"/>
+    <request path="/api/v1/setup/dispatcher/delete" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
 </config>

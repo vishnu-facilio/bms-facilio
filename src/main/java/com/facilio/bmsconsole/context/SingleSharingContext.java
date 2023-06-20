@@ -126,6 +126,7 @@ public class SingleSharingContext implements Serializable {
 		APP,
 		TENANT,
 		VENDOR,
+		PEOPLE,
 		;
 		
 		public int getValue() {
@@ -185,6 +186,9 @@ public class SingleSharingContext implements Serializable {
 				case APP:
 					builder.append(appType);
 					break;
+				case PEOPLE:
+					builder.append(peopleId);
+					break;
 			}
 		}
 		
@@ -206,4 +210,12 @@ public class SingleSharingContext implements Serializable {
 	@Setter
 	private long sharedBy = -1L;
 
+
+	public long getPeopleId() {
+		return peopleId;
+	}
+	public void setPeopleId(long peopleId) {
+		this.peopleId = peopleId;
+	}
+	private long peopleId = -1;
 }
