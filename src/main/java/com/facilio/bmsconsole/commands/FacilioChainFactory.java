@@ -2671,13 +2671,11 @@ public class FacilioChainFactory {
 	public static FacilioChain addDispatcherConfig(){
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddDispatcherConfigCommand());
-		c.addCommand(new DispatcherSharingCommand());
 		return c;
 	}
 	public static FacilioChain updateDispatcherConfig(){
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new UpdateDispatcherConfigCommand());
-		c.addCommand(new DispatcherSharingCommand());
 		return c;
 	}
 	public static FacilioChain deleteDispatcherConfig(){

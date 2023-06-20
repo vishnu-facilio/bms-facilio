@@ -3551,7 +3551,6 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getDispatcherConfig(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new fetchDispatcherConfigCommand());
-		c.addCommand(new fetchDispatcherBoardSharingCommand());
 		return c;
 	}
 
