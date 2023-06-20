@@ -647,7 +647,7 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 		REGRESSION (16,"regression",1,1),
 		TREEMAP (17,"treemap",1,1),
 		BOOLEANGRAPH (18,"boolean",1,1),
-		;
+		HISTOGRAM(19,"histogram",1,1);
 		
 		private int value;
 		private String name;

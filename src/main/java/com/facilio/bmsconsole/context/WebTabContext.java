@@ -298,7 +298,8 @@ public class WebTabContext implements Serializable {
         IMPORT_DATA("Import Data",false,TabType.SETUP,new SetupTypeHandler()), //91
 
         DECOMMISSION("Decommission",false,TabType.SETUP,new SetupTypeHandler()), // 92
-        BACKGROUND_ACTIVITY("Background Activity",false,TabType.SETUP,new SetupTypeHandler()); //93
+        BACKGROUND_ACTIVITY("Background Activity",false,TabType.SETUP,new SetupTypeHandler()), //93
+        NEW_DASHBOARD ("New Dashboard", false,TabType.NORMAL,null); // 94
 
         public void setName(String name) {
             this.name = name;
