@@ -73,6 +73,7 @@ public class PickListUtil {
     }
 
     public static void populatePicklistContext (FacilioContext context, String moduleName, String filters, String search, Criteria clientCriteria, String clientCriteriaStr, String defaultIds, String viewName, int page, int perPage) throws Exception {
+        context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, clientCriteria);
         Boolean isToFetchDecommissionedResource = (Boolean) context.get(FacilioConstants.ContextNames.IS_TO_FETCH_DECOMMISSIONED_RESOURCE);
         List<String> resourceModules = Arrays.asList("site", "building","floor", "space", "asset", "resource", "basespace");
         if(!BooleanUtils.isTrue(isToFetchDecommissionedResource) && resourceModules.contains(moduleName)) {
@@ -111,6 +112,6 @@ public class PickListUtil {
         if (StringUtils.isNotEmpty(viewName)) {
             context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
         }
-        context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, clientCriteria);
+      //  context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, clientCriteria);
     }
 }
