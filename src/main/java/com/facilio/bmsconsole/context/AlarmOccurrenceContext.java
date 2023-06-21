@@ -165,16 +165,6 @@ public class AlarmOccurrenceContext extends V3Context {
 		}
 	}
 
-	public Boolean isNewReadingRule;
-
-    public void setNewReadingRule(Boolean isNewReadingRule) {
-        this.isNewReadingRule = isNewReadingRule;
-    }
-
-    public Boolean getIsNewReadingRule() {
-        return isNewReadingRule;
-    }
-
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {

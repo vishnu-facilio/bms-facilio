@@ -159,15 +159,6 @@ public class BaseAlarmContext extends V3Context {
 		return posList;
 	}
 
-	private Boolean isNewReadingRule;
-
-    public void setNewReadingRule(Boolean isNewReadingRule) {
-        this.isNewReadingRule = isNewReadingRule;
-    }
-
-    public Boolean getIsNewReadingRule() {
-        return isNewReadingRule;
-    }
 
 	public enum Type implements FacilioIntEnum {
 		READING_ALARM,

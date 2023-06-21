@@ -698,7 +698,7 @@ public enum ActionType {
 					long lastWoId = baseAlarm.getLastWoId();
 					AlarmOccurrenceContext lastOccurrence = getAlarmOccurrenceFromAlarm(baseAlarm);
 					String moduleName=NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum());
-					if(moduleName.equals(FacilioConstants.ContextNames.NEW_READING_ALARM) && baseAlarm.getIsNewReadingRule()){
+					if(moduleName.equals(FacilioConstants.ContextNames.NEW_READING_ALARM) && ((ReadingAlarm)baseAlarm).getIsNewReadingRule()){
 						faultWorkorderCreation(obj,(ReadingRuleWorkOrderRelContext) currentRule,baseAlarm);
 					}
 					else {

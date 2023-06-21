@@ -1333,7 +1333,7 @@ public class V2ReportAction extends FacilioAction {
     private void getDataPointFromNewAlarm() throws Exception {
         AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(alarmId);
         ReadingAlarm readingAlarmContext = (ReadingAlarm) alarmOccurrence.getAlarm();
-        this.isNewReadingRule = alarmOccurrence instanceof ReadingAlarmOccurrenceContext ? alarmOccurrence.getIsNewReadingRule() : false;
+        this.isNewReadingRule = alarmOccurrence instanceof ReadingAlarmOccurrenceContext ? ((ReadingAlarmOccurrenceContext) alarmOccurrence).getIsNewReadingRule() : false;
         List<ReadingRuleInterface> readingRules = new ArrayList<>();
         if (isWithPrerequsite) { // new 1st
             if (isNewReadingRule) {

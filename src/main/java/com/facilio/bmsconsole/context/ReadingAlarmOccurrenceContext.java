@@ -7,6 +7,7 @@ import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.BooleanUtils;
 
 @Getter
 @Setter
@@ -18,6 +19,22 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
     private static final long serialVersionUID = 1L;
     private ReadingAlarmCategoryContext readingAlarmCategory;
 
+    public boolean isNewReadingRule;
+
+    public void setIsNewReadingRule(boolean isNewReadingRule) throws Exception {
+        this.isNewReadingRule = isNewReadingRule;
+        if (this.rule != null) {
+            this.setRule(this.rule);
+        }
+        if (this.subRule != null) {
+            this.setSubRule(this.subRule);
+        }
+    }
+
+    public boolean getIsNewReadingRule() {
+        return isNewReadingRule;
+    }
+
     @JsonDeserialize(as = ReadingRuleContext.class)
     private ReadingRuleInterface rule;
 
@@ -26,18 +43,17 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
     }
 
     public void setRule(ReadingRuleInterface rule) throws Exception {
-        if(rule == null) {
+        if (rule == null) {
             return;
         }
-        if(getIsNewReadingRule()!=null) {
-            if (isNewReadingRule) {
-                NewReadingRuleContext ruleContext = new NewReadingRuleContext();
-                ruleContext.setId(rule.getId());
-                this.rule = ruleContext;
-            } else
-                this.rule = rule;
-            }
+        if (BooleanUtils.isTrue(isNewReadingRule)) {
+            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+            ruleContext.setId(rule.getId());
+            this.rule = ruleContext;
+        } else {
+            this.rule = rule;
         }
+    }
 
     @JsonDeserialize(as = ReadingRuleContext.class)
     private ReadingRuleInterface subRule;
@@ -46,15 +62,13 @@ public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
         if(subRule == null) {
             return;
         }
-        if(getIsNewReadingRule()!=null) {
-            if (getIsNewReadingRule()) {
+        if(BooleanUtils.isTrue(isNewReadingRule)) {
                 NewReadingRuleContext ruleContext = new NewReadingRuleContext();
                 ruleContext.setId(subRule.getId());
                 this.subRule = ruleContext;
             } else {
                 this.subRule = subRule;
             }
-        }
     }
 
     private long readingFieldId;

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarmOccurrenceContext;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.command.FacilioCommand;
@@ -32,7 +33,8 @@ public class GetAlarmRcaDetailCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         long alarmId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        BaseAlarmContext baseAlarm = NewAlarmAPI.getAlarm(alarmId);
+        ReadingAlarm baseAlarm = (ReadingAlarm) NewAlarmAPI.getAlarm(alarmId);
+
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE);
         long ruleId = (long) context.get(FacilioConstants.ContextNames.RULE_ID);
         List<Long> rcaIds = new ArrayList<>();

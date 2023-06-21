@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
@@ -55,7 +56,7 @@ public class ReadingEventContext extends BaseEventContext {
         if (readingFieldId != -1) {
             readingAlarm.setReadingFieldId(readingFieldId);
         }
-        readingAlarm.setNewReadingRule(isNewReadingRule);
+        readingAlarm.setIsNewReadingRule(isNewReadingRule);
 
         return baseAlarm;
     }
@@ -83,7 +84,7 @@ public class ReadingEventContext extends BaseEventContext {
         if (readingFieldId != -1) {
             readingOccurrence.setReadingFieldId(readingFieldId);
         }
-        readingOccurrence.setNewReadingRule(isNewReadingRule);
+        readingOccurrence.setIsNewReadingRule(isNewReadingRule);
         return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
     }
 
@@ -94,36 +95,34 @@ public class ReadingEventContext extends BaseEventContext {
     private ReadingRuleInterface rule;
 
     public void setRule(ReadingRuleInterface rule) throws Exception {
-        if(rule == null) {
+        if (rule == null) {
             return;
         }
-        if(getIsNewReadingRule()!=null) {
-            if (getIsNewReadingRule()) {
-                NewReadingRuleContext ruleContext = new NewReadingRuleContext();
-                ruleContext.setId(rule.getId());
-                this.rule = ruleContext;
-            } else {
-                this.rule = rule;
-            }
+        if (BooleanUtils.isTrue(isNewReadingRule)) {
+            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+            ruleContext.setId(rule.getId());
+            this.rule = ruleContext;
+        } else {
+            this.rule = rule;
         }
+
     }
 
     @JsonDeserialize(as = ReadingRuleContext.class)
     private ReadingRuleInterface subRule;
 
     public void setSubRule(ReadingRuleInterface subRule) throws Exception {
-        if(subRule == null) {
+        if (subRule == null) {
             return;
         }
-        if(getIsNewReadingRule()!=null) {
-            if (isNewReadingRule) {
-                NewReadingRuleContext ruleContext = new NewReadingRuleContext();
-                ruleContext.setId(subRule.getId());
-                this.subRule = ruleContext;
-            } else {
-                this.subRule = subRule;
-            }
+        if (BooleanUtils.isTrue(isNewReadingRule)) {
+            NewReadingRuleContext ruleContext = new NewReadingRuleContext();
+            ruleContext.setId(subRule.getId());
+            this.subRule = ruleContext;
+        } else {
+            this.subRule = subRule;
         }
+
     }
 
     private long readingFieldId = -1;
@@ -191,13 +190,19 @@ public class ReadingEventContext extends BaseEventContext {
         }
     }
 
-    private Boolean isNewReadingRule;
+    private boolean isNewReadingRule;
 
-    public void setNewReadingRule(Boolean isNewReadingRule) {
+    public void setIsNewReadingRule(boolean isNewReadingRule) throws Exception {
         this.isNewReadingRule = isNewReadingRule;
+        if (this.rule != null) {
+            this.setRule(this.rule);
+        }
+        if (this.subRule != null) {
+            this.setSubRule(this.subRule);
+        }
     }
 
-    public Boolean getIsNewReadingRule() {
+    public boolean getIsNewReadingRule() {
         return isNewReadingRule;
     }
 

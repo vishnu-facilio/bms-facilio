@@ -50,10 +50,8 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
                 if (alarm instanceof ReadingAlarm) {
                     ReadingAlarm readingAlarm = (ReadingAlarm) alarm;
 
-                    LOGGER.debug("Alarm is NewReadingRule or OldRule "+ readingAlarm.getIsNewReadingRule()!=null
-                            ?readingAlarm.getIsNewReadingRule():null);
 
-                    if (readingAlarm.getIsNewReadingRule()!=null && readingAlarm.getIsNewReadingRule()) {
+                    if (readingAlarm.getIsNewReadingRule()) {
                         newReadingAlarms.add(readingAlarm);
                     } else {
                         readingAlarms.add(readingAlarm);
