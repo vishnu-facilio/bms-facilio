@@ -57,7 +57,7 @@ groups:
   - group: scriptlog
     sendToAll: false
     topics:
-      - { topic: script-log/#, handler: com.facilio.wmsv2.handler.ScriptLogHander, recordTimeout: 5, isLiveMessage: false }
+      - { topic: script-log/#, handler: com.facilio.wmsv2.handler.ScriptLogHander, recordTimeout: 10, isLiveMessage: false }
 
   - group: alarm-wf
     sendToAll: false
