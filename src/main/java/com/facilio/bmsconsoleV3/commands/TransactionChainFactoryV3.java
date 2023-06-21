@@ -3256,6 +3256,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new JobPlanContextCloningCommand());
         c.addCommand(new SetJobPlanStatusCommand());
         c.addCommand(new CreateJobPlanAfterCloning());
+        c.addCommand(new CloneJobPlanAdditionRecords());
         return c;
     }
     public static FacilioChain getPublishJobPlanChain(){
@@ -3280,6 +3281,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new JobPlanContextCloningCommand());
         c.addCommand(new SetJobPlanStatusCommand());
         c.addCommand(new CreateJobPlanAfterCloning());
+        c.addCommand(new CloneJobPlanAdditionRecords());
         return c;
     }
 

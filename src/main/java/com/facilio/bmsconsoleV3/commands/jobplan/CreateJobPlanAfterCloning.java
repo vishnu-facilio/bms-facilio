@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -34,7 +35,9 @@ public class CreateJobPlanAfterCloning extends FacilioCommand {
                 jobPlanTaskSectionContextList.addAll(jobPlan.getJobplansection());
 
             }
-            V3Util.createRecord(jobPlanModule,jobPlanContextList);
+            FacilioContext facilioContext = V3Util.createRecord(jobPlanModule,jobPlanContextList);
+            List<JobPlanContext> newJobPlans = (List<JobPlanContext>) (((Map<String,Object>)facilioContext.get(FacilioConstants.ContextNames.RECORD_MAP)).get(FacilioConstants.ContextNames.JOB_PLAN));
+            context.put("newJobPlans",newJobPlans);
         }
         return false;
     }

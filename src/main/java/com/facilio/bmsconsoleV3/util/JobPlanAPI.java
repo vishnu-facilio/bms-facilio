@@ -21,6 +21,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.*;
@@ -548,4 +549,58 @@ public class JobPlanAPI {
         }
         return orderedJobPlanTaskList;
     }
+    public static List<V3JobPlanLabourContext> getJobPlanLabourFromJobPlanIds(List<Long> jobPlanIdList) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
+        List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.ContextNames.JOB_PLAN_LABOURS);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fieldList);
+
+        SelectRecordsBuilder<V3JobPlanLabourContext> builder = new SelectRecordsBuilder<V3JobPlanLabourContext>()
+                .module(module)
+                .select(fieldList)
+                .beanClass(V3JobPlanLabourContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("parent"), StringUtils.join(jobPlanIdList,","),NumberOperators.EQUALS));
+        return builder.get();
+    }
+    public static List<JobPlanItemsContext> getJobPlanItemsFromJobPlanId(List<Long> jobPlanIdList) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_ITEMS);
+        List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.ContextNames.JOB_PLAN_ITEMS);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fieldList);
+
+        SelectRecordsBuilder<JobPlanItemsContext> builder = new SelectRecordsBuilder<JobPlanItemsContext>()
+                .module(module)
+                .select(fieldList)
+                .beanClass(JobPlanItemsContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobPlan"), StringUtils.join(jobPlanIdList,","),NumberOperators.EQUALS));
+        return builder.get();
+    }
+    public static List<JobPlanToolsContext> getJobPlanToolsFromJobPlanId(List<Long> jobPlanIdList) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_TOOLS);
+        List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.ContextNames.JOB_PLAN_TOOLS);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fieldList);
+
+        SelectRecordsBuilder<JobPlanToolsContext> builder = new SelectRecordsBuilder<JobPlanToolsContext>()
+                .module(module)
+                .select(fieldList)
+                .beanClass(JobPlanToolsContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobPlan"), StringUtils.join(jobPlanIdList,","),NumberOperators.EQUALS));
+        return builder.get();
+    }
+    public static List<JobPlanServicesContext> getJobPlanServicesFromJobPlanId(List<Long> jobPlanIdList) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_SERVICES);
+        List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.ContextNames.JOB_PLAN_SERVICES);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fieldList);
+
+        SelectRecordsBuilder<JobPlanServicesContext> builder = new SelectRecordsBuilder<JobPlanServicesContext>()
+                .module(module)
+                .select(fieldList)
+                .beanClass(JobPlanServicesContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobPlan"), StringUtils.join(jobPlanIdList,","),NumberOperators.EQUALS));
+        return builder.get();
+    }
+
+
 }
