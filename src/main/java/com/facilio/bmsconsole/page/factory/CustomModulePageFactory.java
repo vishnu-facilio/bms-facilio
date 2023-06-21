@@ -164,7 +164,7 @@ public class CustomModulePageFactory extends PageFactory {
 		}
 
 		List<FacilioModule> timelogModule = modBean.getSubModules(module.getModuleId(), FacilioModule.ModuleType.TIME_LOG);
-		if (record.getStateFlowId() > 0 && ((CollectionUtils.isNotEmpty(timelogModule)) && (timelogModule.size() > 0))){
+		if (module.isStateFlowEnabled() && ((CollectionUtils.isNotEmpty(timelogModule)) && (timelogModule.size() > 0))){
 			addTimelogTab(page);
 		}
 		return page;
