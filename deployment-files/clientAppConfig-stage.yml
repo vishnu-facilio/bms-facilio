@@ -30,3 +30,6 @@ clientapps:
   - name: weave-builder
     baseUrl: https://static.facilio.in/weave-builder
     stageBaseUrl: https://static.facilio.in/weave-builder/dev
+  - name: dispatcher
+    baseUrl: https://static.facilio.in/dispatcher
+    stageBaseUrl: https://static.facilio.in/dev
