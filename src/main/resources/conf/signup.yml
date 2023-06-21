@@ -536,3 +536,9 @@ classes:
   - com.facilio.fsm.signup.ServiceOrderModule
   - com.facilio.fsm.signup.TimeOffModule
   - com.facilio.fsm.signup.ServiceTaskModule
+
+  #Adding Location History Module
+  - com.facilio.fsm.signup.LoctionHistoryModule
+
+  #Adding People Skill Level Module
+  - com.facilio.fsm.signup.PeopleSkillLevelModule

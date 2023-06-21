@@ -4572,4 +4572,8 @@ public class FacilioConstants {
 	public static class TimeOff{
 		public static final String TIME_OFF = "timeOff";
 	}
+
+	public static class LocationHistory{
+		public static final String LOCATION_HISTORY = "locationhistory";
+	}
 }

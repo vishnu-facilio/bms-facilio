@@ -310,7 +310,9 @@ public class WebTabContext implements Serializable {
         METER_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()), //101
         SANDBOX("Sandbox",false,TabType.SETUP,new SetupTypeHandler()), //102
         PORTFOLIO("Portfolio",false,TabType.NORMAL,null), // 103
-        PDF_TEMPLATES("Pdf Templates",false,TabType.SETUP,new SetupTypeHandler()); //104
+        PDF_TEMPLATES("Pdf Templates",false,TabType.SETUP,new SetupTypeHandler()), //104
+        DISPATCHER_CONFIG("Dispatcher Configuration",false,TabType.SETUP,new SetupTypeHandler()), //105
+        DISPATCHER_CONSOLE ("Dispatcher Console", false, TabType.NORMAL,null); // 106
         public void setName(String name) {
             this.name = name;
         }

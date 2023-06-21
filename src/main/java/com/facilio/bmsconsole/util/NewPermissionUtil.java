@@ -52,6 +52,7 @@ public class NewPermissionUtil {
 
     private static Map<String, Integer> setupPermissionMap = Collections.unmodifiableMap(initSetupPermissionMap());
     private static Map<String, Integer> newDashboardTabType = Collections.unmodifiableMap(initNewDashboardMap());
+    private static Map<String, Integer> dispatcherBoardTabType = Collections.unmodifiableMap(initDispatcherBoardMap());
 
     private static Map<String, Integer> alarmModulePermissionType = Collections.unmodifiableMap(initAlarmPermissionsMap());
 
@@ -231,7 +232,7 @@ public class NewPermissionUtil {
         settingsTabType.put("COMMISSIONING", 17179869184L);
 		settingsTabType.put("FEEDBACK_AND_COMPLAINTS", 34359738368L);
 		settingsTabType.put("SMART_CONTROLS", 68719476736L);
-        settingsTabType.put("DISPATCHER_BOARD", 137438953472L);
+        settingsTabType.put("DISPATCHER_CONFIG", 137438953472L);
 
         return settingsTabType;
     }
@@ -292,6 +293,12 @@ public class NewPermissionUtil {
         alarmModulePermissionType.put("CLEAR_ALARM", 4);
 
         return alarmModulePermissionType;
+    }
+    private static Map<String, Integer> initDispatcherBoardMap() {
+        dispatcherBoardTabType = new HashMap<>();
+        dispatcherBoardTabType.put("READ", 1);
+        dispatcherBoardTabType.put("CAN_ASSIGN", 2);
+        return dispatcherBoardTabType;
     }
 
     static Map<Integer, Map<String, List<Permission>>> permissionList = new HashMap<>();
@@ -628,6 +635,14 @@ public class NewPermissionUtil {
         permissionMap.put("*", permissions);
         permissionList.put(Type.NEW_DASHBOARD.getIndex(), permissionMap);
 
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("READ", "Read", dispatcherBoardTabType.get("READ"), null));
+        permissions.add(new Permission("CAN_ASSIGN", "Can Assign", dispatcherBoardTabType.get("CAN_ASSIGN"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.DISPATCHER_CONSOLE.getIndex(), permissionMap);
+
+
         for(Type type : Type.values()) {
             if(type.getTabType().getIndex() == WebTabContext.TabType.SETUP.getIndex()) {
                 permissions = new ArrayList<>();
@@ -778,6 +793,9 @@ public class NewPermissionUtil {
                 return newKpiTabType.getOrDefault(action, -1);
             case 94:
                 return newDashboardTabType.getOrDefault(action, -1);
+            case 104:
+                return dispatcherBoardTabType.getOrDefault(action,-1);
+
             default:
                 return -1;
         }
@@ -970,6 +988,13 @@ public class NewPermissionUtil {
                 }
                 return maps;
             }
+            case 104: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : dispatcherBoardTabType.keySet()) {
+                    maps.put(key, Long.valueOf(dispatcherBoardTabType.get(key).toString()));
+                }
+                return maps;
+            }
             default:
                 Map<String, Long> maps = new HashMap<>();
                 for (String key : customTabType.keySet()) {
@@ -989,7 +1014,7 @@ public class NewPermissionUtil {
         }
         return actionList;
     }
-    
+
     public static List<Permission> getTabPermissions(WebTabContext webTab,Long roleId) throws Exception {
         List<Permission> tabPermissionList = new ArrayList<>();
         List<Permission> permissions = webTab.getPermission();

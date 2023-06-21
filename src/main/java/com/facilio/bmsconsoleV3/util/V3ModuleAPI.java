@@ -138,7 +138,9 @@ public class V3ModuleAPI {
         WORK_TYPE(ContextNames.FieldServiceManagement.WORK_TYPE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         WORK_TYPE_LINE_ITEMS(ContextNames.FieldServiceManagement.WORK_TYPE_LINE_ITEMS,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         SERVICE_TASK(ContextNames.FieldServiceManagement.SERVICE_TASK,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        SERVICE_ORDER(ContextNames.SERVICE_ORDER,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        SERVICE_ORDER(ContextNames.SERVICE_ORDER,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        LOCATION_HISTORY(FacilioConstants.LocationHistory.LOCATION_HISTORY,Arrays.asList());
+
 
         private String moduleName;
         private List<String> applicationLinkNames;

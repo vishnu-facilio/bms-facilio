@@ -3158,7 +3158,7 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext("Dispatcher","dispatcher",layout.getId(),203,groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Dispatcher Board","dispatcherboard",WebTabContext.Type.DISPATCHER_BOARD,null,appId,null));
+            webTabs.add(new WebTabContext("Dispatcher Config","dispatcherconfig",WebTabContext.Type.DISPATCHER_CONFIG,null,appId,null));
 
             groupNameVsWebTabsMap.put("dispatcher",webTabs);
 
@@ -3284,7 +3284,7 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext("Dispatcher","dispatcher",layout.getId(),203,groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Dispatcher Board","dispatcherboard",WebTabContext.Type.DISPATCHER_BOARD,null,appId,null));
+            webTabs.add(new WebTabContext("Dispatcher Config","dispatcherconfig",WebTabContext.Type.DISPATCHER_CONFIG,null,appId,null));
 
             groupNameVsWebTabsMap.put("dispatcher",webTabs);
 
@@ -3422,7 +3422,7 @@ public class ApplicationApi {
 
             webTabGroups.add(new WebTabGroupContext("Dispatcher","dispatcher",layout.getId(),203,groupOrder++));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Dispatcher Board","dispatcherboard",WebTabContext.Type.DISPATCHER_BOARD,null,appId,null));
+            webTabs.add(new WebTabContext("Dispatcher Config","dispatcherconfig",WebTabContext.Type.DISPATCHER_CONFIG,null,appId,null));
 
             groupNameVsWebTabsMap.put("dispatcher",webTabs);
 

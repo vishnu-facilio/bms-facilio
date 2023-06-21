@@ -1,5 +1,6 @@
-package com.facilio.bmsconsole.actions;
+package com.facilio.fsm.actions;
 
+import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.fsm.context.DispatcherSettingsContext;
@@ -10,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class DispatcherAction extends FacilioAction{
+public class DispatcherAction extends FacilioAction {
     private long id;
     private long userId;
     private DispatcherSettingsContext dispatcherConfig;

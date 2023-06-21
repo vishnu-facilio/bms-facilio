@@ -2,8 +2,8 @@ package com.facilio.fsm.config;
 
 
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15;
-import com.facilio.fsm.commands.LoadServiceTaskLookupCommandV3;
-import com.facilio.fsm.commands.LoadWorkTypeLookupsCommandV3;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fsm.commands.*;
 import com.facilio.fsm.context.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -67,4 +67,12 @@ public class FieldServiceManagementV3Config {
                 .delete()
                 .build();
     }
+    @Module(FacilioConstants.LocationHistory.LOCATION_HISTORY)
+    public static Supplier<V3Config> getLocationHistory(){
+        return () -> new V3Config(V3LocationHistoryContext.class,null)
+                .create()
+                .afterSave(new updatePeopleLocationHistoryCommand())
+                .build();
+    }
+
 }
