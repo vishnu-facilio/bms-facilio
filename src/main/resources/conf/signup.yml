@@ -533,9 +533,11 @@ classes:
   - com.facilio.fsm.signup.ServiceSkillModule
   - com.facilio.fsm.signup.WorkTypeModule
   - com.facilio.fsm.signup.WorkTypeLineItemsModule
+  - com.facilio.fsm.signup.TerritoryModule
   - com.facilio.fsm.signup.ServiceOrderModule
   - com.facilio.fsm.signup.TimeOffModule
   - com.facilio.fsm.signup.ServiceTaskModule
+  - com.facilio.fsm.signup.ServiceAppointmentModule
 
   #Adding Location History Module
   - com.facilio.fsm.signup.LoctionHistoryModule

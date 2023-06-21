@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.util.ShiftAPI;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,6 +24,7 @@ public class UpdateEmployeePeopleAppPortalAccessCommand extends FacilioCommand {
 		Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(FacilioConstants.ContextNames.CHANGE_SET);
 		if(CollectionUtils.isNotEmpty(employees) && MapUtils.isNotEmpty(changeSet)) {
 			for(EmployeeContext emp : employees) {
+				ShiftAPI.assignDefaultShiftToEmployee(emp.getId());
 				List<UpdateChangeSet> changes = changeSet.get(emp.getId());
 //				if((CollectionUtils.isNotEmpty(changes) && (RecordAPI.checkChangeSet(changes, "isAppAccess", FacilioConstants.ContextNames.EMPLOYEE) || RecordAPI.checkChangeSet(changes, "roleId", FacilioConstants.ContextNames.EMPLOYEE))) || (MapUtils.isNotEmpty(emp.getRolesMap()) && emp.getRolesMap().get(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) != null)) {
 //					PeopleAPI.updateEmployeeAppPortalAccess(emp, FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);

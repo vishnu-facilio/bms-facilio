@@ -56,7 +56,7 @@ public class FieldServiceManagementV3Config {
                 .delete()
                 .build();
     }
-    @Module("timeOff")
+    @Module(FacilioConstants.TimeOff.TIME_OFF)
     public static Supplier<V3Config> getTimeOff(){
         return () -> new V3Config(TimeOffContext.class,null)
                 .create()
@@ -72,6 +72,28 @@ public class FieldServiceManagementV3Config {
         return () -> new V3Config(V3LocationHistoryContext.class,null)
                 .create()
                 .afterSave(new updatePeopleLocationHistoryCommand())
+                .build();
+    }
+    @Module(FacilioConstants.Territory.TERRITORY)
+    public static Supplier<V3Config> getTerritory(){
+        return () -> new V3Config(TerritoryContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .pickList()
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)
+    public static Supplier<V3Config> getServiceAppointment(){
+        return () -> new V3Config(ServiceAppointmentContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .pickList()
+                .delete()
                 .build();
     }
 

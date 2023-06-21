@@ -4567,13 +4567,28 @@ public class FacilioConstants {
 		public static final String DISPATCHER_ID ="dispatcherId";
 		public static final String DISPATCHER_LIST ="dispatcherList";
 
+		public static final String EVENTS = "events";
+
+		public static final String RESOURCES = "resources";
+
 
 	}
+
 	public static class TimeOff{
 		public static final String TIME_OFF = "timeOff";
+	}
+
+	public static class Territory{
+		public static final String TERRITORY = "territory";
 	}
 
 	public static class LocationHistory{
 		public static final String LOCATION_HISTORY = "locationhistory";
 	}
+
+	public static class ServiceAppointment{
+		public static final String SERVICE_APPOINTMENT = "serviceAppointment";
+		public static final String SERVICE_APPOINTMENT_TASK = "serviceAppointmentTask";
+	}
+
 }
