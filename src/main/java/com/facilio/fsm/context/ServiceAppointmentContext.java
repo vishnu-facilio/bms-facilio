@@ -1,11 +1,9 @@
 package com.facilio.fsm.context;
 
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
-import com.facilio.bmsconsoleV3.context.V3ServiceContext;
+import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
@@ -18,7 +16,7 @@ import java.util.List;
 public class ServiceAppointmentContext extends V3Context {
     private String name;
     private String description;
-    private ServiceOrderContext serviceWorkOrder;
+    private ServiceOrderContext serviceWorkorder;
     private List<ServiceAppointmentTaskContext> serviceTasks;
     private Long scheduledStartTime;
     private Long scheduledEndTime;
@@ -27,11 +25,7 @@ public class ServiceAppointmentContext extends V3Context {
     private Long actualEndTime;
     private Long actualDuration;
     private LocationContextV3 location;
-    private List<ServiceSkillsContext> skills;
-    private List<V3ItemTypesContext> itemTypes;
-    private List<V3ToolTypesContext> toolType;
-    private List<V3ServiceContext> service;
-    private TerritoryContext territory;
+    private V3SiteContext site;
     private V3PeopleContext fieldAgent;
     private AppointmentType appointmentType;
     public int getAppointmentType() {
@@ -79,5 +73,5 @@ public class ServiceAppointmentContext extends V3Context {
         }
     }
     private InspectionResponseContext inspection;
-    private V3WorkOrderContext workOrder;
+    private V3WorkOrderContext workorder;
 }

@@ -91,7 +91,9 @@ public class FieldServiceManagementV3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new FetchServiceAppointmentSupplementsCommand())
                 .summary()
+                .beforeFetch(new FetchServiceAppointmentSupplementsCommand())
                 .pickList()
                 .delete()
                 .build();
