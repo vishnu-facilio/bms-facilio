@@ -2,6 +2,7 @@ package com.facilio.readingrule.rca.command;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
@@ -12,6 +13,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.rca.context.RCAGroupContext;
@@ -22,9 +24,7 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FetchRcaReadingsCommand extends FacilioCommand {
@@ -41,7 +41,7 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
         List<RCAScoreReadingContext> readings;
         if (CollectionUtils.isNotEmpty(rcaGroups)) {
             if (perPage != -1) {
-                Integer offset = ((page - 1) * perPage);
+                int offset = ((page - 1) * perPage);
                 if (offset < 0) {
                     offset = 0;
                 }
@@ -51,12 +51,23 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
             }
 
             if (CollectionUtils.isNotEmpty(readings)) {
-                for (RCAScoreReadingContext reading : readings) {
-                    setParentFault(reading);
-                    setRcaRule(reading);
-                    setRcaFault(reading);
-                }
+                Set<Long> alarmIds = new HashSet<>();
 
+                readings.forEach(reading -> {
+                    alarmIds.add(reading.getRcaFaultId());
+                    alarmIds.add(reading.getParentId());
+                });
+                // alarm id vs alarm context
+                Map<Long, BaseAlarmContext> alarmsMap = NewAlarmAPI.getAlarms(new ArrayList<>(alarmIds))
+                        .stream()
+                        .collect(Collectors.toMap(ModuleBaseWithCustomFields::getId, alarm -> alarm));
+
+                for (Iterator<RCAScoreReadingContext> iterator = readings.iterator(); iterator.hasNext(); ) {
+                    RCAScoreReadingContext reading = iterator.next();
+                    if (!setParentFault(alarmsMap, reading) && !setRcaRule(reading) && !setRcaFault(alarmsMap, reading)) {
+                        iterator.remove();
+                    }
+                }
                 Long count = ReadingRuleRcaAPI.getRcaReadingsCount(alarmId, filterCriteria, dateRange);
                 context.put(FacilioConstants.ContextNames.COUNT, count);
             }
@@ -70,24 +81,32 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
         return false;
     }
 
-    private void setParentFault(RCAScoreReadingContext reading) throws Exception {
-        ReadingAlarm parentAlarm = (ReadingAlarm) NewAlarmAPI.getAlarm(reading.getParentId());
-        reading.setParentAlarm(parentAlarm);
+    private boolean setParentFault(Map<Long, BaseAlarmContext> alarmsMap, RCAScoreReadingContext reading) throws Exception {
+        ReadingAlarm parentAlarm = (ReadingAlarm) alarmsMap.get(reading.getParentId());
+        if (parentAlarm != null) {
+            reading.setParentAlarm(parentAlarm);
+            return true;
+        }
+        return false;
     }
 
-    private void setRcaFault(RCAScoreReadingContext reading) throws Exception {
-        ReadingAlarm rcaFault = (ReadingAlarm) NewAlarmAPI.getAlarm(reading.getRcaFaultId());
-        setAssetCategory(rcaFault);
-        reading.setRcaFault(rcaFault);
+    private boolean setRcaFault(Map<Long, BaseAlarmContext> alarmsMap, RCAScoreReadingContext reading) throws Exception {
+        ReadingAlarm rcaFault = (ReadingAlarm) alarmsMap.get(reading.getRcaFaultId());
+        if (rcaFault != null) {
+            setAssetCategory(rcaFault);
+            reading.setRcaFault(rcaFault);
+            return true;
+        }
+        return false;
     }
 
     private void setAssetCategory(ReadingAlarm alarm) throws Exception {
-        Long assetCategoryId = alarm.getReadingAlarmAssetCategory().getId();
+        long assetCategoryId = alarm.getReadingAlarmAssetCategory().getId();
         AssetCategoryContext assetCategoryContext = AssetsAPI.getCategoryForAsset(assetCategoryId);
         alarm.setReadingAlarmAssetCategory(assetCategoryContext);
     }
 
-    private void setRcaRule(RCAScoreReadingContext reading) throws Exception {
+    private boolean setRcaRule(RCAScoreReadingContext reading) throws Exception {
         Long ruleId = reading.getRcaRuleId();
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE);
@@ -100,7 +119,9 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
         List<NewReadingRuleContext> rules = selectRecordsBuilder.get();
         if (CollectionUtils.isNotEmpty(rules)) {
             reading.setRcaRule(rules.get(0));
+            return true;
         }
+        return false;
     }
 
     /**
@@ -110,12 +131,12 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
         List<RCAScoreReadingContext> rcaScoreReadingContexts = new ArrayList<>();
         ReadingAlarm parentAlarm = (ReadingAlarm) NewAlarmAPI.getAlarm(parentAlarmId);
 
-        if (CollectionUtils.isNotEmpty(rcaRuleIds)) {
+        if (CollectionUtils.isNotEmpty(rcaRuleIds) && parentAlarm != null) {
             List<ReadingAlarm> rcaFaults = ReadingRuleRcaAPI.getRCAReadingAlarms(rcaRuleIds, parentAlarm.getResource().getId(), null);
             if (CollectionUtils.isNotEmpty(rcaFaults)) {
-                for(Long rcaRuleId: rcaRuleIds){
+                for (Long rcaRuleId : rcaRuleIds) {
                     List<ReadingAlarm> rcaFaultsFiltered = rcaFaults.stream().filter(fault -> fault.getRule() != null && fault.getRule().getId() == rcaRuleId).collect(Collectors.toList());
-                    if(CollectionUtils.isNotEmpty(rcaFaultsFiltered)){
+                    if (CollectionUtils.isNotEmpty(rcaFaultsFiltered)) {
                         ReadingAlarm rcaFault = rcaFaultsFiltered.get(0);
                         RCAScoreReadingContext readingContext = new RCAScoreReadingContext();
                         NewReadingRuleContext rule = new NewReadingRuleContext();
