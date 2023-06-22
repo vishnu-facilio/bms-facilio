@@ -1,6 +1,8 @@
 package com.facilio.v3.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.CustomButtonAPI;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
@@ -9,6 +11,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,6 +28,9 @@ public class CustomButtonForDataListCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        if(skipCustomButtonForDataListCommand()){
+            return false;
+        }
 
         Object withoutCustomButton = context.get(Constants.WITHOUT_CUSTOMBUTTONS); ;
         if (withoutCustomButton != null && (Boolean)withoutCustomButton){
@@ -65,5 +71,19 @@ public class CustomButtonForDataListCommand extends FacilioCommand {
             context.put(Constants.CUSTOM_BUTTONS, evaluatedCustomButtons);
         }
         return false;
+    }
+    private static boolean skipCustomButtonForDataListCommand()  {
+        try{
+            long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
+            Map<String,Object> map = CommonCommandUtil.getOrgInfo(orgId,"skipCustomButtonForDataListCommand");
+            if(map!=null){
+                Object value = map.getOrDefault("value",false);
+                return FacilioUtil.parseBoolean(value);
+            }
+        }catch (Exception e){
+            LOGGER.info("CustomButtonForDataListCommand error:"+e.getMessage());
+        }
+        return false;
+
     }
 }
