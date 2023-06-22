@@ -53,7 +53,7 @@ public class EmployeeModule extends BaseModuleConfig{
         allView.setDisplayName("All Employees");
         allView.setModuleName(employeeModule.getName());
         allView.setSortFields(sortFields);
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
         allView.setHidden(true);
         return allView;
     }
