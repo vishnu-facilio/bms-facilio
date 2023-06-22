@@ -63,6 +63,14 @@ class SMTPEmailClient extends EmailClient {
                 message.setFrom(new InternetAddress(sender));
                 message.setRecipients(Message.RecipientType.TO,
                         InternetAddress.parse((String) mailJson.get(TO)));
+                String cc = (String) mailJson.get("cc");
+                if (cc != null && StringUtils.isNotEmpty(cc)) {
+                    message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(cc));
+                }
+                String bcc = (String) mailJson.get("bcc");
+                if (bcc != null && StringUtils.isNotEmpty(bcc)) {
+                    message.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bcc));
+                }
                 message.setSubject((String) mailJson.get(SUBJECT));
 
                 if(mailJson.get(MAIL_TYPE) != null && mailJson.get(MAIL_TYPE).equals(HTML)) {
