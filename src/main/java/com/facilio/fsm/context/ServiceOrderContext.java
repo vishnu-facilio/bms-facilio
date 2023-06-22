@@ -3,6 +3,7 @@ package com.facilio.fsm.context;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.workflow.rule.SLAPolicyContext;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.fw.validators.DateTime;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
@@ -33,18 +34,18 @@ public class ServiceOrderContext extends V3Context {
     private DateTime resolvedtime;
     private StateFlowRuleContext stateflow;
     private ServiceOrderSourceType sourceType;
-    private PeopleContext createdby;
+    private V3PeopleContext createdby;
     private DateTime createdtime;
-    private PeopleContext modifiedby;
+    private V3PeopleContext modifiedby;
     private DateTime modifiedtime;
-    private PeopleContext sysdeletedby;
+    private V3PeopleContext sysdeletedby;
     private DateTime sysdeletedtime;
     private Boolean sysdeleted;
     private DateTime actualstarttime;
     private DateTime actualendtime;
     private DateTime actualduration;
-    private PeopleContext assignedto;
-    private PeopleContext assignedby;
+    private V3PeopleContext assignedto;
+    private V3PeopleContext assignedby;
     private DateTime duedate;
     private DateTime estimatedstarttime;
     private DateTime estimatedendtime;
@@ -63,8 +64,24 @@ public class ServiceOrderContext extends V3Context {
     private Boolean prerequisiteapproved;
     private Boolean prerequisiteenabled;
     private Boolean qrenabled;
-    private PeopleContext requestedby;
+    private V3PeopleContext requestedby;
     private Long localid;
+
+    public int getPrerequeststatus() {
+        if (prerequeststatus != null) {
+            return prerequeststatus.getIndex();
+        }
+        return -1;
+    }
+    public void setPrerequeststatus(int prerequeststatus) {
+        this.prerequeststatus = ServiceOrderPrerequisiteStatus.valueOf(prerequeststatus);
+    }
+    public ServiceOrderPrerequisiteStatus getServiceOrderPrerequisiteStatusEnum() {
+        return prerequeststatus;
+    }
+    public void setPrerequeststatus(ServiceOrderPrerequisiteStatus prerequeststatus) {
+        this.prerequeststatus = prerequeststatus;
+    }
 
     public static enum ServiceOrderPrerequisiteStatus implements FacilioIntEnum {
         BREAKDOWN("Breakdown"),
@@ -79,7 +96,7 @@ public class ServiceOrderContext extends V3Context {
             this.name = name;
         }
 
-        public static ServiceOrderContext.ServiceOrderPrerequisiteStatus valueOf(int value) {
+        public static ServiceOrderPrerequisiteStatus valueOf(int value) {
             if (value > 0 && value <= values().length) {
                 return values()[value - 1];
             }
@@ -95,6 +112,22 @@ public class ServiceOrderContext extends V3Context {
         public String getValue() {
             return name;
         }
+    }
+
+    public int getMaintenancetype() {
+        if (maintenancetype != null) {
+            return maintenancetype.getIndex();
+        }
+        return -1;
+    }
+    public void setMaintenancetype(int maintenancetype) {
+        this.maintenancetype = ServiceOrderMaintenanceType.valueOf(maintenancetype);
+    }
+    public ServiceOrderMaintenanceType getServiceOrderMaintenanceTypeEnum() {
+        return maintenancetype;
+    }
+    public void setMaintenanceType(ServiceOrderMaintenanceType maintenancetype) {
+        this.maintenancetype = maintenancetype;
     }
 
     public static enum ServiceOrderMaintenanceType implements FacilioIntEnum {
@@ -126,6 +159,22 @@ public class ServiceOrderContext extends V3Context {
         public String getValue() {
             return name;
         }
+    }
+
+    public int getCategory() {
+        if (category != null) {
+            return category.getIndex();
+        }
+        return -1;
+    }
+    public void setCategory(int category) {
+        this.category = ServiceOrderCategory.valueOf(category);
+    }
+    public ServiceOrderCategory getServiceOrderCategoryEnum() {
+        return category;
+    }
+    public void setCategory(ServiceOrderCategory categoryType) {
+        this.category = categoryType;
     }
 
     public static enum ServiceOrderCategory implements FacilioIntEnum {
@@ -160,6 +209,22 @@ public class ServiceOrderContext extends V3Context {
         }
     }
 
+    public int getPriority() {
+        if (priority != null) {
+            return priority.getIndex();
+        }
+        return -1;
+    }
+    public void setPriority(int priority) {
+        this.priority = ServiceOrderPriority.valueOf(priority);
+    }
+    public ServiceOrderPriority getServiceOrderPriorityEnum() {
+        return priority;
+    }
+    public void setPriority(ServiceOrderPriority priorityType) {
+        this.priority = priorityType;
+    }
+
     public static enum ServiceOrderPriority implements FacilioIntEnum {
         LOW("Low"),
         MEDIUM("Medium"),
@@ -189,6 +254,22 @@ public class ServiceOrderContext extends V3Context {
         }
     }
 
+    public int getSourceType() {
+        if (sourceType != null) {
+            return sourceType.getIndex();
+        }
+        return -1;
+    }
+    public void setSourceType(int sourceType) {
+        this.sourceType = ServiceOrderSourceType.valueOf(sourceType);
+    }
+    public ServiceOrderSourceType getServiceOrderSourceTypeEnum() {
+        return sourceType;
+    }
+    public void setSourceType(ServiceOrderSourceType sourceType) {
+        this.sourceType = sourceType;
+    }
+
     public static enum ServiceOrderSourceType implements FacilioIntEnum {
         WEB("Web"),
         Mobile("Mobile");
@@ -215,6 +296,22 @@ public class ServiceOrderContext extends V3Context {
         public String getValue() {
             return name;
         }
+    }
+
+    public int getStatus() {
+        if (status != null) {
+            return status.getIndex();
+        }
+        return -1;
+    }
+    public void setStatus(int sourceType) {
+        this.status = ServiceOrderStatus.valueOf(sourceType);
+    }
+    public ServiceOrderStatus getServiceOrderStatusEnum() {
+        return status;
+    }
+    public void setStatus(ServiceOrderStatus status) {
+        this.status = status;
     }
 
     public static enum ServiceOrderStatus implements FacilioIntEnum {

@@ -248,7 +248,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         FacilioForm webWorkOrderForm = new FacilioForm();
         webWorkOrderForm.setDisplayName("Standard");
-        webWorkOrderForm.setName("default_workorder_web");
+        webWorkOrderForm.setName("default_serviceorder_web");
         webWorkOrderForm.setModule(serviceOrderModule);
         webWorkOrderForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
         webWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
@@ -257,13 +257,15 @@ public class ServiceOrderModule extends BaseModuleConfig {
         webWorkOrderFormDefaultFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 1, 1));
         webWorkOrderFormDefaultFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 2, 1));
         webWorkOrderFormDefaultFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
-        webWorkOrderFormDefaultFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, "vendors", 4, 1));
+        webWorkOrderFormDefaultFields.add(new FormField("maintenancetype", FacilioField.FieldDisplayType.SELECTBOX, "Maintenance Type", FormField.Required.OPTIONAL, 4, 1));
+        webWorkOrderFormDefaultFields.add(new FormField("priority", FacilioField.FieldDisplayType.SELECTBOX, "Priority", FormField.Required.OPTIONAL, 5, 1));
+        webWorkOrderFormDefaultFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, "vendors", 6, 1));
 
 
         List<FormField> webWorkOrderFormFields = new ArrayList<>();
         webWorkOrderFormFields.addAll(webWorkOrderFormDefaultFields);
 
-        FormSection defaultSection = new FormSection("WORKORDER", 1, webWorkOrderFormDefaultFields, true);
+        FormSection defaultSection = new FormSection("SERVICEORDER", 1, webWorkOrderFormDefaultFields, true);
         defaultSection.setSectionType(FormSection.SectionType.FIELDS);
 
 
