@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
+import com.facilio.fsm.context.TerritoryContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
@@ -146,6 +147,7 @@ public class V3PeopleContext extends V3Context {
     private String currentLocation;
     private Long lastSyncTime;
     private Double currentFreeCapacity;
+    private TerritoryContext territory;
     private PeopleType peopleType;
     public Integer getPeopleType() {
         if (peopleType != null) {

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
+import com.facilio.fsm.context.TerritoryContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import lombok.Getter;
@@ -210,6 +211,7 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private List<Long> groups;
 	@Getter@Setter
 	private Long shiftId;
+	private TerritoryContext territory;
 
 	private Status status;
 	public Integer getStatus() {
