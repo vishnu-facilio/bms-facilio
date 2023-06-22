@@ -19,6 +19,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.security.MalwareInterceptor;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.lang3.StringUtils;
@@ -211,7 +212,7 @@ public class ShiftAPI {
         return shiftSchedule;
     }
 
-    private static List<ShiftSlot> fetchShiftSlots(List<Long> employeeIDs, Long rangeFrom, Long rangeTo) throws Exception {
+    public static List<ShiftSlot> fetchShiftSlots(List<Long> employeeIDs, Long rangeFrom, Long rangeTo) throws Exception {
 
         //        SELECT <fields>
         //                FROM Shift_People_Rel

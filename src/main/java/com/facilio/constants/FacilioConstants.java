@@ -4566,9 +4566,8 @@ public class FacilioConstants {
 		public static final String DISPATCHER ="dispatcher";
 		public static final String DISPATCHER_ID ="dispatcherId";
 		public static final String DISPATCHER_LIST ="dispatcherList";
-
+		public static final String BOARD_ID="boardId";
 		public static final String EVENTS = "events";
-
 		public static final String RESOURCES = "resources";
 
 

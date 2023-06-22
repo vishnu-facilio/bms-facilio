@@ -1632,6 +1632,12 @@ public class PeopleAPI {
 		List<User> users = AccountUtil.getUserBean().getUsers(criteria,true,false);
 		return users;
 	}
+	public static List<User> getUsersForPeopleIds(List<Long> peopleIds) throws Exception {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID","peopleId", StringUtils.join(peopleIds,","), NumberOperators.EQUALS));
+		List<User> users = AccountUtil.getUserBean().getUsers(criteria,true,false);
+		return users;
+	}
 	public static void setPeopleRelatedData(PeopleContext people,Long ouid) throws Exception {
 
 		UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");

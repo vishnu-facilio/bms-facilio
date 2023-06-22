@@ -125,4 +125,10 @@
             <param name="type">count</param>
         </action>
     </package>
+    <package name="resource" namespace="/api/fsm/resource" extends="fsmApi">
+        <action name="list" class="com.facilio.fsm.actions.fsmAction" method="resourceList"></action>
+    </package>
+    <package name="events" extends="fsmApi" namespace="/api/fsm/events">
+        <action name="list" class="com.facilio.fsm.actions.fsmAction" method="eventsList"/>
+    </package>
 </struts>
