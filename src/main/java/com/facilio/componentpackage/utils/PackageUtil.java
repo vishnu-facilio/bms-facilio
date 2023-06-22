@@ -166,6 +166,9 @@ public class PackageUtil {
     }
 
     public static void addOrUpdatePackageChangeSet(long componentId, ComponentType componentType, PackageChangeSetMappingContext.ComponentStatus status) throws Exception {
+        if(PackageUtil.isInstallThread()) {
+            return;
+        }
         Organization organization = AccountUtil.getCurrentOrg();
         FacilioUtil.throwIllegalArgumentException(organization == null, "Organization object cannot be null");
 
@@ -188,6 +191,9 @@ public class PackageUtil {
     }
 
     public static void deletePackageChangeSet(long componentId, ComponentType componentType, PackageChangeSetMappingContext.ComponentStatus status, String componentDisplayName) throws Exception {
+        if(PackageUtil.isInstallThread()) {
+            return;
+        }
         Organization organization = AccountUtil.getCurrentOrg();
         FacilioUtil.throwIllegalArgumentException(organization == null, "Organization object cannot be null");
 

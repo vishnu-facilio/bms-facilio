@@ -18,15 +18,30 @@ public enum ComponentType implements FacilioIntEnum {
     MODULE(ModulePackageBeanImpl.class, null, false),
     FIELD(FieldPackageBeanImpl.class, MODULE, true),
     APP(AppPackageBeanImpl.class, null, false),
-
-
     ORG_INFO(OrgInfoPackageBeanImpl.class, null, false),
     ROLE(RolePackageBeanImpl.class, null, false),
-    SITE(null, null, false),
+    APP_LAYOUT(AppLayoutPackageBeanImpl.class, APP, false),
+    WEBTAB_GROUP(WebTabGroupPackageBeanImpl.class, APP_LAYOUT, false),
+    WEBTAB(WebTabPackageBeanImpl.class, APP, false),
+    FORM(FormPackageBeanImpl.class, MODULE, false),
+    FORM_SECTION(FormSectionPackageBeanImpl.class, FORM, false),
+    FORM_FIELDS(FormFieldPackageBeanImpl.class, FORM, false),
+    VIEW(ViewPackageBeanImpl.class, MODULE, false),
+
+
     USER(null, APP, false),
-    LICENSE(null, null, false),
     TEAM(null, APP, false),
-    DEFAULT_PICKLISTS(null, null, false),
+    SITE(null, null, false),
+    TICKET_CATEGORY(null, null, false),
+    TICKET_STATUS(null, null, false),
+    TICKET_PRIORITY(null, null, false),
+    ASSET_CATEGORY(null, null, false),
+    ASSET_DEPARTMENT(null, null, false),
+    ASSET_TYPE(null, null, false),
+    SPACE_TYPE(null, null, false),
+
+
+
     FUNCTION_NAMESPACE(null, null, false),
     FUNCTION(null, FUNCTION_NAMESPACE, true),
     EMAIL_TEMPLATE(null, MODULE, false),
@@ -36,13 +51,6 @@ public enum ComponentType implements FacilioIntEnum {
     CONNECTED_APP_WIDGETS(null, CONNECTED_APP, false),
     CONNECTED_APP_VARIABLES(null, CONNECTED_APP, false),
     CONNECTED_APP_CONNECTORS(null, CONNECTED_APP, false),
-    APP_LAYOUT(AppLayoutPackageBeanImpl.class, APP, false),
-    WEBTAB_GROUP(WebTabGroupPackageBeanImpl.class, APP_LAYOUT, false),
-    WEBTAB(WebTabPackageBeanImpl.class, APP, false),
-    FORM(FormPackageBeanImpl.class, MODULE, false),
-    FORM_SECTION(FormSectionPackageBeanImpl.class, FORM, false),
-    FORM_FIELDS(FormFieldPackageBeanImpl.class, FORM, false),
-    VIEW(ViewPackageBeanImpl.class, MODULE, false),
     FORM_RULE(null, FORM, false),
     VALIDATION_RULE(null, MODULE, false),
     NAMED_CRITERIA(null, MODULE, false),
@@ -55,15 +63,20 @@ public enum ComponentType implements FacilioIntEnum {
     public static List<ComponentType> initOrderedList() {
         List<ComponentType> componentOrder = new ArrayList<ComponentType>(){{
             add(ORG_INFO);
-            add(LICENSE);
             add(APP);
             add(ROLE);
             add(USER);
+            add(TEAM);
             add(MODULE);
             add(FIELD);
             add(SITE);
-            add(TEAM);
-            add(DEFAULT_PICKLISTS);
+            add(TICKET_CATEGORY);
+            add(TICKET_STATUS);
+            add(TICKET_PRIORITY);
+            add(ASSET_CATEGORY);
+            add(ASSET_DEPARTMENT);
+            add(ASSET_TYPE);
+            add(SPACE_TYPE);
             add(NAMED_CRITERIA);
             add(FUNCTION_NAMESPACE);
             add(FUNCTION);
@@ -82,6 +95,7 @@ public enum ComponentType implements FacilioIntEnum {
             add(VALIDATION_RULE);
             add(CUSTOM_BUTTON);
             add(WORKFLOW_RULE);
+
             add(APP_LAYOUT);
             add(WEBTAB_GROUP);
             add(WEBTAB);
