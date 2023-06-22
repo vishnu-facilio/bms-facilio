@@ -67,7 +67,7 @@
         </global-exception-mappings>
 
     </package>
-    <package name="fsmApi" namespace="/api/fsm" extends="v3BaseApi">
+    <package name="fsmApi" namespace="/api/fsm" extends="fsmBaseApi">
         <interceptors>
             <interceptor name="cacheinterceptor"
                          class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
@@ -108,5 +108,21 @@
         </interceptors>
 
         <default-interceptor-ref name="defaultInterceptor" />
+        <action name="serviceAppointment" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">serviceAppointment</param>
+        </action>
+        <action name="serviceAppointment/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">serviceAppointment</param>
+            <param name="id">{1}</param>
+        </action>
+        <action name="serviceAppointment/view/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">serviceAppointment</param>
+            <param name="viewName">{1}</param>
+        </action>
+        <action name="serviceAppointment/view/*/count" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">serviceAppointment</param>
+            <param name="viewName">{1}</param>
+            <param name="type">count</param>
+        </action>
     </package>
 </struts>

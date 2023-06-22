@@ -40,6 +40,7 @@
 	<include file="apiv4.xml"/>
 	<include file="setupwebtab.xml"></include>
 	<include file="odata.xml" />
+	<include file="fsm.xml"/>
 	<!-- Add packages here -->
 
 </struts>
