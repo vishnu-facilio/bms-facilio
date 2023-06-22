@@ -3,6 +3,7 @@ version: 0.1
 env:
   exported-variables:
     - CODEBUILD_BUILD_NUMBER
+    - CODEBUILD_BUILD_ID
 
 phases:
   build:
