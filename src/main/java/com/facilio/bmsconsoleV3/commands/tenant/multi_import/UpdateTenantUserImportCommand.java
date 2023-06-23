@@ -50,6 +50,9 @@ public class UpdateTenantUserImportCommand extends FacilioCommand {
         List<V3PeopleContext> addTenantContacts = new ArrayList<>();
         List<V3PeopleContext> updateTenantContacts = new ArrayList<>();
 
+        List<Long> unMarkPrimaryContactTenantIdsInContactModule = new ArrayList<>();
+        List<Long> unMarkPrimaryContactTenantIdsInTenantContactModule = new ArrayList<>();
+
         for (Pair<Long,ModuleBaseWithCustomFields> logIdVsTenant : tenants) {
             Long logId = logIdVsTenant.getKey();
 
@@ -61,6 +64,7 @@ public class UpdateTenantUserImportCommand extends FacilioCommand {
                     if (existingcontactForPhone == null) {
                         existingcontactForPhone = getDefaultTenantPrimaryContact(tenant);
                         addPrimaryContacts.add(existingcontactForPhone);
+                        unMarkPrimaryContactTenantIdsInContactModule.add(tenant.getId());
                     } else {
                         existingcontactForPhone.setName(tenant.getPrimaryContactName());
                         existingcontactForPhone.setEmail(tenant.getPrimaryContactEmail());
@@ -71,7 +75,7 @@ public class UpdateTenantUserImportCommand extends FacilioCommand {
                     V3TenantContactContext tc = getDefaultTenantContact(tenant);
                     V3TenantContactContext primaryTenantContact = tenantIdVsPrimaryTenantContactMap.get(tc.getTenant().getId());
 
-                    V3PeopleAPI.addParentPrimaryContactAsPeople(tc,primaryTenantContact,addTenantContacts,updateTenantContacts);
+                    V3PeopleAPI.addParentPrimaryContactAsPeople(tc,primaryTenantContact,tc.getTenant().getId(),addTenantContacts,updateTenantContacts,unMarkPrimaryContactTenantIdsInTenantContactModule);
                 }
 
             }
@@ -83,10 +87,13 @@ public class UpdateTenantUserImportCommand extends FacilioCommand {
 
         }
 
+
         if(CollectionUtils.isNotEmpty(addPrimaryContacts)){
+            V3ContactsAPI.unMarkPrimaryContact(null,unMarkPrimaryContactTenantIdsInContactModule,V3ContactsContext.ContactType.TENANT);
             V3RecordAPI.addRecord(true, addPrimaryContacts, contactModule, contactFields);
         }
         if(CollectionUtils.isNotEmpty(addTenantContacts)){
+            V3PeopleAPI.unMarkPrimaryContact(addTenantContacts,unMarkPrimaryContactTenantIdsInTenantContactModule);
             V3RecordAPI.addRecord(true, addTenantContacts, tcModule, tcFields);
         }
 

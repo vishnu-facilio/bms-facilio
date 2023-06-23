@@ -16,11 +16,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class V3ContactsAPI {
 
@@ -74,6 +73,40 @@ public class V3ContactsAPI {
             updateBuilder.andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenant", String.valueOf(id), NumberOperators.EQUALS));
         } else if(contactType == V3ContactsContext.ContactType.CLIENT){
             updateBuilder.andCondition(CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(id), NumberOperators.EQUALS));
+        }
+
+        Map<String, Object> value = new HashMap<>();
+        value.put("isPrimaryContact", false);
+        int count = updateBuilder.update(value);
+        return count;
+
+    }
+    public static int unMarkPrimaryContact(List<Long> contactIds, List<Long> ids, V3ContactsContext.ContactType contactType) throws Exception{
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.CONTACT);
+        Map<String, FacilioField> contactFieldMap = FieldFactory.getAsMap(fields);
+        List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+        FacilioField primaryContactField = contactFieldMap.get("isPrimaryContact");
+        updatedfields.add(primaryContactField);
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(module.getTableName())
+                .fields(updatedfields)
+                .andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS))
+
+                ;
+
+        if(CollectionUtils.isNotEmpty(contactIds)){
+            updateBuilder.andCondition(CriteriaAPI.getCondition("ID", "contactId", StringUtils.join(contactIds,","), NumberOperators.NOT_EQUALS));
+        }
+        if(contactType == V3ContactsContext.ContactType.VENDOR) {
+            updateBuilder.andCondition(CriteriaAPI.getCondition("VENDOR_ID", "vendor", StringUtils.join(ids,","), NumberOperators.EQUALS));
+        }
+        else if(contactType == V3ContactsContext.ContactType.TENANT){
+            updateBuilder.andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenant", StringUtils.join(ids,","), NumberOperators.EQUALS));
+        } else if(contactType == V3ContactsContext.ContactType.CLIENT){
+            updateBuilder.andCondition(CriteriaAPI.getCondition("CLIENT_ID", "client", StringUtils.join(ids,","), NumberOperators.EQUALS));
         }
 
         Map<String, Object> value = new HashMap<>();

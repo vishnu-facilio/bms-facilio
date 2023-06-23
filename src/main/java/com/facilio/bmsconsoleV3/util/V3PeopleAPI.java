@@ -224,7 +224,7 @@ public class V3PeopleAPI {
         }
 
     }
-    public static void addParentPrimaryContactAsPeople(V3PeopleContext tc,V3PeopleContext primaryContactForParent,List<V3PeopleContext> addPeopleList,List<V3PeopleContext> updatePeopleList) throws Exception {
+    public static void addParentPrimaryContactAsPeople(V3PeopleContext tc,V3PeopleContext primaryContactForParent,long parentId,List<V3PeopleContext> addPeopleList,List<V3PeopleContext> updatePeopleList,List<Long> unMarkPrimaryContactIds) throws Exception {
         if(primaryContactForParent != null) {
             if(StringUtils.isNotEmpty(tc.getEmail())) {
                 if(StringUtils.isEmpty(primaryContactForParent.getEmail())) {
@@ -236,6 +236,7 @@ public class V3PeopleAPI {
                     updatePeopleList.add(tc);
                 }
                 else {
+                    unMarkPrimaryContactIds.add(parentId);
                     addPeopleList.add(tc);
                 }
             }
@@ -450,6 +451,61 @@ public class V3PeopleAPI {
                 ;
 
         updateBuilder.andCondition(CriteriaAPI.getCondition("ID", "peopleId", String.valueOf(person.getId()), NumberOperators.NOT_EQUALS));
+        updateBuilder.andCondition(condition);
+
+        Map<String, Object> value = new HashMap<>();
+        value.put("isPrimaryContact", false);
+        int count = updateBuilder.update(value);
+        return count;
+
+    }
+    public static int unMarkPrimaryContact(List<V3PeopleContext> persons, List<Long> parentIds) throws Exception{
+        if(CollectionUtils.isEmpty(parentIds)&&CollectionUtils.isEmpty(persons)){
+            return 0;
+        }
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = null;
+        List<FacilioField> fields = new ArrayList<FacilioField>();
+        List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+        com.facilio.db.criteria.Condition condition = null;
+
+        if(persons.get(0) instanceof V3TenantContactContext) {
+            module = modBean.getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
+            fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.TENANT_CONTACT));
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+            FacilioField primaryContactField = fieldMap.get("isPrimaryContact");
+            updatedfields.add(primaryContactField);
+            condition = CriteriaAPI.getCondition("TENANT_ID", "tenant", StringUtils.join(parentIds,","), NumberOperators.EQUALS);
+
+
+        }
+        else if(persons.get(0) instanceof V3VendorContactContext) {
+            module = modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT);
+            fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.VENDOR_CONTACT));
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+            FacilioField primaryContactField = fieldMap.get("isPrimaryContact");
+            updatedfields.add(primaryContactField);
+            condition = CriteriaAPI.getCondition("VENDOR_ID", "vendor", StringUtils.join(parentIds,","), NumberOperators.EQUALS);
+        }
+        else if(persons.get(0) instanceof V3ClientContactContext) {
+            module = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
+            fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.CLIENT_CONTACT));
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+            FacilioField primaryContactField = fieldMap.get("isPrimaryContact");
+            updatedfields.add(primaryContactField);
+            condition = CriteriaAPI.getCondition("CLIENT_ID", "client", StringUtils.join(parentIds,","), NumberOperators.EQUALS);
+        }
+
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(module.getTableName())
+                .fields(updatedfields)
+                .andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS))
+
+                ;
+
+        Set<Long> personIds = persons.stream().map(V3PeopleContext::getId).collect(Collectors.toSet());
+        updateBuilder.andCondition(CriteriaAPI.getCondition("ID", "peopleId",StringUtils.join(personIds,","), NumberOperators.NOT_EQUALS));
         updateBuilder.andCondition(condition);
 
         Map<String, Object> value = new HashMap<>();
