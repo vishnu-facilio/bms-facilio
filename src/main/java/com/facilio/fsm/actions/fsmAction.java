@@ -1,6 +1,6 @@
 package com.facilio.fsm.actions;
 
-import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
+
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -24,6 +24,20 @@ public class fsmAction extends V3Action {
     private Long startTime;
     private Long endTime;
     private Long boardId;
+
+    public String getViewName() {
+        return viewName;
+    }
+
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+
+    private String viewName;
+
+    private String moduleName;
+    private long appId = -1;
+
     public String resourceList() throws Exception{
         FacilioChain chain = FSMReadOnlyChainFactory.fetchPeopleListChain();
         FacilioContext context = chain.getContext();
@@ -53,6 +67,22 @@ public class fsmAction extends V3Action {
         chain.execute();
 
         setData((JSONObject) context.get(FacilioConstants.Dispatcher.EVENTS));
+        return SUCCESS;
+    }
+    public String serviceAppointmentList() throws Exception{
+        FacilioChain chain = FSMReadOnlyChainFactory.fetchServiceAppointmentListChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        context.put(FacilioConstants.ContextNames.APP_ID, appId);
+        context.put(FacilioConstants.Dispatcher.BOARD_ID,getBoardId());
+        context.put(FacilioConstants.ContextNames.VIEW_NAME,getViewName());
+        context.put(FacilioConstants.ContextNames.PAGE,getPage());
+        context.put(FacilioConstants.ContextNames.PER_PAGE,getPerPage());
+        context.put(FacilioConstants.ContextNames.SEARCH,getSearch());
+        context.put(FacilioConstants.ContextNames.FILTERS,getFilters());
+
+        chain.execute();
+        setData((JSONObject) context.get(FacilioConstants.ContextNames.DATA));
         return SUCCESS;
     }
 }

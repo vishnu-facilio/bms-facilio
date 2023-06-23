@@ -22,4 +22,11 @@ public class FSMReadOnlyChainFactory {
         c.addCommand(new fetchDispatcherEventsCommand());
         return c;
     }
+
+    public static FacilioChain fetchServiceAppointmentListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchViewCriteriaCommand());
+        c.addCommand(new FetchServiceAppointmentListCommand());
+        return c;
+    }
 }

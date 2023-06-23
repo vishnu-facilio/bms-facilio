@@ -128,7 +128,7 @@ public class fetchDispatcherResourcesCommand extends FacilioCommand {
                 .andCriteria(serverCriteria)
                 .orderBy(sortBy)
                 .limit(perPage)
-                .offset(page)
+                .offset(offset)
                 .fetchSupplements(supplementFields);
 
         Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
