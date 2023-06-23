@@ -75,7 +75,7 @@ public class ConstructTabularReportData extends FacilioCommand {
         if (module == null) {
             throw new Exception("Module name should not be empty");
         }
-
+        context.put("ModuleDisplayName", module.getDisplayName());
         context.put(FacilioConstants.ContextNames.MODULE, module);
 
         if (basecriteria != null) {

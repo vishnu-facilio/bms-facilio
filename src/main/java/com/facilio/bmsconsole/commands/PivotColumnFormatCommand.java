@@ -4,6 +4,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
@@ -30,6 +32,7 @@ public class PivotColumnFormatCommand extends FacilioCommand {
     Map<String, Formatter> formatterMap = new HashMap<>();
     Map<String, Object> lookupMap;
     private ModuleBean modBean;
+    Map<String, Integer> alias_vs_aggr= new HashMap<>();
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -41,7 +44,11 @@ public class PivotColumnFormatCommand extends FacilioCommand {
         JsonTable = (HashMap<String, Object>) templateJson.get("columnFormatting");
         pivotRecords = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.PIVOT_TABLE_DATA);
         lookupMap = (Map<String, Object>) context.get(FacilioConstants.ContextNames.PIVOT_LOOKUP_MAP);
-
+        if(dataColumns != null && dataColumns.size() > 0) {
+            for(PivotDataColumnContext dataColumn : dataColumns){
+                alias_vs_aggr.put(dataColumn.getAlias(), dataColumn.getAggr());
+            }
+        }
         Map<String,Object> params = formatHeaders();
         Map<String, Object> table = formatPivotRecords(params);
 
@@ -318,9 +325,12 @@ public class PivotColumnFormatCommand extends FacilioCommand {
                 Formatter formatter = formatterMap.get(actualKey);
                 if(formatter instanceof BooleanFormatter)
                 {
-                    if(data.get(actualKey) instanceof Integer){
+                    if(data.get(actualKey) instanceof Integer && alias_vs_aggr.containsKey(actualKey) && alias_vs_aggr.get(actualKey) == BmsAggregateOperators.SpecialAggregateOperator.LAST_VALUE.getValue()){
                         Integer value = (Integer) data.get(actualKey);
                         tempMap.put("formattedValue", formatter.format(value == 0 ? Boolean.FALSE : Boolean.TRUE));
+                    }
+                    else if(data.get(actualKey) instanceof Integer){
+                        tempMap.put("formattedValue", (Integer) data.get(actualKey));
                     }else if(data.get(actualKey) instanceof BigDecimal){
                         Double value = Double.valueOf(data.get(actualKey).toString());
                         tempMap.put("formattedValue", value);

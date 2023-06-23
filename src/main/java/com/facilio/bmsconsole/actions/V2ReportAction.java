@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.commands.*;
@@ -9,6 +10,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
 import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
 
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.ns.context.NameSpaceField;
@@ -18,6 +20,7 @@ import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.ReportUserFilterContext;
+import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -37,15 +40,6 @@ import com.facilio.bmsconsole.commands.GetCriteriaDataCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.DashboardUtil;
-import com.facilio.bmsconsole.util.FacilioFrequency;
-import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.NewAlarmAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.SharingAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -1322,7 +1316,16 @@ public class V2ReportAction extends FacilioAction {
             widgetCharts = DashboardUtil.getWidgetFromDashboard(reportId, true);
         }
         if (widgetCharts == null || widgetCharts.isEmpty()) {
+            ReportContext report = ReportUtil.getReport(reportId);
             ReportUtil.deleteReport(reportId);
+            if(report != null) {
+                String log_message = "Report {%s} has been deleted for {%s} Module.";
+                FacilioModule module = report.getModule();
+                if(module != null) {
+                    AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format(log_message, report.getName(), module.getName()), "", AuditLogHandler.RecordType.MODULE, module.getName(), reportId);
+                    AuditLogUtil.sendAuditLogs(auditLog);
+                }
+            }
             return SUCCESS;
         } else {
             setResult("errorString", "Report Used In Dashboard");
@@ -2885,12 +2888,33 @@ public class V2ReportAction extends FacilioAction {
 
         chain.execute(context);
 
+        String log_message= reportId > 0 ? "Report {%s} has been created for {%s} Module." : "Report {%s} has been updated for {%s} Module.";
+        setReportAuditLogs((String) context.get("ModuleDisplayName"), reportContext, log_message, reportId > 0 ? AuditLogHandler.ActionType.UPDATE : AuditLogHandler.ActionType.ADD);
         setResult("message", "Report saved");
         setResult("report", reportContext);
 
         return SUCCESS;
     }
-
+    public void setReportAuditLogs(String moduleDisplayName, ReportContext reportContext, String log_message, AuditLogHandler.ActionType actionType) throws Exception
+    {
+        Boolean isCustomModule= reportContext.getModule().getCustom();
+        long moduleId = reportContext.getModule().getModuleId();
+        String moduleName = reportContext.getModule().getName();
+        AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format(log_message, reportContext.getName(), moduleDisplayName), reportContext.getDescription(), AuditLogHandler.RecordType.MODULE, moduleName, reportContext.getId())
+                .setActionType(actionType)
+                .setLinkConfig(((Function<Void, String>) o -> {
+                    JSONArray array = new JSONArray();
+                    JSONObject json = new JSONObject();
+                    json.put("reportId", reportContext.getId());
+                    json.put("moduleName", moduleName);
+                    json.put("moduleId", moduleId);
+                    json.put("reportType", reportContext.getType());
+                    json.put("moduleType", isCustomModule);
+                    array.add(json);
+                    return array.toJSONString();
+                }).apply(null));
+        AuditLogUtil.sendAuditLogs(auditLog);
+    }
     public String exportPivotReport() throws Exception {
         FacilioChain c = ReadOnlyChainFactory.fetchPivotReportChain();
         c.addCommand(new ExportPivotReport());
@@ -3154,9 +3178,17 @@ class HashMapValueComparator implements Comparator<LinkedHashMap<String, HashMap
         } else if (value2 == null) {
             return 1; // obj1 is considered greater than obj2
         } else {
-            String str1 = value1.toString();
-            String str2 = value2.toString();
-            return sortOrder == 3 ? ascComparator.compare(str1, str2) : descComparator.compare(str2, str1);
+            try {
+                Double number1 = Double.parseDouble(value1.toString());
+                Double number2 = Double.parseDouble(value2.toString());
+                Comparator<Double> doubleAscComparator = Comparator.naturalOrder();
+                Comparator<Double> doubleDescComparator = Comparator.naturalOrder();
+                return sortOrder == 3 ? doubleAscComparator.compare(number1, number2) : doubleDescComparator.compare(number2, number1);
+            } catch (Exception e) {
+                String str1 = value1.toString();
+                String str2 = value2.toString();
+                return sortOrder == 3 ? ascComparator.compare(str1, str2) : descComparator.compare(str2, str1);
+            }
         }
     }
 }
