@@ -6,16 +6,20 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fsm.commands.FSMReadOnlyChainFactory;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter @Setter
 public class fsmAction extends V3Action {
-    private List<Long> resourceIds;
+    private String resourceIds;
     private Criteria criteria;
     private Long startTime;
     private Long endTime;
@@ -32,13 +36,17 @@ public class fsmAction extends V3Action {
         context.put(FacilioConstants.ContextNames.FILTERS,getFilters());
         chain.execute();
 
-        setData((JSONObject) context.get(FacilioConstants.ContextNames.DATA));
+        setData((JSONObject) context.get(FacilioConstants.Dispatcher.RESOURCES));
         return SUCCESS;
     }
     public String eventsList() throws Exception{
         FacilioChain chain = FSMReadOnlyChainFactory.fetchEventsListChain();
         FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.ContextNames.PEOPLE_IDS,getResourceIds());
+        if (StringUtils.isNotEmpty(resourceIds)) {
+            String[] ids = FacilioUtil.splitByComma(resourceIds);
+            List<Long> defaultIdList = Arrays.stream(ids).map(Long::parseLong).collect(Collectors.toList());
+            context.put(FacilioConstants.ContextNames.PEOPLE_IDS, defaultIdList);
+        }
         context.put(FacilioConstants.ContextNames.START_TIME,getStartTime());
         context.put(FacilioConstants.ContextNames.END_TIME,getEndTime());
         context.put(FacilioConstants.Dispatcher.BOARD_ID,getBoardId());

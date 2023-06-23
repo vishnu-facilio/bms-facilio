@@ -6,12 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class DispatcherEventContext extends V3Context {
+public class DispatcherEventContext {
     private Long startTime;
     private Long endTime;
     private int type;
     private String typeEnum;
-    private V3Context EventObj;
+    private TimeOffContext timeOff;
+    private ServiceAppointmentContext serviceAppointmentContext;
     private boolean allowResize = false;
     private boolean allowReschedule = false;
     private String backgroundColor = "#B1FFF4";
@@ -32,8 +33,8 @@ public class DispatcherEventContext extends V3Context {
         return eventType;
     }
     public enum EventType implements FacilioIntEnum {
-        ACTIVE("Active"),
-        PASSIVE("Passive");
+        TIME_OFF("Time Off"),
+        SERVICE_APPOINTMENT("Service Appointment");
         private final String value;
         EventType(String value) {
             this.value = value;

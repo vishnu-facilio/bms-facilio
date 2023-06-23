@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Getter@Setter
-public class DispatcherResourceContext extends V3Context {
+public class DispatcherResourceContext {
     private V3PeopleContext people;
     private List<LabourCraftAndSkillContext> craftAndSkill;
     private List<Map<String, Object>> shifts;

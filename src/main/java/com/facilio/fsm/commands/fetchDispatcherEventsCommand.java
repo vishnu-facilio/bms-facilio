@@ -1,14 +1,14 @@
 package com.facilio.fsm.commands;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.fsm.context.DispatcherEventContext;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.TimeOffContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -20,6 +20,7 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
             Long startTime = (Long) context.get(FacilioConstants.ContextNames.START_TIME);
             Long endTime = (Long) context.get(FacilioConstants.ContextNames.END_TIME);
             String timeOffModuleName = FacilioConstants.TimeOff.TIME_OFF;
-            String workOrderModuleName = FacilioConstants.ContextNames.WORK_ORDER;
+            String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
             ModuleBean moduleBean = Constants.getModBean();
 
             FacilioModule timeOff = moduleBean.getModule(timeOffModuleName);
@@ -49,49 +50,48 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
             List<TimeOffContext> timeOffData = new ArrayList<>();
             Map<Long,List<TimeOffContext>> timeOffMap= new HashMap<>();
 
-            FacilioModule wo = moduleBean.getModule(workOrderModuleName);
-            List<FacilioField> woFields = moduleBean.getAllFields(workOrderModuleName);
-            Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(woFields);
+            FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
+            List<FacilioField> saFields = moduleBean.getAllFields(serviceAppointmentModuleName);
+            Map<String, FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
 
-            List<V3WorkOrderContext> woData = new ArrayList<>();
-            Map<Long,List<V3WorkOrderContext>> woMap= new HashMap<>();
+            List<ServiceAppointmentContext> saData = new ArrayList<>();
+            Map<Long,List<ServiceAppointmentContext>> saMap= new HashMap<>();
 
-            List<FacilioField> woSelectFields = new ArrayList<>();
-            woSelectFields.add(woFieldMap.get("estimatedStart"));
-            woSelectFields.add(woFieldMap.get("estimatedEnd"));
-            woSelectFields.add(woFieldMap.get("subject"));
-            woSelectFields.add(woFieldMap.get("priority"));
-            woSelectFields.add(FieldFactory.getIdField(wo));
+            List<FacilioField> saSelectFields = new ArrayList<>();
+            saSelectFields.add(saFieldMap.get("scheduledStartTime"));
+            saSelectFields.add(saFieldMap.get("scheduledEndTime"));
+            saSelectFields.add(saFieldMap.get("name"));
+            saSelectFields.add(saFieldMap.get("fieldAgent"));
+            saSelectFields.add(FieldFactory.getIdField(serviceAppointment));
+
+
 
             SelectRecordsBuilder<TimeOffContext> timeOffBuilder = new SelectRecordsBuilder<TimeOffContext>()
                     .select(timeOffFields)
                     .module(timeOff)
-                    .andCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.PEOPLE), StringUtils.join(peopleIds, ","), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.START_TIME), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
-                    .andCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.END_TIME), String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL));
+                    .beanClass(TimeOffContext.class)
+                    .andCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.PEOPLE), StringUtils.join(peopleIds, ","), NumberOperators.EQUALS));
+            Criteria timeCrit = new Criteria();
+            timeCrit.addAndCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.START_TIME), startTime+","+endTime, DateOperators.BETWEEN));
+            timeCrit.addOrCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.END_TIME), startTime+","+endTime, DateOperators.BETWEEN));
+            timeOffBuilder.andCriteria(timeCrit);
             timeOffData = timeOffBuilder.get();
             if(CollectionUtils.isNotEmpty(timeOffData)){
                 timeOffMap = timeOffData.stream().collect(Collectors.groupingBy(data -> data.getPeople().getId()));
             }
 
-            List<User> users = PeopleAPI.getUsersForPeopleIds(peopleIds);
-
-            if (CollectionUtils.isNotEmpty(users)) {
-
-                List<Long> ouids = users.stream().map(User::getOuid).collect(Collectors.toList());
-                Map<Long, List<Long>> ppluserIdmap = users.stream().collect(Collectors.groupingBy(User::getPeopleId, Collectors.mapping(User::getOuid, Collectors.toList())));
-
-                SelectRecordsBuilder<V3WorkOrderContext> woBuilder = new SelectRecordsBuilder<V3WorkOrderContext>()
-                        .select(woSelectFields)
-                        .module(wo)
-                        .andCondition(CriteriaAPI.getCondition(woFieldMap.get("estimatedStart"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
-                        .andCondition(CriteriaAPI.getCondition(woFieldMap.get("estimatedEnd"), String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL))
-                        .andCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.ASSIGNED_TO_ID), StringUtils.join(ouids, ","), NumberOperators.EQUALS));
-
-                woData = woBuilder.get();
-                if(CollectionUtils.isNotEmpty(woData)){
-                    woMap = woData.stream().collect(Collectors.groupingBy(data -> data.getAssignedTo().getPeopleId()));
-                }
+            SelectRecordsBuilder<ServiceAppointmentContext> serviceAppointmentBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>()
+                    .select(saSelectFields)
+                    .module(serviceAppointment)
+                    .beanClass(ServiceAppointmentContext.class)
+                    .andCondition(CriteriaAPI.getCondition(saFieldMap.get("fieldAgent"), StringUtils.join(peopleIds, ","), NumberOperators.EQUALS));
+            Criteria saTimeCrit = new Criteria();
+            saTimeCrit.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get("scheduledStartTime"), startTime+","+endTime, DateOperators.BETWEEN));
+            saTimeCrit.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get("scheduledEndTime"), startTime+","+endTime, DateOperators.BETWEEN));
+            serviceAppointmentBuilder.andCriteria(saTimeCrit);
+            saData = serviceAppointmentBuilder.get();
+            if(CollectionUtils.isNotEmpty(saData)){
+                saMap = saData.stream().collect(Collectors.groupingBy(data -> data.getFieldAgent().getId()));
             }
 
             for(Long peopleId : peopleIds){
@@ -102,28 +102,31 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
                         DispatcherEventContext dispatcherTOEvent = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(timeOffEvent), DispatcherEventContext.class);
                         String enumVal = (String) timeOffEnum.get(dispatcherTOEvent.getType());
                         dispatcherTOEvent.setTypeEnum(enumVal);
-                        dispatcherTOEvent.setEventType(DispatcherEventContext.EventType.PASSIVE.getIndex());
-                        dispatcherTOEvent.setEventObj(timeOffEvent);
+                        dispatcherTOEvent.setEventType(DispatcherEventContext.EventType.TIME_OFF.getIndex());
+                        dispatcherTOEvent.setTimeOff(timeOffEvent);
+                        dispatcherTOEvent.setBackgroundColor(timeOffEvent.getTypeColor());
                         pplEvents.add(dispatcherTOEvent);
                     }
                 }
-                List<V3WorkOrderContext> pplWo = woMap.get(peopleId);
-                if ((CollectionUtils.isNotEmpty(pplWo))){
-                    for(V3WorkOrderContext woEvent : pplWo) {
-                        DispatcherEventContext dispatcherWOEvent = new DispatcherEventContext();
-                        dispatcherWOEvent.setEventObj(woEvent);
-                        dispatcherWOEvent.setEventType(DispatcherEventContext.EventType.ACTIVE.getIndex());
-                        dispatcherWOEvent.setAllowResize(true);
-                        dispatcherWOEvent.setAllowReschedule(true);
-                        dispatcherWOEvent.setStartTime(woEvent.getEstimatedStart());
-                        dispatcherWOEvent.setEndTime(woEvent.getEstimatedEnd());
-                        pplEvents.add(dispatcherWOEvent);
+                List<ServiceAppointmentContext> pplSA = saMap.get(peopleId);
+                if ((CollectionUtils.isNotEmpty(pplSA))){
+                    for(ServiceAppointmentContext saEvent : pplSA) {
+                        DispatcherEventContext dispatcherSAEvent = new DispatcherEventContext();
+                        dispatcherSAEvent.setServiceAppointmentContext(saEvent);
+                        dispatcherSAEvent.setEventType(DispatcherEventContext.EventType.SERVICE_APPOINTMENT.getIndex());
+                        dispatcherSAEvent.setAllowResize(true);
+                        dispatcherSAEvent.setAllowReschedule(true);
+                        dispatcherSAEvent.setStartTime(saEvent.getScheduledStartTime());
+                        dispatcherSAEvent.setEndTime(saEvent.getScheduledEndTime());
+                        pplEvents.add(dispatcherSAEvent);
                     }
                 }
                 events.put(peopleId,pplEvents);
             }
         }
-        context.put(FacilioConstants.Dispatcher.EVENTS, events);
+        JSONObject result = new JSONObject();
+        result.put(FacilioConstants.Dispatcher.EVENTS,events);
+        context.put(FacilioConstants.Dispatcher.EVENTS, result);
         return false;
     }
 }
