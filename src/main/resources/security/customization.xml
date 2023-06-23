@@ -46,14 +46,14 @@
 <!--        </requestbody>-->
     </request>
 
-    <!-- Relationship / RelatedList -->
+    <!-- RelatedList -->
     <request path="/api/v3/modules/:moduleName/:id/relatedList/:relatedModuleName/:relatedFieldName" method="GET">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="relatedModuleName" type="string" mandatory="true"/>
             <property name="relatedFieldName" type="string" mandatory="true"/>
-            <property name="viewName" type="string" mandatory="true"/>
+            <property name="viewName" type="string"/>
             <property name="page" type="number"/>
             <property name="perPage" type="number"/>
             <property name="filters" type="string"/>

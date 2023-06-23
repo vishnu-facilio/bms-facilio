@@ -31,7 +31,7 @@ public class CalendarViewActionV2 extends RESTAPIHandler {
 
     public String calendarList() throws Exception {
         FacilioContext listContext = calendarViewListChain(this.getModuleName(), this.getViewName(), true, this.getFilters(), this.getExcludeParentFilter(),
-                this.getClientCriteria(), this.getPage(), this.getPerPage(), this.getQueryParameters(), null, this.getCalendarViewRequest());
+                this.getClientCriteria(), this.getPage(), this.getPerPage(), this.getQueryParameters(), this.getSearch(), null, this.getCalendarViewRequest());
 
         List<CustomizationDataContext> customizationDataContexts = (List<CustomizationDataContext>) listContext.get(FacilioConstants.ViewConstants.CALENDAR_VIEW_CUSTOMIZATON_DATAMAP);
 
@@ -47,7 +47,7 @@ public class CalendarViewActionV2 extends RESTAPIHandler {
 
     public String calendarData() throws Exception {
         FacilioContext listContext = calendarViewListChain(this.getModuleName(), this.getViewName(), false, this.getFilters(), this.getExcludeParentFilter(),
-                this.getClientCriteria(), this.getPage(), this.getPerPage(), this.getQueryParameters(), null, this.getCalendarViewRequest());
+                this.getClientCriteria(), this.getPage(), this.getPerPage(), this.getQueryParameters(), this.getSearch(), null, this.getCalendarViewRequest());
 
         JSONObject recordJSON = Constants.getJsonRecordMap(listContext);
 
@@ -59,7 +59,7 @@ public class CalendarViewActionV2 extends RESTAPIHandler {
     }
 
     public static FacilioContext calendarViewListChain(String moduleName, String viewName, boolean getSingleCellData, String filters, boolean excludeParentFilter, String clientCriteria,
-                                                       int page, int perPage, Map<String, List<Object>> queryParameters, Criteria serverCriteria, String calendarViewRequestString) throws Exception {
+                                                       int page, int perPage, Map<String, List<Object>> queryParameters, String searchString, Criteria serverCriteria, String calendarViewRequestString) throws Exception {
         FacilioChain listChain = ChainUtil.getCalendarViewChain(moduleName, getSingleCellData);
         FacilioContext context = listChain.getContext();
 
@@ -101,6 +101,7 @@ public class CalendarViewActionV2 extends RESTAPIHandler {
             context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
         }
 
+        context.put(FacilioConstants.ContextNames.SEARCH, searchString);
         context.put(Constants.QUERY_PARAMS, queryParameters);
 
         if(serverCriteria != null) {

@@ -62,6 +62,11 @@ public class CalendarViewListCommand extends FacilioCommand {
             selectRecordsBuilder.limit(perPage);
         }
 
+        Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
+        if (searchCriteria != null) {
+            selectRecordsBuilder.andCriteria(searchCriteria);
+        }
+
         selectRecordsBuilder.orderBy(startTimeField.getCompleteColumnName() + "," + idFieldColumnName);
 
         List<? extends ModuleBaseWithCustomFields> records = selectRecordsBuilder.get();

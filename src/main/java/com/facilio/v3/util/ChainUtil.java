@@ -815,6 +815,7 @@ public class ChainUtil {
         nonTransactionChain.addCommand(new GetSelectiveFieldsCommand());
 
         if (getSingleCellData) {
+            nonTransactionChain.addCommand(new GenerateSearchConditionCommand());
             nonTransactionChain.addCommand(new CalendarViewListCommand());
         } else {
             nonTransactionChain.addCommand(new CalendarViewDataAggregationCommand());
