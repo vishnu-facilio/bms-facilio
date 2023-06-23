@@ -9,6 +9,9 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v3/dashboard/rule/execute" method="POST">
+        <requestbody type="object"></requestbody>
+    </request>
     <request path="/api/v2/dashboard/cards/getCardData">
         <requestbody type="object">
             <property name="cardId" type="number"/>
