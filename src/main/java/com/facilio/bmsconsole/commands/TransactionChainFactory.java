@@ -540,6 +540,7 @@ public class TransactionChainFactory {
 		c.addCommand(new AddAttachmentCommand());
 		c.addCommand(new AttachmentContextCommand());
 		c.addCommand(new AddAttachmentRelationshipCommand());
+		c.addCommand(new WorkOrderNotesDestructureCommand());
 		c.addCommand(new AddActivitiesCommand());
 			return c;
 		}

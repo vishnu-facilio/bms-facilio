@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import java.util.*;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -72,6 +74,8 @@ public class ConstructTicketNotesCommand extends FacilioCommand {
 				}
 
 				String ticketModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+				String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
+				context.put("oldParentName", parentModuleName);
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
 				context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, ticketModuleName);
 				context.put(FacilioConstants.ContextNames.NOTE_LIST, notes);
@@ -123,6 +127,8 @@ public class ConstructTicketNotesCommand extends FacilioCommand {
 					notes.add(comment);
 				}
 				String ticketModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+				String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
+				context.put("oldParentName", parentModuleName);
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
 				context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, ticketModuleName);
 				context.put(FacilioConstants.ContextNames.NOTE_LIST, notes);
