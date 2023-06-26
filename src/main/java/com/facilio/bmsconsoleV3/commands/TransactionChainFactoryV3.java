@@ -3370,6 +3370,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new PMResourcePlannerBeforeSaveCommand());
         c.addCommand(new ValidatePmResourcePlannerResource());
+        c.addCommand(new ValidateDuplicateResourcesInsidePlannerCommand());
         return c;
     }
 }
