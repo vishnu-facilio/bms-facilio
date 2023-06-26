@@ -15,7 +15,7 @@ public class DispatcherEventContext {
     private ServiceAppointmentContext serviceAppointmentContext;
     private boolean allowResize = false;
     private boolean allowReschedule = false;
-    private String backgroundColor = "#B1FFF4";
+    private String backgroundColor = "#058545";
     private boolean isMismatch = false;
     private EventType eventType;
     public Integer getEventType() {

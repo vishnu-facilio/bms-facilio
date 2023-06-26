@@ -14,16 +14,16 @@ public class TimeOffContext extends V3Context {
     public String getTypeColor(){
         Color typeColorEnum = Color.valueOf(this.type);
         if(typeColorEnum != null){ return  typeColorEnum.getValue();}
-        return "#FF6969";
+        return "#FDECBA";
     }
     private V3PeopleContext people;
     public enum Color implements FacilioIntEnum {
-        Green("#17594A"),
-        YELLOW("#F2BE22"),
-        BLUE("#213363"),
-        PASTEL_BLUE("#9BCDD2"),
-        PINK("#FF78C4"),
-        BROWN("#4E3636");
+        STAND_BY("#FDE49D"),
+        HOLIDAY("#F4C8E7"),
+        SICK("#E5F4FF"),
+        VACATION("#D7CCF0"),
+        TRUCK_BREAKDOWN("#F6D1C8"),
+        TRAINING("#FCE0C3");
 
         private final String value;
         Color(String value) {
