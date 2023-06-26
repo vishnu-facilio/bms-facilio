@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -42,6 +43,7 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
+@Log4j
 public class UpdateTaskCommand extends FacilioCommand {
 	
 	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateTaskCommand.class.getName());
@@ -52,6 +54,9 @@ public class UpdateTaskCommand extends FacilioCommand {
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(task != null && recordIds != null && !recordIds.isEmpty()) {
+			LOGGER.error("recordIDs: " + recordIds);
+			LOGGER.error("task: " + task);
+
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			
@@ -105,6 +110,7 @@ public class UpdateTaskCommand extends FacilioCommand {
 					}
 					JSONObject newinfo = new JSONObject();
 					newinfo.put("taskupdate", info);
+					LOGGER.error("task: " + task.getId());
 					if(task.isPreRequest()){
 						CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.UPDATE_PREREQUISITE, newinfo, (FacilioContext) context);
 					}else{
@@ -192,7 +198,9 @@ public class UpdateTaskCommand extends FacilioCommand {
 																		.table(dataTableName)
 																		.fields(fields)
 																		.andCondition(idCondition);
-			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(task));
+			int updated = updateBuilder.update(task);
+			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updated);
+			LOGGER.error("Number of rows updated in Tasks table: " + updated);
 			int prerequestStatus;
 			if (task.isPreRequest()) {
 				PreRequisiteStatus preReqStatus = WorkOrderAPI.updatePreRequisiteStatus(parentId);
@@ -206,6 +214,9 @@ public class UpdateTaskCommand extends FacilioCommand {
 			context.put(ContextNames.RECORD_LIST, null);
 			context.put(FacilioConstants.ContextNames.RECORD, task);
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+		}
+		else {
+			LOGGER.error("task is null or recordID is null/empty");
 		}
 		return false;
 	}

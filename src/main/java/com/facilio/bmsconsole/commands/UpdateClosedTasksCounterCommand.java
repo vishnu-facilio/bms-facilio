@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,6 +21,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
+@Log4j
 public class UpdateClosedTasksCounterCommand extends FacilioCommand {
 
     private static Logger log = LogManager.getLogger(UpdateClosedTasksCounterCommand.class.getName());
@@ -32,7 +34,9 @@ public class UpdateClosedTasksCounterCommand extends FacilioCommand {
 				long parentTicketId = task.getParentTicketId();
 				
 				TicketContext ticket = new TicketContext();
-				ticket.setNoOfClosedTasks(getClosedTasksCount(parentTicketId));
+				int noOfClosedTasks = getClosedTasksCount(parentTicketId);
+				ticket.setNoOfClosedTasks(noOfClosedTasks);
+				LOGGER.error("noOfClosedTasks: " + noOfClosedTasks);
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField field = modBean.getField("noOfClosedTasks", FacilioConstants.ContextNames.WORK_ORDER);
@@ -45,8 +49,14 @@ public class UpdateClosedTasksCounterCommand extends FacilioCommand {
 																		.fields(fields)
 																		.andCustomWhere("ID = ?", parentTicketId);
 				
-				updateBuilder.update(ticket);
+				int updated = updateBuilder.update(ticket);
+				LOGGER.error("No. of rows updated in Tickets table for noOfClosedTasks: " + updated);
 			}
+			else{
+				LOGGER.error("Status of Task is -1.");
+			}
+		}else {
+			LOGGER.error("Task is null.");
 		}
 		return false;
 	}
@@ -73,6 +83,8 @@ public class UpdateClosedTasksCounterCommand extends FacilioCommand {
 					Long counter = ((Number) count.get("closedTasks")).longValue(); 
 					return counter.intValue();
 				}
+			}else{
+				LOGGER.info("Query to fetch closed task count is null/empty");
 			}
 		}
 		catch(Exception e) {
