@@ -600,7 +600,8 @@ public class AccountUtil {
 		DISABLE_EDIT_SUB_FORM_DATA(139, getExponentValue(12), LicenseMapping.GROUP3LICENSE),//2^12
 
 		CALENDAR_VIEW(140, getExponentValue(13), LicenseMapping.GROUP3LICENSE),//2^13
-		WORK_ORDER_FEATURE_SETTINGS(141,getExponentValue(14),LicenseMapping.GROUP3LICENSE);//2^14
+		WORK_ORDER_FEATURE_SETTINGS(141,getExponentValue(14),LicenseMapping.GROUP3LICENSE),//2^14
+		DASHBOARD_V2(142, getExponentValue(15), LicenseMapping.GROUP3LICENSE);//2^15
 
 		public int featureId;
 		private long license;
