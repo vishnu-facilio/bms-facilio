@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.FieldUtil;
 
 public class FormRuleContext {
 	long id = -1;
@@ -128,6 +129,7 @@ public class FormRuleContext {
 	public boolean evaluateCriteria (Map<String, Object> record,FacilioContext context) throws Exception {
 		boolean criteriaFlag = true;
 		criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), criteriaId);
+		record= FieldUtil.getAsProperties(CriteriaAPI.setLookupFieldsData(criteria,record));
 		if(criteria != null && record != null) {
 			criteriaFlag = criteria.computePredicate(record).evaluate(record);
 		}
@@ -137,6 +139,7 @@ public class FormRuleContext {
 	public boolean evaluateSubFormCriteria (Map<String, Object> subFormRecord,FacilioContext context) throws Exception {
 		boolean criteriaFlag = true;
 		subFormCriteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), subFormCriteriaId);
+		subFormRecord=FieldUtil.getAsProperties(CriteriaAPI.setLookupFieldsData(subFormCriteria,subFormRecord));
 		if(subFormCriteria != null && subFormRecord != null) {
 			criteriaFlag = subFormCriteria.computePredicate(subFormRecord).evaluate(subFormRecord);
 		}

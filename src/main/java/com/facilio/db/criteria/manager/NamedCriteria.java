@@ -1,5 +1,7 @@
 package com.facilio.db.criteria.manager;
 
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.modules.FieldUtil;
@@ -112,6 +114,8 @@ public class NamedCriteria extends ExpressionEvaluator<Predicate> {
             Object result = null;
             switch (condition.getTypeEnum()) {
                 case CRITERIA:
+                    Criteria criteria=condition.getCriteria();
+                    record=CriteriaAPI.setLookupFieldsData(criteria, record);
                     result = condition.getCriteria().computePredicate(variables).evaluate(record);
                     break;
 

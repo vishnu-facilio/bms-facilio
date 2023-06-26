@@ -104,7 +104,9 @@ public class NotificationAPI {
 	public static void sendPushNotification(List<Long> userIds,JSONObject message) throws Exception {
 		
 		userIds = checkUserDelegation(userIds);
-
+		if (CollectionUtils.isEmpty(userIds)) {
+			return;
+		}
 		ApplicationContext applicationContext = ApplicationApi.getApplicationForId((Long) message.get("application"));
 		String appLinkName = applicationContext.getLinkName();
 		List<UserMobileSetting> mobileInstanceSettings = getMobileInstanceIDs(userIds,appLinkName);
