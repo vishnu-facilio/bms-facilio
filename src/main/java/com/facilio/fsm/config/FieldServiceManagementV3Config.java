@@ -1,6 +1,7 @@
 package com.facilio.fsm.config;
 
 
+import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.commands.*;
@@ -8,6 +9,8 @@ import com.facilio.fsm.context.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
+import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
+import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 
 import java.util.function.Supplier;
 
@@ -50,7 +53,11 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getServiceOrder() {
         return () -> new V3Config(ServiceOrderContext.class, new ModuleCustomFieldCount15())
                 .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .list()
                 .summary()
                 .delete()
