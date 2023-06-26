@@ -2619,4 +2619,13 @@
         </requestbody>
     </request>
 
+    <request path="/api/v1/setup/iamuser/exportUserData" method="GET">
+        <urlparams>
+            <property name="appId" type="number" mandatory="true"/>
+            <property name="inviteStatusValue" type="number"/>
+            <property name="userStatus" type="boolean"/>
+            <property name="activeTab" type="string" />
+            <property name="fileName" type="string" />
+        </urlparams>
+    </request>
 </config>

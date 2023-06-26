@@ -3,7 +3,9 @@ package com.facilio.bmsconsole.commands.IAMUserManagement;
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PeopleUserContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -11,9 +13,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.identity.client.dto.User;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,6 +28,9 @@ public class GetApplicationUserCommand extends FacilioCommand {
 
         List<User> iamUserList = (List<User>) context.get(FacilioConstants.ContextNames.IAM_USERS);
         Boolean getCount = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
+        Long vendorId = (Long) context.getOrDefault(FacilioConstants.ContextNames.VENDOR_ID,0L);
+        Long tenantId = (Long) context.getOrDefault(FacilioConstants.ContextNames.TENANT_ID,0L);
+        Long clientId = (Long) context.getOrDefault(FacilioConstants.ContextNames.CLIENT_ID,0L);
         List<Long> userIds = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(iamUserList)) {
             userIds = iamUserList.stream().map(User::getUid).collect(Collectors.toList());
@@ -35,18 +38,24 @@ public class GetApplicationUserCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(userIds)) {
             long orgId = (long) context.get(FacilioConstants.ContextNames.ORGID);
             long appId = (long) context.get(FacilioConstants.ContextNames.APPLICATION_ID);
+            String linkName = null;
+            if(appId > 0){
+                ApplicationContext application = ApplicationApi.getApplicationForId(appId);
+                linkName = application.getLinkName();
+            }
+            context.put(FacilioConstants.ContextNames.APP_LINKNAME,linkName);
 
             if (getCount) {
-                Long count = getApplicationUserCount(orgId, appId, userIds);
+                Long count = getApplicationUserCount(orgId, appId, userIds,vendorId,tenantId,clientId,linkName);
                 context.put(FacilioConstants.ContextNames.COUNT, count);
             }
             JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-            context.put(FacilioConstants.ContextNames.USERS, getApplicationUserList(orgId, appId, userIds, pagination, iamUserList));
+            context.put(FacilioConstants.ContextNames.USERS, getApplicationUserList(orgId, appId, userIds, pagination, iamUserList,vendorId,tenantId,clientId,linkName));
 
         }
         return false;
     }
-    private static GenericSelectRecordBuilder getSelectBuilderForUser(Long orgId,Long appId,List<Long> userIds) throws Exception {
+    private static GenericSelectRecordBuilder getSelectBuilderForUser(Long orgId,Long appId,List<Long> userIds,Long vendorId,Long tenantId,Long clientId, String linkName) throws Exception {
 
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .table("ORG_Users")
@@ -55,22 +64,58 @@ public class GetApplicationUserCommand extends FacilioCommand {
                 .innerJoin("People")
                 .on("People.ID = ORG_Users.PEOPLE_ID");
 
+        if(linkName.equals("vendor")){
+            selectBuilder.innerJoin(ModuleFactory.getVendorContactModule().getTableName())
+                    .on("Vendor_Contacts.ID=People.ID")
+                    .innerJoin(ModuleFactory.getVendorsModule().getTableName())
+                    .on("Vendors.ID=Vendor_Contacts.VENDOR_ID");
+            if(vendorId>0){
+                selectBuilder.andCondition(CriteriaAPI.getCondition("Vendor_Contacts.VENDOR_ID","vendorId",vendorId+"",NumberOperators.EQUALS));
+            }
+        }else if(linkName.equals("tenant")){
+            selectBuilder.innerJoin(ModuleFactory.getTenantContactModule().getTableName())
+                    .on("Tenant_Contacts.ID=People.ID")
+                    .innerJoin(ModuleFactory.getTenantsModule().getTableName())
+                    .on("Tenants.ID=Tenant_Contacts.TENANT_ID");
+            if(tenantId>0){
+                selectBuilder.andCondition(CriteriaAPI.getCondition("Tenant_Contacts.TENANT_ID","tenantId",tenantId+"",NumberOperators.EQUALS));
+            }
+        }else if(linkName.equals("client")){
+            selectBuilder.innerJoin(ModuleFactory.getClientContactModule().getTableName())
+                    .on("Client_Contacts.ID=People.ID")
+                    .innerJoin(ModuleFactory.getClientModule().getTableName())
+                    .on("Clients.ID=Client_Contacts.CLIENT_ID");
+            if(clientId > 0){
+                selectBuilder.andCondition(CriteriaAPI.getCondition("Client_Contacts.CLIENT_ID","clientId",clientId+"",NumberOperators.EQUALS));
+            }
+        }
+
         selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.USERID", "uid", StringUtils.join(userIds, ","), NumberOperators.EQUALS));
         selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+
         if (appId > 0) {
             selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_User_Apps.APPLICATION_ID","applicationId", String.valueOf(appId), NumberOperators.EQUALS));
         }
+
         return selectBuilder;
     }
 
-    public static List<PeopleUserContext> getApplicationUserList(Long orgId,Long appId, List<Long> userIds, JSONObject pagination,List<User> iamuserList) throws Exception {
-        GenericSelectRecordBuilder selectBuilder = getSelectBuilderForUser(orgId,appId,userIds);
+    public static List<PeopleUserContext> getApplicationUserList(Long orgId,Long appId, List<Long> userIds, JSONObject pagination,List<User> iamuserList,Long vendorId,Long tenantId,Long clientId, String linkName) throws Exception {
+        GenericSelectRecordBuilder selectBuilder = getSelectBuilderForUser(orgId,appId,userIds,vendorId,tenantId,clientId,linkName);
 
         List<FacilioField> fields = new ArrayList<>();
         fields.addAll(AccountConstants.getAppOrgUserFields());
         fields.add(AccountConstants.getApplicationIdField());
         fields.add(AccountConstants.getRoleIdField());
         fields.add(FieldFactory.getIdField(AccountConstants.getOrgUserAppsModule()));
+
+        if(linkName.equals("vendor")){
+            fields.add(FieldFactory.getField("vendorName","Vendors.NAME",FieldType.STRING));
+        }else if(linkName.equals("tenant")){
+            fields.add(FieldFactory.getField("tenantName","Tenants.NAME",FieldType.STRING));
+        }else if(linkName.equals("client")){
+            fields.add(FieldFactory.getField("clientName","Clients.NAME",FieldType.STRING));
+        }
 
         selectBuilder.select(fields);
 
@@ -106,6 +151,10 @@ public class GetApplicationUserCommand extends FacilioCommand {
             for (Map<String, Object> prop : props) {
                 PeopleUserContext user = FieldUtil.getAsBeanFromMap(prop, PeopleUserContext.class);
                 user.setOrgUserId((long) prop.get("ouid"));
+                user.setVendorName((String)prop.get("vendorName"));
+                user.setTenantName((String)prop.get("tenantName"));
+                user.setClientName((String)prop.get("clientName"));
+
                 if (user.getRoleId() > 0) {
                     user.setRole(roleMap.get(user.getRoleId()));
                 }
@@ -122,8 +171,8 @@ public class GetApplicationUserCommand extends FacilioCommand {
         }
         return null;
     }
-    public static Long getApplicationUserCount(Long orgId,Long appId,List<Long> userIds) throws Exception {
-        GenericSelectRecordBuilder selectBuilder = getSelectBuilderForUser(orgId,appId,userIds);
+    public static Long getApplicationUserCount(Long orgId,Long appId,List<Long> userIds,Long vendorId,Long tenantId,Long clientId,String linkName) throws Exception {
+        GenericSelectRecordBuilder selectBuilder = getSelectBuilderForUser(orgId,appId,userIds,vendorId,tenantId,clientId,linkName);
         FacilioField id = FieldFactory.getIdField(AccountConstants.getOrgUserAppsModule());
         selectBuilder
                 .select(new HashSet<>())

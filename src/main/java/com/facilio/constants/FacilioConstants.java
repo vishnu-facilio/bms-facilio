@@ -2244,6 +2244,7 @@ public class FacilioConstants {
 
 		public static final String CLIENT = "client";
 		public static final String CLIENT_IDS = "clientIds";
+		public static final String CLIENT_ID="clientId";
 		public static final String CLIENTS = "clients";
 
 		public static final String SPACE_RATING = "spaceRating";
@@ -4108,5 +4109,22 @@ public class FacilioConstants {
 		public static final String WIDGET_IDS = "widgetIds";
 		public static final String WIDGET_MODULE = "widgetToModule";
 		public static final String WIDGET_CONFIGS = "widgetConfigs";
+	}
+
+	public static class UserPeopleKeys {
+		public static final String TAB_NAME="tabName";
+		public static final String VENDOR = "VENDOR";
+		public static final String TENANT = "TENANT";
+		public static final String CLIENT = "CLIENT";
+		public static final String INVITED_TIME = "INVITED TIME";
+		public static final String LAST_LOGIN_TIME = "LAST LOGIN TIME";
+		public static final String NAME ="NAME";
+		public static final String EMAIL ="EMAIL";
+		public static final String ROLE ="ROLE";
+		public static final String USER_STATUS ="USER STATUS";
+		public static final String INVITE_STATUS ="INVITE STATUS";
+
+
+
 	}
 }

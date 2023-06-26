@@ -509,6 +509,10 @@
             <param name="permission">USER_MANAGEMENT,ALL</param>
             <param name="setupTab">USERS</param>
         </action>
+        <action name="exportUserData" class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="exportUserData">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+            <param name="setupTab">USERS</param>
+        </action>
 
     </package>
 </struts>

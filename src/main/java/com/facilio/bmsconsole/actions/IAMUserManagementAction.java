@@ -86,7 +86,12 @@ public class IAMUserManagementAction extends FacilioAction{
     }
 
     private Boolean isPortal;
+    private long vendorId;
+    private long tenantId;
+    private long clientId;
+    private String fileName;
 
+    private String activeTab;
 
     public String addUser() throws Exception{
 
@@ -183,6 +188,13 @@ public class IAMUserManagementAction extends FacilioAction{
                 pagination.put("perPage", 50);
             }
             context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+        }
+        if(vendorId>0){
+            context.put(FacilioConstants.ContextNames.VENDOR_ID,vendorId);
+        }else if(tenantId > 0){
+            context.put(FacilioConstants.ContextNames.TENANT_ID,tenantId);
+        }else if(clientId>0){
+            context.put(FacilioConstants.ContextNames.CLIENT_ID,clientId);
         }
 
         FacilioChain userListChain = ReadOnlyChainFactory.getUserListChain();
@@ -409,6 +421,44 @@ public class IAMUserManagementAction extends FacilioAction{
                 IdentityClient.getDefaultInstance().getUserBean().sendResetPasswordLink(userId);
             }
         }
+
+        return SUCCESS;
+    }
+
+    public String exportUserData() throws Exception {
+        Organization org = AccountUtil.getCurrentOrg();
+        long orgId = org.getOrgId();
+        AppDomain appDomainObj = null;
+        if(appId != null){
+            appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
+        }
+        if(appDomainObj == null) {
+            throw new IllegalArgumentException("Invalid App Domain");
+        }
+        List<User>  iamUserList = IdentityClient.getDefaultInstance().getUserBean().getUserList(orgId,appDomainObj.getIdentifier(), search,  userStatus, inviteStatus,isUserVerified,withMFA,orderBy,  isAscending,  offset,5000);
+        List<Long> userIds = new ArrayList<>();
+        for(User user: iamUserList){
+            userIds.add(user.getUid());
+        }
+
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.ORGID,orgId);
+        context.put(FacilioConstants.ContextNames.APPLICATION_ID,appId);
+        context.put(FacilioConstants.ContextNames.IAM_USERS,iamUserList);
+        context.put(FacilioConstants.ContextNames.FILE_NAME,fileName);
+        context.put(FacilioConstants.UserPeopleKeys.TAB_NAME,activeTab);
+        if(vendorId>0){
+            context.put(FacilioConstants.ContextNames.VENDOR_ID,vendorId);
+        }else if(tenantId > 0){
+            context.put(FacilioConstants.ContextNames.TENANT_ID,tenantId);
+        }else if(clientId>0){
+            context.put(FacilioConstants.ContextNames.CLIENT_ID,clientId);
+        }
+
+        FacilioChain exportUserListChain = ReadOnlyChainFactory.exportUserListChain();
+        exportUserListChain.execute(context);
+
+        setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
 
         return SUCCESS;
     }

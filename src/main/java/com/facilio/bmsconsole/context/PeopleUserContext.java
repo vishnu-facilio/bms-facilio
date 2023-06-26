@@ -22,5 +22,8 @@ public class PeopleUserContext {
     private Role role;
     private List<Long> accessibleSpace;
     private List<Long> groups;
+    private String vendorName;
+    private String tenantName;
+    private String clientName;
 
 }
