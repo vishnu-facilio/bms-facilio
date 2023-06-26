@@ -50,22 +50,24 @@ public class MatrixAnswerHandler extends AnswerHandler<MatrixAnswerContext> {
 		answerContext.setMatrixAnswer(answer.getAnswer());
 
 		List<MatrixQuestionColumn> columns = ((BaseMatrixQuestionContext) question).getColumns();
+		Map<Long, String> columnIdVsName = columns.stream().collect(Collectors.toMap(column->column.getId(), column->column.getName()));
 
 		Map<Long, FieldType> columnIdVsFieldType = columns.stream().collect(Collectors.toMap(column->column.getId(), column->column.getField().getDataTypeEnum()));
 		List<MatrixAnswerContext.ColumnAnswer> columnAnswers= (answer.getAnswer().getRowAnswer().stream().map(row->row.getColumnAnswer()).collect(Collectors.toList())).stream().flatMap(collist->collist.stream()).collect(Collectors.toList());
 
 		for(MatrixAnswerContext.ColumnAnswer columnAnswer:columnAnswers) {
 			if(columnAnswer.getAnswer()!=null) {
+				String columnName = columnIdVsName.get(columnAnswer.getColumn());
 				FieldType fieldType = columnIdVsFieldType.get(columnAnswer.getColumn());
 				switch (fieldType) {
 					case STRING:
-						V3Util.throwRestException(columnAnswer.getAnswer().toString().length() > CommonStringQuestionHandler.SHORT_STRING_MAX_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("String answer length ({0}) is greater than the max length 255 allowed",columnAnswer.getAnswer().toString().length()));
+						V3Util.throwRestException(columnAnswer.getAnswer().toString().length() > CommonStringQuestionHandler.SHORT_STRING_MAX_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("{0} - answer length ({1}) is greater than the max length 255 allowed",columnName,columnAnswer.getAnswer().toString().length()));
 						break;
 					case NUMBER:
-						V3Util.throwRestException(!StringUtils.isNumeric(columnAnswer.getAnswer().toString()), ErrorCode.VALIDATION_ERROR, "Not a valid number format");
+						V3Util.throwRestException(!StringUtils.isNumeric(columnAnswer.getAnswer().toString()), ErrorCode.VALIDATION_ERROR, MessageFormat.format("{0} - Not a valid number format",columnName));
 						break;
 					case BIG_STRING:
-						V3Util.throwRestException(columnAnswer.getAnswer().toString().length() > CommonStringQuestionHandler.BIG_STRING_MAX_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("String answer length ({0}) is greater than the max length 2000 allowed",columnAnswer.getAnswer().toString().length()));
+						V3Util.throwRestException(columnAnswer.getAnswer().toString().length() > CommonStringQuestionHandler.BIG_STRING_MAX_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("{0} - answer length ({1}) is greater than the max length 2000 allowed",columnName,columnAnswer.getAnswer().toString().length()));
 						break;
 					default:
 						break;
