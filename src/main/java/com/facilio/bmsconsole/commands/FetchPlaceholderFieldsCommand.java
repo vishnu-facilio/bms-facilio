@@ -88,7 +88,7 @@ public class FetchPlaceholderFieldsCommand extends FacilioCommand {
 			if (excludeField(field)) {
 				continue;
 			}
-			if (field instanceof LookupField && !FieldUtil.isGeoLocationField(field)) {
+			if (field instanceof LookupField && !FieldUtil.isGeoLocationField(field) && field.getName()!="siteId") {
 				FacilioModule lookupModule = ((LookupField)field).getLookupModule();
 				String lookupModuleName = lookupModule.getName();
 				
