@@ -164,8 +164,11 @@ public class CustomModulePageFactory extends PageFactory {
 		}
 
 		List<FacilioModule> timelogModule = modBean.getSubModules(module.getModuleId(), FacilioModule.ModuleType.TIME_LOG);
-		if (module.isStateFlowEnabled() && ((CollectionUtils.isNotEmpty(timelogModule)) && (timelogModule.size() > 0))){
-			addTimelogTab(page);
+		AppDomain domain = AccountUtil.getCurrentUser().getAppDomain();
+		if (domain != null && domain.getAppDomainTypeEnum() == AppDomain.AppDomainType.FACILIO) {
+			if (module.isStateFlowEnabled() && ((CollectionUtils.isNotEmpty(timelogModule)) && (timelogModule.size() > 0))) {
+				addTimelogTab(page);
+			}
 		}
 		return page;
 	}
