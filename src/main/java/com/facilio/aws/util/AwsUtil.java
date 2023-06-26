@@ -606,7 +606,7 @@ public class AwsUtil extends BaseAwsUtil{
 						ruleConfig.put("sasl.scram.password", configs.get(IOT_RULE_SASL_SCRAM_PASSWORD).toString());
 					} else {
 						throw new Exception("Required keys not found in  : " + configs);
-				    }
+					}
 				}
 				ruleConfig.put("bootstrap.servers", defaultSource.getBroker());
 			} else {

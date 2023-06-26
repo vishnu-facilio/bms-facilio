@@ -24,6 +24,8 @@ artifacts:
     - scripts/setenv-sp.sh
     - scripts/setenv-uk.sh
     - scripts/setenv-syd.sh
+    - scripts/setenv-oci.sh
+    - scripts/setenv-azure.sh
     - scripts/move_hprof.sh
     - scripts/oom.sh
     - scripts/threaddump.sh

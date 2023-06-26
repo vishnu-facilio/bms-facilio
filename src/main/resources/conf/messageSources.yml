@@ -60,7 +60,7 @@ sources:
       iot.rule.sasl.scram.password: ${get_secret('AmazonMSK_ClientCredential','SecretString','password','arn:aws:iam::668907905219:role/kafkaSASLRole')}      
 
 
-  - name: msk-oci #oracle uk region
+  - name: msk-oci #oracle london
     type: kafka
     configs:
       broker: hfuihb6rx2oq.streaming.uk-london-1.oci.oraclecloud.com:9092
@@ -88,3 +88,17 @@ sources:
       iot.rule.sasl.mechanism: SCRAM-SHA-512
       iot.rule.sasl.scram.username: ${get_secret('AmazonMSK_ClientCredential','SecretString','username','arn:aws:iam::668907905219:role/kafkaSASLRole')}
       iot.rule.sasl.scram.password: ${get_secret('AmazonMSK_ClientCredential','SecretString','password','arn:aws:iam::668907905219:role/kafkaSASLRole')}
+      
+  - name: msk-azure #azure us
+    type: kafka
+    configs:
+      broker: eh-facilio-asda-uksouth-prd-test.servicebus.windows.net:9093
+      auth: true
+      mechanism: PLAIN
+      
+  - name: msk-azure-prod #azure us
+    type: kafka
+    configs:
+      broker: eh-prd-asda-arc01.servicebus.windows.net:9093
+      auth: true
+      mechanism: PLAIN

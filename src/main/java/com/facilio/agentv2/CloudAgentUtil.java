@@ -155,7 +155,10 @@ public class CloudAgentUtil {
 
 	private static String getUrl(String url) throws Exception {
 		String domain = getDomain();
-		return RequestUtil.getProtocol(ServletActionContext.getRequest()) + "://" + domain + url;
+		if (!domain.contains("://")) {
+			return RequestUtil.getProtocol(ServletActionContext.getRequest()) + "://" + domain + url;
+		}
+		return domain + url;
 	}
 	
 	private static String getDomain() throws Exception {

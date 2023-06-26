@@ -3,9 +3,11 @@ package com.facilio.bmsconsoleV3.signup;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -20,6 +22,7 @@ import com.facilio.db.criteria.operators.ScopeOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.oci.util.OCIUtil;
 import com.facilio.services.email.EmailClient;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.util.V3Util;
@@ -57,7 +60,7 @@ public class AddEmailConversationModules extends SignUpData {
 		from2.setCreationType(EmailFromAddress.CreationType.DEFAULT.getIndex());
 		
 		defaultFromEmails.add(from2);
-		
+
 		
 		InsertRecordBuilder<EmailFromAddress> insert = new InsertRecordBuilder<EmailFromAddress>()
 				.moduleName(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
@@ -65,6 +68,20 @@ public class AddEmailConversationModules extends SignUpData {
 				.addRecords(defaultFromEmails);
 		
 		insert.save();
+
+		//adding from address for oracle env
+		if("oci".equals(FacilioProperties.getEmailClient())) {
+			List<String> defaultEmailAddress = defaultFromEmails.stream().map(row -> row.getEmail()).collect(Collectors.toList());
+			defaultEmailAddress.add(EmailClient.getFromEmail("issues"));
+			defaultEmailAddress.add(EmailClient.getFromEmail("mlerror"));
+			defaultEmailAddress.add(EmailClient.getFromEmail("report"));
+			defaultEmailAddress.add(EmailClient.getFromEmail("support"));
+			defaultEmailAddress.add(EmailClient.getFromEmail("noreply"));
+			defaultEmailAddress.add(EmailClient.getFromEmail("error"));
+			for(String fromAddr : defaultEmailAddress) {
+				OCIUtil.getOracleEmailClient().addSender(fromAddr);
+			}
+		}
 		
 		//addScoping(modBean.getModule(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME));
 	}

@@ -49,6 +49,18 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-kafka.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-azure-user.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-azure-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-azure-processor.properties
+    destination: /home/facilio/deployment-files/    
+  - source: /awsprops-azure-test-user.properties
+    destination: /home/facilio/deployment-files/
+  - source: /wmsGroupInfo-azure.yml
+    destination: /home/facilio/deployment-files/    
+  - source: /awsprops-azure-test-scheduler.properties
+    destination: /home/facilio/deployment-files/            
   - source: /awsprops-stage.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-team.properties
@@ -132,9 +144,7 @@ files:
   - source: /awsprops-oci-user.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-oci-scheduler.properties
-    destination: /home/facilio/deployment-files/ 
-  - source: /azureprops-user.properties
-    destination: /home/facilio/deployment-files/   
+    destination: /home/facilio/deployment-files/    
   - source: /executors-org.xml
     destination: /home/facilio/deployment-files/
   - source: /executors-org-au.xml
@@ -165,6 +175,19 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /clientAppConfig-stage.yml
     destination: /home/facilio/deployment-files/
+  - source: /log4j-azure-test-user.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-azure-test-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-azure-test-processor.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-azure-user.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-azure-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-azure-processor.properties
+    destination: /home/facilio/deployment-files/
+    
 
 permissions:
   - object: /home/facilio

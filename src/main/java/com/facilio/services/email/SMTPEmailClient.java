@@ -30,9 +30,10 @@ class SMTPEmailClient extends EmailClient {
     private static final String SOCKET_FACTORY_PORT= "mail.smtp.socketFactory.port";
 
 
-    private SMTPEmailClient(){
-        LOGGER.info("FacilioEmail client created");
+    public SMTPEmailClient(){
+        LOGGER.info("Facilio SMTP Email client created");
     }
+
     private static Properties getSMTPProperties() {
         Properties props = new Properties();
         props.put(SMTP_HOST, FacilioProperties.getConfig(SMTP_HOST));
@@ -52,9 +53,12 @@ class SMTPEmailClient extends EmailClient {
     }
 
     @Override
-    public String sendEmailImpl(JSONObject mailJson) throws Exception {
+    public String sendEmailImpl(JSONObject mailJson) {
         String sender = FacilioProperties.getConfig(MAIL_FROM) != null ? FacilioProperties.getConfig(MAIL_FROM) : FacilioProperties.getConfig(MAIL_USERNAME);
+        return sendMail(sender, mailJson);
+    }
 
+    protected String sendMail(String sender, JSONObject mailJson) {
         Session session = getSession();
         try {
 
@@ -109,15 +113,15 @@ class SMTPEmailClient extends EmailClient {
         }
         return null;
     }
-   protected Session getSession() {
-       String sender = FacilioProperties.getConfig(MAIL_USERNAME);
-           return Session.getDefaultInstance(getSMTPProperties(),
-                   new javax.mail.Authenticator() {
-                       protected PasswordAuthentication getPasswordAuthentication() {
-                           return new PasswordAuthentication(sender, FacilioProperties.getConfig(MAIL_PASSWORD));
-                       }
-                   });
 
+    protected Session getSession() {
+        String sender = FacilioProperties.getConfig(MAIL_USERNAME);
+        return Session.getDefaultInstance(getSMTPProperties(),
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(sender, FacilioProperties.getConfig(MAIL_PASSWORD));
+                    }
+                });
     }
 
 }

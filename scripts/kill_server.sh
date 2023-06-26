@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 echo "stopping the server..."
 
-export APP_HOME="/home/facilio/tomcat"
 export FACILIO_HOME="/home/facilio"
+export APP_HOME="$FACILIO_HOME/tomcat"
+export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
+
+
+export deployment=`grep "deployment" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
+
 cd $APP_HOME
 
 #kill server called from build upgrade. create a file so that app server local monitor won't do server start.

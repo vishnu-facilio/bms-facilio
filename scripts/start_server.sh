@@ -15,6 +15,7 @@ export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 export JAVA_HOME=$FACILIO_HOME/jdk
 export PATH=$JAVA_HOME:$PATH
 export GOOGLE_APPLICATION_CREDENTIALS="/tmp/secrets/google_app_credentials.json"
+export deployment=`grep "deployment" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 cd $FACILIO_HOME
 
 pid=`/home/facilio/jdk/bin/jps | grep Bootstrap| cut -d' ' -f1`

@@ -1,5 +1,28 @@
 package com.facilio.aws.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import com.facilio.auth.AzureSecretManager;
+import javax.servlet.http.HttpServletRequest;
+
+import lombok.Getter;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
@@ -37,7 +60,7 @@ public class FacilioProperties {
     private static boolean scheduleServer = false;
     private static boolean isSmtp = false;
     private static String region;
-    private static String regionCountryCode;    
+    private static String regionCountryCode;
     private static String deployment;
     private static String db;
     private static String dbClass;
@@ -92,6 +115,7 @@ public class FacilioProperties {
     private static List<String> wmsTopics;
 
     private static String emailClient;
+    private static String azureDevelopment;
     private static String fileStore;
     private static boolean isServicesEnabled;
 
@@ -222,7 +246,14 @@ public class FacilioProperties {
     private static String proxyJwtTokenSecret;
 
     static {
-        loadProperties();
+        try {
+            loadProperties();
+        }
+        catch (Exception e) {
+            LOGGER.error("Error occurred while reading reading properties", e);
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     private static List<String> parseCommaSeparatedProps(String propName, String prop) {
@@ -237,6 +268,7 @@ public class FacilioProperties {
         return null;
     }
 
+    @SneakyThrows
     private static void loadProperties() {
         File confFilePath = FacilioUtil.getConfFilePath(AWS_PROPERTY_FILE);
         try (InputStream stream = new FileInputStream(confFilePath)) {
@@ -249,11 +281,14 @@ public class FacilioProperties {
                 mailDomain = "facilio.com";
             }
 
+            azureDevelopment = PROPERTIES.getProperty("azureDevelopment", "false");
             deployment = PROPERTIES.getProperty("deployment", "facilio");
             region = PROPERTIES.getProperty("region", "us-west-2");
+//            LOGGER.info("Before secret reading => ("+environment + "-app.properties)");
             HashMap<String, String> awsSecret = getPassword(environment + "-app.properties");
             awsSecret.forEach((k, v) -> PROPERTIES.put(k.trim(), v.trim()));
-            productionEnvironment = ("demo".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment)) || "preprod".equalsIgnoreCase(environment);
+//            LOGGER.info("After secret reading "+awsSecret);
+            productionEnvironment = ("demo".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment));
             developmentEnvironment = "development".equalsIgnoreCase(environment);
             isOnpremise = "true".equals(PROPERTIES.getProperty("onpremise", "false").trim());
             securityFilterEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("security.filter", "false").trim());
@@ -691,7 +726,7 @@ public class FacilioProperties {
         return "";
     }
 
-    public static HashMap<String, String> getPassword(String secretKey) {
+    public static HashMap<String, String> getPassword(String secretKey) throws Exception {
 
         HashMap<String, String> secretMap = new HashMap<>();
 
@@ -704,6 +739,9 @@ public class FacilioProperties {
                 break;
             case "machinestalk":
                 secretMap.putAll(getSecretFromFile(secretKey));
+                break;
+            case "azure":
+                secretMap.putAll(getSecretFromAzure(secretKey));
                 break;
             default:
                 secretMap.putAll(getSecretFromFile(secretKey));
@@ -748,6 +786,17 @@ public class FacilioProperties {
             }
         }
         return secretMap;
+    }
+    private static Map<String, String> getSecretFromAzure(String secretKey) throws Exception {
+        try {
+            LOGGER.info("Getting secret => "+secretKey);
+            return new AzureSecretManager().getSecret(secretKey);
+        }
+        catch (Exception e) {
+            LOGGER.error("Error occurred while reading secret", e);
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public static String getIotUser() {
@@ -986,6 +1035,7 @@ public class FacilioProperties {
        }
        return regionCountryCode;
    }
+
    public static boolean isPreProd() {
         String environment = getEnvironment();
         if(StringUtils.isNotEmpty(environment) && environment.equalsIgnoreCase("preprod")) {

@@ -1,0 +1,83 @@
+trigger:
+  - main
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: Build
+    displayName: Build stage
+    jobs:
+      - job: Build
+        displayName: Build Maven Project
+        steps:
+          - task: Maven@4
+            displayName: 'Maven Package'
+            inputs:
+              mavenPomFile: 'pom.xml'
+              goals: 'package -s settings.xml'
+          - task: CopyFiles@2
+            displayName: 'Copy Files to artifact staging directory'
+            inputs:
+              SourceFolder: '$(System.DefaultWorkingDirectory)'
+              Contents: |
+                **/scripts/**
+                **/deployment-files/**
+                **/target/*.?(war|jar)
+              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+          - upload: $(Build.ArtifactStagingDirectory)
+            artifact: drop
+  - stage: Deploy
+    jobs:
+      - job: Deploy
+      - deployment: VMDeploy
+        displayName: User Server deploy
+        environment:
+          name: production-user
+          resourceType: VirtualMachine
+        strategy:
+          rolling:
+           maxParallel: 2  #for percentages, mention as x%
+           preDeploy:
+            steps:
+             - download: current
+               artifact: drop 
+             - script: |
+                 sudo rm -rf /home/facilio/scripts/
+                 sudo rm -rf /home/facilio/deployment-files/
+                 sudo rm -rf /home/facilio/target/
+                 sudo mv /home/azureuser/azagent/_work/1/drop/** /home/facilio/
+                 sudo chmod +x /home/facilio/scripts/*
+           deploy:
+            steps:
+            - task: Bash@3
+              inputs:
+                filePath: '/home/facilio/scripts/azure_init.sh'
+                arguments: 'production-user'
+  - stage: Deploy
+    jobs:
+      - job: Deploy
+      - deployment: VMDeploy
+        displayName: Schedule Server deploy
+        environment:
+          name: production-scheduler
+          resourceType: VirtualMachine
+        strategy:
+          rolling:
+            maxParallel: 2  #for percentages, mention as x%
+            preDeploy:
+              steps:
+                - download: current
+                  artifact: drop
+                - script: |
+                    sudo rm -rf /home/facilio/scripts/
+                    sudo rm -rf /home/facilio/deployment-files/
+                    sudo rm -rf /home/facilio/target/
+                    sudo mv /home/azureuser/azagent/_work/1/drop/** /home/facilio/
+                    sudo chmod +x /home/facilio/scripts/*
+            deploy:
+              steps:
+                - task: Bash@3
+                  inputs:
+                    filePath: '/home/facilio/scripts/azure_init.sh'
+                    arguments: 'production-scheduler'

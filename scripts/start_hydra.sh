@@ -2,6 +2,7 @@
 
 export APP_HOME="/home/facilio/tomcat"
 export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
+export deployment=`grep "deployment" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 
 export isScheduler=`grep "schedulerServer=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 export isMessageProcessor=`grep "messageProcessor=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
@@ -22,6 +23,6 @@ export SERVE_ADMIN_TLS_ALLOW_TERMINATION_FROM="127.0.0.1/32"
 export SERVE_PUBLIC_TLS_ALLOW_TERMINATION_FROM="0.0.0.0/32"
 export SERVE_ADMIN_TLS_ENABLED=false
 
-if [ "$isMessageProcessor" = "false" ] && [ "$isScheduler" = "false" ]; then
+if [ "$isMessageProcessor" = "false" ] && [ "$isScheduler" = "false" ] && [ "$deployment" = "aws" ]; then
    nohup ./hydra/hydra serve all --dangerous-force-http &
 fi

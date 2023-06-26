@@ -258,19 +258,68 @@ fi
 if [ "$DEPLOYMENT_GROUP_NAME" = "oci-production-user" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/awsprops-oci-user.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/setenv-oci.sh $APP_HOME/bin/setenv.sh
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "oci-production-scheduler" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/awsprops-oci-scheduler.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/setenv-oci.sh $APP_HOME/bin/setenv.sh
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
-if [ "$DEPLOYMENT_GROUP_NAME" = "azure-deployment" ]; then
+if [ "$DEPLOYMENT_GROUP_NAME" = "azure-test-production-scheduler" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
-    cp $FACILIO_HOME/deployment-files/azureprops-user.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/log4j-azure-test-scheduler.properties $CLASSES_DIR/log4j.properties    
+    cp $FACILIO_HOME/deployment-files/awsprops-azure-test-scheduler.properties $CONF_DIR/awsprops.properties
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    echo "copied service file is =======" >> /home/facilio/deployment.log
+    echo "$(<FACILIO_HOME/deployment-files/service-stage.yml)" >> /home/facilio/deployment.log
+    echo "===============================" >> /home/facilio/deployment.log
+fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "azure-deployment" ] || [ "$DEPLOYMENT_GROUP_NAME" = "azure-test-production-user" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
+    cp $FACILIO_HOME/deployment-files/log4j-azure-test-user.properties $CLASSES_DIR/log4j.properties            
+    cp $FACILIO_HOME/deployment-files/awsprops-azure-test-user.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/wmsGroupInfo-azure.yml $CONF_DIR/wms/wmsGroupInfo.yml
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    echo "copied service file is =======" >> /home/facilio/deployment.log
+    echo "$(<FACILIO_HOME/deployment-files/service-stage.yml)" >> /home/facilio/deployment.log
+    echo "===============================" >> /home/facilio/deployment.log
+fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "azure-deployment" ] || [ "$DEPLOYMENT_GROUP_NAME" = "azure-production-user" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
+    cp $FACILIO_HOME/deployment-files/log4j-azure-user.properties $CLASSES_DIR/log4j.properties                
+    cp $FACILIO_HOME/deployment-files/awsprops-azure-user.properties $CONF_DIR/awsprops.properties
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    echo "copied service file is =======" >> /home/facilio/deployment.log
+    echo "$(<FACILIO_HOME/deployment-files/service-stage.yml)" >> /home/facilio/deployment.log
+    echo "===============================" >> /home/facilio/deployment.log
+fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "azure-production-schedule" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
+    cp $FACILIO_HOME/deployment-files/log4j-azure-scheduler.properties $CLASSES_DIR/log4j.properties                
+    cp $FACILIO_HOME/deployment-files/awsprops-azure-scheduler.properties $CONF_DIR/awsprops.properties
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    echo "copied service file is =======" >> /home/facilio/deployment.log
+    echo "$(<FACILIO_HOME/deployment-files/service-stage.yml)" >> /home/facilio/deployment.log
+    echo "===============================" >> /home/facilio/deployment.log
+fi
+
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "azure-production-processor" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
+    cp $FACILIO_HOME/deployment-files/log4j-azure-processor.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/deployment-files/awsprops-azure-processor.properties $CONF_DIR/awsprops.properties
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     echo "copied service file is =======" >> /home/facilio/deployment.log
     echo "$(<FACILIO_HOME/deployment-files/service-stage.yml)" >> /home/facilio/deployment.log

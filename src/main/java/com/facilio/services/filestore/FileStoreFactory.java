@@ -38,6 +38,8 @@ public class FileStoreFactory {
 			case "local": fs = new LocalFileStore(orgId,ouid); break;
 			case "s3"	: fs = new S3FileStore(orgId,ouid); break;
 			case "onpremise": fs = new FacilioFileStore(orgId,ouid); break;
+			case "azure" : fs = new AzureFileStore(orgId,ouid); break;
+			case "oci": fs = new OracleFileStore(orgId,ouid); break;
 			default: fs = new S3FileStore(orgId,ouid); break;
 		}
 		return fs;

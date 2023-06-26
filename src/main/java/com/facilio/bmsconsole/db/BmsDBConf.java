@@ -23,6 +23,7 @@ import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.wmsv2.message.Message;
 import com.facilio.wmsv2.util.WmsUtil;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -203,7 +204,7 @@ public class BmsDBConf extends DBConf {
     public Set<String> getDBIdentifiers() {
         return FacilioProperties.getDBIdentifiers();
     }
-
+    @SneakyThrows
     public HashMap<String, String> getSecret(String secretKey) {
         HashMap<String, String> password = FacilioProperties.getPassword(secretKey);
         String url = String.format("jdbc:mysql://%s:%s/", password.get("host"), password.get("port"));

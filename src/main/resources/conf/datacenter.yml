@@ -48,3 +48,12 @@ datacenters:
     clientportal: ociclients.faciliopilot.com
     vendorportal: ocivendors.faciliopilot.com
     employeeportal: ociworkplace.faciliopilot.com
+
+  10:
+    mainapp: retail.faciliopilot.com
+    occupantportal: azureportal.faciliopilot.com
+    tenantportal: azuretenants.faciliopilot.com
+    clientportal: azureclients.faciliopilot.com
+    vendorportal: azurevendors.faciliopilot.com
+    employeeportal: azureworkplace.faciliopilot.com
+    

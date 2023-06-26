@@ -8,6 +8,9 @@ logsBucket=facilio-server-logs
 servername=`grep "mainapp.domain=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 logsBucket=`grep "logs.bucket" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 identityBucket=`grep "identityBucket" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
+
+deployment=`grep "deployment" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
+
 isScheduler=`grep "schedulerServer=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 isMessageProcessor=`grep "messageProcessor=" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 server_type=""
