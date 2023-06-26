@@ -1581,7 +1581,7 @@ public class ReadingsAPI {
 		if (!field.isDefault()) {
 			dataMeta.setCustom(true);
 		}
-		if (type == ReadingInputType.FORMULA_FIELD && field instanceof NumberField) {
+		if (field instanceof NumberField) {
 			dataMeta.setUnit(((NumberField) field).getUnitId());
 		}
 		return dataMeta;

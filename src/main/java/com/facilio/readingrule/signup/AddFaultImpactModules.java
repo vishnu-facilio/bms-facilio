@@ -70,7 +70,7 @@ public class AddFaultImpactModules extends SignUpData {
         creationType.setEnumName("AggregationType");
 		fields.add(creationType);
 
-		SystemEnumField nsFieldType = (SystemEnumField) FieldFactory.getDefaultField("nsFieldType", "NS Field Type", "NS_FIELD_TYPE", FieldType.SYSTEM_ENUM);
+		SystemEnumField nsFieldType = (SystemEnumField) FieldFactory.getDefaultField("nsFieldTypeEnum", "NS Field Type", "NS_FIELD_TYPE", FieldType.SYSTEM_ENUM);
         nsFieldType.setEnumName("NsFieldType");
 		fields.add(nsFieldType);
 		

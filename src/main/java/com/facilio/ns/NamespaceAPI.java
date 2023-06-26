@@ -29,6 +29,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -90,9 +91,17 @@ public class NamespaceAPI {
                 field.setRelatedInfo(relatedInfo);
             }
             ns.addField(field);
-            field.setField(modBean.getField(field.getFieldId()));
+            FacilioField readingField = modBean.getField(field.getFieldId());
+            field.setVarDataType(getScriptDataType(readingField));
+            field.setField(readingField);
         }
         return new ArrayList<>(nsMap.values());
+    }
+
+    private static String getScriptDataType(FacilioField readingField) {
+        String typeAsString = readingField.getDataTypeEnum().getTypeAsString();
+        List<String> scriptDataType = Arrays.asList("Number", "String", "Map", "List", "Boolean");
+        return scriptDataType.contains(typeAsString) ? typeAsString : "Number";
     }
 
     public static NameSpaceContext getNameSpaceByRuleId(Long ruleId, NSType type) throws Exception {

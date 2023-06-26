@@ -20,6 +20,8 @@ public class NameSpaceField implements Cloneable, Serializable {
 
     String varName;
 
+    String varDataType;
+
     Long resourceId;
 
     Long fieldId;
