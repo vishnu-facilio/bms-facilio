@@ -4,10 +4,7 @@ import com.facilio.beans.NamespaceBean;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.ns.context.AggregationType;
-import com.facilio.ns.context.NSType;
-import com.facilio.ns.context.NameSpaceContext;
-import com.facilio.ns.context.NameSpaceField;
+import com.facilio.ns.context.*;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.faultimpact.FaultImpactAPI;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
@@ -78,6 +75,7 @@ public class AddFaultImpactRelationCommand extends FacilioCommand {
         fld.setModuleId(rule.getReadingModuleId());
         fld.setVarName("_RULE_");
         fld.setPrimary(false);
+        fld.setNsFieldType(NsFieldType.ASSET_READING);
         return fld;
     }
 
