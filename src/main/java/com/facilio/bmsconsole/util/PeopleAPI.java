@@ -1382,8 +1382,41 @@ public class PeopleAPI {
 		return getScopedTeams(appIds, Collections.singletonList(siteId),false);
 	}
 	public static List<Group> getScopedTeams(List<Long> appIds, List<Long> siteIdsList, boolean fetchAccessibleSpaces) throws Exception {
-		JSONObject resultObject = new JSONObject();
 		List<Group> groups = new ArrayList<>();
+		List<GroupMember> members = getScopedTeamMembers(appIds,siteIdsList,fetchAccessibleSpaces,null);
+
+		FacilioModule groupModule = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP);;
+		FacilioField groupSiteIdField = FieldFactory.getSiteIdField(groupModule);
+
+		Criteria siteCriteria = new Criteria();
+		siteCriteria.addAndCondition(CriteriaAPI.getCondition(groupSiteIdField, CommonOperators.IS_EMPTY));
+		if(CollectionUtils.isNotEmpty(siteIdsList)) {
+			siteCriteria.addOrCondition(CriteriaAPI.getCondition(groupSiteIdField, siteIdsList, NumberOperators.EQUALS));
+		}
+		if(CollectionUtils.isNotEmpty(members)) {
+			Map<Long, List<GroupMember>> groupMemberMap = CollectionUtils.isEmpty(members) ? Collections.emptyMap() : members.stream().collect(Collectors.groupingBy(gm -> gm.getGroupId()));
+
+			SelectRecordsBuilder<Group> groupBuilder = new SelectRecordsBuilder<Group>()
+					.module(groupModule)
+					.select(Constants.getModBean().getAllFields(groupModule.getName()))
+					.beanClass(Group.class)
+					.andCondition(CriteriaAPI.getIdCondition(StringUtils.join(groupMemberMap.keySet(), ","), groupModule));
+
+			if (CollectionUtils.isNotEmpty(siteIdsList)) {
+				groupBuilder.andCriteria(siteCriteria);
+			}
+
+			groups = groupBuilder.get();
+
+			for (Group group : groups) {
+				group.setMembers(groupMemberMap.get(group.getId()));
+			}
+		}
+		return groups;
+	}
+
+	public static List<GroupMember> getScopedTeamMembers(List<Long> appIds, List<Long> siteIdsList, boolean fetchAccessibleSpaces,Long teamId) throws Exception {
+		List<GroupMember> members = new ArrayList<>();
 		Map<Long, List<Long>> accessibleSpaceListMap = new HashMap<>();
 
 		FacilioModule groupModule = Constants.getModBean().getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP);;
@@ -1422,6 +1455,10 @@ public class PeopleAPI {
 					.andCriteria(siteCriteria);
 		}
 
+		if(teamId != null && teamId > 0){
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.GROUP_ID),String.valueOf(teamId),NumberOperators.EQUALS));
+		}
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(fetchAccessibleSpaces){
 			accessibleSpaceListMap = UserBeanImpl.getAllUsersAccessibleSpaceList();
@@ -1430,7 +1467,6 @@ public class PeopleAPI {
 
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getId(), false);
 			if(CollectionUtils.isNotEmpty(props)) {
-				List<GroupMember> members = new ArrayList<>();
 				for(Map<String, Object> prop : props) {
 					if (prop.get("peopleId") != null){
 						prop.put("people",PeopleAPI.getPeopleForId((long) prop.get("peopleId")));
@@ -1444,28 +1480,9 @@ public class PeopleAPI {
 						members.add(member);
 					}
 				}
-				if(CollectionUtils.isNotEmpty(members)) {
-					Map<Long, List<GroupMember>> groupMemberMap = CollectionUtils.isEmpty(members) ? Collections.emptyMap() : members.stream().collect(Collectors.groupingBy(gm -> gm.getGroupId()));
-
-					SelectRecordsBuilder<Group> groupBuilder = new SelectRecordsBuilder<Group>()
-							.module(groupModule)
-							.select(Constants.getModBean().getAllFields(groupModule.getName()))
-							.beanClass(Group.class)
-							.andCondition(CriteriaAPI.getIdCondition(StringUtils.join(groupMemberMap.keySet(), ","), groupModule));
-
-					if (CollectionUtils.isNotEmpty(siteIdsList)) {
-						groupBuilder.andCriteria(siteCriteria);
-					}
-
-					groups = groupBuilder.get();
-
-					for (Group group : groups) {
-						group.setMembers(groupMemberMap.get(group.getId()));
-					}
-				}
 			}
 		}
-		return groups;
+		return members;
 	}
 
 
