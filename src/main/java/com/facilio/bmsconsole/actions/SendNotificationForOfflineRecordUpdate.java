@@ -39,11 +39,6 @@ public class SendNotificationForOfflineRecordUpdate extends FacilioCommand imple
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-
-        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.OFFLINE_SUPPORT)) {
-            return false;
-        }
-
         this.context = context;
 
         return false;
@@ -51,9 +46,17 @@ public class SendNotificationForOfflineRecordUpdate extends FacilioCommand imple
 
     @Override
     public boolean postExecute() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.OFFLINE_SUPPORT)) {
+            return false;
+        }
 
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+
+        if(moduleName == null){
+            return false;
+        }
+
         FacilioModule module = modBean.getModule(moduleName);
         List<Long> recordIds = OfflineSupportUtil.getRecordIds(context);
 

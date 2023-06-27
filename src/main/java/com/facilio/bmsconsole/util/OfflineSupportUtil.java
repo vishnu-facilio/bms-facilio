@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -20,7 +21,11 @@ import java.util.List;
 import static com.facilio.wmsv2.constants.Topics.UpdateOnOfflineRecord.updateOnOfflineRecord;
 
 public class OfflineSupportUtil {
-    public static void sendNotificationOnOfflineRecordUpdate(FacilioModule module, List<Long> recordIds, String type){
+    public static void sendNotificationOnOfflineRecordUpdate(FacilioModule module, List<Long> recordIds, String type) throws Exception {
+        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.OFFLINE_SUPPORT)) {
+            return;
+        }
+
         if(module == null || CollectionUtils.isEmpty(recordIds)) {
             return;
         }
