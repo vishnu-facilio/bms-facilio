@@ -39,6 +39,7 @@
 	<include file="internalv3.xml"/>
 	<include file="apiv4.xml"/>
 	<include file="setupwebtab.xml"></include>
+	<include file="odata.xml" />
 	<!-- Add packages here -->
 
 </struts>

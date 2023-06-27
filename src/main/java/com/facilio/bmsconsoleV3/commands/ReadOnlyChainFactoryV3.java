@@ -7,6 +7,9 @@ import com.facilio.bmsconsole.automation.command.ListGlobalVariableCommand;
 import com.facilio.bmsconsole.automation.command.ListGlobalVariableGroupCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.ODataReadings.GetODataReadingData;
+import com.facilio.bmsconsoleV3.commands.ODataReadings.GetODataReadingFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.ODataReadings.GetParentIdforCriteria;
 import com.facilio.bmsconsoleV3.commands.building.BuildingFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.LoadPeopleAnnouncementLookupCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.UserScopingForAnnouncements;
@@ -142,7 +145,13 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new AddUserCriteriaMyNotification());
         return c;
     }
-
+    public static FacilioChain getODataReadingsChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetParentIdforCriteria());
+        c.addCommand(new GetODataReadingFieldsCommand());
+        c.addCommand(new GetODataReadingData());
+        return c;
+    }
     public static FacilioChain getFacilityAfterFetchChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetFacilityAvailabilityCommandV3());

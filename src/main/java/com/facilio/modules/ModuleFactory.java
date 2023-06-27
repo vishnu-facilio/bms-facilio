@@ -2369,7 +2369,20 @@ public class ModuleFactory {
 		readingDataMeta.setTableName("Reading_Data_Meta");
 		return readingDataMeta;
 	}
-
+	public static FacilioModule getOdataModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("OData_Module_Settings");
+		module.setDisplayName("OData Module Settings");
+		module.setTableName("OData_Module_Settings");
+		return module;
+	}
+	public static FacilioModule getODataReadingModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("OData_Readings");
+		module.setDisplayName("OData Reading Settings");
+		module.setTableName("OData_Reading_Settings");
+		return module;
+	}
 	public static FacilioModule getResetCounterMetaModule() {
 		FacilioModule resetcountermeta = new FacilioModule();
 		resetcountermeta.setName("resetcountermeta");

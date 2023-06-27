@@ -2,8 +2,10 @@
 package com.facilio.bmsconsole.interceptors;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -69,11 +71,24 @@ public class AuthInterceptor extends AbstractInterceptor {
 		boolean isOauth2 = StringUtils.isNotEmpty(authorization) && StringUtils.startsWith(authorization, "Bearer oauth2");
 		String apiKey = request.getHeader("x-api-key");
 		boolean isApiKey = StringUtils.isNotEmpty(apiKey);
+		if(!isApiKey && authorization!=null && StringUtils.startsWith(authorization, "Basic")) {		// odata request
+			String encodedPass = authorization.replace("Basic ", "");
+			String decodedKey = new String(Base64.getDecoder().decode(encodedPass), StandardCharsets.UTF_8);
+			if (decodedKey.substring(0,decodedKey.length()-1).contains(":")) {
+				apiKey = decodedKey.substring(decodedKey.indexOf(":") + 1);
+			} else {
+				apiKey = decodedKey.substring(0,decodedKey.length()-1);
+			}
+		}
+		boolean isOdataReq = StringUtils.isNotEmpty(apiKey);
 		if (isOauth2) {
 			request.setAttribute("authMethod", "OAUTH2");
 			return arg0.invoke();
 		} else if (isApiKey) {
 			request.setAttribute("authMethod", "APIKEY");
+			return arg0.invoke();
+		} else if (isOdataReq) {
+			request.setAttribute("authMethod","APIKEY");
 			return arg0.invoke();
 		}
 		try {

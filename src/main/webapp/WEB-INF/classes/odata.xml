@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+    <package name="odata" strict-method-invocation="false" extends="struts-default,json-default">
+        <global-results>
+            <result name="login" type="httpheader">
+                <param name="status">401</param>
+            </result>
+            <result name="unauthorized" type="httpheader">
+                <param name="status">403</param>
+            </result>
+            <result name="sessionexpired" type="httpheader">
+                <param name="status">440</param>
+            </result>
+            <result name="invalid" type="httpheader">
+                <param name="status">400</param>
+            </result>
+            <result name="usernotinapp" type="httpheader">
+                <param name="status">409</param>
+            </result>
+            <result name="resourcenotfound" type="httpheader">
+                <param name="status">404</param>
+            </result>
+            <result name="error" type="json">
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">responseCode, message, stackTrace</param>
+                <param name="excludeNullProperties">true</param>
+                <param name="statusCode">500</param>
+            </result>
+            <result name="input" type="json">
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">responseCode, message, stackTrace</param>
+                <param name="excludeNullProperties">true</param>
+                <param name="statusCode">400</param>
+            </result>
+            <result name="exception" type="chain">
+                <param name="actionName">handleException</param>
+                <param name="namespace">/v1/exception</param>
+            </result>
+        </global-results>
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception"
+                               result="exception" />
+        </global-exception-mappings>
+    </package>
+    <package name="odataApi" strict-method-invocation="false" extends="odata">
+        <interceptors>
+            <interceptor name="cacheinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+            <interceptor name="scopeinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+            <interceptor name="datasourceinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
+            <interceptor name="authinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+            <interceptor name="validationinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
+            <interceptor name="globalscopevariableinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor" />
+            <interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor" />
+            <interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor" />
+            <interceptor-stack name="defaultInterceptor">
+                <interceptor-ref name="defaultStack" />
+                <interceptor-ref name="authinterceptor" />
+                <interceptor-ref name="apiKeyInterceptor" />
+                <interceptor-ref name="datasourceinterceptor" />
+                <interceptor-ref name="scopeinterceptor" />
+                <interceptor-ref name="malwareInterceptor" />
+                <interceptor-ref name="globalscopevariableinterceptor" />
+                <interceptor-ref name="cacheinterceptor" />
+                <interceptor-ref name="validationinterceptor"/>
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="defaultInterceptor" />
+    </package>
+
+    <package name="readingMetadata" namespace="/api/odata/readings" extends="odataApi">
+        <action name="$metadata" class="com.facilio.odataservice.action.ODataReadingAction" method="execute">
+            <result name="success" type="json">
+            </result>
+        </action>
+        <action name="*" class="com.facilio.odataservice.action.ODataReadingAction" method="execute">
+            <result name="success" type="json">
+            </result>
+        </action>
+    </package>
+    <package name="moduleMetadata" namespace="/api/odata/module" extends="odataApi">
+        <action name="*/$metadata" class="com.facilio.odataservice.action.ODataModuleAction" method="execute">
+            <param name="moduleName">{1}</param>
+            <result name="success" type="json">
+            </result>
+        </action>
+        <action name="*/*" class="com.facilio.odataservice.action.ODataModuleAction" method="execute">
+            <param name="moduleName">{1}</param>
+            <result name="success" type="json">
+            </result>
+        </action>
+    </package>
+</struts>

@@ -1436,7 +1436,33 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
+    public static List<FacilioField> getODataModuleFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getOdataModule();
+        fields.add(getIdField(module));
+        fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("isEnabled", "IS_ENABLED", module, FieldType.BOOLEAN));
+        return fields;
+    }
 
+    public static List<FacilioField> getODataReadingFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getODataReadingModule();
+        fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("isEnabled", "IS_ENABLED", module, FieldType.BOOLEAN));
+        fields.add(getField("readingType", "READING_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("categorymoduleId", "CATEGORY_ID", module, FieldType.NUMBER));
+        fields.add(getField("readingFields", "READING_FIELDS", module, FieldType.STRING));
+        fields.add(getField("dateOperator", "DATE_OPERATOR", module, FieldType.NUMBER));
+        fields.add(getField("aggregateOperator", "AGGREGATE_OPERATOR ", module, FieldType.NUMBER));
+        fields.add(getField("dateRange", "DATE_RANGE", module, FieldType.STRING));
+        fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
+        return fields;
+    }
     public static List<FacilioField> getStringFieldFields() {
 
         List<FacilioField> fields = new ArrayList<>();

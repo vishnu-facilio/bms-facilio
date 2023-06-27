@@ -19,6 +19,7 @@
 	<include file="admin.xml" />
 	<include file="sso.xml" />
 	<include file="internal.xml" />
+	<include file="odata.xml" />
 
 	<!-- Add packages here -->
 	<package name="app" namespace="/" extends="struts-default">

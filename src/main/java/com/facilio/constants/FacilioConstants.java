@@ -260,6 +260,8 @@ public class FacilioConstants {
 		public static final String RELATED_MODULE_NAME = "relatedModuleName";
 		public static final String RELATED_FIELD_NAME = "relatedFieldName";
 		public static final String AUTO_CAD_FILE_IMPORT ="autoCadFileImport";
+		public static final String ODATA_READING_VIEW ="odataReadingView";
+		public static final String MODULE_AND_FIELDS ="moduleAndFields";
 		public static final String READING_IMPORT_APP = "readingimport";
 		public static final String ORDER_TYPE="orderType";
 		public static final String ORDER_BY="orderBy";

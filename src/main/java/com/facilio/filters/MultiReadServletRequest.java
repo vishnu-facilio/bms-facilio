@@ -106,6 +106,22 @@ public class MultiReadServletRequest extends HttpServletRequestWrapper {
 		return super.getInputStream();
 	}
 
+	@Override
+	public String getServletPath() {
+		if (super.getServletPath().contains("api/odata/module")){
+			String servletPath = super.getServletPath();
+			int index = StringUtils.ordinalIndexOf(servletPath,"/",5);
+			servletPath = servletPath.substring(0,index);
+			return servletPath;
+		}else if (super.getServletPath().contains("api/odata/reading")){
+			String servletPath = super.getServletPath();
+			int index = StringUtils.ordinalIndexOf(servletPath,"/",4);
+			servletPath = servletPath.substring(0,index);
+			return servletPath;
+		}else
+			return super.getServletPath();
+	}
+
 	private class ContentCacheServletInputStream extends ServletInputStream {
 
 		private byte[] b;

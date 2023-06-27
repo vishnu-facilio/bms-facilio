@@ -2493,4 +2493,130 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v1/setup/odatasettings/addodatareadings" method="POST">
+        <requestbody type="object">
+            <property name="readingView" type="object">
+                <property name="aggregateOperator" type="number" mandatory="true"/>
+                <property name="categorymoduleId" type="number" mandatory="true"/>
+                <property name="criteria" type="object" />
+                <property name="dateOperator" type="number" mandatory="true"/>
+                <property name="dateRange" type="string" />
+                <property name="description" type="string"/>
+                <property name="displayName" type="string" mandatory="true"/>
+                <property name="isEnabled" type="boolean" />
+                <property name="readingFields" type="string" mandatory="true"/>
+                <property name="readingType" type="number" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/odatasettings/updateodatareadings" method="POST">
+        <requestbody type="object">
+            <property name="readingName" type="string" mandatory="true"/>
+            <property name="readingView" type="object" mandatory="true">
+                <property name="aggregateOperator" type="number" mandatory="true"/>
+                <property name="categorymoduleId" type="number" mandatory="true"/>
+                <property name="criteria" type="object" />
+                <property name="dateOperator" type="number" mandatory="true"/>
+                <property name="dateRange" type="string" />
+                <property name="description" type="string"/>
+                <property name="displayName" type="string" mandatory="true"/>
+                <property name="isEnabled" type="boolean" />
+                <property name="readingFields" type="string" mandatory="true"/>
+                <property name="readingType" type="number" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/odatasettings/changestatus" method="POST">
+        <requestbody type="object">
+            <property name="readingName" type="string" mandatory="true"/>
+            <property name="status" type="boolean" mandatory="true" />
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/odatasettings/readingscount" method="GET">
+        <urlparams>
+            <property name="search" type="string" />
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/odatasettings/modulescount" method="GET">
+        <urlparams>
+            <property name="search" type="string" />
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/odatasettings/getodatamodules" method="GET">
+        <urlparams>
+            <property name="search" type="string" />
+            <property name="page" type="number" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/odata/module/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/odata/module/:moduleName/:view" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="view" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/odata/module/:moduleName/$metadata" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/odata/readings" method="GET">
+    </request>
+    <request path="/api/odata/readings/:readingView" method="GET">
+        <urlparams>
+            <property name="readingView" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/odata/readings/$metadata" method="GET">
+    </request>
+    <request path="/api/v1/setup/odatasettings/fetchodatareadings" method="GET">
+        <urlparams>
+            <property name="search" type="string" />
+            <property name="page" type="number" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/odatasettings/deleteselectedmodules" method="POST">
+        <requestbody type="object">
+            <property name="data" type="object">
+                <property name="moduleName" type="string" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/odatasettings/deleteodatareading" method="POST">
+        <requestbody type="object">
+            <property name="readingName" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/odatasettings/addodatamodules" method="POST">
+        <requestbody type="object">
+            <property name="data" type="object">
+                <property name="selectedModule" type="array" mandatory="true">
+                    <items type="object">
+                        <property name="isEnabled" type="boolean" mandatory="true"/>
+                        <property name="moduleId" type="number" mandatory="true"/>
+                        <property name="name" type="string" mandatory="true"/>
+                    </items>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/odatasettings/updateodatamodules" method="POST">
+        <requestbody type="object">
+            <property name="rowdata" type="array" mandatory="true">
+                <items type="object">
+                    <property name="description" type="string" />
+                    <property name="module" type="string" mandatory="true"/>
+                    <property name="status" type="boolean" mandatory="true"/>
+                    <property name="url" type="string" />
+                </items>
+            </property>
+        </requestbody>
+    </request>
+
 </config>
