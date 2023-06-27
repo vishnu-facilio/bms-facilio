@@ -100,7 +100,9 @@ public class ExportUserListAsXLSCommand extends FacilioCommand {
                     if(finalLinkName != null){
                         userData.put(finalLinkName,getPortalUserName(finalLinkName,people));
                     }
-                    userData.put(FacilioConstants.UserPeopleKeys.ROLE,people.getRole().getName());
+                    if(people.getRole() != null){
+                        userData.put(FacilioConstants.UserPeopleKeys.ROLE,people.getRole().getName());
+                    }
                     userData.put(FacilioConstants.UserPeopleKeys.INVITED_TIME,user.getInvitedTime());
                     userData.put(FacilioConstants.UserPeopleKeys.LAST_LOGIN_TIME,user.getLastLoginTime());
                     userData.put(FacilioConstants.UserPeopleKeys.USER_STATUS,user.getUserStatus());
