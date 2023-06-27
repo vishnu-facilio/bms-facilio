@@ -21,3 +21,6 @@ clientapps:
   - name: dashboard
     baseUrl: https://static.facilio.in/dashboard
     stageBaseUrl: https://static.facilio.in/dev
+  - name: weave-builder
+    baseUrl: https://static.facilio.in/weave-builder
+    stageBaseUrl: https://static.facilio.in/weave-builder/dev
