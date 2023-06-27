@@ -2476,6 +2476,7 @@
         <urlparams>
             <property name="recordId" type="number" mandatory="true"/>
         </urlparams>
+    </request>
     <request path="/api/v2/userMobileSetting/updateFcmToken" method="POST">
         <requestbody type="object">
             <property name="oldFcmToken" type="string" mandatory="true"/>
