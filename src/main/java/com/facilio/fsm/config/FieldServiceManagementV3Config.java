@@ -3,6 +3,7 @@ package com.facilio.fsm.config;
 
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.commands.*;
 import com.facilio.fsm.context.*;
@@ -65,7 +66,7 @@ public class FieldServiceManagementV3Config {
     }
     @Module(FacilioConstants.TimeOff.TIME_OFF)
     public static Supplier<V3Config> getTimeOff(){
-        return () -> new V3Config(TimeOffContext.class,null)
+        return () -> new V3Config(TimeOffContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
                 .update()
                 .list()
@@ -83,7 +84,7 @@ public class FieldServiceManagementV3Config {
     }
     @Module(FacilioConstants.Territory.TERRITORY)
     public static Supplier<V3Config> getTerritory(){
-        return () -> new V3Config(TerritoryContext.class,null)
+        return () -> new V3Config(TerritoryContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
                 .update()
                 .list()
@@ -94,7 +95,7 @@ public class FieldServiceManagementV3Config {
     }
     @Module(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)
     public static Supplier<V3Config> getServiceAppointment(){
-        return () -> new V3Config(ServiceAppointmentContext.class,null)
+        return () -> new V3Config(ServiceAppointmentContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
                 .update()
                 .list()
@@ -102,6 +103,14 @@ public class FieldServiceManagementV3Config {
                 .summary()
                 .beforeFetch(new FetchServiceAppointmentSupplementsCommand())
                 .pickList()
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.PeopleSkillLevel.PEOPLE_SKILL_LEVEL)
+    public static Supplier<V3Config> getPeopleSkillLevel() {
+        return () -> new V3Config(PeopleSkillLevelContext.class, null)
+                .create()
+                .list()
                 .delete()
                 .build();
     }

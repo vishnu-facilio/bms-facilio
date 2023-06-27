@@ -135,4 +135,7 @@
         <action name="list" class="com.facilio.fsm.actions.fsmAction" method="serviceAppointmentList">
         </action>
     </package>
+    <package name="dispatcher" namespace="/api/fsm/dispatcher" extends="fsmApi">
+        <action name="list" class="com.facilio.fsm.actions.DispatcherAction" method="fetchDispatcherBoardList" />
+    </package>
 </struts>

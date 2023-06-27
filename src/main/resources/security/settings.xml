@@ -3621,4 +3621,6 @@
             <property name="id" type="number"/>
         </requestbody>
     </request>
+    <request path="/api/fsm/dispatcher/list" method="GET"/>
+
 </config>

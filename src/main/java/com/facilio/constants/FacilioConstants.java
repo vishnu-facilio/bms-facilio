@@ -4594,4 +4594,8 @@ public class FacilioConstants {
 		public static final String SERVICE_APPOINTMENT_TASK = "serviceAppointmentTask";
 	}
 
+
+	public static class PeopleSkillLevel{
+		public static final String PEOPLE_SKILL_LEVEL = "peopleskilllevel";
+	}
 }

@@ -50,6 +50,7 @@ public class PeopleSkillLevelModule extends SignUpData {
         fields.add(skill);
 
         SystemEnumField level = FieldFactory.getDefaultField("level", "Level", "LEVEL", FieldType.SYSTEM_ENUM);
+        level.setEnumName("Level");
         fields.add(level);
 
         fields.add(FieldFactory.getDefaultField("rate","Rate","RATE",FieldType.DECIMAL));
