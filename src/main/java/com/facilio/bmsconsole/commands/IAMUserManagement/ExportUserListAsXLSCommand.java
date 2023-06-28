@@ -2,6 +2,10 @@ package com.facilio.bmsconsole.commands.IAMUserManagement;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.fs.FileInfo;
+import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.report.formatter.DateFormatter;
 import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.PeopleUserContext;
 import com.facilio.constants.FacilioConstants;
@@ -103,8 +107,12 @@ public class ExportUserListAsXLSCommand extends FacilioCommand {
                     if(people.getRole() != null){
                         userData.put(FacilioConstants.UserPeopleKeys.ROLE,people.getRole().getName());
                     }
-                    userData.put(FacilioConstants.UserPeopleKeys.INVITED_TIME,user.getInvitedTime());
-                    userData.put(FacilioConstants.UserPeopleKeys.LAST_LOGIN_TIME,user.getLastLoginTime());
+                    FacilioField invitedTimeField = new FacilioField(IAMAccountConstants.getAccountsUserModule(),"invitedTime","Invited Time", FacilioField.FieldDisplayType.DATETIME,"INVITED_TIME", FieldType.DATE_TIME,true,false,true,false);
+                    DateFormatter formatter = new DateFormatter(invitedTimeField);
+                    String invitedTime = user.getInvitedTime() > 0 ? (String) formatter.format(user.getInvitedTime()) : "";
+                    String lastLoginTime = user.getLastLoginTime() > 0 ? (String) formatter.format(user.getLastLoginTime()) : "";
+                    userData.put(FacilioConstants.UserPeopleKeys.INVITED_TIME,invitedTime);
+                    userData.put(FacilioConstants.UserPeopleKeys.LAST_LOGIN_TIME,lastLoginTime);
                     userData.put(FacilioConstants.UserPeopleKeys.USER_STATUS,user.getUserStatus());
                     userData.put(FacilioConstants.UserPeopleKeys.INVITE_STATUS,user.getInviteStatusEnum());
                     userTableData.add(userData);
