@@ -116,7 +116,7 @@ public class ConstructCalendarViewResponseCommand extends FacilioCommand {
             Map<String, Object> currDateRecordMap = (Map<String, Object>)aggregateMap.get(currDate);
             long currDateTimeStamp = (long) currDateRecordMap.get(TIMESTAMP);
 
-            if (currDateTimeStamp > startTime && currDateTimeStamp < endTime) {
+            if (currDateTimeStamp > startTime && currDateTimeStamp <= endTime) {
                 currDateRecordMap.put("hidden", true);
             }
         }

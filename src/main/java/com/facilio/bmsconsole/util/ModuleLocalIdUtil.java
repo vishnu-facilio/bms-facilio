@@ -14,6 +14,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -190,4 +191,23 @@ public class ModuleLocalIdUtil {
 		}
 		return false;
 	}
+
+	public static FacilioField getLocalIdField(FacilioModule module) throws Exception {
+		String moduleName = module.getName();
+		ModuleBean moduleBean = Constants.getModBean();
+		FacilioField localIdField = moduleBean.getField("localId", moduleName);
+
+		if (localIdField != null) {
+			return localIdField;
+		} else if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+			return FieldFactory.getNumberField("serialNumber", "SERIAL_NUMBER", module.getExtendModule());
+		} else if (MODULES_WITH_LOCAL_ID.contains(moduleName)) {
+			return FieldFactory.getNumberField("localId", "LOCAL_ID", module);
+		} else if (module.getExtendModule() != null) {
+			return getLocalIdField(module.getExtendModule());
+		}
+
+		return null;
+	}
+
 }

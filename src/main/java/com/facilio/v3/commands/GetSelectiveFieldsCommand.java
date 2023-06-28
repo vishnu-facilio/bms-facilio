@@ -2,6 +2,7 @@ package com.facilio.v3.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.calendarview.CalendarViewContext;
+import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -9,6 +10,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
@@ -39,6 +41,7 @@ public class GetSelectiveFieldsCommand extends FacilioCommand {
         FacilioField endTimeField = calendarViewObj.getEndDateField();
 
         ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule(moduleName);
 
         List<FacilioField> selectableFields = new ArrayList<>();
         selectableFields.add(startTimeField);
@@ -46,6 +49,10 @@ public class GetSelectiveFieldsCommand extends FacilioCommand {
             selectableFields.add(endTimeField);
         }
         selectableFields.add(FieldFactory.getIdField(moduleBean.getModule(moduleName)));
+        FacilioField localIdField = ModuleLocalIdUtil.getLocalIdField(module);
+        if (localIdField != null) {
+            selectableFields.add(localIdField);
+        }
 
         Criteria filterFieldsCriteria = new Criteria();
         filterFieldsCriteria.addAndCondition(CriteriaAPI.getCondition("IS_MAIN_FIELD", "isMainField", String.valueOf(true), BooleanOperators.IS));

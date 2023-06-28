@@ -7,6 +7,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
@@ -55,6 +56,7 @@ public class CalendarViewUtil {
 
     public static Criteria calendarTimeCriteria(FacilioField startTimeField, FacilioField endTimeField, CalendarViewRequestContext calendarViewRequest) {
         Criteria mainCriteria = new Criteria();
+        mainCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, "NULL", CommonOperators.IS_NOT_EMPTY));
 
         // Records with StartTimeField between Request (StartTime and EndTime) or EndTimeField between Request (StartTime and EndTime)
         Criteria timeCriteria = new Criteria();

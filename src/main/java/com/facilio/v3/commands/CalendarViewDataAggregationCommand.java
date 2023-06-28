@@ -1,5 +1,8 @@
 package com.facilio.v3.commands;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.calendarview.CalendarViewRequestContext;
 import com.facilio.bmsconsole.calendarview.CalendarViewContext;
 import com.facilio.constants.FacilioConstants.ViewConstants;
@@ -15,6 +18,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import lombok.extern.log4j.Log4j;
 import com.facilio.modules.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
@@ -95,29 +99,42 @@ public class CalendarViewDataAggregationCommand extends FacilioCommand {
     }
 
     public static Map<String, Long> getTimeStampVsFormattedTimeMap(CalendarViewRequestContext calendarViewRequest) {
+        String timeZoneStr = null;
+        User currentUser = AccountUtil.getCurrentUser();
+        Organization currentOrg = AccountUtil.getCurrentOrg();
+        if (currentUser != null && StringUtils.isNotEmpty(currentUser.getTimezone())) {
+            timeZoneStr = currentUser.getTimezone();
+        } else if (currentOrg != null && StringUtils.isNotEmpty(currentOrg.getTimezone())) {
+            timeZoneStr = currentOrg.getTimezone();
+        }
+
+        TimeZone timeZone = StringUtils.isNotEmpty(timeZoneStr) ? TimeZone.getTimeZone(timeZoneStr) : TimeZone.getDefault();
+
         Map<String, Long> timeStampVsFormattedTimeMap = new HashMap<>();
 
         ViewConstants.CalendarViewType calendarViewType = calendarViewRequest.getDefaultCalendarViewEnum();
         SimpleDateFormat dateFormat = new SimpleDateFormat();
+        dateFormat.setTimeZone(timeZone);
+
         int incrementFieldType = Calendar.DATE;
         switch (calendarViewType) {
             case DAY:
                 // HH pattern to include hours
-                dateFormat = new SimpleDateFormat("HH");
+                dateFormat.applyPattern("HH");
                 incrementFieldType = Calendar.HOUR_OF_DAY;
                 break;
             case WEEK:
                 // EEE includes the abbreviated day of the week
-                dateFormat = new SimpleDateFormat("yyyy MM dd HH");
+                dateFormat.applyPattern("yyyy MM dd HH");
                 incrementFieldType = Calendar.HOUR_OF_DAY;
                 break;
             case MONTH:
-                dateFormat = new SimpleDateFormat("yyyy MM dd");
+                dateFormat.applyPattern("yyyy MM dd");
                 incrementFieldType = Calendar.DATE;
                 break;
             case YEAR:
                 // includes the year and week of the year (using the 'W' pattern symbol)
-                dateFormat = new SimpleDateFormat("yyyy ww");
+                dateFormat.applyPattern("yyyy ww");
                 incrementFieldType = Calendar.WEEK_OF_YEAR;
                 break;
             default:
