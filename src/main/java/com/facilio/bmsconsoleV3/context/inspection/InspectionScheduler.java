@@ -1,17 +1,17 @@
 package com.facilio.bmsconsoleV3.context.inspection;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.BaseScheduleContext.ScheduleType;
 import com.facilio.bmsconsole.context.ScheduleTypeInterface;
+import com.facilio.fms.message.Message;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.ims.handler.InspectionGenerationHandler;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.wmsv2.endpoint.SessionManager;
-import com.facilio.wmsv2.handler.InspectionGenerationHandler;
-import com.facilio.wmsv2.message.Message;
 import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 public class InspectionScheduler implements ScheduleTypeInterface {
 
@@ -24,8 +24,8 @@ public class InspectionScheduler implements ScheduleTypeInterface {
 		LOGGER.info("Reached Inspection Scheduler");
 		JSONObject baseScheduleListObject = new JSONObject();
 		baseScheduleListObject.put(com.facilio.qa.rules.Constants.Command.BASESCHEDULES, baseScheduleContext);
-		SessionManager.getInstance().sendMessage(new Message()
-				.setTopic(InspectionGenerationHandler.TOPIC+"/"+baseScheduleContext.getId())
+		Messenger.getMessenger().sendMessage(new Message()
+				.setKey(InspectionGenerationHandler.KEY+"/"+baseScheduleContext.getId())
 				.setContent(baseScheduleListObject));
 		LOGGER.info("Pushed BaseSchedules to Session");
 		return null;

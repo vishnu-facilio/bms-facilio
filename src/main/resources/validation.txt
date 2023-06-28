@@ -2765,6 +2765,8 @@
 /api/v1/setup/sandbox/update
 /api/v1/setup/sandbox/changeStatus
 /api/v3/weather/allWeatherFields
+/api/v3/wms/stats
+/api/v3/wms/connections
 /api/v1/setup/permissionSet/:module/getGroupItems
 /api/v3/plannedmaintenance/publish
 /api/v3/jobPlan/fetchAssociatedRecords

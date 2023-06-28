@@ -1,14 +1,14 @@
 package com.facilio.mailtracking.actions;
 
+import com.facilio.fms.message.Message;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.ims.handler.MailResponseParsingHandler;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.context.AwsMailResponseContext;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
 import com.opensymphony.xwork2.ActionSupport;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -59,8 +59,8 @@ public class OutgoingMailResponseAction extends ActionSupport {
             V3Util.throwRestException(StringUtils.isEmpty(mapperId), ErrorCode.VALIDATION_ERROR, "mapperId can't be null");
 
             requestJson.put(MailConstants.Params.MAPPER_ID, mapperId);
-            WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                            .setTopic(Topics.Mail.mailResponse+"/"+mapperId)
+            Messenger.getMessenger().sendMessage(new Message()
+                            .setKey(MailResponseParsingHandler.KEY +"/"+mapperId)
                             .setContent(requestJson));
             status = "Successfully pushed outgoing  MAIL-RESPONSE for MAPPER_ID :: "+mapperId
                     + " with eventType :: "+awsMailResponse.getEventType();

@@ -15,7 +15,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.v3.context.Constants;
-import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.facilio.ims.handler.AuditLogHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;

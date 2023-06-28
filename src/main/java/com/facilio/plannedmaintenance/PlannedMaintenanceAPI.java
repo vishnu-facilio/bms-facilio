@@ -20,11 +20,11 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.ims.endpoint.Messenger;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.ScheduleInfo;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
+import com.facilio.fms.message.Message;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import static com.facilio.plannedmaintenance.PlannedMaintenanceAPI.ScheduleOperation.EXTEND;
 import static com.facilio.plannedmaintenance.PlannedMaintenanceAPI.ScheduleOperation.REINIT;
+
 @Log4j
 public class PlannedMaintenanceAPI {
     public enum ScheduleOperation implements FacilioStringEnum {
@@ -66,8 +67,8 @@ public class PlannedMaintenanceAPI {
         message.put("operation", EXTEND.getValue());
         message.put("duration", duration.toString());
 
-        WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                .setTopic("pm_planner/" + plannerId + "/execute")
+        Messenger.getMessenger().sendMessage(new Message()
+                .setKey("pm_planner/" + plannerId + "/execute")
                 .setOrgId(orgId)
                 .setContent(message)
         );
@@ -80,8 +81,8 @@ public class PlannedMaintenanceAPI {
         message.put("plannerId", plannerId);
         message.put("operation", ScheduleOperation.NIGHTLY.getValue());
 
-        WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                .setTopic("pm_planner/" + plannerId + "/execute")
+        Messenger.getMessenger().sendMessage(new Message()
+                .setKey("pm_planner/" + plannerId + "/execute")
                 .setOrgId(orgId)
                 .setContent(message)
         );
@@ -94,8 +95,8 @@ public class PlannedMaintenanceAPI {
         message.put("plannerId", plannerId);
         message.put("operation", REINIT.getValue());
 
-        WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                .setTopic("pm_planner/" + plannerId + "/execute")
+        Messenger.getMessenger().sendMessage(new Message()
+                .setKey("pm_planner/" + plannerId + "/execute")
                 .setOrgId(orgId)
                 .setContent(message)
         );

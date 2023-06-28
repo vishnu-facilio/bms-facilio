@@ -1,31 +1,20 @@
 package com.facilio.permission.action;
 
-import com.facilio.beans.PermissionSetBean;
 import com.facilio.bmsconsole.actions.FacilioAction;
-import com.facilio.bmsconsole.context.ScopingContext;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
-import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 import com.facilio.permission.config.PermissionSetConstants;
-import com.facilio.permission.context.BasePermissionContext;
 import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.permission.util.PermissionSetUtil;
 import com.facilio.v3.V3Action;
-import com.facilio.wmsv2.handler.AuditLogHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 
 @Log4j

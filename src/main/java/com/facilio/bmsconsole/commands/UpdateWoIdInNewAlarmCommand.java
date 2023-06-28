@@ -10,12 +10,12 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.fms.message.Message;
 import com.facilio.fw.BeanFactory;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.ims.handler.AlarmWorkFlowHandler;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.handler.AlarmWorkFlowHandler;
-import com.facilio.wmsv2.message.Message;
 import org.apache.commons.chain.Context;
 
 import java.lang.reflect.InvocationTargetException;
@@ -71,8 +71,8 @@ public class UpdateWoIdInNewAlarmCommand extends FacilioCommand {
 		alarmContext.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, changes);
 		alarmContext.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, Collections.singletonList(EventType.EDIT));
 
-		WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-				.setTopic(AlarmWorkFlowHandler.TOPIC + "/" + baseAlarm.getId())
+		Messenger.getMessenger().sendMessage(new Message()
+				.setKey(AlarmWorkFlowHandler.KEY + "/" + baseAlarm.getId())
 				.setContent(FieldUtil.getAsJSON(alarmContext)));
 	}
 }

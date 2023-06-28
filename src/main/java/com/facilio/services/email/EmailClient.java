@@ -18,7 +18,10 @@ import com.facilio.db.util.DBConf;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.email.BaseEmailClient;
+import com.facilio.fms.message.Message;
 import com.facilio.fw.BeanFactory;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.ims.handler.OutgoingPreprocessHandler;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.commands.MailTransactionChainFactory;
@@ -31,9 +34,6 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -99,8 +99,8 @@ public abstract class EmailClient extends BaseEmailClient {
 
                 long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
                 String topicIdentifier = OutgoingMailAPI.getTopicIdentifier(mailJson, orgId);
-                WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                        .setTopic(Topics.Mail.prepareOutgoingMail + "/" + topicIdentifier)
+                Messenger.getMessenger().sendMessage(new Message()
+                        .setKey(OutgoingPreprocessHandler.KEY + "/" + topicIdentifier)
                         .setOrgId(orgId)
                         .setContent(mailJson));
                 LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail content preprocess queue/wms for topic ::" + topicIdentifier);

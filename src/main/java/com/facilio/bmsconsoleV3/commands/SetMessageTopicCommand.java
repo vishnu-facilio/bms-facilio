@@ -6,8 +6,8 @@ import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.Constants;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
+import com.facilio.wmsv2.endpoint.Broadcaster;
+import com.facilio.wmsv2.message.WebMessage;
 import org.apache.commons.chain.Context;
 
 import java.util.List;
@@ -28,14 +28,14 @@ public class SetMessageTopicCommand extends FacilioCommand implements PostTransa
     public boolean postExecute() throws Exception {
         Map<String, List<UserNotificationContext>> recordMap = (Map<String, List<UserNotificationContext>>) context.get(Constants.RECORD_MAP);
         List<UserNotificationContext> userNotificationList = recordMap.get(FacilioConstants.ContextNames.USER_NOTIFICATION);
-        Message message = new Message();
+        WebMessage message = new WebMessage();
         for (UserNotificationContext userNotification:userNotificationList) {
-            message.setTopic(inApp);
+            message.setTopic(inApp); //__inApp__
             message.setOrgId(userNotification.getOrgId());
             message.setAppId(userNotification.getApplication());
             message.setTo(userNotification.getUser().getId());
             message.setContent(FieldUtil.getAsJSON(userNotification));
-            WmsBroadcaster.getBroadcaster().sendMessage(message);
+            Broadcaster.getBroadcaster().sendMessage(message);
         }
         return false;
     }

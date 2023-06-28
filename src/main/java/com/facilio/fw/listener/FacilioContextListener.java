@@ -29,9 +29,10 @@ import com.facilio.bmsconsole.monitoring.MonitoringMXBean;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
 import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.backgroundactivity.util.BackgroundActivityUtil;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.backgroundactivity.util.BackgroundActivityUtil;
+import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.client.app.beans.ClientAppBean;
@@ -49,9 +50,10 @@ import com.facilio.fw.cache.FacilioCacheConfig;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.fw.cache.RedisManager;
 import com.facilio.fw.validators.Date;
-import com.facilio.identity.client.IdentityClient;
 import com.facilio.fw.validators.*;
 import com.facilio.iam.accounts.util.DCUtil;
+import com.facilio.identity.client.IdentityClient;
+import com.facilio.ims.endpoint.Messenger;
 import com.facilio.jmx.FacilioQueryCounter;
 import com.facilio.jmx.FacilioQueryCounterMBean;
 import com.facilio.logging.SysOutLogger;
@@ -75,7 +77,7 @@ import com.facilio.util.ValidatePermissionUtil;
 import com.facilio.util.ValueGeneratorUtil;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.weather.service.WeatherServiceType;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
+import com.facilio.wmsv2.endpoint.Broadcaster;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -192,7 +194,8 @@ public class FacilioContextListener implements ServletContextListener {
 			initLocalHostName();
 			initClientAppConfig();
 			registerValidatorTypes();
-			WmsBroadcaster.getBroadcaster();
+			Broadcaster.getBroadcaster();
+			Messenger.getMessenger();
 			HealthCheckFilter.setStatus(200);
 		} catch (Exception e) {
 			sendFailureEmail(e);
@@ -350,8 +353,7 @@ public class FacilioContextListener implements ServletContextListener {
 		} catch(Exception e) {
 			LOGGER.error("Exception occurred ", e);
 			throw e;
-		}
-		finally {
+		} finally {
 			DBUtil.closeAll(conn, stmt, rs);
 		}
 	}

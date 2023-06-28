@@ -5,7 +5,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
-import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.facilio.ims.handler.AuditLogHandler;
 
 import java.util.List;
 

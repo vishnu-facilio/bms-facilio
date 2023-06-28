@@ -2,10 +2,10 @@ package com.facilio.faults;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.fms.message.Message;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.ims.handler.AlarmDeleteHandler;
 import com.facilio.v3.context.Constants;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.handler.AlarmDeleteHandler;
-import com.facilio.wmsv2.message.Message;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -21,8 +21,8 @@ public class AfterDeleteAlarmCommand extends FacilioCommand {
         baseAlarms.forEach(baseAlarm -> {
             JSONObject content = new JSONObject();
             content.put("alarmId",baseAlarm.getId());
-            WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                    .setTopic(AlarmDeleteHandler.TOPIC)
+            Messenger.getMessenger().sendMessage(new Message()
+                    .setKey(AlarmDeleteHandler.KEY)
                     .setContent(content)
             );
         });

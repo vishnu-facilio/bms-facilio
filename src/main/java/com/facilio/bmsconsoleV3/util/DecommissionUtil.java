@@ -13,14 +13,14 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fms.message.Message;
+import com.facilio.ims.endpoint.Messenger;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
-import com.facilio.wmsv2.endpoint.SessionManager;
-import com.facilio.wmsv2.handler.CommissioningLogHandler;
-import com.facilio.wmsv2.handler.ResourceDecommissioningHandler;
-import com.facilio.wmsv2.message.Message;
+import com.facilio.ims.handler.CommissioningLogHandler;
+import com.facilio.ims.handler.ResourceDecommissioningHandler;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
@@ -29,13 +29,13 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
 @Getter@Setter
 public class DecommissionUtil {
 
     public static Map<String, Object> fetchDependentModulesDataForResource(Long currentResourceId, List<Long> dependentResourceIds, String currentResourceModuleName) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         Map<String, Object> dependentResourcesModuleList = new LinkedHashMap<>();
-
 
         //ERROR MODULES
 
@@ -568,9 +568,9 @@ public class DecommissionUtil {
             String resourceModuleName = DecommissionUtil.getResourceModuleNameFromType(resource);
             Long resourceId = resource.getId();
             json.put("resourceId", resourceId);
-            json.put(FacilioConstants.ContextNames.RESOURCE_MODULENAME, resourceModuleName);
-            SessionManager.getInstance().sendMessage(new Message()
-                    .setTopic(CommissioningLogHandler.TOPIC)
+            json.put(FacilioConstants.ContextNames.RESOURCE_MODULENAME,resourceModuleName);
+            Messenger.getMessenger().sendMessage(new Message()
+                    .setKey(CommissioningLogHandler.KEY)
                     .setOrgId(orgId)
                     .setContent(json)
             );
@@ -585,8 +585,8 @@ public class DecommissionUtil {
         json.put(FacilioConstants.ContextNames.DECOMMISSION, decommission);
         for (Long id : resourceIds) {
             json.put("resourceId", id);
-            SessionManager.getInstance().sendMessage(new Message()
-                    .setTopic(ResourceDecommissioningHandler.TOPIC)
+            Messenger.getMessenger().sendMessage(new Message()
+                    .setKey(ResourceDecommissioningHandler.KEY)
                     .setOrgId(orgId)
                     .setContent(json)
             );

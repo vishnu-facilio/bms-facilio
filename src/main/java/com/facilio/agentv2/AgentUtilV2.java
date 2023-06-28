@@ -25,7 +25,9 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.fms.message.Message;
 import com.facilio.fw.BeanFactory;
+import com.facilio.ims.endpoint.Messenger;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -39,10 +41,7 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.AckUtil;
 import com.facilio.util.FacilioUtil;
-import com.facilio.wmsv2.endpoint.SessionManager;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.constants.Topics;
+import com.facilio.ims.handler.agent.ClearPointAlarmHandler;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -91,7 +90,7 @@ public class AgentUtilV2
         AgentBean agentBean = getAgentBean();
         JSONObject agentDetails = agentBean.getAgentCountDetails();
         if(agentDetails == null ||agentDetails.isEmpty()) {
-        	return new JSONObject();
+            return new JSONObject();
         }
         overiewData.put(AgentConstants.AGENT,agentDetails);
         if (overiewData.containsKey(AgentConstants.AGENT)) {
@@ -493,7 +492,7 @@ public class AgentUtilV2
     }
 
     private boolean updateAgent(FacilioAgent agent, JSONObject jsonObject) throws Exception {
-    	refreshAgent(agent);
+        refreshAgent(agent);
         AgentBean agentBean = getAgentBean();
         return agentBean.editAgent(agent, jsonObject, true);
     }
@@ -556,53 +555,52 @@ public class AgentUtilV2
     }
     
     public static MessageSource getMessageSource(long agentId) throws Exception {
-    	FacilioAgent agent = null;
+        FacilioAgent agent = null;
         AgentBean agentBean = getAgentBean();
         try {
-    		agent = agentBean.getAgent(agentId);
-		} catch (Exception e) {
-			LOGGER.error("Error while fetching agent", e); 
-		}
-    	return getMessageSource(agent);
+            agent = agentBean.getAgent(agentId);
+        } catch (Exception e) {
+            LOGGER.error("Error while fetching agent", e);
+        }
+        return getMessageSource(agent);
     }
     
     public static MessageSource getMessageSource(FacilioAgent agent){
-    	String sourceName = null;
-    	
-    	if (agent != null && StringUtils.isNotEmpty(agent.getMessageSource())) {
-    		sourceName = agent.getMessageSource();
-    	}
-    	else {
-    		Map<String, String> orgInfo = null;
-        	String orgInfoKey = OrgInfoKeys.MESSAGE_QUEUE_SOURCE; 
-        	try { 
-        		if(AccountUtil.getCurrentOrg() != null) { 
-        			orgInfo = CommonCommandUtil.getOrgInfo(orgInfoKey); 
-        			if (!MapUtils.isEmpty(orgInfo)) {
-                		sourceName = orgInfo.get(orgInfoKey);
-                	}
-        		} 
-        	} catch (Exception e) {
-        		LOGGER.error("Error while fetching org info"); 
-        	}
-    	}
-    	
-    	if (sourceName != null) {
-    		return MessageSourceUtil.getSource(sourceName);
-    	}
-    	
-    	return MessageSourceUtil.getDefaultSource();
+        String sourceName = null;
+
+        if (agent != null && StringUtils.isNotEmpty(agent.getMessageSource())) {
+            sourceName = agent.getMessageSource();
+        } else {
+            Map<String, String> orgInfo = null;
+            String orgInfoKey = OrgInfoKeys.MESSAGE_QUEUE_SOURCE;
+            try {
+                if(AccountUtil.getCurrentOrg() != null) {
+                    orgInfo = CommonCommandUtil.getOrgInfo(orgInfoKey);
+                    if (!MapUtils.isEmpty(orgInfo)) {
+                        sourceName = orgInfo.get(orgInfoKey);
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("Error while fetching org info");
+            }
+        }
+
+        if (sourceName != null) {
+            return MessageSourceUtil.getSource(sourceName);
+        }
+
+        return MessageSourceUtil.getDefaultSource();
     }
     
    
     public static Object publishToQueue(String topic, String key, JSONObject payload, KafkaMessageSource source) {
-		MessageQueue messageQueue = MessageQueueFactory.getMessageQueue(source);
-    	try {
-			return messageQueue.putRecord(topic, key, payload);
-		} catch (Exception e) {
-			LOGGER.info("Exception while put record ", e);
-		}
-    	return null;
+        MessageQueue messageQueue = MessageQueueFactory.getMessageQueue(source);
+        try {
+            return messageQueue.putRecord(topic, key, payload);
+        } catch (Exception e) {
+            LOGGER.info("Exception while put record ", e);
+        }
+        return null;
     }
 
     public static AgentBean getAgentBean() throws Exception {
@@ -670,8 +668,8 @@ public class AgentUtilV2
         JSONObject content = new JSONObject();
         content.put(AgentConstants.AGENT, agent.getName());
         if(orgId > 0L){
-            WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                    .setTopic(Topics.Agent.agentPointAlarm + orgId + "/" + agent.getId())
+            Messenger.getMessenger().sendMessage(new Message()
+                    .setKey(ClearPointAlarmHandler.KEY + orgId + "/" + agent.getId())
                     .setOrgId(orgId)
                     .setContent(content)
             );

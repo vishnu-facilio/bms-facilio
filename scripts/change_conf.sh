@@ -334,7 +334,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "azure-deployment" ] || [ "$DEPLOYMENT_GROUP_NAM
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     cp $FACILIO_HOME/deployment-files/log4j-azure-test-user.properties $CLASSES_DIR/log4j.properties            
     cp $FACILIO_HOME/deployment-files/awsprops-azure-test-user.properties $CONF_DIR/awsprops.properties
-    cp $FACILIO_HOME/deployment-files/wmsGroupInfo-azure.yml $CONF_DIR/wms/wmsGroupInfo.yml
+    cp $FACILIO_HOME/deployment-files/imsTopicInfo-azure.yml $CONF_DIR/fms/imsTopicInfo.yml
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     echo "copied service file is =======" >> /home/facilio/deployment.log
     echo "$(<FACILIO_HOME/deployment-files/service-stage.yml)" >> /home/facilio/deployment.log

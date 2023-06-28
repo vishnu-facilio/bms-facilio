@@ -1,15 +1,14 @@
 package com.facilio.bmsconsoleV3.commands;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
+import com.facilio.fms.message.Message;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.ims.handler.DashboardUpdateHandler;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import static com.facilio.wmsv2.constants.Topics.DashboardUpdate.dashboardUpdate;
 
 public class GetDashboardThumbnailCommand  extends FacilioCommand {
 
@@ -20,10 +19,9 @@ public class GetDashboardThumbnailCommand  extends FacilioCommand {
         DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
         dashboardObj.put("dashboardId",dashboard.getId());
         dashboardObj.put("dashboardUrl",context.get("dashboardUrl"));
-        message.setTopic(dashboardUpdate);
+        message.setKey(DashboardUpdateHandler.KEY);
         message.setContent(dashboardObj);
-        message.setAppId(AccountUtil.getCurrentUser().getApplicationId());
-        WmsBroadcaster.getBroadcaster().sendMessage(message);
+        Messenger.getMessenger().sendMessage(message);
         return false;
     }
 }

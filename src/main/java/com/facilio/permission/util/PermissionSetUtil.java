@@ -16,7 +16,7 @@ import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.permission.context.PermissionSetType;
 import com.facilio.permission.factory.PermissionSetFieldFactory;
 import com.facilio.v3.util.ChainUtil;
-import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.facilio.ims.handler.AuditLogHandler;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -23,7 +23,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.taskengine.ScheduleInfo;
-import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.facilio.ims.handler.AuditLogHandler;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;

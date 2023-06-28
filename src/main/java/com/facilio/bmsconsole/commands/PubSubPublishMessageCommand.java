@@ -4,8 +4,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
+
+import com.facilio.wmsv2.endpoint.Broadcaster;
+import com.facilio.wmsv2.message.WebMessage;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -39,11 +40,11 @@ public class PubSubPublishMessageCommand extends FacilioCommand {
 					content.put("fieldId", rdm.getFieldId());
 					content.put("value", rdm.getValue());
 
-					Message msg = new Message();
+					WebMessage msg = new WebMessage();
 					msg.setOrgId(AccountUtil.getCurrentOrg().getId());
 					msg.setTopic("__livereading__/" + rdm.getResourceId() + "/" + rdm.getFieldId());
 					msg.setContent(content);
-					WmsBroadcaster.getBroadcaster().sendMessage(msg);
+					Broadcaster.getBroadcaster().sendMessage(msg);
 				} catch (Exception e) {
 					LOGGER.log(Level.WARN, "Exception while send wms message for live reading update. readingKey: "+readingKey, e);
 				} catch (Error err) {

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.*;
-import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.facilio.ims.handler.AuditLogHandler;
 import org.apache.commons.chain.Context;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.json.simple.JSONArray;
@@ -151,7 +151,6 @@ public interface ModuleCRUDBean {
     public long getPendingDataCount() throws Exception;
 
 	public List<Map<String,Object>> getMissingData() throws Exception;
-
 
 	public InputStream getDownloadStream(String nameSpace, long fileId) throws Exception;
 

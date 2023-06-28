@@ -1,6 +1,5 @@
 package com.facilio.backgroundactivity.util;
 
-import com.azure.core.annotation.Delete;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.backgroundactivity.context.BackgroundActivity;
 import com.facilio.backgroundactivity.context.BackgroundActivityLiveMessageContext;
@@ -10,28 +9,34 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.NewTransactionService;
+import com.facilio.fms.message.Message;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.SessionManager;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.util.WmsUtil;
+import com.facilio.wmsv2.endpoint.Broadcaster;
+import com.facilio.wmsv2.message.WebMessage;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Log4j
 public class BackgroundActivityAPI {
@@ -48,8 +53,8 @@ public class BackgroundActivityAPI {
         long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
         if (orgId > 0L) {
             JSONObject json = FieldUtil.getAsJSON(backgroundActivity);
-            WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                    .setTopic("__background_activity__/" + backgroundActivity.getId() + "/process")
+            Messenger.getMessenger().sendMessage(new Message()
+                    .setKey("__background_activity__/"+ backgroundActivity.getId() +"/process")
                     .setOrgId(orgId)
                     .setContent(json)
             );
@@ -113,10 +118,11 @@ public class BackgroundActivityAPI {
             }
             if(sendMessage) {
                 JSONObject json = FieldUtil.getAsJSON(liveMessageContext);
-                WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                                .setTopic("__background__activity__live__/" + liveMessageContext.getActivityId() + "/send")
-                                .setOrgId(orgId)
-                                .setContent(json));
+                WebMessage msg = new WebMessage();
+                msg.setTopic("__background__activity__live__/" + liveMessageContext.getActivityId() + "/send");
+                msg.setOrgId(orgId);
+                msg.setContent(json);
+                Broadcaster.getBroadcaster().sendMessage(msg);
             }
         }
     }
@@ -173,8 +179,8 @@ public class BackgroundActivityAPI {
         }
         long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
         if (orgId > 0L) {
-            WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                    .setTopic("__background_activity_rollup__/"+ activityId +"/rollup")
+            Messenger.getMessenger().sendMessage(new Message()
+                    .setKey("__background_activity_rollup__/"+ activityId +"/rollup")
                     .setOrgId(orgId)
                     .setContent(null)
             );

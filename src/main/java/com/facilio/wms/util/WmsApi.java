@@ -1,25 +1,6 @@
 package com.facilio.wms.util;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.websocket.EncodeException;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.services.kafka.FacilioKafkaProducer;
 import com.facilio.services.procon.message.FacilioRecord;
@@ -28,11 +9,21 @@ import com.facilio.wms.endpoints.FacilioClientEndpoint;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionSource;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.endpoints.SessionManager;
-import com.facilio.wms.message.Message;
-import com.facilio.wms.message.WmsChatMessage;
-import com.facilio.wms.message.WmsEvent;
-import com.facilio.wms.message.WmsNotification;
-import com.facilio.wms.message.WmsPublishResponse;
+import com.facilio.wms.message.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.json.simple.JSONObject;
+
+import javax.websocket.EncodeException;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class WmsApi
 {

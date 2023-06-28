@@ -1,18 +1,18 @@
 package com.facilio.wmsv2.handler;
 
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
+import com.facilio.wmsv2.endpoint.Broadcaster;
+import com.facilio.wmsv2.message.WebMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-public class PushHandler extends BaseHandler {
+public class PushHandler extends WmsHandler {
 
     @Override
-    public void processIncomingMessage(Message message) {
+    public void processIncomingMessage(WebMessage message) {
         JSONObject content = message.getContent();
         String topic = (String) content.remove("topic");
         if (StringUtils.isNotEmpty(topic)) {
-            Message sendMessage = new Message();
+            WebMessage sendMessage = new WebMessage();
             sendMessage.setTopic(topic);
             sendMessage.setContent(content);
             if (content.containsKey("to")) {
@@ -26,7 +26,7 @@ public class PushHandler extends BaseHandler {
             } else {
                 sendMessage.setOrgId(message.getOrgId());
             }
-            WmsBroadcaster.getBroadcaster().sendMessage(sendMessage);
+            Broadcaster.getBroadcaster().sendMessage(sendMessage);
         }
     }
 }

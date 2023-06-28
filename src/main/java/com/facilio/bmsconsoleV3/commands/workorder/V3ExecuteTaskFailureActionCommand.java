@@ -1,24 +1,23 @@
 package com.facilio.bmsconsoleV3.commands.workorder;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.fms.message.Message;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.modules.FacilioStatus;
+import lombok.extern.log4j.Log4j;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.json.simple.JSONObject;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
-import com.facilio.command.FacilioCommand;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
-import lombok.extern.log4j.Log4j;
-import org.apache.commons.chain.Context;
-
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.constants.FacilioConstants.ContextNames;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.json.simple.JSONObject;
 
 /**
  * V3ExecuteTaskFailureActionCommand
@@ -41,7 +40,6 @@ public class V3ExecuteTaskFailureActionCommand extends FacilioCommand implements
                 }
             }
         }
-
         LOGGER.info("Time take in V3ExecuteTaskFailureActionCommand = " + (System.currentTimeMillis() - startTime));
         return false;
     }
@@ -52,10 +50,10 @@ public class V3ExecuteTaskFailureActionCommand extends FacilioCommand implements
         message.put("orgId", orgId);
         message.put("workOrderId", workOrderContext.getId());
 
-        String topicName = getTaskDeviationHandlerTopicName(orgId, workOrderContext);
-        LOGGER.info("Pushing wms topic " + topicName);
-        WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                .setTopic(topicName)
+        String key = getTaskDeviationHandlerTopicName(orgId, workOrderContext);
+        LOGGER.info("Pushing ims key " + key);
+        Messenger.getMessenger().sendMessage(new Message()
+                .setKey(key)
                 .setOrgId(orgId)
                 .setContent(message));
     }

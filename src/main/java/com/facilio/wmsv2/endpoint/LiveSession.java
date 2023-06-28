@@ -2,13 +2,14 @@ package com.facilio.wmsv2.endpoint;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.User;
+import com.facilio.ims.util.TopicUtil;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.util.TopicUtil;
+import org.json.simple.JSONObject;
 
 import javax.websocket.Session;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class LiveSession {
@@ -24,6 +25,10 @@ public class LiveSession {
 	private LiveSessionSource liveSessionSource;
 	private long createdTime;
 	private long lastMsgTime;
+
+	private long lastPingTime;
+
+	private Set<String> topics = new HashSet<>();
 
 	public String getId() {
 		return id;
@@ -110,7 +115,15 @@ public class LiveSession {
 		return this;
 	}
 
-	private List<String> topics = new ArrayList<>();
+	public LiveSession setLastPingTime(long lastPingTime) {
+		this.lastPingTime = lastPingTime;
+		return this;
+	}
+
+	public long getLastPingTime() {
+		return lastPingTime;
+	}
+
 	public LiveSession subscribe(String topic) {
 		this.topics.add(topic);
 		return this;
@@ -119,6 +132,15 @@ public class LiveSession {
 		this.topics.remove(topic);
 		return this;
 	}
+
+	public void flushTopics() {
+		this.topics.clear();
+	}
+
+	public Set<String> getTopics() {
+		return this.topics;
+	}
+
 	public boolean matchTopic(String topic) {
 		// default topics match
 		if (TopicUtil.matchTopic(topic, Topics.defaultSubscribedTopics)) {
@@ -137,12 +159,28 @@ public class LiveSession {
 				"id='" + id + '\'' +
 				", orgId=" + orgId +
 				", user=" + user +
+				", appId=" + appId +
 				", session=" + session.getId() +
 				", liveSessionType=" + liveSessionType +
 				", createdTime=" + createdTime +
 				", lastMsgTime=" + lastMsgTime +
+				", lastPingTime=" + lastPingTime +
 				", topics=" + topics +
 				'}';
+	}
+
+	public JSONObject toJson() {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("id", id);
+		jsonObject.put("orgId", orgId);
+		jsonObject.put("appId", appId);
+		jsonObject.put("session", session.getId());
+		jsonObject.put("liveSessionType", liveSessionType);
+		jsonObject.put("createdTime", createdTime);
+		jsonObject.put("lastMsgTime", lastMsgTime);
+		jsonObject.put("lastPingTime", lastPingTime);
+		jsonObject.put("topics", topics);
+		return jsonObject;
 	}
 
 	public LiveSession setCurrentAccount(Account currentAccount) {

@@ -6,14 +6,14 @@ import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fms.message.Message;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.ims.handler.NewWeatherJobHandler;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 import com.facilio.weather.service.WeatherService;
 import com.facilio.weather.service.WeatherServiceType;
 import com.facilio.weather.util.WeatherAPI;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -95,8 +95,8 @@ public class FacilioWeatherDataJob extends FacilioJob {
 		JSONObject content = new JSONObject();
 		content.put("weatherData", weatherData);
 		content.put("stationId", String.valueOf(id));
-		WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-				.setTopic(Topics.Weather.newWeatherJob + "/" + orgId + "/" + id)
+		Messenger.getMessenger().sendMessage(new Message()
+				.setKey(NewWeatherJobHandler.KEY + "/" + orgId + "/" + id)
 				.setOrgId(orgId)
 				.setContent(content));
 	}

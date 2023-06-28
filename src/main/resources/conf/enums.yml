@@ -167,10 +167,10 @@ enums:
     enumClassName: com.facilio.qa.context.ResponseContext$ResponseStatus
 
   - name: AuditLogRecordType
-    enumClassName: com.facilio.wmsv2.handler.AuditLogHandler$RecordType
+    enumClassName: com.facilio.ims.handler.AuditLogHandler$RecordType
 
   - name: AuditLogSourceType
-    enumClassName: com.facilio.wmsv2.handler.AuditLogHandler$SourceType
+    enumClassName: com.facilio.ims.handler.AuditLogHandler$SourceType
 
   - name: InspectionCreationType
     enumClassName: com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext$CreationType

@@ -1,14 +1,14 @@
 package com.facilio.wmsv2.filters;
 
 import com.facilio.wmsv2.endpoint.LiveSession;
-import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.message.SessionInfo;
+import com.facilio.wmsv2.message.WebMessage;
 
 @WMSFilter(priority = 0)
 public class PopulateMessage extends BaseFilter {
 
     @Override
-    public Message incoming(Message message) {
+    public WebMessage incoming(WebMessage message) {
+
         fillBasicData(message);
 
         // TODO - need to get device info
@@ -24,21 +24,14 @@ public class PopulateMessage extends BaseFilter {
         return message;
     }
 
-    private void fillBasicData(Message message) {
-        SessionInfo sessionInfo;
-        try {
-            sessionInfo = SessionInfo.getSessionInfo(message);
-            LiveSession session = sessionInfo.getLiveSession();
-            sessionInfo.setSessionType(session.getLiveSessionType());
-            message.setSessionInfo(sessionInfo.toJson());
-            message.setOrgId(session.getOrgId());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    private void fillBasicData(WebMessage message) {
+        LiveSession session = message.getLiveSession();
+        message.setSessionType(session.getLiveSessionType());
+        message.setOrgId(session.getOrgId());
     }
 
     @Override
-    public Message outgoing(Message message) {
+    public WebMessage outgoing(WebMessage message) {
         return message;
     }
 }

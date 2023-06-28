@@ -18,7 +18,7 @@ import com.facilio.modules.*;
 import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.util.V3Util;
-import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.facilio.ims.handler.AuditLogHandler;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;

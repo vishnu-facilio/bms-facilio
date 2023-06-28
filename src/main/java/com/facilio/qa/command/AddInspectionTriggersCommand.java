@@ -1,20 +1,6 @@
 package com.facilio.qa.command;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import com.facilio.wmsv2.handler.InspectionGenerationHandler;
-import com.facilio.wmsv2.endpoint.SessionManager;
-import com.facilio.wmsv2.message.Message;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.BaseScheduleContext.ScheduleType;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
@@ -22,6 +8,7 @@ import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTriggerIncludeExcludeResourceContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.fw.BeanFactory;
@@ -31,6 +18,13 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 public class AddInspectionTriggersCommand extends FacilioCommand {
 	

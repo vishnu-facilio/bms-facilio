@@ -30,10 +30,9 @@ import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.wmsv2.endpoint.Broadcaster;
 import com.facilio.wmsv2.endpoint.LiveSession;
-import com.facilio.wmsv2.endpoint.SessionManager;
-import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.message.SessionInfo;
+import com.facilio.wmsv2.message.WebMessage;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1020,18 +1019,13 @@ public class MultiImportApi {
 
         long ouid = importDataDetails.getCreatedBy();
         User user = AccountUtil.getUserBean().getUser(ouid,false);
-        Message message = new Message();
+        WebMessage message = new WebMessage();
         message.setTopic(multiImport+"/"+importId+"/update");
         message.setContent(json);
         message.setTo(ouid);
         message.setOrgId(user.getOrgId());
-        SessionInfo sessionInfo = SessionInfo.getSessionInfo(message);
-        if(sessionInfo == null) {
-            sessionInfo =  new SessionInfo();
-        }
-        sessionInfo.setSessionType(LiveSession.LiveSessionType.APP);
-        message.setSessionInfo(sessionInfo.toJson());
-        SessionManager.getInstance().sendMessage(message);
+        message.setSessionType(LiveSession.LiveSessionType.APP);
+        Broadcaster.getBroadcaster().sendMessage(message);
     }
     public static float getImportCompletePercentage(ImportDataDetails importDataDetails){
         float totalImportRecordsCount = importDataDetails.getTotalRecords();
@@ -1056,18 +1050,13 @@ public class MultiImportApi {
 
         long ouid = importDataDetails.getCreatedBy();
         User user = AccountUtil.getUserBean().getUser(ouid,false);
-        Message message = new Message();
+        WebMessage message = new WebMessage();
         message.setTopic(multiImportErrorRecords+"/"+importId+"/update");
         message.setContent(json);
         message.setTo(ouid);
         message.setOrgId(user.getOrgId());
-        SessionInfo sessionInfo = SessionInfo.getSessionInfo(message);
-        if(sessionInfo == null) {
-            sessionInfo =  new SessionInfo();
-        }
-        sessionInfo.setSessionType(LiveSession.LiveSessionType.APP);
-        message.setSessionInfo(sessionInfo.toJson());
-        SessionManager.getInstance().sendMessage(message);
+        message.setSessionType(LiveSession.LiveSessionType.APP);
+        Broadcaster.getBroadcaster().sendMessage(message);
     }
     private static boolean canAddRecordId(String moduleName) throws Exception {
         ModuleBean modBean = Constants.getModBean();

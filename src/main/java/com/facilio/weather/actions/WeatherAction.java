@@ -3,12 +3,12 @@ package com.facilio.weather.actions;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.fms.message.Message;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.ims.handler.LongRunningTaskHandler;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.V3Action;
 import com.facilio.weather.commands.WeatherReadOnlyChainFactory;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -100,8 +100,8 @@ public class WeatherAction extends V3Action {
         content.put("emailAddress", emailAddress);
         content.put("methodName", "addBulkWeatherStationMigration");
         content.put("startTime", DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata"))+"");
-        WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                .setTopic(Topics.Tasks.longRunnningTasks+"/"+ DateTimeUtil.getCurrenTime())
+        Messenger.getMessenger().sendMessage(new Message()
+                .setKey(LongRunningTaskHandler.KEY+"/"+ DateTimeUtil.getCurrenTime())
                 .setOrgId(orgId)
                 .setContent(content));
         setMessage("We will email to the given email address ["+emailAddress+"] once the migration is done.");

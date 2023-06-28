@@ -8,37 +8,30 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fms.message.Message;
 import com.facilio.fw.BeanFactory;
+import com.facilio.ims.handler.ImsHandler;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.handler.BaseHandler;
-import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.message.TopicHandler;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class BackgroundActivityRollupTopicHandler extends BaseHandler {
+public class BackgroundActivityRollupTopicHandler extends ImsHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(BackgroundActivityRollupTopicHandler.class.getName());
 
-    @Override
-    public void processIncomingMessage(Message message) {
-        LOGGER.error(message.toString());
-    }
 
     @Override
-    public void processOutgoingMessage(Message message) {
+    public void processMessage(Message message) {
         long activityId = getActivityId(message);
         if(activityId > 0) {
             try {
@@ -116,8 +109,8 @@ public class BackgroundActivityRollupTopicHandler extends BaseHandler {
     }
 
     private long getActivityId(Message message) {
-        String topic = message.getTopic();
-        String[] split = StringUtils.split(topic, "/");
+        String partitionKey = message.getKey();
+        String[] split = StringUtils.split(partitionKey, "/");
         long activityId = Long.parseLong(split[1]);
         return activityId;
     }

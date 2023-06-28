@@ -8,18 +8,18 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.fms.message.Message;
 import com.facilio.fw.BeanFactory;
+import com.facilio.ims.endpoint.Messenger;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
+import com.facilio.ims.handler.AddOneTimeJobForScheduledRuleHandler;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -27,8 +27,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.*;
-
-import static com.facilio.wmsv2.constants.Topics.AddOneTimeJobForScheduledRule.addOneTimeJobForScheduledRule;
 
 public class AddOneTimeJobForScheduledRule extends FacilioCommand {
     private static final Logger LOGGER = LogManager.getLogger(AddOneTimeJobForScheduledRule.class.getName());
@@ -105,10 +103,9 @@ public class AddOneTimeJobForScheduledRule extends FacilioCommand {
                     content.put("ruleIds", filteredRuleIds);
                     content.put("eventType", eventType.getName());
 
-                    Message message = new Message();
-                    message.setTopic(addOneTimeJobForScheduledRule + "/" + module.getModuleId() + "/" + record.getId());
-                    message.setContent(content);
-                    WmsBroadcaster.getBroadcaster().sendMessage(message);
+                    Messenger.getMessenger().sendMessage(new Message()
+                            .setKey(AddOneTimeJobForScheduledRuleHandler.KEY+"/"+ module.getModuleId() + "/" + record.getId())
+                            .setContent(content));
                 }
             }
         }catch (Exception e){

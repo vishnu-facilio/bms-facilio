@@ -1,0 +1,60 @@
+version: 1.0
+date: Apr 13, 2023
+
+topics:
+  - topic: default-single
+    keys:
+      - { key: alarm-delete, handler: com.facilio.ims.handler.AlarmDeleteHandler }
+      - { key: __audit_logs__, handler: com.facilio.ims.handler.AuditLogHandler }
+      - { key: __pushnotification__/#, handler: com.facilio.ims.handler.PushNotificationHandler, priority: -6, recordTimeout: 60 }
+      - { key: __mailresponse__/#, handler: com.facilio.ims.handler.MailResponseParsingHandler }
+      - { key: __update_on_offline_record__/#, handler: com.facilio.ims.handler.UpdateOnOfflineRecordHandler, priority: -6, recordTimeout: 60 }
+      - { key: resource-decommission, handler: com.facilio.ims.handler.ResourceDecommissioningHandler,recordTimeout: 60 }
+      - { key: decommission-log, handler: com.facilio.ims.handler.CommissioningLogHandler, recordTimeout: 60 }
+      - { key: __newweather__/#, handler: com.facilio.ims.handler.NewWeatherJobHandler, recordTimeout: 30 }
+      - { key: __agent__/point/alarm/org/#, handler: com.facilio.ims.handler.agent.ClearPointAlarmHandler }
+      - { key: __dashboard_update__, handler: com.facilio.ims.handler.DashboardUpdateHandler }
+      - { key: __one_time_job_for_scheduled_rule__/#/#, handler: com.facilio.ims.handler.AddOneTimeJobForScheduledRuleHandler, recordTimeout: 60 }
+      - { key: task_deviation_createWorkOrder/#, handler: com.facilio.ims.handler.workorder.TaskDeviationWorkOrderHandler, recordTimeout: 60 }
+
+  - topic: receive-mail
+    keys:
+      - { key: email-process/#, handler: com.facilio.ims.handler.EmailProcessHandler, recordTimeout: 60 }
+
+  - topic: receive-mail-tutenlabs
+    keys:
+      - { key: email-process-tutenlabs/#, handler: com.facilio.ims.handler.EmailProcessHandler, recordTimeout: 60 }
+
+  - topic: long-running-task
+    keys:
+      - { key: __longrunning_tasks__, handler: com.facilio.ims.handler.LongRunningTaskHandler, recordTimeout: 900 }
+
+  - topic: pre-send-mail
+    keys:
+      - { key: __prepare_ogmail__/org/#, handler: com.facilio.ims.handler.OutgoingPreprocessHandler, recordTimeout: 5 }
+
+  - topic: send-mail
+    keys:
+      - { key: __sendmail__/org/#, handler: com.facilio.ims.handler.OutgoingMailHandler, recordTimeout: 10 }
+
+  - topic: pm-planner
+    keys:
+      - { key: pm_planner/+/execute, handler: com.facilio.ims.handler.PMPlannerHandler, recordTimeout: 1800 }
+      - { key: inspection-generation-process/#, handler: com.facilio.ims.handler.InspectionGenerationHandler , priority: -5, recordTimeout: 1800 }
+
+  - topic: scriptlog
+    keys:
+      - { key: script-log/#, handler: com.facilio.ims.handler.ScriptLogHander, recordTimeout: 10 }
+
+  - topic: alarm-wf
+    keys:
+      - { key: alarm-workflow/#, handler: com.facilio.ims.handler.AlarmWorkFlowHandler, recordTimeout: 120 }
+
+  - topic: backgroundactivity
+    keys:
+      - { key: __background_activity__/+/process, handler: com.facilio.backgroundactivity.handlers.BackgroundActivityTopicHandler, recordTimeout: 120 }
+      - { key: __background_activity_rollup__/+/rollup, handler: com.facilio.backgroundactivity.handlers.BackgroundActivityRollupTopicHandler, recordTimeout: 120 }
+
+  - topic: workflow-rulelog
+    keys:
+      - { key: __workflow_rule_logs__/#/#/#, handler: com.facilio.ims.handler.WorkFlowRuleLogHandler }

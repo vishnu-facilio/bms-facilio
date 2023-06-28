@@ -1,14 +1,14 @@
 package com.facilio.bmsconsoleV3.commands.usernotification;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fms.message.Message;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.ims.handler.PushNotificationHandler;
 import com.facilio.v3.context.Constants;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -18,8 +18,6 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.facilio.wmsv2.constants.Topics.PushNotification.pushNotification;
 
 public class SendUserNotificationCommandV3 extends FacilioCommand implements PostTransactionCommand {
 
@@ -53,10 +51,10 @@ public class SendUserNotificationCommandV3 extends FacilioCommand implements Pos
                 ids.put("recordIds", recordIdsList);
                 if (CollectionUtils.isNotEmpty(recordIdsList)) {
                     Message message = new Message();
-                    message.setTopic(pushNotification+"/"+recordIdsList.get(0));
+                    message.setKey(PushNotificationHandler.KEY+"/"+recordIdsList.get(0));
                     message.setContent(ids);
-                    LOGGER.info("Sending push notifications for ids to wms: " + recordIdsList);
-                    WmsBroadcaster.getBroadcaster().sendMessage(message);
+                    LOGGER.info("Sending push notifications for ids to ims: " + recordIdsList);
+                    Messenger.getMessenger().sendMessage(message);
                 }
         }
 //        if(CollectionUtils.isNotEmpty(records)) {

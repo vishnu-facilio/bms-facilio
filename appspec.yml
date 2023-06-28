@@ -57,7 +57,7 @@ files:
     destination: /home/facilio/deployment-files/    
   - source: /awsprops-azure-test-user.properties
     destination: /home/facilio/deployment-files/
-  - source: /wmsGroupInfo-azure.yml
+  - source: /imsTopicInfo-azure.yml
     destination: /home/facilio/deployment-files/    
   - source: /awsprops-azure-test-scheduler.properties
     destination: /home/facilio/deployment-files/            

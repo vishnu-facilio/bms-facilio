@@ -2,11 +2,11 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.ims.handler.EmailProcessHandler;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.handler.EmailProcessHandler;
-import com.facilio.wmsv2.message.Message;
+import com.facilio.fms.message.Message;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -36,17 +36,17 @@ public class WorkOrderRequestAPI {
                     .addRecord(workOrderEmailProps);
             insertBuilder.save();
             
-            
+
             if(recipient != null && (recipient.contains("@tutenlabs.facilio-us.com") || recipient.contains("amalhadeez+tuten@"))) {
                 LOGGER.info(recipient+" Functioning Inside Tuten Lab seperate group");
-            	
-            	WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-    			        .setTopic(EmailProcessHandler.TOPIC_TUTEN_LABS+"/"+recipient)
+
+            	Messenger.getMessenger().sendMessage(new Message()
+    			        .setKey(EmailProcessHandler.TUTEN_LABS_KEY+"/"+recipient)
     			        .setContent(FieldUtil.getAsJSON(workOrderEmailProps)));
             }
             else {
-            	WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-    			        .setTopic(EmailProcessHandler.TOPIC+"/"+recipient)
+            	Messenger.getMessenger().sendMessage(new Message()
+    			        .setKey(EmailProcessHandler.KEY+"/"+recipient)
     			        .setContent(FieldUtil.getAsJSON(workOrderEmailProps)));
             }
 

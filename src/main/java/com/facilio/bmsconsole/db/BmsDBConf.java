@@ -21,8 +21,6 @@ import com.facilio.services.filestore.FileStore;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
-import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.util.WmsUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -204,6 +202,7 @@ public class BmsDBConf extends DBConf {
     public Set<String> getDBIdentifiers() {
         return FacilioProperties.getDBIdentifiers();
     }
+
     @SneakyThrows
     public HashMap<String, String> getSecret(String secretKey) {
         HashMap<String, String> password = FacilioProperties.getPassword(secretKey);
@@ -218,23 +217,18 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
-    public String getWmsBroadcaster() {
-        return FacilioProperties.getWmsBroadcaster();
+    public String getImsMessengerConf() {
+        return FacilioProperties.getImsMesssengerConf();
     }
 
     @Override
-    public void pushToLiveSession(Message message) {
-        WmsUtil.pushToLiveSession(message);
+    public boolean isImsConsumerEnabled() {
+        return FacilioProperties.isImsConsumerEnabled();
     }
 
     @Override
-    public boolean isWmsConsumerEnabled() {
-        return FacilioProperties.isWmsConsumerEnabled();
-    }
-
-    @Override
-    public List<String> getWmsTopics() {
-        return FacilioProperties.getWmsTopics();
+    public List<String> getImsTopics() {
+        return FacilioProperties.getImsTopics();
     }
 
     @Override

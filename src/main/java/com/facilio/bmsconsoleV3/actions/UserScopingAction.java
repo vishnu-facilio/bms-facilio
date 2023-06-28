@@ -1,8 +1,5 @@
 package com.facilio.bmsconsoleV3.actions;
 
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.UserScopeBean;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.ScopingContext;
@@ -12,9 +9,7 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.v3.V3Action;
-import com.facilio.wmsv2.handler.AuditLogHandler;
+import com.facilio.ims.handler.AuditLogHandler;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONArray;
@@ -22,8 +17,6 @@ import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.function.Function;
-
-import static com.facilio.bmsconsole.util.AuditLogUtil.sendAuditLogs;
 
 
 @Getter

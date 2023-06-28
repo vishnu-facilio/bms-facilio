@@ -10,12 +10,15 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fms.message.Message;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
+import com.facilio.ims.handler.WorkFlowRuleLogHandler;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -68,11 +71,10 @@ public class WorkflowRuleLogUtil {
             long orgId = AccountUtil.getCurrentOrg() == null? workflowRuleLog.getOrgId() : AccountUtil.getCurrentOrg().getOrgId();
 
             if (orgId > 0L) {
-                Message message = new Message();
-                message.setTopic(Topics.System.workflowLogs+"/"+orgId+"/"+workflowRuleLog.getRecordModuleId()+"/"+workflowRuleLog.getWorkflowRuleId());
-                message.setOrgId(orgId);
-                message.setContent(workflowRuleLog.toJson());
-                WmsBroadcaster.getBroadcaster().sendMessage(message);
+                Messenger.getMessenger().sendMessage(new Message()
+                        .setKey(WorkFlowRuleLogHandler.KEY+"/"+orgId+"/"+workflowRuleLog.getRecordModuleId()+"/"+workflowRuleLog.getWorkflowRuleId())
+                        .setOrgId(orgId)
+                        .setContent(workflowRuleLog.toJson()));
             }
         }catch (Exception e){
             LOGGER.error(e);

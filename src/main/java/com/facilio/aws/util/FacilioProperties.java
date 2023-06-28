@@ -111,8 +111,9 @@ public class FacilioProperties {
     private static List<String> portalStageDomains;
 
     private static String wmsBroadcaster;
-    private static boolean wmsConsumerEnabled;
-    private static List<String> wmsTopics;
+    private static String imsMesssengerConf;
+    private static boolean imsConsumerEnabled;
+    private static List<String> imsTopics;
 
     private static String emailClient;
     private static String azureDevelopment;
@@ -439,8 +440,11 @@ public class FacilioProperties {
 
 
             wmsBroadcaster = PROPERTIES.getProperty("wms.broadcaster");
-            wmsConsumerEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("wms.enableConsumer", "true"));
-            wmsTopics = parseCommaSeparatedProps("wms.topics", PROPERTIES.getProperty("wms.topics"));
+
+            imsMesssengerConf = PROPERTIES.getProperty("ims.messenger");
+
+            imsConsumerEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("ims.enableConsumer", "true"));
+            imsTopics = parseCommaSeparatedProps("ims.topics", PROPERTIES.getProperty("ims.topics"));
 
             proxyUrl = PROPERTIES.getProperty("proxyUrl");
             portalProxyUserUrl = PROPERTIES.getProperty("portalProxyUrl");
@@ -524,12 +528,12 @@ public class FacilioProperties {
         return localFileStorePath;
     }
 
-    public static boolean isWmsConsumerEnabled() {
-        return wmsConsumerEnabled;
+    public static boolean isImsConsumerEnabled() {
+        return imsConsumerEnabled;
     }
 
-    public static List<String> getWmsTopics() {
-        return wmsTopics;
+    public static List<String> getImsTopics() {
+        return imsTopics;
     }
     public static Long getMessageReprocessInterval() {
         return messageReprocessInterval;
@@ -955,6 +959,13 @@ public class FacilioProperties {
             wmsBroadcaster = "default";
         }
         return wmsBroadcaster;
+    }
+
+    public static String getImsMesssengerConf() {
+        if (StringUtils.isEmpty(imsMesssengerConf)) {
+            imsMesssengerConf = "default";
+        }
+        return imsMesssengerConf;
     }
 
     public static boolean logUserAccessLog() {

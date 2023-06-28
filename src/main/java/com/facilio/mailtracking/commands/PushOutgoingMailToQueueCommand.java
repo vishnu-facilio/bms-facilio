@@ -3,15 +3,15 @@ package com.facilio.mailtracking.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
+import com.facilio.fms.message.Message;
+import com.facilio.ims.endpoint.Messenger;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.OutgoingMailAPI;
 import com.facilio.mailtracking.context.MailEnums;
 import com.facilio.mailtracking.context.V3OutgoingMailLogContext;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.endpoint.WmsBroadcaster;
-import com.facilio.wmsv2.message.Message;
+import com.facilio.ims.handler.OutgoingMailHandler;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -52,8 +52,8 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand implements Po
         }
         long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
         String topicIdentifier = OutgoingMailAPI.getTopicIdentifier(mailJson, orgId);
-        WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                .setTopic(Topics.Mail.outgoingMail+"/"+topicIdentifier)
+        Messenger.getMessenger().sendMessage(new Message()
+                .setKey(OutgoingMailHandler.KEY+"/"+topicIdentifier)
                 .setOrgId(orgId)
                 .setContent(mailJson));
         LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail to queue/wms for LOGGER_ID ::"+mailJson.get(MailConstants.Params.ID));

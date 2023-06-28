@@ -1,37 +1,31 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.accounts.dto.NewPermission;
+import com.facilio.accounts.dto.Permissions;
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.RoleApp;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.ModuleGroupFactory.ModuleGroupPermissionFactory;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.SetupLayout;
+import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.ims.handler.AuditLogHandler;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.chain.Command;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-
-import com.facilio.accounts.dto.NewPermission;
-import com.facilio.accounts.dto.RoleApp;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.WebTabContext;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsoleV3.context.V3PeopleContext;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
-import com.facilio.wmsv2.handler.AuditLogHandler;
-import org.apache.commons.chain.Command;
-
-import com.facilio.accounts.dto.Permissions;
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.ModuleGroupFactory.ModuleGroupPermissionFactory;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.SetupLayout;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.ActionSupport;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import static com.facilio.bmsconsole.util.AuditLogUtil.sendAuditLogs;
 

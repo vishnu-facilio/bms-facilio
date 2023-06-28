@@ -68,6 +68,7 @@ import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeContext;
 import com.facilio.control.*;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.util.ControlActionUtil;
+import com.facilio.ims.handler.AuditLogHandler;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
@@ -79,7 +80,6 @@ import com.facilio.taskengine.common.JobConstants;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.util.ChainUtil;
-import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;

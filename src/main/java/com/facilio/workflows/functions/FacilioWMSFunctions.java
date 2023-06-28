@@ -5,11 +5,11 @@ import com.facilio.scriptengine.annotation.ScriptNameSpace;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
-import com.facilio.wmsv2.endpoint.SessionManager;
-import com.facilio.wmsv2.handler.BaseHandler;
-import com.facilio.wmsv2.handler.Processor;
-import com.facilio.wmsv2.message.Message;
+import com.facilio.wmsv2.endpoint.Broadcaster;
+import com.facilio.wmsv2.handler.WmsHandler;
+import com.facilio.wmsv2.handler.WmsProcessor;
 import com.facilio.wmsv2.message.TopicHandler;
+import com.facilio.wmsv2.message.WebMessage;
 
 import java.util.Map;
 
@@ -20,11 +20,11 @@ public class FacilioWMSFunctions {
 		checkParam(objects);
 
 		Map<String,Object> msgMap = (Map<String,Object>) objects[0];
-		Message msg = FieldUtil.getAsBeanFromMap(msgMap, Message.class);
+		WebMessage msg = FieldUtil.getAsBeanFromMap(msgMap, WebMessage.class);
 
 		msg.setTopic("__custom__/user/"+msg.getTopic());
 
-		BaseHandler handler = Processor.getInstance().getHandler(msg.getTopic());
+		WmsHandler handler = WmsProcessor.getInstance().getHandler(msg.getTopic());
 
 		if (handler.getDeliverTo() != TopicHandler.DELIVER_TO.USER) {
 			throw new FunctionParamException("Topic handler will not send to user");
@@ -33,7 +33,7 @@ public class FacilioWMSFunctions {
 			throw new FunctionParamException("To cannot be null here for delivery type USER");
 		}
 
-		SessionManager.getInstance().sendMessage(msg);
+		Broadcaster.getBroadcaster().sendMessage(msg);
 
 		return null;
 	}
@@ -44,11 +44,11 @@ public class FacilioWMSFunctions {
 
 		Map<String,Object> msgMap = (Map<String,Object>) objects[0];
 
-		Message msg = FieldUtil.getAsBeanFromMap(msgMap, Message.class);
+		WebMessage msg = FieldUtil.getAsBeanFromMap(msgMap, WebMessage.class);
 
 		msg.setTopic("__custom__/org/"+msg.getTopic());
 
-		BaseHandler handler = Processor.getInstance().getHandler(msg.getTopic());
+		WmsHandler handler = WmsProcessor.getInstance().getHandler(msg.getTopic());
 		if (handler.getDeliverTo() != TopicHandler.DELIVER_TO.ORG) {
 			throw new FunctionParamException("Topic handler will not send to org");
 		}
@@ -57,7 +57,7 @@ public class FacilioWMSFunctions {
 //				throw new FunctionParamException("Orgid cannot be null for delivery type ORG");
 //			}
 
-		SessionManager.getInstance().sendMessage(msg);
+		Broadcaster.getBroadcaster().sendMessage(msg);
 
 		return null;
 	}
@@ -68,9 +68,9 @@ public class FacilioWMSFunctions {
 
 		Map<String,Object> msgMap = (Map<String,Object>) objects[0];
 
-		Message msg = FieldUtil.getAsBeanFromMap(msgMap, Message.class);
+		WebMessage msg = FieldUtil.getAsBeanFromMap(msgMap, WebMessage.class);
 
-		BaseHandler handler = Processor.getInstance().getHandler(msg.getTopic());
+		WmsHandler handler = WmsProcessor.getInstance().getHandler(msg.getTopic());
 
 		if( handler.getDeliverTo() == TopicHandler.DELIVER_TO.ORG && (msg.getOrgId() == null || msg.getOrgId() < 0)) {
 			throw new FunctionParamException("Orgid cannot be null for delivery type ORG");
@@ -80,7 +80,7 @@ public class FacilioWMSFunctions {
 			throw new FunctionParamException("To cannot be null here for delivery type USER");
 		}
 
-		SessionManager.getInstance().sendMessage(msg);
+		Broadcaster.getBroadcaster().sendMessage(msg);
 
 		return null;
 	}

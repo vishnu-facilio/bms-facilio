@@ -1,17 +1,13 @@
 package com.facilio.wmsv2.handler;
 
-import com.facilio.db.util.DBConf;
-import com.facilio.wmsv2.message.Message;
+import com.facilio.wmsv2.message.WebMessage;
+import com.facilio.wmsv2.util.WmsUtil;
 
-public class PingHandler extends BaseHandler {
+public class PingHandler extends WmsHandler {
 
     @Override
-    public void processIncomingMessage(Message message) {
-        message = Processor.getInstance().filterOutgoingMessage(message);
-        BaseHandler handler = Processor.getInstance().getHandler(message.getTopic());
-        handler.processOutgoingMessage(message);
-        if(handler.isLiveMessage()) {
-            DBConf.getInstance().pushToLiveSession(message);
-        }
+    public void processIncomingMessage(WebMessage message) {
+        message = WmsProcessor.getInstance().filterOutgoingMessage(message);
+        WmsUtil.sendObject(message.getLiveSession(), message);
     }
 }

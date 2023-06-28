@@ -8,32 +8,26 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fms.message.Message;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.ims.handler.ImsHandler;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.wmsv2.constants.Topics;
-import com.facilio.wmsv2.handler.BaseHandler;
-import com.facilio.wmsv2.message.Message;
-import com.facilio.wmsv2.message.TopicHandler;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import java.util.Collections;
+
 import java.util.List;
 import java.util.Map;
 
-public class BackgroundActivityTopicHandler extends BaseHandler {
+public class BackgroundActivityTopicHandler extends ImsHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(BackgroundActivityTopicHandler.class.getName());
 
     @Override
-    public void processIncomingMessage(Message message) {
-        LOGGER.error(message.toString());
-    }
-
-    @Override
-    public void processOutgoingMessage(Message message) {
+    public void processMessage(Message message) {
         BackgroundActivity backgroundActivity = new BackgroundActivity();
         try {
             JSONObject content = message.getContent();

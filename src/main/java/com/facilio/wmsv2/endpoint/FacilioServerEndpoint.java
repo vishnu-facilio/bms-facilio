@@ -8,14 +8,14 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.wmsv2.constants.Topics;
+import com.facilio.wmsv2.handler.WmsHandler;
 import com.facilio.wms.endpoints.FacilioServerConfigurator;
 import com.facilio.wmsv2.endpoint.LiveSession.LiveSessionType;
-import com.facilio.wmsv2.handler.BaseHandler;
-import com.facilio.wmsv2.handler.Processor;
-import com.facilio.wmsv2.message.Message;
+import com.facilio.wmsv2.handler.WmsProcessor;
 import com.facilio.wmsv2.message.MessageDecoder;
 import com.facilio.wmsv2.message.MessageEncoder;
-import com.facilio.wmsv2.message.SessionInfo;
+import com.facilio.wmsv2.message.WebMessage;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.websocket.*;
@@ -49,7 +49,7 @@ public class FacilioServerEndpoint
     private static final String AUTH_TOKEN = "token";
 
     private DefaultBroadcaster broadcaster = null;
-    private Processor processor = Processor.getInstance();
+    private WmsProcessor processor = WmsProcessor.getInstance();
 
 //    private Session session;
 //    private static final Set<FacilioServerEndpoint> endpoints = new CopyOnWriteArraySet<FacilioServerEndpoint>();
@@ -57,10 +57,10 @@ public class FacilioServerEndpoint
 	public FacilioServerEndpoint() {
 		System.out.println("Initializing");
 	}
-	
+
 	private DefaultBroadcaster getBroadcaster() {
 		if (this.broadcaster == null) {
-			this.broadcaster = WmsBroadcaster.getDefaultBroadcaster();
+			this.broadcaster = Broadcaster.getBroadcaster();
 		}
 		return this.broadcaster;
 	}
@@ -68,22 +68,22 @@ public class FacilioServerEndpoint
     @OnOpen
     public void onOpen(Session session, @PathParam("id") long id) throws Exception
     {
-    	LiveSession liveSession = validateSession(session);
-    	if (liveSession != null) {
-    		log.log(Level.INFO, "Session started => " + liveSession);
+		LiveSession liveSession = validateSession(session);
+
+		if (liveSession != null) {
+			log.log(Level.INFO, "Session started => " + liveSession);
 
 			SessionManager.getInstance().setBroadcaster(getBroadcaster());
-	        SessionManager.getInstance().addLiveSession(liveSession);
-    	}
-    	else {
-    		throw new Exception("Invalid user!");
-    	}
+			SessionManager.getInstance().addLiveSession(liveSession);
+		} else {
+			throw new Exception("Invalid user!");
+		}
     }
     
     private LiveSession validateSession(Session session) throws Exception {
-    	
-    	HandshakeRequest hreq = (HandshakeRequest) session.getUserProperties().get(HANDSHAKE_REQUEST);
-		
+
+		HandshakeRequest hreq = (HandshakeRequest) session.getUserProperties().get(HANDSHAKE_REQUEST);
+
 		Map<String, List<String>> headers = hreq.getHeaders();
 		Map<String, List<String>> params = hreq.getParameterMap();
 
@@ -141,8 +141,7 @@ public class FacilioServerEndpoint
 				Organization organization = null;
 				if (StringUtils.isNotBlank(currentOrgDomain)) {
 					organization = IAMUserUtil.getOrg(currentOrgDomain, iamAccount.getUser().getUid());
-				}
-				else {
+				} else {
 					organization = IAMUserUtil.getDefaultOrg(iamAccount.getUser().getUid());
 				}
 				iamAccount.setOrg(organization);
@@ -179,19 +178,19 @@ public class FacilioServerEndpoint
 	}
 
     @OnMessage
-    public void onMessage(Session session, Message message) throws IOException, EncodeException
+    public void onMessage(Session session, WebMessage message) throws IOException, EncodeException
     {
     	System.out.println("Session started message to ::" +session.getPathParameters()+ ":::sessionid" + session.getId()+"  msg: "+message.getContent()+"  cc: "+message);
-
 		LiveSession ls = SessionManager.getInstance().getLiveSession(session.getId());
+		ls.setLastMsgTime(System.currentTimeMillis());
 
-		SessionInfo sessionInfo = new SessionInfo();
-		sessionInfo.setLiveSession(ls);
-		message.setSessionInfo(sessionInfo.toJson());
-
+		message.setLiveSession(ls);
 		message = processor.filterIncomingMessage(message);
 		if (message != null) {
-			BaseHandler handler = processor.getHandler(message.getTopic());
+			if(message.getTopic().equals(Topics.System.ping)){
+				ls.setLastPingTime(ls.getLastMsgTime());
+			}
+			WmsHandler handler = processor.getHandler(message.getTopic());
 			if (handler != null) {
 				handler.processIncomingMessage(message);
 			}
@@ -201,15 +200,14 @@ public class FacilioServerEndpoint
     @OnClose
     public void onClose(Session session) throws IOException, EncodeException 
     {
-    	log.info("Session started closed" +session.getId());
-//    	endpoints.remove(this);
-    	SessionManager.getInstance().removeLiveSession(session.getId());
-    	session.close();
+		log.info("Session started closed" +session.getId());
+		SessionManager.getInstance().removeLiveSession(session.getId());
+		session.close();
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) 
     {
-    	log.info("Session started Error" +throwable.getMessage());
+		log.info("Session started Error" +throwable.getMessage());
     }
 }

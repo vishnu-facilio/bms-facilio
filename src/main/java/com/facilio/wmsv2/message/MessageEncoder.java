@@ -1,7 +1,6 @@
 package com.facilio.wmsv2.message;
 
 import com.facilio.modules.FieldUtil;
-import com.google.gson.Gson;
 import org.json.simple.JSONObject;
 
 import javax.websocket.EncodeException;
@@ -12,11 +11,11 @@ import java.util.logging.Logger;
 /**
  * Created by Shivaraj on 16/05/2017.
  */
-public class MessageEncoder implements Encoder.Text<Message>
+public class MessageEncoder implements Encoder.Text<WebMessage>
 {
     private final Logger log = Logger.getLogger(getClass().getName());
 
-    public String encode(Message message) throws EncodeException
+    public String encode(WebMessage message) throws EncodeException
     {
         try {
             JSONObject json = FieldUtil.getAsJSON(message);
