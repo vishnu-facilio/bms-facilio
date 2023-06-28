@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.interfaces.customfields.modules;
 
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldsCount;
+import com.facilio.modules.FieldType;
 import org.apache.commons.collections4.map.HashedMap;
 
 import java.util.Collections;
@@ -30,10 +31,7 @@ public class WorkOrderModuleCustomFieldCount implements ModuleCustomFieldsCount 
     }
 
     @Override
-    public String getNewColumnNameForFieldType(Integer fieldTypeInt, List<String> existingColumns) {
-        if (typeVsCustomColumns.containsKey(fieldTypeInt)) {
-            return ModuleCustomFieldsCount.getColumnName(typeVsCustomColumns.get(fieldTypeInt), existingColumns);
-        }
-        return null;
+    public String getNewColumnNameForFieldType(FieldType fieldType, List<String> existingColumns) {
+        return ModuleCustomFieldsCount.getColumnName(fieldType, typeVsCustomColumns, existingColumns);
     }
 }

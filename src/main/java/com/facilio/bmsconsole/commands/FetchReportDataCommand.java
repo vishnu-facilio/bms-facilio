@@ -791,6 +791,9 @@ public class FetchReportDataCommand extends FacilioCommand {
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                     groupByField.setField(groupByField.getModule(), modBean.getField(groupByField.getFieldId()));
                 }
+                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && groupByField.getField() instanceof MultiCurrencyField) {
+                    groupByField.getField().setColumnName(((MultiCurrencyField) groupByField.getField()).getBaseCurrencyValueColumnName());
+                }
                 FacilioField gField;
                 if (reportType == ReportType.PIVOT_REPORT) {
                     if (groupByField.getLookupFieldId() > 0) {

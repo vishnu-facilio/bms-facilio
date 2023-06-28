@@ -314,6 +314,21 @@
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
 		</action>
+		<action name="multiCurrencyFieldMigration" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/multiCurrencyFieldMigration.jsp</result>
+		</action>
+		<action name="migrateMultiCurrencyField" class="com.facilio.bmsconsole.actions.MultiCurrencyFieldMigrationAction" method="migrateMultiCurrencyField">
+			<result name="success" type="json">
+				<param name="root">result</param>
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+			</result>
+		</action>
 	</package>
 
 </struts>

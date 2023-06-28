@@ -6,12 +6,10 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.UpdateChangeSet;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -59,6 +57,15 @@ public class SaveCommand extends FacilioCommand {
             FacilioModule module = modBean.getModule(moduleName);
 
             List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(module)) {
+                fields.addAll(FieldFactory.getCurrencyPropsFields(module));
+                List<FacilioField> multiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsForModule(moduleName);
+                List<FacilioField> baseCurrencyValueFields = CurrencyUtil.getBaseCurrencyFieldsForModule(module, multiCurrencyFields);
+                if(CollectionUtils.isNotEmpty(baseCurrencyValueFields)){
+                    fields.addAll(baseCurrencyValueFields);
+                }
+            }
 
             InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<>()
                     .module(module)

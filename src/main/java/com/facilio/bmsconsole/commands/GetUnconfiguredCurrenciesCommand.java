@@ -13,7 +13,7 @@ import java.util.*;
 public class GetUnconfiguredCurrenciesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Collection<Unit> availableCurrencies = Unit.getUnitsForMetric(Metric.CURRENCY);                     // All Currencies
+        Collection<Unit> availableCurrencies = new ArrayList<>(Unit.getUnitsForMetric(Metric.CURRENCY));                     // All Currencies
         List<CurrencyContext> currencyList = CurrencyUtil.getUnconfiguredCurrencies();                      // Configured Currencies
 
         if (currencyList != null) {

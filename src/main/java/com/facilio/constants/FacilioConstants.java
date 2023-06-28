@@ -124,6 +124,45 @@ public class FacilioConstants {
 		public static final String URL_RECORD = "urlRecord";
 		public static final String CURRENCY_RECORD = "currencyRecord";
 	}
+	public static class MultiCurrency {
+		public static final List<String> MULTI_CURRENCY_ENABLED_MODULES = Collections.unmodifiableList(getMultiCurrencyEnabledModuleNames());
+		public static final List<String> MULTI_CURRENCY_CUSTOM_FIELD_ADDITION_MODULES = Collections.unmodifiableList(getMultiCurrencyCustomFieldAdditionModules());
+
+		private static List<String> getMultiCurrencyCustomFieldAdditionModules() {
+			List<String> moduleNames = new ArrayList<>();
+			moduleNames.add(ContextNames.PURCHASE_ORDER);
+			moduleNames.add(ContextNames.QUOTE);
+			moduleNames.add(ContextNames.PURCHASE_REQUEST);
+			moduleNames.add(ContextNames.WORK_ORDER);
+			return moduleNames;
+		}
+		private static List<String> getMultiCurrencyEnabledModuleNames() {
+			List<String> moduleNames = new ArrayList<>();
+			moduleNames.add(ContextNames.PURCHASE_ORDER);
+			moduleNames.add(ContextNames.PURCHASE_ORDER_LINE_ITEMS);
+			moduleNames.add(ContextNames.QUOTE);
+			moduleNames.add(ContextNames.QUOTE_LINE_ITEMS);
+			moduleNames.add(ContextNames.PURCHASE_REQUEST);
+			moduleNames.add(ContextNames.PURCHASE_REQUEST_LINE_ITEMS);
+			moduleNames.add(ContextNames.WORK_ORDER);
+			moduleNames.add(ContextNames.TICKET);
+			moduleNames.add(ContextNames.RESOURCE);
+			moduleNames.add(ContextNames.WORKORDER_COST);
+//			moduleNames.add(ContextNames.WORKORDER_ITEMS);
+//			moduleNames.add(ContextNames.WORKORDER_TOOLS);
+			moduleNames.add(ContextNames.WO_SERVICE);
+			moduleNames.add(ContextNames.WO_PLANNED_ITEMS);
+			moduleNames.add(ContextNames.WO_PLANNED_TOOLS);
+			moduleNames.add(ContextNames.WO_PLANNED_SERVICES);
+			moduleNames.add(ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
+			moduleNames.add(ContextNames.WO_LABOUR);
+			moduleNames.add(ContextNames.BUDGET);
+			moduleNames.add(ContextNames.BUDGET_AMOUNT);
+			moduleNames.add(ContextNames.BUDGET_MONTHLY_AMOUNT);
+			moduleNames.add(ContextNames.TRANSACTION);
+			return moduleNames;
+		}
+	}
 	
 	public static class PM_V2 {
 		public static final String PM_V2_MODULE_NAME = "plannedmaintenance";
@@ -329,8 +368,9 @@ public class FacilioConstants {
 		public static final String IS_LOCKED_STATE = "isLockedState";
 		public static final String CURRENT_MODULE_STATE = "currentModuleState";
 		public static final String NAME = "name";
+		public static final String PATCH_FIELD_NAMES = "patchFieldNames";
 
-        public static class HomePage {
+		public static class HomePage {
 			public static final String HOME_PAGE = "homepage";
 			public static final String WIDGET_LINKNAME = "widgetLinkName";
 			public static final String WIDGET_DATA = "widgetData";
@@ -575,6 +615,7 @@ public class FacilioConstants {
 		public static final String FETCH_SUPPLEMENTS = "fetchSupplement";
 		public static final String SELECTABLE_FIELDS = "selectableFields";
 		public static final String EXTRA_SELECTABLE_FIELDS = "extraSelectableFields";
+		public static final String EXTRA_ADD_FIELDS = "extraAddFields";
 
 
 		public static final String CONNECTEDAPP_SAML_LIST = "connectedAppSAMLList";

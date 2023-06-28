@@ -10,6 +10,7 @@ import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiCurrencyField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -91,11 +92,13 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 						throw new IllegalArgumentException("Both module name and fieldName cannot be null in Condition");
 					}
 				}
-				
 				if (condition.getOperator() == null) {
 					throw new IllegalArgumentException("Operator cannot be null in Condition");
 				}
-
+				if(condition.getField() != null &&  condition.getField() instanceof MultiCurrencyField){
+					condition.getField().setColumnName(((MultiCurrencyField)condition.getField()).getBaseCurrencyValueColumnName());
+					condition.setColumnName(condition.getField().getCompleteColumnName());
+				}
 				if (condition.getOperator().isValueNeeded() && condition.getValue() == null && condition.getCriteriaValue() == null && condition.getJsonValue() == null) {
 					throw new IllegalArgumentException("Value cannot be null for Condition with operator "+condition.getOperator());
 				}

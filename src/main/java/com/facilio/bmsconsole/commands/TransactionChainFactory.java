@@ -7178,6 +7178,13 @@ public class TransactionChainFactory {
 		chain.addCommand(new RecommissionWorkOrder());
 		return chain;
 	}
+
+	public static FacilioChain getMultiCurrencyFieldUpdateChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new MigrateNumberFieldToMultiCurrencyFieldCommand());
+		chain.addCommand(new RevertMultiCurrencyFieldMigrationCommand());
+		return chain;
+	}
 }
 
 

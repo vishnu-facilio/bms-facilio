@@ -43,6 +43,8 @@ operators: #Names of enum class that implements Operator Ifc with field types
     enumClassName: com.facilio.db.criteria.operators.ScopeOperator
   - types: [ CURRENCY_FIELD ]
     enumClassName: com.facilio.db.criteria.operators.CurrencyOperator
+  - types: [MULTI_CURRENCY_FIELD]
+    enumClassName: com.facilio.db.criteria.operators.MultiCurrencyOperator
   - types: [ MULTI_LOOKUP ]
     enumClassName: com.facilio.db.criteria.operators.MultiLookupOperator
   - types: [ LOOKUP ]

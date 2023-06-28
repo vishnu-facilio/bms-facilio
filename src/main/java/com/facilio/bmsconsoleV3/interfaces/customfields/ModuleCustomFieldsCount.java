@@ -1,20 +1,22 @@
 package com.facilio.bmsconsoleV3.interfaces.customfields;
 
+import com.facilio.modules.FieldType;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ModuleCustomFieldsCount {
 
-    String getNewColumnNameForFieldType(Integer fieldTypeInt, List<String> existingColumns);
+    String getNewColumnNameForFieldType(FieldType fieldType, List<String> existingColumns);
 
-    static String getColumnName(String[] columns, List<String> existingColumns) {
-        if (columns != null && columns.length > 0) {
-            if (CollectionUtils.isEmpty(existingColumns)) {
-                return columns[0];
-            } else {
+    static String getColumnName(FieldType fieldType, Map<Integer, String[]> typeVsCustomColumns, List<String> existingColumns) {
+        List<FieldType> fieldTypes = fieldType.getRelatedFieldTypes();
+        for(FieldType dataType : fieldTypes) {
+            String[] columns = typeVsCustomColumns.get(dataType.getTypeAsInt());
+            if (columns != null && columns.length > 0) {
                 for (String column : columns) {
-                    if (!existingColumns.contains(column)) {
+                    if (CollectionUtils.isEmpty(existingColumns) || !existingColumns.contains(column)) {
                         return column;
                     }
                 }

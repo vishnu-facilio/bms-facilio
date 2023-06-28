@@ -113,7 +113,7 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
         if(CollectionUtils.isNotEmpty(updateAssetTypeDatas)) {
             V3Config v3Config = ChainUtil.getV3Config(module);
             List<ModuleBaseWithCustomFields> oldRecords = (List<ModuleBaseWithCustomFields>) PackageBeanUtil.getModuleDataListsForIds(keyList, module, V3AssetTypeContext.class);
-            FacilioContext context = V3Util.updateBulkRecords(module, v3Config, oldRecords, updateAssetTypeDatas, keyList, null, null, null, null, null, null, null, null, false, false);
+            FacilioContext context = V3Util.updateBulkRecords(module, v3Config, oldRecords, updateAssetTypeDatas, keyList, null, null, null, null, null, null, null, null, false, false, null);
             Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
             List<V3AssetTypeContext> updatedAssetTypesFromContext = recordMap.get(FacilioConstants.ContextNames.ASSET_TYPE);
             for (V3AssetTypeContext assetTypeFromContext : updatedAssetTypesFromContext) {
@@ -140,7 +140,7 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
                 newAssetTypeDatas.add(data);
             }
             V3Config v3Config = ChainUtil.getV3Config(module);
-            V3Util.updateBulkRecords(module, v3Config, oldRecords, newAssetTypeDatas, keyList, null, null, null, null, null, null, null, null, false, false);
+            V3Util.updateBulkRecords(module, v3Config, oldRecords, newAssetTypeDatas, keyList, null, null, null, null, null, null, null, null, false, false, null);
         }
     }
 

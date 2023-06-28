@@ -412,6 +412,7 @@ public class FilterUtil {
         map.put(FieldType.DATE_TIME,DateOperators.BETWEEN);
         map.put(FieldType.DATE,DateOperators.BETWEEN);
         map.put(FieldType.CURRENCY_FIELD,CurrencyOperator.EQUALS);
+        map.put(FieldType.MULTI_CURRENCY_FIELD, MultiCurrencyOperator.EQUALS);
         map.put(FieldType.BIG_STRING,StringOperators.CONTAINS);
 
         return map;

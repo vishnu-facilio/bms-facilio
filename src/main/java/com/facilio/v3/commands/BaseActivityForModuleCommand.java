@@ -45,7 +45,7 @@ public abstract class BaseActivityForModuleCommand extends FacilioCommand {
 					Object newValue = changeSet.getNewValue();
 					FacilioField field = modBean.getField(fieldId, moduleName);
 
-					if(oldValue == null && newValue == null){
+					if (oldValue == null && newValue == null) {
 						continue;
 					}
 
@@ -54,23 +54,22 @@ public abstract class BaseActivityForModuleCommand extends FacilioCommand {
 					changeObj.put("displayName", field.getDisplayName());
 					if (field instanceof LookupField && oldValue != null) {
 						long recId = (long) oldValue;
-						oldValue = RecordAPI.getPrimaryValue(((LookupField)field).getLookupModule().getName(), recId);
+						oldValue = RecordAPI.getPrimaryValue(((LookupField) field).getLookupModule().getName(), recId);
 						info.put("oldRecordId", recId);
 					}
 					changeObj.put("oldValue", oldValue);
-					
+
 					if (newValue != null) {
 						if (field instanceof LookupField) {
 							long recId = (long) newValue;
-							newValue = RecordAPI.getPrimaryValue(((LookupField)field).getLookupModule().getName(), recId);
+							newValue = RecordAPI.getPrimaryValue(((LookupField) field).getLookupModule().getName(), recId);
 							info.put("recordId", recId);
-						}
-						else if (field instanceof MultiLookupField) {
+						} else if (field instanceof MultiLookupField) {
 							newValue = CommonCommandUtil.getMultiLookupValues(newValue, field);
 						}
 					}
 					changeObj.put("newValue", newValue);
-					
+
 					changeList.add(changeObj);
 				}
 				info.put("changeSet", changeList);

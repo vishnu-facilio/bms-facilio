@@ -159,7 +159,7 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
                 newAssetCategoryDatas.add(data);
             }
             V3Config v3Config = ChainUtil.getV3Config(module);
-            V3Util.updateBulkRecords(module, v3Config, oldRecords, newAssetCategoryDatas, keyList, null, null, null, null, null, null, null, null, false, false);
+            V3Util.updateBulkRecords(module, v3Config, oldRecords, newAssetCategoryDatas, keyList, null, null, null, null, null, null, null, null, false, false, null);
         }
     }
 
@@ -198,7 +198,7 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
         if(CollectionUtils.isNotEmpty(keyList)) {
             List<ModuleBaseWithCustomFields> oldRecords = (List<ModuleBaseWithCustomFields>) PackageBeanUtil.getModuleDataListsForIds(keyList, module, V3AssetCategoryContext.class);
             V3Config v3Config = ChainUtil.getV3Config(module);
-            V3Util.updateBulkRecords(module, v3Config, oldRecords, newAssetCategoryDatas, keyList, null, null, null, null, null, null, null, null, false, false);
+            V3Util.updateBulkRecords(module, v3Config, oldRecords, newAssetCategoryDatas, keyList, null, null, null, null, null, null, null, null, false, false, null, null);
         }
     }
 

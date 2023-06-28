@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.CurrencyContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -13,15 +14,20 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiCurrencyField;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import com.facilio.beans.ModuleBean;
 
+import java.text.MessageFormat;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +35,7 @@ import java.util.Map;
 
 public class CurrencyUtil {
 	public static Logger LOGGER = LogManager.getLogger(CurrencyUtil.class.getName());
+	private static final String BASE_CURRENCY_FIELD_NAME = "##{0}##"+"baseCurrencyValue";
 
 	public static CurrencyContext getBaseCurrency() throws Exception {
 		Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(AccountUtil.getCurrentOrg().getId(), "baseCurrencyCode");
@@ -226,6 +233,43 @@ public class CurrencyUtil {
 		return null;
 	}
 
+	public static Map<String, CurrencyContext> getCurrencyMap() throws Exception {
+		List<CurrencyContext> currencyList = getCurrencyList(null, null);
+		Map<String, CurrencyContext> currencyCodeVsCurrency = CollectionUtils.isNotEmpty(currencyList) ?
+				currencyList.stream().collect(Collectors.toMap(CurrencyContext::getCurrencyCode, currency -> currency, (a, b) -> b)) : new HashMap<>();
+		return currencyCodeVsCurrency;
+	}
+
+	public static List<FacilioField> getMultiCurrencyFieldsForModule(String moduleName) throws Exception {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("DATA_TYPE", "dataType", String.valueOf(FieldType.MULTI_CURRENCY_FIELD.getTypeAsInt()), NumberOperators.EQUALS));
+
+		ModuleBean moduleBean = Constants.getModBean();
+		return moduleBean.getAllFields(moduleName, null, null, criteria);
+	}
+
+	public static void setBaseCurrencyValueForRecord(Map<String, Object> props, List<FacilioField> multiCurrencyFields) throws Exception {
+		for (FacilioField multiCurrencyField : multiCurrencyFields) {
+			Double currencyValue = props.get(multiCurrencyField.getName()) != null && StringUtils.isNotEmpty(String.valueOf(props.get(multiCurrencyField.getName())))
+					? Double.parseDouble(String.valueOf(props.get(multiCurrencyField.getName())))  : null;
+			if (currencyValue != null) {
+				String baseCurrencyFieldName = MessageFormat.format(BASE_CURRENCY_FIELD_NAME, multiCurrencyField.getName());
+				double baseCurrencyValue = CurrencyUtil.getConvertedBaseCurrencyValue(currencyValue, Double.parseDouble(String.valueOf(props.get("exchangeRate"))));
+				props.put(baseCurrencyFieldName, baseCurrencyValue);
+			}
+		}
+	}
+
+	public static List<FacilioField> getBaseCurrencyFieldsForModule(FacilioModule module, List<FacilioField> multiCurrencyFields) {
+		List<FacilioField> baseCurrencyValueFields = new ArrayList<>();
+		for (FacilioField multiCurrencyField : multiCurrencyFields) {
+			String baseCurrencyFieldName = MessageFormat.format(BASE_CURRENCY_FIELD_NAME, multiCurrencyField.getName());
+			FacilioField field = FieldFactory.getField(baseCurrencyFieldName, ((MultiCurrencyField)multiCurrencyField).getBaseCurrencyValueColumnName(), module, FieldType.DECIMAL);
+			baseCurrencyValueFields.add(field);
+		}
+		return baseCurrencyValueFields;
+	}
+
 	public static double getConvertedBaseCurrencyValue(double value, String currencyCode) throws Exception  {
 		return getConvertedBaseCurrencyValue(value, getCurrencyFromCode(currencyCode).getExchangeRate());
 	}
@@ -240,5 +284,33 @@ public class CurrencyUtil {
 
 	public static double getConvertedBaseCurrencyValue(double value, double exchangeRate) throws Exception  {
 		return value / exchangeRate;
+	}
+
+	public static double getEquivalentCurrencyValue(double baseCurrencyValue, double exchangeRate) throws Exception {
+		return baseCurrencyValue * exchangeRate;
+	}
+
+	public static void replaceCurrencyValueWithBaseCurrencyValue(Map<String, Object> props, List<FacilioField> multiCurrencyFields, CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyCodeVsCurrency) throws Exception{
+		String currencyCode = props.containsKey("currencyCode") ? (String) props.get("currencyCode") : null;
+		if(CollectionUtils.isEmpty(multiCurrencyFields) || baseCurrency == null || currencyCodeVsCurrency.size() == 1 || StringUtils.isEmpty(currencyCode)){
+			return;
+		}
+
+		CurrencyContext currency = currencyCodeVsCurrency.get(currencyCode);
+		for (FacilioField multiCurrencyField : multiCurrencyFields) {
+			if (props.containsKey(multiCurrencyField.getName())) {
+				Double currencyValue = props.get(multiCurrencyField.getName()) != null && StringUtils.isNotEmpty(String.valueOf(props.get(multiCurrencyField.getName())))
+						? Double.parseDouble(String.valueOf(props.get(multiCurrencyField.getName())))  : null;
+				if(currencyValue != null) {
+					double exchangeRate = currency.getExchangeRate();
+					double baseCurrencyValue = getConvertedBaseCurrencyValue(currencyValue, exchangeRate);
+					props.put(multiCurrencyField.getName(), baseCurrencyValue);
+				}
+			}
+		}
+	}
+	public static boolean isMultiCurrencyEnabledModule(FacilioModule module) {
+		return FacilioConstants.MultiCurrency.MULTI_CURRENCY_ENABLED_MODULES.contains(module.getName())
+				|| (module.isCustom() && module.getTypeEnum().equals(FacilioModule.ModuleType.BASE_ENTITY));
 	}
 }

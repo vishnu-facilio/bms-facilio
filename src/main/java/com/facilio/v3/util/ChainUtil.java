@@ -89,6 +89,7 @@ public class ChainUtil {
         nonTransactionChain.addCommand(new AddCustomLookupInSupplementCommand(true));
         nonTransactionChain.addCommand(new FetchSysFields());
         nonTransactionChain.addCommand(new SummaryCommand(module));
+        nonTransactionChain.addCommand(new FillCurrencyCodeCommand());
         nonTransactionChain.addCommand(new SummaryClassificationDataCommand());
         nonTransactionChain.addCommand(new CheckContextTampering("getFetchRecordChain", "SummaryCommand", moduleName));
         if (afterFetchCommand != null) {
@@ -170,7 +171,9 @@ public class ChainUtil {
         nonTransactionChain.addCommand(new AddCustomLookupInSupplementCommand(false));
         nonTransactionChain.addCommand(new FetchSysFields());
         nonTransactionChain.addCommand(new FetchOnlyViewGroupColumnFieldsCommand());
+        nonTransactionChain.addCommand(new ConvertSortFieldsToColumnsCommand());
         nonTransactionChain.addCommand(new ListCommand(module));
+        nonTransactionChain.addCommand(new FillCurrencyCodeCommand());
 
         if (listHandler != null && listHandler.isShowStateFlowList()) {
             nonTransactionChain.addCommand(new StateFlowListCommand());
@@ -310,6 +313,7 @@ public class ChainUtil {
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "AddMultiSelectFieldsCommand", moduleName));
         transactionChain.addCommand(new EvaluateFormValidationRuleCommand());
+        transactionChain.addCommand(new AddMultiCurrencyDataCommand());
         transactionChain.addCommand(new SaveCommand(module));
         transactionChain.addCommand(new UpdateTransactionEventTypeCommand());
         transactionChain.addCommand(new AddClassificationDataCommand());
@@ -553,6 +557,7 @@ public class ChainUtil {
         transactionChain.addCommand(new LocationFieldCRUDHandlerCommand());
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new EvaluateFormValidationRuleCommand());
+        transactionChain.addCommand(new UpdateMultiCurrencyDataCommand());
         transactionChain.addCommand(new UpdateCommand(module));
         transactionChain.addCommand(new UpdateTransactionEventTypeCommand());
         transactionChain.addCommand(new UpdateClassificationDataCommand());

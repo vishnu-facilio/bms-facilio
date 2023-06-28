@@ -2,7 +2,12 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.*;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.CurrencyUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.commons.chain.Context;
@@ -177,6 +182,14 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 					triggerFieldIds.add(respectiveFormField.getId());
 				}	
 			}
+			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
+				FacilioModule formModule = form.getModule();
+				String moduleName = formModule.getName();
+				List<FacilioField> multiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsForModule(moduleName);
+				CurrencyContext baseCurrency = CurrencyUtil.getBaseCurrency();
+				Map<String, CurrencyContext> currencyCodeVsCurrency = CurrencyUtil.getCurrencyMap();
+				CurrencyUtil.replaceCurrencyValueWithBaseCurrencyValue(formData, multiCurrencyFields, baseCurrency, currencyCodeVsCurrency);
+			}
 			if (lookupFormData != null && !lookupFormData.isEmpty()) {
 				formData.putAll(lookupFormData);
 			}
@@ -191,7 +204,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 				}
 			}
 		}
-		
+
 		LOGGER.debug("ruleInfoObject - formData - "+ formData + triggerType);
 		context.put(FormRuleAPI.FORM_DATA, formData);
 		context.put(ContextNames.FORM, form);

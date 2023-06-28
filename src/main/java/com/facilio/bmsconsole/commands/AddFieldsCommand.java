@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldsCount;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -15,6 +16,7 @@ import com.facilio.i18n.util.TranslationUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiCurrencyField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
@@ -26,10 +28,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -54,6 +53,7 @@ public class AddFieldsCommand extends FacilioCommand {
 
 			for (FacilioModule module : modules) {
 				FacilioModule cloneMod = new FacilioModule(module);
+				cloneMod.setCustom(module.getCustom());
 				if(module != null && CollectionUtils.isNotEmpty(module.getFields())) {
 					List<Long> extendedModuleIds = module.getExtendedModuleIds();
 					List<FacilioField> existingFields = isNewModules ? null : modBean.getAllFields(module.getName());
@@ -122,25 +122,28 @@ public class AddFieldsCommand extends FacilioCommand {
 		FacilioUtil.throwIllegalArgumentException (dataType == null, "Invalid Data Type Value");
 
 		if (!dataType.isRelRecordField ()) {
-			List< String > existingColumnNames = existingColumns.get (dataType);
-			if (existingColumnNames == null) {
-				existingColumnNames = new ArrayList<> ();
-				existingColumns.put (dataType, existingColumnNames);
-			}
+			List< String > existingColumnNames = new ArrayList<>();
+
+			dataType.getRelatedFieldTypes().stream()
+					.map(existingColumns::get)
+					.filter(CollectionUtils::isNotEmpty)
+					.flatMap(Collection::stream)
+					.forEach(existingColumnNames::add);
+
 			if (field.getColumnName () == null || field.getColumnName ().isEmpty ()) {
 				V3Config v3Config = ChainUtil.getV3Config (field.getModule().getName ());
 				String newColumnName;
 				if (v3Config != null) {
 					FacilioUtil.throwIllegalArgumentException (v3Config.getCustomFieldsCount () == null, "Field limit exceeded for "+ dataType.name()+" field type.");
-					newColumnName = v3Config.getCustomFieldsCount ().getNewColumnNameForFieldType (dataType.getTypeAsInt (), existingColumnNames);
+					newColumnName = v3Config.getCustomFieldsCount ().getNewColumnNameForFieldType(dataType, existingColumnNames);
 				} else {
-					newColumnName = new ModuleCustomFieldCount50 ().getNewColumnNameForFieldType (dataType.getTypeAsInt (), existingColumnNames);
+					newColumnName = new ModuleCustomFieldCount50 ().getNewColumnNameForFieldType(dataType, existingColumnNames);
 				}
 				FacilioUtil.throwIllegalArgumentException (StringUtils.isEmpty (newColumnName),  "Field limit exceeded for "+ dataType.name()+" field type.");
 
 				field.setColumnName (newColumnName);
 			}
-			existingColumnNames.add (field.getColumnName ());
+			existingColumns.computeIfAbsent(dataType, key -> new ArrayList<>()).add(field.getColumnName());
 		}
 	}
 

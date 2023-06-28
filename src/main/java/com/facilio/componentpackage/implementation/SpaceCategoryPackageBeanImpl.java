@@ -125,7 +125,7 @@ public class SpaceCategoryPackageBeanImpl implements PackageBean<V3SpaceCategory
         if(CollectionUtils.isNotEmpty(updateSpaceCategoryDatas)) {
             V3Config v3Config = ChainUtil.getV3Config(spaceCategoryModule);
             List<ModuleBaseWithCustomFields> oldRecords = (List<ModuleBaseWithCustomFields>) PackageBeanUtil.getModuleDataListsForIds(keyList, spaceCategoryModule, V3SpaceCategoryContext.class);
-            FacilioContext context = V3Util.updateBulkRecords(spaceCategoryModule, v3Config, oldRecords, updateSpaceCategoryDatas, keyList, null, null, null, null, null, null, null, null, false, false);
+            FacilioContext context = V3Util.updateBulkRecords(spaceCategoryModule, v3Config, oldRecords, updateSpaceCategoryDatas, keyList, null, null, null, null, null, null, null, null, false, false, null);
             Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
             List<V3SpaceCategoryContext> updatedSpaceCategoriesFromContext = recordMap.get(FacilioConstants.ContextNames.SPACE_CATEGORY);
             for (V3SpaceCategoryContext spaceCategoryFromContext : updatedSpaceCategoriesFromContext) {
@@ -152,7 +152,7 @@ public class SpaceCategoryPackageBeanImpl implements PackageBean<V3SpaceCategory
                 newSpaceCategoryDatas.add(data);
             }
             V3Config v3Config = ChainUtil.getV3Config(module);
-            V3Util.updateBulkRecords(module, v3Config, oldRecords, newSpaceCategoryDatas, keyList, null, null, null, null, null, null, null, null, false, false);
+            V3Util.updateBulkRecords(module, v3Config, oldRecords, newSpaceCategoryDatas, keyList, null, null, null, null, null, null, null, null, false, false, null);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.facilio.v3.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -9,6 +10,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import lombok.extern.log4j.Log4j;
@@ -58,6 +60,15 @@ public class UpdateCommand extends FacilioCommand {
         List<FacilioField> fields = getPatchFields(defaultOptions, options);
         if (fields == null) {
             fields = modBean.getAllFields(moduleName);
+        }
+
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(module)) {
+            fields.addAll(FieldFactory.getCurrencyPropsFields(module));
+            List<FacilioField> multiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsForModule(moduleName);
+            List<FacilioField> baseCurrencyValueFields = CurrencyUtil.getBaseCurrencyFieldsForModule(module, multiCurrencyFields);
+            if(CollectionUtils.isNotEmpty(baseCurrencyValueFields)){
+                fields.addAll(baseCurrencyValueFields);
+            }
         }
 
         Map<Long, List<UpdateChangeSet>> changeSet = new HashMap<>();

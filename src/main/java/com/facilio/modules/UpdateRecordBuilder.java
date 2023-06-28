@@ -440,6 +440,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			changeSet = new HashMap<>();
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 			Set<String> fieldNames = fieldMap.keySet();
+			// removing Currency Field props
+			if (CollectionUtils.isNotEmpty(fieldNames)) {
+				fieldNames.remove("currencyCode");
+				fieldNames.remove("exchangeRate");
+				fieldNames.removeIf(fieldName -> fieldName.endsWith("##baseCurrencyValue"));
+			}
 			for (E bean : oldValues) {
 				long id = bean.getId();
 				ids.add(id);

@@ -2779,3 +2779,4 @@
 /api/v2/customPage/summaryFieldWidget
 /api/v3/myApps/:listMyApps
 /api/v3/qanda/answers/executeDisplayLogic
+/api/v2/multicurrency/list

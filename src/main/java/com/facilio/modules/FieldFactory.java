@@ -1382,6 +1382,13 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getCurrencyFieldsModule();
 
         fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
+        fields.add(getStringField("baseCurrencyValueColumnName", "BASE_CURRENCY_VALUE_COLUMN", module));
+        return fields;
+    }
+    public static List<FacilioField> getCurrencyPropsFields(FacilioModule module){
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getStringField("currencyCode", "CURRENCY_CODE", module.getParentModule()));
+        fields.add(getField("exchangeRate", "EXCHANGE_RATE", module.getParentModule(), FieldType.DECIMAL));
         return fields;
     }
 
@@ -12023,6 +12030,8 @@ public class FieldFactory extends BaseFieldFactory {
                 return (F) new UrlField();
             case CURRENCY_FIELD:
                 return (F) new CurrencyField();
+            case MULTI_CURRENCY_FIELD:
+                return (F) new MultiCurrencyField();
             default:
                 return BaseFieldFactory.getNewFieldObject(type);
         }

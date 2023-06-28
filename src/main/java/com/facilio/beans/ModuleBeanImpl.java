@@ -4,6 +4,8 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldsCount;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.*;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -22,6 +24,7 @@ import com.facilio.modules.fields.*;
 import com.facilio.util.FacilioDateUtil;
 import com.facilio.util.FacilioNumberUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +33,6 @@ import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.mockito.internal.stubbing.answers.DoesNothing;
 
 import java.sql.*;
 import java.text.MessageFormat;
@@ -609,6 +611,10 @@ public class ModuleBeanImpl implements ModuleBean {
 							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 							field = FieldUtil.getAsBeanFromMap(prop, CurrencyField.class);
 							break;
+						case MULTI_CURRENCY_FIELD:
+							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+							field = FieldUtil.getAsBeanFromMap(prop, MultiCurrencyField.class);
+							break;
 						default:
 							field = FieldUtil.getAsBeanFromMap(prop, FacilioField.class);
 							break;
@@ -719,6 +725,9 @@ public class ModuleBeanImpl implements ModuleBean {
 					extendedProps.put(entry.getKey(), getDateExtendedProps(entry.getValue()));
 					break;
 				case CURRENCY_FIELD:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getCurrencyFieldsModule (), FieldFactory.getCurrencyFieldFields (), entry.getValue()));
+					break;
+				case MULTI_CURRENCY_FIELD:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getCurrencyFieldsModule (), FieldFactory.getCurrencyFieldFields (), entry.getValue()));
 					break;
 				default:
@@ -1061,6 +1070,21 @@ public class ModuleBeanImpl implements ModuleBean {
 					}
 					addExtendedProps(ModuleFactory.getMultiLookupFieldsModule(), FieldFactory.getMultiLookupFieldFields(), fieldProps);
 					break;
+				case MULTI_CURRENCY_FIELD:
+					if(FacilioConstants.MultiCurrency.MULTI_CURRENCY_CUSTOM_FIELD_ADDITION_MODULES.contains(field.getModule().getName()) || (field.getModule().isCustom() && field.getModule().getTypeEnum().equals(FacilioModule.ModuleType.BASE_ENTITY))) {
+						if (!(field instanceof MultiCurrencyField)) {
+							throw new IllegalArgumentException("Invalid Field instance for the MULTI_CURRENCY_FIELD data type");
+						}
+						MultiCurrencyField multiCurrencyField = (MultiCurrencyField) field;
+						if (!multiCurrencyField.getDefault()) {
+							fieldProps.put("baseCurrencyValueColumnName", getBaseCurrencyValueColumn(field.getModule(), fieldId));
+						}
+						addExtendedProps(ModuleFactory.getCurrencyFieldsModule(), FieldFactory.getCurrencyFieldFields(), fieldProps);
+					}
+					else {
+						throw new IllegalArgumentException("Multi Currency Fields not enabled for this Module");
+					}
+					break;
 				case FILE:
 					addExtendedProps(ModuleFactory.getFileFieldModule(), FieldFactory.getFileFieldFields(), fieldProps);
 					break;
@@ -1153,6 +1177,31 @@ public class ModuleBeanImpl implements ModuleBean {
 		else {
 			throw new IllegalArgumentException("Invalid field object for addition");
 		}
+	}
+
+	private String getBaseCurrencyValueColumn(FacilioModule module, long fieldId) throws Exception{
+		String[] baseCurrencyValueColumnNames = new String[]{"BASE_CURRENCY_VALUE_CF1", "BASE_CURRENCY_VALUE_CF2", "BASE_CURRENCY_VALUE_CF3", "BASE_CURRENCY_VALUE_CF4", "BASE_CURRENCY_VALUE_CF5"};
+
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getFieldFields());
+		Criteria typeCriteria = new Criteria();
+		typeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("dataType"), String.valueOf(FieldType.MULTI_CURRENCY_FIELD.getTypeAsInt()), NumberOperators.EQUALS));
+		typeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("default"), String.valueOf(false), BooleanOperators.IS));
+		typeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("fieldId"), String.valueOf(fieldId), NumberOperators.NOT_EQUALS));
+		//module id criteria, as the fields for current module only required
+		typeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+		List<FacilioField> existingFields = getAllFields(module.getName(), null, null, typeCriteria);
+
+		List<String> occupiedColumns = existingFields.stream()
+				.map(currencyField -> ((MultiCurrencyField) currencyField).getBaseCurrencyValueColumnName())
+				.collect(Collectors.toList());
+
+		String baseCurrencyValueColumnName = Arrays.stream(baseCurrencyValueColumnNames)
+				.filter(column -> occupiedColumns.isEmpty() || !occupiedColumns.contains(column))
+				.findFirst()
+				.orElse(null);
+
+		FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(baseCurrencyValueColumnName), "Currency field limit exceeded");
+		return baseCurrencyValueColumnName;
 	}
 
 	private void addStringField (StringField field, Map< String, Object> fieldProps) throws SQLException {

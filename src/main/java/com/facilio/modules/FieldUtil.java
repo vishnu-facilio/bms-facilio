@@ -693,6 +693,9 @@ public class FieldUtil {
 					case CURRENCY_FIELD:
 						facilioField = FieldUtil.getAsBeanFromMap (fieldJson,CurrencyField.class);
 						break;
+					case MULTI_CURRENCY_FIELD:
+						facilioField = FieldUtil.getAsBeanFromMap (fieldJson,MultiCurrencyField.class);
+						break;
 					default:
 						facilioField = ( FacilioField ) FieldUtil.getAsBeanFromMap (fieldJson, FacilioField.class);
 						break;
@@ -706,7 +709,12 @@ public class FieldUtil {
 
     public static List<UpdateChangeSet> constructChangeSet(long recordId, Map<String, Object> prop, Map<String, FacilioField> fieldMap) {
         Set<String> fieldNames = fieldMap.keySet();
-        List<UpdateChangeSet> changeList = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(fieldNames)) {
+			fieldNames.remove("currencyCode");
+			fieldNames.remove("exchangeRate");
+			fieldNames.removeIf(fieldName -> fieldName.endsWith("##baseCurrencyValue"));
+		}
+		List<UpdateChangeSet> changeList = new ArrayList<>();
         for (Map.Entry<String, Object> entry : prop.entrySet()) {
             if (fieldNames.contains(entry.getKey())) {
                 UpdateChangeSet currentChange = new UpdateChangeSet();

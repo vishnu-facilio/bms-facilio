@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.FieldType;
 import org.apache.commons.collections4.map.HashedMap;
 
 public class ModuleCustomFieldCount30 implements ModuleCustomFieldsCount {
@@ -29,10 +30,7 @@ public class ModuleCustomFieldCount30 implements ModuleCustomFieldsCount {
     }
 
     @Override
-    public String getNewColumnNameForFieldType(Integer fieldTypeInt, List<String> existingColumns) {
-        if (typeVsCustomColumns.containsKey(fieldTypeInt)) {
-            return ModuleCustomFieldsCount.getColumnName(typeVsCustomColumns.get(fieldTypeInt), existingColumns);
-        }
-        return null;
+    public String getNewColumnNameForFieldType(FieldType fieldType, List<String> existingColumns) {
+        return ModuleCustomFieldsCount.getColumnName(fieldType, typeVsCustomColumns, existingColumns);
     }
 }

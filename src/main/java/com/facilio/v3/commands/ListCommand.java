@@ -7,12 +7,11 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
@@ -58,6 +57,10 @@ public class ListCommand extends FacilioCommand {
         List<FacilioField> fields =(List<FacilioField>) context.get(FacilioConstants.ContextNames.SELECTABLE_FIELDS);
         if(CollectionUtils.isEmpty(fields)){
             fields=modBean.getAllFields(moduleName);
+        }
+
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(module)) {
+            fields.addAll(FieldFactory.getCurrencyPropsFields(module));
         }
 
         SelectRecordsBuilder selectRecordsBuilder = getSelectRecordsBuilder(context);

@@ -126,18 +126,20 @@ public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand
                     idVsRecordMap.put(record.getId(), FieldUtil.getAsJSON(record));
                 }
 
+                Map<Long, Collection<String>> patchFieldNames = new HashMap<>();
                 for (Map<String, Object> rec: subFormDataList) {
                     Map<String, Object> jsonObject = idVsRecordMap.get((long) rec.get("id"));
                     Set<String> keys = rec.keySet();
                     for (String key : keys) {
                         jsonObject.put(key, rec.get(key));
                     }
+                    patchFieldNames.put((long) rec.get("id"), keys);
                 }
                 Collection<Map<String, Object>> values = idVsRecordMap.values();
 
                 V3Config v3Config = ChainUtil.getV3Config(module);
                 V3Util.updateBulkRecords(module, v3Config, oldRecordList, new ArrayList<>(values), ids,
-                        null, null, null, null, null,null, null, null,false,false);
+                        null, null, null, null, null,null, null, null,false,false, patchFieldNames);
             }
         }
     }

@@ -24,6 +24,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
@@ -69,6 +70,9 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 			if (CollectionUtils.isEmpty(fields)) {
 				fields = modBean.getAllFields(moduleName);
 				context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, fields);
+			}
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(module)) {
+				fields.addAll(FieldFactory.getCurrencyPropsFields(module));
 			}
 		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
