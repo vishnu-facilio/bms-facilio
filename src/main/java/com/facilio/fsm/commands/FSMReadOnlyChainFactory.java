@@ -26,6 +26,8 @@ public class FSMReadOnlyChainFactory {
     public static FacilioChain fetchServiceAppointmentListChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchViewCriteriaCommand());
+        c.addCommand(new GenerateCriteriaFromFilterCommand());
+        c.addCommand(new GenerateSearchConditionCommand());
         c.addCommand(new FetchServiceAppointmentListCommand());
         return c;
     }

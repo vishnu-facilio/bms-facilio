@@ -190,22 +190,27 @@ public class DispatcherUtil {
             if(peopleId>0) {
                 groupId = getFacilioGroupMember(peopleId);
             }
-            List<Long> dispatcherBoardIds = getDispatcherSharingList(peopleId,roleId,groupId);
-            FacilioModule dispatcherModule = ModuleFactory.getDispatcherModule();
-            List<FacilioField> selectFields = new ArrayList<>();
-            selectFields.addAll(FieldFactory.getDispatcherFields(dispatcherModule));
-            selectFields.add(FieldFactory.getIdField(dispatcherModule));
-            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                    .select(selectFields)
-                    .table("Dispatcher")
-                    .andCondition(CriteriaAPI.getIdCondition(dispatcherBoardIds,dispatcherModule));
-
-            List<Map<String, Object>> props = selectBuilder.get();
             List<DispatcherSettingsContext> dispatcherSettingsContextList = new ArrayList<>();
-            if (CollectionUtils.isNotEmpty(props)) {
-                dispatcherSettingsContextList = FieldUtil.getAsBeanListFromMapList(props, DispatcherSettingsContext.class);
+            dispatcherSettingsContextList.addAll(getSharedDispatcherList()); //fetching dispatcher board shared to everyone
+
+            List<Long> dispatcherBoardIds = getDispatcherSharingList(peopleId,roleId,groupId);
+            if(CollectionUtils.isNotEmpty(dispatcherBoardIds)) {
+                FacilioModule dispatcherModule = ModuleFactory.getDispatcherModule();
+                List<FacilioField> selectFields = new ArrayList<>();
+                selectFields.addAll(FieldFactory.getDispatcherFields(dispatcherModule));
+                selectFields.add(FieldFactory.getIdField(dispatcherModule));
+                GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                        .select(selectFields)
+                        .table("Dispatcher")
+                        .andCondition(CriteriaAPI.getIdCondition(dispatcherBoardIds, dispatcherModule));
+
+                List<Map<String, Object>> props = selectBuilder.get();
+
+                if (CollectionUtils.isNotEmpty(props)) {
+                    dispatcherSettingsContextList = FieldUtil.getAsBeanListFromMapList(props, DispatcherSettingsContext.class);
+                }
             }
-            dispatcherSettingsContextList.addAll(getSharedDispatcherList());
+
             return dispatcherSettingsContextList;
         }
         return null;
