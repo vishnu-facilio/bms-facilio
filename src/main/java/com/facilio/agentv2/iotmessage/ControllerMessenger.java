@@ -307,13 +307,12 @@ public static boolean discoverPoints(long controllerId) throws Exception {
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 
-    public static void sendAddModbusTcpPoint(ModbusTcpPointContext tcpPointContext, int interval) throws Exception {
-        Controller controller = AgentConstants.getControllerBean().getControllerFromDb(tcpPointContext.getControllerId());
+    public static void sendAddModbusTcpPoint(Controller controller, Point point, int interval) throws Exception {
         IotData iotData;
         if (interval > 0) {
-            iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(tcpPointContext)), FacilioCommand.ADD_POINTS, controller, interval);
+            iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(point)), FacilioCommand.ADD_POINTS, controller, interval);
         } else {
-            iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(tcpPointContext)), FacilioCommand.ADD_POINTS, controller);
+            iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(point)), FacilioCommand.ADD_POINTS, controller);
         }
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }

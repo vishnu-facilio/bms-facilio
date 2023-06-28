@@ -107,7 +107,7 @@ public class ModbusPointAction extends DeviceIdActions {
 
     public String createModbusPoint() {
         try {
-                Controller controller = AgentConstants.getControllerBean().getController(controllerId,getAgentId());
+                Controller controller = AgentConstants.getControllerBean().getController(controllerId, getAgentId());
                 Objects.requireNonNull(controller, "controller can't be null");
                 if (getControllerType() == FacilioControllerType.MODBUS_IP.asInt()) {
                     ModbusTcpPointContext tcpPointContext = new ModbusTcpPointContext(getAgentId(), controller.getId());
@@ -115,16 +115,16 @@ public class ModbusPointAction extends DeviceIdActions {
                     tcpPointContext.setModbusDataType(modbusDataType);
                     tcpPointContext.setRegisterNumber(registerNumber);
                     tcpPointContext.setName(name);
-                    ControllerMessenger.sendAddModbusTcpPoint(tcpPointContext, interval);
+                    ControllerMessenger.sendAddModbusTcpPoint(controller, tcpPointContext, interval);
                     setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
                 } else {
-                    ModbusRtuPointContext rtuPointContext = new ModbusRtuPointContext(-1, controller.getId());
+                    ModbusRtuPointContext rtuPointContext = new ModbusRtuPointContext(getAgentId(), controller.getId());
                     rtuPointContext.setRegisterType(registerType);
                     rtuPointContext.setModbusDataType(modbusDataType);
                     rtuPointContext.setRegisterNumber(registerNumber);
                     rtuPointContext.setName(name);
-                    ControllerMessenger.sendConfigureModbusRtuPoint(rtuPointContext);
+                    ControllerMessenger.sendAddModbusTcpPoint(controller, rtuPointContext, interval);
                     setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
                 }

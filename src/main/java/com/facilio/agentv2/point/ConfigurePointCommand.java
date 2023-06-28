@@ -19,10 +19,9 @@ public class ConfigurePointCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         if(context.containsKey(AgentConstants.CONTROLLER_ID)){
             Long controllerId = (Long) context.get(AgentConstants.CONTROLLER_ID);
-            Controller controller = AgentConstants.getControllerBean().getControllerFromDb(controllerId);
-//            List<Controller> controllers = FieldUtil.getAsBeanListFromMapList(AgentConstants.getControllerBean().getControllers(Collections.singletonList(controllerId)), Controller.class);
-
-            if(controller== null){
+            Long agentId = (Long) context.get(AgentConstants.AGENT_ID);
+            Controller controller = AgentConstants.getControllerBean().getController(controllerId, agentId);
+            if(controller == null){
                 throw new Exception(" no controllers found ");
             }
             context.put(AgentConstants.CONTROLLER,controller);

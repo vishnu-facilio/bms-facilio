@@ -4,6 +4,7 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
+import com.facilio.agentv2.point.PointsUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -25,15 +26,14 @@ public class BulkConfigurePointsJob extends InstantJob {
         List<Point> points = new GetPointRequest().ofType(controllerType).fromIds(pointIds).getPoints();
         if(!points.isEmpty()){
             Map<Long, List<Point>> controllerIdVsPointsMap = getControllerIdVsPointsMap(points);
+            long agentId = points.get(0).getAgentId();
             for(Map.Entry<Long, List<Point>> controllerVsPoints : controllerIdVsPointsMap.entrySet()){
                 long controllerId = controllerVsPoints.getKey();
                 List<Point> pointsToConfigure = controllerVsPoints.getValue();
-                if (controllerId < 0) {
-                    throw new Exception("Point's Controller Id Id can't be less than 1");
-                }
                 FacilioChain chain = TransactionChainFactory.getConfigurePointAndProcessControllerV2Chain();
                 FacilioContext context = chain.getContext();
                 context.put(AgentConstants.CONTROLLER_ID, controllerId);
+                context.put(AgentConstants.AGENT_ID, agentId);
                 context.put(AgentConstants.POINTS, pointsToConfigure);
                 context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
                 context.put(AgentConstants.DATA_INTERVAL, interval);

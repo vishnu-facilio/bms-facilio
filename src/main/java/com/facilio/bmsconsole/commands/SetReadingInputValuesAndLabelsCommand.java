@@ -9,21 +9,28 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import java.sql.SQLException;
 import java.util.*;
 
 public class SetReadingInputValuesAndLabelsCommand extends FacilioCommand {
+    private static final Logger LOGGER = LogManager.getLogger(SetReadingInputValuesAndLabelsCommand.class.getName());
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
-        List<Map<String,Object>> points = (List<Map<String, Object>>) context.get(AgentConstants.POINTS);
-        List<String> multiStatePointNames = getMultiStatePointNames(points);
-        List<Map<String, Object>> multiStatePoints = getMultiStatePoints(points);
-        List<Map<String, Object>> multiStatePointsFromDb = PointsAPI.getPointsFromDb(multiStatePointNames, controller);
-        List<Map<String, Object>> values = getValues(multiStatePointsFromDb, multiStatePoints);
-        addInputValueAndInputLabel(values);
+        try {
+            Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
+            List<Map<String,Object>> points = (List<Map<String, Object>>) context.get(AgentConstants.POINTS);
+            List<String> multiStatePointNames = getMultiStatePointNames(points);
+            List<Map<String, Object>> multiStatePoints = getMultiStatePoints(points);
+            List<Map<String, Object>> multiStatePointsFromDb = PointsAPI.getPointsFromDb(multiStatePointNames, controller);
+            List<Map<String, Object>> values = getValues(multiStatePointsFromDb, multiStatePoints);
+            addInputValueAndInputLabel(values);
+        } catch (Exception e){
+            LOGGER.error("Exception in SetReadingInputValuesAndLabelsCommand", e);
+        }
+
         return false;
     }
 
@@ -31,16 +38,16 @@ public class SetReadingInputValuesAndLabelsCommand extends FacilioCommand {
         List<Map<String, Object>> values = new ArrayList<>();
         Map<String,Long> nameVsId = createNameVsPointIdMap(pointsFromDb);
         for (Map<String, Object> point : points) {
-            JSONObject enumValue = (JSONObject) point.get(AgentConstants.STATES);
+            HashMap<Object, Object> enumValue = (HashMap<Object, Object>) point.get(AgentConstants.STATES);
             String name = point.get(AgentConstants.NAME).toString();
             Long id = nameVsId.get(name);
             for (Object key : enumValue.keySet()){
                 Map<String, Object> value = new HashMap<>();
                 value.put(AgentConstants.POINT_ID, id);
-                String idx = key.toString();
-                String label = enumValue.get(key).toString();
-                value.put(AgentConstants.INPUT_VALUE, idx);
-                value.put(AgentConstants.INPUT_LABEL, label);
+                String inputValue = key.toString();
+                String inputLabel = enumValue.get(key).toString();
+                value.put(AgentConstants.INPUT_VALUE, inputValue);
+                value.put(AgentConstants.INPUT_LABEL, inputLabel);
                 values.add(value);
             }
         }

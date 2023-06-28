@@ -607,7 +607,8 @@ public class AccountUtil {
 		WORK_ORDER_FEATURE_SETTINGS(141,getExponentValue(14),LicenseMapping.GROUP3LICENSE),//2^14
 		DASHBOARD_V2(142, getExponentValue(15), LicenseMapping.GROUP3LICENSE),//2^15
 		ODATA_API(143,getExponentValue(16),LicenseMapping.GROUP3LICENSE), //2^16
-		SENSOR_RULE(144,getExponentValue(17),new String[]{ContextNames.SENSOR_ROLLUP_ALARM},LicenseMapping.GROUP3LICENSE);//2^17
+		SENSOR_RULE(144,getExponentValue(17),new String[]{ContextNames.SENSOR_ROLLUP_ALARM},LicenseMapping.GROUP3LICENSE),//2^17
+		AGENT_INTERVAL(145,getExponentValue(18),LicenseMapping.GROUP3LICENSE);//2^18
 
 		public int featureId;
 		private long license;
