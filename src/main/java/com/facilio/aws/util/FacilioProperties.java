@@ -288,7 +288,7 @@ public class FacilioProperties {
             HashMap<String, String> awsSecret = getPassword(environment + "-app.properties");
             awsSecret.forEach((k, v) -> PROPERTIES.put(k.trim(), v.trim()));
 //            LOGGER.info("After secret reading "+awsSecret);
-            productionEnvironment = ("demo".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment));
+            productionEnvironment = ("demo".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment)) || "preprod".equalsIgnoreCase(environment);
             developmentEnvironment = "development".equalsIgnoreCase(environment);
             isOnpremise = "true".equals(PROPERTIES.getProperty("onpremise", "false").trim());
             securityFilterEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("security.filter", "false").trim());
