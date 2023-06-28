@@ -15,8 +15,10 @@ import com.facilio.modules.fields.EnumFieldValue;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiEnumField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -351,7 +353,10 @@ public class FilterUtil {
           if (operator instanceof StringOperators || operator instanceof StringSystemEnumOperators || operator instanceof UrlOperators) {
               obj = obj.replace(",", StringOperators.DELIMITED_COMMA);
               values.append(obj.trim());
-          } else {
+          }
+          else if (field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL){
+              values.append(encodeFilterDataForNumberField(obj.trim(),field));
+          }else {
               String splDisplayName = PickListOperators.getDisplayNameForCurrentValue(obj);
               if (StringUtils.isEmpty(splDisplayName)) {
                   values.append(ESAPI.encoder().encodeForSQL(new MySQLCodec(MySQLCodec.Mode.STANDARD), obj.trim()));
@@ -421,6 +426,34 @@ public class FilterUtil {
         lookup.put("lookupFieldname",fieldName);
         lookup.put("value",fieldMap.get(fieldName));
         return lookup;
+    }
+    private static String encodeFilterDataForNumberField(String value,FacilioField field) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if(value.contains(",")){
+            String arr[]=value.split(",");
+            for(int i=0;i< arr.length;i++){
+                String strValue = arr[i];
+                if(NumberUtils.isNumber(strValue)){
+                    stringBuilder.append(strValue);
+                }else{
+                    stringBuilder.append("-1");
+                    //FacilioUtil.throwIllegalArgumentException(!NumberUtils.isNumber(strValue),strValue+" is not a number for "+field.getDisplayName() +" field");
+                    LOGGER.info(strValue+" is not a number for field:"+field.toString() +" in FilterUtil");
+
+                }
+                if(i!= arr.length-1){
+                    stringBuilder.append(",");
+                }
+            }
+        }else{
+            if(NumberUtils.isNumber(value)){
+                stringBuilder.append(value);
+            }else{
+                stringBuilder.append("-1");
+                LOGGER.info(value+" is not a number for field:"+field.toString()+"  in FilterUtil");
+            }
+        }
+        return stringBuilder.toString();
     }
 
 }
