@@ -20,18 +20,25 @@ public class DecommissionPicklistCheckCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Criteria criteria = new Criteria();
-        criteria.addOrCondition(CriteriaAPI.getCondition("Resources.IS_DECOMMISSIONED", FacilioConstants.ContextNames.DECOMMISSION, falseCheck, BooleanOperators.IS));
+        Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA);
+        criteria = criteria != null ? criteria : new Criteria();
+
+        Criteria resourceDecommissionCriteria = new Criteria();
+        resourceDecommissionCriteria.addAndCondition(CriteriaAPI.getCondition("Resources.IS_DECOMMISSIONED", FacilioConstants.ContextNames.DECOMMISSION, falseCheck, BooleanOperators.IS));
+
         List<Long> defaultIdList = (List<Long>) context.get(FacilioConstants.PickList.DEFAULT_ID_LIST);
         if(CollectionUtils.isNotEmpty(defaultIdList)) {
-            criteria.addOrCondition(CriteriaAPI.getCondition("Resources.ID", AgentConstants.ID, StringUtils.join(defaultIdList, ","), NumberOperators.EQUALS));
+            resourceDecommissionCriteria.addOrCondition(CriteriaAPI.getCondition("Resources.ID", AgentConstants.ID, StringUtils.join(defaultIdList, ","), NumberOperators.EQUALS));
         }
+
         Map<String, List> query = (Map<String, List>) context.get(FacilioConstants.ContextNames.QUERY_PARAMS);
         if(query != null) {
             if (!query.containsKey(FacilioConstants.ContextNames.IS_TO_FETCH_DECOMMISSIONED_RESOURCE)) {
+                criteria.andCriteria(resourceDecommissionCriteria);
                 context.put(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, criteria);
             }
         }
+
         return false;
     }
 }

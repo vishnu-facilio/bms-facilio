@@ -45,7 +45,7 @@ public class FetchResourceDependentModuleListCommand extends FacilioCommand {
             long orgId = AccountUtil.getCurrentOrg().getId();
             Long emailCount = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> DecommissionUtil.getDependentResourceEmailCount(Collections.singletonList(currentResourceId),orgId));
             if( emailCount > 0){
-                    resourceDependentModuleList.put(FacilioConstants.ContextNames.EMAIL_SETTING,DecommissionUtil.constructResultJSON(supportEmailModule,emailCount,true));
+                    resourceDependentModuleList.put(FacilioConstants.ContextNames.EMAIL_SETTING,DecommissionUtil.constructResultJSON(supportEmailModule,emailCount,FacilioConstants.DecommissionModuleType.ERROR));
             }
         }
 
@@ -56,7 +56,7 @@ public class FetchResourceDependentModuleListCommand extends FacilioCommand {
         JSONObject userObject = new JSONObject();
         if(usersCount > 0 )
         {
-            userObject = DecommissionUtil.constructResultJSON(userModule , (long) usersCount, true);
+            userObject = DecommissionUtil.constructResultJSON(userModule , (long) usersCount, FacilioConstants.DecommissionModuleType.ERROR);
             userObject.put(FacilioConstants.ContextNames.USERS, userList);
         }
         resourceDependentModuleList.put(FacilioConstants.ContextNames.APPLICATION,userObject);

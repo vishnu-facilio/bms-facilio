@@ -42,14 +42,14 @@ public class DecommissionUtil {
         FacilioModule tenantUnitSpaceModule = ModuleFactory.getTenantUnitSpaceModule();
         Long tenantUnitSpaceCount = getTenantsCountOccupiedUnits(dependentResourceIds);
         if (tenantUnitSpaceCount > 0) {
-            dependentResourcesModuleList.put(tenantUnitSpaceModule.getName(), constructResultJSON(tenantUnitSpaceModule, tenantUnitSpaceCount, true));
+            dependentResourcesModuleList.put(tenantUnitSpaceModule.getName(), constructResultJSON(tenantUnitSpaceModule, tenantUnitSpaceCount, FacilioConstants.DecommissionModuleType.ERROR));
         }
 
         if(currentResourceModuleName.equals(FacilioConstants.ContextNames.SITE)) {
             FacilioModule clientPortalModule = modBean.getModule(FacilioConstants.ContextNames.CLIENT);
             Long clientPortalClientCount = getClientCountOfDependentUnits(currentResourceId);
             if (clientPortalClientCount > 0) {
-                dependentResourcesModuleList.put(clientPortalModule.getName(), constructResultJSON(clientPortalModule, clientPortalClientCount, true));
+                dependentResourcesModuleList.put(clientPortalModule.getName(), constructResultJSON(clientPortalModule, clientPortalClientCount, FacilioConstants.DecommissionModuleType.ERROR));
             }
         }
 
@@ -57,7 +57,7 @@ public class DecommissionUtil {
         FacilioModule pmPlannerModule = modBean.getModule(FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
         Long pmPlannerCount = getDependentResourcePMCount(dependentResourceIds);
         if (pmPlannerCount > 0) {
-            dependentResourcesModuleList.put(pmPlannerModule.getName(), constructResultJSON(pmPlannerModule, pmPlannerCount, false));
+            dependentResourcesModuleList.put(pmPlannerModule.getName(), constructResultJSON(pmPlannerModule, pmPlannerCount, FacilioConstants.DecommissionModuleType.WARNING));
         }
 
 //        FacilioModule inspectionTemplateModule = modBean.getModule(FacilioConstants.Inspection.INSPECTION_TEMPLATE);
@@ -71,7 +71,7 @@ public class DecommissionUtil {
             FacilioModule inductionTemplateModule = modBean.getModule(FacilioConstants.Induction.INDUCTION_TEMPLATE);
             Long inductionTemplateCount = getDependentResourceInductionTemplateCount(Collections.singletonList(currentResourceId));
             if(inductionTemplateCount > 0) {
-                dependentResourcesModuleList.put(inductionTemplateModule.getName() , constructResultJSON(inductionTemplateModule , inductionTemplateCount , false));
+                dependentResourcesModuleList.put(inductionTemplateModule.getName() , constructResultJSON(inductionTemplateModule , inductionTemplateCount , FacilioConstants.DecommissionModuleType.WARNING));
             }
 
 
@@ -79,20 +79,20 @@ public class DecommissionUtil {
 
         Long workorderCount = getDependentResourceWorkorderCount(dependentResourceIds, currentResourceModuleName);
         if (workorderCount > 0) {
-            dependentResourcesModuleList.put(ModuleFactory.getWorkOrdersModule().getName(), constructResultJSON(ModuleFactory.getWorkOrdersModule(), workorderCount, false));
+            dependentResourcesModuleList.put(ModuleFactory.getWorkOrdersModule().getName(), constructResultJSON(ModuleFactory.getWorkOrdersModule(), workorderCount, FacilioConstants.DecommissionModuleType.INFO));
         }
 
 
         FacilioModule inspectionModule = modBean.getModule(FacilioConstants.Inspection.INSPECTION_RESPONSE);
         Long inspectionCount = getDependentResourceInspectionCount(dependentResourceIds);
         if (inspectionCount > 0) {
-            dependentResourcesModuleList.put(inspectionModule.getName(), constructResultJSON(inspectionModule, inspectionCount, false));
+            dependentResourcesModuleList.put(inspectionModule.getName(), constructResultJSON(inspectionModule, inspectionCount, FacilioConstants.DecommissionModuleType.INFO));
         }
         if(currentResourceModuleName.equals(FacilioConstants.ContextNames.SITE)){
             FacilioModule inductionModule = modBean.getModule(FacilioConstants.Induction.INDUCTION_RESPONSE);
             Long inductionCount = getDependentResourceInductionCount(Collections.singletonList(currentResourceId), currentResourceModuleName);
             if (inductionCount > 0) {
-                dependentResourcesModuleList.put(inductionModule.getName(), constructResultJSON(inductionModule, inductionCount, false));
+                dependentResourcesModuleList.put(inductionModule.getName(), constructResultJSON(inductionModule, inductionCount, FacilioConstants.DecommissionModuleType.INFO));
             }
 
         }
@@ -100,31 +100,31 @@ public class DecommissionUtil {
         FacilioModule serviceRequestModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST);
         Long serviceRequestCount = getDependentResourceServiceRequestCount(dependentResourceIds, currentResourceModuleName);
         if (serviceRequestCount > 0) {
-            dependentResourcesModuleList.put(serviceRequestModule.getName(), constructResultJSON(serviceRequestModule, serviceRequestCount, false));
+            dependentResourcesModuleList.put(serviceRequestModule.getName(), constructResultJSON(serviceRequestModule, serviceRequestCount, FacilioConstants.DecommissionModuleType.INFO));
         }
 
         if(currentResourceModuleName.equals(FacilioConstants.ContextNames.SITE)){
             FacilioModule inventoryModule = modBean.getModule(FacilioConstants.ContextNames.STORE_ROOM);
             Long storeRoomCount = getDependentResourceStoreRoomCount(Collections.singletonList(currentResourceId), currentResourceModuleName);
             if (storeRoomCount > 0) {
-                dependentResourcesModuleList.put(inventoryModule.getName(), constructResultJSON(inventoryModule, storeRoomCount, false));
+                dependentResourcesModuleList.put(inventoryModule.getName(), constructResultJSON(inventoryModule, storeRoomCount, FacilioConstants.DecommissionModuleType.INFO));
             }
 
             FacilioModule safetyPlanModule = modBean.getModule(FacilioConstants.ContextNames.SAFETY_PLAN);
             Long safetyPlanCount = getDependentSafetyPlansCount(currentResourceId);
             if (safetyPlanCount > 0) {
-                dependentResourcesModuleList.put(safetyPlanModule.getName(), constructResultJSON(safetyPlanModule, safetyPlanCount, false));
+                dependentResourcesModuleList.put(safetyPlanModule.getName(), constructResultJSON(safetyPlanModule, safetyPlanCount, FacilioConstants.DecommissionModuleType.INFO));
             }
         }
 
         return dependentResourcesModuleList;
     }
 
-    public static JSONObject constructResultJSON(FacilioModule module, Long count, Boolean isErrorModule) {
+    public static JSONObject constructResultJSON(FacilioModule module, Long count, String type) {
         JSONObject concernedModuleObject = new JSONObject();
         concernedModuleObject.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, module.getDisplayName());
         concernedModuleObject.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
-        concernedModuleObject.put(FacilioConstants.ContextNames.TYPE, isErrorModule ? "error" : "warning");
+        concernedModuleObject.put(FacilioConstants.ContextNames.TYPE, type);
         concernedModuleObject.put(FacilioConstants.ContextNames.COUNT, count);
         return concernedModuleObject;
     }
@@ -531,14 +531,14 @@ public class DecommissionUtil {
             FacilioModule inductionTemplateModule = modBean.getModule(FacilioConstants.Induction.INDUCTION_TEMPLATE);
             Long inductionTemplateCount = getDependentResourceInductionTemplateCount(Collections.singletonList(resourceId));
             if(inductionTemplateCount > 0) {
-                dependentModuleList.add(DecommissionUtil.constructResultJSON(inductionTemplateModule , inductionTemplateCount , false));
+                dependentModuleList.add(DecommissionUtil.constructResultJSON(inductionTemplateModule , inductionTemplateCount , FacilioConstants.DecommissionModuleType.WARNING));
             }
         }
 
         FacilioModule pmPlannerModule = modBean.getModule(FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
         Long pmPlannerCount = DecommissionUtil.getDependentResourcePMCount(childResourceDataIds);
         if (pmPlannerCount > 0) {
-            dependentModuleList.add(DecommissionUtil.constructResultJSON(pmPlannerModule, pmPlannerCount, false));
+            dependentModuleList.add(DecommissionUtil.constructResultJSON(pmPlannerModule, pmPlannerCount, FacilioConstants.DecommissionModuleType.WARNING));
         }
 
 

@@ -252,6 +252,11 @@ public class FacilioConstants {
 		public static final String STATE_FLOW = "stateflow";
 		public static final String PAGE_BUILDER = "pageBuilder";
 	}
+	public static class DecommissionModuleType{
+		public static final String ERROR = "error";
+		public static final String WARNING = "warning";
+		public static final String INFO = "info";
+	}
 
 	public static class ContextNames {
 		public static final String ONE_LEVEL_LOOKUP="oneLevelLookup";

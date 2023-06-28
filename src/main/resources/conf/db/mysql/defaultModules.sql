@@ -112,7 +112,7 @@ VALUES (${orgId}, @RESOURCE_MODULE_ID, 'commissionedTime','commissioned Time', 7
 INSERT INTO DateFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 INSERT INTO DateFieldChild (ORGID, DATE_FIELD_ID) VALUES (${orgId}, (SELECT LAST_INSERT_ID()));
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT)
-VALUES (${orgId}, @RESOURCE_MODULE_ID, 'decommission', 'Decommission', 5, 'IS_DECOMMISSIONED', 4, false, false, true);
+VALUES (${orgId}, @RESOURCE_MODULE_ID, 'decommission', 'Is Decommissioned', 5, 'IS_DECOMMISSIONED', 4, false, false, true);
 INSERT INTO BooleanFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT)
 VALUES (${orgId}, @RESOURCE_MODULE_ID, 'viewRecommissionedBtn', 'View Recommission Button', 5, 'VIEW_RECOMMISSION_BTN', 4, false, false, true);
