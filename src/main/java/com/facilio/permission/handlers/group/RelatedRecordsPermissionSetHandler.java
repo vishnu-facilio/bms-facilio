@@ -9,6 +9,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.permission.context.module.RelatedListPermissionSet;
+import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -69,6 +70,9 @@ public class RelatedRecordsPermissionSetHandler implements PermissionSetGroupHan
         }
         Page page = new Page();
         relatedListPermissionSets.addAll(PageFactory.addOtherRelatedList(module,page,page.new Tab("Related"), page.new Section(),null,true));
+        if (CollectionUtils.isNotEmpty(relatedListPermissionSets)) {
+            relatedListPermissionSets.sort(Comparator.comparing(RelatedListPermissionSet::getDisplayName));
+        }
         return relatedListPermissionSets;
     }
 
@@ -100,5 +104,20 @@ public class RelatedRecordsPermissionSetHandler implements PermissionSetGroupHan
             }
         }
         return prop;
+    }
+
+    @Override
+    public boolean getDefaultValue(Map<String,Long> queryProp) throws Exception {
+        return false;
+    }
+
+    @Override
+    public boolean getIsDisabled(Map<String,Long> queryProp) throws Exception {
+        return false;
+    }
+
+    @Override
+    public boolean showParent(Long groupId) throws Exception {
+        return CollectionUtils.isNotEmpty(getPermissions(groupId));
     }
 }

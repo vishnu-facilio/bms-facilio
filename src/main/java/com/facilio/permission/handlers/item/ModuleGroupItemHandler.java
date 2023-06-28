@@ -19,7 +19,7 @@ public class ModuleGroupItemHandler implements GroupItemHandler {
         List<PermissionSetGroupingItemContext> items = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(allModules)) {
             for(FacilioModule module : allModules) {
-                if(module.getModuleId() > 0) {
+                if(module != null && module.getModuleId() > 0) {
                     items.add(new PermissionSetGroupingItemContext(module.getModuleId(), module.getDisplayName()));
                 }
             }

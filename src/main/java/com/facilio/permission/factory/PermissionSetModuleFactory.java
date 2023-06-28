@@ -37,4 +37,13 @@ public class PermissionSetModuleFactory {
         relatedListPermissionSetModule.setExtendModule(getModuleTypePermissionSetModule());
         return relatedListPermissionSetModule;
     }
+
+    public static FacilioModule getFieldPermissionSetModule() {
+        FacilioModule relatedListPermissionSetModule = new FacilioModule();
+        relatedListPermissionSetModule.setName("fieldPermissionSet");
+        relatedListPermissionSetModule.setDisplayName("Field Permission Set");
+        relatedListPermissionSetModule.setTableName("FieldPermissionSet");
+        relatedListPermissionSetModule.setExtendModule(getModuleTypePermissionSetModule());
+        return relatedListPermissionSetModule;
+    }
 }

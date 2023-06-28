@@ -7,11 +7,14 @@ import com.facilio.permission.context.BasePermissionContext;
 import com.facilio.permission.context.PermissionSetType;
 import com.facilio.permission.context.TypeItem.GroupingType;
 import com.facilio.permission.context.TypeItem.PermissionSetGroupingItemContext;
+import com.facilio.permission.handlers.group.FieldPermissionSetHandler;
 import com.facilio.permission.handlers.group.PermissionSetGroupHandler;
 import com.facilio.permission.handlers.item.GroupItemHandler;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,7 +36,7 @@ public class GetPermissionSetGroupItemsCommand extends FacilioCommand {
                     for(PermissionSetType.Type setType : PermissionSetType.Type.values()) {
                         if(groupingItem != null && setType.getGroupingType() == groupType) {
                             PermissionSetGroupHandler permissionSetGroupHandler = setType.getHandler();
-                            if(CollectionUtils.isNotEmpty(permissionSetGroupHandler.getPermissions(groupingItem.getId()))) {
+                            if(permissionSetGroupHandler.showParent(groupingItem.getId())) {
                                 filteredList.add(groupingItem);
                             }
                         }

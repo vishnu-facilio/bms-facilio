@@ -1,8 +1,9 @@
 package com.facilio.permission.util;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.beans.PermissionSetBean;
-import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
@@ -19,6 +20,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import lombok.SneakyThrows;
 
 import java.util.*;
 import java.util.function.Function;
@@ -85,6 +87,10 @@ public class PermissionSetUtil {
 
     public static boolean hasPermission (PermissionSetType.Type type, Map<String,Long> queryProp, PermissionFieldEnum permissionFieldEnum) throws Exception {
         if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
+            return true;
+        }
+
+        if(type.getHandler().getDefaultValue(queryProp) && type.getHandler().getIsDisabled(queryProp)){
             return true;
         }
         List<PermissionSetContext> permissionSets = AccountUtil.getPermissionSets();
@@ -175,4 +181,16 @@ public class PermissionSetUtil {
         }
         throw new IllegalArgumentException("Unable to construct link name for permission set");
     }
+
+    @SneakyThrows
+    public static Boolean getCurrentPeopleAccessibleFields(Long moduleId, Long fieldId) {
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FIELD_LIST_PERMISSION)) {
+                Map<String, Long> queryProp = new HashMap<>();
+                queryProp.put("moduleId", moduleId);
+                queryProp.put("fieldId", fieldId);
+                boolean hasPermission = PermissionSetUtil.hasPermission(PermissionSetType.Type.FIELD_LIST, queryProp, PermissionFieldEnum.FIELD_READ_PERMISSION);
+                return hasPermission;
+            }
+        return true;
+        }
 }

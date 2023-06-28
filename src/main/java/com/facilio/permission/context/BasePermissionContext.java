@@ -21,4 +21,8 @@ public class BasePermissionContext implements Serializable {
 
     private PermissionFieldEnum permissionType;
 
+    private boolean defaultValue;
+
+    private boolean isDisabled;
+
 }

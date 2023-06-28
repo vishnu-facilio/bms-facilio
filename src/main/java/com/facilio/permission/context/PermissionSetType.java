@@ -4,9 +4,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStringEnum;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.permission.context.TypeItem.GroupingType;
+import com.facilio.permission.context.module.FieldPermissionSet;
 import com.facilio.permission.context.module.RelatedListPermissionSet;
 import com.facilio.permission.factory.PermissionSetFieldFactory;
 import com.facilio.permission.factory.PermissionSetModuleFactory;
+import com.facilio.permission.handlers.group.FieldPermissionSetHandler;
 import com.facilio.permission.handlers.group.PermissionSetGroupHandler;
 import com.facilio.permission.handlers.group.RelatedRecordsPermissionSetHandler;
 import lombok.Getter;
@@ -38,6 +40,17 @@ public class PermissionSetType implements Serializable {
                 Arrays.asList("moduleId","relatedModuleId","relatedFieldId"),
                 Arrays.asList(PermissionFieldEnum.RELATED_LIST_READ_PERMISSION),
                 Arrays.asList("moduleName","relatedModuleName","relatedFieldName")
+        ),
+        FIELD_LIST(
+                "Field List",
+                GroupingType.MODULE,
+                PermissionSetModuleFactory.getFieldPermissionSetModule(),
+                PermissionSetFieldFactory.getFieldPermissionSetFields(),
+                FieldPermissionSet.class,
+                new FieldPermissionSetHandler(),
+                Arrays.asList("moduleId","fieldId"),
+                Arrays.asList(PermissionFieldEnum.FIELD_READ_PERMISSION),
+                Arrays.asList("moduleName","fieldName")
         );
 
         Type(@NonNull String displayName, @NonNull GroupingType groupingType, @NonNull FacilioModule module, @NonNull List<FacilioField> fields, @NonNull Class setClass, @NonNull PermissionSetGroupHandler handler, @NonNull List<String> queryFields, @NonNull List<PermissionFieldEnum> permissionFieldEnumList, @NonNull List<String> requiredHTTPParams) {

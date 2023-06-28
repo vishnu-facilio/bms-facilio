@@ -71,6 +71,15 @@ public class PermissionSetFieldFactory {
         moduleVsFieldMap.put(PermissionSetModuleFactory.getPermissionSetModule().getName(),getPermissionSetFields());
         moduleVsFieldMap.put(PermissionSetModuleFactory.getModuleTypePermissionSetModule().getName(),getModuleTypePermissionSetFields());
         moduleVsFieldMap.put(PermissionSetModuleFactory.getRelatedListPermissionSetModule().getName(),getRelatedListPermissionSetFields());
+        moduleVsFieldMap.put(PermissionSetModuleFactory.getFieldPermissionSetModule().getName(),getFieldPermissionSetFields());
         return moduleVsFieldMap;
+    }
+
+    public static List<FacilioField> getFieldPermissionSetFields() {
+        List<FacilioField> fieldList = new ArrayList<>();
+        FacilioModule module = PermissionSetModuleFactory.getFieldPermissionSetModule();
+        fieldList.add(FieldFactory.getIdField(module));
+        fieldList.add(FieldFactory.getNumberField("fieldId", "FIELD_ID", module));
+        return fieldList;
     }
 }

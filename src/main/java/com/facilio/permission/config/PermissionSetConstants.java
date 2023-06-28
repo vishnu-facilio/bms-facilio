@@ -16,6 +16,10 @@ public class PermissionSetConstants {
                     PermissionSetModuleFactory.getRelatedListPermissionSetModule().getName(),
                     PermissionSetModuleFactory.getModuleTypePermissionSetModule()
                 );
+        extendModuleRelation.put(
+                PermissionSetModuleFactory.getFieldPermissionSetModule().getName(),
+                PermissionSetModuleFactory.getModuleTypePermissionSetModule()
+        );
         return extendModuleRelation;
     }
 
