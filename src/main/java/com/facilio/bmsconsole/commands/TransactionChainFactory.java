@@ -1530,6 +1530,7 @@ public class TransactionChainFactory {
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new UpdateTaskCommand());
 			c.addCommand(new UpdateClosedTasksCounterCommand());
+			c.addCommand(new AutoResolveWorkOrderCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new AddActivitiesCommand());
 			c.addCommand(new UpdateRdmWithLatestInputUnit());

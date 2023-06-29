@@ -8,5 +8,6 @@ import lombok.Setter;
 @Setter
 public class V3WorkOrderModuleSettingContext extends V3Context {
 
-    private boolean hideGallery;
+    private Boolean hideGallery;
+    private Long autoResolveStateId;
 }
