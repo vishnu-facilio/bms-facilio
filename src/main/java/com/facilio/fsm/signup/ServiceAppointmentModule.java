@@ -73,6 +73,9 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         actualDuration.setDisplayType(FacilioField.FieldDisplayType.DURATION);
         serviceAppointmentFields.add(actualDuration);
 
+        FacilioField isAllTasksClosed = FieldFactory.getDefaultField("isAllTasksClosed","All Tasks Closed","IS_ALL_TASKS_CLOSED", FieldType.BOOLEAN);
+        serviceAppointmentFields.add(isAllTasksClosed);
+
         FacilioField scheduledStartTime = FieldFactory.getDefaultField("scheduledStartTime","Scheduled Start Time","SCHEDULED_START_TIME", FieldType.DATE_TIME);
         serviceAppointmentFields.add(scheduledStartTime);
 

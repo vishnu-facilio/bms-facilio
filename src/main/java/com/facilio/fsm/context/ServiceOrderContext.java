@@ -1,9 +1,9 @@
 package com.facilio.fsm.context;
 
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.workflow.rule.SLAPolicyContext;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.fw.validators.DateTime;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
@@ -17,70 +17,70 @@ public class ServiceOrderContext extends V3Context {
 
     private String subject;
     private String description;
-    private SiteContext site;
+    private V3SiteContext site;
     private ClientContext client;
-    private ServiceOrderMaintenanceType maintenancetype;
+    private ServiceOrderMaintenanceType maintenanceType;
     private ServiceOrderCategory category;
     private ServiceOrderPriority priority;
     private SpaceContext space;
     private AssetContext asset;
     private ServiceOrderStatus status;
     private VendorContext vendor;
-    private DateTime preferredstarttime;
-    private DateTime preferredendtime;
-    private Boolean autocreatesa;
-    private DateTime responseduedate;
-    private DateTime resolutionduedate;
-    private DateTime resolvedtime;
+    private DateTime preferredStartTime;
+    private DateTime preferredEndTime;
+    private Boolean autoCreateSa;
+    private DateTime responseDueDate;
+    private DateTime resolutionDueDate;
+    private DateTime resolvedTime;
     private StateFlowRuleContext stateflow;
     private ServiceOrderSourceType sourceType;
-    private V3PeopleContext createdby;
-    private DateTime createdtime;
-    private V3PeopleContext modifiedby;
-    private DateTime modifiedtime;
+    private V3PeopleContext createdBy;
+    private DateTime createdTime;
+    private V3PeopleContext modifiedBy;
+    private DateTime modifiedTime;
     private V3PeopleContext sysdeletedby;
-    private DateTime sysdeletedtime;
-    private Boolean sysdeleted;
-    private DateTime actualstarttime;
-    private DateTime actualendtime;
-    private DateTime actualduration;
-    private V3PeopleContext assignedto;
-    private V3PeopleContext assignedby;
-    private DateTime duedate;
-    private DateTime estimatedstarttime;
-    private DateTime estimatedendtime;
-    private DateTime estimatedduration;
-    private Long modulestate;
+//    private DateTime sysDeletedTime;
+    private Boolean sysDeleted;
+    private DateTime actualStartTime;
+    private DateTime actualEndTime;
+    private DateTime actualDuration;
+    private V3PeopleContext assignedTo;
+    private V3PeopleContext assignedBy;
+    private DateTime dueDate;
+    private DateTime estimatedStartTime;
+    private DateTime estimatedEndTime;
+    private DateTime estimatedDuration;
+//    private Long moduleState;
     private Long noOfAttachments;
     private Long noOfClosedTasks;
     private Long noOfNotes;
     private Long noOfTasks;
-    private SLAPolicyContext slapolicyid;
-    private Long approvalruleid;
+//    private SLAPolicyContext slaPolicyId;
+    private Long approvalRuleId;
     private Long approvalState;
-    private Long parentso;
+    private Long parentSo;
     private PlannedMaintenance pm;
-    private ServiceOrderPrerequisiteStatus prerequeststatus;
-    private Boolean prerequisiteapproved;
-    private Boolean prerequisiteenabled;
-    private Boolean qrenabled;
-    private V3PeopleContext requestedby;
-    private Long localid;
+    private ServiceOrderPrerequisiteStatus prerequestStatus;
+    private Boolean prerequisiteApproved;
+    private Boolean prerequisiteEnabled;
+    private Boolean qrEnabled;
+    private V3PeopleContext requestedBy;
+//    private Long localId;
 
     public int getPrerequeststatus() {
-        if (prerequeststatus != null) {
-            return prerequeststatus.getIndex();
+        if (prerequestStatus != null) {
+            return prerequestStatus.getIndex();
         }
         return -1;
     }
     public void setPrerequeststatus(int prerequeststatus) {
-        this.prerequeststatus = ServiceOrderPrerequisiteStatus.valueOf(prerequeststatus);
+        this.prerequestStatus = ServiceOrderPrerequisiteStatus.valueOf(prerequeststatus);
     }
     public ServiceOrderPrerequisiteStatus getServiceOrderPrerequisiteStatusEnum() {
-        return prerequeststatus;
+        return prerequestStatus;
     }
     public void setPrerequeststatus(ServiceOrderPrerequisiteStatus prerequeststatus) {
-        this.prerequeststatus = prerequeststatus;
+        this.prerequestStatus = prerequeststatus;
     }
 
     public static enum ServiceOrderPrerequisiteStatus implements FacilioIntEnum {
@@ -115,19 +115,19 @@ public class ServiceOrderContext extends V3Context {
     }
 
     public int getMaintenancetype() {
-        if (maintenancetype != null) {
-            return maintenancetype.getIndex();
+        if (maintenanceType != null) {
+            return maintenanceType.getIndex();
         }
         return -1;
     }
     public void setMaintenancetype(int maintenancetype) {
-        this.maintenancetype = ServiceOrderMaintenanceType.valueOf(maintenancetype);
+        this.maintenanceType = ServiceOrderMaintenanceType.valueOf(maintenancetype);
     }
     public ServiceOrderMaintenanceType getServiceOrderMaintenanceTypeEnum() {
-        return maintenancetype;
+        return maintenanceType;
     }
     public void setMaintenanceType(ServiceOrderMaintenanceType maintenancetype) {
-        this.maintenancetype = maintenancetype;
+        this.maintenanceType = maintenancetype;
     }
 
     public static enum ServiceOrderMaintenanceType implements FacilioIntEnum {

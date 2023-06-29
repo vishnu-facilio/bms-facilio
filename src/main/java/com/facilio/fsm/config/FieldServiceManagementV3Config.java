@@ -44,6 +44,7 @@ public class FieldServiceManagementV3Config {
         return () -> new V3Config(ServiceTaskContext.class, new ModuleCustomFieldCount15())
                 .create()
                 .update()
+                .afterSave(new FsmTransactionChainFactoryV3().updateTaskChain())
                 .list()
                 .beforeFetch(new LoadServiceTaskLookupCommandV3())
                 .summary()

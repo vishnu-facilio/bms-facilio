@@ -27,6 +27,7 @@ public class ServiceAppointmentContext extends V3Context {
     private LocationContextV3 location;
     private V3SiteContext site;
     private V3PeopleContext fieldAgent;
+    private Boolean isAllTasksClosed;
     private AppointmentType appointmentType;
     public int getAppointmentType() {
         if (appointmentType != null) {
