@@ -84,6 +84,8 @@ public class FetchMyReadingImportDataList extends FacilioCommand {
             GenericSelectRecordBuilder countSelectBuilder = new GenericSelectRecordBuilder()
                     .select(FieldFactory.getCountField())
                     .table(ModuleFactory.getReadingImportAPPModule().getTableName());
+            countSelectBuilder.andCondition(CriteriaAPI.getCondition("Reading_Import_APP.CREATED_BY", "createdBy", String.valueOf(AccountUtil.getCurrentUser().getOuid()), NumberOperators.EQUALS));
+
             List<Map<String,Object>> countRecord = countSelectBuilder.get();
             if(CollectionUtils.isNotEmpty(countRecord)){
                 context.put("count", countRecord.get(0).get("count"));
