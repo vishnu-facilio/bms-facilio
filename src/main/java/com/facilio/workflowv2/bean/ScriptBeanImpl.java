@@ -3,6 +3,7 @@ package com.facilio.workflowv2.bean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
 import com.facilio.scriptengine.context.WorkflowFunctionContext;
 import com.facilio.scriptengine.context.WorkflowNamespaceContext;
@@ -10,6 +11,8 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+
+import java.util.List;
 
 public class ScriptBeanImpl implements ScriptBean {
 
@@ -52,6 +55,15 @@ public class ScriptBeanImpl implements ScriptBean {
 		addWorkflowChain.execute();
 		
 		return nameSpace;
+	}
+
+	@Override
+	public void deleteNameSpacesForIds(List<Long> ids) throws Exception {
+		FacilioChain deleteFunctionChain = TransactionChainFactory.getBulkDeleteWorkflowNameSpaceChain();
+
+		FacilioContext chainContext = deleteFunctionChain.getContext();
+		chainContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+		deleteFunctionChain.execute();
 	}
 
 	@Override
@@ -119,6 +131,15 @@ public class ScriptBeanImpl implements ScriptBean {
 		addWorkflowChain.execute();
 		
 		return function;
+	}
+
+	@Override
+	public void deleteFunctionsForIds(List<Long> ids) throws Exception {
+		FacilioChain deleteFunctionChain = TransactionChainFactory.getBulkDeleteWorkFlowChain();
+
+		FacilioContext chainContext = deleteFunctionChain.getContext();
+		chainContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+		deleteFunctionChain.execute();
 	}
 
 	@Override

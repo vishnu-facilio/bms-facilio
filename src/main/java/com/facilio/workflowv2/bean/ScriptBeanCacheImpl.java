@@ -8,6 +8,11 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
+import java.util.List;
+import java.util.Map;
 
 public class ScriptBeanCacheImpl extends ScriptBeanImpl implements ScriptBean {
 
@@ -41,6 +46,17 @@ public class ScriptBeanCacheImpl extends ScriptBeanImpl implements ScriptBean {
 		nameSpace = super.deleteNameSpace(nameSpace);
         invalidateNameSpaceCache(nameSpace);
 		return nameSpace;
+	}
+
+	@Override
+	public void deleteNameSpacesForIds(List<Long> ids) throws Exception {
+		super.deleteNameSpacesForIds(ids);
+		Map<Long, WorkflowNamespaceContext> nameSpacesForIds = UserFunctionAPI.getNameSpacesForIds(ids);
+		if (MapUtils.isNotEmpty(nameSpacesForIds)) {
+			for (WorkflowNamespaceContext nameSpace : nameSpacesForIds.values()) {
+				invalidateNameSpaceCache(nameSpace);
+			}
+		}
 	}
 
 	@Override
@@ -101,7 +117,20 @@ public class ScriptBeanCacheImpl extends ScriptBeanImpl implements ScriptBean {
 		
 		return function;
 	}
-	
+
+	@Override
+	public void deleteFunctionsForIds(List<Long> ids) throws Exception {
+		super.deleteFunctionsForIds(ids);
+		Map<Long, WorkflowUserFunctionContext> functionsForIds = UserFunctionAPI.getFunctionsForIds(ids, false);
+		if (MapUtils.isNotEmpty(functionsForIds)) {
+			for (WorkflowUserFunctionContext functionContext : functionsForIds.values()) {
+				FacilioCache<String, WorkflowUserFunctionContext> functionCache = LRUScriptCache.getScriptFunctionCache();
+				String key = LRUScriptCache.CacheKeys.SCRIPT_FUNCTION_KEY(getOrgId(), functionContext.getNameSpaceName(), functionContext.getName());
+				functionCache.remove(key);
+			}
+		}
+	}
+
 	@Override
 	public WorkflowContext deleteFunction(WorkflowContext function) throws Exception {
 		// TODO Auto-generated method stub

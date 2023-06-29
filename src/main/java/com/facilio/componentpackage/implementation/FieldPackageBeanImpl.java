@@ -12,6 +12,7 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.field.validation.date.DateValidatorType;
 import com.facilio.db.criteria.operators.StringOperators;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.MapUtils;
@@ -31,6 +32,7 @@ import java.time.DayOfWeek;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j
 public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
     private static final List<String> SYSTEM_FIELD_NAMES_WITH_CUSTOM_CONFIGURATION = Arrays.asList("textContent", "htmlContent");
 
@@ -151,12 +153,20 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
             String fieldName = fieldElement.getElement(PackageConstants.NAME).getText();
             String moduleName = fieldElement.getElement(PackageConstants.MODULENAME).getText();
 
-            FacilioField field = moduleBean.getField(fieldName, moduleName);
+            FacilioModule module = moduleBean.getModule(moduleName);
+            if (module == null) {
+                LOGGER.info("###Sandbox - Module not found - " + moduleName);
+                continue;
+            }
+
+            FacilioField field = getFieldFromDB(module, fieldName);
             if (fieldName.equals("id") || fieldName.equals("siteId")) {
-                field = getFieldFromDB(moduleName, fieldName);
+                field = getFieldFromDB(module, fieldName);
             }
             if (field != null) {
                 uniqueIdentifierVsFieldId.put(uniqueIdentifier, field.getFieldId());
+            } else {
+                LOGGER.info("###Sandbox - Field not found - ModuleName - " + moduleName + " FieldName - " + fieldName);
             }
         }
         return uniqueIdentifierVsFieldId;
@@ -580,6 +590,10 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
                 }
                 break;
 
+            case CURRENCY_FIELD:
+                facilioField = (CurrencyField) FieldUtil.getAsBeanFromMap(fieldProp, CurrencyField.class);
+                break;
+
             default:
                 facilioField = (FacilioField) FieldUtil.getAsBeanFromMap(fieldProp, FacilioField.class);
                 break;
@@ -625,16 +639,14 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
         return dayOfWeeks;
     }
 
-    private FacilioField getFieldFromDB(String moduleName, String fieldName) throws Exception {
-        FacilioModule module = Constants.getModBean().getModule(moduleName);
-        List<Long> extendedModuleIds = module.getExtendedModuleIds();
+    private FacilioField getFieldFromDB(FacilioModule module, String fieldName) throws Exception {
         FacilioModule fieldsModule = ModuleFactory.getFieldsModule();
 
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .table(fieldsModule.getTableName())
                 .select(Collections.singleton(FieldFactory.getNumberField("fieldId", "FIELDID", fieldsModule)))
                 .andCondition(CriteriaAPI.getCondition("NAME", "name", fieldName, StringOperators.IS))
-                .andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 
         Map<String, Object> fieldObj = selectBuilder.fetchFirst();
 

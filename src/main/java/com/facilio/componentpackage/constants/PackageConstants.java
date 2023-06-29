@@ -228,4 +228,59 @@ public class PackageConstants {
         public static final String FEATURE_LICENSE_VALUE = "Feature_License_Value";
         public static final String FEATURE_LICENSE_LIST = "Feature_License_List";
     }
+
+    public static class WorkFlowRuleConstants {
+        public static final String EXECUTION_ORDER = "Execution_Order";
+        public static final String STATUS = "Status";
+        public static final String RULE_TYPE = "Rule_Type";
+        public static final String ACTIVITY_TYPE = "Activity_Type";
+        public static final String PARENT_RULE = "Parent_Rule";
+        public static final String ON_SUCCESS = "On_Success";
+        public static final String VERSION_GROUP_ID = "Version_Group_Id";
+        public static final String IS_LATEST_VERSION = "Is_Latest_Version";
+        public static final String SCHEDULE_INFO = "Schedule_info";
+        public static final String DATE_FIELD_NAME = "Date_Field_Name";
+        public static final String DATE_FIELD_MODULE_NAME = "Date_Field_Module_Name";
+        public static final String SCHEDULE_TYPE = "Schedule_Type";
+        public static final String TIME_INTERVAL = "Time_Interval";
+        public static final String VERSION_NUMBER = "Version_Number";
+        public static final String JOB_TIME = "Job_Time";
+        public static final String LAST_SCHEDULE_RULE_EXECUTED_TIME = "Last_Schedule_Rule_Executed_Time";
+        public static final String ACTION = "Action";
+        public static final String ACTIONS_LIST = "Actions_List";
+        public static final String ACTION_TYPE = "Action_Type";
+        public static final String ACTION_STATUS = "Action_Status";
+        public static final String DEFAULT_TEMPLATE = "Default_Template";
+
+        public static final String TEMPLATE = "Template";
+        public static final String TEMPLATE_NAME = "Template_Name";
+        public static final String TEMPLATE_TYPE = "Template_Type";
+        public static final String PLACEHOLDER = "Placeholder";
+        public static final String WORKFLOW_CONTEXT = "Workflow_Context";
+        public static final String IS_V2_SCRIPT = "IS_V2_Script";
+        public static final String WORKFLOW_STRING = "Workflow_String";
+        public static final String USER_WORKFLOW = "User_Workflow";
+        public static final String IS_FTL = "is_FTL";
+        public static final String IS_ATTACHMENT_ADDED = "Is_Attachment_Added";
+        public static final String ORIGINAL_TEMPLATE = "Original_Template";
+        public static final String VALUE_ELEMENT = "Value_Element";
+        public static final String NEW_STATE = "New_State";
+        public static final String STATUS_NAME = "Status_Name";
+        public static final String PARENT_MODULE_NAME = "Parent_Module_Name";
+        public static final String ACTION_FIELD_NAME = "Action_Field_Name";
+        public static final String ACTION_FIELD_VALUE = "Action_Field_Value";
+        public static final String CONTAINS_RECORD_ID_MAP = "Contains_Record_Id_Map";
+    }
+
+    public static class FunctionConstants {
+        public static final String NAMESPACE_LINK_NAME = "NameSpace_Link_Name";
+        public static final String WORKFLOW_XML_STRING = "Workflow_String";
+        public static final String WORKFLOW_STRING = "Workflow_V2_String";
+        public static final String UI_MODE = "Workflow_UIMode";
+        public static final String TYPE = "Type";
+        public static final String RETURN_TYPE = "Return_Type";
+        public static final String IS_LOG_NEEDED = "Is_LogNeeded";
+        public static final String IS_V2 = "Is_V2Script";
+        public static final String RUN_AS_ADMIN = "Run_AsAdmin";
+    }
 }

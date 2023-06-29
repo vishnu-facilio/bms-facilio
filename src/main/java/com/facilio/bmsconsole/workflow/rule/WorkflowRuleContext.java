@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLTimeoutException;
 import java.text.MessageFormat;
 import java.time.LocalTime;
@@ -48,6 +49,34 @@ public class WorkflowRuleContext implements Serializable {
 	/**
 	 * 
 	 */
+	public WorkflowRuleContext() {}
+
+	public WorkflowRuleContext(String name, String description, String moduleName, long moduleId, int executionOrder, boolean status, boolean onSuccess, long versionGroupId,
+							   int versionNumber, boolean isLatestVersion, String scheduleInfoJson, long interval, String jobTime, long lastScheduleRuleExecutedTime,
+							   WorkflowEventContext event, WorkflowRuleContext.RuleType ruleType, WorkflowRuleContext.ScheduledRuleType scheduledRuleType) throws Exception {
+		this.name = name;
+		this.description = description;
+		this.moduleName = moduleName;
+		this.moduleId = moduleId;
+		this.executionOrder = executionOrder;
+		this.status = status;
+		this.onSuccess = onSuccess;
+		this.versionGroupId = versionGroupId;
+		this.versionNumber = versionNumber;
+		this.latestVersion = isLatestVersion;
+		this.interval = interval;
+		setEvent(event);
+		this.ruleType = ruleType;
+		this.scheduleType = scheduledRuleType;
+		this.lastScheduleRuleExecutedTime = lastScheduleRuleExecutedTime;
+		if (StringUtils.isNotEmpty(scheduleInfoJson)) {
+			setScheduleJson(scheduleInfoJson);
+		}
+		if (StringUtils.isNotEmpty(jobTime)) {
+			setTime(jobTime);
+		}
+	}
+
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(WorkflowRuleContext.class.getName());
 	private long orgId = -1;

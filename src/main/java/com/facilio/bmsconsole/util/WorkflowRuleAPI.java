@@ -28,7 +28,6 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.readingrule.faulttowo.ReadingRuleWorkOrderRelContext;
 import com.facilio.readingrule.faulttowo.RuleWoAPI;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.ScriptContext.WorkflowUIMode;
 import com.facilio.scriptengine.context.WorkflowFieldType;
@@ -1478,5 +1477,62 @@ public class WorkflowRuleAPI {
 		Constants.setRecordMap(context, recordMap);
 		CommonCommandUtil.addEventType(EventType.SLA, context);
 		slaChain.execute();
+	}
+
+	public static Map<Long, Long> getAllRuleIdVsModuleId(WorkflowRuleContext.RuleType ruleType) throws Exception {
+		Map<Long, Long> ruleIdVsModuleId = new HashMap<>();
+		FacilioModule rulesModule = ModuleFactory.getWorkflowRuleModule();
+
+		List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
+			add(FieldFactory.getIdField(rulesModule));
+			add(FieldFactory.getModuleIdField(rulesModule));
+		}};
+
+		Criteria filterCriteria = new Criteria();
+		filterCriteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(ruleType.getIntVal()), BooleanOperators.IS));
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(selectableFields)
+				.table(rulesModule.getTableName())
+				.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(ruleType.getIntVal()), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> propsList = selectBuilder.get();
+
+		if (CollectionUtils.isNotEmpty(propsList)) {
+			for (Map<String, Object> prop : propsList) {
+				long moduleId = prop.containsKey("moduleId") ? (Long) prop.get("moduleId") : -1;
+				ruleIdVsModuleId.put((Long) prop.get("id"), moduleId);
+			}
+		}
+		return ruleIdVsModuleId;
+	}
+
+	public static Map<Long, WorkflowRuleContext> getWorkFlowRules(WorkflowRuleContext.RuleType ruleType, List<Long> ids) throws Exception {
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		Map<Long, WorkflowRuleContext> ruleIdVsRuleMap = new HashMap<>();
+
+		int fromIndex = 0;
+		int toIndex = Math.min(ids.size(), 250);
+
+		List<Long> idsSubList;
+		while (fromIndex < ids.size()) {
+			idsSubList = ids.subList(fromIndex, toIndex);
+
+			Criteria ruleIdCriteria = new Criteria();
+			ruleIdCriteria.addAndCondition(CriteriaAPI.getIdCondition(idsSubList, ModuleFactory.getWorkflowRuleModule()));
+
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules(ruleType, true,
+					ruleIdCriteria, null, null, null);
+			for (WorkflowRuleContext rule : workflowRules) {
+				List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(orgId, rule.getId());
+				ruleIdVsRuleMap.put(rule.getId(), rule);
+				rule.setActions(actions);
+			}
+
+			fromIndex = toIndex;
+			toIndex = Math.min((toIndex + 250), ids.size());
+		}
+
+		return ruleIdVsRuleMap;
 	}
 }

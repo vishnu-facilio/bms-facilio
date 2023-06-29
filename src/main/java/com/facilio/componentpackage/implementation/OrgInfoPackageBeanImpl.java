@@ -54,7 +54,6 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
         element.element(PackageConstants.OrgConstants.TIMEZONE).text(organization.getTimezone());
         element.element(PackageConstants.OrgConstants.DATE_FORMAT).text(organization.getDateFormat());
         element.element(PackageConstants.OrgConstants.LANGUAGE).text(organization.getLanguage());
-        element.element(PackageConstants.OrgConstants.FACILIODOMAINNAME).text(organization.getDomain());
         element.element(PackageConstants.OrgConstants.TIME_FORMAT)
                 .text(organization.getTimeFormatEnum() != null ? organization.getTimeFormatEnum().name() : null);
         element.element(PackageConstants.OrgConstants.BUSINESS_HOUR).text(String.valueOf(organization.getBusinessHour()));
@@ -151,7 +150,6 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
         String timeZone = element.getElement(PackageConstants.OrgConstants.TIMEZONE).getText();
         String dateFormat = element.getElement(PackageConstants.OrgConstants.DATE_FORMAT).getText();
         String language = element.getElement(PackageConstants.OrgConstants.LANGUAGE).getText();
-        String facilioDomainName = element.getElement(PackageConstants.OrgConstants.FACILIODOMAINNAME).getText();
         String timeFormatStr = element.getElement(PackageConstants.OrgConstants.TIME_FORMAT).getText();
         long businessHour = Long.parseLong(element.getElement(PackageConstants.OrgConstants.BUSINESS_HOUR).getText());
         boolean allowUserTimeZone = Boolean.parseBoolean(element.getElement(PackageConstants.OrgConstants.ALLOW_USER_TIMEZONE).getText());
@@ -170,7 +168,6 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
         organization.setTimezone(timeZone);
         organization.setDateFormat(dateFormat);
         organization.setLanguage(language);
-        organization.setDomain(facilioDomainName);
         organization.setBusinessHour(businessHour);
         organization.setAllowUserTimeZone(allowUserTimeZone);
         if (StringUtils.isNotEmpty(timeFormatStr)) {

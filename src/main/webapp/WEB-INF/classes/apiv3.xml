@@ -296,12 +296,6 @@
         </action>
     </package>
 
-    <package name="sandbox" namespace="/api/v3/sandbox/package" extends="v3Api">
-        <action name="create"
-                class="com.facilio.componentpackage.action.PackageAction"
-                method="createPackageFromOrg" />
-    </package>
-
     <package name="workorderV3Api" namespace="/api/v3/workorders" extends="v3Api">
         <action name="close"
                 class="com.facilio.bmsconsoleV3.actions.WorkorderAction"

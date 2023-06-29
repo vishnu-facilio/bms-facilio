@@ -2,35 +2,45 @@ package com.facilio.componentpackage.utils;
 
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.componentpackage.constants.ComponentType;
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j
 public class PackageBeanUtil {
     public static Map<String, Long> getAppNameVsAppId() throws Exception {
         List<ApplicationContext> applicationContexts = ApplicationApi.getAllApplicationsWithOutFilter();
@@ -133,16 +143,20 @@ public class PackageBeanUtil {
         if (StringUtils.isNotEmpty(formField.getName())) {
             fieldSelectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name", formField.getName(), StringOperators.IS));
         }
+        if (StringUtils.isNotEmpty(formField.getDisplayName())) {
+            fieldSelectBuilder.andCondition(CriteriaAPI.getCondition("DISPLAYNAME", "displayName", formField.getDisplayName(), StringOperators.IS));
+        }
 
         Map<String, Object> prop = fieldSelectBuilder.fetchFirst();
         return MapUtils.isNotEmpty(prop) ? (Long) prop.get("id") : -1;
     }
 
-    public static XMLBuilder constructBuilderFromCriteria(Criteria criteria, XMLBuilder xmlBuilder) throws Exception {
+    public static XMLBuilder constructBuilderFromCriteria(Criteria criteria, XMLBuilder xmlBuilder, String moduleName) throws Exception {
         if (criteria == null || criteria.isEmpty()) {
             return xmlBuilder;
         }
 
+        ModuleBean moduleBean = Constants.getModBean();
         xmlBuilder.element(PackageConstants.CriteriaConstants.PATTERN).text(criteria.getPattern());
 
         Map<String, Condition> criteriaConditions = criteria.getConditions();
@@ -162,7 +176,17 @@ public class PackageBeanUtil {
 
                 if (condition.getCriteriaValueId() > 0) {
                     conditionElement.element(PackageConstants.CriteriaConstants.CRITERIA_VALUE)
-                        .addElement(constructBuilderFromCriteria(condition.getCriteriaValue(), conditionElement.element(PackageConstants.CriteriaConstants.CRITERIA)));
+                        .addElement(constructBuilderFromCriteria(condition.getCriteriaValue(), conditionElement.element(PackageConstants.CriteriaConstants.CRITERIA), moduleName));
+                }
+
+                if (condition.getOperatorId() == 36 || condition.getOperatorId() == 37) {
+                    String fieldName = condition.getFieldName();
+                    moduleName = fieldName.contains(".") ? fieldName.split("\\.")[0] : moduleName;
+
+                    FacilioModule facilioModule = moduleBean.getModule(moduleName);
+                    if (!(facilioModule.getTypeEnum() == FacilioModule.ModuleType.PICK_LIST)) {
+                        LOGGER.info("####Sandbox Tracking - Condition contains Module Record - " + moduleName + " FieldName - " + fieldName);
+                    }
                 }
             }
         }
@@ -269,7 +293,7 @@ public class PackageBeanUtil {
         Map<String, Long> roleNameVsRoleId = new HashMap<>();
 
         if (CollectionUtils.isNotEmpty(allRoles)) {
-            roleNameVsRoleId = allRoles.stream().collect(Collectors.toMap(Role::getName, Role::getRoleId));
+            roleNameVsRoleId = allRoles.stream().collect(Collectors.toMap(Role::getName, Role::getRoleId, (a, b) -> b));
         }
 
         SharingContext<SingleSharingContext> sharingContexts = new SharingContext<>();
@@ -305,5 +329,188 @@ public class PackageBeanUtil {
         }
 
         return sharingContexts;
+    }
+
+    public static void constructBuilderFromActionsList(List<ActionContext> actionsContextList, XMLBuilder actionsList) throws Exception {
+        if (CollectionUtils.isEmpty(actionsContextList)) {
+            return;
+        }
+
+        ModuleBean moduleBean = Constants.getModBean();
+        for (ActionContext actionContext : actionsContextList) {
+            // TODO - Handle DEFAULT_TEMPLATE_ID
+            XMLBuilder actionElement = actionsList.element(PackageConstants.WorkFlowRuleConstants.ACTION);
+            actionElement.element(PackageConstants.WorkFlowRuleConstants.ACTION_STATUS).text(String.valueOf(actionContext.isActive()));
+            actionElement.element(PackageConstants.WorkFlowRuleConstants.ACTION_TYPE).text(actionContext.getActionTypeEnum().name());
+
+            if (actionContext.getTemplate() != null) {
+                // TODO - Handle WORKFLOW_ID, USER_WORKFLOW_ID
+                Template templateContext = actionContext.getTemplate();
+                XMLBuilder templateElement = actionElement.element(PackageConstants.WorkFlowRuleConstants.TEMPLATE);
+                templateElement.element(PackageConstants.WorkFlowRuleConstants.TEMPLATE_NAME).text(templateContext.getName());
+                templateElement.element(PackageConstants.WorkFlowRuleConstants.TEMPLATE_TYPE).text(templateContext.getTypeEnum().name());
+                templateElement.element(PackageConstants.WorkFlowRuleConstants.PLACEHOLDER).text(templateContext.getPlaceholderStr());
+                templateElement.element(PackageConstants.WorkFlowRuleConstants.IS_FTL).text(String.valueOf(templateContext.isFtl()));
+                templateElement.element(PackageConstants.WorkFlowRuleConstants.IS_ATTACHMENT_ADDED).text(String.valueOf(templateContext.getIsAttachmentAdded()));
+
+                JSONObject originalTemplate = templateContext.getOriginalTemplate();
+                if (originalTemplate == null) {
+                    continue;
+                }
+
+                XMLBuilder originalTemplateElement = templateElement.element(PackageConstants.WorkFlowRuleConstants.ORIGINAL_TEMPLATE);
+                switch (templateContext.getTypeEnum()) {
+                    case JSON:
+                        switch (actionContext.getActionTypeEnum()) {
+                            case CHANGE_STATE:
+                                String newStateId = String.valueOf(originalTemplate.get("new_state"));
+                                long ticketStatusId = StringUtils.isNotEmpty(newStateId) ? Long.parseLong(newStateId) : -1;
+                                FacilioStatus ticketStatus = ticketStatusId != -1 ? TicketAPI.getStatus(ticketStatusId) : null;
+                                if (ticketStatus != null) {
+                                    FacilioModule parentModule = moduleBean.getModule(ticketStatus.getParentModuleId());
+                                    XMLBuilder newStateElement = originalTemplateElement.element(PackageConstants.VALUE_ELEMENT);
+                                    newStateElement.element(PackageConstants.WorkFlowRuleConstants.STATUS_NAME).text(ticketStatus.getStatus());
+                                    newStateElement.element(PackageConstants.WorkFlowRuleConstants.PARENT_MODULE_NAME).text(parentModule.getName());
+                                }
+                                break;
+
+                            case FIELD_CHANGE:
+                                for (Object key : originalTemplate.keySet()) {
+                                    Object value = originalTemplate.get(key);
+                                    XMLBuilder valueElement = originalTemplateElement.element(PackageConstants.VALUE_ELEMENT);
+                                    valueElement.element(PackageConstants.WorkFlowRuleConstants.ACTION_FIELD_NAME).text(String.valueOf(key));
+                                    if (value instanceof JSONObject) {
+                                        valueElement.attribute(PackageConstants.WorkFlowRuleConstants.CONTAINS_RECORD_ID_MAP, Boolean.TRUE.toString());
+                                        XMLBuilder actionFieldValueElement = valueElement.element(PackageConstants.WorkFlowRuleConstants.ACTION_FIELD_VALUE);
+                                        actionFieldValueElement.element("id").text(String.valueOf(((JSONObject) value).get("id")));
+                                    } else {
+                                        valueElement.element(PackageConstants.WorkFlowRuleConstants.ACTION_FIELD_VALUE).text(String.valueOf(value));
+                                    }
+                                }
+                                break;
+
+                            default:
+                                break;
+                        }
+                        break;
+
+                    case WORKFLOW:
+                        if (originalTemplate.containsKey("workflowContext")) {
+                            XMLBuilder workFlowElement = originalTemplateElement.element(PackageConstants.WorkFlowRuleConstants.WORKFLOW_CONTEXT);
+                            JSONObject workFlowContext = (JSONObject) originalTemplate.get("workflowContext");
+                            if (workFlowContext.containsKey("isV2Script")) {
+                                workFlowElement.element(PackageConstants.WorkFlowRuleConstants.IS_V2_SCRIPT).text(String.valueOf(workFlowContext.get("isV2Script")));
+                            }
+                            if (workFlowContext.containsKey("workflowV2String")) {
+                                workFlowElement.element(PackageConstants.WorkFlowRuleConstants.WORKFLOW_STRING).cData(String.valueOf(workFlowContext.get("workflowV2String")));
+                            }
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    public static List<ActionContext> constructActionContextsFromBuilder(XMLBuilder actionsList) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        List<ActionContext> actionContextList = new ArrayList<>();
+        List<XMLBuilder> actionsListElementList = actionsList.getElementList(PackageConstants.WorkFlowRuleConstants.ACTION);
+        for (XMLBuilder actionElement : actionsListElementList) {
+            boolean actionStatus = Boolean.parseBoolean(actionElement.getElement(PackageConstants.WorkFlowRuleConstants.ACTION_STATUS).getText());
+            String actionTypeStr = actionElement.getElement(PackageConstants.WorkFlowRuleConstants.ACTION_TYPE).getText();
+            ActionType actionType = StringUtils.isNotEmpty(actionTypeStr) ? ActionType.valueOf(actionTypeStr) : null;
+
+            ActionContext actionContext = new ActionContext();
+            actionContext.setActionType(actionType);
+            actionContext.setStatus(actionStatus);
+            actionContextList.add(actionContext);
+
+            XMLBuilder templateElement = actionElement.getElement(PackageConstants.WorkFlowRuleConstants.TEMPLATE);
+            if (templateElement != null) {
+                String placeholderStr = templateElement.getElement(PackageConstants.WorkFlowRuleConstants.PLACEHOLDER).getText();
+                String templateName = templateElement.getElement(PackageConstants.WorkFlowRuleConstants.TEMPLATE_NAME).getText();
+                String templateTypeStr = templateElement.getElement(PackageConstants.WorkFlowRuleConstants.TEMPLATE_TYPE).getText();
+                boolean isFtl = Boolean.parseBoolean(templateElement.getElement(PackageConstants.WorkFlowRuleConstants.IS_FTL).getText());
+                boolean isAttachmentAdded = Boolean.parseBoolean(templateElement.getElement(PackageConstants.WorkFlowRuleConstants.IS_ATTACHMENT_ADDED).getText());
+
+                Template.Type templateType = StringUtils.isNotEmpty(templateTypeStr) ? Template.Type.valueOf(templateTypeStr) : null;
+                XMLBuilder originalTemplateElement = templateElement.getElement(PackageConstants.WorkFlowRuleConstants.ORIGINAL_TEMPLATE);
+                if (templateType != null) {
+                    JSONObject templateJson = new JSONObject();
+                    switch (templateType) {
+                        case JSON:
+                            List<XMLBuilder> allValueElements = originalTemplateElement.getElementList(PackageConstants.VALUE_ELEMENT);
+
+                            if (actionType == null) {
+                                continue;
+                            }
+
+                            switch (actionType) {
+                                case CHANGE_STATE:
+                                    for (XMLBuilder valueElement : allValueElements) {
+                                        String statusName = valueElement.getElement(PackageConstants.WorkFlowRuleConstants.STATUS_NAME).getText();
+                                        String parentModuleName = valueElement.getElement(PackageConstants.WorkFlowRuleConstants.PARENT_MODULE_NAME).getText();
+                                        FacilioModule parentModule = moduleBean.getModule(parentModuleName);
+                                        if (parentModule != null) {
+                                            FacilioStatus ticketStatus = TicketAPI.getStatus(parentModule, statusName);
+                                            if (ticketStatus != null) {
+                                                templateJson.put("new_state", ticketStatus.getId());
+                                            }
+                                        }
+                                    }
+                                    break;
+
+                                case FIELD_CHANGE:
+                                    ArrayList<Map<String, Object>> fieldMatcher = new ArrayList<>();
+                                    for (XMLBuilder valueElement : allValueElements) {
+                                        Map<String, Object> fieldChangeMap = new HashMap<>();
+                                        boolean containsRecordIdMap = Boolean.parseBoolean(valueElement.getAttribute(PackageConstants.WorkFlowRuleConstants.CONTAINS_RECORD_ID_MAP));
+                                        String actionFieldName = valueElement.getElement(PackageConstants.WorkFlowRuleConstants.ACTION_FIELD_NAME).getText();
+                                        XMLBuilder actionValueElement = valueElement.getElement(PackageConstants.WorkFlowRuleConstants.ACTION_FIELD_VALUE);
+                                        if (containsRecordIdMap) {
+                                            String id = actionValueElement.getElement("id").getText();
+                                            JSONObject idObject = new JSONObject();
+                                            idObject.put("id", id);
+
+                                            fieldChangeMap.put("value", idObject);
+                                        } else {
+                                            String actionValue = actionValueElement.getText();
+                                            fieldChangeMap.put("value", actionValue);
+                                        }
+                                        fieldChangeMap.put("field", actionFieldName);
+                                        fieldMatcher.add(fieldChangeMap);
+                                    }
+                                    templateJson.put("fieldMatcher", fieldMatcher);
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                            break;
+
+                        case WORKFLOW:
+                            JSONObject resultWorkflowContext = new JSONObject();
+                            XMLBuilder workFlowElement = originalTemplateElement.getElement(PackageConstants.WorkFlowRuleConstants.WORKFLOW_CONTEXT);
+                            if (workFlowElement != null) {
+                                boolean isV2Script = Boolean.parseBoolean(workFlowElement.getElement(PackageConstants.WorkFlowRuleConstants.IS_V2_SCRIPT).getText());
+                                String workflowV2String = workFlowElement.getElement(PackageConstants.WorkFlowRuleConstants.WORKFLOW_STRING).getCData();
+                                resultWorkflowContext.put("isV2Script", isV2Script);
+                                resultWorkflowContext.put("workflowV2String", workflowV2String);
+                            }
+                            templateJson.put("resultWorkflowContext", resultWorkflowContext);
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    actionContext.setTemplateJson(templateJson);
+                }
+            }
+        }
+        return actionContextList;
     }
 }

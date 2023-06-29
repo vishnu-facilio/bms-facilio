@@ -1,24 +1,26 @@
 package com.facilio.workflowv2.util;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.context.WorkflowNamespaceContext;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class UserFunctionAPI {
 	
@@ -233,5 +235,137 @@ public class UserFunctionAPI {
 		}
 		return functions;
 	}
-	
+
+	public static Map<Long, WorkflowNamespaceContext> getNameSpacesForIds(List<Long> nameSpaceIds) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowNamespaceFields())
+				.table(ModuleFactory.getWorkflowNamespaceModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(nameSpaceIds, ModuleFactory.getWorkflowNamespaceModule()))
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", Boolean.FALSE.toString(), BooleanOperators.IS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (CollectionUtils.isNotEmpty(props)) {
+			Map<Long, WorkflowNamespaceContext> nameSpaceIdVsNameSpace = new HashMap<>();
+			List<WorkflowNamespaceContext> workflowNamespaceContextList = FieldUtil.getAsBeanListFromMapList(props, WorkflowNamespaceContext.class);
+			workflowNamespaceContextList.forEach(workflowNamespace -> nameSpaceIdVsNameSpace.put(workflowNamespace.getId(), workflowNamespace));
+			return nameSpaceIdVsNameSpace;
+		}
+		return null;
+	}
+
+	public static Map<String, WorkflowNamespaceContext> getNameSpacesForLinkName(Collection<String> linkNames) throws Exception {
+		FacilioModule module = ModuleFactory.getWorkflowNamespaceModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowNamespaceFields();
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("linkName"), StringUtils.join(linkNames, ","), StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", Boolean.FALSE.toString(), BooleanOperators.IS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (CollectionUtils.isNotEmpty(props)) {
+			Map<String, WorkflowNamespaceContext> nameSpaceIdVsNameSpace = new HashMap<>();
+			List<WorkflowNamespaceContext> workflowNamespaceContextList = FieldUtil.getAsBeanListFromMapList(props, WorkflowNamespaceContext.class);
+			workflowNamespaceContextList.forEach(workflowNamespace -> nameSpaceIdVsNameSpace.put(workflowNamespace.getLinkName(), workflowNamespace));
+			return nameSpaceIdVsNameSpace;
+		}
+		return null;
+	}
+
+	public static Map<Long, WorkflowUserFunctionContext> getFunctionsForIds(Collection<Long> ids, boolean fetchUserObj) throws Exception {
+		FacilioModule workflowUserFunctionModule = ModuleFactory.getWorkflowUserFunctionModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowUserFunctionFields();
+		fields.addAll(FieldFactory.getWorkflowFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
+				.table(workflowUserFunctionModule.getTableName())
+				.innerJoin(ModuleFactory.getWorkflowModule().getTableName())
+				.on(ModuleFactory.getWorkflowModule().getTableName()+".ID="+workflowUserFunctionModule.getTableName()+".ID")
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", Boolean.FALSE.toString(), BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getIdCondition(ids, workflowUserFunctionModule));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (CollectionUtils.isNotEmpty(props)) {
+			Map<Long, WorkflowUserFunctionContext> functionIdVsFunctionMap = new HashMap<>();
+			for(Map<String, Object> prop : props) {
+				WorkflowUserFunctionContext workflowContext = FieldUtil.getAsBeanFromMap(prop, WorkflowUserFunctionContext.class);
+				workflowContext.fillFunctionHeaderFromScript();
+
+				if (fetchUserObj) {
+					setUserObjects(workflowContext);
+				}
+
+				functionIdVsFunctionMap.put(workflowContext.getId(), workflowContext);
+			}
+			return functionIdVsFunctionMap;
+		}
+		return null;
+	}
+
+	public static Map<String, WorkflowUserFunctionContext> getFunctionsForLinkNames(List<String> linkNames, boolean fetchUserObj) throws Exception {
+		FacilioModule workflowUserFunctionModule = ModuleFactory.getWorkflowUserFunctionModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowUserFunctionFields();
+		fields.addAll(FieldFactory.getWorkflowFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(workflowUserFunctionModule.getTableName())
+				.innerJoin(ModuleFactory.getWorkflowModule().getTableName())
+				.on(ModuleFactory.getWorkflowModule().getTableName()+".ID="+workflowUserFunctionModule.getTableName()+".ID")
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", Boolean.FALSE.toString(), BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", StringUtils.join(linkNames, ","), StringOperators.IS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (CollectionUtils.isNotEmpty(props)) {
+			Map<String, WorkflowUserFunctionContext> functionIdVsFunctionMap = new HashMap<>();
+			for(Map<String, Object> prop : props) {
+				WorkflowUserFunctionContext workflowContext = FieldUtil.getAsBeanFromMap(prop, WorkflowUserFunctionContext.class);
+				workflowContext.fillFunctionHeaderFromScript();
+
+				if (fetchUserObj) {
+					setUserObjects(workflowContext);
+				}
+
+				functionIdVsFunctionMap.put(workflowContext.getLinkName(), workflowContext);
+			}
+			return functionIdVsFunctionMap;
+		}
+		return null;
+	}
+
+	private static void setUserObjects(WorkflowUserFunctionContext workflowContext) throws Exception {
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", AccountUtil.getCurrentOrg().getOrgId());
+		if (workflowContext.getSysCreatedBy() > 0) {
+			workflowContext.setSysCreatedByObj(userBean.getUser(workflowContext.getSysCreatedBy(), false));
+		}
+		if (workflowContext.getSysModifiedBy() > 0) {
+			workflowContext.setSysModifiedByObj(userBean.getUser(workflowContext.getSysModifiedBy(), false));
+		}
+	}
+
+	public static List<GenericUpdateRecordBuilder.BatchUpdateContext> constructUpdatePropsForDeleteStatus(FacilioModule module, Collection<Long> recordIds) {
+		long currenTime = DateTimeUtil.getCurrenTime();
+		long currentUserId = AccountUtil.getCurrentUser().getId();
+
+		FacilioField idField = FieldFactory.getIdField(module);
+		List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
+
+		for (Long recordId : recordIds) {
+			GenericUpdateRecordBuilder.BatchUpdateContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateContext();
+			updateVal.addUpdateValue("deleted", Boolean.TRUE);
+			updateVal.addUpdateValue("deletedTime", currenTime);
+			updateVal.addUpdateValue("deletedBy", currentUserId);
+			updateVal.addWhereValue(idField.getName(), recordId);
+
+			batchUpdateList.add(updateVal);
+		}
+
+		return batchUpdateList;
+	}
 }

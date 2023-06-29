@@ -18,11 +18,13 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
+@Log4j
 public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
@@ -114,6 +116,10 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
             XMLBuilder formElement = idVsData.getValue();
             formSection = constructSectionFromBuilder(formElement, moduleBean);
 
+            if (formSection == null) {
+                continue;
+            }
+
             long sectionId = PackageBeanUtil.getSectionIdFromName(formSection.getFormId(), formSection.getName());
 
             if (sectionId > 0) {
@@ -134,6 +140,10 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
             XMLBuilder formElement = idVsData.getValue();
             formSection = constructSectionFromBuilder(formElement, moduleBean);
 
+            if (formSection == null) {
+                continue;
+            }
+
             long sectionId = checkAndAddSection(formSection);
             uniqueIdentifierVsComponentId.put(idVsData.getKey(), sectionId);
         }
@@ -151,6 +161,9 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
             XMLBuilder formElement = idVsData.getValue();
 
             formSection = constructSectionFromBuilder(formElement, moduleBean);
+            if (formSection == null) {
+                continue;
+            }
             formSection.setId(sectionId);
 
             updateFormSection(formSection);
@@ -210,6 +223,11 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
         moduleId = currModule.getModuleId();
 
         formId = PackageBeanUtil.getFormIdFromName(formName, moduleId);
+
+        if (formId < 0) {
+            LOGGER.info("###Sandbox - Form not found - ModuleName - " + moduleName + " FormName - " + formName);
+            return null;
+        }
 
         XMLBuilder subFormElement = sectionElement.getElement(PackageConstants.FormXMLComponents.SUB_FORM);
         if (subFormElement != null) {

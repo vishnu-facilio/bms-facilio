@@ -16,20 +16,6 @@
         <td class="table-head"><h4>Target OrgId</h4></td>
         <td><input type="text" id="targetOrgId" required class="input-field"/></td>
     </tr>
-    <tr>
-        <td class="table-head"><h4>Components</h4></td>
-        <td>
-            <ul class="components-list">
-                <li>OrgInfo</li>
-                <li>Applications</li>
-                <li>Roles</li>
-                <li>Modules & Fields</li>
-                <li>Tabs & Layouts</li>
-                <li>Views</li>
-                <li>Forms</li>
-            </ul>
-        </td>
-    </tr>
 </table>
 
 <button type="submit" class='submitBtn' id="submitBtn" onclick="sendAjax()">Submit</button>
@@ -38,19 +24,18 @@
 
 <script>
     function sendAjax() {
-        // get inputs
         const dataObject = {};
         dataObject.sourceOrgId = $('#sourceOrgId').val();
         dataObject.targetOrgId = $('#targetOrgId').val();
         dataObject.fromAdminTool = true;
 
         $.ajax({
-            url: "/api/v3/sandbox/package/create",
+            url: "/admin/createAndInstallPackage",
             type: "POST",
-            dataType: "application",
+            dataType: "json",
             data: dataObject,
             success: function(data) {
-                $("#result").html(data);
+                $("#result").html(data.result);
             },
             error: function(xhr, status, error) {
                 console.log("Error: " + xhr.responseText);

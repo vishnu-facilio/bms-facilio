@@ -8,6 +8,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.operators.NumberOperators;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +21,7 @@ import com.facilio.modules.FieldUtil;
 
 import java.util.*;
 
-
+@Log4j
 public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
 
     @Override
@@ -168,6 +169,11 @@ public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
 
     private Map<Long, Long> getAppIdVsParentId(boolean fetchSystem) throws Exception {
         List<Long> applicationIds = ApplicationApi.getAllApplicationIds(fetchSystem);
+
+        if (CollectionUtils.isEmpty(applicationIds)) {
+            LOGGER.info("####Sandbox - ApplicationIds is null");
+            return null;
+        }
 
         Map<Long, Long> appIdVsParentId = new HashMap<>();
         for (Long appId : applicationIds) {

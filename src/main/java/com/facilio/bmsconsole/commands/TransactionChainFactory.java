@@ -3677,6 +3677,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getBulkDeleteWorkFlowChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new BulkDeleteFunctionsCommand());
+			return c;
+		}
+
 		public static FacilioChain getAddWorkflowNameSpaceChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddNameSpaceCommand());
@@ -3692,6 +3698,12 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteNameSpaceCommand());
 			return c;
 		}
+
+	public static FacilioChain getBulkDeleteWorkflowNameSpaceChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new BulkDeleteNameSpaceCommand());
+		return c;
+	}
 
 		public static FacilioChain getAddWorkflowUserFunctionChain() {
 			FacilioChain c = getDefaultChain();

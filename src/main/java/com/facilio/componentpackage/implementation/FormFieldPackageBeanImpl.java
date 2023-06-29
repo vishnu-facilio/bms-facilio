@@ -20,6 +20,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
@@ -124,6 +126,10 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
             XMLBuilder formFieldElement = idVsData.getValue();
             formField = constructFormFieldFromBuilder(formFieldElement, moduleBean);
 
+            if (formField == null) {
+                continue;
+            }
+
             long formFieldId = PackageBeanUtil.getFormFieldId(formField);
 
             if (formFieldId > 0) {
@@ -144,6 +150,10 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
             XMLBuilder formFieldElement = idVsData.getValue();
             formField = constructFormFieldFromBuilder(formFieldElement, moduleBean);
 
+            if (formField == null) {
+                continue;
+            }
+
             long formFieldId = checkAndAddFormField(formField);
             uniqueIdentifierVsComponentId.put(idVsData.getKey(), formFieldId);
         }
@@ -161,6 +171,9 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
             XMLBuilder formFieldElement = idVsData.getValue();
 
             formField = constructFormFieldFromBuilder(formFieldElement, moduleBean);
+            if (formField == null) {
+                continue;
+            }
             formField.setId(formFieldId);
 
             updateFormField(formField);
@@ -202,7 +215,7 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
     private FormField constructFormFieldFromBuilder(XMLBuilder formFieldElement, ModuleBean moduleBean) throws Exception {
         String formFieldName, displayName, formName, sectionName, moduleName, facilioFieldName, displayTypeStr, defaultValue, config;
         boolean requiredBool, hideField, isDisabled, allowCreate;
-        long formId, moduleId, sectionId, fieldId;
+        long formId, moduleId, sectionId, fieldId = -1;
         FacilioField.FieldDisplayType displayType;
         int sequenceNumber, span;
 
@@ -226,14 +239,30 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
 
         formId = PackageBeanUtil.getFormIdFromName(formName, moduleId);
 
+        if (formId < 0) {
+            LOGGER.info("###Sandbox - Form not found - ModuleName - " + moduleName + " FormName - " + formName);
+            return null;
+        }
+
         XMLBuilder sectionElement = formFieldElement.getElement(PackageConstants.FormXMLComponents.SECTION_NAME);
         sectionName = sectionElement != null ? sectionElement.getText() : null;
         sectionId = StringUtils.isNotEmpty(sectionName) ? PackageBeanUtil.getSectionIdFromName(formId, sectionName) : -1;
 
         XMLBuilder facilioFieldElement = formFieldElement.getElement(PackageConstants.FormXMLComponents.FACILIO_FIELD_NAME);
         facilioFieldName = facilioFieldElement != null ? facilioFieldElement.getText() : null;
-        fieldId = StringUtils.isNotEmpty(facilioFieldName) ? moduleBean.getField(facilioFieldName, moduleName).getFieldId() : -1;
+        if (StringUtils.isNotEmpty(facilioFieldName)) {
+            FacilioField field = moduleBean.getField(facilioFieldName, moduleName);
+            if (field != null) {
+                fieldId = field.getFieldId();
+            } else {
+                LOGGER.info("###Sandbox - Field not found - ModuleName - " + moduleName + " FieldName - " + facilioFieldName);
+                return null;
+            }
+        }
 
+        if(fieldId == -1) {
+            fieldId = -99;
+        }
         FormField formField = new FormField(fieldId, formFieldName, displayType, displayName, null, sequenceNumber, span, hideField);
         formField.setConfig(FacilioUtil.parseJson(config));
         formField.setAllowCreate(allowCreate);

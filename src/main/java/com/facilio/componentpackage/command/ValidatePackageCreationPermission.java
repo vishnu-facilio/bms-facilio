@@ -21,8 +21,6 @@ public class ValidatePackageCreationPermission extends FacilioCommand {
         long sourceOrgId = (long) context.get(PackageConstants.SOURCE_ORG_ID);
         long targetOrgId = (long) context.get(PackageConstants.TARGET_ORG_ID);
 
-        AccountUtil.setCurrentAccount(targetOrgId);
-
         Map<String, Object> metaMigrationPermission = CommonCommandUtil.getOrgInfo(targetOrgId, "metaMigration");
         Map<String, Object> metaMigrationStatus = CommonCommandUtil.getOrgInfo(targetOrgId, "metaMigrationStatus");
 
@@ -39,12 +37,6 @@ public class ValidatePackageCreationPermission extends FacilioCommand {
         if (status > 0 || !hasMetaMigrationPermission) {
             return true;
         }
-
-        AccountUtil.cleanCurrentAccount();
-        AccountUtil.setCurrentAccount(sourceOrgId);
-
-        String displayName = "package_" + sourceOrgId + "_" + targetOrgId + "_" + System.currentTimeMillis();
-        context.put(PackageConstants.DISPLAY_NAME, displayName);
 
         return false;
     }

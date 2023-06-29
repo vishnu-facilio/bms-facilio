@@ -13,6 +13,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.accounts.util.AccountUtil;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Log4j
 public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
@@ -82,10 +84,11 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         ApplicationContext application = view.getAppId() > 0 ?
                                 ApplicationApi.getApplicationForId(view.getAppId()) :
                                 ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        String currModuleName = currModule != null ? currModule.getName() : null;
 
         // View
         viewElement.element(PackageConstants.NAME).text(view.getName());
-        viewElement.element(PackageConstants.MODULENAME).text(currModule.getName());
+        viewElement.element(PackageConstants.MODULENAME).text(currModuleName);
         viewElement.element(PackageConstants.DISPLAY_NAME).text(view.getDisplayName());
         viewElement.element(PackageConstants.IS_DEFAULT).text(String.valueOf(view.isDefault()));
         viewElement.element(PackageConstants.ViewConstants.VIEW_TYPE).text(String.valueOf(view.getType()));
@@ -113,7 +116,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
             for (ViewField viewField : view.getFields()) {
                 XMLBuilder viewFieldElement = viewFieldElementsList.element(PackageConstants.ViewConstants.VIEW_FIELD);
 
-                viewFieldElement.element(PackageConstants.DISPLAY_NAME).text(application.getLinkName());
+                viewFieldElement.element(PackageConstants.DISPLAY_NAME).text(viewField.getColumnDisplayName());
                 viewFieldElement.element(PackageConstants.ViewConstants.VIEW_FIELD_NAME).text(viewField.getFieldName());
                 viewFieldElement.element(PackageConstants.ViewConstants.CUSTOMIZATION).text(viewField.getCustomization());
                 if (viewField.getFieldId() > 0) {
@@ -159,7 +162,8 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
 
         // Criteria
         if (view.getCriteria() != null && !view.getCriteria().isEmpty()) {
-            viewElement.addElement(PackageBeanUtil.constructBuilderFromCriteria(view.getCriteria(), viewElement.element(PackageConstants.CriteriaConstants.CRITERIA)));
+            LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + currModuleName + " ViewName - " + view.getName());
+            viewElement.addElement(PackageBeanUtil.constructBuilderFromCriteria(view.getCriteria(), viewElement.element(PackageConstants.CriteriaConstants.CRITERIA), currModuleName));
         }
 
         // View Sharing

@@ -24,10 +24,16 @@ public class UnzipPackageFileCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		PackageContext packageContext = (PackageContext) context.get(PackageConstants.PACKAGE_CONTEXT);
+		File file = (File) context.get(PackageConstants.FILE);
 		Long fileId = (Long) context.get(PackageConstants.FILE_ID);
 		Long sourceOrgId = (Long) context.get(PackageConstants.SOURCE_ORG_ID);
 
-		File packageZipFile = PackageFileUtil.getPackageZipFile(fileId, sourceOrgId);
+		File packageZipFile;
+		if (file != null) {
+			packageZipFile = file;
+		} else {
+			packageZipFile = PackageFileUtil.getPackageZipFile(fileId, sourceOrgId);
+		}
 		context.put(PackageConstants.FILE, packageZipFile);
 
 		File outputDirectory = new File(UnzipPackageFileCommand.class.getClassLoader().getResource("").getFile()

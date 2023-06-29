@@ -5,13 +5,12 @@ import com.facilio.chain.FacilioChain;
 public class PackageChainFactory {
 
 	private static FacilioChain getDefaultChain() {
-        return FacilioChain.getTransactionChain();
+        return FacilioChain.getTransactionChain(600000);
     }
 
     public static FacilioChain getCreatePackageChain() {
         FacilioChain c = getDefaultChain();
 
-        c.addCommand(new ValidatePackageCreationPermission());
         c.addCommand(new ValidateAndCreatePackageCommand());
         c.addCommand(new PopulateExistingChangesetMappingCommand());
         c.addCommand(new CreateXMLPackageCommand());
@@ -22,6 +21,7 @@ public class PackageChainFactory {
     public static FacilioChain getDeployPackageChain() {
         FacilioChain c = getDefaultChain();
 
+        c.addCommand(new ValidatePackageCreationPermission());
         c.addCommand(new UnzipPackageFileCommand());
         c.addCommand(new DeployPackageCommand());
         c.addCommand(new DeployPackageComponentCommand());

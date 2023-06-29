@@ -23,9 +23,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.chain.FacilioContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.beans.ModuleBean;
+import lombok.extern.log4j.Log4j;
 
 import java.util.*;
 
+@Log4j
 public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
     public static final List<Integer> IGNORE_MODULE_TYPES = new ArrayList<Integer>(){{
         add(FacilioModule.ModuleType.NOTES.getValue());
@@ -160,8 +162,11 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
 
             if (!isCustom) {
                 FacilioModule module = moduleBean.getModule(moduleName);
-
-                uniqueIdentifierVsModuleId.put(uniqueIdentifier, module.getModuleId());
+                if (module != null) {
+                    uniqueIdentifierVsModuleId.put(uniqueIdentifier, module.getModuleId());
+                } else {
+                    LOGGER.info("###Sandbox - Module not found - " + moduleName);
+                }
             }
         }
         return uniqueIdentifierVsModuleId;

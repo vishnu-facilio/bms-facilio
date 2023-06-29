@@ -16,10 +16,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -135,6 +132,8 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 				createdComponentIds.putAll(systemComponentIds);
 			}
 			PackageUtil.addComponentsUIdVsComponentId(componentType, createdComponentIds);
+			checkForDuplicateUIds(componentType, mappingToAdd);
+
 			computeAndAddPackageChangeset(mappingToAdd, createdComponentIds);
 
 			//Update
@@ -163,6 +162,33 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 				.collect(Collectors.toList())
 				;
 		PackageUtil.addPackageMappingChangesets(mappings);
+	}
+
+	private void checkForDuplicateUIds(ComponentType componentType, Map<String, PackageChangeSetMappingContext> mappingToAdd) {
+		Map<String, Long> uidVsCompId = PackageUtil.getComponentsUIdVsComponentIdForComponent(componentType);
+
+		Map<Long, String> compIdVsUid = new HashMap<>();
+		Map<Long, Set<String>> compIdVsDuplicateUid = new HashMap<>();
+		for (Map.Entry<String, Long> entry : uidVsCompId.entrySet()) {
+			String currUId = entry.getKey();
+			long currCompId = entry.getValue();
+
+			if (compIdVsUid.containsKey(currCompId)) {
+				String oldUId = compIdVsUid.get(currCompId);
+				mappingToAdd.remove(currUId);
+
+				Set<String> duplicateUIdSet;
+				if (!compIdVsDuplicateUid.containsKey(currCompId)) {
+					compIdVsDuplicateUid.put(currCompId, new HashSet<>());
+				}
+				duplicateUIdSet = compIdVsDuplicateUid.get(currCompId);
+				duplicateUIdSet.add(oldUId);
+				duplicateUIdSet.add(currUId);
+			}
+			compIdVsUid.put(currCompId, currUId);
+		}
+
+		LOGGER.info("####Sandbox - Duplicate ComponentIdVsUIds - " + componentType.name() + " - " + compIdVsDuplicateUid);
 	}
 
 	@Override
