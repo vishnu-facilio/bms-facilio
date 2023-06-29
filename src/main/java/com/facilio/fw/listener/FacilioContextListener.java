@@ -44,6 +44,7 @@ import com.facilio.db.util.DBConf;
 import com.facilio.db.util.SQLScriptRunner;
 import com.facilio.filters.HealthCheckFilter;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.cache.FacilioCacheConfig;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.fw.cache.RedisManager;
 import com.facilio.fw.validators.Date;
@@ -68,6 +69,7 @@ import com.facilio.tasker.FacilioInstantJobScheduler;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.translation.TranslationConf;
 import com.facilio.util.FacilioUtil;
+import com.facilio.util.RedisSubscribeTopics;
 import com.facilio.util.ValidatePermissionUtil;
 import com.facilio.util.ValueGeneratorUtil;
 import com.facilio.v3.util.ChainUtil;
@@ -139,6 +141,10 @@ public class FacilioContextListener implements ServletContextListener {
 
 			//All these init should be moved to config
 			initDBConnectionPool();
+
+			RedisSubscribeTopics.init();
+
+			FacilioCacheConfig.setSubscribeCacheConfig(RedisSubscribeTopics.getAllTopics(),null);
 
 			if(RedisManager.getInstance() != null) {
 				RedisManager.getInstance().connect(true); // creating redis connection pool
