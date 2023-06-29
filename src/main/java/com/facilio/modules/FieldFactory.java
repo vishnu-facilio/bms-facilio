@@ -4605,6 +4605,8 @@ public class FieldFactory extends BaseFieldFactory {
         startUrl.setDefault(true);
         fields.add(startUrl);
 
+        fields.add(getBooleanField("locked", "IS_LOCKED", module));
+
         return fields;
     }
 
@@ -4634,7 +4636,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("entityId", "ENTITY_ID", module, FieldType.NUMBER));
         fields.add(getField("entityType", "ENTITY_TYPE", module, FieldType.NUMBER));
         fields.add(getField("resourcePath", "RESOURCE_PATH", module, FieldType.STRING));
-
+        fields.add(getBooleanField("locked", "IS_LOCKED", module));
         return fields;
     }
 

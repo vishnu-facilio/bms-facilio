@@ -226,4 +226,12 @@ public class ConnectedAppContext extends ModuleBaseWithCustomFields {
 		}
 	}
 
+	private boolean locked;
+	public boolean isLocked() {
+		return locked;
+	}
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+
 }

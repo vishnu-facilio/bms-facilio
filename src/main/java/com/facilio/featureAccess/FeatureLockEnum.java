@@ -11,7 +11,9 @@ public enum FeatureLockEnum implements FacilioIntEnum {
     FIELDS,
     WORKFLOW,
     STATEFLOW,
-    CUSTOM_BUTTON;
+    CUSTOM_BUTTON,
+    CONNECTED_APPS,
+    CONNECTED_APP_WIDGETS;
 
     public FeatureLockEnum getFeatureLockType(int val) {
         return TYPE_MAP.get(val);

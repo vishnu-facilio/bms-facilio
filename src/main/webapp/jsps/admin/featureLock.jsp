@@ -21,6 +21,8 @@
                   <option value="3">Workflow</option>
                   <option value="4">Stateflow</option>
                   <option value="5">Custom Button</option>
+                  <option value="6">Connected Apps</option>
+                  <option value="7">Connected App Widgets</option>
                 </select>
 
             </td>
@@ -54,16 +56,18 @@
             var dataObject = new Object();
             dataObject.orgId = $('#orgId').val();
             dataObject.feature = $('#feature').val();
-            dataObject.ids = $('#recordIds').val().trim();
             dataObject.locked = (document.getElementById("lock").checked) ? true : false;
+
+            var recordIdsValue = $('#recordIds').val().trim();
+            dataObject.ids = recordIdsValue ? recordIdsValue.split(',').map(Number) : [];
 
             $.ajax({
                 url: "/admin/updateFeatureLock",
                 type: "POST",
-                dataType: "application",
+                dataType: "json",
                 data: dataObject,
                 success: function(data) {
-                        $("#result").html(data);
+                        $("#result").html(data.result);
                     },
                 error: function(xhr, status, error) {
                     console.log("Error: " + xhr.responseText);

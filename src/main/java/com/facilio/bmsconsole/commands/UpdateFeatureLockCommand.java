@@ -2,15 +2,12 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FieldUtil;
+import com.facilio.modules.*;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.featureAccess.FeatureLockEnum;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.command.FacilioCommand;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import com.facilio.util.FacilioUtil;
 import com.facilio.fw.cache.FacilioCache;
@@ -51,6 +48,19 @@ public class UpdateFeatureLockCommand extends FacilioCommand {
                 case STATEFLOW:
                 case CUSTOM_BUTTON:
                     module = ModuleFactory.getWorkflowRuleModule();
+                    updateRecords(module, FieldFactory.getIdField(module), recordIds, isLocked);
+                    break;
+
+                case CONNECTED_APPS:
+                    module = ModuleFactory.getConnectedAppsModule();
+                    updateRecords(module, FieldFactory.getIdField(module), recordIds, isLocked);
+
+                    module = ModuleFactory.getConnectedAppWidgetsModule();
+                    updateRecords(module, FieldFactory.getNumberField("connectedAppId", "CONNECTEDAPP_ID", module), recordIds, isLocked);
+                    break;
+
+                case CONNECTED_APP_WIDGETS:
+                    module = ModuleFactory.getConnectedAppWidgetsModule();
                     updateRecords(module, FieldFactory.getIdField(module), recordIds, isLocked);
                     break;
 
