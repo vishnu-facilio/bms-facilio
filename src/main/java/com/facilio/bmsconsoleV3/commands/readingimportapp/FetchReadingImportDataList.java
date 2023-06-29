@@ -102,7 +102,6 @@ public class FetchReadingImportDataList extends FacilioCommand {
             selectBuilder.andCriteria(filterCriteria);
         }
 
-//        selectBuilder.andCondition(CriteriaAPI.getCondition("Reading_Import_APP.CREATED_BY", "createdBy", String.valueOf(AccountUtil.getCurrentUser().getOuid()), NumberOperators.EQUALS));
         selectBuilder.orderBy("CREATED_TIME  desc");
 
         return selectBuilder;
