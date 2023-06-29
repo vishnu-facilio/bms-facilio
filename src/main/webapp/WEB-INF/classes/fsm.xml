@@ -125,6 +125,9 @@
             <param name="type">count</param>
         </action>
     </package>
+    <package name="dispatcherboard" namespace="/api/fsm/board" extends="fsmApi">
+        <action name="list" class="com.facilio.fsm.actions.fsmAction" method="fetchDispatcherBoardList" />
+    </package>
     <package name="resource" namespace="/api/fsm/resource" extends="fsmApi">
         <action name="list" class="com.facilio.fsm.actions.fsmAction" method="resourceList"></action>
     </package>
@@ -134,8 +137,5 @@
     <package name="service" extends="fsmApi" namespace="/api/fsm/serviceappointment">
         <action name="list" class="com.facilio.fsm.actions.fsmAction" method="serviceAppointmentList">
         </action>
-    </package>
-    <package name="dispatcher" namespace="/api/fsm/dispatcher" extends="fsmApi">
-        <action name="list" class="com.facilio.fsm.actions.DispatcherAction" method="fetchDispatcherBoardList" />
     </package>
 </struts>

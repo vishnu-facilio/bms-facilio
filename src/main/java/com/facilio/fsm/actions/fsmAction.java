@@ -1,6 +1,7 @@
 package com.facilio.fsm.actions;
 
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -82,6 +83,13 @@ public class fsmAction extends V3Action {
         context.put(FacilioConstants.ContextNames.FILTERS,getFilters());
         chain.execute();
         setData((JSONObject) context.get(FacilioConstants.ContextNames.DATA));
+        return SUCCESS;
+    }
+    public String fetchDispatcherBoardList() throws Exception{
+        FacilioContext context = new FacilioContext();
+        FacilioChain fetchListChain = ReadOnlyChainFactory.getDispatcherBoardList();
+        fetchListChain.execute(context);
+        setData(FacilioConstants.Dispatcher.DISPATCHER_LIST,context.get(FacilioConstants.Dispatcher.DISPATCHER_LIST));
         return SUCCESS;
     }
 }

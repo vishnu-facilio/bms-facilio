@@ -2791,3 +2791,4 @@
 /api/v3/virtualMeterTemplate/publish
 
 /api/fsm/serviceappointment/list
+/api/fsm/board/list
