@@ -2513,6 +2513,7 @@
             <property name="recordId" type="number" mandatory="true"/>
         </urlparams>
     </request>
+
     <request path="/api/v2/userMobileSetting/updateFcmToken" method="POST">
         <requestbody type="object">
             <property name="oldFcmToken" type="string" mandatory="true"/>
@@ -2663,5 +2664,25 @@
             <property name="activeTab" type="string" />
             <property name="fileName" type="string" />
         </urlparams>
+    </request>
+
+    <!-- WorkOrder Settings API -->
+    <request path="/api/v1/setup/womodulesetting/fetch" method="GET"/>
+    <request path="/api/v1/setup/womodulesetting/add" method="POST">
+        <requestbody type="object">
+            <property name="workOrderModuleSetting" type="object" mandatory="true">
+                <property name="hideGallery" type="boolean"/>
+                <property name="autoResolveStateId" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/womodulesetting/update" method="POST">
+        <requestbody type="object">
+            <property name="workOrderModuleSetting" type="object" mandatory="true">
+                <property name="id" type="number" mandatory="true"/>
+                <property name="hideGallery" type="boolean"/>
+                <property name="autoResolveStateId" type="number"/>
+            </property>
+        </requestbody>
     </request>
 </config>

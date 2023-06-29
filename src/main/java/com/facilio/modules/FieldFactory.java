@@ -11891,6 +11891,7 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> list = new ArrayList<>();
         list.add(getIdField(module));
         list.add(getBooleanField(V3WorkOrderModuleSettingAPI.HIDE_GALLERY, "IS_HIDE_GALLERY", module));
+        list.add(getNumberField(V3WorkOrderModuleSettingAPI.AUTO_RESOLVE_STATE_ID, "AUTO_RESOLVE_TICKET_STATUS_ID", module));
         return list;
     }
 
