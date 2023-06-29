@@ -369,7 +369,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
         fields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING, true));
         
         SystemEnumField creationType = (SystemEnumField) FieldFactory.getDefaultField("jobPlanCategory", "Category", "CATEGORY", FieldType.SYSTEM_ENUM);
-        creationType.setEnumName("PMScopeAssigmentType");
+        creationType.setEnumName("JPScopeAssignmentType");
         fields.add(creationType);
         
         LookupField assetCategory = (LookupField) FieldFactory.getDefaultField("assetCategory", "Asset Category", "ASSET_CATEGORY_ID", FieldType.LOOKUP);

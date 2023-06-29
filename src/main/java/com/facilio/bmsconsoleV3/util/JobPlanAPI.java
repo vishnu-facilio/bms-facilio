@@ -19,6 +19,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +28,7 @@ import org.apache.kafka.common.protocol.types.Field;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
+@Log4j
 public class JobPlanAPI {
 
     public static void deleteJobPlanTasks(Long sectionId) throws Exception {
@@ -382,7 +383,14 @@ public class JobPlanAPI {
         
         if (initalTaskSections != null) {
             for (JobPlanTaskSectionContext initalTaskSection : initalTaskSections) {
-
+                long siteId = workOrderContext.getSiteId();
+                if(workOrderContext.getResource() == null && siteId > 0){
+                    ResourceContext resourceContext = ResourceAPI.getResource(siteId);
+                    if(resourceContext == null){
+                        throw new IllegalArgumentException("Resource is Null");
+                    }
+                    workOrderContext.setResource(resourceContext);
+                }
                 List<ResourceContext> sectionResourceList = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(initalTaskSection.getJobPlanSectionCategoryEnum(), Collections.singletonList(workOrderContext.getResource().getId()), initalTaskSection.getSpaceCategory() == null ? null :  initalTaskSection.getSpaceCategory().getId(), initalTaskSection.getAssetCategory() == null ? null :  initalTaskSection.getAssetCategory().getId(), null, null, false);
 
                 if(CollectionUtils.isNotEmpty(sectionResourceList)) {
@@ -397,7 +405,9 @@ public class JobPlanAPI {
                     }
                 }
            }
-
+            if(workOrderContext.getSectionNameList() != null){
+                sectionNameList.addAll(workOrderContext.getSectionNameList());
+            }
             workOrderContext.setSectionNameList(sectionNameList); // update sectionNameList in workorder
 
             int taskUniqueId = 1;
@@ -599,6 +609,19 @@ public class JobPlanAPI {
                 .select(fieldList)
                 .beanClass(JobPlanServicesContext.class)
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobPlan"), StringUtils.join(jobPlanIdList,","),NumberOperators.EQUALS));
+        return builder.get();
+    }
+    public static List<JobPlanTaskSectionContext> getJobPlanTaskSection(Long jobPlanId) throws Exception{
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(FacilioConstants.ContextNames.JOB_PLAN_SECTION);
+        List<FacilioField> fieldList = moduleBean.getAllFields(FacilioConstants.ContextNames.JOB_PLAN_SECTION);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fieldList);
+
+        SelectRecordsBuilder<JobPlanTaskSectionContext> builder = new SelectRecordsBuilder<JobPlanTaskSectionContext>()
+                .module(module)
+                .select(fieldList)
+                .beanClass(JobPlanTaskSectionContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobPlan"),String.valueOf(jobPlanId),NumberOperators.EQUALS));
         return builder.get();
     }
 

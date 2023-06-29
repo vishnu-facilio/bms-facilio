@@ -17,15 +17,15 @@ import java.util.List;
 public class JobPlanContext extends V3Context {
 
     private String name;
-    private PlannedMaintenance.PMScopeAssigmentType jobPlanCategory;
+    private JPScopeAssignmentType jobPlanCategory;
 
     public void setJobPlanCategory(Integer type) {
         if (type != null) {
-            this.jobPlanCategory = PlannedMaintenance.PMScopeAssigmentType.valueOf(type);
+            this.jobPlanCategory = JPScopeAssignmentType.valueOf(type);
         }
     }
 
-    public PlannedMaintenance.PMScopeAssigmentType getJobPlanCategoryEnum() {
+    public JPScopeAssignmentType getJobPlanCategoryEnum() {
         return jobPlanCategory;
     }
     public Integer getJobPlanCategory() {
@@ -136,6 +136,38 @@ public class JobPlanContext extends V3Context {
                 return CREATION_TYPES[type - 1];
             }
             return null;
+        }
+    }
+    public static enum JPScopeAssignmentType implements FacilioIntEnum {
+        ASSETS("Assets"),
+        SPACES("Spaces"),
+        ASSETCATEGORY("Asset Category"),
+        SPACECATEGORY("Space Category"),
+        BUILDINGS("Buildings"),
+        SITES("Sites"),
+        FLOORS("Floors"),
+        GENERAL("General");
+
+        @Override
+        public String getValue() {
+            return this.name;
+        }
+
+        private String name;
+
+        JPScopeAssignmentType(String name) {
+            this.name = name;
+        }
+
+        public static JPScopeAssignmentType valueOf(int index) {
+            if (index >= 1 && index <= values().length) {
+                return values()[index - 1];
+            }
+            return null;
+        }
+
+        public int getVal() {
+            return ordinal() + 1;
         }
     }
 

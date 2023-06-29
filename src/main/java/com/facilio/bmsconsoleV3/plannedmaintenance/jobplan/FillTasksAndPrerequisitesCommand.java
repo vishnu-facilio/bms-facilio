@@ -8,12 +8,12 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.kafka.common.protocol.types.Field;
 
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * FillTasksAndPrerequisitesCommand adds the task from following job plans
@@ -57,10 +57,41 @@ public class FillTasksAndPrerequisitesCommand extends FacilioCommand {
             Map<String, List<V3TaskContext>> jobPlanPrerequisites = JobPlanAPI.getScopedTasksForWo(prerequisiteJobPlan, true, workOrderContext);
             context.put(FacilioConstants.ContextNames.PRE_REQUEST_MAP, jobPlanPrerequisites);
         }
-
+        LinkedHashMap<String,List<V3TaskContext>> orderedTaskSection = new LinkedHashMap<>();
         if (allTasks.entrySet().iterator().hasNext()) {
-            workOrderContext.setTasksString(allTasks);
+            if(workOrderContext.getTasksString() != null && workOrderContext.getJobPlan() != null) {
+                LinkedHashMap<String, List<V3TaskContext>> taskString = workOrderContext.getTasksString();
+                List<String> sectionNameList = workOrderContext.getSectionNameList();
+                for (String key : sectionNameList) {
+                    if(taskString.get(key) != null) {
+                        orderedTaskSection.put(key, taskString.get(key));
+                    }
+                }
+            }
+            allTasks.putAll(orderedTaskSection);
+            LinkedHashMap<String,List<V3TaskContext>> orderedTaskMap = orderTaskString(allTasks);
+            workOrderContext.setTasksString(orderedTaskMap);
         }
         return false;
+    }
+    LinkedHashMap<String,List<V3TaskContext>> orderTaskString(LinkedHashMap<String,List<V3TaskContext>> taskmap){
+        if(taskmap == null){
+            return null;
+        }
+        int sequence = 0;
+        for(Map.Entry<String, List<V3TaskContext>> entry : taskmap.entrySet()){
+            List<V3TaskContext> taskContextList = entry.getValue();
+            for(V3TaskContext taskContext : taskContextList){
+                if(sequence < taskContext.getSequence()){
+                    sequence = taskContext.getSequence();
+                }
+                else {
+                    sequence += 1;
+                    taskContext.setSequence(sequence);
+                    taskContext.setUniqueId(sequence);
+                }
+            }
+        }
+        return taskmap;
     }
 }

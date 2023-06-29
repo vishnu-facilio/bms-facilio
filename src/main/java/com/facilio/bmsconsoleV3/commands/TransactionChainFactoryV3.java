@@ -596,6 +596,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddWorkOrderCommandV3());
         c.addCommand(new AddFailureClassFromResource());
         c.addCommand(new TrimWorkOrderDescriptionCommandV3());
+        c.addCommand(new ValidateJobPlanAssociationCommand());
         return c;
     }
     public static FacilioChain getWorkOrderBeforeCreateImportChain(){
@@ -716,7 +717,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new BackwardCompatibleStateFlowUpdateCommandV3());
         c.addCommand(new AddFailureClassFromResource());
         c.addCommand(new TrimWorkOrderDescriptionCommandV3());
-
+        c.addCommand(new ValidateJobPlanAssociationCommand());
         return c;
     }
 

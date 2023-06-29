@@ -1073,6 +1073,9 @@ public class FormsAPI {
 						urgency.setValueObject(WorkOrderContext.WOUrgency.NOTURGENT.getValue());
 						fields.add(urgency);
 						fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 6, 1));
+						if(AccountUtil.isFeatureEnabled(FeatureLicense.PM_PLANNER)){
+							fields.add(new FormField("jobPlan",FieldDisplayType.LOOKUP_SIMPLE,"Job Plan",Required.OPTIONAL, ContextNames.JOB_PLAN,1,1));
+						}
 					}else {
 						FormField serviceRequest = new FormField("serviceRequest", FieldDisplayType.LOOKUP_SIMPLE, "Service Request", Required.OPTIONAL, 14, 1);
 						serviceRequest.setHideField(true);
@@ -1102,6 +1105,9 @@ public class FormsAPI {
 						}
 						if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLIENT)) {
 							fields.add(new FormField("client", FieldDisplayType.LOOKUP_SIMPLE, "Client", Required.OPTIONAL, "client", 1, 1));
+						}
+						if(AccountUtil.isFeatureEnabled(FeatureLicense.PM_PLANNER)){
+							fields.add(new FormField("jobPlan",FieldDisplayType.LOOKUP_SIMPLE,"Job Plan",Required.OPTIONAL, ContextNames.JOB_PLAN,1,1));
 						}
 					}
 				fields.add(new FormField("route", FieldDisplayType.LOOKUP_SIMPLE, "Route", Required.OPTIONAL, "routes", 1, 1));

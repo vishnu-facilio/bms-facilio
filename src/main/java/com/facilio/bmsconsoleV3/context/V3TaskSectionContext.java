@@ -61,5 +61,4 @@ public class V3TaskSectionContext extends V3Context {
     public void setTaskIds(List<Long> taskIds) {
         this.taskIds = taskIds;
     }
-
 }

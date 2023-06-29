@@ -332,3 +332,6 @@ enums:
 
   - name: ExecutionStatus
     enumClassName: com.facilio.readingrule.context.ExecutionStatus
+
+  - name: JPScopeAssignmentType
+    enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext$JPScopeAssignmentType
