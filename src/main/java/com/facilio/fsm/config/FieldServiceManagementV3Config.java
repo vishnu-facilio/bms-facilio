@@ -43,6 +43,7 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getServiceTask() {
         return () -> new V3Config(ServiceTaskContext.class, new ModuleCustomFieldCount15())
                 .create()
+                .beforeSave(new FsmTransactionChainFactoryV3().createTaskChain())
                 .update()
                 .afterSave(new FsmTransactionChainFactoryV3().updateTaskChain())
                 .list()

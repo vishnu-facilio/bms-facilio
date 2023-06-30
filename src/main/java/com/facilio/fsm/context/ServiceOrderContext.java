@@ -15,7 +15,7 @@ public class ServiceOrderContext extends V3Context {
 
     private static final long serialVersionUID = 1L;
 
-    private String subject;
+    private String name;
     private String description;
     private V3SiteContext site;
     private ClientContext client;
@@ -29,6 +29,7 @@ public class ServiceOrderContext extends V3Context {
     private DateTime preferredStartTime;
     private DateTime preferredEndTime;
     private Boolean autoCreateSa;
+    private Boolean isAllSAClosed;
     private DateTime responseDueDate;
     private DateTime resolutionDueDate;
     private DateTime resolvedTime;

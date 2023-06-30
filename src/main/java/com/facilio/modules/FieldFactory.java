@@ -12351,6 +12351,13 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getServiceAppointmentsTasksFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getField("serviceAppointment", "SERVICE_APPOINTMENT_ID", null, FieldType.LOOKUP));
+        fields.add(getField("serviceTask", "SERVICE_TASK_ID", null, FieldType.LOOKUP));
+        return fields;
+    }
+
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:

@@ -26,7 +26,7 @@ public class FetchServiceAppointmentSupplementsCommand extends FacilioCommand {
             List<SupplementRecord> fetchLookupsList = new ArrayList<>();
             SupplementRecord site = (SupplementRecord) fieldsAsMap.get("site");
             SupplementRecord location = (SupplementRecord) fieldsAsMap.get("location");
-            SupplementRecord serviceWorkorder = (SupplementRecord) fieldsAsMap.get("serviceWorkorder");
+            SupplementRecord serviceWorkorder = (SupplementRecord) fieldsAsMap.get("serviceOrder");
             SupplementRecord workorder = (SupplementRecord) fieldsAsMap.get("workorder");
             SupplementRecord inspection = (SupplementRecord) fieldsAsMap.get("inspection");
             SupplementRecord fieldAgent = (SupplementRecord) fieldsAsMap.get("fieldAgent");

@@ -56,7 +56,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         client.setLookupModule(bean.getModule(FacilioConstants.ContextNames.CLIENT));
         fields.add(client);
 
-        FacilioField subject = FieldFactory.getDefaultField("subject","Subject","SUBJECT", FieldType.STRING,true);
+        FacilioField subject = FieldFactory.getDefaultField("name","Name","NAME", FieldType.STRING,true);
         subject.setRequired(true);
         fields.add(subject);
 
@@ -99,6 +99,9 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         FacilioField autocreatesa = FieldFactory.getDefaultField("autoCreateSa","AutoCreateSA","AUTO_CREATE_SA", FieldType.BOOLEAN);
         fields.add(autocreatesa);
+
+        FacilioField isallserviceappointmentsclosed = FieldFactory.getDefaultField("isAllSAClosed","Is All SA Closed","IS_ALL_SA_CLOSED", FieldType.BOOLEAN);
+        fields.add(isallserviceappointmentsclosed);
 
         FacilioField responseDueDate = FieldFactory.getDefaultField("responseDueDate","ResponseDueDate","RESPONSE_DUE_DATE", FieldType.DATE_TIME);
         fields.add(responseDueDate);
@@ -263,7 +266,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         webWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         List<FormField> webWorkOrderFormDefaultFields = new ArrayList<>();
-        webWorkOrderFormDefaultFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 1, 1));
+        webWorkOrderFormDefaultFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         webWorkOrderFormDefaultFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 2, 1));
         webWorkOrderFormDefaultFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
         webWorkOrderFormDefaultFields.add(new FormField("maintenancetype", FacilioField.FieldDisplayType.SELECTBOX, "Maintenance Type", FormField.Required.OPTIONAL, 4, 1));

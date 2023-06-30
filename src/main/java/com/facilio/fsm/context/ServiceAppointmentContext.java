@@ -16,7 +16,7 @@ import java.util.List;
 public class ServiceAppointmentContext extends V3Context {
     private String name;
     private String description;
-    private ServiceOrderContext serviceWorkorder;
+    private ServiceOrderContext serviceOrder;
     private List<ServiceAppointmentTaskContext> serviceTasks;
     private Long scheduledStartTime;
     private Long scheduledEndTime;

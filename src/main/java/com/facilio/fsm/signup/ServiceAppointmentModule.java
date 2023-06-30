@@ -47,7 +47,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         typeField.setEnumName("AppointmentType");
         serviceAppointmentFields.add(typeField);
 
-        LookupField serviceWorkorder = FieldFactory.getDefaultField("serviceWorkorder","Service Workorder","SERVICE_WORKORDER_ID",FieldType.LOOKUP);
+        LookupField serviceWorkorder = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER_ID",FieldType.LOOKUP);
         serviceWorkorder.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER));
         serviceAppointmentFields.add(serviceWorkorder);
 
@@ -172,7 +172,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         serviceAppointmentFormFields.add(new FormField("appointmentType",FacilioField.FieldDisplayType.SELECTBOX,"Appointment Type", FormField.Required.REQUIRED,3,3));
         serviceAppointmentFormFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Site",FormField.Required.OPTIONAL,4,3));
         serviceAppointmentFormFields.add(new FormField("location", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Location",FormField.Required.OPTIONAL,5,3));
-        serviceAppointmentFormFields.add(new FormField("serviceWorkorder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Service Workorders",FormField.Required.OPTIONAL,6,3));
+        serviceAppointmentFormFields.add(new FormField("serviceOrder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Service Orders",FormField.Required.OPTIONAL,6,3));
         serviceAppointmentFormFields.add(new FormField("serviceTasks",FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Service Tasks", FormField.Required.OPTIONAL,7,1));
         serviceAppointmentFormFields.add(new FormField("inspection", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Inspection",FormField.Required.OPTIONAL,8,3));
         serviceAppointmentFormFields.add(new FormField("workorder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Workorder",FormField.Required.OPTIONAL,9,3));
