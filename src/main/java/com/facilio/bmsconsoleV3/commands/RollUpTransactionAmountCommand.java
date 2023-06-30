@@ -192,6 +192,8 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
 
         long convertedTimestampInMillis = targetDateTime.toInstant().toEpochMilli();
 
+        LOGGER.error("Budget timeZoneConverter -- "+ timestampInMillis + " convertedTimestampInMillis--" + convertedTimestampInMillis );
+
         return convertedTimestampInMillis;
     }
     private void rollUpData(Double amount, Map<String, Object> accountMap, Map<String, Object> resourceMap, String rollUpModName, String rollUpFieldName, long startDate) throws Exception {
@@ -199,7 +201,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
         FacilioModule module = modBean.getModule(rollUpModName);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 
-
+        LOGGER.error("Budget rollup Data Date -- "+ startDate +"rollup Amount -- "+ amount+ "rollup ModuleName -- "+rollUpModName);
         SelectRecordsBuilder<V3Context> selectRecordbuilder = new SelectRecordsBuilder<V3Context>()
                 .module(module)
                 .beanClass(V3Context.class)
