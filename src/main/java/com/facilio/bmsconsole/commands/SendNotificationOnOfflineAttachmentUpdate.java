@@ -13,6 +13,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 public class SendNotificationOnOfflineAttachmentUpdate extends FacilioCommand implements PostTransactionCommand {
+    private static final Logger LOGGER = LogManager.getLogger(SendNotificationOnOfflineAttachmentUpdate.class.getName());
 
     private String type;
     private Context context;
@@ -35,37 +38,43 @@ public class SendNotificationOnOfflineAttachmentUpdate extends FacilioCommand im
 
     @Override
     public boolean postExecute() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
-        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        try {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
+            String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
-        if(moduleName == null){
-            return false;
+            if (moduleName == null) {
+                return false;
+            }
+
+            FacilioModule module = modBean.getModule(moduleName);
+
+            List<Long> recordIds = OfflineSupportUtil.getRecordIds(context);
+
+            String currentModuleName = getCurrentModuleName(parentModuleName, moduleName);
+
+            if (moduleName.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS) && CollectionUtils.isNotEmpty(recordIds)) {
+                recordIds = getRecordIdsForTask(recordIds.get(0));
+                this.type = OfflineUpdateType.TASK.getName();
+            }
+
+            if (currentModuleName != null) {
+                module = modBean.getModule(currentModuleName);
+            } else {
+                module = modBean.getParentModule(module.getModuleId());
+            }
+
+            if (CollectionUtils.isEmpty(recordIds)) {
+                Set<Long> parentIds = (Set<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
+                if (parentIds != null) {
+                    recordIds = new ArrayList<>(parentIds);
+                }
+            }
+
+            OfflineSupportUtil.sendNotificationOnOfflineRecordUpdate(module, recordIds, type);
+        }catch(Exception e){
+            LOGGER.info("Exception at SendNotificationOnOfflineAttachmentUpdate: ", e);
         }
-
-        FacilioModule module = modBean.getModule(moduleName);
-
-        List<Long> recordIds = OfflineSupportUtil.getRecordIds(context);
-
-        String currentModuleName = getCurrentModuleName(parentModuleName,moduleName);
-
-        if(moduleName.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS) && CollectionUtils.isNotEmpty(recordIds)){
-            recordIds = getRecordIdsForTask(recordIds.get(0));
-            this.type = OfflineUpdateType.TASK.getName();
-        }
-
-        if(currentModuleName != null){
-            module = modBean.getModule(currentModuleName);
-        }else {
-            module = modBean.getParentModule(module.getModuleId());
-        }
-
-        if(CollectionUtils.isEmpty(recordIds)){
-            Set<Long> parentIds = (Set<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
-            recordIds = new ArrayList<>(parentIds);
-        }
-
-        OfflineSupportUtil.sendNotificationOnOfflineRecordUpdate(module,recordIds,type);
 
         return false;
     }

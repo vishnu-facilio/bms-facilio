@@ -21,6 +21,8 @@ import com.facilio.wmsv2.message.Message;
 import com.google.common.collect.Lists;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 import static com.facilio.wmsv2.constants.Topics.UpdateOnOfflineRecord.updateOnOfflineRecord;
 
 public class SendNotificationForOfflineRecordUpdate extends FacilioCommand implements PostTransactionCommand {
+    private static final Logger LOGGER = LogManager.getLogger(SendNotificationForOfflineRecordUpdate.class.getName());
 
     private String type;
     private Context context;
@@ -46,21 +49,25 @@ public class SendNotificationForOfflineRecordUpdate extends FacilioCommand imple
 
     @Override
     public boolean postExecute() throws Exception {
-        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.OFFLINE_SUPPORT)) {
-            return false;
+        try {
+            if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.OFFLINE_SUPPORT)) {
+                return false;
+            }
+
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+
+            if (moduleName == null) {
+                return false;
+            }
+
+            FacilioModule module = modBean.getModule(moduleName);
+            List<Long> recordIds = OfflineSupportUtil.getRecordIds(context);
+
+            OfflineSupportUtil.sendNotificationOnOfflineRecordUpdate(module, recordIds, type);
+        }catch(Exception e){
+            LOGGER.info("Exception at SendNotificationForOfflineRecordUpdate: ", e);
         }
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-
-        if(moduleName == null){
-            return false;
-        }
-
-        FacilioModule module = modBean.getModule(moduleName);
-        List<Long> recordIds = OfflineSupportUtil.getRecordIds(context);
-
-        OfflineSupportUtil.sendNotificationOnOfflineRecordUpdate(module,recordIds,type);
 
         return false;
     }

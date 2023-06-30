@@ -65,6 +65,11 @@ public class DeleteAttachmentCommand extends FacilioCommand implements PostTrans
 				}
 			}			
 			else if(moduleName.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS) && recordId > 0) {
+				Long currentTime = (Long) context.get(FacilioConstants.ContextNames.CURRENT_TIME);
+				if(currentTime == null){
+					currentTime = -1L;
+				}
+
 				JSONArray attachmentNames = new JSONArray();
 	     		JSONObject attach = new JSONObject();
 				List<Object> attachmentActivity = new ArrayList<>();
@@ -81,7 +86,7 @@ public class DeleteAttachmentCommand extends FacilioCommand implements PostTrans
 					attachmentActivity.add(info);
     			}
     			attach.put("taskattachment", attachmentActivity);
-    			CommonCommandUtil.addActivityToContext(parentAttachmentId, -1, WorkOrderActivityType.DELETE_TASK_ATTACHMENT, attach, (FacilioContext) context);
+    			CommonCommandUtil.addActivityToContext(parentAttachmentId, currentTime, WorkOrderActivityType.DELETE_TASK_ATTACHMENT, attach, (FacilioContext) context);
      		} 
 			
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()

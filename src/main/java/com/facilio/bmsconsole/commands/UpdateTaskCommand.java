@@ -64,7 +64,17 @@ public class UpdateTaskCommand extends FacilioCommand {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			
+
+			//Update task modified time
+			if (task.getOfflineModifiedTime() != -1) {
+				task.setModifiedTime(task.getOfflineModifiedTime());
+			}
+			else {
+				task.setModifiedTime(System.currentTimeMillis());
+			}
+
+			long taskModifiedTime = task.getModifiedTime();
+
 			if(recordIds.size() == 1) {
 				ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 				if(reading != null) {
@@ -112,9 +122,9 @@ public class UpdateTaskCommand extends FacilioCommand {
 					newinfo.put("taskupdate", info);
 					LOGGER.error("task: " + task.getId());
 					if(task.isPreRequest()){
-						CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.UPDATE_PREREQUISITE, newinfo, (FacilioContext) context);
+						CommonCommandUtil.addActivityToContext(parentId, taskModifiedTime, WorkOrderActivityType.UPDATE_PREREQUISITE, newinfo, (FacilioContext) context);
 					}else{
-						CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.UPDATE_TASK, newinfo, (FacilioContext) context);
+						CommonCommandUtil.addActivityToContext(parentId, taskModifiedTime, WorkOrderActivityType.UPDATE_TASK, newinfo, (FacilioContext) context);
 					}
 				}
 			
@@ -127,7 +137,6 @@ public class UpdateTaskCommand extends FacilioCommand {
 				throw new IllegalArgumentException("The task was modified after the last sync");
 			}
 			
-			List<Object> closedtask = new ArrayList<>();
 			EventType taskActivity = null;
 			ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 			
@@ -149,9 +158,9 @@ public class UpdateTaskCommand extends FacilioCommand {
 						String filteredName = (String) context.get(FacilioConstants.ContextNames.FILTERED_NAME);
 						if (filteredName != null) {
 							newinfo.put(FacilioConstants.ContextNames.FILTERED_NAME,filteredName);
-							CommonCommandUtil.addActivityToContext(parentId, -1,WorkOrderActivityType.CLOSE_FILTERED_TASK, newinfo, (FacilioContext) context);
+							CommonCommandUtil.addActivityToContext(parentId, taskModifiedTime,WorkOrderActivityType.CLOSE_FILTERED_TASK, newinfo, (FacilioContext) context);
 						} else {
-							CommonCommandUtil.addActivityToContext(parentId, -1,WorkOrderActivityType.CLOSE_ALL_TASK, newinfo, (FacilioContext) context);
+							CommonCommandUtil.addActivityToContext(parentId, taskModifiedTime,WorkOrderActivityType.CLOSE_ALL_TASK, newinfo, (FacilioContext) context);
 						}
 					}
 				} else {
@@ -160,14 +169,14 @@ public class UpdateTaskCommand extends FacilioCommand {
 						JSONObject info = new JSONObject();
 						long newTaskId = recordIds.get(0);
 							info.put("subject", taskMap.get(newTaskId).getSubject());
-							CommonCommandUtil.addActivityToContext(taskMap.get(recordIds.get(0)).getParentTicketId(), -1, WorkOrderActivityType.CLOSE_TASK, info, (FacilioContext) context);
+							CommonCommandUtil.addActivityToContext(taskMap.get(recordIds.get(0)).getParentTicketId(), taskModifiedTime, WorkOrderActivityType.CLOSE_TASK, info, (FacilioContext) context);
 						
 					}
 					else if(task.getStatusNewEnum().toString() == "OPEN") {
 						JSONObject info = new JSONObject();
 						long newTaskId = recordIds.get(0);
 							info.put("subject", taskMap.get(newTaskId).getSubject());
-							CommonCommandUtil.addActivityToContext(taskMap.get(recordIds.get(0)).getParentTicketId(), -1, WorkOrderActivityType.REOPEN_TASK, info, (FacilioContext) context);
+							CommonCommandUtil.addActivityToContext(taskMap.get(recordIds.get(0)).getParentTicketId(), taskModifiedTime, WorkOrderActivityType.REOPEN_TASK, info, (FacilioContext) context);
 						
 					}
 				  }
@@ -185,13 +194,6 @@ public class UpdateTaskCommand extends FacilioCommand {
 			idCondition.setField(FieldFactory.getIdField(module));
 			idCondition.setOperator(NumberOperators.EQUALS);
 			idCondition.setValue(ids);
-			
-			if (task.getOfflineModifiedTime() != -1) {
-				task.setModifiedTime(task.getOfflineModifiedTime());
-			}
-			else {
-				task.setModifiedTime(System.currentTimeMillis());
-			}
 			
 			UpdateRecordBuilder<TaskContext> updateBuilder = new UpdateRecordBuilder<TaskContext>()
 																		.moduleName(moduleName)

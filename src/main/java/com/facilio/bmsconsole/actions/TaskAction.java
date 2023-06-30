@@ -175,7 +175,23 @@ public class TaskAction extends FacilioAction {
 	public void setAttachmentId(List<Long> attachmentId) {
 		this.attachmentId = attachmentId;
 	}
-	
+
+	private long offlineModifiedTime = -1L;
+	public long getOfflineModifiedTime() {
+		return offlineModifiedTime;
+	}
+	public void setOfflineModifiedTime(long offlineModifiedTime) {
+		this.offlineModifiedTime = offlineModifiedTime;
+	}
+
+	public long getCurrentTime() {
+		if (this.offlineModifiedTime != -1L) {
+			return this.offlineModifiedTime;
+		} else {
+			return System.currentTimeMillis();
+		}
+	}
+
 	//Add Task Props
 	public String addTask() throws Exception {
 		// TODO Auto-generated method stub
@@ -221,6 +237,7 @@ public class TaskAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, attachmentId);
+		context.put(FacilioConstants.ContextNames.CURRENT_TIME, getCurrentTime());
 		
 		chain.execute();
 		
@@ -497,6 +514,7 @@ public class TaskAction extends FacilioAction {
 			return;
 		}
 
+		long currentTime = getCurrentTime();
 		if (beforeAttachment != null) {
 			FacilioContext context1 = new FacilioContext();
 			context1.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
@@ -505,6 +523,7 @@ public class TaskAction extends FacilioAction {
 			context1.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, Arrays.asList(this.beforeAttachment));
 			context1.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, Arrays.asList(this.beforeAttachmentFileName));
 			context1.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, Arrays.asList(this.beforeAttachmentContentType));
+			context1.put(FacilioConstants.ContextNames.CURRENT_TIME, currentTime);
 
 			if (module.equals(FacilioConstants.ContextNames.ITEM_TYPES_ATTACHMENTS)) {
 				context1.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
@@ -531,6 +550,7 @@ public class TaskAction extends FacilioAction {
 			context1.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, Arrays.asList(this.afterAttachment));
 			context1.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, Arrays.asList(this.afterAttachmentFileName));
 			context1.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, Arrays.asList(this.afterAttachmentContentType));
+			context1.put(FacilioConstants.ContextNames.CURRENT_TIME, currentTime);
 
 			if (module.equals(FacilioConstants.ContextNames.ITEM_TYPES_ATTACHMENTS)) {
 				context1.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
@@ -567,6 +587,7 @@ public class TaskAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.TASK, singleTask);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+
 			if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
 				context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 			}

@@ -784,6 +784,7 @@ public class FacilioConstants {
 		public static final String ATTACHMENT_ID_LIST = "attachmentIds";
 		public static final String ATTACHMENT_MODULE_NAME = "attachmentModuleName";
 		public static final String ATTACHMENT_MAP_FILE_LIST = "attachmentsMapFiles";
+		public static final String CURRENT_TIME = "currentTime";
 
 		public static final String FILE = "file";
 		public static final String FILE_NAME = "fileName";

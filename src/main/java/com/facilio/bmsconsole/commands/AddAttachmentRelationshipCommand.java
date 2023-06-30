@@ -47,6 +47,11 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
 		}
 		
 		this.parentModuleName =  (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
+
+		Long currentTime = (Long) context.get(FacilioConstants.ContextNames.CURRENT_TIME);
+		if(currentTime == null){
+			currentTime = -1L;
+		}
 		
 		Long recordId = null;
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
@@ -101,11 +106,10 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
 			JSONArray attachmentNames = new JSONArray();
      		JSONObject attach = new JSONObject();
 			List<Object> attachmentActivity = new ArrayList<>();
-     		
-     		
+
      		if(moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-				CommonCommandUtil.addActivityToContext(recordId, -1, WorkOrderActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordId, currentTime, WorkOrderActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
      		}
      		else if(moduleName.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS)) {
     			TaskContext task = WorkOrderAPI.getTask(recordId);
@@ -120,54 +124,54 @@ public class AddAttachmentRelationshipCommand extends FacilioCommand implements 
 					attachmentActivity.add(info);
     			}
     			attach.put("taskattachment", attachmentActivity);
-    			CommonCommandUtil.addActivityToContext(parentAttachmentId, -1, WorkOrderActivityType.ADD_TASK_ATTACHMENT, attach, (FacilioContext) context);
+    			CommonCommandUtil.addActivityToContext(parentAttachmentId, currentTime, WorkOrderActivityType.ADD_TASK_ATTACHMENT, attach, (FacilioContext) context);
      		} 
      		else if(moduleName.equals(FacilioConstants.ContextNames.ITEM_TYPES_ATTACHMENTS)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-				CommonCommandUtil.addActivityToContext(recordId, -1, ItemActivityType.ITEM_ATTACHMENT, attach, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordId, currentTime, ItemActivityType.ITEM_ATTACHMENT, attach, (FacilioContext) context);
      		}
 			else if(moduleName.equals(FacilioConstants.ContextNames.TOOL_TYPES_ATTACHMENTS)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordId, currentTime, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
 			}
 			else if(moduleName.equals(FacilioConstants.ContextNames.RECEIVABLE_ATTACHMENTS)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordId, currentTime, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
 			}
 			else if(moduleName.equals(FacilioConstants.ContextNames.CONTRACT_ATTACHMENTS)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordId, currentTime, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
 			}
      		else if(moduleName.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-				CommonCommandUtil.addActivityToContext(recordId, -1, AssetActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordId, currentTime, AssetActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
      		}
 			else if(Arrays.asList(FacilioConstants.ContextNames.QUOTE_ATTACHMENTS,FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ATTACHMENTS).contains(moduleName)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordId, currentTime, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
 			}
 			else if(moduleName.equals(FacilioConstants.ContextNames.STORE_ROOM_ATTACHMENTS)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordId, currentTime, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
      		}
 			else if(moduleName.equals(FacilioConstants.ContextNames.BASE_SPACE_ATTACHMENTS)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordId, currentTime, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
 			}
 			else if(Arrays.asList(FacilioConstants.ContextNames.VENDOR_ATTACHMENTS,FacilioConstants.ContextNames.TENANT_ATTACHMENTS,FacilioConstants.ContextNames.DELIVERY_ATTACHMENTS).contains(moduleName)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordId, currentTime, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
 			}
 			else if(moduleName.equals(FacilioConstants.ContextNames.SERVICE_REQUEST_ATTACHMENTS)) {
 				setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-				CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(recordId, currentTime, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
      		}
 			else  {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule parentModule = modBean.getModule(parentModuleName);
 				if (parentModule.isCustom()) {
 					setAttachmentsActivityContext(attachments, attachmentNames, attach, attachmentActivity);
-					CommonCommandUtil.addActivityToContext(recordId, -1, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+					CommonCommandUtil.addActivityToContext(recordId, currentTime, CommonActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
 				}
 			}
 

@@ -19,6 +19,11 @@ public class AttachmentContextCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		List<Long> attachmentIdList = (List<Long>) context.get(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST);
+		Long currentTime = (Long) context.get(FacilioConstants.ContextNames.CURRENT_TIME);
+		if(currentTime == null){
+			currentTime = System.currentTimeMillis();
+		}
+
 		if(attachmentIdList != null) {
 			AttachmentType type = (AttachmentType) context.get(FacilioConstants.ContextNames.ATTACHMENT_TYPE);
 			List<AttachmentContext> attachments = new ArrayList<>();
@@ -28,7 +33,7 @@ public class AttachmentContextCommand extends FacilioCommand {
 			for(long attachmentId : attachmentIdList) {
 				AttachmentContext attachment = new AttachmentContext();
 				attachment.setFileId(attachmentId);
-				attachment.setCreatedTime(System.currentTimeMillis());
+				attachment.setCreatedTime(currentTime);
 				attachment.setType(type);
 				
 				attachments.add(attachment);

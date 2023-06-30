@@ -106,6 +106,22 @@ public class AttachmentAction  extends FacilioAction {
 		this.attachmentType = AttachmentType.getType(attachmentType);
 	}
 
+	private long offlineModifiedTime = -1L;
+	public long getOfflineModifiedTime() {
+		return offlineModifiedTime;
+	}
+	public void setOfflineModifiedTime(long offlineModifiedTime) {
+		this.offlineModifiedTime = offlineModifiedTime;
+	}
+
+	public long getCurrentTime() {
+		if (this.offlineModifiedTime != -1L) {
+			return this.offlineModifiedTime;
+		} else {
+			return System.currentTimeMillis();
+		}
+	}
+
 	public String addAttachment() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -116,6 +132,7 @@ public class AttachmentAction  extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachmentFileName);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachmentContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
+		context.put(FacilioConstants.ContextNames.CURRENT_TIME, getCurrentTime());
 
 		if(this.parentModuleName != null) {
 			context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
