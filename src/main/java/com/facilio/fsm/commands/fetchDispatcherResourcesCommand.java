@@ -152,48 +152,52 @@ public class fetchDispatcherResourcesCommand extends FacilioCommand {
                 List<Map<String, Object>> shiftSchedule = new ArrayList<>();
                 Map<Long, Map<String, Object>> shiftScheduleMap = new HashMap<>();
                 for (long time = startTime; time <= endTime; time += DAY_IN_MILLIS) {
-                    Map<String, Object> shift = new HashMap<>();
-                    shift.put("name", defaultShiftSlot.getShift().getName());
-                    shift.put("shiftId", defaultShiftSlot.getShift().getId());
-                    shift.put("colorCode", defaultShiftSlot.getShift().getColorCode());
-                    boolean isWeeklyOff = defaultShiftSlot.getShift().isWeeklyOff(time);
-                    if(isWeeklyOff){
-                        shift.put("startTime", DateTimeUtil.getDayStartTimeOf(time));
-                        shift.put("endTime",DateTimeUtil.getDayEndTimeOf(time));
-                    } else {
-                        shift.put("startTime", time + (defaultShiftSlot.getShift().getStartTime()*1000));
-                        shift.put("endTime", time + (defaultShiftSlot.getShift().getEndTime())*1000);
+                    if( defaultShiftSlot != null && defaultShiftSlot.getShift() != null ) {
+                        Shift defaultShift = defaultShiftSlot.getShift();
+                        Map<String, Object> shift = new HashMap<>();
+                        shift.put("name", defaultShift.getName());
+                        shift.put("shiftId", defaultShift.getId());
+                        shift.put("colorCode", defaultShift.getColorCode());
+                        boolean isWeeklyOff = defaultShift.isWeeklyOff(time);
+                        if (isWeeklyOff) {
+                            shift.put("startTime", DateTimeUtil.getDayStartTimeOf(time));
+                            shift.put("endTime", DateTimeUtil.getDayEndTimeOf(time));
+                        } else {
+                            shift.put("startTime", time + defaultShift.getStartTime());
+                            shift.put("endTime", time + defaultShift.getEndTime());
+                        }
+                        shift.put("isWeeklyOff", isWeeklyOff);
+                        shiftSchedule.add(shift);
+                        shiftScheduleMap.put(time, shift);
                     }
-                    shift.put("isWeeklyOff", isWeeklyOff);
-                    shiftSchedule.add(shift);
-                    shiftScheduleMap.put(time, shift);
                 }
                 for (ShiftSlot slot : slots) {
-
-                    long modificationStart = slot.getFrom();
-                    long modificationEnd = slot.getTo();
-                    if (modificationStart == UNLIMITED_PERIOD || modificationEnd == UNLIMITED_PERIOD) {
-                        continue;
-                    }
-                    Shift shift = slot.getShift();
-
-                    for (long time = modificationStart; time <= modificationEnd; time += DAY_IN_MILLIS) {
-                        Map<String, Object> shiftObj = shiftScheduleMap.get(time);
-                        if (shiftObj == null) {
+                    if(slot != null){
+                        long modificationStart = slot.getFrom();
+                        long modificationEnd = slot.getTo();
+                        if (modificationStart == UNLIMITED_PERIOD || modificationEnd == UNLIMITED_PERIOD) {
                             continue;
                         }
-                        shiftObj.put("name", shift.getName());
-                        shiftObj.put("shiftId", shift.getId());
-                        shiftObj.put("colorCode", shift.getColorCode());
-                        boolean isWeeklyOff = shift.isWeeklyOff(time);
-                        if(isWeeklyOff){
-                            shiftObj.put("startTime", DateTimeUtil.getDayStartTimeOf(time));
-                            shiftObj.put("endTime",DateTimeUtil.getDayEndTimeOf(time));
-                        } else {
-                            shiftObj.put("startTime", (shift.getStartTime()*1000) + time);
-                            shiftObj.put("endTime", (shift.getEndTime()*1000) + time);
+                        Shift shift = slot.getShift();
+
+                        for (long time = modificationStart; time <= modificationEnd; time += DAY_IN_MILLIS) {
+                            Map<String, Object> shiftObj = shiftScheduleMap.get(time);
+                            if (shiftObj == null) {
+                                continue;
+                            }
+                            shiftObj.put("name", shift.getName());
+                            shiftObj.put("shiftId", shift.getId());
+                            shiftObj.put("colorCode", shift.getColorCode());
+                            boolean isWeeklyOff = shift.isWeeklyOff(time);
+                            if (isWeeklyOff) {
+                                shiftObj.put("startTime", DateTimeUtil.getDayStartTimeOf(time));
+                                shiftObj.put("endTime", DateTimeUtil.getDayEndTimeOf(time));
+                            } else {
+                                shiftObj.put("startTime", shift.getStartTime() + time);
+                                shiftObj.put("endTime", shift.getEndTime() + time);
+                            }
+                            shiftObj.put("isWeeklyOff", isWeeklyOff);
                         }
-                        shiftObj.put("isWeeklyOff", isWeeklyOff);
                     }
                 }
                 dispatcherResource.setPeople(resource);
