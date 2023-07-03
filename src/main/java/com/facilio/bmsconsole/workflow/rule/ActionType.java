@@ -10,6 +10,8 @@ import com.facilio.activity.AlarmActivityType;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.blockfactory.BlockFactory;
+import com.facilio.blockfactory.blocks.BaseBlock;
 import com.facilio.bmsconsole.commands.ExecuteSpecificWorkflowsCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.UpdateWoIdInNewAlarmCommand;
@@ -40,6 +42,10 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
+import com.facilio.flowengine.executor.FlowEngine;
+import com.facilio.flows.context.FlowContext;
+import com.facilio.flows.context.FlowTransitionContext;
+import com.facilio.flows.util.FlowUtil;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
@@ -1989,11 +1995,35 @@ public enum ActionType implements FacilioIntEnum {
 			FacilioModule module = moduleBean.getModule(moduleName);
 			if(obj!=null){
 				Map<String,Object> data = (Map<String, Object>) obj.get("data");
-				V3Util.createRecord(module, data,false,null,null,true);
+				V3Util.createRecord(module, data,false,null,null,true,null);
 			}
 			return true;
 		}
 	},
+	FLOW_ACTION(38,true){
+		@Override
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			try{
+				Long flowId = (Long)obj.get(FacilioConstants.ContextNames.FLOW_ID);
+				FlowContext flow = FlowUtil.getFlow(flowId);
+				JSONObject currentRecordJSON = FieldUtil.getAsJSON(currentRecord);
+				FlowEngine flowEngine = new FlowEngine(flow,currentRecordJSON);
+				List<FlowTransitionContext> transitions = FlowUtil.getFlowTransitionListWithExtendedConfig(flowId);
+				BaseBlock startBlock = BlockFactory.buildFlowGraph(transitions);
+
+				String moduleName = currentRule.getModuleName();
+				Map<String,Object> memory = new HashMap<>();
+				memory.put(moduleName,currentRecordJSON);
+
+				flowEngine.execute(startBlock,memory);
+
+			}catch (Exception e){
+				LOGGER.error("Exception occurred on flow Action", e);
+				return false;
+			}
+			return true;
+		}
+	}
 
 	;
 

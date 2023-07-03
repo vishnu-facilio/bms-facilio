@@ -140,7 +140,10 @@ public class FlowEngineUtil {
 
             for (String placeHolder : placeholders) {
 
-                Object value = getOrDefaultValue(placeHolder, memory, "null");
+                Object value = getOrDefaultValue(placeHolder, memory, null);
+                if(value == null){
+                    value = "";
+                }
                 placeHolderMap.put(placeHolder, value);
 
             }

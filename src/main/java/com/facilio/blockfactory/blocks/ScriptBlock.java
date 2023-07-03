@@ -11,9 +11,7 @@ import com.facilio.flowengine.executor.FlowEngineUtil;
 import com.facilio.modules.FieldUtil;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.workflowlog.context.WorkflowLogContext;
-import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
-import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import lombok.Getter;
@@ -21,6 +19,7 @@ import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class ScriptBlock extends BaseBlock{
             userFunction.setLogNeeded(true);
             functionContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, userFunction);
 
-            Map<String, Object> currentRecord = (Map<String, Object>) memory.get(Constants.CURRENT_RECORD);
+            JSONObject currentRecord = super.getFlowEngineInterFace().getCurrentRecord();
 
             List<ParameterContext> functionParameters = userFunction.getParameters();
 

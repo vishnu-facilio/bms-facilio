@@ -8,6 +8,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.util.V3Util;
+import org.apache.commons.lang.math.NumberUtils;
 
 import java.util.Map;
 
@@ -23,20 +24,21 @@ public class SummaryRecordBlock extends BaseBlock {
         try{
             init();
 
-            long recId = -1l;
-            String moduleName = null;
+            Object recordIdOb = FlowEngineUtil.replacePlaceHolder(recordId,memory);
+            Object moduleNameOb = FlowEngineUtil.replacePlaceHolder(this.moduleName,memory);
 
-            Object ob = FlowEngineUtil.evaluateExpression(memory,recordId.toString());
-            Object moduleNameOb = FlowEngineUtil.evaluateExpression(memory, this.moduleName);
-            if(!(ob instanceof Number)){
-                throw new FlowException("recordId is not a number for SummaryRecordBlock");
-            }
             if(!(moduleNameOb instanceof  String)){
                 throw new FlowException("moduleName is not a string");
             }
+            if(recordIdOb == null){
+                throw new FlowException("recordId cannot be empty for SummaryRecordBlock");
+            }
+            if(!NumberUtils.isNumber(recordIdOb.toString())){
+                throw new FlowException("recordId is not a number for SummaryRecordBlock");
+            }
 
-            recId = (long) Double.parseDouble(ob.toString());
-            moduleName = moduleNameOb.toString();
+            String moduleName = moduleNameOb.toString();
+            long recId = (long)Double.parseDouble(recordIdOb.toString());
 
             ModuleBean modBean =  (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(moduleName);

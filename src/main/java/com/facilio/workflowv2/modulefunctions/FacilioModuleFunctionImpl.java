@@ -224,7 +224,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					CommonCommandUtil.handleLookupFormData(modBean.getAllFields(module.getName()), data);
 				}
 				
-				FacilioContext context = V3Util.createRecord(module, dataList, true, null, null,true);
+				FacilioContext context = V3Util.createRecord(module, dataList, true, null, null,true,null);
 				
 				List<ModuleBaseWithCustomFields> records = Constants.getRecordList(context);
 				if(CollectionUtils.isNotEmpty(dataList)) {

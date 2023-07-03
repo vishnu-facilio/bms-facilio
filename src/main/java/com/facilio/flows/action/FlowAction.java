@@ -95,6 +95,7 @@ public class FlowAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.ID, id);
         chain.execute();
         setResult(FacilioConstants.ContextNames.FLOW_TRANSITION, context.get(FacilioConstants.ContextNames.FLOW_TRANSITION));
+        setResult(FacilioConstants.ContextNames.SUPPLEMENTS,context.get(FacilioConstants.ContextNames.SUPPLEMENTS));
         return SUCCESS;
     }
 

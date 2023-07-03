@@ -20,14 +20,15 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class FlowUtil {
 
@@ -69,7 +70,13 @@ public class FlowUtil {
                 .select(FieldFactory.getFlowFields())
                 .andCondition(CriteriaAPI.getIdCondition(id,ModuleFactory.getFlowModule()));
 
-        FlowContext flow = FieldUtil.getAsBeanFromMap(builder.fetchFirst(),FlowContext.class);
+        Map<String,Object> prop = builder.fetchFirst();
+
+        if(MapUtils.isEmpty(prop)){
+            return null;
+        }
+
+        FlowContext flow = FieldUtil.getAsBeanFromMap(prop,FlowContext.class);
         List<ParameterContext> parameters = getParameters(id);
         flow.setParameters(parameters);
         return flow;
@@ -146,6 +153,36 @@ public class FlowUtil {
         List<FlowTransitionContext> flowTransitions = FieldUtil.getAsBeanListFromMapList(builder.get(), FlowTransitionContext.class);
         return flowTransitions;
     }
+    public static List<FlowTransitionContext> getFlowTransitionListWithExtendedConfig(long flowId) throws Exception{
+
+        List<FlowTransitionContext> result = new ArrayList<>();
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getFlowTransitionFields())
+                .table(ModuleFactory.getFlowTransitionModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("FLOW_ID","flowId", String.valueOf(flowId), NumberOperators.EQUALS));
+
+        List<Map<String,Object>> list = builder.get();
+        Map<String, List<Map<String,Object>>> blockTypeVsFlowTransitionListMap = list.stream().collect(Collectors.groupingBy((p)->(String)p.get(Constants.BLOCK_TYPE)));
+
+        for (Map.Entry<String,List<Map<String,Object>>> entry:blockTypeVsFlowTransitionListMap.entrySet()){
+            String blockTypeStr = entry.getKey();
+            List<Map<String,Object>> props = entry.getValue();
+            BlockType blockType = BlockType.valueOf(blockTypeStr);
+            Class<? extends FlowTransitionContext> beanClass = FlowChainUtil.getBeanClassByBlockType(blockType);
+            List<? extends FlowTransitionContext> flowTransitionList = FieldUtil.getAsBeanListFromMapList(props,beanClass);
+            FacilioChain configChain = FlowChainUtil.getFlowTransitionListChain(blockType);
+            if(configChain!=null){
+                FacilioContext configContext = configChain.getContext();
+                configContext.put(FacilioConstants.ContextNames.FLOW_TRANSITIONS,flowTransitionList);
+                configChain.execute();
+                flowTransitionList = (List<? extends FlowTransitionContext>) configContext.get(FacilioConstants.ContextNames.FLOW_TRANSITIONS);
+            }
+            result.addAll(flowTransitionList);
+        }
+
+        return result;
+    }
 
     public static FlowTransitionContext getFlowTransition(long id) throws Exception{
 
@@ -153,18 +190,17 @@ public class FlowUtil {
                 .select(FieldFactory.getFlowTransitionFields())
                 .table(ModuleFactory.getFlowTransitionModule().getTableName())
                 .andCondition(CriteriaAPI.getIdCondition(id,ModuleFactory.getFlowTransitionModule()));
-
         FlowTransitionContext flowTransition = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), FlowTransitionContext.class);
         return flowTransition;
     }
-    public static FlowTransitionContext getFlowTransitionWithConfig(long id) throws Exception{
+    public static FacilioContext getFlowTransitionWithConfig(long id) throws Exception{
+        FacilioContext context = new FacilioContext();
 
         Map<String,Object> props = FlowUtil.getFlowTransitionAsProps(id);
 
         if(MapUtils.isEmpty(props)){
-            return null;
+            return context;
         }
-
         BlockType blockType = BlockType.valueOf((String) props.get(Constants.BLOCK_TYPE));
         Class<? extends FlowTransitionContext> beanClass = FlowChainUtil.getBeanClassByBlockType(blockType);
         FlowTransitionContext flowTransition = FieldUtil.getAsBeanFromMap(props,beanClass);
@@ -175,9 +211,10 @@ public class FlowUtil {
             configContext.put(FacilioConstants.ContextNames.FLOW_TRANSITION,flowTransition);
             configChain.execute();
             flowTransition = (FlowTransitionContext) configContext.get(FacilioConstants.ContextNames.FLOW_TRANSITION);
+            context.put(FacilioConstants.ContextNames.SUPPLEMENTS,configContext.get(FacilioConstants.ContextNames.SUPPLEMENTS));
         }
-
-        return flowTransition;
+        context.put(FacilioConstants.ContextNames.FLOW_TRANSITION,flowTransition);
+        return context;
     }
 
     public static Map<String,Object> getFlowTransitionAsProps(long id) throws Exception{

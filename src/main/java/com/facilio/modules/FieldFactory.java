@@ -3549,6 +3549,28 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("functionId","FUNCTION_ID",module));
         return fields;
     }
+    public static List<FacilioField> getNotificationBlockConfigDataFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getNotificationBlockConfigDataModule();
+
+        fields.add(getIdField(module));
+        fields.add(getStringField("subject","SUBJECT",module));
+        fields.add(getStringField("message","MESSAGE",module));
+        fields.add(getNumberField("application","APPLICATION_ID",module));
+        fields.add(getBooleanField("isSendPushNotification","SEND_PUSH_NOTIFICATION",module));
+        fields.add(getNumberField("recordModuleId","RECORD_MODULEID",module));
+        return fields;
+    }
+    public static List<FacilioField> getNotificationSendToBlockConfigDataFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getNotificationSendToBlockConfigDataModule();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("userId","USER_ID",module));
+        fields.add(getStringField("placeHolder","PLACEHOLDER",module));
+        fields.add(getNumberField("notificationBlockId","NOTIFICATION_BLOCK_ID",module));
+        return fields;
+    }
 
     public static List<FacilioField> getImportDataDetailsFields() {
         FacilioModule module = ModuleFactory.getImportDataDetailsModule();

@@ -33,6 +33,7 @@ import com.facilio.v3.annotation.Module;
 import com.facilio.v3.annotation.ModuleType;
 import com.facilio.v3.commands.*;
 import com.facilio.v3.context.AttachmentV3Context;
+import com.facilio.v3.context.ConfigParams;
 import com.facilio.v3.context.CustomModuleDataV3;
 import com.facilio.v3.context.V3Context;
 import lombok.extern.log4j.Log4j;
@@ -275,10 +276,10 @@ public class ChainUtil {
     }
 
     public static FacilioChain getCreateChain(String moduleName) throws Exception {
-        return getCreateChain(moduleName, false);
+        return getCreateChain(moduleName, false,null);
     }
 
-    public static FacilioChain getCreateChain(String moduleName, boolean bulkOp) throws Exception {
+    public static FacilioChain getCreateChain(String moduleName, boolean bulkOp,ConfigParams configParams) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(module);
 
@@ -328,7 +329,7 @@ public class ChainUtil {
         addIfNotNull(transactionChain, afterSaveCommand);
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "afterSaveCommand", moduleName));
 
-        addWorkflowChain(transactionChain);
+        addWorkflowChain(transactionChain,configParams);
         addIfNotNull(transactionChain, afterTransactionCommand);
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "afterTransactionCommand", moduleName));
 
@@ -512,14 +513,14 @@ public class ChainUtil {
     }
 
     public static FacilioChain getBulkPatchChain(String moduleName) throws Exception {
-        return getPatchChain(moduleName, true);
+        return getPatchChain(moduleName, true,null);
     }
 
-    public static FacilioChain getPatchChain(String moduleName) throws Exception {
-        return getPatchChain(moduleName, false);
+    public static FacilioChain getPatchChain(String moduleName,ConfigParams configParams) throws Exception {
+        return getPatchChain(moduleName, false,configParams);
     }
 
-    private static FacilioChain getPatchChain(String moduleName, boolean isBulkOp) throws Exception {
+    private static FacilioChain getPatchChain(String moduleName, boolean isBulkOp, ConfigParams configParams) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(module);
 
@@ -575,7 +576,7 @@ public class ChainUtil {
         transactionChain.addCommand(new SendNotificationForOfflineRecordUpdate(OfflineUpdateType.RECORD));
 
 
-        updateWorkflowChain(transactionChain);
+        updateWorkflowChain(transactionChain,configParams);
         // execute custom button action if the custom button id is sent
         transactionChain.addCommand(new ExecuteSpecificWorkflowsCommand(WorkflowRuleContext.RuleType.CUSTOM_BUTTON));
 
@@ -729,6 +730,16 @@ public class ChainUtil {
     }
 
     public static void addWorkflowChain(Chain chain) throws Exception {
+      addWorkflowChain(chain,null);
+    }
+    public static void addWorkflowChain(Chain chain,ConfigParams configParams) throws Exception{
+        if(configParams!=null && configParams.isOnlyRestrictedWorkflows()){
+            addRestrictedWorkflowChain(chain);
+        }else{
+            defaultAddWorkflowChain(chain);
+        }
+    }
+    private static void defaultAddWorkflowChain(Chain chain){
         chain.addCommand(new ExecuteStateFlowCommand());
 		chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));
 		chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE));
@@ -741,8 +752,32 @@ public class ChainUtil {
         chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(true));
         chain.addCommand(new ExecuteRollUpFieldCommand());
     }
+    private static void addRestrictedWorkflowChain(Chain chain) {
+        chain.addCommand(new ExecuteStateFlowCommand());
+        //chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));
+        //chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
+        chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
+        //chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
+        // chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.TRANSACTION_RULE));
+        chain.addCommand(new ExecuteSLAWorkFlowsCommand());
+        chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(true));
+        chain.addCommand(new ExecuteRollUpFieldCommand());
+    }
+
 
     public static void updateWorkflowChain(Chain chain) throws Exception {
+        updateWorkflowChain(chain,null);
+    }
+    public static void updateWorkflowChain(Chain chain,ConfigParams configParams) throws Exception {
+      if(configParams!=null && configParams.isOnlyRestrictedWorkflows()){
+          updateRestrictedWorkflowChain(chain);
+      }else{
+          defaultUpdateWorkflowChain(chain);
+      }
+    }
+    private static void defaultUpdateWorkflowChain(Chain chain) throws Exception{
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
@@ -750,6 +785,18 @@ public class ChainUtil {
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.TRANSACTION_RULE));
+        chain.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
+        chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(false));
+        chain.addCommand(new ExecuteRollUpFieldCommand());
+    }
+    public static void updateRestrictedWorkflowChain(Chain chain) throws Exception {
+        //chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));
+        //chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
+        chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
+        //chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION));
+        //chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.TRANSACTION_RULE));
         chain.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
         chain.addCommand(new AddOrUpdateSLABreachJobCommandV3(false));
         chain.addCommand(new ExecuteRollUpFieldCommand());

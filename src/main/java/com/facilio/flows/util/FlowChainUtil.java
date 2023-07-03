@@ -4,10 +4,7 @@ import com.facilio.blockfactory.enums.BlockType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.flows.command.AddFlowTransitionCommand;
 import com.facilio.flows.command.UpdateFlowTransitionCommand;
-import com.facilio.flows.config.FlowConfig;
-import com.facilio.flows.config.FlowTransitionSaveHandler;
-import com.facilio.flows.config.FlowTransitionSummaryHandler;
-import com.facilio.flows.config.FlowTransitionUpdateHandler;
+import com.facilio.flows.config.*;
 import com.facilio.flows.config.annotations.Block;
 import com.facilio.flows.context.FlowTransitionContext;
 import org.apache.commons.chain.Command;
@@ -130,6 +127,30 @@ public class FlowChainUtil {
 
         if(afterFetchCommand ==null){
            return null;
+        }
+
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(afterFetchCommand);
+        return chain;
+    }
+    public static FacilioChain getFlowTransitionListChain(BlockType blockType) {
+        FlowConfig flowConfig = getFlowConfig(blockType);
+
+        if(flowConfig == null){
+            return null;
+        }
+
+        Command afterFetchCommand = null;
+
+        FlowTransitionListHandler listHandler = flowConfig.getListHandler();
+        if(listHandler == null){
+            return null;
+        }
+
+        afterFetchCommand = listHandler.getAfterFetchCommand();
+
+        if(afterFetchCommand ==null){
+            return null;
         }
 
         FacilioChain chain = getDefaultChain();

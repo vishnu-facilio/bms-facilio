@@ -130,7 +130,7 @@ public class PurchaseOrderQuantityRecievedRollUpCommand extends FacilioCommand {
 		JSONObject json = new JSONObject();
 		json.putAll(map);
 
-		FacilioChain patchChain = ChainUtil.getPatchChain(FacilioConstants.ContextNames.PURCHASE_ORDER);
+		FacilioChain patchChain = ChainUtil.getPatchChain(FacilioConstants.ContextNames.PURCHASE_ORDER,null);
 		FacilioContext patchContext = patchChain.getContext();
 		V3Config v3Config = ChainUtil.getV3Config(FacilioConstants.ContextNames.PURCHASE_ORDER);
 		Class beanClass = ChainUtil.getBeanClass(v3Config, pomodule);

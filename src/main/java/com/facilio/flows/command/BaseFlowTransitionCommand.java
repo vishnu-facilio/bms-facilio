@@ -37,7 +37,9 @@ public abstract class BaseFlowTransitionCommand extends FacilioCommand {
 
     }
     private static void validateConfigData(FlowTransitionContext flowTransition) throws Exception {
-        Map<String, Object> blockConfig = BlockFactory.getAsMapFromJsonString(flowTransition.getConfigData());
+        flowTransition.updateConfig();
+
+        Map<String, Object> blockConfig = flowTransition.getConfig();
 
         blockConfig.put(Constants.BLOCK_ID,flowTransition.getId());
 

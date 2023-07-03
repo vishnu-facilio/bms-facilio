@@ -11,6 +11,7 @@ import java.io.Serializable;
 @Setter
 public class ConfigParams implements Serializable {
     private String selectableFieldNames;
+    private boolean onlyRestrictedWorkflows;
 
     public static void addConfigParams(FacilioContext context, ConfigParams configParams) throws Exception {
          if (configParams == null){

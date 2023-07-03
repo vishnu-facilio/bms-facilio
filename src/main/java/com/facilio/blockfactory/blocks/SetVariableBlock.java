@@ -22,7 +22,7 @@ public class SetVariableBlock extends BaseBlock {
         try{
             init();
             if(variableValue instanceof String){
-                variableValue = evaluate(context,(String) variableValue);
+                variableValue = FlowEngineUtil.replacePlaceHolder(variableValue,context);
             }
             context.put(variableName,variableValue);
         }catch (Exception ex){
@@ -51,9 +51,5 @@ public class SetVariableBlock extends BaseBlock {
         if(variableValue == null){
             throw new FlowException("variableValue can not be empty for SetVariableBlock");
         }
-    }
-
-    private Object evaluate(Map<String, Object> memory, String expressionStr) throws  Exception {
-        return FlowEngineUtil.evaluateExpression(memory,expressionStr);
     }
 }

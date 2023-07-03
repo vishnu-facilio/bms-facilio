@@ -28,7 +28,8 @@ public class InitAddOrUpdateFlowTransitionConfigCommand extends FacilioCommand {
 
         FlowTransitionContext oldFlowTransition = null;
         if (id != null && id != -1l) {
-            oldFlowTransition = FlowUtil.getFlowTransitionWithConfig(id);
+            FacilioContext oldFlowContext = FlowUtil.getFlowTransitionWithConfig(id);
+            oldFlowTransition =(FlowTransitionContext) oldFlowContext.get(FacilioConstants.ContextNames.FLOW_TRANSITION);
             FacilioUtil.throwIllegalArgumentException(oldFlowTransition == null, "FlowTransition with id:" + id + " doesn't exist");
             blockType = oldFlowTransition.getBlockType();
         } else {

@@ -12,6 +12,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,15 +32,16 @@ public class ExecuteFlowCommand extends FacilioCommand {
 
 
 
-        List<FlowTransitionContext> flowTransitions = FlowUtil.getFlowTransitionList(flowId);
+        List<FlowTransitionContext> flowTransitions = FlowUtil.getFlowTransitionListWithExtendedConfig(flowId);
 
         Object record = V3Util.getRecord(moduleName, recordId, null);
 
         BaseBlock startBlock = BlockFactory.buildFlowGraph(flowTransitions);
 
+        JSONObject currentRecord = FieldUtil.getAsJSON(record);
         HashMap<String, Object> memory = new HashMap<>();
-        FlowEngine flowEngine = new FlowEngine(flow);
-        memory.put("currentRecord",FieldUtil.getAsProperties(record));
+        FlowEngine flowEngine = new FlowEngine(flow,currentRecord);
+        memory.put(moduleName,currentRecord);
         flowEngine.execute(startBlock,memory);
         context.put(FacilioConstants.ContextNames.MEMORY, memory);
         return false;

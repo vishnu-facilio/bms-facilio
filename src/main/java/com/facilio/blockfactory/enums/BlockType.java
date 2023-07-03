@@ -13,8 +13,12 @@ public enum BlockType implements FacilioStringEnum {
     if_else(Group.LOGIC, "Decision", If_Else_Block.class),
     summary_record(Group.CRUD, "Get Record", SummaryRecordBlock.class),
     delete_record(Group.CRUD, "Delete Record", DeleteRecordBlock.class),
+    create_record(Group.CRUD,"Create Record", CreateRecordBlock.class),
+    update_record(Group.CRUD,"Update Record", UpdateRecordBlock.class),
     change_status(Group.ACTION,"Change Status",ChangeStatusBlock.class),
-    script(Group.ACTION,"Script", ScriptBlock.class);
+    script(Group.ACTION,"Script", ScriptBlock.class),
+    send_notification(Group.ACTION,"Send Notification", SendPushNotificationBlock.class),
+    send_mail(Group.ACTION,"Send Mail", BaseBlock.class);
 
     private Class clazz;
     @Getter

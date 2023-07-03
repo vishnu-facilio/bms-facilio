@@ -24,7 +24,9 @@ public class BlockFactory {
 
         for (FlowTransitionContext block:blocks){
 
-            Map<String, Object> blockConfig = getAsMapFromJsonString(block.getConfigData());
+            block.updateConfig();
+
+            Map<String, Object> blockConfig = block.getConfig();
 
             blockConfig.put(Constants.BLOCK_ID,block.getId());
 

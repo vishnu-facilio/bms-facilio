@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.templates.*;
 
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.flows.action.FlowAction;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.services.email.EmailClient;
@@ -453,6 +454,7 @@ public class ActionAPI {
 							case REPORT_DOWNTIME_ACTION:
 							case CHANGE_STATE:
 							case INVOKE_TRIGGER:
+							case FLOW_ACTION:
 								setDefaultTemplate(action, rule);
 								break;
 							case MAIL_TO_CUSTOM_MODULE_RECORD:
@@ -637,26 +639,29 @@ public class ActionAPI {
 	}
 	
 	private static void setMobileTemplate(ActionContext action) throws Exception {
+		Template template = generateMobileTemplate(action.getTemplateJson());
+		action.setTemplate(template);
+	}
+	public static Template generateMobileTemplate(JSONObject templateJson) throws Exception {
 		PushNotificationTemplate pushNotificationTemplate = new PushNotificationTemplate();
-		pushNotificationTemplate.setTo((String) action.getTemplateJson().get("id"));
-		pushNotificationTemplate.setBody((String) action.getTemplateJson().get("body"));	// TODO needs to save only message...now saving entire json structure
-		pushNotificationTemplate.setName((String) action.getTemplateJson().get("name"));
+		pushNotificationTemplate.setTo((String) templateJson.get("id"));
+		pushNotificationTemplate.setBody((String) templateJson.get("body"));	// TODO needs to save only message...now saving entire json structure
+		pushNotificationTemplate.setName((String) templateJson.get("name"));
 		pushNotificationTemplate.setType(Type.PUSH_NOTIFICATION);
-		if (action.getTemplateJson().containsKey("application") && action.getTemplateJson().get("application") != null) {
-			pushNotificationTemplate.setApplication(((Number) action.getTemplateJson().get("application")).longValue());
+		if (templateJson.containsKey("application") && templateJson.get("application") != null) {
+			pushNotificationTemplate.setApplication(((Number) templateJson.get("application")).longValue());
 		} else {
 			// should be removed once the application id is migrated in ActionArray in SLA
 			pushNotificationTemplate.setApplication(ApplicationApi.getApplicationIdForLinkName("newApp"));
 		}
-		if (action.getTemplateJson().containsKey("isSendNotification")) {
-			pushNotificationTemplate.setIsSendNotification((boolean) action.getTemplateJson().get("isSendNotification"));
+		if (templateJson.containsKey("isSendNotification")) {
+			pushNotificationTemplate.setIsSendNotification((boolean) templateJson.get("isSendNotification"));
 		} else {
 			pushNotificationTemplate.setIsSendNotification(true);
 		}
-		action.setTemplate(pushNotificationTemplate);
-		checkAndSetWorkflow(action.getTemplateJson(), pushNotificationTemplate);
-		checkAndSetUserWorkflow(action.getTemplateJson(), pushNotificationTemplate);
-
+		checkAndSetWorkflow(templateJson, pushNotificationTemplate);
+		checkAndSetUserWorkflow(templateJson, pushNotificationTemplate);
+		return pushNotificationTemplate;
 	}
 	
 	private static void checkAndSetWorkflow(JSONObject templateJson, Template template) {

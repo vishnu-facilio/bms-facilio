@@ -744,6 +744,22 @@ public class ModuleFactory {
 		flowTransitionModule.setExtendModule(getFlowTransitionModule());
 		return flowTransitionModule;
 	}
+	public static FacilioModule getNotificationBlockConfigDataModule(){
+		FacilioModule flowTransitionModule = new FacilioModule();
+		flowTransitionModule.setName("notificationBlockConfigData");
+		flowTransitionModule.setDisplayName("Notification Block Config Data");
+		flowTransitionModule.setTableName("NotificationBlockConfigData");
+		flowTransitionModule.setExtendModule(getFlowTransitionModule());
+		return flowTransitionModule;
+	}
+	public static FacilioModule getNotificationSendToBlockConfigDataModule(){
+		FacilioModule flowTransitionModule = new FacilioModule();
+		flowTransitionModule.setName("notificationSendToBlockConfigData");
+		flowTransitionModule.setDisplayName("Notification Send To Block Config Data");
+		flowTransitionModule.setTableName("NotificationBlockSendToConfigData");
+		flowTransitionModule.setExtendModule(getFlowTransitionModule());
+		return flowTransitionModule;
+	}
 	public static FacilioModule getReadingRuleMetricModule() {
 		FacilioModule readingRuleModule = new FacilioModule();
 		readingRuleModule.setName("readingruleMetrics");

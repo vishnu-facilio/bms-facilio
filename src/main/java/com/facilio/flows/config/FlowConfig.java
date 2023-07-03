@@ -20,15 +20,18 @@ public class FlowConfig {
     public FlowTransitionUpdateHandler getUpdateHandler() {
         return updateHandler;
     }
+    public FlowTransitionListHandler getListHandler() {return listHandler;}
 
     private FlowTransitionSummaryHandler summaryHandler;
     private FlowTransitionUpdateHandler updateHandler;
+    private FlowTransitionListHandler listHandler;
     private FlowConfig() {}
     private FlowConfig(FlowConfigBuilder flowConfigBuilder) {
         this.beanClass = flowConfigBuilder.beanClass;
         this.createHandler = flowConfigBuilder.createHandler;
         this.summaryHandler = flowConfigBuilder.summaryHandler;
         this.updateHandler = flowConfigBuilder.updateHandler;
+        this.listHandler = flowConfigBuilder.listHandler;
     }
     public static class FlowConfigBuilder {
         private Class beanClass;
@@ -39,6 +42,7 @@ public class FlowConfig {
         FlowTransitionSaveHandler createHandler;
         FlowTransitionSummaryHandler summaryHandler;
         FlowTransitionUpdateHandler updateHandler;
+        FlowTransitionListHandler listHandler;
         public FlowTransitionSaveHandler.FlowTransitionSaveHandlerBuilder create() {
             return new FlowTransitionSaveHandler.FlowTransitionSaveHandlerBuilder(this);
         }
@@ -47,6 +51,9 @@ public class FlowConfig {
         }
         public FlowTransitionUpdateHandler.FlowTransitionUpdateHandlerBuilder update() {
             return new FlowTransitionUpdateHandler.FlowTransitionUpdateHandlerBuilder(this);
+        }
+        public FlowTransitionListHandler.FlowTransitionListBuilder list() {
+            return new FlowTransitionListHandler.FlowTransitionListBuilder(this);
         }
         public FlowConfig  build() {
             return new FlowConfig(this);

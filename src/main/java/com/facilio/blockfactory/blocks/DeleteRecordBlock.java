@@ -7,6 +7,7 @@ import com.facilio.flowengine.executor.FlowEngineUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.v3.util.V3Util;
+import org.apache.commons.lang.math.NumberUtils;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,21 +25,22 @@ public class DeleteRecordBlock extends BaseBlock {
     public void execute(Map<String, Object> memory) throws FlowException {
         try {
             init();
-            long recId = -1l;
-            String moduleName = null;
 
-            Object recIdOb = FlowEngineUtil.evaluateExpression(memory, this.recordId.toString());
-            Object moduleNameOb = FlowEngineUtil.evaluateExpression(memory, this.moduleName);
+            Object recordIdOb = FlowEngineUtil.replacePlaceHolder(recordId,memory);
+            Object moduleNameOb = FlowEngineUtil.replacePlaceHolder(this.moduleName,memory);
 
-            if (!(recIdOb instanceof Number)) {
-                throw new FlowException("recordId is not a number for DeleteRecordBlock");
-            }
             if(!(moduleNameOb instanceof  String)){
                 throw new FlowException("moduleName is not a string");
             }
+            if(recordIdOb == null){
+                throw new FlowException("recordId cannot be empty for DeleteRecordBlock");
+            }
+            if(!NumberUtils.isNumber(recordIdOb.toString())){
+                throw new FlowException("recordId is not a number for DeleteRecordBlock");
+            }
 
-            recId = (long) Double.parseDouble(recIdOb.toString());
-            moduleName = moduleNameOb.toString();
+            String moduleName = moduleNameOb.toString();
+            long recId = (long)Double.parseDouble(recordIdOb.toString());
 
             ModuleBean modBean =  (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(moduleName);

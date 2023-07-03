@@ -210,7 +210,7 @@ public class QAndAUtil {
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(module);
         Class beanClass = ChainUtil.getBeanClass(v3Config, module);
-        FacilioChain patchChain = ChainUtil.getPatchChain(moduleName);
+        FacilioChain patchChain = ChainUtil.getPatchChain(moduleName,null);
         FacilioContext context = patchChain.getContext();
 
         Constants.setV3config(context, v3Config);

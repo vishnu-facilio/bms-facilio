@@ -11,6 +11,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.util.V3Util;
+import org.apache.commons.lang.math.NumberUtils;
 
 import java.util.Map;
 
@@ -28,20 +29,20 @@ public class ChangeStatusBlock extends BaseBlock{
             init();
 
             long recId = -1l;
-            String moduleName = null;
-            String statusName = null;
+            String moduleName;
+            String statusName;
 
-            Object ob = FlowEngineUtil.evaluateExpression(memory,recordId.toString());
-            Object moduleNameOb = FlowEngineUtil.evaluateExpression(memory, this.moduleName);
-            Object statusNameOb = FlowEngineUtil.evaluateExpression(memory,this.newState);
+            Object ob = FlowEngineUtil.replacePlaceHolder(recordId,memory);
+            Object moduleNameOb = FlowEngineUtil.replacePlaceHolder(this.moduleName,memory);
+            Object statusNameOb = FlowEngineUtil.replacePlaceHolder(this.newState,memory);
             if(!(ob instanceof Number)){
                 throw new FlowException("recordId is not a number for ChangeStatusBlock");
             }
             if(!(moduleNameOb instanceof  String)){
-                throw new FlowException("moduleName is not a string");
+                throw new FlowException("moduleName is not a string for ChangeStatusBlock");
             }
             if(!(statusNameOb instanceof  String)){
-                throw new FlowException("statusName is not a string");
+                throw new FlowException("statusName is not a string for ChangeStatusBlock");
             }
 
             recId = (long) Double.parseDouble(ob.toString());
@@ -58,7 +59,7 @@ public class ChangeStatusBlock extends BaseBlock{
             ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) V3Util.getRecord(moduleName,recId,null);
 
             if(record == null){
-                throw new FlowException("Record not found to change status for recordId:"+recId);
+                throw new FlowException("ChangeStatusBlock:Record not found to change status for recordId:"+recId);
             }
 
             FacilioStatus status = TicketAPI.getStatus(module, statusName);

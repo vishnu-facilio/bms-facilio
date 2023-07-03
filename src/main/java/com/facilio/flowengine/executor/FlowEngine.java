@@ -4,22 +4,25 @@ import com.facilio.blockfactory.blocks.BaseBlock;
 import com.facilio.flowengine.observers.Observer;
 import com.facilio.flows.context.FlowContext;
 import com.facilio.modules.FieldUtil;
+import org.json.simple.JSONObject;
 
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class FlowEngine {
+public class FlowEngine implements FlowEngineInterFace {
     private static org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(FlowEngine.class.getName());
     private static final Logger LOGGER = Logger.getLogger(FlowEngine.class.getName());
     private static final int maxBlocks = 50;
     private FlowContext flow;
+    private JSONObject currentRecord;
 
     private int blocksExecuted = 0;
     private List<Observer> observers = new ArrayList<>();
-    public FlowEngine(FlowContext flow){
+    public FlowEngine(FlowContext flow,JSONObject currentRecord){
         this.flow = Objects.requireNonNull(flow);
+        this.currentRecord = Objects.requireNonNull(currentRecord);
     }
 
     public void addObserver(Observer observer) {
@@ -36,6 +39,7 @@ public class FlowEngine {
             BaseBlock currentBlock = startBlock;
             while (currentBlock != null) {
                 blocksExecuted++;
+                currentBlock.setFlowEngineInterFace(this);
                 emitBlockStart(currentBlock, FieldUtil.cloneBean(memory, LinkedHashMap.class));
 
                 currentBlock.execute(memory);
@@ -99,4 +103,12 @@ public class FlowEngine {
             }
         }
     }
+
+    @Override
+    public FlowContext getFlow() {
+        return flow;
+    }
+
+    @Override
+    public JSONObject getCurrentRecord() { return currentRecord; }
 }
