@@ -51,12 +51,12 @@ public enum PeopleOperator implements Operator<String> {
     CURRENT_TENANT(130, "Logged In Tenant") {
         @Override
         public String getWhereClause(String fieldName, String value) {
-            return getWhereClauseForType(fieldName, true);
+            return getWhereClauseForType(fieldName, false);
         }
 
         @Override
         public FacilioModulePredicate getPredicate(String fieldName, String value) {
-            return getPredicateForType(fieldName, true);
+            return getPredicateForType(fieldName, false);
         }
     },
     CURRENT_CLIENT(131, "Logged In Client") {
@@ -73,12 +73,12 @@ public enum PeopleOperator implements Operator<String> {
     CURRENT_VENDOR(132, "Logged In Vendor") {
         @Override
         public String getWhereClause(String fieldName, String value) {
-            return getWhereClauseForType(fieldName, true);
+            return getWhereClauseForType(fieldName, false);
         }
 
         @Override
         public FacilioModulePredicate getPredicate(String fieldName, String value) {
-            return getPredicateForType(fieldName, true);
+            return getPredicateForType(fieldName, false);
         }
     };
 
@@ -174,7 +174,7 @@ public enum PeopleOperator implements Operator<String> {
                             }
 
                         }
-                        else if (lookupModule.getName().equals(FacilioConstants.ContextNames.VENDOR)) {
+                        else if (lookupModule.getName().equals(FacilioConstants.ContextNames.VENDORS)) {
                             currentId = AccountUtil.getCurrentUser().getPeopleId();
                             List<FacilioField> fields = FieldFactory.getVendorContactFields();
                             GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder().select(fields).table("Vendor_Contacts").andCondition(CriteriaAPI.getCondition("ID","id",String.valueOf(currentId),NumberOperators.EQUALS));

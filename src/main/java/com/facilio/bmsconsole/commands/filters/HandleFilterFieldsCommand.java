@@ -187,7 +187,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
                                     true
                             )));
                     break;
-                case ContextNames.VENDOR:
+                case ContextNames.VENDORS:
                     field.setOperators(Arrays.asList(
                             new FilterOperator(
                                     PeopleOperator.CURRENT_VENDOR,
