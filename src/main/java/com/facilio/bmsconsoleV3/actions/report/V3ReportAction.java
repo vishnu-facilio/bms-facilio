@@ -910,4 +910,16 @@ public class V3ReportAction extends V3Action {
         return SUCCESS;
     }
 
+    public String reportModulesList()throws Exception
+    {
+        FacilioChain chain = TransactionChainFactoryV3.getPivotModulesList();
+        FacilioContext context = chain.getContext();
+        context.put("webTabId", webTabId);
+        chain.execute();
+
+        setData("systemModules", context.get("systemModules"));
+        setData("customModules", context.get("customModules"));
+
+        return SUCCESS;
+    }
 }

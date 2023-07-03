@@ -62,6 +62,9 @@ const pupeteer = require(homedir + '/.npm-global/lib/node_modules/puppeteer');
 		if (info.currentSite) {
 			headers['X-current-site'] = info.currentSite + "";
 		}
+		if (info.switchSiteValue) {
+        	headers['X-Switch-Value'] = info.switchSiteValue + "";
+        }
 		await page.setExtraHTTPHeaders(headers);
 		await page.setRequestInterception(true);
 		page.on('request', async (request) => {

@@ -118,7 +118,9 @@ public class ReportInfo {
 	public EMailTemplate getEmailTemplate() {
 		if (emailTemplate != null) {
 			emailTemplate.setName("Report");
-			emailTemplate.setFrom(EmailClient.getFromEmail("report"));
+			if(emailTemplate.getFromID() == null) {
+				emailTemplate.setFrom(EmailClient.getFromEmail("report"));
+			}
 		}
 		return emailTemplate;
 	}

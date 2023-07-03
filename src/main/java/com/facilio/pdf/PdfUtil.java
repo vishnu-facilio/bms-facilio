@@ -14,7 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsoleV3.util.GlobalScopeUtil;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.util.FacilioUtil;
 import lombok.extern.log4j.Log4j;
@@ -22,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -64,7 +68,9 @@ public class PdfUtil {
 			additionalInfo = new JSONObject();
 		}
 		setAdditionalInfo(additionalInfo);
-		
+		if(additionalInfo.containsKey("switchSiteValue")){
+			url = PdfUtil.addCurrentScopedSiteInUrl(url);
+		}
 
 		String[] command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, getToken(), serverName, htmlContent, additionalInfo.toString()};
 		int exitStatus = CommandExecutor.execute(command);
@@ -156,6 +162,14 @@ public class PdfUtil {
 		additionalInfo.put("orgDomain", AccountUtil.getCurrentOrg().getDomain());
 		if (AccountUtil.getCurrentSiteId() != -1) {
 			additionalInfo.put("currentSite", AccountUtil.getCurrentSiteId());
+		}
+		HttpServletRequest request = ServletActionContext.getRequest();
+		if(request != null ){
+			String switchVariable = request.getHeader("X-Switch-Value");
+			if (StringUtils.isNotEmpty(switchVariable))
+			{
+				additionalInfo.put("switchSiteValue", switchVariable);
+			}
 		}
 	}
 
@@ -292,4 +306,36 @@ public class PdfUtil {
 		return -1;
 	}
 
+	public static String addCurrentScopedSiteInUrl(String url)
+	{
+		try
+		{
+			StringBuilder sb = null;
+			List<SiteContext> sites_list = SpaceAPI.getAllSites();
+			if(sites_list != null && sites_list.size() > 0 && sites_list.size() == 1){
+				sb=new StringBuilder();
+				for(SiteContext site : sites_list){
+					sb.append(site.getName()).append(" , ");
+				}
+			}
+			String site_names = sb.toString();
+			if(site_names != null && site_names.length() > 0) {
+				site_names = site_names.substring(0, site_names.length()-2);
+				URI uri = new URI(url);
+				String str ="";
+				if(uri != null && uri.getQuery() != null){
+					return new StringBuilder(url).append("&scoping_site=").append(site_names).toString();
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			LOGGER.info("Error while decoding current site");
+		}
+		return url;
+	}
+	public static void addScopingSite(String sites, String url)throws Exception{
+		URI uri = new URI(url);
+		String str ="";
+	}
 }

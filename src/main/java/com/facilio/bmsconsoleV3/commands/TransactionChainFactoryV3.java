@@ -23,6 +23,7 @@ import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.*;
 import com.facilio.bmsconsoleV3.commands.people.*;
+import com.facilio.bmsconsoleV3.commands.pivot.GetPivotModulesListCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.*;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestExtraFields;
@@ -3373,4 +3374,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ValidateDuplicateResourcesInsidePlannerCommand());
         return c;
     }
+
+    public static FacilioChain getPivotModulesList(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetPivotModulesListCommand());
+        return c;
+    }
+
+
 }

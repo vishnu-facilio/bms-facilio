@@ -12,6 +12,9 @@
     <request path="/api/v3/dashboard/rule/execute" method="POST">
         <requestbody type="object"></requestbody>
     </request>
+    <request path="/api/v3/dashboard/tab/update" method="POST">
+        <requestbody type="object"></requestbody>
+    </request>
     <request path="/api/v2/dashboard/cards/getCardData">
         <requestbody type="object">
             <property name="cardId" type="number"/>
@@ -406,5 +409,9 @@
             <property name="moduleName" type="string"></property>
         </urlparams>
     </request>
-
+    <request path="/api/v3/report/modules/list" method="GET">
+        <urlparams>
+            <property name="webTabId" type="number" ></property>
+        </urlparams>
+    </request>
 </config>

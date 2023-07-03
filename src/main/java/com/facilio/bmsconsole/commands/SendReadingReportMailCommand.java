@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.context.MailSourceType;
@@ -41,6 +43,12 @@ public class SendReadingReportMailCommand extends FacilioCommand {
 		}
 		EMailTemplate eMailTemplate = (EMailTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
 		eMailTemplate.setFrom(emailFrom);
+		if(eMailTemplate.getFromID() != null && eMailTemplate.getFromID() > 0){
+			String fromEmailAddress = ActionAPI.getEMailAddress(eMailTemplate.getFromID());
+			if(fromEmailAddress != null) {
+				eMailTemplate.setFrom(fromEmailAddress);
+			}
+		}
 		if(eMailTemplate.getWorkflow() != null && eMailTemplate.getWorkflow().getWorkflowString() == null) {
 			eMailTemplate.getWorkflow().setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(eMailTemplate.getWorkflow()));
 		}

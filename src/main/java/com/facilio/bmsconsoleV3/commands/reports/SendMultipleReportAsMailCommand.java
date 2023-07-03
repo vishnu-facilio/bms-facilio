@@ -29,7 +29,9 @@ public class SendMultipleReportAsMailCommand extends FacilioCommand {
         Map<String, String> files_list = (HashMap<String, String>) context.get("files");
         String emailFrom = EmailClient.getFromEmail("report");;
         EMailTemplate eMailTemplate = (EMailTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
-        eMailTemplate.setFrom(emailFrom);
+        if(eMailTemplate.getFrom() == null || eMailTemplate.getFrom().equals("")){
+            eMailTemplate.setFrom(emailFrom);
+        }
         if(eMailTemplate.getWorkflow() != null && eMailTemplate.getWorkflow().getWorkflowString() == null) {
             eMailTemplate.getWorkflow().setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(eMailTemplate.getWorkflow()));
         }
