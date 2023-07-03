@@ -49,6 +49,10 @@ public class LoctionHistoryModule extends SignUpData {
         FacilioField location = FieldFactory.getDefaultField("location", "Location", "LOCATION_JSON", FieldType.STRING);
         fields.add(location);
 
+        fields.add(FieldFactory.getDefaultField("batteryInfo","Battery Info","BATTERY_INFO",FieldType.DECIMAL));
+        fields.add(FieldFactory.getDefaultField("signalInfo","Signal Info","SIGNAL_INFO",FieldType.DECIMAL));
+
+
         module.setFields(fields);
         return module;
 

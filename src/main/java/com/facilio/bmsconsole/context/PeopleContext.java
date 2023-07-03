@@ -272,4 +272,7 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private String currentLocation;
 	private Long lastSyncTime;
 	private Double currentFreeCapacity;
+	private boolean trackGeoLocation;
+	private Double batteryInfo;
+	private Double signalInfo;
 }

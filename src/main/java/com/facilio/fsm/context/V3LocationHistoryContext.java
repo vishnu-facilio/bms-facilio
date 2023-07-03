@@ -27,6 +27,7 @@ public class V3LocationHistoryContext extends V3Context {
         }
     }
     private JSONObject location;
-
+    private Double batteryInfo;
+    private Double signalInfo;
 
 }

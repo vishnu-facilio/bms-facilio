@@ -148,6 +148,9 @@ public class V3PeopleContext extends V3Context {
     private Long lastSyncTime;
     private Double currentFreeCapacity;
     private TerritoryContext territory;
+    private boolean trackGeoLocation;
+    private Double batteryInfo;
+    private Double signalInfo;
     private PeopleType peopleType;
     public Integer getPeopleType() {
         if (peopleType != null) {
