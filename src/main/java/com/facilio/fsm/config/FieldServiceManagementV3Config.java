@@ -56,8 +56,7 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getServiceOrder() {
         return () -> new V3Config(ServiceOrderContext.class, new ModuleCustomFieldCount15())
                 .create()
-                .afterSave(new ConstructAddCustomActivityCommandV3(),
-                        new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
+                .afterSave(new FsmTransactionChainFactoryV3().afterSOCreateChain())
                 .update()
                 .afterSave(new ConstructUpdateCustomActivityCommandV3(),
                         new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))

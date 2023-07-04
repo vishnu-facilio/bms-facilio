@@ -20,9 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class updateServiceOrderStatus extends FacilioCommand {
+public class UpdateServiceOrderStatus extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        //this is handled for only one service appointment
+        //if multiple service appointments needs to be handled then we should set the serviceAppointmentId as a list of string in previous command
         String serviceAppointmentId = (String) context.get("serviceAppointmentId");
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule serviceAppointmentModule = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
@@ -30,6 +32,7 @@ public class updateServiceOrderStatus extends FacilioCommand {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(serviceAppointmentFields);
 
         if(StringUtils.isNotEmpty(serviceAppointmentId)){
+            //fetching the service appointment details based on id set in context in previous command
             SelectRecordsBuilder<ServiceAppointmentContext> selectRecordsBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>();
             selectRecordsBuilder.select(serviceAppointmentFields)
                     .module(serviceAppointmentModule)
@@ -38,7 +41,7 @@ public class updateServiceOrderStatus extends FacilioCommand {
             ServiceAppointmentContext serviceAppointment = selectRecordsBuilder.fetchFirst();
             ServiceOrderContext serviceOrderInfo= serviceAppointment.getServiceOrder();
 
-
+            //fetching all the service appointments which are mapped to the particular service order
             SelectRecordsBuilder<ServiceAppointmentContext> selectAppointmentsBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>();
             selectAppointmentsBuilder.select(serviceAppointmentFields)
                     .module(serviceAppointmentModule)
@@ -48,12 +51,14 @@ public class updateServiceOrderStatus extends FacilioCommand {
             Long count = 0L;
             if(CollectionUtils.isNotEmpty(selectAppointments)){
                 FacilioStatus closedStatus = TicketAPI.getStatus(serviceAppointmentModule,"completed");
+                //looping and verifying whether all the service appointments are in completed status
                 for(ServiceAppointmentContext sa : selectAppointments){
                     if(sa.getModuleState() == closedStatus.getModuleState()){
                         count++;
                     }
                 }
                 if(selectAppointments.size() == count){
+                    //if all service appointments are closed we are updating the column isAllSAClosed against the Service Order
                     FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
                     List<FacilioField> serviceOrderFields = modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
                     Map<String, FacilioField> soFieldMap = FieldFactory.getAsMap(serviceOrderFields);
