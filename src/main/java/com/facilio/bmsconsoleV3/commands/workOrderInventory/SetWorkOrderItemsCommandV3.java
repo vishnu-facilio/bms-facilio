@@ -368,7 +368,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
     }
 
     private void updateAsset(V3AssetContext asset) throws Exception {
-        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.ASSET, asset.getId(), FieldUtil.getAsJSON(asset), null, null, null, null, null,null,null, null);
+        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.ASSET, asset.getId(), FieldUtil.getAsJSON(asset), null, null, null, null, null,null,null, null,null);
     }
 
     public static V3AssetContext getAssetFromId(Long id)

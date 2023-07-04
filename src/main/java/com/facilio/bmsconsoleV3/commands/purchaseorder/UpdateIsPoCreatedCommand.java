@@ -91,7 +91,7 @@ public class UpdateIsPoCreatedCommand extends FacilioCommand {
                     Map<String, Object> poCreated = new HashMap<>();
                     poCreated.put("isPoCreated",true);
                     poCreated.put("purchaseOrderId", po.getId());
-                    V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.VENDOR_QUOTES, po.getVendorQuote().getId(), patchObj, FieldUtil.getAsJSON(poCreated) , null, null, null, null,null, null, null);
+                    V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.VENDOR_QUOTES, po.getVendorQuote().getId(), patchObj, FieldUtil.getAsJSON(poCreated) , null, null, null, null,null, null, null,null);
 
                 }
             }

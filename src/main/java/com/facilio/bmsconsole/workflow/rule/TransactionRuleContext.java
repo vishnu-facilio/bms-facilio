@@ -181,7 +181,7 @@ public class TransactionRuleContext extends WorkflowRuleContext{
                     V3Util.createRecord(module, data, bodyParam, null);
                 } else {//update
                     if (transactionRecord != null) {
-                        V3Util.processAndUpdateSingleRecord(creationModuleName, transactionRecord.getId(), data, bodyParam, null, null, null, null, null, null, null);
+                        V3Util.processAndUpdateSingleRecord(creationModuleName, transactionRecord.getId(), data, bodyParam, null, null, null, null, null, null, null,null);
                     }else{
                         V3Util.createRecord(module, data, bodyParam, null);
                     }

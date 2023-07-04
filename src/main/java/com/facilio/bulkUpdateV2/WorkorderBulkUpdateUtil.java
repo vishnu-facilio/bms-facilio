@@ -36,7 +36,7 @@ public class WorkorderBulkUpdateUtil extends V3Util{
                                                   Long stateTransitionId, Long customButtonId, Long approvalTransitionId, String qrValue, String locationValue,Map<String, Double>currentLocation) throws Exception{
         List<Map<String, Object>> rawRecords = (List<Map<String, Object>>) dataMap.get(moduleName);
         List<Long> ids = new ArrayList<>();
-        FacilioContext summaryContext = V3Util.getSummary(moduleName, id,null,true);
+        FacilioContext summaryContext = V3Util.getSummary(moduleName, id,null,true,null);
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = Constants.getRecordListFromContext(summaryContext, moduleName);
 
         FacilioModule module = ChainUtil.getModule(moduleName);

@@ -24,7 +24,7 @@ public class ReservationSummaryCommandV3 extends FacilioCommand {
         queryParams.put("reserveValidation", Collections.singletonList(true));
         List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 
-        FacilioContext workOrderPlannedItemsContext = V3Util.getSummary(moduleName,recordIds,queryParams,false);
+        FacilioContext workOrderPlannedItemsContext = V3Util.getSummary(moduleName,recordIds,queryParams,false,null);
         context.put(FacilioConstants.ContextNames.WO_PLANNED_ITEMS, ((Map<String, List>) workOrderPlannedItemsContext.get("recordMap")).get("workOrderPlannedItems"));
         return false;
     }

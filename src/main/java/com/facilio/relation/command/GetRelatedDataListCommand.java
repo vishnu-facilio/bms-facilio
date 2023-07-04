@@ -60,7 +60,7 @@ public class GetRelatedDataListCommand extends FacilioCommand {
 
             if (CollectionUtils.isNotEmpty(resultData)) {
                 Map<String, Object> moduleDataObj = (Map<String, Object>) resultData.get(0).get(relationPosition.getFieldName());
-                FacilioContext summaryContext = V3Util.getSummary(moduleName, Collections.singletonList((long) moduleDataObj.get("id")), queryParams, fetchOnlyViewColumnFields);
+                FacilioContext summaryContext = V3Util.getSummary(moduleName, Collections.singletonList((long) moduleDataObj.get("id")), queryParams, fetchOnlyViewColumnFields,null);
 
                 Map<String, List> recordMap = (Map<String, List>) summaryContext.get(Constants.RECORD_MAP);
                 List list = recordMap.get(moduleName);

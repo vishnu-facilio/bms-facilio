@@ -54,7 +54,7 @@ public class OutgoingMailAPI {
 
     public static void updateV3(String moduleName, V3Context record) throws Exception {
         Map<String, Object> row = FieldUtil.getAsJSON(record);
-        V3Util.processAndUpdateSingleRecord(moduleName, record.getId(), row, null, null, null, null, null,null, null, null);
+        V3Util.processAndUpdateSingleRecord(moduleName, record.getId(), row, null, null, null, null, null,null, null, null,null);
     }
 
     public static long updateRecord(long id, String moduleName, Map<String, Object> row) throws Exception {

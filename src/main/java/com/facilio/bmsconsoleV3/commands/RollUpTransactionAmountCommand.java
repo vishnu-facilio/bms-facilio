@@ -228,7 +228,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
             FacilioContext summaryContext = V3Util.getSummary(rollUpModName, ids);
             List<ModuleBaseWithCustomFields> oldRecord = Constants.getRecordListFromContext(summaryContext, rollUpModName);
             V3Util.processAndUpdateBulkRecords(module, oldRecord, mapList, null, null, null,
-                    null, null, null, null, null, false,false);
+                    null, null, null, null, null, false,false,null);
         }
     }
 }

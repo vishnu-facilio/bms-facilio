@@ -61,7 +61,7 @@ public class UpdateWorkorderTotalCostCommandV3 extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.RECORD_LIST, java.util.Collections.singletonList(workorder));
                 context.put(FacilioConstants.ContextNames.WO_TOTAL_COST, totalcost);
 
-                V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.WORK_ORDER, parentId, FieldUtil.getAsJSON(workorder), null, null, null, null, null,null, null, null);
+                V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.WORK_ORDER, parentId, FieldUtil.getAsJSON(workorder), null, null, null, null, null,null, null, null,null);
 
             }
             else{

@@ -178,12 +178,12 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         for (Map<String, Object> record: rawRecords) {
             ids.add((long) record.get("id"));
         }
-        FacilioContext summaryContext = V3Util.getSummary(moduleName, ids,null,true);
+        FacilioContext summaryContext = V3Util.getSummary(moduleName, ids,null,true,null);
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = Constants.getRecordListFromContext(summaryContext, moduleName);
 
         FacilioModule module = ChainUtil.getModule(moduleName);
         FacilioContext context = V3Util.processAndUpdateBulkRecords(module, moduleBaseWithCustomFields, rawRecords, bodyParams, getQueryParameters(), getStateTransitionId(),
-                getCustomButtonId(), getApprovalTransitionId(), getQrValue(), getLocationValue(),getCurrentLocation(), false,false);
+                getCustomButtonId(), getApprovalTransitionId(), getQrValue(), getLocationValue(),getCurrentLocation(), false,false,null);
 
         Integer count = (Integer) context.get(Constants.ROWS_UPDATED);
 
@@ -379,7 +379,7 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         String moduleName = getModuleName();
         JSONObject data = getData();
         List<Long> ids = (List<Long>) data.get(moduleName);
-        FacilioContext summaryContext = V3Util.getSummary(moduleName, ids, null, true);
+        FacilioContext summaryContext = V3Util.getSummary(moduleName, ids, null, true,null);
 
         List<ModuleBaseWithCustomFields> records = Constants.getRecordListFromContext(summaryContext, moduleName);
         JSONObject result = new JSONObject();
@@ -396,7 +396,8 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         }
         removeRestrictedFields(data, this.getModuleName(), true);
 
-        JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), getQueryParameters(), this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(),this.getQrValue(),this.getLocationValue(), this.getCurrentLocation());
+
+        JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), getQueryParameters(), this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(),this.getQrValue(),this.getLocationValue(), this.getCurrentLocation(),null);
 
         addAuditLog(Collections.singletonList((JSONObject)result.get(getModuleName())), getModuleName(), "Record {%s} of module %s has been updated",
                     AuditLogHandler.ActionType.UPDATE, true);

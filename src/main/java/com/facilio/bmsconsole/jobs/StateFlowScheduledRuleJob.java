@@ -35,7 +35,7 @@ public class StateFlowScheduledRuleJob extends FacilioJob {
 				JSONObject bodyParam = new JSONObject();
 				bodyParam.put(FacilioConstants.ContextNames.SKIP_APPROVAL,true);
 				V3Util.processAndUpdateSingleRecord(stateTransition.getModuleName(), recordId, recordMap , bodyParam, null ,stateTransition.getId(), null,
-						null,null, null,null);
+						null,null, null,null,null);
 
 			}
 		} catch (Exception e) {

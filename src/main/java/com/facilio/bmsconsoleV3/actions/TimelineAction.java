@@ -22,6 +22,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.timeline.context.TimelineRequest;
 import com.facilio.v3.RESTAPIHandler;
+import com.facilio.v3.context.ConfigParams;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.TimelineViewUtil;
@@ -167,7 +168,7 @@ public class TimelineAction extends RESTAPIHandler {
 		}
 		removeRestrictedFields(data, this.getModuleName(), true);
 
-		JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.getQueryParameters(), this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(), this.getQrValue(), this.getLocationValue(), this.getCurrentLocation());
+		JSONObject result = V3Util.processAndUpdateSingleRecord(this.getModuleName(), this.getId(), data, this.getParams(), this.getQueryParameters(), this.getStateTransitionId(), this.getCustomButtonId(), this.getApprovalTransitionId(), this.getQrValue(), this.getLocationValue(), this.getCurrentLocation(),null);
 
 		String message = "Record {%s} of module %s has been "
 				+ (validationContext.containsKey(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE) ? validationContext.get(FacilioConstants.ContextNames.TIMELINE_PATCHTYPE): "updated")

@@ -40,6 +40,7 @@ public class Constants {
     public static final String ROWS_UPDATED = "rowsUpdated";
     public static final String PATCH_FIELDS = "patchFields";
     public static final String QUERY_PARAMS = "queryParams";
+    public static final String CONFIG_PARAMS = "configParams";
     public static final String STATE_FLOWS = "stateFlows";
     public static final String CUSTOM_BUTTONS = "customButtons";
     public static final String CUSTOM_BUTTONS_RECORDS = "customButtonsforRecords";
