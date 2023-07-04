@@ -3,6 +3,7 @@ package com.facilio.backgroundactivity.util;
 import com.azure.core.annotation.Delete;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.backgroundactivity.context.BackgroundActivity;
+import com.facilio.backgroundactivity.context.BackgroundActivityLiveMessageContext;
 import com.facilio.backgroundactivity.factory.BackgroundActivityChainFactory;
 import com.facilio.backgroundactivity.factory.Constants;
 import com.facilio.beans.ModuleBean;
@@ -23,6 +24,7 @@ import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.endpoint.SessionManager;
 import com.facilio.wmsv2.endpoint.WmsBroadcaster;
 import com.facilio.wmsv2.message.Message;
+import com.facilio.wmsv2.util.WmsUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,10 +49,75 @@ public class BackgroundActivityAPI {
         if (orgId > 0L) {
             JSONObject json = FieldUtil.getAsJSON(backgroundActivity);
             WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-                    .setTopic("__background_activity__/"+ backgroundActivity.getId() +"/process")
+                    .setTopic("__background_activity__/" + backgroundActivity.getId() + "/process")
                     .setOrgId(orgId)
                     .setContent(json)
             );
+        }
+    }
+
+    public static void refreshActivity(long parentActivity) throws Exception {
+        if(isActivityLicenseEnabled()) {
+            BackgroundActivityLiveMessageContext liveMessageContext = new BackgroundActivityLiveMessageContext();
+            liveMessageContext.setActivityId(parentActivity);
+            liveMessageContext.setRefresh(true);
+            sendLiveMessage(liveMessageContext);
+        }
+    }
+    public static void sendLiveMessage(BackgroundActivity backgroundActivity, String message) throws Exception {
+        if(isActivityLicenseEnabled()) {
+            BackgroundActivityLiveMessageContext liveMessageContext = new BackgroundActivityLiveMessageContext();
+            liveMessageContext.setActivityId(backgroundActivity.getId());
+            liveMessageContext.setMessage(message);
+            liveMessageContext.setPercentage(backgroundActivity.getPercentage());
+            liveMessageContext.setActivity(backgroundActivity);
+            sendLiveMessage(liveMessageContext);
+        }
+    }
+    public static void sendLiveMessage(BackgroundActivityInterface backgroundActivity, String message,Long totalRecords,Long processedRecords) throws Exception {
+        if(isActivityLicenseEnabled()) {
+            BackgroundActivityLiveMessageContext liveMessageContext = new BackgroundActivityLiveMessageContext();
+            liveMessageContext.setActivityId(backgroundActivity.getActivityId());
+            liveMessageContext.setMessage(message);
+            liveMessageContext.setTotalRecords(totalRecords);
+            liveMessageContext.setProcessedRecords(processedRecords);
+            liveMessageContext.setPercentage(null);
+            liveMessageContext.setActivity(null);
+            sendLiveMessage(liveMessageContext);
+        }
+    }
+
+    //note that live messages won't be stored anywhere
+    private static void sendLiveMessage(BackgroundActivityLiveMessageContext liveMessageContext) throws Exception {
+        if (liveMessageContext == null) {
+            LOGGER.error("Live message object is null");
+            return;
+        }
+        long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
+        if (orgId > 0L) {
+            BackgroundActivity activity = liveMessageContext.getActivity();
+            if(activity == null) {
+                activity = BackgroundActivityAPI.getBackgroundActivity(liveMessageContext.getActivityId());
+            }
+            boolean sendMessage = false;
+            if(liveMessageContext.isRefresh()) {
+                sendMessage = true;
+                liveMessageContext.setActivityList(fetchAllChildActivities(liveMessageContext.getActivityId()));
+            }
+            else if(liveMessageContext.getPercentage() != null && liveMessageContext.getPercentage() >= activity.getPercentage()) {
+                sendMessage = true;
+                activity.setPercentage(liveMessageContext.getPercentage());
+                activity.setStatusColorCode(BackgroundActivityUtil.getStatusColorCode(activity.getRecordType(), activity.getPercentage()));
+                activity.setMessage(liveMessageContext.getMessage());
+                liveMessageContext.setActivity(activity);
+            }
+            if(sendMessage) {
+                JSONObject json = FieldUtil.getAsJSON(liveMessageContext);
+                WmsBroadcaster.getBroadcaster().sendMessage(new Message()
+                                .setTopic("__background__activity__live__/" + liveMessageContext.getActivityId() + "/send")
+                                .setOrgId(orgId)
+                                .setContent(json));
+            }
         }
     }
 
@@ -70,6 +137,18 @@ public class BackgroundActivityAPI {
         return null;
     }
 
+    public static List<BackgroundActivity> fetchAllChildActivities(long parentActivityId) throws Exception {
+        if(isActivityLicenseEnabled()) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            SelectRecordsBuilder builder = new SelectRecordsBuilder()
+                    .moduleName(Constants.BACKGROUND_ACTIVITY_MODULE)
+                    .beanClass(BackgroundActivity.class)
+                    .select(modBean.getAllFields(Constants.BACKGROUND_ACTIVITY_MODULE))
+                    .andCondition(CriteriaAPI.getCondition("PARENT_ACTIVITY", "parentActivity",String.valueOf(parentActivityId), NumberOperators.EQUALS));
+            return builder.get();
+        }
+        return null;
+    }
     public static Long getChildActivity(Long parentActivity, Long recordId,String recordType) throws Exception {
         if(isActivityLicenseEnabled() && recordId != null && StringUtils.isNotEmpty(recordType)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -152,41 +231,12 @@ public class BackgroundActivityAPI {
         }
         return BackgroundActivityUtil.getStatus(activity,percentage);
     }
-    private static boolean anyNeighbourStarted(Long parentActivityId) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(Constants.BACKGROUND_ACTIVITY_MODULE));
-
-        Criteria criteriaNeighbour = new Criteria();
-        criteriaNeighbour.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("parentActivity"), String.valueOf(parentActivityId), NumberOperators.EQUALS));
-        criteriaNeighbour.addOrCondition(CriteriaAPI.getIdCondition(String.valueOf(parentActivityId),modBean.getModule(Constants.BACKGROUND_ACTIVITY_MODULE)));
-
-        Criteria criteriaParent = new Criteria();
-        criteriaParent.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("percentage"), String.valueOf(BackgroundActivityAPI.INITIAL_PERCENTAGE),NumberOperators.GREATER_THAN));
-
-        Criteria criteria = new Criteria();
-        criteria.andCriteria(criteriaNeighbour);
-        criteria.andCriteria(criteriaParent);
-
-        FacilioField aggregateField = FieldFactory.getIdField(modBean.getModule(Constants.BACKGROUND_ACTIVITY_MODULE));
-        List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(Constants.BACKGROUND_ACTIVITY_MODULE, null, BackgroundActivity.class,criteria, BmsAggregateOperators.CommonAggregateOperator.COUNT, aggregateField, null);
-        if(props != null) {
-            Long count = (Long) props.get(0).get(aggregateField.getName());
-            if(count != null && count > 0) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private static boolean isValidChildActivity(Long parentActivityId) throws Exception {
         if (parentActivityId == null) {
             LOGGER.error("Parent Activity Id is null");
             return false;
         }
-//        if(anyNeighbourStarted(parentActivityId)) {
-//            LOGGER.error("Some neighbour activity is already started");
-//            return false;
-//        }
         return true;
     }
 
@@ -212,6 +262,7 @@ public class BackgroundActivityAPI {
             context.put(Constants.MESSAGE,message);
             context.put(Constants.PARENT_ACTIVITY_ID,parentActivityId);
             chain.execute();
+            BackgroundActivityAPI.refreshActivity(parentActivityId);
             return (Long) context.get(Constants.ACTIVITY_ID);
         } catch (Exception e) {
             LOGGER.error("Error while adding background activity in new transaction",e);
@@ -249,8 +300,7 @@ public class BackgroundActivityAPI {
     }
 
     public static BackgroundActivity getBackgroundActivity(Long activityId) throws Exception {
-        BackgroundActivity backgroundActivity = V3RecordAPI.getRecord(Constants.BACKGROUND_ACTIVITY_MODULE,activityId,BackgroundActivity.class);
-        return backgroundActivity;
+        return NewTransactionService.newTransactionWithReturn(() -> V3RecordAPI.getRecord(Constants.BACKGROUND_ACTIVITY_MODULE,activityId,BackgroundActivity.class));
     }
 
     public static void updateBackgroundActivityMessage(Long activityId, String message) throws Exception {
@@ -300,5 +350,6 @@ public class BackgroundActivityAPI {
             deleteRecordBuilder.andCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(ids,","), NumberOperators.EQUALS));
             deleteRecordBuilder.delete();
         }
+        BackgroundActivityAPI.refreshActivity(parentId);
     }
 }

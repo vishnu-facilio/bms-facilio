@@ -14,6 +14,7 @@ groups:
       - { topic: __ping__, handler: com.facilio.wmsv2.handler.PingHandler, deliverTo: SESSION, isLiveMessage: true }
       - { topic: __push__, handler: com.facilio.wmsv2.handler.PushHandler, isLiveMessage: true }
       - { topic: [ __subscribe__, __unsubscribe__ ], handler: com.facilio.wmsv2.handler.SubscribeHandler, deliverTo: SESSION, isLiveMessage: true }
+      - { topic: [ __background__activity__live__/+/send ], handler: com.facilio.wmsv2.handler.BackgroundActivityLiveHandler, deliverTo: ALL, isLiveMessage: true }
 
   - group: default-single
     sendToAll: false

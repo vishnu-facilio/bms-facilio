@@ -117,7 +117,6 @@ public class ParseAndLogMultiImportDataJob extends FacilioJob {
                 if (module == null) {   //skip if module not mapped for any sheet
                     continue;
                 }
-
                 importSheet.setStatus(ImportDataStatus.PARSING_STARTED);
                 MultiImportApi.updateImportSheetStaus(importSheet);
 
@@ -128,6 +127,7 @@ public class ParseAndLogMultiImportDataJob extends FacilioJob {
                 parseContext.put(FacilioConstants.ContextNames.IMPORT_DATA_DETAILS,importDataDetails);
                 parseContext.put(FacilioConstants.ContextNames.IMPORT_FILE_READERS_MAP,importFileIdVsImportReaderMap);
                 parseContext.put(FacilioConstants.ContextNames.PROCESSED_ROW_COUNT,processedRowCount);
+                parseContext.put(FacilioConstants.ContextNames.BACKGROUND_ACTIVITY,childActivityService);
                 chain.execute();
 
                 updateSheetDetails(importSheet);

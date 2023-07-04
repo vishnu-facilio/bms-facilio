@@ -128,7 +128,7 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
         }
 
         LOGGER.info("Split size for sheet id:" + importSheet.getId() + " is " + splitSize);
-
+        childService.updateActivity(10,"0 / " + totalRowCount + " records imported");
         for (int i = 1; i <= splitSize; i++) {
 
             int currentRecordsInChunk = BATCH_SIZE;
@@ -161,7 +161,7 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             LOGGER.info(i + "/" + splitSize + " batch completed------completed time:"+System.currentTimeMillis());
             updateSheetDetails(importSheet, context);
             if(childService != null) {
-                childService.updateActivity((int) (((float) i / (float) splitSize) * 100), "Import in progress");
+                childService.updateActivity((int) (((float) i / (float) splitSize) * 100), (i * BATCH_SIZE) + " / " + totalRowCount + " records imported");
             }
         }
         LOGGER.info("currently processed records count :" + remainingRecordsToImport);
@@ -186,9 +186,6 @@ public class MultiImportDataProcessCommand extends FacilioCommand  implements Po
             importDataDetails.setStatus(ImportDataStatus.IMPORT_STARTED);
             importDataDetails.setImportStartTime(DateTimeUtil.getCurrenTime());
             MultiImportApi.updateImportDataDetails(importDataDetails);
-            if(backgroundActivityService != null) {
-                backgroundActivityService.updateActivity(1,"Import Started");
-            }
             LOGGER.info("MultiImport Started for multiImportId--- :" + importDataDetails.getId());
         } else if (totalImportRecordsCount == processedRecordsCount || processedRecordsCount==MAXIMUM_RECORDS_PER_THREAD) {
             importDataDetails.setStatus(ImportDataStatus.IMPORT_COMPLETED);

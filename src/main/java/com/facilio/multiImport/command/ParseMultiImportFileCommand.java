@@ -1,6 +1,8 @@
 package com.facilio.multiImport.command;
 
 
+import com.facilio.backgroundactivity.util.BackgroundActivityAPI;
+import com.facilio.backgroundactivity.util.ChildActivityService;
 import com.facilio.bmsconsole.imports.annotations.RowFunction;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.command.FacilioCommand;
@@ -52,6 +54,7 @@ public class ParseMultiImportFileCommand extends FacilioCommand {
         AbstractImportFileReader fileReader = importFileIdVsImportReaderMap.get(importFileId);
         AbstractImportSheetReader sheetReader = fileReader.getSheetReaderAt(sheetIndex);
         RowFunction rowFunction = (RowFunction) context.get(ImportAPI.ImportProcessConstants.ROW_FUNCTION);
+        ChildActivityService activityService = (ChildActivityService) context.get(FacilioConstants.ContextNames.BACKGROUND_ACTIVITY);
 
         long processedRowCount = 0;                    //count parse error records count only
         boolean heading = true;
@@ -112,6 +115,7 @@ public class ParseMultiImportFileCommand extends FacilioCommand {
                 sendImportProgressToClient(global_ProcessedRowCount);
             }
 
+            BackgroundActivityAPI.sendLiveMessage(activityService,"Processing row",Long.valueOf(importSheet.getRowCount()),Long.valueOf(rowNo));
         }
 
         importSheet.setProcessedRowCount(processedRowCount);

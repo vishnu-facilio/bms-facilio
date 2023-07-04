@@ -213,6 +213,7 @@ public class WebTabContext implements Serializable {
         KPI ("Kpi", false,TabType.NORMAL,null), // 6
         DASHBOARD ("Dashboard", false,TabType.NORMAL,new DashboardHandler()), // 7
         CUSTOM ("Custom",false, TabType.NORMAL,new CustomTypehandler()), // 8
+
         APPS ("Apps",false,TabType.NORMAL,null), // 9
         SETTINGS("Settings",true,TabType.NORMAL,null), // 10
         TIMELINE("Timeline", false, TabType.NORMAL,null), // 11
@@ -303,7 +304,7 @@ public class WebTabContext implements Serializable {
         ODATA_CONFIGURATION("OData Configuration",false,TabType.SETUP,new SetupTypeHandler()), //95
         KPI_EXEC_LOGS("KPI Execution Logs", false, TabType.SETUP, new SetupTypeHandler()), // 96
         RULE_LOGS("Rule Logs", false, TabType.SETUP, new SetupTypeHandler()),// 97
-        INBOUND_MAIL_CONVERSION("Inbound Mail Conversion",false,TabType.SETUP,new SetupTypeHandler()); //98
+        INBOUND_MAIL_CONVERSION("Inbound Mail Conversion",false,TabType.SETUP,new SetupTypeHandler());
         public void setName(String name) {
             this.name = name;
         }

@@ -40,7 +40,7 @@ public class WmsApi
 	private static String kinesisNotificationTopic = "notifications";
 	
 	private static String WEBSOCKET_URL = "ws://localhost:8080/websocket";
-	private static String NEW_WEBSOCKET_URL = "ws://localhost:8080/websocket/connect";
+	private static String NEW_WEBSOCKET_URL = "ws://localhost:8080";
 	
 	private static Map<String, FacilioClientEndpoint> FACILIO_CLIENT_ENDPOINTS = new HashMap<>();
 	private static FacilioProducer producer;

@@ -11,6 +11,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.wmsv2.constants.Topics;
@@ -90,7 +91,14 @@ public class BackgroundActivityRollupTopicHandler extends BaseHandler {
                 List<FacilioField> fields = Arrays.asList(fieldsMap.get("percentage"),fieldsMap.get("message"),fieldsMap.get("systemStatus"));
                 updateRecordBuilder.fields(fields);
                 updateRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module),String.valueOf(activityId), NumberOperators.EQUALS));
-                updateRecordBuilder.update(updateActivity);
+                updateActivity.setId(activityId);
+                BackgroundActivity liveMessageActivity = FieldUtil.cloneBean(updateActivity,BackgroundActivity.class);
+                liveMessageActivity.setName(currentActivity.getName());
+                liveMessageActivity.setRecordType(currentActivity.getRecordType());
+                liveMessageActivity.setStartTime(currentActivity.getStartTime());
+                liveMessageActivity.setCompletedTime(currentActivity.getCompletedTime());
+                BackgroundActivityAPI.sendLiveMessage(liveMessageActivity,updateActivity.getMessage());
+                updateRecordBuilder.update(liveMessageActivity);
                 if(currentActivity != null && currentActivity.getParentActivity() != null) {
                     BackgroundActivityAPI.rollupActivity(currentActivity.getParentActivity());
                 }

@@ -54,6 +54,11 @@ public class BackgroundActivityTopicHandler extends BaseHandler {
                 backgroundActivity.setPercentage(-2);
             }
             BackgroundActivityAPI.updateBackgroundActivity(backgroundActivity);
+            BackgroundActivity liveMessageActivity = FieldUtil.cloneBean(backgroundActivity, BackgroundActivity.class);
+            liveMessageActivity.setName(existingBackgroundActivity.getName());
+            liveMessageActivity.setRecordType(existingBackgroundActivity.getRecordType());
+            liveMessageActivity.setStartTime(existingBackgroundActivity.getStartTime());
+            BackgroundActivityAPI.sendLiveMessage(liveMessageActivity,liveMessageActivity.getMessage());
             if(existingBackgroundActivity != null && existingBackgroundActivity.getParentActivity() != null) {
                 BackgroundActivityAPI.rollupActivity(existingBackgroundActivity.getParentActivity());
             }

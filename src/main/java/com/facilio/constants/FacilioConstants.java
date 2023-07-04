@@ -3170,6 +3170,8 @@ public class FacilioConstants {
 		public static final String FETCH_ORIGINAL = "fetchOriginal";
 
 		public static final List<String> MONTH_LIST = Arrays.asList("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC");
+
+		public static final String BACKGROUND_ACTIVITY = "backgroundActivity";
 	}
 
 
