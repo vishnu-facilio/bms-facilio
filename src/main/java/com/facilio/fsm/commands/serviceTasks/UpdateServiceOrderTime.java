@@ -69,6 +69,7 @@ public class UpdateServiceOrderTime extends FacilioCommand {
 
                     ServiceOrderContext so = new ServiceOrderContext();
                     List<FacilioField> updateFields = new ArrayList<>();
+                    so.setId(serviceOrderId);
                     //for initiated state we update the actual start time
                     if(initOrder != null && initOrder){
                         so.setActualStartTime(System.currentTimeMillis());
