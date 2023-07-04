@@ -538,6 +538,7 @@ classes:
   - com.facilio.fsm.signup.ServiceOrderActivityModule
   - com.facilio.fsm.signup.TimeOffModule
   - com.facilio.fsm.signup.ServiceTaskModule
+  - com.facilio.fsm.signup.ServiceTaskAttachmentsModule
   - com.facilio.fsm.signup.ServiceAppointmentModule
 
   #Adding Location History Module

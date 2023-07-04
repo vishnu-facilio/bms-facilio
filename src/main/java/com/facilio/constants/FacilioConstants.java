@@ -2870,6 +2870,7 @@ public class FacilioConstants {
 			public static final String SERVICE_ORDER = "serviceOrder";
 			public static final String SERVICE_ORDER_ACTIVITY = "serviceOrderActivity";
 			public static final String SERVICE_TASK = "serviceTask";
+			public static final String SERVICE_TASK_ATTACHMENTS = "serviceTaskAttachments";
 			public static final String SERVICE_TASK_SKILLS = "serviceTaskSkills";
 		}
 		// etisalat changes

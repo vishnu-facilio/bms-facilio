@@ -19,6 +19,7 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new updateServiceAppointment());
         c.addCommand(new updateServiceOrderStatus());
+        c.addCommand(new ServiceTaskDurationUpdateCommandV3());
         return c;
     }
 

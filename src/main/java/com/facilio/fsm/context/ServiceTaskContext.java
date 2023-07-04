@@ -18,6 +18,7 @@ public class ServiceTaskContext extends V3Context {
     private Long actualStartTime;
     private Long actualEndTime;
     private ServiceTaskStatus status;
+    private String remarks;
     private ServiceOrderContext serviceOrder;
 
     public String getName() {
@@ -144,5 +145,13 @@ public class ServiceTaskContext extends V3Context {
 
     public void setServiceOrder(ServiceOrderContext serviceOrder) {
         this.serviceOrder = serviceOrder;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }
