@@ -908,6 +908,7 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getAddItemChain())
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getBeforeFetchItemListChain())
+                .beforeCount(new IncludeServingSiteFilterCommandV3())
                 .summary()
                 .beforeFetch(new LoadItemLookUpCommandV3())
                 .build();
@@ -921,6 +922,7 @@ public class APIv3Config {
                 .afterSave(new UpdateItemTransactionsCommandV3())
                 .update()
                 .list()
+                .beforeCount(new FilterItemTransactionsCommandV3())
                 .beforeFetch(TransactionChainFactoryV3.getBeforeFetchItemTransactionsChain())
                 .summary()
                 .build();
@@ -959,6 +961,7 @@ public class APIv3Config {
                 .update()
                 .afterSave(new StockOrUpdateToolsCommandV3())
                 .list()
+                .beforeCount(new IncludeServingSiteFilterCommandV3())
                 .beforeFetch(TransactionChainFactoryV3.getBeforeFetchToolListChain())
                 .summary()
                 .beforeFetch(new LoadToolLookupCommandV3())
