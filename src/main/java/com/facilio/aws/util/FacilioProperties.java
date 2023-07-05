@@ -708,6 +708,10 @@ public class FacilioProperties {
         return PROPERTIES.getProperty(name);
     }
 
+    public static String getConfig(String name, String defaultValue) {
+        return PROPERTIES.getProperty(name, defaultValue);
+    }
+
     public static String getDomain() {
         return domain;
     }

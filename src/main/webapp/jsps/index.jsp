@@ -125,15 +125,18 @@
         	faviconPath = "/statics/moro-fav.png";
             title = "Moro";
         }
-        
+
+        JSONObject brandConfig = com.facilio.accounts.util.AccountUtil.getBrandingJson(request.getServerName());
 
         Map<String, String> placeHolderParams = new HashMap<>();
+        placeHolderParams.put("brandConfig", brandConfig.toString());
         placeHolderParams.put("domainInfo", domainInfo.toString());
         placeHolderParams.put("rebrandInfo", rebrandInfo.toString());
         placeHolderParams.put("staticURL", staticUrl);
         placeHolderParams.put("webpackPublicPath", staticUrl);
-        placeHolderParams.put("title", title);
+        placeHolderParams.put("title", (String) brandConfig.get("name"));
         placeHolderParams.put("favicon", faviconPath);
+        placeHolderParams.put("faviconURL", (String) brandConfig.get("favicon"));
         placeHolderParams.put("servicePortalDomain", String.valueOf(servicePortalDomain));
         placeHolderParams.put("googleAuthEnable", Boolean.toString(googleAuthEnable));
         placeHolderParams.put("googleAuthClientId", googleAuthClientId);

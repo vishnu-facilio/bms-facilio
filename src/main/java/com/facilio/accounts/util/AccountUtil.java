@@ -18,6 +18,8 @@ import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
+import com.facilio.identity.client.IdentityClient;
+import com.facilio.identity.client.dto.Brand;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -32,6 +34,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -896,5 +899,43 @@ public class AccountUtil {
 			}
 		}
 		return null;
+	}
+
+	public static JSONObject getBrandingJson(String domain) {
+		try {
+			if (StringUtils.isNotEmpty(FacilioProperties.getIdentityServerURL())) { // if identity service is configured
+				Brand brand = (Brand) LRUCache.getAppDomainBrandingCache().get("appDomainBrandingCache_"+domain);
+				if (brand == null) {
+					brand = IdentityClient.getDefaultInstance().getAppDomainBean().getAppDomainBrand(domain);
+					if (brand != null) {
+						LRUCache.getAppDomainBrandingCache().put("appDomainBrandingCache_"+domain, brand);
+					}
+				}
+				if (brand != null) {
+					JSONObject brandingJson = new JSONObject();
+					brandingJson.put("name", brand.getName());
+					brandingJson.put("legalName", brand.getLegalName());
+					brandingJson.put("logo", brand.getLogo());
+					brandingJson.put("logoLight", brand.getLogoLight());
+					brandingJson.put("poweredByLogo", brand.getPoweredByLogo());
+					brandingJson.put("favicon", brand.getFavicon());
+					brandingJson.put("website", brand.getWebsite());
+					brandingJson.put("copyright", brand.getCopyright());
+					return brandingJson;
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.warn("Exception in fetching the branding for app domain. domain: "+domain, e);
+		}
+		JSONObject brandingJson = new JSONObject();
+		brandingJson.put("name", FacilioProperties.getConfig("rebrand.brand", "Facilio"));
+		brandingJson.put("legalName", FacilioProperties.getConfig("rebrand.copyright.name", "Facilio Inc"));
+		brandingJson.put("logo", FacilioProperties.getConfig("rebrand.logo", "https://static.facilio.com/common/facilio-dark-logo.svg"));
+		brandingJson.put("logoLight", FacilioProperties.getConfig("rebrand.logoLight", "https://static.facilio.com/common/facilio-light-logo.svg"));
+		brandingJson.put("poweredByLogo", null);
+		brandingJson.put("favicon", FacilioProperties.getConfig("rebrand.favicon", "https://static.facilio.com/common/favicon.png"));
+		brandingJson.put("website", FacilioProperties.getConfig("rebrand.website", "www.facilio.com"));
+		brandingJson.put("copyright", FacilioProperties.getConfig("rebrand.copyright.name", "Facilio Inc") + " &copy; " + java.time.Year.now().getValue());
+		return brandingJson;
 	}
 }
