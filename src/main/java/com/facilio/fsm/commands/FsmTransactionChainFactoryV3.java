@@ -15,13 +15,13 @@ public class FsmTransactionChainFactoryV3 {
         return FacilioChain.getTransactionChain();
     }
 
-    public static FacilioChain createTaskChain() {
+    public static FacilioChain getTaskBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         //update the task status before creation
         c.addCommand(new TaskStatusUpdate());
         return c;
     }
-    public static FacilioChain updateTaskChain() {
+    public static FacilioChain getTaskAfterUpdateChain() {
         FacilioChain c = getDefaultChain();
         //updating the service appointment status based on task status
         c.addCommand(new UpdateServiceAppointment());
@@ -29,6 +29,10 @@ public class FsmTransactionChainFactoryV3 {
         c.addCommand(new UpdateServiceOrderTime());
         //updating the service order status based on service appointment status
         c.addCommand(new UpdateServiceOrderStatus());
+        return c;
+    }
+    public static FacilioChain getTaskBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
         c.addCommand(new ServiceTaskDurationUpdateCommandV3());
         return c;
     }

@@ -20,6 +20,7 @@ public class ServiceTaskContext extends V3Context {
     private ServiceTaskStatus status;
     private String remarks;
     private ServiceOrderContext serviceOrder;
+    private ServiceAppointmentContext serviceAppointment;
 
     public String getName() {
         return name;
@@ -153,5 +154,13 @@ public class ServiceTaskContext extends V3Context {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public ServiceAppointmentContext getServiceAppointment() {
+        return serviceAppointment;
+    }
+
+    public void setServiceAppointment(ServiceAppointmentContext serviceAppointment) {
+        this.serviceAppointment = serviceAppointment;
     }
 }
