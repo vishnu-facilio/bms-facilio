@@ -2,6 +2,10 @@ package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.alarms.AgentAlarmContext;
+import com.facilio.alarms.sensor.commands.FetchSensorRuleSummaryCommand;
+import com.facilio.alarms.sensor.commands.PrepareSensorRuleForUpdateCommand;
+import com.facilio.alarms.sensor.commands.UpdateSensorRuleCommand;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.attribute.chain.ClassificationAttributeChain;
 import com.facilio.attribute.command.BeforeSaveClassificationAttributeCommand;
 import com.facilio.attribute.command.BeforeUpdateClassificationAttributeCommand;
@@ -10,7 +14,7 @@ import com.facilio.backgroundactivity.commands.FetchBackgroundActivitySupplement
 import com.facilio.backgroundactivity.context.BackgroundActivity;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
@@ -41,7 +45,6 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.LoadAd
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.AnnouncementFillDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.DeleteChildAnnouncementsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.LoadAnnouncementLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.LoadPeopleAnnouncementLookupCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.ContactDirectoryFillLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.FillContactDirectorySharingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.dealsandoffers.DealsAndOffersFillLookupFields;
@@ -64,7 +67,6 @@ import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
-import com.facilio.bmsconsoleV3.commands.inventoryrequest.lineitems.LoadExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.*;
@@ -192,7 +194,6 @@ import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
 import com.facilio.faults.UpdateOccurrenceCommand;
@@ -2726,6 +2727,20 @@ public class APIv3Config {
                 .afterFetch(TransactionChainFactoryV3.fetchReadingRuleSummaryChain())
                 .delete()
                 .afterDelete(TransactionChainFactoryV3.afterDeleteReadingRuleRcaChain())
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.SENSOR_RULE_MODULE)
+    public static Supplier<V3Config> getSensorRule() {
+        return () -> new V3Config(SensorRuleContext.class, null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.addSensorRuleChain())
+                .afterSave(TransactionChainFactoryV3.addSensorRuleTypeAndNsChain())
+                .summary()
+                .afterFetch(new FetchSensorRuleSummaryCommand())
+                .update()
+                .beforeSave(new PrepareSensorRuleForUpdateCommand())
+                .afterSave(new UpdateSensorRuleCommand())
                 .build();
     }
 

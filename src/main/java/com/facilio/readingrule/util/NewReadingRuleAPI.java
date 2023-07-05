@@ -205,8 +205,8 @@ public class NewReadingRuleAPI {
         return nameMap;
     }
 
-    public static Long getPrimaryFieldId(NewReadingRuleContext readingRule) {
-        List<NameSpaceField> fields = readingRule.getNs().getFields();
+    public static Long getPrimaryFieldId(NameSpaceContext ns) {
+        List<NameSpaceField> fields = ns.getFields();
         if (CollectionUtils.isNotEmpty(fields)) {
             for (NameSpaceField field : fields) {
                 if (field.getResourceId() == null || field.getResourceId() == -1) {

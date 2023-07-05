@@ -16,7 +16,6 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
@@ -33,8 +32,8 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -65,7 +64,6 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)
 				|| FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)
 				|| FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)
-				|| FacilioConstants.ContextNames.SENSOR_RULE_MODULE.equals(specialType)
 				|| EventConstants.EventContextNames.EVENT.equals(specialType)
 				|| FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)
 				|| ModuleFactory.getTaskTemplateModule().getName().equals(specialType)

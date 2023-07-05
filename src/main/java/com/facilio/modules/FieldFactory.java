@@ -1367,11 +1367,11 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getSensorRuleModule();
 
         fields.add(getIdField(module));
-        fields.add(getField("moduleId", "MODULE_ID", module, FieldType.LOOKUP));
-        fields.add(getField("readingFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
+        fields.add(getField("sensorModuleId", "MODULE_ID", module, FieldType.LOOKUP));
+        fields.add(getField("sensorFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
         fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
-        fields.add(getField("sensorRuleType", "SENSOR_RULE_TYPE", module, FieldType.NUMBER));
-        fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
+        fields.add(getField("recordModuleId","RECORD_MODULE_ID",module,FieldType.NUMBER));
+        fields.add(getField("recordFieldId","RECORD_FIELD_ID",module,FieldType.NUMBER));
         return fields;
     }
 
@@ -1381,7 +1381,9 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getIdField(module));
         fields.add(getField("parentSensorRuleId", "PARENT_SENSOR_RULE_ID", module, FieldType.LOOKUP));
-        fields.add(getField("ruleValidatorProps", "RULE_VALIDATOR_PROPS", module, FieldType.STRING));
+        fields.add(getField("sensorRuleType", "SENSOR_RULE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("rulePropStr", "RULE_VALIDATOR_PROPS", module, FieldType.STRING));
+        fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
         return fields;
     }
 

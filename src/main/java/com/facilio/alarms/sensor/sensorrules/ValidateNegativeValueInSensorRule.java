@@ -1,20 +1,24 @@
-package com.facilio.bmsconsole.context.sensor;
+package com.facilio.alarms.sensor.sensorrules;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.alarms.sensor.SensorRuleType;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
+import com.facilio.alarms.sensor.sensorrules.SensorRuleTypeValidationInterface;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
+import com.facilio.ns.context.AggregationType;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.util.FacilioUtil;
 
-public class ValidateNegativeValueInSensorRule implements SensorRuleTypeValidationInterface{
+public class ValidateNegativeValueInSensorRule implements SensorRuleTypeValidationInterface {
 
 	@Override
 	public List<String> getSensorRuleProps() {
@@ -37,7 +41,7 @@ public class ValidateNegativeValueInSensorRule implements SensorRuleTypeValidati
 	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Object record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) {
 		
 		ReadingContext reading = (ReadingContext)record;
-		FacilioField readingField = sensorRule.getReadingField();
+		FacilioField readingField = sensorRule.getSensorField();
 
 		if(readingField instanceof NumberField && reading != null && reading.getParentId() != -1)
 		{
@@ -47,10 +51,7 @@ public class ValidateNegativeValueInSensorRule implements SensorRuleTypeValidati
 			if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField) || !SensorRuleUtil.isCounterField(numberField)){
 				return false;
 			}
-			if((double)currentReadingValue < 0.0){ 
-				return true;
-			}	
-			
+			return evaluateNewSensorRule(sensorRule,currentReadingValue,null,fieldConfig);
 		}
 		return false;
 	}
@@ -58,6 +59,16 @@ public class ValidateNegativeValueInSensorRule implements SensorRuleTypeValidati
 	@Override
 	public SensorRuleType getSensorRuleTypeFromValidator() {
 		return SensorRuleType.NEGATIVE_VALUE;
+	}
+
+	@Override
+	public boolean evaluateNewSensorRule(SensorRuleContext sensorRule, Object currentValue, Map<Long, Double> readingsMap, JSONObject fieldConfig) {
+		return (double)currentValue < 0.0;
+	}
+
+	@Override
+	public Object calculateTimeInterval(Map<String, Object> ruleProp) {
+		return null;
 	}
 
 }

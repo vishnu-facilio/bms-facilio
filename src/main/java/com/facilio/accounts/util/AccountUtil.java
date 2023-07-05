@@ -593,6 +593,7 @@ public class AccountUtil {
 		FORM_DSM(133,getExponentValue(6),LicenseMapping.GROUP3LICENSE),//2^6
 		GROUP_INVITES(134,getExponentValue(7),new String[]{ContextNames.GROUP_VISITOR_INVITE},LicenseMapping.GROUP3LICENSE),//2^7
 		NEW_GROUP_INVITES(135,getExponentValue(8),LicenseMapping.GROUP3LICENSE),//2^8
+
 		COMMISSIONING(136,getExponentValue(9),LicenseMapping.GROUP3LICENSE),//2^9
 		BACKGROUND_ACTIVITY(137,getExponentValue(10),LicenseMapping.GROUP3LICENSE),//2^10
 		PAGE_BUILDER(138, getExponentValue(11), LicenseMapping.GROUP3LICENSE),//2^11
@@ -601,7 +602,8 @@ public class AccountUtil {
 		CALENDAR_VIEW(140, getExponentValue(13), LicenseMapping.GROUP3LICENSE),//2^13
 		WORK_ORDER_FEATURE_SETTINGS(141,getExponentValue(14),LicenseMapping.GROUP3LICENSE),//2^14
 		DASHBOARD_V2(142, getExponentValue(15), LicenseMapping.GROUP3LICENSE),//2^15
-		ODATA_API(143,getExponentValue(16),LicenseMapping.GROUP3LICENSE); //2^16
+		ODATA_API(143,getExponentValue(16),LicenseMapping.GROUP3LICENSE), //2^16
+		SENSOR_RULE(144,getExponentValue(17),new String[]{ContextNames.SENSOR_ROLLUP_ALARM},LicenseMapping.GROUP3LICENSE);//2^17
 
 		public int featureId;
 		private long license;

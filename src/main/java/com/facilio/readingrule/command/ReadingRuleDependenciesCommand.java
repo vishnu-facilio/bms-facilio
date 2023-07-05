@@ -12,6 +12,7 @@ import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.faultimpact.FaultImpactAPI;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.v3.context.Constants;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -33,6 +34,11 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
                 readingRule.getNs().getWorkflowContext().setIsV2Script(Boolean.TRUE);
                 readingRule.getNs().setType(NSType.READING_RULE.getIndex());
 
+                WorkflowContext workflow=readingRule.getNs().getWorkflowContext();
+
+                if(workflow==null){
+                    throw new Exception("WorkFlow can not be null for reading rule");
+                }
                 ctx.put(NamespaceConstants.NAMESPACE, readingRule.getNs());
                 ctx.put(FacilioConstants.ContextNames.NEW_READING_RULE, readingRule);
 

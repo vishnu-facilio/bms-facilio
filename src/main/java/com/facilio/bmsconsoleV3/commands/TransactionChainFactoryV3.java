@@ -5,8 +5,11 @@ import static com.facilio.bmsconsole.commands.TransactionChainFactory.addOrDelet
 import static com.facilio.bmsconsole.commands.TransactionChainFactory.getAddCategoryReadingChain;
 
 import java.util.Collections;
-import java.util.List;
 
+import com.facilio.alarms.sensor.commands.AddSensorReadingsCommand;
+import com.facilio.alarms.sensor.commands.AddSensorRuleTypeCommand;
+import com.facilio.alarms.sensor.commands.SensorRulePreCreationCommand;
+import com.facilio.alarms.sensor.commands.SetRecordModuleAndFieldIdCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.asset.AddAssetRequiredFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.attendance.*;
@@ -57,15 +60,12 @@ import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.LoadMultiResourceExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.context.spacebooking.*;
 import com.facilio.bmsconsoleV3.plannedmaintenance.ValidatePmResourcePlannerResource;
-import com.facilio.command.PostTransactionCommand;
 import com.facilio.plannedmaintenance.FetchPlannerDetails;
 import com.facilio.plannedmaintenance.PreCreateWorkOrderRecord;
 import com.facilio.permission.commands.AddOrUpdatePermissionSet;
 import com.facilio.permission.commands.DeletePermissionSetCommand;
 import com.facilio.permission.commands.FetchPermissionSetCommand;
 import com.facilio.permission.commands.UpdatePermissionsForPermissionSetCommand;
-import com.facilio.readingrule.faulttowo.command.FaultToWorkorderStatusChangeCommand;
-import nl.basjes.shaded.org.yaml.snakeyaml.error.Mark;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -83,7 +83,6 @@ import com.facilio.bmsconsole.commands.util.ListColorPaletteCommand;
 import com.facilio.bmsconsole.commands.util.ReportSharePermission;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.AddAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.DeleteAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesCommand;
@@ -232,9 +231,6 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.UpdateVisitorInviteRelAr
 import com.facilio.bmsconsoleV3.commands.visitorlogging.VisitorFaceRecognitionCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.CreateReservationCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.CreateWorkOrderPlannedInventoryCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.PlannedItemsUnSavedListCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.PlannedServicesUnSavedListCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.PlannedToolsUnSavedListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.PlansCostCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.ReservationSummaryCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.ReservationValidationCommandV3;
@@ -2989,11 +2985,17 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    private static FacilioChain addNsAndNsFieldsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddNamespaceCommand());
+        c.addCommand(new AddNamespaceFieldsCommand());
+        return c;
+    }
+
     public static FacilioChain addNamespaceAndFieldsChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddWorkflowCommand());
-        c.addCommand(new AddNamespaceCommand());
-        c.addCommand(new AddNamespaceFieldsCommand());
+        c.addCommand(addNsAndNsFieldsChain());
         return c;
     }
 
@@ -3367,6 +3369,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new SendMultipleReportAsMailCommand());
         return c;
     }
+
     public static FacilioChain getPmV2ResourcePlannerBeforeSaveCommand(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new PMResourcePlannerBeforeSaveCommand());
@@ -3374,6 +3377,36 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ValidateDuplicateResourcesInsidePlannerCommand());
         return c;
     }
+
+    public static FacilioChain addSensorRuleNsChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructNsFieldsCommand());
+        c.addCommand(new SetParentIdForNamespaceCommand());
+        c.addCommand(addNsAndNsFieldsChain());
+        return c;
+    }
+
+    public static FacilioChain addSensorRuleTypeAndNsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddSensorRuleTypeCommand());
+        c.addCommand(addSensorRuleNsChain());
+        return c;
+    }
+    public static FacilioChain addSensorRuleChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SensorRulePreCreationCommand());
+        c.addCommand(addSensorReadingsChain());
+        c.addCommand(new SetRecordModuleAndFieldIdCommand());
+        return c;
+    }
+
+    public static FacilioChain addSensorReadingsChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddSensorReadingsCommand());
+        c.addCommand(getAddCategoryReadingChain());
+        return c;
+    }
+
 
     public static FacilioChain getPivotModulesList(){
         FacilioChain c = getDefaultChain();
@@ -3383,3 +3416,4 @@ public class TransactionChainFactoryV3 {
 
 
 }
+

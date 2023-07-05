@@ -1,5 +1,6 @@
 package com.facilio.ns.command;
 
+import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.readingrule.context.NewReadingRuleContext;
@@ -18,15 +19,18 @@ public class SetParentIdForNamespaceCommand extends FacilioCommand {
         List<Object> list = recordMap.get(moduleName);
 
         if (CollectionUtils.isNotEmpty(list)) {
-            for (Object kpi : list) {
-                if (kpi instanceof NewReadingRuleContext) {
-                    NewReadingRuleContext newReadingRuleContext = (NewReadingRuleContext) kpi;
+            for (Object fddObject : list) {
+                if (fddObject instanceof NewReadingRuleContext) {
+                    NewReadingRuleContext newReadingRuleContext = (NewReadingRuleContext) fddObject;
                     newReadingRuleContext.getNs().setParentRuleId(newReadingRuleContext.getId());
                     newReadingRuleContext.getNs().getWorkflowContext().setIsV2Script(true);
-                } else if(kpi instanceof ReadingKPIContext) {
-                    ReadingKPIContext readingKPIContext= (ReadingKPIContext) kpi;
+                } else if (fddObject instanceof ReadingKPIContext) {
+                    ReadingKPIContext readingKPIContext = (ReadingKPIContext) fddObject;
                     readingKPIContext.getNs().setParentRuleId(readingKPIContext.getId());
                     readingKPIContext.getNs().getWorkflowContext().setIsV2Script(true);
+                } else if (fddObject instanceof SensorRuleContext) {
+                    SensorRuleContext sensorRuleContext = (SensorRuleContext) fddObject;
+                    sensorRuleContext.getNs().setParentRuleId(sensorRuleContext.getId());
                 }
             }
         }

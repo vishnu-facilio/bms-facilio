@@ -1,11 +1,11 @@
-package com.facilio.bmsconsole.context.sensor;
+package com.facilio.alarms.sensor.sensorrules;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.alarms.sensor.SensorRuleType;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
+import com.facilio.alarms.sensor.sensorrules.SensorRuleTypeValidationInterface;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AssetContext;
@@ -15,7 +15,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.util.FacilioUtil;
 
-public class ValidateContinuouslyReceivingZeroInSensorRule implements SensorRuleTypeValidationInterface{
+public class ValidateContinuouslyReceivingZeroInSensorRule implements SensorRuleTypeValidationInterface {
 
 	@Override
 	public List<String> getSensorRuleProps() {
@@ -39,7 +39,7 @@ public class ValidateContinuouslyReceivingZeroInSensorRule implements SensorRule
 	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Object record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception {
 		
 		ReadingContext reading = (ReadingContext)record;
-		FacilioField readingField = sensorRule.getReadingField();
+		FacilioField readingField = sensorRule.getSensorField();
 
 		if(readingField instanceof NumberField && reading != null && reading.getParent() instanceof AssetContext)
 		{
@@ -79,6 +79,16 @@ public class ValidateContinuouslyReceivingZeroInSensorRule implements SensorRule
 
 	@Override
 	public SensorRuleType getSensorRuleTypeFromValidator() {
+		return null;
+	}
+
+	@Override
+	public boolean evaluateNewSensorRule(SensorRuleContext sensorRule, Object currentValue, Map<Long, Double> readingsMap, JSONObject fieldConfig) {
+		throw new RuntimeException("Not implemented !!!");
+	}
+
+	@Override
+	public Object calculateTimeInterval(Map<String, Object> ruleProp) {
 		return null;
 	}
 

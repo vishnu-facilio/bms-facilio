@@ -1,25 +1,23 @@
-package com.facilio.bmsconsole.context.sensor;
+package com.facilio.alarms.sensor.sensorrules;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.facilio.alarms.sensor.SensorRuleType;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
+import com.facilio.alarms.sensor.sensorrules.SensorRuleTypeValidationInterface;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
+import com.facilio.ns.context.AggregationType;
+import org.apache.commons.collections.MapUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleTypeValidationInterface;
-import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
-import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 
-public class ValidateContinuouslyReceivingSameValueInSensorRule implements SensorRuleTypeValidationInterface{
+public class ValidateContinuouslyReceivingSameValueInSensorRule implements SensorRuleTypeValidationInterface {
 
 	@Override
 	public List<String> getSensorRuleProps() {
@@ -43,7 +41,7 @@ public class ValidateContinuouslyReceivingSameValueInSensorRule implements Senso
 	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Object record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception
 	{
 		ReadingContext reading = (ReadingContext)record;
-		FacilioField readingField = sensorRule.getReadingField();
+		FacilioField readingField = sensorRule.getSensorField();
 
 		if(readingField instanceof NumberField && reading != null && reading.getParentId() != -1)
 		{
@@ -53,8 +51,8 @@ public class ValidateContinuouslyReceivingSameValueInSensorRule implements Senso
 			if(currentReadingValue == null || !SensorRuleUtil.isAllowedSensorMetric(numberField)){
 				return false;
 			}
-			
-			Long noOfHoursToBeFetched = Long.valueOf(String.valueOf(fieldConfig.get("timeInterval")));
+
+			Long noOfHoursToBeFetched = (Long) calculateTimeInterval(fieldConfig);
 			if(noOfHoursToBeFetched == null) {
 				noOfHoursToBeFetched = 6l;
 			}
@@ -80,6 +78,21 @@ public class ValidateContinuouslyReceivingSameValueInSensorRule implements Senso
 	@Override
 	public SensorRuleType getSensorRuleTypeFromValidator() {
 		return SensorRuleType.CONTINUOUSLY_RECEIVING_SAME_VALUE;
+	}
+
+	@Override
+	public boolean evaluateNewSensorRule(SensorRuleContext sensorRule, Object currentValue, Map<Long, Double> readingsMap, JSONObject fieldConfig) {
+		if(MapUtils.isNotEmpty(readingsMap) && readingsMap.size()>1){
+			Set<Double> readingValue = readingsMap.values().stream().collect(Collectors.toSet());
+			return readingValue.size() == 1;
+		}
+		return false;
+	}
+
+	@Override
+	public Object calculateTimeInterval(Map<String, Object> ruleProp) {
+		Long noOfHoursToBeFetched = Long.valueOf(String.valueOf(ruleProp.get("timeInterval")));
+		return noOfHoursToBeFetched;
 	}
 
 }

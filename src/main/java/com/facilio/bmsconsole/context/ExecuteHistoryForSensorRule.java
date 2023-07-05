@@ -12,16 +12,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.MapUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpEventContext;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
 import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalAlarmsAPI;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
@@ -62,7 +58,7 @@ public class ExecuteHistoryForSensorRule extends ExecuteHistoricalRule{
 		List<ReadingContext> readings = new ArrayList<ReadingContext>();
 		List<SensorRollUpEventContext> sensorMeterRollUpEvents = new ArrayList<SensorRollUpEventContext>();
 		if(sensorRules != null && !sensorRules.isEmpty()) {	
-			Set<FacilioField> sensorRuleFields = sensorRules.stream().map(sensorRule -> sensorRule.getReadingField()).collect(Collectors.toSet());
+			Set<FacilioField> sensorRuleFields = sensorRules.stream().map(sensorRule -> sensorRule.getSensorField()).collect(Collectors.toSet());
 			LinkedHashMap<FacilioModule, List<FacilioField>> sensorRuleModuleVsFieldsMap = SensorRuleUtil.groupSensorRuleFieldsByModule(sensorRuleFields);
 			for(FacilioModule module: sensorRuleModuleVsFieldsMap.keySet()) 
 			{
@@ -72,7 +68,7 @@ public class ExecuteHistoryForSensorRule extends ExecuteHistoricalRule{
 					readings.addAll(fieldReadings);
 				}	
 			}
-			baseEvents = SensorRuleUtil.executeSensorRules(sensorRules,readings, true, sensorMeterRollUpEvents);
+			//baseEvents = SensorRuleUtil.executeSensorRules(sensorRules,readings, true, sensorMeterRollUpEvents);
 		}	
 		LOGGER.info("Time taken for SensorRule HistoricalRun for jobId: " +jobId+ " is: " + (System.currentTimeMillis() - processStartTime));
 		return baseEvents;

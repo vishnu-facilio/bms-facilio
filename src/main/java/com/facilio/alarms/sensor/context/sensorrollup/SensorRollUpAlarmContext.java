@@ -1,5 +1,9 @@
-package com.facilio.bmsconsole.context.sensor;
+package com.facilio.alarms.sensor.context.sensorrollup;
 
+import com.facilio.alarms.sensor.context.SensorRuleContext;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -8,27 +12,14 @@ import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 
+@Getter
+@Setter
+@Log4j
 public class SensorRollUpAlarmContext extends BaseAlarmContext{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = LogManager.getLogger(SensorRollUpAlarmContext.class.getName());
-
 	private SensorRuleContext sensorRule;
-	public SensorRuleContext getSensorRule() {
-		return sensorRule;
-	}
-	public void setSensorRule(SensorRuleContext sensorRule) {
-		this.sensorRule = sensorRule;
-	}
-	
 	private long readingFieldId = -1;
-	public long getReadingFieldId() {
-		return readingFieldId;
-	}
-	public void setReadingFieldId(long readingFieldId) {
-		this.readingFieldId = readingFieldId;
-	}
-	
 	private FacilioField readingField;
 	public FacilioField getReadingField(){
 		try {

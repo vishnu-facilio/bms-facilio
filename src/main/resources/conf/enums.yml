@@ -134,7 +134,7 @@ enums:
     enumClassName: com.facilio.bmsconsoleV3.context.facilitybooking.FacilitySpecialAvailabilityContext$SpecialType
 
   - name: SensorRuleType
-    enumClassName: com.facilio.bmsconsole.context.sensor.SensorRuleType
+    enumClassName: com.facilio.alarms.sensor.SensorRuleType
 
   - name: ReceivableStatus
     enumClassName: com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext$ReceivableStatus

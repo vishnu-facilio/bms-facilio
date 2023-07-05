@@ -1,7 +1,6 @@
-package com.facilio.bmsconsole.context.sensor;
+package com.facilio.alarms.sensor.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,18 +8,18 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmContext;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpEventContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -29,13 +28,12 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.time.DateRange;
 
 public class SensorRollUpUtil {
 	
 	private static final Logger LOGGER = Logger.getLogger(SensorRollUpUtil.class.getName());	
 	
-	public static void fetchSensorRollUpAlarmMeta(Set<Long> assetIds,  LinkedHashMap<String, SensorRollUpEventContext> fieldSensorRollUpEventMeta, LinkedHashMap<Long, SensorRollUpEventContext> assetSensorRollUpEventMeta) throws Exception {
+	public static void fetchSensorRollUpAlarmMeta(Set<Long> assetIds, LinkedHashMap<String, SensorRollUpEventContext> fieldSensorRollUpEventMeta, LinkedHashMap<Long, SensorRollUpEventContext> assetSensorRollUpEventMeta) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -101,17 +99,17 @@ public class SensorRollUpUtil {
 			SensorRollUpEventContext sensorRollUpEvent = new SensorRollUpEventContext();
 			
 			sensorRollUpEvent.setIsMeterRollUpEvent(isMeterRollUpEvent);
-			if(!isMeterRollUpEvent) {
-				sensorRollUpEvent.setReadingFieldId(previousSensorRollUpEventMeta.getReadingFieldId());
-			}		
+
+			sensorRollUpEvent.setReadingFieldId(previousSensorRollUpEventMeta.getReadingFieldId());
+
 			sensorRollUpEvent.setSensorRule(previousSensorRollUpEventMeta.getSensorRule());
 			
 			sensorRollUpEvent.setAutoClear(true);
 			sensorRollUpEvent.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
 			sensorRollUpEvent.setComment("Sensor alarm auto cleared because associated rule executed clear condition for the associated asset.");
 			sensorRollUpEvent.setEventMessage(previousSensorRollUpEventMeta.getEventMessage());
-			
-			SensorRuleUtil.addDefaultEventProps(reading, null, sensorRollUpEvent);		
+
+			SensorRuleUtil.addDefaultEventProps(reading, null, sensorRollUpEvent);
 			return sensorRollUpEvent;
 		}
 		return null;

@@ -14,6 +14,7 @@ import com.facilio.agentv2.point.AddPointCommand;
 import com.facilio.agentv2.point.ConfigurePointCommand;
 import com.facilio.agentv2.point.EditPointCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
+import com.facilio.alarms.sensor.commands.FetchSensorRuleListCommand;
 import com.facilio.banner.commands.CloseBannerCommand;
 import com.facilio.bmsconsole.ModuleSettingConfig.command.AddGlimpseCommand;
 import com.facilio.bmsconsole.ModuleSettingConfig.command.GetModuleSettingConfigDetailsCommand;
@@ -65,7 +66,10 @@ import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
+import com.facilio.ns.command.AddNamespaceCommand;
+import com.facilio.ns.command.AddNamespaceFieldsCommand;
 import com.facilio.ns.command.DeleteRuleNamespacesCommand;
+import com.facilio.ns.command.SetParentIdForNamespaceCommand;
 import com.facilio.permission.commands.AddOrUpdatePermissionSetsForPeopleCommand;
 import com.facilio.permission.commands.DefaultPermissionSetCommand;
 import com.facilio.readingkpi.commands.ExecuteSchKpiOfACategoryCommand;
@@ -3872,15 +3876,23 @@ public class TransactionChainFactory {
 		return c;
 	}
 
-	public static FacilioChain updateSensorRulesChain() {
 
+
+	public static FacilioChain addSensorRuleNsChain(){
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new UpdateSensorRulesCommand());
-
+		c.addCommand(new ConstructNsFieldsCommand());
+		c.addCommand(new SetParentIdForNamespaceCommand());
+		c.addCommand(new AddNamespaceCommand());
+		c.addCommand(new AddNamespaceFieldsCommand());
+		return c;
+	}
+	public static FacilioChain fetchNewSensorRuleChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchSensorRuleListCommand());
 		return c;
 	}
 
-		public static FacilioChain configureStoreNotificationsChain() {
+	public static FacilioChain configureStoreNotificationsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AssociateFieldIdToStoreRuleTypeCommand());
 			c.addCommand(addWorkflowRuleChain());

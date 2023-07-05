@@ -9,9 +9,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
-import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
-import com.facilio.bmsconsole.context.sensor.SensorAlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

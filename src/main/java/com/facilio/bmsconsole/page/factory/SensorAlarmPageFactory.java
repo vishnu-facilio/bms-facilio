@@ -3,14 +3,11 @@ package com.facilio.bmsconsole.page.factory;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
-import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.fw.BeanFactory;

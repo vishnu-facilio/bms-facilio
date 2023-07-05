@@ -12,9 +12,9 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleType;
-import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
+import com.facilio.alarms.sensor.SensorRuleType;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -70,7 +70,7 @@ public class GenerateSensorRulesListCommand extends FacilioCommand {
 						}
 						
 					}	
-				sensorRule.setSubject(SensorRuleType.valuOf(sensorRule.getSensorRuleType()).getValueString());
+				sensorRule.setSubject(SensorRuleType.valueOf(sensorRule.getSensorRuleType()).getValueString());
 				}	
 			}
 			

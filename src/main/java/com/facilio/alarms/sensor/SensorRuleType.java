@@ -1,9 +1,9 @@
-package com.facilio.bmsconsole.context.sensor;
+package com.facilio.alarms.sensor;
 
+import com.facilio.alarms.sensor.sensorrules.*;
 import com.facilio.modules.FacilioIntEnum;
 
 public enum SensorRuleType implements FacilioIntEnum {
-	
 	CONTINUOUSLY_RECEIVING_SAME_VALUE("Same value received continuously for {timeInterval} hours",new ValidateContinuouslyReceivingSameValueInSensorRule(),false, false),
 	PERMISSIBLE_LIMIT_VIOLATION("Range is outside of {lowerLimit} and {upperLimit}",new ValidatePermissibleLimitViolationInSensorRule(), false, false, true),
 	NEGATIVE_VALUE("Meter reads negative value",new ValidateNegativeValueInSensorRule(), true, true, true),
@@ -28,7 +28,7 @@ public enum SensorRuleType implements FacilioIntEnum {
 		this.valueString = valueString;
 	}
 
-	public static SensorRuleType valuOf(int value) {
+	public static SensorRuleType valueOf(int value) {
 		if (value > 0 && value <= values().length) {
 			return values()[value - 1];
 		}
@@ -44,19 +44,19 @@ public enum SensorRuleType implements FacilioIntEnum {
 	private SensorRuleType(){
 	}
 	
-	private SensorRuleType(String valueString,SensorRuleTypeValidationInterface sensorRuleValidationTypeClass){
+	 SensorRuleType(String valueString,SensorRuleTypeValidationInterface sensorRuleValidationTypeClass){
 		this.sensorRuleValidationType = sensorRuleValidationTypeClass;
 		this.valueString = valueString;
 	}
 	
-	private SensorRuleType(String valueString,SensorRuleTypeValidationInterface sensorRuleValidationType, boolean isMeterRollUp, boolean isCounterFieldType) {
+	 SensorRuleType(String valueString,SensorRuleTypeValidationInterface sensorRuleValidationType, boolean isMeterRollUp, boolean isCounterFieldType) {
 		this.sensorRuleValidationType = sensorRuleValidationType;
 		this.isMeterRollUp = isMeterRollUp;
 		this.isCounterFieldType = isCounterFieldType;
 		this.valueString = valueString;
 	}
 	
-	private SensorRuleType(String valueString,SensorRuleTypeValidationInterface sensorRuleValidationType, boolean isMeterRollUp, boolean isCounterFieldType, boolean dependsOnCurrentValue) {
+	 SensorRuleType(String valueString,SensorRuleTypeValidationInterface sensorRuleValidationType, boolean isMeterRollUp, boolean isCounterFieldType, boolean dependsOnCurrentValue) {
 		this.sensorRuleValidationType = sensorRuleValidationType;
 		this.isMeterRollUp = isMeterRollUp;
 		this.isCounterFieldType = isCounterFieldType;

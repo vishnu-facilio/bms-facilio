@@ -66,7 +66,7 @@ import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkPermitContext;
-import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.forms.FormSection.SectionType;

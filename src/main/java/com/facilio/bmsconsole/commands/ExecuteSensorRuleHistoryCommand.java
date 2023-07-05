@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,27 +9,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
-import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpEventContext;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NewEventAPI;
-import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalAlarmsAPI;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -73,7 +66,7 @@ public class ExecuteSensorRuleHistoryCommand extends FacilioJob {
 			List<ReadingContext> readings = new ArrayList<ReadingContext>();
 			List<SensorRollUpEventContext> sensorMeterRollUpEvents = new ArrayList<SensorRollUpEventContext>();
 			if(sensorRules != null && !sensorRules.isEmpty()) {	
-				Set<FacilioField> sensorRuleFields = sensorRules.stream().map(sensorRule -> sensorRule.getReadingField()).collect(Collectors.toSet());
+				Set<FacilioField> sensorRuleFields = sensorRules.stream().map(sensorRule -> sensorRule.getSensorField()).collect(Collectors.toSet());
 				LinkedHashMap<FacilioModule, List<FacilioField>> sensorRuleModuleVsFieldsMap = SensorRuleUtil.groupSensorRuleFieldsByModule(sensorRuleFields);
 				for(FacilioModule module: sensorRuleModuleVsFieldsMap.keySet()) 
 				{
@@ -83,8 +76,8 @@ public class ExecuteSensorRuleHistoryCommand extends FacilioJob {
 						readings.addAll(fieldReadings);
 					}	
 				}
-				SensorRuleUtil.executeSensorRules(sensorRules,readings, true, sensorMeterRollUpEvents);
-			}	
+//				SensorRuleUtil.executeSensorRules(sensorRules,readings, true, sensorMeterRollUpEvents);
+			}
 				
 		}
 		catch(Exception e) {

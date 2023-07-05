@@ -2,10 +2,10 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.agent.alarms.AgentEventContext;
+import com.facilio.alarms.sensor.context.sensoralarm.SensorEventContext;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpEventContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
-import com.facilio.bmsconsole.context.sensor.SensorEventContext;
-import com.facilio.bmsconsole.context.sensor.SensorRollUpEventContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;

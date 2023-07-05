@@ -18,7 +18,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
-import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
 import com.facilio.bmsconsole.util.MarkingUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;

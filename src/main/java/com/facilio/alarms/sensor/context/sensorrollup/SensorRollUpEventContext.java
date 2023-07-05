@@ -1,16 +1,20 @@
-package com.facilio.bmsconsole.context.sensor;
+package com.facilio.alarms.sensor.context.sensorrollup;
 
+import com.facilio.alarms.sensor.util.NewSensorRuleUtil;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.json.annotations.JSON;
-import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -18,16 +22,15 @@ import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+
+@Setter
+@Getter
 public class SensorRollUpEventContext extends BaseEventContext {
 	
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(SensorRollUpEventContext.class.getName());
 
 	Boolean isMeterRollUpEvent;
-	
-	public Boolean getIsMeterRollUpEvent() {
-		return isMeterRollUpEvent;
-	}
 
 	public void setIsMeterRollUpEvent(Boolean isMeterRollUpEvent) {
 		this.isMeterRollUpEvent = isMeterRollUpEvent;
@@ -83,21 +86,7 @@ public class SensorRollUpEventContext extends BaseEventContext {
 	}
 
 	private SensorRuleContext sensorRule;
-	public SensorRuleContext getSensorRule() {
-		return sensorRule;
-	}
-	public void setSensorRule(SensorRuleContext sensorRule) {
-		this.sensorRule = sensorRule;
-	}
-
 	private long readingFieldId = -1;
-	public long getReadingFieldId() {
-		return readingFieldId;
-	}
-	public void setReadingFieldId(long readingFieldId) {
-		this.readingFieldId = readingFieldId;
-	}
-	
 	private FacilioField readingField;
 	public FacilioField getReadingField(){
 		try {
@@ -111,10 +100,6 @@ public class SensorRollUpEventContext extends BaseEventContext {
 		}
 		return readingField;
 	}
-	public void setReadingField(FacilioField readingField) {
-		this.readingField = readingField;
-	}
-
 	@JsonSerialize
 	public Type getEventTypeEnum() {
 		return Type.SENSOR_ROLLUP_ALARM;
@@ -129,28 +114,55 @@ public class SensorRollUpEventContext extends BaseEventContext {
 			setSensorRule(sensorRuleContext);
 		}
 	}
-	
-	public SensorRollUpEventContext constructRollUpClearEvent(ReadingContext reading, boolean isHistorical, boolean isMeterRollUpEvent) throws Exception {
-		
-		if (this != null && !this.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) 
-		{			
-			SensorRollUpEventContext sensorRollUpEvent = new SensorRollUpEventContext();
-			
-			sensorRollUpEvent.setIsMeterRollUpEvent(isMeterRollUpEvent);
-			if(!isMeterRollUpEvent) {
-				sensorRollUpEvent.setReadingFieldId(this.getReadingFieldId());
-			}		
-			sensorRollUpEvent.setSensorRule(this.getSensorRule());
-			
-			sensorRollUpEvent.setAutoClear(true);
-			sensorRollUpEvent.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
-			sensorRollUpEvent.setComment("Sensor alarm auto cleared because associated rule executed clear condition for the associated asset.");
-			sensorRollUpEvent.setEventMessage(this.getEventMessage());
-			
-			SensorRuleUtil.addDefaultEventProps(reading, null, sensorRollUpEvent);		
-			return sensorRollUpEvent;
+	public SensorRollUpEventContext constructRollUpEvent(Long resourceId, Long ttime, boolean isMeterRollUpEvent, SensorRuleContext sensorRule) throws Exception {
+
+		SensorRollUpEventContext sensorRollUpEvent = new SensorRollUpEventContext();
+		ResourceContext resource = ResourceAPI.getResource(resourceId);
+
+		sensorRollUpEvent.setSeverityString("Warning");
+		sensorRollUpEvent.setResource(resource);
+		sensorRollUpEvent.setSiteId(resource.getSiteId());
+
+		sensorRollUpEvent.setIsMeterRollUpEvent(isMeterRollUpEvent);
+		sensorRollUpEvent.setCreatedTime(ttime);
+		String eventMessage;
+		if (!isMeterRollUpEvent) {
+			sensorRollUpEvent.setReadingFieldId(NewReadingRuleAPI.getPrimaryFieldId(sensorRule.getNs()));
+			eventMessage = "Faulty " + sensorRule.getSensorField().getDisplayName().toLowerCase() + " sensor of " + resource.getName().toLowerCase();
+		} else {
+			sensorRollUpEvent.setReadingFieldId(NewReadingRuleAPI.getPrimaryFieldId(sensorRule.getNs()));
+			eventMessage = "Faulty " + resource.getName().toLowerCase();
 		}
-		return null;
+		sensorRollUpEvent.setEventMessage(eventMessage);
+		sensorRollUpEvent.setSensorRule(sensorRule);
+
+		return sensorRollUpEvent;
 	}
-	
+
+	public SensorRollUpEventContext constructRollUpClearEvent(Long resourceId, Long ttime, boolean isMeterRollUpEvent, SensorRuleContext sensorRule) throws Exception {
+
+		SensorRollUpEventContext sensorRollUpEvent = new SensorRollUpEventContext();
+		ResourceContext resource = ResourceAPI.getResource(resourceId);
+
+		sensorRollUpEvent.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+		sensorRollUpEvent.setResource(resource);
+		sensorRollUpEvent.setSiteId(resource.getSiteId());
+
+		sensorRollUpEvent.setIsMeterRollUpEvent(isMeterRollUpEvent);
+		sensorRollUpEvent.setCreatedTime(ttime);
+		String eventMessage;
+		if (!isMeterRollUpEvent) {
+			sensorRollUpEvent.setReadingFieldId(NewReadingRuleAPI.getPrimaryFieldId(sensorRule.getNs()));
+			eventMessage = "Faulty " + sensorRule.getSensorField().getDisplayName().toLowerCase() + " sensor of " + resource.getName().toLowerCase();
+		} else {
+			sensorRollUpEvent.setReadingFieldId(NewReadingRuleAPI.getPrimaryFieldId(sensorRule.getNs()));
+			eventMessage = "Faulty " + resource.getName().toLowerCase();
+		}
+		sensorRollUpEvent.setComment("Sensor alarm auto cleared because associated rule executed clear condition for the associated asset.");
+		sensorRollUpEvent.setEventMessage(eventMessage);
+		sensorRollUpEvent.setSensorRule(sensorRule);
+
+		return sensorRollUpEvent;
+	}
+
 }

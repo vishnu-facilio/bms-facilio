@@ -14,7 +14,7 @@ import org.apache.commons.chain.Context;
 import java.util.List;
 import java.util.Map;
 
-import static com.facilio.accounts.util.AccountUtil.FeatureLicense.NEW_READING_RULE;
+import static com.facilio.accounts.util.AccountUtil.FeatureLicense.*;
 
 @Log4j
 public class ReadingPostProcessingCommand extends FacilioCommand {
@@ -39,9 +39,15 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
     }
 
     private void executeRules(Context context) throws Exception {
+        if((boolean)(context.getOrDefault(FacilioConstants.ContextNames.HISTORY_READINGS, false))){
+            LOGGER.debug("Imported reading does not evaluate rules.");
+            return;
+        }
         boolean isNewReadingRule = AccountUtil.isFeatureEnabled(NEW_READING_RULE);
+        boolean isSensorRuleEnabled=AccountUtil.isFeatureEnabled(SENSOR_RULE);
+        boolean isNewKpiEnabled=AccountUtil.isFeatureEnabled(NEW_KPI);
         LOGGER.debug("Executing rules. storm exec ?? " + isNewReadingRule);
-        if (isNewReadingRule) {
+        if (isNewReadingRule || isSensorRuleEnabled || isNewKpiEnabled) {
             forwardToStorm(context);
         } else {
             executeWorkflowsRules(context);

@@ -8,7 +8,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -17,6 +17,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.time.DateRange;
 import lombok.Getter;
 import lombok.Setter;
+
 
 @Getter
 @Setter
@@ -49,28 +50,15 @@ public class V2AlarmAction extends FacilioAction {
     private List<SensorRuleContext> sensorRules;
 
     public String fetchSensorRulesList() throws Exception {
-        FacilioChain sensorRuleChain = ReadOnlyChainFactory.getSensorRulesListChain();
+        FacilioChain sensorRuleChain;
+        sensorRuleChain = TransactionChainFactory.fetchNewSensorRuleChain();
         FacilioContext context = sensorRuleChain.getContext();
         constructListContext(context);
         context.put(ContextNames.READING_FIELD_ID, readingFieldId);
         context.put(ContextNames.CATEGORY_ID, categoryId);
         sensorRuleChain.execute();
         setResult(FacilioConstants.ContextNames.SENSOR_RULE_TYPES, context.get(FacilioConstants.ContextNames.SENSOR_RULE_TYPES));
-
-        return SUCCESS;
-    }
-
-    public String updateSensorRulesList() throws Exception {
-
-        FacilioChain updateSensorRulesChain = TransactionChainFactory.updateSensorRulesChain();
-        FacilioContext context = updateSensorRulesChain.getContext();
-        constructListContext(context);
-        context.put(ContextNames.SENSOR_RULE_TYPES, sensorRules);
-        context.put(ContextNames.RULE_TYPES, typesToInactive);
-        context.put(ContextNames.READING_FIELD_ID, readingFieldId);
-        context.put(ContextNames.CATEGORY_ID, categoryId);
-        context.put(ContextNames.MODULE_ID, moduleId);
-        updateSensorRulesChain.execute();
+        setResult("id",context.get(ContextNames.ID));
 
         return SUCCESS;
     }

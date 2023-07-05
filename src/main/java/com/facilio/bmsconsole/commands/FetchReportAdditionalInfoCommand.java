@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
-import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
+import com.facilio.alarms.sensor.context.sensoralarm.SensorAlarmContext;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmContext;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;

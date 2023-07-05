@@ -8,9 +8,9 @@ import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
-import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleUtil;
+import com.facilio.alarms.sensor.context.sensoralarm.SensorAlarmContext;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmContext;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.DateOperators;

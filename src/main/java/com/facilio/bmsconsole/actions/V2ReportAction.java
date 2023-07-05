@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.sensor.SensorAlarmContext;
-import com.facilio.bmsconsole.context.sensor.SensorRollUpAlarmContext;
+import com.facilio.alarms.sensor.context.sensoralarm.SensorAlarmContext;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmContext;
 
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -34,7 +34,6 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
-import com.facilio.bmsconsole.commands.ConstructTabularReportData;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.GetCriteriaDataCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;

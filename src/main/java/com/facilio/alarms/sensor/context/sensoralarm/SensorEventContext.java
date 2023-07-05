@@ -1,5 +1,13 @@
-package com.facilio.bmsconsole.context.sensor;
+package com.facilio.alarms.sensor.context.sensoralarm;
 
+import com.facilio.alarms.sensor.*;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpEventContext;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
+import com.facilio.alarms.sensor.context.SensorRulePropContext;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
@@ -10,19 +18,20 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@Getter
+@Setter
+@Log4j
 public class SensorEventContext extends BaseEventContext {
 	
 	public String constructMessageKey() {
 		if (getResource() != null && getSensorRule() != null) {
-			return "Sensor_" + getReadingFieldId() +"_"+ getResource().getId() +"_"+ getSensorRule().getId();
+			return "Sensor_" + getReadingFieldId() +"_"+ getResource().getId() +"_"+ getSensorRule().getId()+"_"+getSensorRuleProp().getId();
 		}
 		return null;
 	}
@@ -60,21 +69,8 @@ public class SensorEventContext extends BaseEventContext {
 	}
 
 	private SensorRuleContext sensorRule;
-	public SensorRuleContext getSensorRule() {
-		return sensorRule;
-	}
-	public void setSensorRule(SensorRuleContext sensorRule) {
-		this.sensorRule = sensorRule;
-	}
-
+	private SensorRulePropContext sensorRuleProp;
 	private long readingFieldId = -1;
-	public long getReadingFieldId() {
-		return readingFieldId;
-	}
-	public void setReadingFieldId(long readingFieldId) {
-		this.readingFieldId = readingFieldId;
-	}
-
 	private SensorRuleType sensorRuleType;
 	public SensorRuleType getSensorRuleTypeEnum() {
 		return sensorRuleType;
@@ -83,23 +79,13 @@ public class SensorEventContext extends BaseEventContext {
 		this.sensorRuleType = sensorRuleType;
 	}
 	public int getSensorRuleType() {
-		if (sensorRuleType != null) {
-			return sensorRuleType.getIndex();
-		}
-		return -1;
+		return sensorRuleType!=null?sensorRuleType.getIndex():-1;
 	}
 	public void setSensorRuleType(int sensorRuleType) {
-		this.sensorRuleType = SensorRuleType.valuOf(sensorRuleType);
+		this.sensorRuleType = SensorRuleType.valueOf(sensorRuleType);
 	}
 
 	private Boolean meterRollUp;
-	public Boolean getMeterRollUp() {
-		return meterRollUp;
-	}
-	public void setMeterRollUp(Boolean meterRollUp) {
-		this.meterRollUp = meterRollUp;
-	}
-
 	@JsonSerialize
 	public Type getEventTypeEnum() {
 		return Type.SENSOR_ALARM;
@@ -128,9 +114,10 @@ public class SensorEventContext extends BaseEventContext {
 		String eventMessage = new String();
 		if(!isMeterRollUpEvent) {
 			sensorRollUpEvent.setReadingFieldId(this.getReadingFieldId());
-			eventMessage = "Faulty " + sensorRule.getReadingField().getDisplayName().toLowerCase() + " sensor of " + resource.getName().toLowerCase();
+			eventMessage = "Faulty " + sensorRule.getSensorField().getDisplayName().toLowerCase() + " sensor of " + resource.getName().toLowerCase();
 		}
 		else {
+			sensorRollUpEvent.setReadingFieldId(this.getReadingFieldId());
 			eventMessage = "Faulty " + resource.getName().toLowerCase();
 		}
 		

@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.mail.MethodNotSupportedException;
 
 import com.facilio.bmsconsole.context.BaseScheduleContext.ScheduleType;
-import com.facilio.bmsconsole.context.sensor.SensorRuleType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 

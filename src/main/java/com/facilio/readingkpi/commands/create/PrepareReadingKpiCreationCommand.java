@@ -14,6 +14,7 @@ import com.facilio.readingkpi.context.KPIType;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.v3.context.Constants;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -95,7 +96,11 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
     }
 
     public void setContextForNsAndWorkflow(Context context, ReadingKPIContext kpi) throws Exception {
-        context.put(WorkflowV2Util.WORKFLOW_CONTEXT, kpi.getNs().getWorkflowContext());
+        WorkflowContext workflow=kpi.getNs().getWorkflowContext();
+        if(workflow==null){
+            throw new Exception("WorkFlow can not be null for KPI");
+        }
+        context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
         context.put(NamespaceConstants.NAMESPACE_FIELDS, kpi.getNs().getFields());
         context.put(NamespaceConstants.NAMESPACE, kpi.getNs());
         kpi.getNs().setExecInterval(kpi.getFrequencyEnum().getMs());

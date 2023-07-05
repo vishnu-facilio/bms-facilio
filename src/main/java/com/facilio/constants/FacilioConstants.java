@@ -15,11 +15,16 @@ import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.agentv2.system.SystemControllerContext;
+import com.facilio.alarms.sensor.context.sensoralarm.SensorAlarmContext;
+import com.facilio.alarms.sensor.context.sensoralarm.SensorAlarmOccurrenceContext;
+import com.facilio.alarms.sensor.context.sensoralarm.SensorEventContext;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmContext;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmOccurrenceContext;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpEventContext;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
-import com.facilio.bmsconsole.context.sensor.*;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
@@ -1438,7 +1443,7 @@ public class FacilioConstants {
 		public static final String READING_RULE_ID = "readingRuleId";
 		public static final String IS_READING_RULE_EXECUTE_FROM_JOB = "isReadingRulesExecutionFromJob";
 		public static final String READING_RULE_ALARM_META = "readingRuleAlarmMeta";
-		public static final String SENSOR_RULE_MODULE = "sensorRule";
+		public static final String SENSOR_RULE_MODULE = "sensorrule";
 		public static final String SENSOR_RULE_TYPES = "sensorRuleTypes";
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
 		public static final String WORKFLOW_ACTION_LIST = "workflowActions";
@@ -4125,6 +4130,11 @@ public class FacilioConstants {
 		public static final String INVITE_STATUS ="INVITE STATUS";
 
 
+
+	}
+
+	public static class SensorRule{
+		public  static final String SENSOR_RULE_TABLE_NAME = "Sensor_Readings";
 
 	}
 }

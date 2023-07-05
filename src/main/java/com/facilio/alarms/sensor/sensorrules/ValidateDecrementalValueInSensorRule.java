@@ -1,31 +1,27 @@
-package com.facilio.bmsconsole.context.sensor;
+package com.facilio.alarms.sensor.sensorrules;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.facilio.alarms.sensor.SensorRuleType;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleContext;
-import com.facilio.bmsconsole.context.sensor.SensorRuleTypeValidationInterface;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
-import com.facilio.time.DateTimeUtil;
-import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
 
-public class ValidateDecrementalValueInSensorRule implements SensorRuleTypeValidationInterface{
+public class ValidateDecrementalValueInSensorRule implements SensorRuleTypeValidationInterface {
 
 	@Override
 	public List<String> getSensorRuleProps() {
-		List<String> validatorProps = new ArrayList<String>();
+		List<String> validatorProps = new ArrayList<>();
 		validatorProps.add("subject");
 		validatorProps.add("severity");
 		return validatorProps;
@@ -41,10 +37,10 @@ public class ValidateDecrementalValueInSensorRule implements SensorRuleTypeValid
 	}
 	
 	@Override
-	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Object record, JSONObject fieldConfig,  boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception {
+	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Object record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception {
 		
 		ReadingContext reading = (ReadingContext)record;
-		FacilioField readingField = sensorRule.getReadingField();
+		FacilioField readingField = sensorRule.getSensorField();
 
 		if(readingField instanceof NumberField && reading != null && reading.getParentId() != -1)
 		{
@@ -107,6 +103,24 @@ public class ValidateDecrementalValueInSensorRule implements SensorRuleTypeValid
 	@Override
 	public SensorRuleType getSensorRuleTypeFromValidator() {
 		return SensorRuleType.DECREMENTAL_VALUE;
+	}
+
+	@Override
+	public boolean evaluateNewSensorRule(SensorRuleContext sensorRule, Object currentValue, Map<Long, Double> readingsMap, JSONObject fieldConfig) {
+		if (MapUtils.isNotEmpty(readingsMap) && readingsMap.size() > 1) {
+			List<Double> readingValue = readingsMap.values().stream().filter(m -> m != currentValue).collect(Collectors.toList());
+			double lastValue = CollectionUtils.isNotEmpty(readingValue) ? readingValue.get(0) : -1;
+			if (lastValue > -1) {
+				return lastValue > (double) currentValue;
+			}
+		}
+		return false;
+	}
+
+
+	@Override
+	public Object calculateTimeInterval(Map<String, Object> ruleProp) {
+		return null;
 	}
 }
 

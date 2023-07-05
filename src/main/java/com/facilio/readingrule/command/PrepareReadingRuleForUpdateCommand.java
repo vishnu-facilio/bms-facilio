@@ -36,6 +36,9 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
         NameSpaceContext nameSpaceContext = NamespaceAPI.getNameSpaceByRuleId(readingRule.getId(), NSType.READING_RULE);
         WorkflowContext workflow = readingRule.getNs().getWorkflowContext();
         workflow.setId(nameSpaceContext.getWorkflowId());
+        if(workflow==null){
+            throw new Exception("WorkFlow can not be null for reading rule");
+        }
         NewReadingRuleContext oldRule = NewReadingRuleAPI.getReadingRules(Collections.singletonList(readingRule.getId())).get(0);
         if (oldRule == null) {
             throw new Exception("Rule (" + readingRule.getId() + ") is not found!");
