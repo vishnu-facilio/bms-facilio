@@ -4,6 +4,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
+import com.facilio.bmsconsole.ModuleSettingConfig.util.ModuleSettingConfigUtil;
+import com.facilio.bmsconsole.context.ModuleSettingContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -70,10 +72,25 @@ public class SiteModule extends BaseModuleConfig {
             activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
 
+            addDefaultSiteModuleConfig(siteModule.getModuleId());
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void addDefaultSiteModuleConfig(long siteModuleId) throws Exception {
+
+        ModuleSettingContext moduleSettingContext = new ModuleSettingContext();
+
+        moduleSettingContext.setStatus(true);
+        moduleSettingContext.setModuleId(siteModuleId);
+        moduleSettingContext.setConfigurationName(FacilioConstants.ContextNames.SITE_MAP_VIEW);
+        moduleSettingContext.setDescription("Configure to show Google map view in the site list page");
+        moduleSettingContext.setDisplayName("Site Map View");
+        moduleSettingContext.setStatusDependent(true);
+
+        ModuleSettingConfigUtil.insertModuleConfiguration(moduleSettingContext);
     }
 
 //    private static void createSiteDefaultForm(ModuleBean modBean, FacilioModule siteModule) throws Exception {

@@ -7576,4 +7576,7 @@
 				class="com.facilio.bmsconsole.actions.UpdateFcmTokenAction" method="updateFcmToken">
 		</action>
 	</package>
+	<package name="siteMapView"  namespace="/api/v2/siteSettings" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.ModuleSetupAction" method="getSettingsList"/>
+	</package>
 </struts>
