@@ -39,7 +39,8 @@ public class ApplicationLayoutContext implements Serializable {
 
     public enum AppLayoutType implements FacilioIntEnum {
         SINGLE("Single"),
-        DUAL("Dual");
+        DUAL("Dual"),
+        DUAL_BETA("Dual Beta");
 
         String name;
 
