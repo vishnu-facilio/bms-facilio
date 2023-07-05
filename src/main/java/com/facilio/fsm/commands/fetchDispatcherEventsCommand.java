@@ -16,16 +16,14 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class fetchDispatcherEventsCommand extends FacilioCommand {
@@ -84,7 +82,8 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
                     .select(saSelectFields)
                     .module(serviceAppointment)
                     .beanClass(ServiceAppointmentContext.class)
-                    .andCondition(CriteriaAPI.getCondition(saFieldMap.get("fieldAgent"), StringUtils.join(peopleIds, ","), NumberOperators.EQUALS));
+                    .andCondition(CriteriaAPI.getCondition(saFieldMap.get("fieldAgent"), StringUtils.join(peopleIds, ","), NumberOperators.EQUALS))
+                    .fetchSupplements(Collections.singletonList((LookupField) saFieldMap.get("site")));
             Criteria saTimeCrit = new Criteria();
             saTimeCrit.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get("scheduledStartTime"), startTime+","+endTime, DateOperators.BETWEEN));
             saTimeCrit.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get("scheduledEndTime"), startTime+","+endTime, DateOperators.BETWEEN));
