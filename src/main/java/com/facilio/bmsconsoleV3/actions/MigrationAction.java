@@ -10,13 +10,11 @@ import com.facilio.bmsconsoleV3.util.OldAppMigrationUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.util.PortalUtil;
 import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.common.protocol.types.Field;
 
 
 @Getter
@@ -31,6 +29,8 @@ public class MigrationAction extends V3Action {
     private String viewName;
     private String pageType;
     private long recordId;
+    private String childModuleName;
+    private long childRecordId;
 
 
     public String oldAppMigration() {
@@ -64,12 +64,16 @@ public class MigrationAction extends V3Action {
                 if (migratedApp != null) {
                     long currentAppId = migratedApp.getId();
                     WebTabContext moduleTab = null;
-                    if(moduleName.equals("dashboard")){
-                        moduleTab = OldAppMigrationUtil.findRouteForTabType(currentAppId, WebTabContext.Type.DASHBOARD.getIndex());
+                    if (moduleName.equals("dashboard")) {
+                        moduleTab = OldAppMigrationUtil.getTabForTabType(currentAppId, WebTabContext.Type.DASHBOARD.getIndex());
+                    } else if (moduleName.equals("analytics")) {
+                        moduleTab = OldAppMigrationUtil.getTabForTabType(currentAppId, WebTabContext.Type.ANALYTICS.getIndex());
+                    } else if (moduleName.equals("portfolio")) {
+                        moduleTab = OldAppMigrationUtil.getCustomTab(currentAppId, "portfolio");
                     } else {
                         int tabType = WebTabContext.Type.MODULE.getIndex();
                         int deviceType = ApplicationLayoutContext.LayoutDeviceType.WEB.getIndex();
-                        moduleTab =  OldAppMigrationUtil.getModuleTab(currentAppId, deviceType, tabType, moduleName);
+                        moduleTab = OldAppMigrationUtil.getModuleTab(currentAppId, deviceType, tabType, moduleName);
                     }
                     if (moduleTab != null) {
                         WebTabGroupContext moduleTabGroup = OldAppMigrationUtil.findWebTabGroupForWebTab(moduleTab.getId(), ApplicationLayoutContext.LayoutDeviceType.WEB.getIndex());
@@ -88,10 +92,27 @@ public class MigrationAction extends V3Action {
                                     redirectUrl = "/" + appLinkName + "/" + groupRoute + "/" + tabRoute + "/new";
                                     break;
                                 case "LIST":
+                                case "DASHBOARD":
                                     redirectUrl = "/" + appLinkName + "/" + groupRoute + "/" + tabRoute + "/" + viewName;
                                     break;
-                                case "DASHBOARD":
-                                    redirectUrl = "/" + appLinkName + "/" + groupRoute + "/" + tabRoute + "/" ;
+                                case "ANALYTICS":
+                                    redirectUrl = "/" + appLinkName + "/" + groupRoute + "/" + tabRoute + "/" + childModuleName;
+                                    break;
+                                case "SITE_SUMMARY":
+                                    redirectUrl = "/" + appLinkName + "/" + groupRoute + "/" + tabRoute + "/sites/all/site/" + recordId + "/overview";
+                                    break;
+                                case "SITE_CHILD_SUMMARY":
+                                    redirectUrl = "/" + appLinkName + "/" + groupRoute + "/" + tabRoute
+                                            + "/sites/all/site/" + recordId + "/" + childModuleName + "/" + childRecordId;
+                                    break;
+                                case "PRINT_PAGE":
+                                    if (moduleName.equals("purchaserequest")) {
+                                        redirectUrl = "/" + appLinkName + "/" + groupRoute + "/" + tabRoute + "/prpdf";
+                                    }
+                                    if(moduleName.equals("workorder")){
+                                        redirectUrl = "/" + appLinkName + "/pdf/summarydownloadreport";
+                                    }
+                                    break;
                             }
                         }
                     }

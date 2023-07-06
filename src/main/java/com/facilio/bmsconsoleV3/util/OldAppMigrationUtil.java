@@ -19,7 +19,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.PortalUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.*;
 
@@ -96,11 +95,11 @@ public class OldAppMigrationUtil {
         return new WebTabGroupContext();
     }
 
-    public static WebTabContext findRouteForTabType(long appId, int tabType) throws Exception {
+    public static WebTabContext getTabForTabType(long appId, int tabType) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getWebTabModule().getTableName())
                 .select(FieldFactory.getWebTabFields())
-                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID","applicationId",String.valueOf(tabType),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID","applicationId",String.valueOf(appId),NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition("TYPE","type",String.valueOf(tabType),NumberOperators.EQUALS));
         Map<String, Object> webTab = builder.fetchFirst();
         if(MapUtils.isNotEmpty(webTab)){
@@ -140,5 +139,18 @@ public class OldAppMigrationUtil {
         }
 
         return null;
+    }
+
+    public static WebTabContext getCustomTab(Long appId, String type) throws Exception{
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabModule().getTableName())
+                .select(FieldFactory.getWebTabFields())
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID","applicationId",String.valueOf(appId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("NAME","name","Portfolio",StringOperators.CONTAINS));
+        Map<String, Object> webTab = builder.fetchFirst();
+        if(MapUtils.isNotEmpty(webTab)){
+            return FieldUtil.getAsBeanFromMap(webTab, WebTabContext.class);
+        }
+        return new WebTabContext();
     }
 }
