@@ -42,6 +42,7 @@ public class V3UpdateDashboardWithWidgets extends FacilioCommand
             List<DashboardWidgetContext> widgets = dashboard.getDashboardWidgets();
             V3DashboardAPIHandler.checkAndGenerateWidgetLinkName(widgets, dashboard.getId(), null);
             if (widgets != null && widgets.size() > 0)  {
+                Long parentId = null;
                 for (int i = 0; i < widgets.size(); i++) {
 
                     DashboardWidgetContext widget = widgets.get(i);
@@ -70,7 +71,11 @@ public class V3UpdateDashboardWithWidgets extends FacilioCommand
                             context.put(FacilioConstants.ContextNames.WIDGET, widget);
                             context.put(FacilioConstants.ContextNames.WIDGET_TYPE, widget.getWidgetType());
                             context.put(FacilioConstants.ContextNames.DASHBOARD_ID, dashboard.getId());
+                            context.put(FacilioConstants.ContextNames.PARENT_ID,parentId);
                             addWidgetChain.execute(context);
+                            if(widget.getCombo()){
+                                parentId = widget.getId();
+                            }
                         }
                     }
                     else if(widget.getId() > 0 && widget.getWidgetType().equals(DashboardWidgetContext.WidgetType.SECTION)){

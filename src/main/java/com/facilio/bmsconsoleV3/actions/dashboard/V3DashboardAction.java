@@ -51,6 +51,7 @@ public class V3DashboardAction extends V3Action {
     private boolean onlySelected;
     private boolean onlyFolders;
     private boolean withTabs;
+    private boolean newFlow;
     /**
      variables for recieving props for dashboard list api ends here
      */
@@ -413,6 +414,9 @@ public class V3DashboardAction extends V3Action {
             FacilioChain chain = TransactionChainFactoryV3.getDashboardListChain();
             FacilioContext context = chain.getContext();
             context.put("dashboard_list_prop", dashboard_list_prop);
+            if(newFlow){
+                context.put("newFlow",true);
+            }
             chain.execute();
             setData("dashboardFolders", dashboard_list_prop.getFolders());
         }
