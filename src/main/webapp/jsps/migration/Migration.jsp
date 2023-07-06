@@ -55,8 +55,6 @@
 <%@ page import="com.facilio.modules.fields.FacilioField" %>
 <%@ page import="com.facilio.modules.FieldType" %>
 <%@ page import="com.facilio.bmsconsole.commands.FacilioChainFactory" %>
-<%@ page import="com.facilio.bmsconsole.ModuleSettingConfig.util.ModuleSettingConfigUtil"%>
-<%@page import="com.facilio.bmsconsole.context.ModuleSettingContext"%>
 
 
 <%--
@@ -83,18 +81,6 @@
             long orgId = AccountUtil.getCurrentOrg().getId();
             printMsg("Started For -- "+AccountUtil.getCurrentOrg().getId());
             // write code here
-
-                    FacilioModule siteModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.SITE);
-                    ModuleSettingContext moduleSettingContext = new ModuleSettingContext();
-
-                    moduleSettingContext.setStatus(true);
-                    moduleSettingContext.setModuleId(siteModule.getModuleId());
-                    moduleSettingContext.setConfigurationName("siteMapView");
-                    moduleSettingContext.setDescription("Configure to show Google map view in the site list page");
-                    moduleSettingContext.setDisplayName("Site Map View");
-                    moduleSettingContext.setStatusDependent(true);
-
-                    ModuleSettingConfigUtil.insertModuleConfiguration(moduleSettingContext);
 
             printMsg("Completed For -- "+AccountUtil.getCurrentOrg().getId());
 
