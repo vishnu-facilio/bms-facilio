@@ -31,7 +31,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             addServiceAppointmentModule();
             addServiceAppointmentTaskModule();
             addServiceTasksField();
-            addServiceAppointmentFieldInServiceTask();
             addStateFlow();
     }
     private void addServiceAppointmentModule() throws Exception {
@@ -116,6 +115,24 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         locationId.setLookupModule(moduleBean.getModule("location"));
         serviceAppointmentFields.add(locationId);
 
+        FacilioField isDefault = FieldFactory.getDefaultField("isDefault","Is Default Appointment","IS_DEFAULT", FieldType.BOOLEAN);
+        serviceAppointmentFields.add(isDefault);
+
+        FacilioField responseDueTime = FieldFactory.getDefaultField("responseDueTime","Response Due Time","RESPONSE_DUE_TIME", FieldType.DATE_TIME);
+        serviceAppointmentFields.add(responseDueTime);
+
+        FacilioField resolutionDueTime = FieldFactory.getDefaultField("resolutionDueTime","Resolution Due Time","RESOLUTION_DUE_TIME", FieldType.DATE_TIME);
+        serviceAppointmentFields.add(resolutionDueTime);
+
+        SystemEnumField priority = FieldFactory.getDefaultField("priority","Priority","PRIORITY",FieldType.SYSTEM_ENUM);
+        priority.setEnumName("ServiceOrderPriority");
+        serviceAppointmentFields.add(priority);
+
+        LookupField territory = FieldFactory.getDefaultField("territory","Territory","TERRITORY_ID",FieldType.LOOKUP);
+        territory.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        territory.setLookupModule(moduleBean.getModule("territory"));
+        serviceAppointmentFields.add(territory);
+
         serviceAppointmentModule.setFields(serviceAppointmentFields);
         modules.add(serviceAppointmentModule);
 
@@ -156,13 +173,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
         chain.execute();
-    }
-    private void addServiceAppointmentFieldInServiceTask() throws Exception{
-        ModuleBean bean = Constants.getModBean();
-        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Service Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
-        serviceAppointment.setModule(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK));
-        serviceAppointment.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),"Service Appointment module doesn't exist."));
-        bean.addField(serviceAppointment);
     }
     @Override
     public List<FacilioForm> getModuleForms() throws Exception {

@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.context;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.calendar.V3CalendarContext;
+import com.facilio.fsm.context.TerritoryContext;
 import com.facilio.modules.FacilioEnum;
 
 import java.util.Collections;
@@ -25,6 +26,7 @@ public class V3SiteContext extends V3BaseSpaceContext {
 	private Integer boundaryRadius;
 	private V3ClientContext client;
 	private V3CalendarContext calendar;
+	private TerritoryContext territory;
 
 	public LocationContext getLocation() {
 		return location;

@@ -25,6 +25,7 @@ public class TerritoryModule extends BaseModuleConfig {
     public void addData() throws Exception {
         addTerritoryModule();
         addTerritoryLookupInPeople();
+        addTerritoryLookupInSite();
     }
     private void addTerritoryModule() throws Exception {
         List<FacilioModule> modules = new ArrayList<>();
@@ -46,6 +47,14 @@ public class TerritoryModule extends BaseModuleConfig {
         LookupField territoryLookup = new LookupField(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),FacilioConstants.Territory.TERRITORY,"Territory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"TERRITORY_ID",FieldType.LOOKUP,false,false,true,false,"Territory",modBean.getModule(FacilioConstants.Territory.TERRITORY));
         FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PEOPLE);
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(territoryLookup));
+        chain.execute();
+    }
+    private void addTerritoryLookupInSite() throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        LookupField territoryLookup = new LookupField(modBean.getModule(FacilioConstants.ContextNames.SITE),FacilioConstants.Territory.TERRITORY,"Territory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"TERRITORY_ID",FieldType.LOOKUP,false,false,true,false,"Territory",modBean.getModule(FacilioConstants.Territory.TERRITORY));
+        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.SITE);
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(territoryLookup));
         chain.execute();
     }

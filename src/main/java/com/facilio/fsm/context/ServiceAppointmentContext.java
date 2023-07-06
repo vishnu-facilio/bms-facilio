@@ -17,12 +17,17 @@ public class ServiceAppointmentContext extends V3Context {
     private String name;
     private String description;
     private ServiceOrderContext serviceOrder;
+    private ServiceOrderContext.ServiceOrderPriority priority;
+    private TerritoryContext territory;
     private List<ServiceAppointmentTaskContext> serviceTasks;
     private Long scheduledStartTime;
     private Long scheduledEndTime;
     private Long estimatedDuration;
     private Long actualStartTime;
     private Long actualEndTime;
+    private Long responseDueTime;
+    private Long resolutionDueTime;
+    private Boolean isDefault;
     private Long actualDuration;
     private LocationContextV3 location;
     private V3SiteContext site;
@@ -75,4 +80,49 @@ public class ServiceAppointmentContext extends V3Context {
     }
     private InspectionResponseContext inspection;
     private V3WorkOrderContext workorder;
+
+    private DueStatus responseDueStatus = DueStatus.ON_TIME; //client-purpose
+    public int getResponseDueStatus() {
+        if (responseDueStatus != null) {
+            return responseDueStatus.getIndex();
+        }
+        return -1;
+    }
+    public void setResponseDueStatus(int responseDueStatus) {
+        this.responseDueStatus = DueStatus.valueOf(responseDueStatus);
+    }
+    public DueStatus getResponseDueStatusEnum() {
+        return responseDueStatus;
+    }
+    public void setResponseDueStatus(DueStatus responseDueStatus) {
+        this.responseDueStatus = responseDueStatus;
+    }
+
+    public static enum DueStatus implements FacilioIntEnum {
+        ON_TIME ("On Time"),
+        OVERDUE ("Overdue");
+
+        String name;
+
+        DueStatus(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return this.name;
+        }
+
+        public static DueStatus valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
 }

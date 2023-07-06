@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.fsm.context.TerritoryContext;
+import lombok.Getter;
+import lombok.Setter;
 
 public class SiteContext extends BaseSpaceContext {
 
@@ -25,6 +28,9 @@ public class SiteContext extends BaseSpaceContext {
 	public void setLocation(LocationContext location) {
 		this.location = location;
 	}
+
+	@Getter@Setter
+	private TerritoryContext territory;
 
 	private User managedBy;
 
