@@ -163,12 +163,13 @@ public class PdfUtil {
 		if (AccountUtil.getCurrentSiteId() != -1) {
 			additionalInfo.put("currentSite", AccountUtil.getCurrentSiteId());
 		}
-		HttpServletRequest request = ServletActionContext.getRequest();
-		if(request != null ){
-			String switchVariable = request.getHeader("X-Switch-Value");
-			if (StringUtils.isNotEmpty(switchVariable))
-			{
-				additionalInfo.put("switchSiteValue", switchVariable);
+		if(ActionContext.getContext() != null) {
+			HttpServletRequest request = ServletActionContext.getRequest();
+			if (request != null) {
+				String switchVariable = request.getHeader("X-Switch-Value");
+				if (StringUtils.isNotEmpty(switchVariable)) {
+					additionalInfo.put("switchSiteValue", switchVariable);
+				}
 			}
 		}
 	}
