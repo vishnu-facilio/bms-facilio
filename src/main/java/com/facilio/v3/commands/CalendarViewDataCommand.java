@@ -59,11 +59,12 @@ public class CalendarViewDataCommand extends FacilioCommand {
                 .on(calendarViewRequest.getDateAggregator().getSelectField(startTimeField).getColumnName() + " = groupMax." + DATE_FORMAT);
 
         // Filter MAX Number of Records per cell
-        recordsBuilder.andCustomWhere("FIND_IN_SET(" + idFieldColumnName + ", " + GROUP_CONCAT_FIELD_NAME + ") <= " + (calendarViewRequest.getMaxResultPerCell() + 1));
-
+        recordsBuilder.andCustomWhere("FIND_IN_SET(" + idFieldColumnName + ", " + GROUP_CONCAT_FIELD_NAME + ") BETWEEN 1 AND " + (calendarViewRequest.getMaxResultPerCell() + 1));
+        
         if (endTimeField != null) {
             FacilioField differenceField = new FacilioField();
             differenceField.setName(DIFFERENCE);
+            differenceField.setDataType(FieldType.NUMBER);
             differenceField.setColumnName("(" + endTimeField.getCompleteColumnName() + " - " + startTimeField.getCompleteColumnName() + ")");
             recordsBuilder.orderBy("groupMax." + DATE_FORMAT + ", " + differenceField.getCompleteColumnName() + " " + "desc");
             selectiveFields.add(differenceField);
