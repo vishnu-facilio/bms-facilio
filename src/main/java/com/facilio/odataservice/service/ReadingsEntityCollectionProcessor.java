@@ -67,7 +67,6 @@ public class ReadingsEntityCollectionProcessor implements CountEntityCollectionP
         EdmEntitySet edmEntitySet = uriResourceEntitySet.getEntitySet();
         String readingView = edmEntitySet.getName();
         EntityCollection entityCollection = new EntityCollection();
-        LOGGER.error("Reading name"+readingView);
         try {
             if(ODataReadingViewsUtil.getReadingView(readingView)!=null) {
                 entityCollection = storage.getReadingsData(readingView);

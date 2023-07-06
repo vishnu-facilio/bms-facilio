@@ -52,9 +52,7 @@ public class ODataReadingViewsUtil {
         }
     }
     public static List<String> getReadingViewsList() throws Exception {
-        LOGGER.info("Get reading views List");
         LOGGER.info(tableName + "fields: "+fields);
-        LOGGER.info("fieldsmap: "+fieldsAsMap);
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(tableName)
                 .select(fields)

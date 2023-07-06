@@ -2,6 +2,7 @@ package com.facilio.odataservice.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -107,7 +108,6 @@ public class ODataModuleViewsUtil {
         return getView(view,moduleName,getAppId()).getFields();
     }
     public static List<FacilioField> getFields(List<ViewField> viewFields) throws Exception {
-        LOGGER.info("view fields sec");
         Map<String,FacilioField> moduleFields = getModuleFields(moduleName);
         moduleFields.put("siteId",FieldFactory.getSiteIdField(module));
         moduleFields.put("moduleId",FieldFactory.getModuleIdField(module));
@@ -118,27 +118,20 @@ public class ODataModuleViewsUtil {
             moduleFields.put("controllerId", FieldFactory.getControllerIdField(module));
         }
 
-        LOGGER.info("view fields sec module fields");
         List<FacilioField>  ViewFields= new ArrayList<>();
-        LOGGER.info(viewFields+"view fields");
         for(int i=0;i<viewFields.size();i++) {
-            LOGGER.info(viewFields.size()+"size");
             if(viewFields.get(i).getFieldName() != null && viewFields.get(i).getFieldName().equalsIgnoreCase("siteid")){
-                LOGGER.info(viewFields.get(i).getFieldName() + "name" + i);
                 ViewFields.add(moduleFields.get(viewFields.get(i).getFieldName()));
             }
             else if(viewFields.get(i).getField().getName() != null) {
-                LOGGER.info(viewFields.get(i).getField().getName() + "name" +i);
                 ViewFields.add(moduleFields.get(viewFields.get(i).getField().getName()));
             }
         }
-        LOGGER.info("view fields :" + viewFields);
         return ViewFields;
     }
     public static void viewAction(String moduleName,String viewName) throws Exception {
         ODataViewAction.v2getViewDetail(moduleName,viewName);
         ODataViewAction.getResult();
-        LOGGER.error("res -> "+ ODataViewAction.getResult());
     }
     public static Map<String,FacilioField> getFields(String view,String moduleName) throws Exception {
         view = getViewName(view);
@@ -157,8 +150,6 @@ public class ODataModuleViewsUtil {
                     }
                 }
             }
-            LOGGER.info("1view fields :" + viewFields);
-            LOGGER.info("view module fields :" + moduleFields1);
             return moduleFields1;
         }else {
             return null;
@@ -207,58 +198,40 @@ public class ODataModuleViewsUtil {
 
     public static EntityCollection getModuleViewRecords() throws Exception{
         modBean = Constants.getModBean();
-        LOGGER.info("Fields : "+fields);
         module = modBean.getModule(moduleName);
-        LOGGER.info("module :"+module);
         moduleClass = FacilioConstants.ContextNames.getClassFromModule(module);
-        LOGGER.info("Module class : "+moduleClass.getName());
-        LOGGER.info("lookup start");
         lookupFields = ODATAUtil.getSupplementRecords();
-        LOGGER.info("lookupend");
-        LOGGER.info("fields and fieldmap1");
         fields = modBean.getAllFields(moduleName);
         fieldsAsMap = FieldFactory.getAsMap(fields);
-        LOGGER.info("fields and fieldmap");
         fieldsAsMap.put("id", FieldFactory.getIdField(module));
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
                 .module(module)
                 .beanClass(moduleClass)
                 .fetchSupplements(lookupFields);
         // fields
-        LOGGER.info("fields section");
         LOGGER.info("result"+ODataViewAction.getResult());
         LOGGER.info(((FacilioView)ODataViewAction.getResult().get("viewDetail")).getFields()+"fields fetched successfully");
         fields = getFields(((FacilioView)ODataViewAction.getResult().get("viewDetail")).getFields());
         selectBuilder.select(fields);
-        LOGGER.info("sort fields " + ((FacilioView)ODataViewAction.getResult().get("viewDetail")).getSortFields());
-        LOGGER.info("criteria " + ((FacilioView)ODataViewAction.getResult().get("viewDetail")).getCriteria());
         //sorting
         if(((FacilioView)ODataViewAction.getResult().get("viewDetail")).getSortFields()!=null) {
-            LOGGER.info("field name"+((FacilioView) ODataViewAction.getResult().get("viewDetail")).getSortFields().get(0).getSortField().getName());
             String OrderBy = ((FacilioView) ODataViewAction.getResult().get("viewDetail")).getSortFields().get(0).getSortField().getName();
-            LOGGER.info("is ascending - "+((FacilioView) ODataViewAction.getResult().get("viewDetail")).getSortFields().get(0).getIsAscending());
             Boolean isAsc = ((FacilioView) ODataViewAction.getResult().get("viewDetail")).getSortFields().get(0).getIsAscending();
             String isAscOrDesc = !isAsc ? " DESC" : " ASC";
             OrderBy = fieldsAsMap.get(OrderBy).getColumnName();
             OrderBy = OrderBy + isAscOrDesc;
-            LOGGER.info("Orderby" + OrderBy);
             selectBuilder.orderBy(OrderBy);
         }
         //conditions
         if(((FacilioView)ODataViewAction.getResult().get("viewDetail")).getCriteria()!=null){
-            LOGGER.info("criteria block");
             Map<String, Condition> conditionMap =  ((FacilioView)ODataViewAction.getResult().get("viewDetail")).getCriteria().getConditions();
             for(Map.Entry<String,Condition> entry: conditionMap.entrySet()){
                 Condition condition = entry.getValue();
                 selectBuilder.andCondition(condition);
             }
         }
-        LOGGER.info("limit block");
-        selectBuilder.limit(5000);
-        LOGGER.info("props fetch");
-        for(FacilioField field : fields) {
-            LOGGER.info("f "+field);
-        }
+        int odataModuleRecordsLimit = Integer.parseInt(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.ODATA_MODULE_RECORDS_LIMIT, 10000));
+        selectBuilder.limit(odataModuleRecordsLimit);
         List<ModuleBaseWithCustomFields> props = selectBuilder.get();
         LOGGER.info("props fetch success");
         List<Map<String, Object>> propsMap = FieldUtil.getAsMapList(props, ModuleBaseWithCustomFields.class);

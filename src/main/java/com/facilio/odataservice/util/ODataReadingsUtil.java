@@ -67,20 +67,17 @@ public class ODataReadingsUtil {
 
     //get values for specific readingView
     public static List<Map<String, Object>> getReadingViewData(String readingView) throws Exception{
-        LOGGER.error("get data");
         ODataReadingsDataAction.setReadingViewName(readingView);
         return  ODataReadingsDataAction.getData(readingView);
     }
 
     //get fields for reading views
     public static Map<String, FacilioField> getFields(String readingView) throws Exception{
-        LOGGER.info("get fields");
         List<FacilioField> fields = new ArrayList<>();
         List<Long> fieldIds = new ArrayList<>();
         ODataReadingsContext context1 = ODataReadingViewsUtil.getReadingView(readingView);
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String fieldObj = context1.getReadingFields();
-        LOGGER.info("field obj: "+fieldObj);
         if(fieldObj != null&& !fieldObj.isEmpty() && !fieldObj.equalsIgnoreCase("[]") && !fieldObj.equalsIgnoreCase("null")) {
             JSONParser jsonParser = new JSONParser();
             List<String> resObj = (List<String>) jsonParser.parse(fieldObj);
@@ -90,7 +87,6 @@ public class ODataReadingsUtil {
             }
             fields = moduleBean.getFields(fieldIds);
         }
-        LOGGER.info("fetched fields : "+fields);
         return FieldFactory.getAsMap(fields);
     }
     public static Map<String, Object> getWeatherStation(long parentId) throws Exception{

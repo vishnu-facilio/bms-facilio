@@ -3312,6 +3312,8 @@ public class FacilioConstants {
 		public static final String HIDE_COMMENTS_AND_INFORMATION_SECTION_IN_SR="hideCommentsAndInformationSectionInSR";
 
 		public static final String NOTES_EDIT_AVAILABLE = "notesEditAvailable";
+		public static final String ODATA_READING_RECORDS_LIMIT = "odataReadingRecordsLimit";
+		public static final String ODATA_MODULE_RECORDS_LIMIT = "odataModuleRecordsLimit";
 	}
 
 	public static class Services {

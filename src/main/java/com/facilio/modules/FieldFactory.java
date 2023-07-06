@@ -468,7 +468,8 @@ public class FieldFactory extends BaseFieldFactory {
                 "sysModifiedTime",
                 "sysModifiedBy",
                 "id",
-                "localId"
+                "localId",
+                "client"
         }));
 
         public static final List<String> APPROVAL_FORM_FIELDS = Collections.unmodifiableList(Arrays.asList(new String[]{

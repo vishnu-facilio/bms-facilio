@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.ODataReadings;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsoleV3.context.ODataReadingsContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -140,7 +141,9 @@ public class GetODataReadingData extends FacilioCommand {
             if (criteria != null && !criteria.isEmpty()) {
                 selectRecordBuilder.andCriteria(criteria);
             }
-            selectRecordBuilder.limit(20000);
+
+            int odataReadingRecordsLimit = Integer.parseInt(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.ODATA_READING_RECORDS_LIMIT, 20000));
+            selectRecordBuilder.limit(odataReadingRecordsLimit);
             props = selectRecordBuilder.get();
         }
         if (aggregateOperator != null && !booleanFieldsData.isEmpty()) {

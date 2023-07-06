@@ -49,7 +49,7 @@ public class ODataModuleAction extends FacilioAction {
     public String execute() throws Exception {
             HttpServletRequest req = ServletActionContext.getRequest();
             HttpServletResponse resp = ServletActionContext.getResponse();
-            if( true || AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.ODATA_API)) {
+            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.ODATA_API)) {
                 if (moduleName.equalsIgnoreCase("index")) {
                     setModuleName((Arrays.asList(req.getServletPath().split("/api/odata/module/"))).get(1));
                 }
@@ -59,8 +59,8 @@ public class ODataModuleAction extends FacilioAction {
                     moduleId = actionModule.getModuleId();
                 }
 
-//                if (moduleId != -1 && ODataModuleViewsUtil.isModuleEnabled(moduleId)) {
-                if(true){
+                if (moduleId != -1 && ODataModuleViewsUtil.isModuleEnabled(moduleId)) {
+//                if(true){
                     OData odata = OData.newInstance();
                     ModuleViewsEdmProvider provider = new ModuleViewsEdmProvider(getModuleName());
                     ServiceMetadata edm = odata.createServiceMetadata(provider, new ArrayList<EdmxReference>());

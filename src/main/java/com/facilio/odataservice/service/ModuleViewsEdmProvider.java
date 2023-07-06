@@ -52,7 +52,6 @@ public class ModuleViewsEdmProvider extends CsdlAbstractEdmProvider {
         try {
             Map<String, FacilioField> fieldMap = ODataModuleViewsUtil.getFields(viewName, CONTAINER_NAME);
             csdlPropertyList = ODATAUtil.getEntityTypeProperties(fieldMap, csdlPropertyList, false,0);
-            LOGGER.info("Properties of "+viewName+"is :"+csdlPropertyList);
             // configure EntityType
             entityType = new CsdlEntityType();
             entityType.setName(viewName);
