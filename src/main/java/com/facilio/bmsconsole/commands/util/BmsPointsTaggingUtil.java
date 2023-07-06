@@ -94,9 +94,11 @@ public class BmsPointsTaggingUtil {
         postObj.put("pointsMap", pointsMap);
         postObj.put("pointsMapList",pointsMapList);
         postObj.put("org_id", MLServiceUtil.getOrgInfo().get("orgId"));
+        postObj.put("callback_url",FacilioProperties.getMainAppDomain());
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
         String postURL = FacilioProperties.getAnomalyPredictAPIURL() + "/getMetaDataV1";
+        LOGGER.info("predict api ---"+"POSTURL---  "+postURL+"HEADERS--- "+headers+"   POSTOBJ --- "+postObj.toString());
         String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(), 300);
         if (org.apache.commons.lang.StringUtils.isEmpty(result) || result.contains("Internal Server Error")) {
             LOGGER.fatal("Error getMetaDataV1 api " + postURL + " ERROR MESSAGE : " + "Response is not valid. RESULT : " + result);
@@ -421,6 +423,7 @@ public class BmsPointsTaggingUtil {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
         String postURL = FacilioProperties.getAnomalyPredictAPIURL() + "/updateMetaDataV1";
+        LOGGER.info("update api---"+"POSTURL---  "+postURL+"HEADERS--- "+headers+"   POSTOBJ --- "+postObj.toString());
         String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(), 300);
         if (org.apache.commons.lang.StringUtils.isEmpty(result) || result.contains("Internal Server Error")) {
             LOGGER.fatal("Error_updateMetaDataV1 api " + postURL + " ERROR MESSAGE : " + "Response is not valid. RESULT : " + result);
@@ -549,6 +552,7 @@ public class BmsPointsTaggingUtil {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
         String postURL = FacilioProperties.getAnomalyPredictAPIURL() + "/createDb";
+        LOGGER.info("create db api---"+"POSTURL---  "+postURL+"HEADERS--- "+headers+"   POSTOBJ --- "+postObj.toString());
         String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(), 300);
         if (org.apache.commons.lang.StringUtils.isEmpty(result) || result.contains("Internal Server Error")) {
             LOGGER.info("Error createDb api " + postURL + " ERROR MESSAGE : " + "Response is not valid. RESULT : " + result);
