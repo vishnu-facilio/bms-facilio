@@ -22,4 +22,5 @@ public interface NamespaceBean {
 
     void addNamespaceFields(Long nsId, List<NameSpaceField> fields) throws Exception;
 
+    void updateNsCacheWithCategory(Long categoryId,List<NSType> nsType) throws Exception;
 }

@@ -1,6 +1,7 @@
 package com.facilio.ns.command;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.ns.NamespaceConstants;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.v3.context.Constants;
@@ -21,8 +22,9 @@ public class AddNamespaceCommand extends FacilioCommand {
             Long workflowId = ((WorkflowContext) context.get(WorkflowV2Util.WORKFLOW_CONTEXT)).getId();
             ns.setWorkflowId(workflowId);
         }
-
+        Long categoryId= (Long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
         Long parentRuleId = (Long) context.get(NamespaceConstants.PARENT_RULE_ID);
+        ns.setCategoryId(categoryId);
         ns.setStatus(true);
 
         if (parentRuleId != null) {

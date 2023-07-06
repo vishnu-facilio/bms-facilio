@@ -5795,4 +5795,12 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setDisplayName("Schedule Rule Record Relation");
 		return module;
 	}
+
+	public static FacilioModule getSensorAlarmDetailsModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("sensorAlarmDetails");
+		module.setDisplayName("Sensor Alarm Details");
+		module.setTableName("SensorAlarm_Details");
+		return module;
+	}
 }

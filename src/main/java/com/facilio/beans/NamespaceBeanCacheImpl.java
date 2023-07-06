@@ -44,7 +44,7 @@ public class NamespaceBeanCacheImpl extends NamespaceBeanImpl implements Namespa
         removeCacheWithFieldsList(fields);
     }
 
-    private void removeCacheWithFieldsList(List<NameSpaceField> fields){
+    private void removeCacheWithFieldsList(List<NameSpaceField> fields) {
         List<Long> readingFieldIds = fields.stream().map(NameSpaceField::getFieldId).collect(Collectors.toList());
         FacilioCache<String, List<Long>> nameSpaceIdCache = LRUCache.getNameSpaceIdCache();
         for (Long fieldId : readingFieldIds) {
@@ -83,9 +83,28 @@ public class NamespaceBeanCacheImpl extends NamespaceBeanImpl implements Namespa
             nameSpaceCache.remove(CacheUtil.NAMESPACE_KEY(AccountUtil.getCurrentOrg().getId(), nsId));
         }
         FacilioCache<String, List<Long>> nameSpaceIdCache = LRUCache.getNameSpaceIdCache();
-        List<Long> fieldIds = NamespaceAPI.getNsFieldIdsForRuleId(ruleId, nsTypeList);
+        List<Long> fieldIds = NamespaceAPI.getNsFieldIdsForRuleId(nsIds, nsTypeList);
         for (Long fieldId : fieldIds) {
             nameSpaceIdCache.remove(CacheUtil.NAMESPACE_IDS_KEY(AccountUtil.getCurrentOrg().getId(), fieldId));
         }
+    }
+
+    private void removeNsCacheWithCategory(Long categoryId, List<NSType> nsTypeList) throws Exception {
+        FacilioCache<String, NameSpaceCacheContext> nameSpaceCache = LRUCache.getNameSpaceCache();
+        List<Long> nsIds = NamespaceAPI.
+                getNsIdForCategoryId(categoryId, nsTypeList);
+        for (Long nsId : nsIds) {
+            nameSpaceCache.remove(CacheUtil.NAMESPACE_KEY(AccountUtil.getCurrentOrg().getId(), nsId));
+        }
+        FacilioCache<String, List<Long>> nameSpaceIdCache = LRUCache.getNameSpaceIdCache();
+        List<Long> fieldIds = NamespaceAPI.getNsFieldIdsForRuleId(nsIds, nsTypeList);
+        for (Long fieldId : fieldIds) {
+            nameSpaceIdCache.remove(CacheUtil.NAMESPACE_IDS_KEY(AccountUtil.getCurrentOrg().getId(), fieldId));
+        }
+    }
+
+    @Override
+    public void updateNsCacheWithCategory(Long categoryId, List<NSType> nsList) throws Exception {
+        removeNsCacheWithCategory(categoryId, nsList);
     }
 }

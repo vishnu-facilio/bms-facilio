@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -48,6 +49,8 @@ import java.util.stream.Collectors;
 
 import static com.facilio.accounts.util.AccountUtil.FeatureLicense.NEW_READING_RULE;
 
+@Getter
+@Setter
 public class ReadingAction extends FacilioAction {
 	
 	/**
@@ -57,6 +60,7 @@ public class ReadingAction extends FacilioAction {
 
 	@Getter @Setter
 	private Map<String, List<ReadingContext>> readingMap;
+
 
 	public String addHistoryReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -103,7 +107,9 @@ public class ReadingAction extends FacilioAction {
 	
 
 	String resourceType;
-	
+
+	List<SensorRuleContext> sensorRuleList;
+
 	
 	public String getResourceType() {
 		return resourceType;
@@ -148,19 +154,20 @@ public class ReadingAction extends FacilioAction {
 	public String addAssetCategoryReading() throws Exception {
 		return addCategoryReading(FacilioConstants.ContextNames.ASSET_CATEGORY, ModuleFactory.getAssetCategoryReadingRelModule());
 	}
-	
+
 	private String addCategoryReading(String parentModule, FacilioModule categoryReadingModule) throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModule);
-		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
-		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
-		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, categoryReadingModule);
-		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
-		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, getFieldReadingRules());
-		
-		FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
-		addReadingChain.execute(context);
-		
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModule);
+			context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
+			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
+			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, categoryReadingModule);
+			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
+			context.put(FacilioConstants.ContextNames.VALIDATION_RULES, getFieldReadingRules());
+			context.put(ContextNames.SENSOR_RULE_LIST,getSensorRuleList());
+
+			FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
+			addReadingChain.execute(context);
+
 		return SUCCESS;
 	}
 	

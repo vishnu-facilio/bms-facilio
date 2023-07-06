@@ -1,5 +1,6 @@
 package com.facilio.alarms.sensor.commands;
 
+import com.facilio.alarms.sensor.context.SensorAlarmDetailsContext;
 import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.alarms.sensor.context.SensorRulePropContext;
 import com.facilio.alarms.sensor.util.NewSensorRuleUtil;
@@ -29,6 +30,8 @@ public class FetchSensorRuleSummaryCommand extends FacilioCommand {
             if(sensorRuleTypes!=null) {
                 sensorRule.setSensorRuleTypes(sensorRuleTypes);
             }
+            SensorAlarmDetailsContext sensorAlarmDetails=NewSensorRuleUtil.getSensorAlarmDetails(sensorRule.getId());
+            sensorRule.setSensorAlarmDetails(sensorAlarmDetails);
 
             NameSpaceContext nameSpaceContext = NamespaceAPI.getNameSpaceByRuleId(sensorRule.getId(), NSType.SENSOR_RULE);
             sensorRule.setNs(nameSpaceContext);

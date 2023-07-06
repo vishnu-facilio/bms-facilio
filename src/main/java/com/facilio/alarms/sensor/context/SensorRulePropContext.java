@@ -28,6 +28,8 @@ public class SensorRulePropContext {
 
     boolean isInterval;
 
+    boolean isCounterField;
+
     public void setIsInterval(){
         if(ruleValidatorProps!=null){
             this.isInterval= ruleValidatorProps.containsKey("timeInterval");
@@ -58,6 +60,7 @@ public class SensorRulePropContext {
     }
     public void setSensorRuleType(SensorRuleType sensorRuleType) {
         this.sensorRuleType = sensorRuleType;
+        this.setCounterField();
     }
 
     public void setSensorRuleType(int sensorRuleType) {
@@ -80,4 +83,9 @@ public class SensorRulePropContext {
             ruleValidatorProps = (JSONObject) parser.parse(jsonStr);
         }
     }
+
+    public void setCounterField() {
+        this.isCounterField = this.sensorRuleType.isCounterFieldType();
+    }
+
 }

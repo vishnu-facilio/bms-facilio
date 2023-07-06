@@ -1,8 +1,11 @@
 package com.facilio.alarms.sensor.util;
 
+import com.facilio.alarms.sensor.SensorRuleType;
+import com.facilio.alarms.sensor.context.SensorAlarmDetailsContext;
 import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.alarms.sensor.context.SensorRulePropContext;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -17,14 +20,17 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class NewSensorRuleUtil {
     public static List<SensorRuleContext> fetchSensorRulesByModule(String moduleName, boolean isFetchSubProps, boolean isHistorical) throws Exception {
@@ -146,6 +152,68 @@ public class NewSensorRuleUtil {
     public static void setParentIdForRuleTypes(List<SensorRulePropContext> sensorRuleTypes, SensorRuleContext sensorRuleContext) {
         for (SensorRulePropContext sensorRuleProps : sensorRuleTypes) {
             sensorRuleProps.setParentSensorRuleId(sensorRuleContext.getId());
+        }
+    }
+
+    public static SensorAlarmDetailsContext getSensorAlarmDetails(Long sensorRuleId) throws Exception {
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getSensorAlarmDetailFields())
+                .table(ModuleFactory.getSensorAlarmDetailsModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("SENSOR_RULE_ID", "sensorRuleId", String.valueOf(sensorRuleId), NumberOperators.EQUALS));
+        List<Map<String, Object>> alarmDetailProps = selectRecordBuilder.get();
+        if (CollectionUtils.isNotEmpty(alarmDetailProps)) {
+            SensorAlarmDetailsContext sensorAlarmDetailsContext = FieldUtil.getAsBeanFromMap(alarmDetailProps.get(0), SensorAlarmDetailsContext.class);
+            sensorAlarmDetailsContext.setSeverity(AlarmAPI.getAlarmSeverity(sensorAlarmDetailsContext.getSeverityId()).getSeverity());
+            return sensorAlarmDetailsContext;
+        }
+        return null;
+    }
+
+    public static void updateSensorRuleStatus(Long categoryId, boolean status) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule sensorModule = modBean.getModule(FacilioConstants.ContextNames.SENSOR_RULE_MODULE);
+
+        SensorRuleContext sensorRuleContext = new SensorRuleContext();
+        sensorRuleContext.setStatus(status);
+        GenericUpdateRecordBuilder updateSensorStatus = new GenericUpdateRecordBuilder()
+                .table(sensorModule.getTableName())
+                .fields(FieldFactory.getSensorRuleFields())
+                .andCondition(CriteriaAPI.getCondition("ASSET_CATEGORY_ID", "assetCategory", String.valueOf(categoryId), NumberOperators.EQUALS));
+
+        updateSensorStatus.update(FieldUtil.getAsProperties(sensorRuleContext));
+    }
+
+    public static void addSensorRuleType(List<SensorRulePropContext> sensorRuleTypes, SensorRuleType type, FacilioField readingFieldObj, boolean filterFields) {
+
+        JSONObject rulePropInfo = new JSONObject();
+        for (String prop : type.getSensorRuleValidationType().getSensorRuleProps()) {
+            if (!prop.equals("subject") && !prop.equals("severity")) {
+                rulePropInfo.put(prop, null);
+            }
+        }
+
+        SensorRulePropContext newContext = new SensorRulePropContext();
+        newContext.setSensorRuleType(type);
+        newContext.setSubject(type.getValueString());
+        newContext.setRuleValidatorProps(rulePropInfo);
+
+        if (filterFields) {
+            List<SensorRulePropContext> filteredRuleTypes = sensorRuleTypes.stream()
+                    .filter(i -> i.getSensorRuleTypeEnum() == type)
+                    .collect(Collectors.toList());
+
+            if (CollectionUtils.isEmpty(filteredRuleTypes)) {
+                NumberField numberField = (NumberField) readingFieldObj;
+                if (!numberField.isCounterField() && readingFieldObj instanceof NumberField && !type.isCounterFieldType()) {
+                    sensorRuleTypes.add(newContext);
+                } else if ((numberField.isCounterField() && type.isCounterFieldType())) {
+                    sensorRuleTypes.add(newContext);
+                }
+            }
+        }
+        else{
+            sensorRuleTypes.add(newContext);
         }
     }
 }

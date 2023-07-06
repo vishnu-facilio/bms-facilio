@@ -14,6 +14,8 @@ import com.facilio.agentv2.point.AddPointCommand;
 import com.facilio.agentv2.point.ConfigurePointCommand;
 import com.facilio.agentv2.point.EditPointCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
+import com.facilio.alarms.sensor.commands.AddSensorRuleFromReadingsCommand;
+import com.facilio.alarms.sensor.commands.FetchAllSensorRulesCommand;
 import com.facilio.alarms.sensor.commands.FetchSensorRuleListCommand;
 import com.facilio.banner.commands.CloseBannerCommand;
 import com.facilio.bmsconsole.ModuleSettingConfig.command.AddGlimpseCommand;
@@ -1378,6 +1380,7 @@ public class TransactionChainFactory {
 			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
 			c.addCommand(new SetValidationRulesContextCommand());
 			c.addCommand(new AddValidationRulesCommand());
+			c.addCommand(new AddSensorRuleFromReadingsCommand());
 			return c;
 		}
 
@@ -3902,18 +3905,15 @@ public class TransactionChainFactory {
 	}
 
 
-
-	public static FacilioChain addSensorRuleNsChain(){
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new ConstructNsFieldsCommand());
-		c.addCommand(new SetParentIdForNamespaceCommand());
-		c.addCommand(new AddNamespaceCommand());
-		c.addCommand(new AddNamespaceFieldsCommand());
-		return c;
-	}
-	public static FacilioChain fetchNewSensorRuleChain() {
+	public static FacilioChain fetchSensorRuleChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new FetchSensorRuleListCommand());
+		return c;
+	}
+
+	public static FacilioChain fetchAllSensorRules() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchAllSensorRulesCommand());
 		return c;
 	}
 

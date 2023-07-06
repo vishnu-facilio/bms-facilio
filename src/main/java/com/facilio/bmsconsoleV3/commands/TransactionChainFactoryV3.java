@@ -6,10 +6,7 @@ import static com.facilio.bmsconsole.commands.TransactionChainFactory.getAddCate
 
 import java.util.Collections;
 
-import com.facilio.alarms.sensor.commands.AddSensorReadingsCommand;
-import com.facilio.alarms.sensor.commands.AddSensorRuleTypeCommand;
-import com.facilio.alarms.sensor.commands.SensorRulePreCreationCommand;
-import com.facilio.alarms.sensor.commands.SetRecordModuleAndFieldIdCommand;
+import com.facilio.alarms.sensor.commands.*;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.asset.*;
 import com.facilio.bmsconsoleV3.commands.attendance.*;
@@ -64,6 +61,8 @@ import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.LoadMultiResourceExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.context.spacebooking.*;
 import com.facilio.bmsconsoleV3.plannedmaintenance.ValidatePmResourcePlannerResource;
+import com.facilio.connected.commands.FetchCategoryLevelStatusCommand;
+import com.facilio.connected.commands.UpdateCategoryLevelStatusCommand;
 import com.facilio.plannedmaintenance.FetchPlannerDetails;
 import com.facilio.plannedmaintenance.PreCreateWorkOrderRecord;
 import com.facilio.permission.commands.AddOrUpdatePermissionSet;
@@ -3439,6 +3438,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain addSensorRuleTypeAndNsChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddSensorRuleTypeCommand());
+        c.addCommand(new AddSensorAlarmDetailsCommand());
         c.addCommand(addSensorRuleNsChain());
         return c;
     }
@@ -3463,11 +3463,22 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetPivotModulesListCommand());
         return c;
     }
+    public  static FacilioChain fetchConnectedCategoryStatusChain(){
+        FacilioChain chain=getDefaultChain();
+        chain.addCommand(new FetchCategoryLevelStatusCommand());
+        return chain;
+    }
 
     public static FacilioChain getWorkflowVersionHistoryBeforeSaveCommand() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new WorkflowVersionHistoryFillVersionCommand());
         return c;
+    }
+
+    public  static FacilioChain updateConnectedCategoryStatusChain(){
+        FacilioChain chain=getDefaultChain();
+        chain.addCommand(new UpdateCategoryLevelStatusCommand());
+        return chain;
     }
 }
 

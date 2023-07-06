@@ -10,6 +10,8 @@ import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.connected.ConnectedCategoryContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -49,17 +51,49 @@ public class V2AlarmAction extends FacilioAction {
 
     private List<SensorRuleContext> sensorRules;
 
+    ConnectedCategoryContext connectedCategory;
+
+    int nsType;
+
     public String fetchSensorRulesList() throws Exception {
         FacilioChain sensorRuleChain;
-        sensorRuleChain = TransactionChainFactory.fetchNewSensorRuleChain();
+        sensorRuleChain = TransactionChainFactory.fetchSensorRuleChain();
         FacilioContext context = sensorRuleChain.getContext();
         constructListContext(context);
         context.put(ContextNames.READING_FIELD_ID, readingFieldId);
         context.put(ContextNames.CATEGORY_ID, categoryId);
         sensorRuleChain.execute();
-        setResult(FacilioConstants.ContextNames.SENSOR_RULE_TYPES, context.get(FacilioConstants.ContextNames.SENSOR_RULE_TYPES));
+        setResult(ContextNames.SENSOR_RULE_MODULE, context.get(ContextNames.SENSOR_RULE_MODULE));
         setResult("id",context.get(ContextNames.ID));
 
+        return SUCCESS;
+    }
+
+    public String fetchAllSensorRules() throws Exception{
+        FacilioChain fetchSensorRules=TransactionChainFactory.fetchAllSensorRules();
+        FacilioContext context = fetchSensorRules.getContext();
+        fetchSensorRules.execute();
+        setResult(ContextNames.SENSOR_RULE_MODULE, context.get(ContextNames.SENSOR_RULE_MODULE));
+        return SUCCESS;
+    }
+    public String fetchCategoryAlarmsDetails() throws Exception {
+        FacilioChain facilioChain = TransactionChainFactoryV3.fetchConnectedCategoryStatusChain();
+        FacilioContext context=facilioChain.getContext();
+        context.put(ContextNames.CATEGORY_ID,categoryId);
+        facilioChain.execute();
+        setResult(ContextNames.CONNECTED_CATEGORY_DETAILS,context.get(ContextNames.CONNECTED_CATEGORY_DETAILS));
+        setResult(ContextNames.COUNT,context.get(ContextNames.COUNT));
+        return SUCCESS;
+    }
+
+    public String updateSensorRuleCategoryStatus() throws Exception {
+        FacilioChain facilioChain = TransactionChainFactoryV3.updateConnectedCategoryStatusChain();
+        FacilioContext context=facilioChain.getContext();
+        context.put(ContextNames.CATEGORY_ID,categoryId);
+        context.put(ContextNames.CONNECTED_CATEGORY_DETAILS,connectedCategory);
+        context.put(ContextNames.TYPE,nsType);
+        facilioChain.execute();
+        setResult(ContextNames.CONNECTED_CATEGORY_DETAILS,context.get(ContextNames.CONNECTED_CATEGORY_DETAILS));
         return SUCCESS;
     }
 

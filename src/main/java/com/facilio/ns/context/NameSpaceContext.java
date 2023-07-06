@@ -25,10 +25,12 @@ public class NameSpaceContext implements Serializable {
         this.includedAssetIds = ns.includedAssetIds;
         this.type = ns.type;
         this.assetCategoryId = ns.assetCategoryId;
+        this.categoryId=ns.categoryId;
         this.workflowId = ns.workflowId;
         this.workflowContext = ns.workflowContext;
         this.status = ns.status;
         this.fields = ns.fields;
+        this.loggerLevel=ns.loggerLevel;
     }
 
     /**
@@ -42,10 +44,12 @@ public class NameSpaceContext implements Serializable {
         this.includedAssetIds = ns.includedAssetIds;
         this.type = ns.type;
         this.assetCategoryId = ns.assetCategoryId;
+        this.categoryId=ns.categoryId;
         this.workflowId = ns.workflowId;
         this.workflowContext = ns.workflowContext;
         this.status = ns.status;
         this.fields = ns.fields;
+        this.loggerLevel=ns.loggerLevel;
     }
 
     Long id;
@@ -62,6 +66,8 @@ public class NameSpaceContext implements Serializable {
 
     Long assetCategoryId;
 
+    Long categoryId;
+
     Long workflowId;
 
     WorkflowContext workflowContext;
@@ -69,6 +75,8 @@ public class NameSpaceContext implements Serializable {
     Boolean status;
 
     List<NameSpaceField> fields;
+
+    int loggerLevel;
 
     {
         fields = new ArrayList<>();

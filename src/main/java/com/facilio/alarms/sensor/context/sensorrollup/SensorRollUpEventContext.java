@@ -1,5 +1,6 @@
 package com.facilio.alarms.sensor.context.sensorrollup;
 
+import com.facilio.alarms.sensor.context.SensorAlarmDetailsContext;
 import com.facilio.alarms.sensor.util.NewSensorRuleUtil;
 import com.facilio.alarms.sensor.util.SensorRuleUtil;
 import com.facilio.alarms.sensor.context.SensorRuleContext;
@@ -119,7 +120,9 @@ public class SensorRollUpEventContext extends BaseEventContext {
 		SensorRollUpEventContext sensorRollUpEvent = new SensorRollUpEventContext();
 		ResourceContext resource = ResourceAPI.getResource(resourceId);
 
-		sensorRollUpEvent.setSeverityString("Warning");
+		SensorAlarmDetailsContext sensorAlarmDetails=sensorRule.getSensorAlarmDetails();
+
+		sensorRollUpEvent.setSeverityString(sensorAlarmDetails.getSeverity());
 		sensorRollUpEvent.setResource(resource);
 		sensorRollUpEvent.setSiteId(resource.getSiteId());
 

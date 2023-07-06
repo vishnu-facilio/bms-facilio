@@ -21,6 +21,7 @@ public class SensorRulePreCreationCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(sensorRules)) {
             for (SensorRuleContext sensorRule : sensorRules) {
                 List<SensorRulePropContext> sensorRuleTypes = sensorRule.getSensorRuleTypes();
+                sensorRule.setStatus(Boolean.TRUE);
                 context.put(FacilioConstants.ContextNames.SENSOR_RULE_TYPES, sensorRuleTypes);
             }
 

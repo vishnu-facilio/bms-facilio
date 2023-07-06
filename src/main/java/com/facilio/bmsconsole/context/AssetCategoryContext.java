@@ -5,20 +5,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 
+@Log4j
+@Setter
+@Getter
 public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private String name;
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	private AssetCategoryType type;
 	public int getType() {
 		if(type != null) {
@@ -42,22 +41,9 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 	public AssetCategoryType getTypeEnum() {
 		return type;
 	}
-	
 	private long parentCategoryId;
-	public long getParentCategoryId() {
-		return parentCategoryId;
-	}
-	public void setParentCategoryId(long parentCategoryId) {
-		this.parentCategoryId = parentCategoryId;
-	}
-	
 	private long assetModuleID;
-	public long getAssetModuleID() {
-		return assetModuleID;
-	}
-	public void setAssetModuleID(long assetModuleID) {
-		this.assetModuleID = assetModuleID;
-	}
+
 //	public String getAssetModuleName() throws Exception {
 //		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 //		FacilioModule module = modBean.getModule(assetModuleID);
@@ -68,15 +54,6 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 //	}
 	
 	private String moduleName;
-	
-	
-
-	public String getModuleName() {
-		return moduleName;
-	}
-	public void setModuleName(String moduleName) {
-		this.moduleName = moduleName;
-	}
 
 	private String displayName;
 	public String getDisplayName() {
@@ -87,16 +64,8 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 			return name;
 		}
 	}
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
 	private Boolean isDefault;
-	public Boolean getIsDefault() {
-		return isDefault;
-	}
-	public void setIsDefault(Boolean isDefault) {
-		this.isDefault = isDefault;
-	}
+	private String description;
 
 	public static enum AssetCategoryType {
 		MISC(0, "Misc"),
@@ -114,14 +83,14 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 			this.intVal = intVal;
 			this.strVal = strVal;
 		}
-		
+
 		public int getIntVal() {
 			return intVal;
 		}
 		public String getStringVal() {
 			return strVal;
 		}
-		
+
 		public static AssetCategoryType getType(int val) {
 			return STATE_MAP.get(val);
 		}

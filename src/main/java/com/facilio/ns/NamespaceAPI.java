@@ -312,8 +312,23 @@ public class NamespaceAPI {
         return nsIds;
     }
 
-    public static List<Long> getNsFieldIdsForRuleId(Long parentRuleId, List<NSType> nsTypeList) throws Exception {
-        List<Long> nsIds = getNsIdForRuleId(parentRuleId, nsTypeList);
+    public static List<Long> getNsFieldIdsForRuleId(List<Long> nsIds, List<NSType> nsTypeList) throws Exception {
         return CollectionUtils.isNotEmpty(nsIds) ? NamespaceAPI.getFieldIdsForNamespace(nsIds) : new ArrayList<>();
+    }
+
+    public static List<Long> getNsIdForCategoryId(Long parentRuleId, List<NSType> nsTypeList) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
+                .select(Collections.singleton(FieldFactory.getIdField("id", "ID", NamespaceModuleAndFieldFactory.getNamespaceModule())))
+                .andCondition(CriteriaAPI.getCondition("CATEGORY_ID", "categoryId", parentRuleId.toString(), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getConditionFromList("TYPE", "type", getNsIndexFromList(nsTypeList), NumberOperators.EQUALS));
+        List<Map<String, Object>> props = builder.get();
+        List<Long> nsIds = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(props)) {
+            for (Map<String, Object> prop : props) {
+                nsIds.add((Long) prop.get("id"));
+            }
+        }
+        return nsIds;
     }
 }

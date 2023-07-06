@@ -1419,6 +1419,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("sensorFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
         fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
         fields.add(getField("recordModuleId","RECORD_MODULE_ID",module,FieldType.NUMBER));
+        fields.add(getField("status","STATUS",module,FieldType.BOOLEAN));
         fields.add(getField("recordFieldId","RECORD_FIELD_ID",module,FieldType.NUMBER));
         return fields;
     }
@@ -1432,6 +1433,17 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("sensorRuleType", "SENSOR_RULE_TYPE", module, FieldType.NUMBER));
         fields.add(getField("rulePropStr", "RULE_VALIDATOR_PROPS", module, FieldType.STRING));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
+        return fields;
+    }
+
+    public static List<FacilioField>  getSensorAlarmDetailFields(){
+        List<FacilioField> fields=new ArrayList<>();
+        FacilioModule module=ModuleFactory.getSensorAlarmDetailsModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("sensorRuleId", "SENSOR_RULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("severityId", "SEVERITY_ID", module, FieldType.NUMBER));
+        fields.add(getField("message", "MESSAGE", module, FieldType.STRING));
         return fields;
     }
 
@@ -11269,7 +11281,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getSystemField("sysModifiedBy", module));
         return fields;
     }
-    
+
     public static List<FacilioField> getPackageChangesetsFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getPackageChangesetsModule();

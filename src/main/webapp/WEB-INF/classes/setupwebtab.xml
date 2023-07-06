@@ -753,4 +753,32 @@
             <param name="setupTab">MODULES</param>
         </action>
     </package>
+
+    <package name="alarms" namespace="/api/v1/setup/alarms" extends="v2Api">
+        <action name="fetchSensorRules"
+                class="com.facilio.events.actions.V2AlarmAction" method="fetchSensorRulesList">
+            <param name="permission">ALL</param>
+            <param name="setupTab">READINGS</param>
+        </action>
+        <action name="fetchAllSensorRules"
+                class="com.facilio.events.actions.V2AlarmAction" method="fetchAllSensorRules">
+            <param name="permission">ALL</param>
+            <param name="setupTab">READINGS</param>
+        </action>
+        <action name="updateSensorRules"
+                class="com.facilio.events.actions.V2AlarmAction" method="updateSensorRulesList">
+            <param name="permission">ALL</param>
+            <param name="setupTab">READINGS</param>
+        </action>
+        <action name="fetchConnectedRulesStatus"
+                class="com.facilio.events.actions.V2AlarmAction" method="fetchCategoryAlarmsDetails">
+            <param name="permission">ALL</param>
+            <param name="setupTab">READINGS</param>
+        </action>
+        <action name="updateSensorRuleCategoryStatus"
+                class="com.facilio.events.actions.V2AlarmAction" method="updateSensorRuleCategoryStatus">
+            <param name="permission">ALL</param>
+            <param name="setupTab">READINGS</param>
+        </action>
+    </package>
 </struts>

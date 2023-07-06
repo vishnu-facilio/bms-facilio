@@ -55,6 +55,10 @@ public class AddSensorRuleModules extends SignUpData {
         NumberField readingFieldId = FieldFactory.getDefaultField("recordFieldId", "Field ID", "RECORD_FIELD_ID", FieldType.NUMBER);
         fields.add(readingFieldId);
 
+
+        BooleanField status = FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.BOOLEAN);
+        fields.add(status);
+
         fields.add(FieldFactory.getSystemField("sysCreatedTime",module));
         fields.add(FieldFactory.getSystemField("sysCreatedBy",module));
         fields.add(FieldFactory.getSystemField("sysModifiedTime",module));

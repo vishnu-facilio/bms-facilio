@@ -128,6 +128,10 @@ public class NamespaceBeanImpl implements NamespaceBean {
 
     }
 
+    @Override
+    public void updateNsCacheWithCategory(Long categoryId, List<NSType> nsType) throws Exception {
+    }
+
     private static Long addNsField(Map<String, Object>  nsField) throws Exception {
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                 .table(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName())
@@ -190,5 +194,17 @@ public class NamespaceBeanImpl implements NamespaceBean {
             NamespaceAPI.deleteExistingInclusionRecords(ns);
         }
         NamespaceAPI.addInclusions(ns);
+    }
+
+    @Override
+    public void updateNsStatusWithCategory(Long categoryId, boolean status, List<NSType> nsType) throws Exception {
+        NameSpaceContext namespaceContext = new NameSpaceContext();
+        namespaceContext.setStatus(status);
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
+                .fields(NamespaceModuleAndFieldFactory.getNamespaceFields())
+                .andCondition(CriteriaAPI.getCondition("CATEGORY_ID", "categoryId", String.valueOf(categoryId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getConditionFromList("TYPE", "type", NamespaceAPI.getNsIndexFromList(nsType), NumberOperators.EQUALS));
+        updateBuilder.update(FieldUtil.getAsProperties(namespaceContext));
     }
 }

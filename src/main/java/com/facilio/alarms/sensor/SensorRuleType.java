@@ -2,7 +2,12 @@ package com.facilio.alarms.sensor;
 
 import com.facilio.alarms.sensor.sensorrules.*;
 import com.facilio.modules.FacilioIntEnum;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 
+@Log4j
+@Getter
 public enum SensorRuleType implements FacilioIntEnum {
 	CONTINUOUSLY_RECEIVING_SAME_VALUE("Same value received continuously for {timeInterval} hours",new ValidateContinuouslyReceivingSameValueInSensorRule(),false, false),
 	PERMISSIBLE_LIMIT_VIOLATION("Range is outside of {lowerLimit} and {upperLimit}",new ValidatePermissibleLimitViolationInSensorRule(), false, false, true),

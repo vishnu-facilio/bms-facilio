@@ -66,10 +66,12 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getIdField(module));
         fields.add(getNumberField("parentRuleId", "PARENT_RULE_ID", module));
+        fields.add(getNumberField("categoryId","CATEGORY_ID",module));
         fields.add(getNumberField("execInterval", "EXEC_INTERVAL", module));
         fields.add(getNumberField("type", "TYPE", module));
         fields.add(getNumberField("workflowId", "WORKFLOW_ID", module));
         fields.add(getBooleanField("status", "STATUS", module));
+        fields.add(getNumberField("loggerLevel","LOGGER_LEVEL",module));
         return fields;
     }
 

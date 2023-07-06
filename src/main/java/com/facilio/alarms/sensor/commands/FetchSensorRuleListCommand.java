@@ -1,6 +1,7 @@
 package com.facilio.alarms.sensor.commands;
 
 import com.facilio.alarms.sensor.SensorRuleType;
+import com.facilio.alarms.sensor.context.SensorAlarmDetailsContext;
 import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.alarms.sensor.context.SensorRulePropContext;
 import com.facilio.alarms.sensor.util.NewSensorRuleUtil;
@@ -18,13 +19,10 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class FetchSensorRuleListCommand extends FacilioCommand {
     @Override
@@ -56,44 +54,43 @@ public class FetchSensorRuleListCommand extends FacilioCommand {
                 sensorRuleTypes = NewSensorRuleUtil.getSensorRuleValidatorPropsByParentRuleId(sensorRule.getId(), Boolean.FALSE);
             }
 
-            String[] specialFields = new String[]{"totalEnergyConsumption", "phaseEnergyR", "phaseEnergyY", "phaseEnergyB"};
-            for (SensorRuleType type : SensorRuleType.values()) {
-                if (type == SensorRuleType.NEGATIVE_VALUE) {
-                    //negative value rule is intentionally removed
-                    continue;
-                }
+            // String[] specialFields = new String[]{"totalEnergyConsumption", "phaseEnergyR", "phaseEnergyY", "phaseEnergyB"};
+            //  TODO:special fields need to be migrated from decimal to counter
 
-                    JSONObject rulePropInfo = new JSONObject();
-                    for (String prop : type.getSensorRuleValidationType().getSensorRuleProps()) {
-                        if (!prop.equals("subject") && !prop.equals("severity")) {
-                            rulePropInfo.put(prop, null);
-                        }
+            sensorRulesBasedOnField(readingFieldObj, sensorRuleTypes);
+        }
 
-                    }
-
-                    SensorRulePropContext newContext = new SensorRulePropContext();
-                    newContext.setSensorRuleType(type);
-                    newContext.setSubject(type.getValueString());
-                    newContext.setRuleValidatorProps(rulePropInfo);
-                    List<SensorRulePropContext> filteredRuleTypes = sensorRuleTypes.stream()
-                            .filter(i -> i.getSensorRuleTypeEnum() == type)
-                            .collect(Collectors.toList());
-
-                    if (CollectionUtils.isEmpty(filteredRuleTypes)) {
-                        NumberField numberField = (NumberField) readingFieldObj;
-                        if (!numberField.isCounterField() && readingFieldObj instanceof NumberField && !type.isCounterFieldType() && !Arrays.asList(specialFields).contains(readingFieldObj.getName())) {
-                            sensorRuleTypes.add(newContext);
-                        } else if ((numberField.isCounterField() || Arrays.asList(specialFields).contains(readingFieldObj.getName())) && type.isCounterFieldType()) {
-                            sensorRuleTypes.add(newContext);
-                        }
-                    }
-                }
-            }
-
-        context.put(FacilioConstants.ContextNames.SENSOR_RULE_TYPES, sensorRuleTypes);
+        setSensorRuleDetails(sensorRule, sensorRuleTypes);
+        context.put(FacilioConstants.ContextNames.SENSOR_RULE_MODULE, sensorRule);
         context.put(FacilioConstants.ContextNames.ID, sensorRule.getId());
 
         return false;
+    }
+
+    /***
+     *
+     * @param readingFieldObj
+     * @param sensorRuleTypes
+     * @implNote filter sensorrule types based on fields which where not configured by user
+     */
+    private static void sensorRulesBasedOnField(FacilioField readingFieldObj, List<SensorRulePropContext> sensorRuleTypes) {
+        for (SensorRuleType type : SensorRuleType.values()) {
+            if (type == SensorRuleType.NEGATIVE_VALUE) {
+                //negative value rule is intentionally removed
+                continue;
+            }
+
+            NewSensorRuleUtil.addSensorRuleType(sensorRuleTypes, type, readingFieldObj, true);
+
+        }
+    }
+
+    private void setSensorRuleDetails(SensorRuleContext sensorRule, List<SensorRulePropContext> sensorRuleTypes) throws Exception {
+        if (sensorRule.getId() > 0) {
+            SensorAlarmDetailsContext sensorDetails = NewSensorRuleUtil.getSensorAlarmDetails(sensorRule.getId());
+            sensorRule.setSensorAlarmDetails(sensorDetails);
+        }
+        sensorRule.setSensorRuleTypes(sensorRuleTypes);
     }
 
 }

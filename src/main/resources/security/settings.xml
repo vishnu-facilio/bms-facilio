@@ -2897,11 +2897,37 @@
         </urlparams>
     </request>
 
-    <request path="/api/v1/setup/role/fetchRolesApps" method="POST">
+    <request path="/api/v1/setup/alarms/fetchConnectedRulesStatus" method="GET">
+        <urlparams>
+            <property name="categoryId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/alarms/updateSensorRuleCategoryStatus" method="POST">
         <requestbody type="object">
-            <property name="appIds" type="array">
+            <property name="categoryId" type="number" mandatory="true"/>
+            <property name="connectedCategory" type="object"/>
+            <property name="nsType" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/readingrule/historical/run" method="POST">
+        <requestbody type="object">
+            <property name="assetIds" type="array" mandatory="true">
                 <items type="number"/>
             </property>
+            <property name="endTime" type="number" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="startTime" type="number" mandatory="true"/>
         </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/alarms/fetchAllSensorRules" method="GET">
+    </request>
+
+    <request path="/api/v1/setup/alarms/fetchSensorRules" method="GET">
+        <urlparams type="object">
+            <property name="categoryId" type="number" mandatory="true"/>
+            <property name="readingFieldId" type="number" mandatory="true"/>
+        </urlparams>
     </request>
 </config>
