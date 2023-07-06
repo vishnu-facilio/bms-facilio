@@ -1928,7 +1928,7 @@
     </request>
     <request path="/api/v3/shiftplanner/update">
         <requestbody type="object">
-            <property name="employees" type="array" mandatory="true">
+            <property name="people" type="array" mandatory="true">
                 <items type="number"/>
             </property>
             <property name="shiftEnd" type="number" mandatory="true"/>

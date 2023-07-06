@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.shift.Break;
 import com.facilio.bmsconsoleV3.context.shift.Shift;
@@ -106,47 +105,49 @@ public class ShiftAPI {
     /**
      * Assigns the default Shift to the given employee perpetually
      *
-     * @param employeeID ID of the employee
+     * @param peopleID ID of the employee
      */
-    public static void assignDefaultShiftToEmployee(long employeeID) throws Exception {
+    public static void assignDefaultShiftToEmployee(long peopleID) throws Exception {
         Shift shift = getDefaultShift();
 
-        V3EmployeeContext emp = new V3EmployeeContext();
-        emp.setId(employeeID);
+        V3PeopleContext people = new V3PeopleContext();
+        people.setId(peopleID);
+//        V3EmployeeContext emp = new V3EmployeeContext();
+//        emp.setId(peopleID);
 
-        ShiftSlot defaultShiftSlot = new ShiftSlot(emp, shift, UNLIMITED_PERIOD, UNLIMITED_PERIOD);
+        ShiftSlot defaultShiftSlot = new ShiftSlot(people, shift, UNLIMITED_PERIOD, UNLIMITED_PERIOD);
         addSlots(Collections.singletonList(defaultShiftSlot));
     }
 
     /**
      * Assigns the given Shift to the given employee for the given time span.
      *
-     * @param employees IDs of the Employee
+     * @param peopleList IDs of the Employee
      * @param shiftID   ID of the Shift to be associated
      * @param from      time span start
      * @param to        time span end
      */
-    public static void updateEmployeeShift(List<Long> employees, long shiftID, long from, long to) throws Exception {
+    public static void updateEmployeeShift(List<Long> peopleList, long shiftID, long from, long to) throws Exception {
 
-        for (Long emp : employees) {
-            V3EmployeeContext employee = new V3EmployeeContext();
-            employee.setId(emp);
+        for (Long people : peopleList) {
+            V3PeopleContext peopleContext = new V3PeopleContext();
+            peopleContext.setId(people);
             Shift shift = new Shift();
             shift.setId(shiftID);
-            updateShift(employee, shift, from, to);
+            updateShift(peopleContext, shift, from, to);
         }
     }
 
     /**
      * Will decorate the given Employee's shift roster with weekly off information.
      *
-     * @param employeeID ID of the Employee
+     * @param peopleID ID of the Employee
      * @param rangeFrom  time span start
      * @param rangeTo    time span end
      * @return shift roster for the given time span
      **/
-    public static List<Map<String, Object>> getShiftListDecoratedWithWeeklyOff(Long employeeID, Long rangeFrom, Long rangeTo) throws Exception {
-        List<Map<String, Object>> shifts = ShiftAPI.getShiftList(employeeID, rangeFrom, rangeTo);
+    public static List<Map<String, Object>> getShiftListDecoratedWithWeeklyOff(Long peopleID, Long rangeFrom, Long rangeTo) throws Exception {
+        List<Map<String, Object>> shifts = ShiftAPI.getShiftList(peopleID, rangeFrom, rangeTo);
         return shifts.stream()
                 .map(s -> {
                     if ((Boolean) s.get("isWeeklyOff")) {
@@ -159,9 +160,9 @@ public class ShiftAPI {
                 .collect(Collectors.toList());
     }
 
-    public static List<Map<String, Object>> getShiftList(Long employeeID, Long rangeFrom, Long rangeTo) throws Exception {
+    public static List<Map<String, Object>> getShiftList(Long peopleID, Long rangeFrom, Long rangeTo) throws Exception {
 
-        List<ShiftSlot> slots =  fetchShiftSlots(Collections.singletonList(employeeID), rangeFrom, rangeTo);
+        List<ShiftSlot> slots =  fetchShiftSlots(Collections.singletonList(peopleID), rangeFrom, rangeTo);
 
         ShiftSlot defaultShiftSlot = slots.get(0);
         // applying default shift as base
@@ -212,7 +213,7 @@ public class ShiftAPI {
         return shiftSchedule;
     }
 
-    public static List<ShiftSlot> fetchShiftSlots(List<Long> employeeIDs, Long rangeFrom, Long rangeTo) throws Exception {
+    public static List<ShiftSlot> fetchShiftSlots(List<Long> peopleIDs, Long rangeFrom, Long rangeTo) throws Exception {
 
         //        SELECT <fields>
         //                FROM Shift_People_Rel
@@ -242,7 +243,7 @@ public class ShiftAPI {
 
         // A.1 People Condition | PEOPLE_ID = peopleID
         Condition peopleCondition = CriteriaAPI.getCondition(fieldMap.get("peopleId"),
-                employeeIDs,
+                peopleIDs,
                 NumberOperators.EQUALS);
 
         // B.1 Bound Condition | START_TIME = -2
@@ -311,10 +312,10 @@ public class ShiftAPI {
             Long shiftID = (Long) row.get("shiftID");
             shift.setId(shiftID);
 
-            V3EmployeeContext emp = new V3EmployeeContext();
-            emp.setId(peopleID);
+            V3PeopleContext people = new V3PeopleContext();
+            people.setId(peopleID);
 
-            ShiftSlot slot = new ShiftSlot(emp, shift, slotStart, slotEnd);
+            ShiftSlot slot = new ShiftSlot(people, shift, slotStart, slotEnd);
             slots.add(slot);
         }
         return slots;
@@ -366,14 +367,14 @@ public class ShiftAPI {
      * Compaction process merges contiguous identical shifts into a single block and adds 'span' attribute
      * representing the number of blocks merged.
      *
-     * @param employeeID ID of the Employee
+     * @param peopleId ID of the Employee
      * @param rangeFrom  range start
      * @param rangeTo    range end
      * @return list of compacted Shift sequence between the given range.
      */
-    public static List<Map<String, Object>> getCompactedShiftList(long employeeID, Long rangeFrom, Long rangeTo) throws Exception {
+    public static List<Map<String, Object>> getCompactedShiftList(long peopleId, Long rangeFrom, Long rangeTo) throws Exception {
         List<Map<String, Object>> compactedShifts = new ArrayList<>();
-        List<Map<String, Object>> shifts = getShiftList(employeeID, rangeFrom, rangeTo);
+        List<Map<String, Object>> shifts = getShiftList(peopleId, rangeFrom, rangeTo);
 
         Map<String, Object> prevShift = null;
         int counter = 1;
@@ -547,13 +548,13 @@ public class ShiftAPI {
     }
 
 
-    public static void updateShift(V3PeopleContext emp, Shift shift, long from, long to) throws Exception {
-        List<ShiftSlot> incidentSlots = getIncidentSlots(emp.getId(), from, to);
+    public static void updateShift(V3PeopleContext people, Shift shift, long from, long to) throws Exception {
+        List<ShiftSlot> incidentSlots = getIncidentSlots(people.getId(), from, to);
 
         List<ShiftSlot> slotsToBeDeleted = new ArrayList<>();
         List<ShiftSlot> slotsToBeAdded = new ArrayList<>();
 
-        ShiftSlot newSlot = new ShiftSlot(emp, shift, from, to);
+        ShiftSlot newSlot = new ShiftSlot(people, shift, from, to);
         slotsToBeAdded.add(newSlot);
 
         slotsToBeDeleted.addAll(incidentSlots);
@@ -719,8 +720,8 @@ public class ShiftAPI {
 
             Long id = (Long) rec.get("id");
 
-            V3EmployeeContext emp = new V3EmployeeContext();
-            emp.setId((Long) rec.get("peopleId"));
+            V3PeopleContext people = new V3PeopleContext();
+            people.setId((Long) rec.get("peopleId"));
 
             Shift shift = new Shift();
             shift.setId((Long) rec.get("shiftId"));
@@ -728,7 +729,7 @@ public class ShiftAPI {
             Long from = (Long) rec.get("startTime");
             Long to = (Long) rec.get("endTime");
 
-            slots.add(new ShiftSlot(id, emp, shift, from, to));
+            slots.add(new ShiftSlot(id, people, shift, from, to));
         }
         return slots;
     }

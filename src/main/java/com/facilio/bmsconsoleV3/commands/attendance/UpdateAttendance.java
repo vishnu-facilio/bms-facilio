@@ -14,6 +14,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.*;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 
@@ -45,13 +46,15 @@ public class UpdateAttendance extends FacilioCommand {
         long previousDay = date - ShiftAPI.DAY_IN_MILLIS;
         List<AttendanceTransaction> previousDayTransactions = AttendanceAPI.getAttendanceTxnsForGivenDay(previousDay, peopleID);
 
-        if (existingAttendance == null && isPersonSignedInSincePreviousDay(previousDayTransactions)){
-            List<AttendanceTransaction> cumulativeTransactions = new ArrayList<>();
-            cumulativeTransactions.addAll(previousDayTransactions);
-            cumulativeTransactions.addAll(transactions);
-            transactions = cumulativeTransactions;
+        if(CollectionUtils.isNotEmpty(previousDayTransactions)) {
+            if (existingAttendance == null && isPersonSignedInSincePreviousDay(previousDayTransactions)) {
+                List<AttendanceTransaction> cumulativeTransactions = new ArrayList<>();
+                cumulativeTransactions.addAll(previousDayTransactions);
+                cumulativeTransactions.addAll(transactions);
+                transactions = cumulativeTransactions;
 
-            existingAttendance = AttendanceAPI.getAttendanceForGivenDay(previousDay, peopleID);
+                existingAttendance = AttendanceAPI.getAttendanceForGivenDay(previousDay, peopleID);
+            }
         }
 
         if (transactions.size() < 2){

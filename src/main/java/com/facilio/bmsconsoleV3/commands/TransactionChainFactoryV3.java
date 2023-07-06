@@ -801,6 +801,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new AddOrUpdatePortalUserCommandV3());
         c.addCommand(new AddOrUpdateScopingAndPermissionCommandV3());
+        c.addCommand(new AssignDefaultShift());
         return c;
     }
 

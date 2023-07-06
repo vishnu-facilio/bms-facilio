@@ -49,6 +49,7 @@ public class fsmAction extends V3Action {
         context.put(FacilioConstants.Dispatcher.BOARD_ID,getBoardId());
         context.put(FacilioConstants.ContextNames.SEARCH,getSearch());
         context.put(FacilioConstants.ContextNames.FILTERS,getFilters());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.PEOPLE);
         chain.execute();
 
         setData((JSONObject) context.get(FacilioConstants.Dispatcher.RESOURCES));
@@ -81,6 +82,7 @@ public class fsmAction extends V3Action {
         context.put(FacilioConstants.ContextNames.PER_PAGE,getPerPage());
         context.put(FacilioConstants.ContextNames.SEARCH,getSearch());
         context.put(FacilioConstants.ContextNames.FILTERS,getFilters());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         chain.execute();
         setData((JSONObject) context.get(FacilioConstants.ContextNames.DATA));
         return SUCCESS;

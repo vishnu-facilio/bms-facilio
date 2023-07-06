@@ -25,7 +25,7 @@ public class GetPageEmployeesCommand extends FacilioCommand {
         int page = (Integer) context.get(FacilioConstants.ContextNames.PAGE);
         int perPage = (Integer) context.get(FacilioConstants.ContextNames.PER_PAGE);
 
-        String moduleName = FacilioConstants.ContextNames.EMPLOYEE;
+        String moduleName = FacilioConstants.ContextNames.PEOPLE;
         String viewName = "all";
         String filters = (String) context.get(FacilioConstants.ContextNames.FILTERS);
         String clientCriteria = null;
@@ -43,7 +43,7 @@ public class GetPageEmployeesCommand extends FacilioCommand {
                 search, page, perPage, withCount, queryParameters, serverCriteria,null);
 
         Map<String, Object> recordMap = (Map<String, Object>) listContext.get("recordMap");
-        context.put(FacilioConstants.Shift.EMPLOYEES, recordMap.get(moduleName));
+        context.put(FacilioConstants.ContextNames.PEOPLE, recordMap.get(moduleName));
         context.put(FacilioConstants.ContextNames.COUNT,
                 listContext.get(FacilioConstants.ContextNames.COUNT));
 

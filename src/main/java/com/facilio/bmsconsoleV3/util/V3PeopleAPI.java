@@ -220,6 +220,9 @@ public class V3PeopleAPI {
                         tc.setFormId(defaultform.getId());
                     }
                     addPeopleRecord(tc, module, fields, parentId);
+                    if(module.getName().equals("vendorcontact") || module.getName().equals("employee")){
+                        ShiftAPI.assignDefaultShiftToEmployee(tc.getId());
+                    }
                     return;
                 }
             }
@@ -242,9 +245,15 @@ public class V3PeopleAPI {
                 validatePeopleEmail(trimmedEmail);
 
                 addPeopleRecord(tc, module, fields, parentId);
+                if(module.getName().equals("vendorcontact") || module.getName().equals("employee")){
+                    ShiftAPI.assignDefaultShiftToEmployee(tc.getId());
+                }
                 return;
             }
             V3RecordAPI.addRecord(true, Collections.singletonList(tc), module, fields);
+            if(module.getName().equals("vendorcontact") || module.getName().equals("employee")){
+                ShiftAPI.assignDefaultShiftToEmployee(tc.getId());
+            }
             updateStateForPrimaryContact(tc);
         }
 

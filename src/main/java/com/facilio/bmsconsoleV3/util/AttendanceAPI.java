@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.attendance.Attendance;
 import com.facilio.bmsconsoleV3.context.attendance.AttendanceSettings;
@@ -195,25 +196,23 @@ public class AttendanceAPI {
 
         long clockedHours = 0L;
         long startTime = 0;
+        long totalclockedHours = 0L;
         boolean checkedInForTheDay = false;
         for (AttendanceTransaction tx: txns) {
-            if (checkInOrBreakTransaction(tx)){
+            if(checkIn(tx)){
                 startTime = tx.getTransactionTime();
                 checkedInForTheDay = true;
                 continue;
             }
-
             if (!checkedInForTheDay) {
                 continue;
             }
-
-            if (checkOutOrBreakTransaction(tx)){
-                Long txTime = tx.getTransactionTime();
-                clockedHours +=  (txTime - startTime);
+            if(checkOut(tx)){
+                clockedHours = tx.getTransactionTime() - startTime;
+                totalclockedHours += clockedHours;
             }
-
         }
-        attendance.setWorkingHours(clockedHours);
+        attendance.setWorkingHours(totalclockedHours - attendance.getTotalUnpaidBreakHrs());
     }
 
     private static AttendanceTransaction getFirstCheckInTxn(List<AttendanceTransaction> txns) {
@@ -226,19 +225,20 @@ public class AttendanceAPI {
         return txns.get(0);
     }
 
-    private static boolean checkOutOrBreakTransaction(AttendanceTransaction tx) {
-        return tx.getTransactionType().equals(AttendanceTransaction.Type.CHECK_OUT) ||
-                tx.getTransactionType().equals(AttendanceTransaction.Type.BREAK);
-    }
 
-    private static boolean checkInOrBreakTransaction(AttendanceTransaction tx) {
-        return tx.getTransactionType().equals(AttendanceTransaction.Type.CHECK_IN) ||
-                tx.getTransactionType().equals(AttendanceTransaction.Type.RESUME_WORK);
+
+    private static boolean checkIn(AttendanceTransaction tx){
+        return tx.getTransactionType().equals(AttendanceTransaction.Type.CHECK_IN);
+    }
+    private static boolean checkOut(AttendanceTransaction tx){
+        return tx.getTransactionType().equals(AttendanceTransaction.Type.CHECK_OUT);
     }
 
     private static void computeBreaksConsumed(Attendance attendance, List<AttendanceTransaction> txns) {
 
         Map<Long, Long> breakTimeCounter = new HashMap<>();
+        Long paidBreakSurplus = 0L;
+        Long unpaidBreakSurplus = 0L;
 
         for (int ix = 0; ix < txns.size(); ix++) {
             AttendanceTransaction txn = txns.get(ix);
@@ -260,6 +260,8 @@ public class AttendanceAPI {
             if (isPaidBreak(associatedBreak)) {
 
                 if (breakTimeElapsedInMillis > availableBreakTimeMillis) {
+                    long extraBreakTimeConsumedInMillis = breakTimeElapsedInMillis - availableBreakTimeMillis;
+                    paidBreakSurplus += extraBreakTimeConsumedInMillis;
 
                     breakTimeCounter.put(associatedBreak.getId(), 0L);
 
@@ -273,6 +275,8 @@ public class AttendanceAPI {
 
             } else {
                 if (breakTimeElapsedInMillis > availableBreakTimeMillis) {
+                    long extraBreakTimeConsumedInMillis = breakTimeElapsedInMillis - availableBreakTimeMillis;
+                    unpaidBreakSurplus += extraBreakTimeConsumedInMillis;
 
                     breakTimeCounter.put(associatedBreak.getId(), 0L);
 
@@ -286,6 +290,7 @@ public class AttendanceAPI {
                 }
             }
         }
+        attendance.setTotalUnpaidBreakHrs(attendance.getTotalUnpaidBreakHrs() + paidBreakSurplus + unpaidBreakSurplus);
     }
 
 
