@@ -54,7 +54,9 @@ public class FacilioVisitorLogingModuleFunctions extends FacilioModuleFunctionIm
 			c.getContext().put(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, visitorLoggingContexts);
 				
 			c.execute();
-			scriptContext.incrementTotalInsertCount();
+			if(CollectionUtils.isNotEmpty(visitorLoggingContexts)) {
+				scriptContext.incrementTotalInsertCount(visitorLoggingContexts.size());
+			}
 		}
 	}
 }

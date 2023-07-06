@@ -24,6 +24,7 @@ import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.scriptengine.systemfunctions.*;
 import com.facilio.workflows.functions.*;
+import com.facilio.workflowv2.util.WorkflowRelUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +46,6 @@ import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -56,11 +56,8 @@ import com.facilio.modules.BaseLineContext.AdjustType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.util.DemoHelperUtil;
 import com.facilio.scriptengine.context.ParameterContext;
-import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.scriptengine.context.WorkflowFunctionContext;
-import com.facilio.scriptengine.systemfunctions.*;
-import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.wmsv2.endpoint.WmsBroadcaster;
@@ -73,33 +70,10 @@ import com.facilio.workflows.conditions.context.ElseContext;
 import com.facilio.workflows.conditions.context.ElseIfContext;
 import com.facilio.workflows.conditions.context.IfContext;
 import com.facilio.workflows.context.*;
-import com.facilio.workflows.functions.*;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.udojava.evalex.Expression;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.*;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.*;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 ;
 
@@ -519,7 +493,6 @@ public class WorkflowUtil {
 	}
 	
 	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {	// change this method
-
 		if(workflowContext.isV2Script() && workflowContext.getWorkflowV2String() == null) {
 			getV2ScriptFromWorkflowContext(workflowContext);
 		}
@@ -535,8 +508,8 @@ public class WorkflowUtil {
 			}
 		}
 
-		throwExceptionIfScriptValidationFailed(workflowContext);
-
+		scriptSyntaxValidation(workflowContext);
+		workflowContext.validateScript();
 		
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
@@ -549,7 +522,8 @@ public class WorkflowUtil {
 		insertBuilder.save();
 		
 		workflowContext.setId((Long) props.get("id"));
-		
+		WorkflowRelUtil.addWorkflowRelations(workflowContext);
+
 		if(!workflowContext.isV2Script()) {
 			
 			insertBuilder = new GenericInsertRecordBuilder()
@@ -569,13 +543,14 @@ public class WorkflowUtil {
 
 			insertBuilder.save();
 		}
-
 		return workflowContext.getId();
 	}
 
 	public static void updateWorkflow(WorkflowContext workflowContext, Long workflowId) throws Exception{
-		throwExceptionIfScriptValidationFailed(workflowContext);
+		scriptSyntaxValidation(workflowContext);
+		workflowContext.validateScript();
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		WorkflowRelUtil.addWorkflowRelations(workflowContext);
 		Map<String, Object> props = FieldUtil.getAsProperties(workflowContext);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getWorkflowModule().getTableName())
@@ -2391,7 +2366,7 @@ public class WorkflowUtil {
         	
         	try {
         		workflowlogcontext.setThreadName(Thread.currentThread().getName());
-    			workflowlogcontext.setTotalStatementCount(workflowContext.getTotalStatementCount());
+    			workflowlogcontext.setTotalStatementCount(workflowContext.getTotalStatementCount() - 2);
     			workflowlogcontext.setTotalSelectCount(workflowContext.getTotalSelectCount());
     			workflowlogcontext.setTotalInsertCount(workflowContext.getTotalInsertCount());
     			workflowlogcontext.setTotalUpdateCount(workflowContext.getTotalUpdateCount());
@@ -2447,9 +2422,9 @@ public class WorkflowUtil {
 		return transitionIdVsStateFlowId;
 	}
 
-	public  static void throwExceptionIfScriptValidationFailed(WorkflowContext workflowContext) throws Exception{
+	public  static void scriptSyntaxValidation(WorkflowContext workflowContext) throws Exception{
 		if(workflowContext.isV2Script()) {
-			ScriptContext scriptContext = ScriptUtil.validateScript(workflowContext.getWorkflowV2String());
+			ScriptContext scriptContext = ScriptUtil.validateScript(workflowContext.getWorkflowV2String());	// syntax check
 			if (scriptContext.getErrorListener().hasErrors()) {
 				throw new IllegalArgumentException(scriptContext.getErrorListener().getErrorsAsString());
 			}

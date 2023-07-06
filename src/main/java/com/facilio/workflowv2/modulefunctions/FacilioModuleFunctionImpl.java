@@ -159,7 +159,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			FacilioContext context = V3Util.createRecord(module, rawData);
 			ModuleBaseWithCustomFields record = Constants.getRecordMap(context).get(module.getName()).get(0);
 			rawData.put("id", record.getId());
-			scriptContext.incrementTotalInsertCount();
+
+		}
+		if(CollectionUtils.isNotEmpty(dataList)) {
+			scriptContext.incrementTotalInsertCount(dataList.size());
 		}
 	}
 	@Override
@@ -194,7 +197,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
 			
 			addReadingChain.execute();
-			scriptContext.incrementTotalInsertCount();
+			if(CollectionUtils.isNotEmpty(readings)) {
+				scriptContext.incrementTotalInsertCount(readings.size());
+			}
 		}
 		else {
 			
@@ -222,7 +227,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				FacilioContext context = V3Util.createRecord(module, dataList, true, null, null,true);
 				
 				List<ModuleBaseWithCustomFields> records = Constants.getRecordList(context);
-				scriptContext.incrementTotalInsertCount();
+				if(CollectionUtils.isNotEmpty(dataList)) {
+					scriptContext.incrementTotalInsertCount(dataList.size());
+				}
 				
 				for(int i=0;i<records.size();i++) {
 					dataList.get(i).put("id", records.get(i).getId());
@@ -332,7 +339,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			CommonCommandUtil.handleLookupFormData(modBean.getAllFields(module.getName()), updateMap);
 
 			FacilioContext context = V3Util.updateBulkRecords(module.getName(), updateMap,ids, true,true);
-			scriptContext.incrementTotalUpdateCount();
+			if(CollectionUtils.isNotEmpty(props)) {
+				scriptContext.incrementTotalUpdateCount(props.size());
+			}
 		}
 		else {
 			if (LookupSpecialTypeUtil.isSpecialType(module.getName())) {
@@ -433,7 +442,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			deleteObj.put(module.getName(), ids);
 			
 			FacilioContext context = V3Util.deleteRecords(module.getName(), deleteObj, null,null, true);
-			scriptContext.incrementTotalDeleteCount();
+			if(CollectionUtils.isNotEmpty(props)) {
+				scriptContext.incrementTotalDeleteCount(props.size());
+			}
 		}
 		else {
 			DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>()
@@ -445,16 +456,18 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			if(dbParamContext != null && dbParamContext.isSkipModuleCriteria()) {
 				delete.skipModuleCriteria();
 			}
-			
+			int deletedRecords;
 			delete.andCriteria(criteria);
 			
 			if (module.isTrashEnabled()) {
-	            delete.markAsDelete();
+				deletedRecords=delete.markAsDelete();
 	        }
 			else {
-				delete.delete();
+				 deletedRecords = delete.delete();
 			}
-			scriptContext.incrementTotalDeleteCount();
+			if(deletedRecords > 0){
+				scriptContext.incrementTotalDeleteCount(deletedRecords);
+			}
 		}
 	}
 	

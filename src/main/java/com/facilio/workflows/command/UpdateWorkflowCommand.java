@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowRelUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -35,7 +36,8 @@ public class UpdateWorkflowCommand extends FacilioCommand {
 			workflow.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
 			workflow.setSysModifiedTime(DateTimeUtil.getCurrenTime());
 
-			WorkflowUtil.throwExceptionIfScriptValidationFailed(workflow);
+			WorkflowUtil.scriptSyntaxValidation(workflow);
+			workflow.validateScript();
 
 			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
 			update.table(ModuleFactory.getWorkflowModule().getTableName());
@@ -45,6 +47,7 @@ public class UpdateWorkflowCommand extends FacilioCommand {
 			Map<String, Object> prop = FieldUtil.getAsProperties(workflow);
 			prop.put("runAsAdmin",workflow.getRunAsAdmin());
 			update.update(prop);
+			WorkflowRelUtil.addWorkflowRelations(workflow);
 		}
 		
 		return false;

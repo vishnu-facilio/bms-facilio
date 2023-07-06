@@ -79,7 +79,9 @@ public class FacilioRfqModuleFunctions  extends FacilioModuleFunctionImpl {
             CommonCommandUtil.handleLookupFormData(modBean.getAllFields(module.getName()), updateMap);
 
             FacilioContext context = V3Util.updateBulkRecords(module.getName(), updateMap,ids,bodyParam,null, true);
-            scriptContext.incrementTotalUpdateCount();
+            if(CollectionUtils.isNotEmpty(props)) {
+                scriptContext.incrementTotalUpdateCount(props.size());
+            }
         }
         else {
             if (LookupSpecialTypeUtil.isSpecialType(module.getName())) {

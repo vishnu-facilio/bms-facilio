@@ -84,7 +84,7 @@ public class EmailProcessHandler extends BaseHandler{
         			}
                 }
       } catch (Exception e) {
-        	LOGGER.error("ERROR IN ADDING SCRIPT LOGS : "+ e);
+        	LOGGER.error("ERROR IN EmailProcessHandler : "+ e,e);
         }
     }
 	

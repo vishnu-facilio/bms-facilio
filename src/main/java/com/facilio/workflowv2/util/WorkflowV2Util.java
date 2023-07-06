@@ -55,6 +55,8 @@ public class WorkflowV2Util {
 	public static final String NEW_CONNECTION_INITIALIZATION = "Connection";
 
 	public static final String IS_V2 = "IsV2";
+
+	public static List<String> scriptWhiteListedModules= new ArrayList<>();
 	
 	public static Function<List<?>, List<Integer>> anyListToIntList = (objList) -> {
 		
@@ -70,8 +72,16 @@ public class WorkflowV2Util {
 			if(!DBConf.getInstance().getService().equalsIgnoreCase("storm")) {
 				initWorkflowResource();
 			}
+			setScriptAllowedModules();
 		} catch (Exception e) {
 			CommonCommandUtil.emailException(WorkflowV2Util.class.getName(), "Workflow Resource init failed", e);
+		}
+	}
+
+	private static  void setScriptAllowedModules(){
+		String[] whiteListedModules={"workorder","jobplan","site","asset","crafts","inspectionResponse","craftSkill","labourCraftSkill","labour"};
+		for(String moduleName:whiteListedModules){
+			scriptWhiteListedModules.add(moduleName);
 		}
 	}
 	

@@ -381,7 +381,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
     public Value visitModuleAndSystemNameSpaceInitialization(WorkflowV2Parser.ModuleAndSystemNameSpaceInitializationContext ctx) {
     	try {
     		String moduleDisplayName = ctx.VAR().getText();
-
+			this.getScriptContext().incrementTotalStatementCount();
     		Object scopedObject = getCurrentScope().getObject(moduleDisplayName, this, ctx.expr());
     		if(scopedObject != null) {
     			return new Value(scopedObject); 
@@ -402,7 +402,7 @@ public class WorkflowFunctionVisitor extends FunctionVisitor<Value> {
     public Value visitNewKeywordIntitialization(WorkflowV2Parser.NewKeywordIntitializationContext ctx) {
     	try {
     		String newObject = ctx.VAR().toString();
-        	
+        	this.getScriptContext().incrementTotalStatementCount();
         	switch(newObject) {
         		case WorkflowV2Util.NEW_NAMESPACE_INITIALIZATION :
         			Value nameSpaceName = this.visit(ctx.expr(0));

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowRelUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -30,6 +31,7 @@ public class AddWorkflowCommand extends FacilioCommand {
 			workflow.setType(WorkflowContext.WorkflowType.USER_DEFINED.getValue());
 		}
 		
+		
 		workflow.setSysCreatedBy(AccountUtil.getCurrentUser().getOuid());
 		workflow.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
 		workflow.setSysCreatedTime(DateTimeUtil.getCurrenTime());
@@ -37,7 +39,8 @@ public class AddWorkflowCommand extends FacilioCommand {
 		
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 
-		WorkflowUtil.throwExceptionIfScriptValidationFailed(workflow);
+		WorkflowUtil.scriptSyntaxValidation(workflow);
+		workflow.validateScript();
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getWorkflowModule().getTableName())
@@ -48,6 +51,7 @@ public class AddWorkflowCommand extends FacilioCommand {
 		insertBuilder.save();
 		
 		workflow.setId((Long) props.get("id"));
+		WorkflowRelUtil.addWorkflowRelations(workflow);
 		return false;
 	}
 

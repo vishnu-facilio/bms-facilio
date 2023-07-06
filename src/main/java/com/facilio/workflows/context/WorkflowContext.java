@@ -12,6 +12,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.workflowv2.contexts.WorkflowFieldsRelContext;
+import com.facilio.workflowv2.contexts.WorkflowModuleRelContext;
+import com.facilio.workflowv2.contexts.WorkflowNameSpaceRelContext;
+import com.facilio.workflowv2.parser.ScriptValidator;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -42,11 +46,14 @@ import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
 import com.facilio.workflowv2.parser.ScriptParser;
+import com.facilio.workflowv2.parser.ScriptValidationException;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 
+@Getter
+@Setter
 public class WorkflowContext extends ScriptContext{
 	
 	/**
@@ -244,6 +251,10 @@ public class WorkflowContext extends ScriptContext{
 		return variableResultMap;
 	}
 
+
+	private List<WorkflowModuleRelContext> moduleRels=new ArrayList<>();
+	private List<WorkflowNameSpaceRelContext> nameSpaceRels= new ArrayList<>();
+	private List<WorkflowFieldsRelContext> fieldRels= new ArrayList<>();
 	public void setVariableResultMap(Map<String, Object> variableToExpresionMap) {
 		this.variableResultMap = variableToExpresionMap;
 	}
@@ -350,11 +361,33 @@ public class WorkflowContext extends ScriptContext{
 		        this.setParsedV2Script(true);
 			}
 			catch(Exception e) {
-//				e.printStackTrace();
-//				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				this.setWorkflowExpressions(null);
 				this.setParsedV2Script(false);
 				this.setWorkflowUIMode(WorkflowUIMode.XML);
+			}
+		}
+	}
+
+	public void validateScript() throws Exception {
+
+		if(isV2Script()) {
+
+			try {
+				WorkflowV2Parser parser = getParser(this.getWorkflowV2String());
+				ParseTree tree = parser.parse();
+
+				if(!getErrorListener().hasErrors()) {
+					ScriptValidator scriptValidator = new ScriptValidator();
+					scriptValidator.setWorkflowContext(this);
+					scriptValidator.visit(tree);
+				}
+			}
+			catch(ScriptValidationException e) {
+	            log.error(e.getMessage(), e);
+	            throw e;
+	        }
+			catch(Exception e) {
+				log.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -383,17 +416,6 @@ public class WorkflowContext extends ScriptContext{
 				try {
 					WorkflowV2Parser parser = getParser(this.getWorkflowV2String());
 			        ParseTree tree = parser.parse();
-			        
-			        try {
-			        	int statementCount=((ParserRuleContext) tree).getStop().getLine();
-						if(statementCount > 0){
-							statementCount-= 2; // Doing this to skip function wrapper appended in script
-						}
-						this.setTotalStatementCount(statementCount);
-			        }
-			        catch(Exception e) {
-			        	LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			        };
 
 			        if(!getErrorListener().hasErrors()) {
 			        	WorkflowFunctionVisitor visitor = new WorkflowFunctionVisitor();

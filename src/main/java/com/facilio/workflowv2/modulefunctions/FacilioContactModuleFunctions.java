@@ -42,7 +42,10 @@ public class FacilioContactModuleFunctions extends FacilioModuleFunctionImpl {
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, contacts);
 			c.execute();
-			scriptContext.incrementTotalInsertCount();
+			if(CollectionUtils.isNotEmpty(contacts)){
+				scriptContext.incrementTotalInsertCount(contacts.size());
+			}
+
 		}
 	}
 }
