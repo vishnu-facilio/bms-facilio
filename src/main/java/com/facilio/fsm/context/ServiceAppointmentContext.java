@@ -33,6 +33,21 @@ public class ServiceAppointmentContext extends V3Context {
     private V3SiteContext site;
     private V3PeopleContext fieldAgent;
     private Boolean isAllTasksClosed;
+    public int getPriority() {
+        if (priority != null) {
+            return priority.getIndex();
+        }
+        return -1;
+    }
+    public void setPriority(int priority) {
+        this.priority = ServiceOrderContext.ServiceOrderPriority.valueOf(priority);
+    }
+    public ServiceOrderContext.ServiceOrderPriority getServiceOrderPriorityEnum() {
+        return priority;
+    }
+    public void setPriority(ServiceOrderContext.ServiceOrderPriority priorityType) {
+        this.priority = priorityType;
+    }
     private AppointmentType appointmentType;
     public int getAppointmentType() {
         if (appointmentType != null) {

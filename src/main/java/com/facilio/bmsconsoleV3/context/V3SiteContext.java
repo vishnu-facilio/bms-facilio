@@ -5,6 +5,8 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.calendar.V3CalendarContext;
 import com.facilio.fsm.context.TerritoryContext;
 import com.facilio.modules.FacilioEnum;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ public class V3SiteContext extends V3BaseSpaceContext {
 	private Integer boundaryRadius;
 	private V3ClientContext client;
 	private V3CalendarContext calendar;
+	@Getter@Setter
 	private TerritoryContext territory;
 
 	public LocationContext getLocation() {

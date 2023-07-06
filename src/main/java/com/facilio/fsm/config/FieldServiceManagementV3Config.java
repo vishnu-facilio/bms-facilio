@@ -99,7 +99,7 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getServiceAppointment(){
         return () -> new V3Config(ServiceAppointmentContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
-                .afterSave(new rollupServiceAppointmentFieldsCommand())
+                .beforeSave(new rollupServiceAppointmentFieldsCommand())
                 .update()
                 .list()
                 .beforeFetch(new FetchServiceAppointmentSupplementsCommand())

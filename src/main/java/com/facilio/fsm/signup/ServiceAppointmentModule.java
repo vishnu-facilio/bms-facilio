@@ -188,16 +188,13 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         serviceAppointmentFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
         serviceAppointmentFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         serviceAppointmentFormFields.add(new FormField("appointmentType",FacilioField.FieldDisplayType.SELECTBOX,"Appointment Type", FormField.Required.REQUIRED,3,3));
-        serviceAppointmentFormFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Site",FormField.Required.OPTIONAL,4,3));
-        serviceAppointmentFormFields.add(new FormField("location", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Location",FormField.Required.OPTIONAL,5,3));
         serviceAppointmentFormFields.add(new FormField("serviceOrder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Service Orders",FormField.Required.OPTIONAL,6,3));
         serviceAppointmentFormFields.add(new FormField("serviceTasks",FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Service Tasks", FormField.Required.OPTIONAL,7,1));
         serviceAppointmentFormFields.add(new FormField("inspection", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Inspection",FormField.Required.OPTIONAL,8,3));
         serviceAppointmentFormFields.add(new FormField("workorder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Workorder",FormField.Required.OPTIONAL,9,3));
-        serviceAppointmentFormFields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 10, 3));
-        serviceAppointmentFormFields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.REQUIRED, 11, 3));
+        serviceAppointmentFormFields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.OPTIONAL, 10, 3));
+        serviceAppointmentFormFields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.OPTIONAL, 11, 3));
         serviceAppointmentFormFields.add(new FormField("estimatedDuration", FacilioField.FieldDisplayType.DURATION,"Estimated Duration", FormField.Required.OPTIONAL,12,3));
-        serviceAppointmentFormFields.add(new FormField("fieldAgent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Field Agent",FormField.Required.OPTIONAL,13,3));
         FormSection section = new FormSection("Default", 1, serviceAppointmentFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         serviceAppointmentForm.setSections(Collections.singletonList(section));
