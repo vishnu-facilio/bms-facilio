@@ -2685,10 +2685,4 @@
             </property>
         </requestbody>
     </request>
-    <request path="/api/v1/setup/readingkpilogs">
-        <requestbody type="object" />
-    </request>
-    <request path="/api/v1/setup/readingrulelogs">
-        <requestbody type="object" />
-    </request>
 </config>

@@ -519,22 +519,6 @@
         </action>
     </package>
 
-    <package name="readingkpilogs" namespace="/api/v1/setup" extends="v3Api">
-        <action name="readingkpilogs" class="com.facilio.v3.action.RestAPIHandlerV3">
-            <param name="moduleName">readingkpilogs</param>
-            <param name="permission">ALL</param>
-            <param name="setupTab">KPI_EXEC_LOGS</param>
-        </action>
-    </package>
-
-    <package name="readingrulelogs" namespace="/api/v1/setup" extends="v3Api">
-        <action name="readingrulelogs" class="com.facilio.v3.action.RestAPIHandlerV3">
-            <param name="moduleName">readingrulelogs</param>
-            <param name="permission">ALL</param>
-            <param name="setupTab">RULE_LOGS</param>
-        </action>
-    </package>
-
     <package name="geoLocationFieldsSetup" namespace="/api/v1/setup/getFields" extends="v2Api">
         <action name="geoLocation/*"
                 class="com.facilio.bmsconsole.actions.ModuleAction" method="getGeoLocationFields">
