@@ -57,7 +57,7 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
         ModuleBean moduleBean = Constants.getModBean();
         element.element(PackageConstants.EmailConstants.NAME).text(component.getName());
         element.element(PackageConstants.EmailConstants.SUBJECT).text(component.getSubject());
-        element.element(PackageConstants.EmailConstants.MESSAGE).text(component.getMessage());
+        element.element(PackageConstants.EmailConstants.MESSAGE).cData(component.getMessage());
         element.element(PackageConstants.EmailConstants.HTML).text(String.valueOf(component.getHtml()));
         element.element(PackageConstants.EmailConstants.DRAFT).text(String.valueOf(component.getDraft()));
 
@@ -96,7 +96,7 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
                 userWorkflowElements.element(PackageConstants.EmailConstants.IS_V2_SCRIPT).text(String.valueOf(component.getUserWorkflow().isV2Script()));
             }
             if (CollectionUtils.isNotEmpty(Collections.singleton(component.getUserWorkflow().getWorkflowV2String()))) {
-                userWorkflowElements.element(PackageConstants.EmailConstants.WORKFLOW_V2_STRING).text(component.getUserWorkflow().getWorkflowV2String());
+                userWorkflowElements.element(PackageConstants.EmailConstants.WORKFLOW_V2_STRING).cData(component.getUserWorkflow().getWorkflowV2String());
             }
         }
     }
@@ -197,7 +197,7 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
         List<XMLBuilder> expressionsLists =  workFlowElementLists.getElementList(PackageConstants.WorkFlowConstants.EXPRESSIONS);
         String name = EmailElement.getElement(PackageConstants.EmailConstants.NAME).getText();
         String subject = EmailElement.getElement(PackageConstants.EmailConstants.SUBJECT).getText();
-        String message = EmailElement.getElement(PackageConstants.EmailConstants.MESSAGE).getText();
+        String message = EmailElement.getElement(PackageConstants.EmailConstants.MESSAGE).getCData();
         boolean html = Boolean.parseBoolean(EmailElement.getElement(PackageConstants.EmailConstants.HTML).getText());
         boolean draft = Boolean.parseBoolean(EmailElement.getElement(PackageConstants.EmailConstants.DRAFT).getText());
 
@@ -252,7 +252,7 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
                 eMailStructure.setUserWorkflow(userWorkflowContext);
             }
             if (workflowV2StringElement != null) {
-                String workflowV2string = userWorkFlowElementLists.getElement(PackageConstants.EmailConstants.WORKFLOW_V2_STRING).getText();
+                String workflowV2string = userWorkFlowElementLists.getElement(PackageConstants.EmailConstants.WORKFLOW_V2_STRING).getCData();
                 userWorkflowContext.setWorkflowV2String(workflowV2string);
                 eMailStructure.setUserWorkflow(userWorkflowContext);
             }

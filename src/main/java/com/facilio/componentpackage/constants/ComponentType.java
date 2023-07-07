@@ -41,7 +41,7 @@ public enum ComponentType implements FacilioIntEnum {
 
     FUNCTION_NAMESPACE(FunctionNameSpacePackageBeanImpl.class, null, false),
     FUNCTION(FunctionPackageBeanImpl.class, FUNCTION_NAMESPACE, true),
-    EMAIL_TEMPLATE(null, MODULE, false),
+    EMAIL_TEMPLATE(EmailTemplatePackageBeanImpl.class, MODULE, false),
     WORKFLOW_RULE(WorkflowRulePackageBeanImpl.class, MODULE, false),
     SCHEDULE(null, null, false),
     CONNECTED_APP(null, null, false),
@@ -73,12 +73,6 @@ public enum ComponentType implements FacilioIntEnum {
             add(TICKET_PRIORITY);
             add(FIELD);
             add(SITE);
-            add(TICKET_CATEGORY);
-            add(TICKET_PRIORITY);
-            add(ASSET_CATEGORY);
-            add(ASSET_DEPARTMENT);
-            add(ASSET_TYPE);
-            add(SPACE_TYPE);
             add(NAMED_CRITERIA);
             add(FUNCTION_NAMESPACE);
             add(FUNCTION);
