@@ -124,6 +124,8 @@
             <param name="viewName">{1}</param>
             <param name="type">count</param>
         </action>
+        <action name="serviceAppointment/dispatch" class="com.facilio.fsm.actions.fsmAction" method="dispatchServiceAppointment">
+        </action>
     </package>
     <package name="dispatcherboard" namespace="/api/fsm/board" extends="fsmApi">
         <action name="list" class="com.facilio.fsm.actions.fsmAction" method="fetchDispatcherBoardList" />

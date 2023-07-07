@@ -2,29 +2,45 @@ package com.facilio.fsm.actions;
 
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fsm.commands.FSMReadOnlyChainFactory;
+import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
+import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
+import com.facilio.v3.util.V3Util;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter @Setter
 public class fsmAction extends V3Action {
     private String resourceIds;
+    private List<Long> ids;
+    private Long fieldAgentId;
     private Criteria criteria;
     private Long startTime;
     private Long endTime;
     private Long boardId;
+    private boolean skipValidation;
+    private Long scheduledStartTime;
+    private Long scheduledEndTime;
 
     public String getViewName() {
         return viewName;
@@ -94,6 +110,30 @@ public class fsmAction extends V3Action {
         FacilioChain fetchListChain = ReadOnlyChainFactory.getDispatcherBoardList();
         fetchListChain.execute(context);
         setData(FacilioConstants.Dispatcher.DISPATCHER_LIST,context.get(FacilioConstants.Dispatcher.DISPATCHER_LIST));
+        return SUCCESS;
+    }
+    public String dispatchServiceAppointment() throws Exception {
+        if (CollectionUtils.isEmpty(ids)) {
+            return ERROR;
+        }
+        Map<String, Object> mapping = new HashMap<>();
+        Long fieldAgentId = getFieldAgentId();
+        if(fieldAgentId != null && fieldAgentId > 0) {
+            V3PeopleContext fieldAgent = V3PeopleAPI.getPeopleById(fieldAgentId);
+            mapping.put("fieldAgent", fieldAgent);
+        }
+        if(scheduledStartTime != null && scheduledStartTime > 0){
+            mapping.put("scheduledStartTime",scheduledStartTime);
+        }
+        if(scheduledEndTime != null && scheduledEndTime > 0){
+            mapping.put("scheduledEndTime",scheduledEndTime);
+        }
+        if(!skipValidation){
+            ServiceAppointmentUtil.validateDispatch(ids,mapping);
+        }
+        if(MapUtils.isNotEmpty(mapping)) {
+            FacilioContext ctx = V3Util.updateBulkRecords(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, mapping, ids, false);
+        }
         return SUCCESS;
     }
 }

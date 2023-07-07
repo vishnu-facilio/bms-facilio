@@ -60,6 +60,10 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
             saSelectFields.add(saFieldMap.get("scheduledEndTime"));
             saSelectFields.add(saFieldMap.get("name"));
             saSelectFields.add(saFieldMap.get("fieldAgent"));
+            saSelectFields.add(saFieldMap.get("priority"));
+            saSelectFields.add(saFieldMap.get("responseDueStatus"));
+            saSelectFields.add(saFieldMap.get("resolutionDueStatus"));
+            saSelectFields.add(saFieldMap.get("site"));
             saSelectFields.add(FieldFactory.getIdField(serviceAppointment));
 
 
