@@ -31,6 +31,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             addServiceAppointmentModule();
             addServiceAppointmentTaskModule();
             addServiceTasksField();
+            addServiceAppointmentFieldInServiceTask();
             addStateFlow();
     }
     private void addServiceAppointmentModule() throws Exception {
@@ -181,6 +182,13 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
         chain.execute();
+    }
+    private void addServiceAppointmentFieldInServiceTask() throws Exception{
+        ModuleBean bean = Constants.getModBean();
+        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Service Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
+        serviceAppointment.setModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK),"Service Task module doesn't exist."));
+        serviceAppointment.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),"Service Appointment module doesn't exist."));
+        bean.addField(serviceAppointment);
     }
     @Override
     public List<FacilioForm> getModuleForms() throws Exception {
