@@ -342,7 +342,6 @@ public class TaskAction extends FacilioAction {
 			if (context.get(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT) != null && (boolean) context.get(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT)) {
 				setResult(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT, true);
 			}
-			setResult(FacilioConstants.ContextNames.RELOAD_WORK_ORDER, context.getOrDefault(FacilioConstants.ContextNames.RELOAD_WORK_ORDER, true));
 
 			setTaskActionExecuted(context);
 			
@@ -482,7 +481,6 @@ public class TaskAction extends FacilioAction {
 			}
 			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 			setModifiedTime(defaultClosedTaskObj.getModifiedTime());
-			setResult(FacilioConstants.ContextNames.RELOAD_WORK_ORDER, context.getOrDefault(FacilioConstants.ContextNames.RELOAD_WORK_ORDER, true));
 		}
 		}
 		catch (Exception e) {
@@ -621,8 +619,6 @@ public class TaskAction extends FacilioAction {
 				if (context.get(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT) != null && (boolean) context.get(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT)) {
 					setResult(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT, true);
 				}
-
-				setResult(FacilioConstants.ContextNames.RELOAD_WORK_ORDER, context.getOrDefault(FacilioConstants.ContextNames.RELOAD_WORK_ORDER, true));
 
 				setTaskActionExecuted(context);
 
@@ -872,12 +868,7 @@ public class TaskAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.TASK, task);
 		return SUCCESS;
 	}
-
-	/**
-	 * -> Single Task Update call
-	 * @return
-	 * @throws Exception
-	 */
+	
 	public String v2updateStatus() throws Exception {
 		updateStatus();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
@@ -891,24 +882,14 @@ public class TaskAction extends FacilioAction {
 		);
 		return SUCCESS;
 	}
-
-	/**
-	 * Close All Tasks call
-	 * @return
-	 * @throws Exception
-	 */
+	
 	public String v2closeAllTask() throws Exception {
 		closeAllTask();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.MODIFIED_TIME, modifiedTime);
 		return SUCCESS;
 	}
-
-	/**
-	 * Update All task Call
-	 * @return
-	 * @throws Exception
-	 */
+	
 	public String v2updateAllTask() throws Exception {
 		FacilioContext context = new FacilioContext();
 		handleTaskAttachment(context);
@@ -917,7 +898,6 @@ public class TaskAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.TASK_LIST, taskContextList);
 		setResult("error", getError());
 		setResult("preRequestStatus", preRequestStatus);
-		setResult(FacilioConstants.ContextNames.RELOAD_WORK_ORDER, context.getOrDefault(FacilioConstants.ContextNames.RELOAD_WORK_ORDER, true));
 		return SUCCESS;
 	}
 	

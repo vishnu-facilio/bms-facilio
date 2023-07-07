@@ -761,7 +761,6 @@ public class FacilioConstants {
 		public static final String TASK_ERRORS = "taskErrors";
 		public static final String REQUIRES_REMARKS = "requiresRemarks";
 		public static final String REQUIRES_ATTACHMENT = "requiresAttachment";
-		public static final String RELOAD_WORK_ORDER = "reloadWorkOrder";
 
 		public static final String HAS_TASK_ERRORS = "hasTaskErrors";
 		public static final String TASK_LIST = "tasks";
