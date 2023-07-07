@@ -96,7 +96,7 @@ public class FacilioConstants {
 	public static final SimpleDateFormat HTML5_DATE_FORMAT_1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 	public static final int INVITATION_EXPIRY_DAYS = 7;
 
-	public static class CognitoUserPool {
+    public static class CognitoUserPool {
 
 		public static String getAWSAccountId() {
 			return "665371858763";
@@ -4567,17 +4567,17 @@ public class FacilioConstants {
 		public static final String INCLUDE_HIDDEN_RELATIONS = "includeHiddenRelations";
 	}
 	public static class Dispatcher{
+	public static class Dispatcher {
 		public static final String DISPATCHER_CONFIG = "dispatcherConfig";
-		public static final String DISPATCHER ="dispatcher";
-		public static final String DISPATCHER_ID ="dispatcherId";
-		public static final String DISPATCHER_LIST ="dispatcherList";
-		public static final String BOARD_ID="boardId";
+		public static final String DISPATCHER = "dispatcher";
+		public static final String DISPATCHER_ID = "dispatcherId";
+		public static final String DISPATCHER_LIST = "dispatcherList";
+		public static final String BOARD_ID = "boardId";
 		public static final String EVENTS = "events";
+		public static final String EVENT = "event";
 		public static final String RESOURCES = "resources";
 
-
 	}
-
 	public static class TimeOff{
 		public static final String TIME_OFF = "timeOff";
 	}
@@ -4593,6 +4593,9 @@ public class FacilioConstants {
 	public static class ServiceAppointment{
 		public static final String SERVICE_APPOINTMENT = "serviceAppointment";
 		public static final String SERVICE_APPOINTMENT_TASK = "serviceAppointmentTask";
+		public static final String FIELD_AGENT_ID = "fieldAgentId";
+		public static final String FIELD_AGENT = "fieldAgent";
+		public static final String SERVICE_APPOINTMENT_ACTIVITY = "serviceAppointmentActivity";
 	}
 
 
