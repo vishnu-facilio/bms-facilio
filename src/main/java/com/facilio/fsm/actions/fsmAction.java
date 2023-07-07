@@ -12,9 +12,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fsm.commands.FSMReadOnlyChainFactory;
 import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
+import com.facilio.fsm.context.DispatcherEventContext;
+import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,16 +28,13 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter @Setter
 public class fsmAction extends V3Action {
     private String resourceIds;
-    private List<Long> ids;
+    private Long appointmentId;
     private Long fieldAgentId;
     private Criteria criteria;
     private Long startTime;
@@ -113,27 +115,52 @@ public class fsmAction extends V3Action {
         return SUCCESS;
     }
     public String dispatchServiceAppointment() throws Exception {
-        if (CollectionUtils.isEmpty(ids)) {
-            return ERROR;
-        }
+
         Map<String, Object> mapping = new HashMap<>();
+        DispatcherEventContext dispatcherSAEvent = null;
         Long fieldAgentId = getFieldAgentId();
+
+        if (appointmentId == null || appointmentId < 0) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR,"appointment id is mandatory");
+        }
+
         if(fieldAgentId != null && fieldAgentId > 0) {
             V3PeopleContext fieldAgent = V3PeopleAPI.getPeopleById(fieldAgentId);
             mapping.put("fieldAgent", fieldAgent);
         }
+
         if(scheduledStartTime != null && scheduledStartTime > 0){
             mapping.put("scheduledStartTime",scheduledStartTime);
         }
+
         if(scheduledEndTime != null && scheduledEndTime > 0){
             mapping.put("scheduledEndTime",scheduledEndTime);
         }
+
         if(!skipValidation){
-            ServiceAppointmentUtil.validateDispatch(ids,mapping);
+            ServiceAppointmentUtil.validateDispatch(appointmentId,mapping);
         }
+
         if(MapUtils.isNotEmpty(mapping)) {
-            FacilioContext ctx = V3Util.updateBulkRecords(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, mapping, ids, false);
+            FacilioContext context = V3Util.updateBulkRecords(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, mapping, Collections.singletonList(appointmentId), false);
+            HashMap<String,Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
+            List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName"));
+            if(CollectionUtils.isNotEmpty(serviceAppointments)) {
+                ServiceAppointmentContext serviceAppointment = serviceAppointments.get(0);
+                if(serviceAppointment != null){
+                    dispatcherSAEvent = new DispatcherEventContext();
+                    dispatcherSAEvent.setServiceAppointmentContext(serviceAppointment);
+                    dispatcherSAEvent.setEventType(DispatcherEventContext.EventType.SERVICE_APPOINTMENT.getIndex());
+                    dispatcherSAEvent.setAllowResize(true);
+                    dispatcherSAEvent.setAllowReschedule(true);
+                    dispatcherSAEvent.setStartTime(serviceAppointment.getScheduledStartTime());
+                    dispatcherSAEvent.setEndTime(serviceAppointment.getScheduledEndTime());
+                }
+            }
         }
+
+        setData(FacilioConstants.Dispatcher.EVENT,dispatcherSAEvent);
         return SUCCESS;
+
     }
 }
