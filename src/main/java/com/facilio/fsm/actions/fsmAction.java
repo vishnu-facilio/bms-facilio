@@ -83,6 +83,8 @@ public class fsmAction extends V3Action {
         context.put(FacilioConstants.ContextNames.SEARCH,getSearch());
         context.put(FacilioConstants.ContextNames.FILTERS,getFilters());
         context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        context.put(FacilioConstants.ContextNames.ORDER_BY,getOrderBy());
+        context.put(FacilioConstants.ContextNames.ORDER_TYPE,getOrderType());
         chain.execute();
         setData((JSONObject) context.get(FacilioConstants.ContextNames.DATA));
         return SUCCESS;

@@ -28,7 +28,8 @@ public class FetchServiceAppointmentListCommand extends FacilioCommand {
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         Long boardId = (Long) context.getOrDefault(FacilioConstants.Dispatcher.BOARD_ID,-1L);
         long criteriaId = (long) context.get(FacilioConstants.ContextNames.CRITERIA);
-
+        String orderBy = (String) context.get(FacilioConstants.ContextNames.ORDER_BY);
+        String orderType = (String) context.get(FacilioConstants.ContextNames.ORDER_TYPE);
         ModuleBean moduleBean = Constants.getModBean();
         List<FacilioField> selectFields = new ArrayList<>();
         List<String> defaultFieldNames = new ArrayList<>(Arrays.asList("name","location","site"));
@@ -107,9 +108,12 @@ public class FetchServiceAppointmentListCommand extends FacilioCommand {
             }
 
             if (sortBy != null && !sortBy.isEmpty()) {
-                sortBy = moduleBean.getField(sortBy, FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT).getCompleteColumnName();
+                sortBy = moduleBean.getField(sortBy, FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT).getCompleteColumnName()+ " " + sortOrder;
             } else {
                 sortBy = FieldFactory.getIdField(module).getCompleteColumnName() + " " + sortOrder;
+            }
+            if(orderBy != null && !orderBy.isEmpty() && orderType != null && !orderType.isEmpty()){
+                sortBy = moduleBean.getField(orderBy, FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT).getCompleteColumnName() + " " + orderType;
             }
 
         Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
