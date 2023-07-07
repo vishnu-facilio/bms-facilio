@@ -1,22 +1,36 @@
 package com.facilio.workflowv2.util;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.db.util.DBConf;
-import com.facilio.modules.FacilioIntEnum;
-import com.facilio.modules.FieldUtil;
-import com.facilio.scriptengine.context.Value;
-import com.facilio.util.FacilioUtil;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.FileReader;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.yaml.snakeyaml.Yaml;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.util.DBConf;
+import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
+import com.facilio.modules.FacilioIntEnum;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.scriptengine.context.Value;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 
 public class WorkflowV2Util {
 
@@ -176,5 +190,33 @@ public class WorkflowV2Util {
 	        json.put(key, value);
 	    }
 	    return json;
+	}
+	
+	public static int getWorkflowVersionHistoryMaxVersion(Long workflowId) throws Exception {
+    	
+		ModuleBean modBean = Constants.getModBean();
+		
+		FacilioModule module = modBean.getModule(FacilioConstants.Workflow.WORKFLOW_VERSION_HISTORY);
+		
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.Workflow.WORKFLOW_VERSION_HISTORY);
+		
+		Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.select(new HashSet<>())
+				.table(module.getTableName())
+				.aggregate(NumberAggregateOperator.MAX, fieldMap.get("version"))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("workflowId"), workflowId+"", NumberOperators.EQUALS))
+				;
+		
+		List<Map<String, Object>> props = select.get();
+		
+		if(!CollectionUtils.isEmpty(props)) {
+			
+			return (int)props.get(0).get("version");
+		}
+		else {
+			return 0;
+		}
 	}
 }

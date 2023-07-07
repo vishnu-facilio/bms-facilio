@@ -238,6 +238,8 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.workflowlog.context.WorkflowLogContext;
+import com.facilio.workflowlog.context.WorkflowVersionHistoryContext;
+
 import org.apache.commons.chain.Context;
 
 import java.util.Map;
@@ -3142,6 +3144,15 @@ public class APIv3Config {
                 .afterFetch(ReadOnlyChainFactoryV3.backgroundActivityFetchChain())
                 .build();
     }
+    
+    @Module(FacilioConstants.Workflow.WORKFLOW_VERSION_HISTORY)
+    public static Supplier<V3Config> getWorkfowVersionHistory(){
+        return () -> new V3Config(WorkflowVersionHistoryContext.class,null)
+        		.create()
+        		.beforeSave(TransactionChainFactoryV3.getWorkflowVersionHistoryBeforeSaveCommand())
+        		.build();
+    }
+    
     @Module(FacilioConstants.ContextNames.BASE_SPACE)
     public static Supplier<V3Config> getBaseSpace(){
         return () -> new V3Config(V3BaseSpaceContext.class,null)

@@ -3397,6 +3397,7 @@ public class FacilioConstants {
 		public static final String WORKFLOW_LIST = "workflows";
 
 		public static final String WORKFLOW_LOG = "workflowLog";
+		public static final String WORKFLOW_VERSION_HISTORY = "workflowVersionHistory";
 		public static final String WORKFLOW_LOG_VIEW = "workflowLogView";
 
 		public static final String WORKFLOW_LOG_TABLENAME = "Workflow_Log";

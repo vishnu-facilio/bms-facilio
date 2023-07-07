@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -94,13 +95,45 @@ public class WorkFlowLogModules extends SignUpData{
 	    List<FacilioModule> modules = new ArrayList<>();
 	    
 	    FacilioModule workFlowLogModule = constructWorkFlowLogModule();
+	    
+	    FacilioModule workFlowVersionModule = constructWorkFlowVersionModule(modBean);
+	    
 	    modules.add(workFlowLogModule);
+	    
+	    modules.add(workFlowVersionModule);
         
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
 	}
 	
+	private FacilioModule constructWorkFlowVersionModule(ModuleBean modBean) throws Exception {
+		
+		FacilioModule module = new FacilioModule(FacilioConstants.Workflow.WORKFLOW_VERSION_HISTORY,
+                "Workflow Version History",
+                "Workflow_Version_History",
+                FacilioModule.ModuleType.BASE_ENTITY
+                );
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add((FacilioField) FieldFactory.getDefaultField("workflowId", "Parent", "WORKFLOW_ID", FieldType.NUMBER));
+		fields.add((FacilioField) FieldFactory.getDefaultField("workflowString", "Workflow String", "WORKFLOW_STRING", FieldType.STRING));
+		fields.add((FacilioField) FieldFactory.getDefaultField("version", "Version", "VERSION", FieldType.NUMBER));
+		fields.add((FacilioField) FieldFactory.getDefaultField("createdTime", "Created Time", "CREATED_TIME", FieldType.DATE_TIME));
+		fields.add((FacilioField) FieldFactory.getDefaultField("modifiedTime", "Modified Time", "MODIFIED_TIME", FieldType.DATE_TIME));
+		
+		LookupField createdByPeople = FieldFactory.getDefaultField("createdByPeople","Created By","CREATED_BY_PEOPLE",FieldType.LOOKUP);
+		createdByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(createdByPeople);
+        
+        LookupField modifiedByPeople = FieldFactory.getDefaultField("modifiedByPeople","Modified By","MODIFIED_BY_PEOPLE",FieldType.LOOKUP);
+        modifiedByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(modifiedByPeople);
+        
+		module.setFields(fields);
+		return module;
+	}
+
 	public FacilioModule constructWorkFlowLogModule() throws Exception {
 		
 		FacilioModule module = new FacilioModule(FacilioConstants.Workflow.WORKFLOW_LOG,

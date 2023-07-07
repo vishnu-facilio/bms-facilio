@@ -3417,6 +3417,10 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-
+    public static FacilioChain getWorkflowVersionHistoryBeforeSaveCommand() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new WorkflowVersionHistoryFillVersionCommand());
+        return c;
+    }
 }
 
