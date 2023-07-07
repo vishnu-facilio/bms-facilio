@@ -1492,7 +1492,7 @@
         </requestbody>
     </request>
 
-    <request path="api/v2/customPage/tabs/fetch" >
+    <request path="/api/v2/customPage/tabs/fetch" >
         <requestbody type="object">
             <property name="id" type="number"/>
             <property name="moduleName" type="string"/>

@@ -75,13 +75,13 @@ public class ModuleWidgetsUtil {
             ModuleWidgets moduleWidgets = supplierModuleWidgets.get();
 
             if(moduleWidgets == null) {
-                LOGGER.info("Widgets does not exists for module --"+moduleName);
+                LOGGER.info("Widgets does not exists for module -- "+moduleName);
                 return null;
             }
             return moduleWidgets.getWidgets();
         }
         else {
-            LOGGER.info("Widgets entry does not exists in APIModuleWidgets");
+            LOGGER.info("Widgets entry does not exists in APIModuleWidgets for module -- "+moduleName);
             return new ArrayList<>();
         }
     }

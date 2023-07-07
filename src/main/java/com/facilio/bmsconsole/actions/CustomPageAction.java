@@ -43,6 +43,7 @@ public class CustomPageAction extends FacilioAction {
     private Boolean approval = false;
     private PagesContext.PageLayoutType layoutType;
     private Boolean excludeTabs = false;
+    private boolean showNewPageBuilder = false;
 
     public String createCustomPage() throws Exception{
         FacilioChain chain = TransactionChainFactory.getCreateCustomPageChain();
@@ -74,7 +75,7 @@ public class CustomPageAction extends FacilioAction {
 
         boolean isNewPage = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PAGE_BUILDER) &&
                 ModuleSettingConfigUtil.isConfigEnabledForModule(moduleName, FacilioConstants.SettingConfigurationContextNames.PAGE_BUILDER);
-        if(isNewPage) {
+        if(isNewPage || showNewPageBuilder) {
             FacilioChain chain = ReadOnlyChainFactory.getPageForRecordChain();
             FacilioContext context = chain.getContext();
             context.put(FacilioConstants.ContextNames.APP_ID, getAppId());
@@ -90,18 +91,6 @@ public class CustomPageAction extends FacilioAction {
         }
 
         if(!isNewPage || customPage == null) {
-            if(layoutType == PagesContext.PageLayoutType.WEB) {
-                FacilioChain chain = ReadOnlyChainFactory.getPageChain();
-                FacilioContext context = chain.getContext();
-                context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-                context.put(FacilioConstants.ContextNames.ID, id);
-                context.put(FacilioConstants.ContextNames.IS_APPROVAL, approval);
-                context.put(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, true);
-                chain.execute();
-
-                setResult(FacilioConstants.ContextNames.PAGE, context.get(FacilioConstants.ContextNames.PAGE));
-                setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
-            }
             setResult("isNewPage", false);
         }
         return SUCCESS;

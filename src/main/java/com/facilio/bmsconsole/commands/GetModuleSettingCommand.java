@@ -31,6 +31,7 @@ public class GetModuleSettingCommand extends FacilioCommand {
             List<String> availableConfigurationName = new ArrayList<>();
             List<ModuleSettingContext> moduleSettingConfigurations = new ArrayList<>();
             List<ModuleSettingContext> availableModuleConfigurations = ModuleSettingConfigUtil.getModuleSettingConfigurations(module);
+            availableModuleConfigurations.removeIf(f->ModuleSettingConfigUtil.HIDE_FROM_SETTING.contains(f.getConfigurationName()));
 
             if(CollectionUtils.isNotEmpty(availableModuleConfigurations)){
                 availableConfigurationName = availableModuleConfigurations.stream().map(ModuleSettingContext::getConfigurationName).collect(Collectors.toList());

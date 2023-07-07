@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 public class ModuleSettingConfigUtil {
 
     public static final List<String> COMMON_CONFIGURATION_LIST = Collections.unmodifiableList(initList());
+    public static final List<String> HIDE_FROM_SETTING = Arrays.asList("pageBuilder");//the list here will restrict the settings from showing in the module settings setup page
 
     private static List<String> initList() {
         List<String> configurationNames = new ArrayList<>();

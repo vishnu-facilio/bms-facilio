@@ -27,12 +27,10 @@ public class CreateDefaultPageCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
         String moduleName = module.getName();
-
-        if(WidgetAPI.checkIfWidgetConfigExistsWithLayoutType()) {
-            try {
-                List<String> appNames = new ArrayList<>();
-                appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-                appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        try {
+            List<String> appNames = new ArrayList<>();
+            appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+            appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 //        appNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
 //        appNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
 //        appNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
@@ -40,13 +38,9 @@ public class CreateDefaultPageCommand extends FacilioCommand {
 //        appNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
 //        appNames.add(FacilioConstants.ApplicationLinkNames.DEVELOPER_APP);
 //        PagesUtil.addTemplatePage(moduleName, getCustomModuleTemplatePageForApps(module, appNames));
-                PagesUtil.addSystemPages(moduleName, getCustomModuleDefaultPagesForApps(module, appNames));
-            }
-            catch (Exception e) {
-                LOGGER.info("Error occured while creating default page for the module -- "+moduleName+", error message - "+e.getMessage());
-            }
-        }else {
-            LOGGER.info("Default page have not been created for the module -- "+moduleName+", as widget configuration does not defined for layoutType");
+            PagesUtil.addSystemPages(moduleName, getCustomModuleDefaultPagesForApps(module, appNames));
+        } catch (Exception e) {
+            LOGGER.info("Error occured while creating default page for the module -- " + moduleName + ", error message - " + e.getMessage());
         }
         return false;
     }
@@ -95,11 +89,11 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                         .addWebTab("summary", "SUMMARY", true, null)
                             .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                                 .addSection("summaryfields", null, null)
-                                    .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_41", 0, 0, null, getSummaryWidgetDetails(module.getName()))
+                                    .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(module.getName()))
                                     .widgetDone()
                                 .sectionDone()
                                 .addSection("widgetGroup", null, null)
-                                    .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_17", 0, 4, null, getWidgetGroup(false))
+                                    .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 4, null, getWidgetGroup(false))
                                     .widgetDone()
                                 .sectionDone()
                             .columnDone()
@@ -107,19 +101,19 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                         .addWebTab("related", "RELATED", true, null)
                             .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                                 .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
-                                    .addWidget("bulkrelationshipwidget", null, PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_25", 0, 0,  null, null)
+                                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0,  null, null)
                                     .widgetDone()
                                 .sectionDone()
                                 .addSection("relatedlist", "Related List", "List of related records across modules")
-                                    .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_25", 0, 4,  null, null)
+                                    .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_29", 0, 4,  null, null)
                                     .widgetDone()
                                 .sectionDone()
                             .columnDone()
                         .tabDone()
                         .addWebTab("specification", "SPECIFICATION",true, AccountUtil.FeatureLicense.CLASSIFICATION)
                             .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                                .addSection("classification", "Classification", null)
-                                    .addWidget(null, "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_28",  0, 0,  classificationWidgetParam, null)
+                                .addSection("classification", null, null)
+                                    .addWidget("classificationwidget", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_28",  0, 0,  classificationWidgetParam, null)
                                     .widgetDone()
                                 .sectionDone()
                             .columnDone()
@@ -127,7 +121,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                         .addWebTab("history", "HISTORY",true, null)
                             .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                                 .addSection("history", null, null)
-                                    .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_21", 0, 0,  historyWidgetParam, null)
+                                    .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0,  historyWidgetParam, null)
                                     .widgetDone()
                                 .sectionDone()
                             .columnDone()
@@ -135,7 +129,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                         .addWebTab("failurereport", "FAILURE REPORT",true, AccountUtil.FeatureLicense.FAILURE_CODES)
                             .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                                 .addSection("failurereport", null, null)
-                                    .addWidget("failurereport", "Failure Report", PageWidget.WidgetType.FAILURE_REPORT, "flexiblewebfailurereport_21", 0, 0,  timeLogWidgetParam, null)
+                                    .addWidget("failurereport", "Failure Report", PageWidget.WidgetType.FAILURE_REPORT, "flexiblewebfailurereport_29", 0, 0,  timeLogWidgetParam, null)
                                     .widgetDone()
                                 .sectionDone()
                             .columnDone()
@@ -143,7 +137,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                         .addWebTab("timelog", "TIME LOG",true, null)
                             .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                                 .addSection("timelog", null, null)
-                                    .addWidget("timelogandmetrics", "Time Log", PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG, "flexiblewebstatetransitiontimelog_46", 0, 0, timeLogWidgetParam, null)
+                                    .addWidget("timelogandmetrics", "Time Log", PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG, "flexiblewebstatetransitiontimelog_30", 0, 0, timeLogWidgetParam, null)
                                     .widgetDone()
                                 .sectionDone()
                             .columnDone()
@@ -171,31 +165,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                         .addMobileTab("specification", "SPECIFICATION",true, AccountUtil.FeatureLicense.CLASSIFICATION)
                             .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                                 .addSection("classification", "Classification", null)
-                                    .addWidget("classification", null, PageWidget.WidgetType.CLASSIFICATION,"flexiblemobileclassification_8", 0, 0,  classificationWidgetParam, null)
-                                    .widgetDone()
-                                .sectionDone()
-                            .columnDone()
-                        .tabDone()
-                        .addMobileTab("history", "HISTORY",true, null)
-                            .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                                .addSection("history", null,  null)
-                                    .addWidget("historyWidget", null, PageWidget.WidgetType.ACTIVITY,"flexiblemobileactivity_4",0, 0,  historyWidgetParam, null)
-                                    .widgetDone()
-                                .sectionDone()
-                            .columnDone()
-                        .tabDone()
-                        .addMobileTab("failurereport", "FAILURE REPORT",true, AccountUtil.FeatureLicense.FAILURE_CODES)
-                            .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                                .addSection("failurereport", null, null)
-                                    .addWidget("failurereport", null, PageWidget.WidgetType.FAILURE_REPORT, "flexiblemobilefailurereport_8", 0, 0,  timeLogWidgetParam, null)
-                                    .widgetDone()
-                                .sectionDone()
-                            .columnDone()
-                        .tabDone()
-                        .addMobileTab("timelog", "TIME LOG",true, null)
-                            .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                                .addSection("timelog", null, null)
-                                    .addWidget("timelogandmetrics", null, PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG,"flexiblemobilestatetransitiontimelog_8", 0, 0, timeLogWidgetParam, null)
+                                    .addWidget("classificationwidget", null, PageWidget.WidgetType.CLASSIFICATION,"flexiblemobileclassification_8", 0, 0,  classificationWidgetParam, null)
                                     .widgetDone()
                                 .sectionDone()
                             .columnDone()
@@ -209,11 +179,11 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                             .addWebTab("summary", "SUMMARY", true, null)
                                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                                     .addSection("summaryfields", null, null)
-                                        .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_41", 0, 0,  null, getSummaryWidgetDetails(module.getName()))
+                                        .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0,  null, getSummaryWidgetDetails(module.getName()))
                                         .widgetDone()
                                     .sectionDone()
                                     .addSection("widgetGroup", null, null)
-                                        .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_17", 0, 4, null, getWidgetGroup(false))
+                                        .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 4, null, getWidgetGroup(false))
                                         .widgetDone()
                                     .sectionDone()
                                 .columnDone()
@@ -221,18 +191,18 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                             .addWebTab("related", "RELATED", true, null)
                                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                                     .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
-                                        .addWidget("bulkrelationshipwidget", "Realtionships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_25", 0, 0, null, null)
+                                        .addWidget("bulkrelationshipwidget", "Realtionships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
                                         .widgetDone()
                                     .sectionDone()
                                     .addSection("relatedlist", "Related List", "List of related records across modules")
-                                        .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_25", 0, 4,  null, null)
+                                        .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_29", 0, 4,  null, null)
                                         .widgetDone()
                                     .sectionDone()
                                 .columnDone()
                             .tabDone()
                             .addWebTab("specification", "SPECIFICATION",true, AccountUtil.FeatureLicense.CLASSIFICATION)
                                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                                    .addSection("classification", "Classification", null)
+                                    .addSection("classification", null, null)
                                         .addWidget("classificationwidget", "Classfication", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_28",  0, 0, classificationWidgetParam, null)
                                         .widgetDone()
                                     .sectionDone()
@@ -241,15 +211,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                             .addWebTab("failurereport", "FAILURE REPORT",true, AccountUtil.FeatureLicense.FAILURE_CODES)
                                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                                     .addSection("failurereport", null, null)
-                                        .addWidget("failurereport", "Failure Report", PageWidget.WidgetType.FAILURE_REPORT, "flexiblewebfailurereport_21", 0, 0,  timeLogWidgetParam, null)
-                                        .widgetDone()
-                                    .sectionDone()
-                                .columnDone()
-                            .tabDone()
-                            .addWebTab("timelog", "TIME LOG",true, null)
-                                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                                    .addSection("timelog", null, null)
-                                        .addWidget("timelogandmetrics", null, PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG, "flexiblewebstatetransitiontimelog_46", 0, 0,  timeLogWidgetParam, null)
+                                        .addWidget("failurereport", "Failure Report", PageWidget.WidgetType.FAILURE_REPORT, "flexiblewebfailurereport_29", 0, 0,  timeLogWidgetParam, null)
                                         .widgetDone()
                                     .sectionDone()
                                 .columnDone()
@@ -277,23 +239,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                             .addMobileTab("specification", "SPECIFICATION",true, AccountUtil.FeatureLicense.CLASSIFICATION)
                                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                                     .addSection("classification", "Classification", null)
-                                        .addWidget(null, null, PageWidget.WidgetType.CLASSIFICATION,"flexiblemobileclassification_8", 0, 0,  classificationWidgetParam, null)
-                                        .widgetDone()
-                                    .sectionDone()
-                                .columnDone()
-                            .tabDone()
-                            .addMobileTab("failurereport", "FAILURE REPORT",true, AccountUtil.FeatureLicense.FAILURE_CODES)
-                                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                                    .addSection("failurereport", null, null)
-                                        .addWidget("failurereport", null, PageWidget.WidgetType.FAILURE_REPORT, "flexiblemobilefailurereport_8", 0, 0,  timeLogWidgetParam, null)
-                                        .widgetDone()
-                                    .sectionDone()
-                                .columnDone()
-                            .tabDone()
-                            .addMobileTab("timelog", "TIME LOG",true, null)
-                                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                                    .addSection("timelog", null, null)
-                                        .addWidget("timelogandmetrics", null, PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG, "flexiblemobilestatetransitiontimelog_8", 0, 0,  timeLogWidgetParam, null)
+                                        .addWidget("classificationwidget", null, PageWidget.WidgetType.CLASSIFICATION,"flexiblemobileclassification_8", 0, 0,  classificationWidgetParam, null)
                                         .widgetDone()
                                     .sectionDone()
                                 .columnDone()
@@ -364,11 +310,11 @@ public class CreateDefaultPageCommand extends FacilioCommand {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                     .addSection("notes", "Notes", null)
-                        .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_10", 0, 4, null, null)
+                        .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 4, null, null)
                         .widgetGroupWidgetDone()
                     .widgetGroupSectionDone()
                     .addSection("documents", "Documents", null)
-                        .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_10", 0, 4, null, null)
+                        .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 4, null, null)
                         .widgetGroupWidgetDone()
                     .widgetGroupSectionDone();
 

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.modules.FacilioIntEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,13 +25,14 @@ public class WidgetConfigContext {
         this.configType = configType;
         this.minHeight = minHeight;
         this.minWidth = minWidth;
-        this.layoutType = layoutType;
+        this.layoutType = layoutType == null? PagesContext.PageLayoutType.WEB : layoutType;
     }
 
     private long id =-1;
     private String name;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private PagesContext.PageLayoutType layoutType = PagesContext.PageLayoutType.WEB;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private PagesContext.PageLayoutType layoutType;
     private String displayName;
     private long widgetId =-1;
     private long minHeight =-1;
