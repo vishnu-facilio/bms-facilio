@@ -10,7 +10,6 @@ import com.facilio.fsm.context.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
-import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 
 import java.util.function.Supplier;
@@ -44,6 +43,7 @@ public class FieldServiceManagementV3Config {
         return () -> new V3Config(ServiceTaskContext.class, new ModuleCustomFieldCount15())
                 .create()
                 .beforeSave(new FsmTransactionChainFactoryV3().getTaskBeforeSaveChain())
+                .afterSave(new FsmTransactionChainFactoryV3().getTaskAfterSaveChain())
                 .update()
                 .beforeSave(new FsmTransactionChainFactoryV3().getTaskBeforeUpdateChain())
                 .afterSave(new FsmTransactionChainFactoryV3().getTaskAfterUpdateChain())
@@ -57,6 +57,7 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getServiceOrder() {
         return () -> new V3Config(ServiceOrderContext.class, new ModuleCustomFieldCount15())
                 .create()
+                .beforeSave(FsmTransactionChainFactoryV3.getServiceOrderBeforeSaveCreateChain())
                 .afterSave(new FsmTransactionChainFactoryV3().afterSOCreateChain())
                 .update()
                 .afterSave(new ConstructUpdateCustomActivityCommandV3(),

@@ -111,9 +111,12 @@ public class ServiceTaskContext extends V3Context {
     }
     public static enum ServiceTaskStatus implements FacilioIntEnum {
         NEW("New"),
+        SCHEDULED("Scheduled"),
+        DISPATCHED("Dispatched"),
         IN_PROGRESS("In Progress"),
         PARTIALLY_COMPLETE("Partially Complete"),
         COMPLETED("Completed"),
+        REOPENED("Reopened"),
         NOT_COMPLETED("Not Completed");
 
         private String name;

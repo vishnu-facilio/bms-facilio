@@ -320,12 +320,15 @@ public class ServiceOrderContext extends V3Context {
 
     public static enum ServiceOrderStatus implements FacilioIntEnum {
         NEW("New"),
+        SCHEDULED("Scheduled"),
         IN_PROGRESS("In Progress"),
-        ON_HOLD("On Hold"),
-        CANNOT_COMPLETE("Cannot Complete"),
         COMPLETED("Completed"),
-        CLOSED("Closed"),
-        CANCELLED("Cancelled");
+        CANCELLED("Cancelled"),
+        CLOSED("Closed");
+//        ON_HOLD("On Hold"),
+//        CANNOT_COMPLETE("Cannot Complete"),
+
+
 
         private String name;
 

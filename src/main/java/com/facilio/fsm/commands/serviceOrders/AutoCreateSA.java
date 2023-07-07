@@ -53,7 +53,6 @@ public class AutoCreateSA extends FacilioCommand {
                 }
 //                sa.setServiceTasks(order.getServiceTasks());
             }
-//            orders.setStatus(ServiceTaskContext.ServiceTaskStatus.NEW.getIndex());
         }
 
         return false;

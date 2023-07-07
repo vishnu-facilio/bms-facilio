@@ -278,11 +278,11 @@ public class ServiceOrderModule extends BaseModuleConfig {
         webWorkOrderFormDefaultFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.VENDORS, 6, 1));
 //        webWorkOrderFormDefaultFields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.CLIENT, 7, 2));
 //        webWorkOrderFormDefaultFields.add(new FormField("parentSo", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent SO", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, 8, 2));
-        webWorkOrderFormDefaultFields.add(new FormField("actualStartTime", FacilioField.FieldDisplayType.DATETIME, "Actual Start Time", FormField.Required.REQUIRED, 7, 2));
-        webWorkOrderFormDefaultFields.add(new FormField("actualEndTime", FacilioField.FieldDisplayType.DATETIME, "Actual End Time", FormField.Required.REQUIRED, 8, 2));
-        webWorkOrderFormDefaultFields.add(new FormField("preferredStartTime", FacilioField.FieldDisplayType.DATETIME, "Preferred Start Time", FormField.Required.OPTIONAL, 9, 2));
-        webWorkOrderFormDefaultFields.add(new FormField("preferredEndTime", FacilioField.FieldDisplayType.DATETIME, "Preferred End Time", FormField.Required.OPTIONAL, 10, 2));
-        webWorkOrderFormDefaultFields.add(new FormField("autoCreateSa", FacilioField.FieldDisplayType.RADIO, "Auto Create SA", FormField.Required.OPTIONAL, 11, 2));
+        webWorkOrderFormDefaultFields.add(new FormField("actualStartTime", FacilioField.FieldDisplayType.DATETIME, "Actual Start Time", FormField.Required.OPTIONAL, 7, 2));
+        webWorkOrderFormDefaultFields.add(new FormField("actualEndTime", FacilioField.FieldDisplayType.DATETIME, "Actual End Time", FormField.Required.OPTIONAL, 8, 2));
+        webWorkOrderFormDefaultFields.add(new FormField("preferredStartTime", FacilioField.FieldDisplayType.DATETIME, "Preferred Start Time", FormField.Required.REQUIRED, 9, 2));
+        webWorkOrderFormDefaultFields.add(new FormField("preferredEndTime", FacilioField.FieldDisplayType.DATETIME, "Preferred End Time", FormField.Required.REQUIRED, 10, 2));
+        webWorkOrderFormDefaultFields.add(new FormField("autoCreateSa", FacilioField.FieldDisplayType.DECISION_BOX, "Auto Create SA", FormField.Required.OPTIONAL, 11, 2));
 
 
         List<FormField> webWorkOrderFormFields = new ArrayList<>();
