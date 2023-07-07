@@ -133,6 +133,14 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         territory.setLookupModule(moduleBean.getModule("territory"));
         serviceAppointmentFields.add(territory);
 
+        SystemEnumField responseDueStatus = FieldFactory.getDefaultField("responseDueStatus","Response Due Status","RESPONSE_DUE_STATUS",FieldType.SYSTEM_ENUM);
+        responseDueStatus.setEnumName("AppointmentDueStatus");
+        serviceAppointmentFields.add(responseDueStatus);
+
+        SystemEnumField resolutionDueStatus = FieldFactory.getDefaultField("resolutionDuesStatus","Resolution Due Status","RESOLUTION_DUE_STATUS",FieldType.SYSTEM_ENUM);
+        resolutionDueStatus.setEnumName("AppointmentDueStatus");
+        serviceAppointmentFields.add(resolutionDueStatus);
+
         serviceAppointmentModule.setFields(serviceAppointmentFields);
         modules.add(serviceAppointmentModule);
 

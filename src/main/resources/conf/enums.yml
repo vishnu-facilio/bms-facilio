@@ -520,3 +520,6 @@ enums:
 
   - name: AppointmentType
     enumClassName: com.facilio.fsm.context.ServiceAppointmentContext$AppointmentType
+
+  - name: AppointmentDueStatus
+    enumClassName: com.facilio.fsm.context.ServiceAppointmentContext$DueStatus

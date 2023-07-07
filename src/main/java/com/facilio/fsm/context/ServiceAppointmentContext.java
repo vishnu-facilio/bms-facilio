@@ -96,7 +96,8 @@ public class ServiceAppointmentContext extends V3Context {
     private InspectionResponseContext inspection;
     private V3WorkOrderContext workorder;
 
-    private DueStatus responseDueStatus = DueStatus.ON_TIME; //client-purpose
+    private DueStatus responseDueStatus;
+    private DueStatus resolutionDueStatus;
     public int getResponseDueStatus() {
         if (responseDueStatus != null) {
             return responseDueStatus.getIndex();
@@ -114,6 +115,7 @@ public class ServiceAppointmentContext extends V3Context {
     }
 
     public static enum DueStatus implements FacilioIntEnum {
+        DUE ("Due"),
         ON_TIME ("On Time"),
         OVERDUE ("Overdue");
 
