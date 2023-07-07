@@ -5,6 +5,10 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -19,12 +23,20 @@ import com.facilio.v3.context.Constants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.beans.ModuleBean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 public class WorkflowRulePackageBeanImpl implements PackageBean<WorkflowRuleContext> {
+    private final List<Integer> SUPPORTED_ACTION_TYPES = new ArrayList<Integer>(){{
+        add(ActionType.FIELD_CHANGE.getVal());
+        add(ActionType.CHANGE_STATE.getVal());
+        add(ActionType.WORKFLOW_ACTION.getVal());
+    }};
+
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
         return null;
@@ -37,7 +49,20 @@ public class WorkflowRulePackageBeanImpl implements PackageBean<WorkflowRuleCont
 
     @Override
     public Map<Long, WorkflowRuleContext> fetchComponents(List<Long> ids) throws Exception {
-        return WorkflowRuleAPI.getWorkFlowRules(WorkflowRuleContext.RuleType.MODULE_RULE, ids);
+        Map<Long, WorkflowRuleContext> workFlowRules = WorkflowRuleAPI.getWorkFlowRules(WorkflowRuleContext.RuleType.MODULE_RULE, ids);
+        // TODO - Filtering UnSupported ActionTypes - Do handle all ActionTypes
+        Map<Long, WorkflowRuleContext> workFlowRulesToPackage = new HashMap<>();
+        for (WorkflowRuleContext workflowRule : workFlowRules.values()) {
+            List<ActionContext> actionContexts = workflowRule.getActions();
+            if (CollectionUtils.isNotEmpty(actionContexts)) {
+                List<ActionContext> actionContextsToPackage = actionContexts.stream().filter(actionContext -> SUPPORTED_ACTION_TYPES.contains(actionContext.getActionType())).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(actionContextsToPackage)) {
+                    workflowRule.setActions(actionContextsToPackage);
+                    workFlowRulesToPackage.put(workflowRule.getId(), workflowRule);
+                }
+            }
+        }
+        return workFlowRulesToPackage;
     }
 
     @Override
@@ -77,6 +102,17 @@ public class WorkflowRulePackageBeanImpl implements PackageBean<WorkflowRuleCont
         // actions
         if (CollectionUtils.isNotEmpty(workflowRule.getActions())) {
             PackageBeanUtil.constructBuilderFromActionsList(workflowRule.getActions(), builder.element(PackageConstants.WorkFlowRuleConstants.ACTIONS_LIST));
+        }
+
+        // EventType.FIELD_CHANGE (move to common handling)
+        if (EventType.FIELD_CHANGE.isPresent(workflowRule.getActivityType()) && CollectionUtils.isNotEmpty(workflowRule.getFields())) {
+            List<Long> fieldIds = workflowRule.getFields().stream().map(FieldChangeFieldContext::getFieldId).collect(Collectors.toList());
+            List<FacilioField> fieldList = moduleBean.getFields(fieldIds);
+
+            XMLBuilder fieldChangeFieldsElement = builder.element(PackageConstants.WorkFlowRuleConstants.FIELD_CHANGE_FIELDS);
+            for (FacilioField field : fieldList) {
+                fieldChangeFieldsElement.element(PackageConstants.WorkFlowRuleConstants.CHANGE_FIELD_NAME).text(field.getName());
+            }
         }
     }
 
@@ -197,6 +233,36 @@ public class WorkflowRulePackageBeanImpl implements PackageBean<WorkflowRuleCont
         if (actionsList != null) {
             List<ActionContext> actionContextList = PackageBeanUtil.constructActionContextsFromBuilder(actionsList);
             workflowRuleContext.setActions(actionContextList);
+        }
+
+        // Field_Change_Fields
+        XMLBuilder fieldChangeFieldsElement = builder.getElement(PackageConstants.WorkFlowRuleConstants.FIELD_CHANGE_FIELDS);
+        if (EventType.FIELD_CHANGE.isPresent(workflowRuleContext.getActivityType()) && fieldChangeFieldsElement != null) {
+            List<XMLBuilder> changeFieldNamesBuilder = fieldChangeFieldsElement.getFirstLevelElementListForTagName(PackageConstants.WorkFlowRuleConstants.CHANGE_FIELD_NAME);
+            List<String> changeFieldNames = new ArrayList<>();
+            for (XMLBuilder changeFieldBuilder : changeFieldNamesBuilder) {
+                String fieldName = changeFieldBuilder.getText();
+                if (StringUtils.isNotEmpty(fieldName)) {
+                    changeFieldNames.add(fieldName);
+                }
+            }
+
+            Criteria fieldNamCriteria = new Criteria();
+            FacilioField fieldNameField = FieldFactory.getStringField("NAME", "name", ModuleFactory.getFieldsModule());
+            fieldNamCriteria.addAndCondition(CriteriaAPI.getCondition(fieldNameField, StringUtils.join(changeFieldNames, ","), StringOperators.IS));
+            List<FacilioField> moduleFields = moduleBean.getAllFields(moduleName, null, null, fieldNamCriteria);
+
+            if (CollectionUtils.isNotEmpty(moduleFields)) {
+                List<FieldChangeFieldContext> changeFieldContexts = new ArrayList<>();
+                for (FacilioField field : moduleFields) {
+                    FieldChangeFieldContext fieldChangeFieldContext = new FieldChangeFieldContext();
+                    fieldChangeFieldContext.setFieldId(field.getFieldId());
+                    changeFieldContexts.add(fieldChangeFieldContext);
+                }
+                workflowRuleContext.setFields(changeFieldContexts);
+            } else {
+                LOGGER.info("####Sandbox Tracking - FieldChangeFieldContext is empty - WorkflowRule - + " + name + " FieldObj not found moduleName - " + moduleName + " for fieldNames" + changeFieldNames);
+            }
         }
 
         return workflowRuleContext;

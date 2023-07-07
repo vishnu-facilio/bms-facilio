@@ -6,6 +6,7 @@ import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.componentpackage.interfaces.PackageBean;
+import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -200,6 +201,10 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
             String moduleName = moduleFields.getKey();
             List<FacilioField> fieldsList = moduleFields.getValue();
             FacilioModule module = moduleBean.getModule(moduleName);
+            if (module == null) {
+                LOGGER.info("###Sandbox - Module not found - " + moduleName);
+                continue;
+            }
             fieldsList = createFields(module, fieldsList);
 
             // set uniqueIdentifier vs fieldId
@@ -267,7 +272,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
                 .select(selectableFields)
                 .table(fieldsModule.getTableName())
                 .innerJoin("Modules").on("Fields.MODULEID = Modules.MODULEID")
-                .andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "type", StringUtils.join(ModulePackageBeanImpl.IGNORE_MODULE_TYPES, ","), NumberOperators.NOT_EQUALS))
+                .andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "type", StringUtils.join(PackageBeanUtil.INCLUDE_MODULE_TYPES, ","), NumberOperators.EQUALS))
                 ;
 
         if (!fetchCustom) {

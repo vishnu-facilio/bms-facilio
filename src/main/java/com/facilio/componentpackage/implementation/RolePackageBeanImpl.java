@@ -119,13 +119,13 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
             XMLBuilder roleElement = idVsData.getValue();
             Role role = constructRoleFromBuilder(roleElement);
 
-            // Operations Admin - Does not have an app associated
-            if (role.getName().equals("Operations Admin")) {
-                continue;
-            }
-
             Role dbRole = roleBean.getRole(currentOrg.getOrgId(), role.getName());
             List<RoleApp> roleAppList = constructRoleAppsFromBuilder(roleElement, appNameVsAppId);
+
+            // Skip adding/ updating role if Role_App mapping is empty
+            if (CollectionUtils.isEmpty(roleAppList)) {
+                continue;
+            }
 
             long roleId = -1;
             if (dbRole == null) {
@@ -150,6 +150,10 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
             XMLBuilder roleElement = idVsData.getValue();
             Role role = constructRoleFromBuilder(roleElement);
             List<RoleApp> roleAppList = constructRoleAppsFromBuilder(roleElement, appNameVsAppId);
+
+            if (CollectionUtils.isEmpty(roleAppList)) {
+                continue;
+            }
 
             updateRole(role, null, roleAppList);
         }

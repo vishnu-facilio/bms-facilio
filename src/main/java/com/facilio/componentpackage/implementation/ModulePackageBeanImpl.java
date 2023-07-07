@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.interfaces.PackageBean;
+import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -29,23 +30,6 @@ import java.util.*;
 
 @Log4j
 public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
-    public static final List<Integer> IGNORE_MODULE_TYPES = new ArrayList<Integer>(){{
-        add(FacilioModule.ModuleType.NOTES.getValue());
-        add(FacilioModule.ModuleType.PHOTOS.getValue());
-        add(FacilioModule.ModuleType.ACTIVITY.getValue());
-        add(FacilioModule.ModuleType.TIME_LOG.getValue());
-        add(FacilioModule.ModuleType.ATTACHMENTS.getValue());
-        add(FacilioModule.ModuleType.LIVE_FORMULA.getValue());
-        add(FacilioModule.ModuleType.RELATION_DATA.getValue());
-        add(FacilioModule.ModuleType.ENUM_REL_MODULE.getValue());
-        add(FacilioModule.ModuleType.SCHEDULED_FORMULA.getValue());
-        add(FacilioModule.ModuleType.LOOKUP_REL_MODULE.getValue());
-        add(FacilioModule.ModuleType.CLASSIFICATION_DATA.getValue());
-        add(FacilioModule.ModuleType.LARGE_TEXT_DATA_MODULE.getValue());
-        add(FacilioModule.ModuleType.SYSTEM_SCHEDULED_FORMULA.getValue());
-        add(FacilioModule.ModuleType.CUSTOM_MODULE_DATA_FAILURE_CLASS_RELATIONSHIP.getValue());
-    }};
-
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
         return getModuleIdVsParents(false);
@@ -234,7 +218,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
                 .select(Collections.singletonList(moduleIdField))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(1), NumberOperators.NOT_EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("custom"), String.valueOf(fetchCustom), BooleanOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("type"), StringUtils.join(IGNORE_MODULE_TYPES, ","), NumberOperators.NOT_EQUALS));
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("type"), StringUtils.join(PackageBeanUtil.INCLUDE_MODULE_TYPES, ","), NumberOperators.EQUALS));
 
         List<Map<String, Object>> props = selectBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {

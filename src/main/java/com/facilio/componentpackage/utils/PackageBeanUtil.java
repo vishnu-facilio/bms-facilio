@@ -42,6 +42,17 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class PackageBeanUtil {
+    public static final List<Integer> INCLUDE_MODULE_TYPES = new ArrayList<Integer>(){{
+        add(FacilioModule.ModuleType.Q_AND_A.getValue());
+        add(FacilioModule.ModuleType.BASE_ENTITY.getValue());
+        add(FacilioModule.ModuleType.TRANSACTION.getValue());
+        add(FacilioModule.ModuleType.Q_AND_A_RESPONSE.getValue());
+    }};
+
+//    public static final Map<String, FacilioField> getFieldsForFieldName(String moduleName, List<String> fieldNames) throws Exception {
+//
+//    }
+
     public static Map<String, Long> getAppNameVsAppId() throws Exception {
         List<ApplicationContext> applicationContexts = ApplicationApi.getAllApplicationsWithOutFilter();
         Map<String, Long> appNameVsAppId = new HashMap<>();

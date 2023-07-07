@@ -270,6 +270,8 @@ public class PackageConstants {
         public static final String ACTION_FIELD_NAME = "Action_Field_Name";
         public static final String ACTION_FIELD_VALUE = "Action_Field_Value";
         public static final String CONTAINS_RECORD_ID_MAP = "Contains_Record_Id_Map";
+        public static final String FIELD_CHANGE_FIELDS = "Field_Change_Fields";
+        public static final String CHANGE_FIELD_NAME = "Change_Field_Name";
     }
 
     public static class FunctionConstants {
