@@ -3,6 +3,7 @@ package com.facilio.componentpackage.implementation;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
@@ -15,6 +16,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
@@ -67,25 +69,33 @@ public class TicketCategoryPackageBeanImpl implements PackageBean<TicketCategory
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule ticketCategoryModule = moduleBean.getModule("ticketcategory");
+        SelectRecordsBuilder<TicketCategoryContext> builder = new SelectRecordsBuilder<TicketCategoryContext>()
+                .table(ticketCategoryModule.getTableName())
+                .select(moduleBean.getAllFields(ticketCategoryModule.getName()))
+                .module(ticketCategoryModule)
+                .beanClass(TicketCategoryContext.class);
+        List<TicketCategoryContext> ticketCategories = builder.get();
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder ticketCategoryElement = idVsData.getValue();
             TicketCategoryContext ticketCategoryContext = constructTicketCategoryFromBuilder(ticketCategoryElement);
-            FacilioModule ticketCategoryModule = ModuleFactory.getTicketCategoryModule();
-            List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
-                add(FieldFactory.getStringField("name", "NAME", ticketCategoryModule));
-            }};
-            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                    .table(ticketCategoryModule.getTableName())
-                    .select(selectableFields)
-                    .andCondition(CriteriaAPI.getCondition("NAME", "name", ticketCategoryContext.getName(), StringOperators.IS));
-            List<Map<String, Object>> props = builder.get();
-            if(CollectionUtils.isEmpty(props)) {
-                long ticketCategoryId = addTicketCategory(ticketCategoryContext);
-                ticketCategoryContext.setId(ticketCategoryId);
-                uniqueIdentifierVsComponentId.put(idVsData.getKey(), ticketCategoryId);
+            boolean containsName = false;
+            Long id = -1L;
+            for(TicketCategoryContext ticketCategory : ticketCategories) {
+                if (ticketCategory.getName().equals(ticketCategoryContext.getName())) {
+                    containsName = true;
+                    id = ticketCategory.getId();
+                    break;
+                }
             }
-            else{
+            if (!containsName) {
+                long ticketCategoryId = addTicketCategory(ticketCategoryContext);
+                uniqueIdentifierVsComponentId.put(idVsData.getKey(), ticketCategoryId);
+            }else{
+                ticketCategoryContext.setId(id);
                 updateTicketCategory(ticketCategoryContext);
+                uniqueIdentifierVsComponentId.put(idVsData.getKey(), id);
             }
         }
         return uniqueIdentifierVsComponentId;
@@ -103,9 +113,9 @@ public class TicketCategoryPackageBeanImpl implements PackageBean<TicketCategory
     }
     @Override
     public void deleteComponentFromXML(List<Long> ids) throws Exception {
-        FacilioChain deleteTicketCategoryChain = FacilioChainFactory.getDeleteTicketCategoryChain();
-        FacilioContext context = deleteTicketCategoryChain.getContext();
         for (long id : ids) {
+            FacilioChain deleteTicketCategoryChain = FacilioChainFactory.getDeleteTicketCategoryChain();
+            FacilioContext context = deleteTicketCategoryChain.getContext();
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(id));
             deleteTicketCategoryChain.execute();
         }
@@ -114,7 +124,7 @@ public class TicketCategoryPackageBeanImpl implements PackageBean<TicketCategory
         Map<Long, Long> ticketCategoryIdVsModuleId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule ticketCategoryModule = moduleBean.getModule("ticketcategory");
-        List<TicketCategoryContext> props = (List<TicketCategoryContext>) PackageBeanUtil.getContextIdVsParentId(null,ticketCategoryModule, TicketCategoryContext.class);
+        List<TicketCategoryContext> props = (List<TicketCategoryContext>) PackageBeanUtil.getModuleDataIdVsModuleId(null,ticketCategoryModule, TicketCategoryContext.class);
         if (CollectionUtils.isNotEmpty(props)) {
             for (TicketCategoryContext prop : props) {
                 ticketCategoryIdVsModuleId.put( prop.getId(), prop.getModuleId());
@@ -125,7 +135,7 @@ public class TicketCategoryPackageBeanImpl implements PackageBean<TicketCategory
     public List<TicketCategoryContext> getTicketCategoryForIds(Collection<Long> ids) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule ticketCategoryModule = moduleBean.getModule("ticketcategory");
-        List<TicketCategoryContext> ticketCategories = (List<TicketCategoryContext>) PackageBeanUtil.getContextListsForIds(ids,ticketCategoryModule, TicketCategoryContext.class);
+        List<TicketCategoryContext> ticketCategories = (List<TicketCategoryContext>) PackageBeanUtil.getModuleDataListsForIds(ids,ticketCategoryModule, TicketCategoryContext.class);
         return ticketCategories;
     }
     public static TicketCategoryContext constructTicketCategoryFromBuilder(XMLBuilder ticketCategoryElement) throws Exception {

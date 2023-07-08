@@ -9,6 +9,9 @@ import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
@@ -26,7 +29,7 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
 
     @Override
     public Map<Long, Long> fetchCustomComponentIdsToPackage() throws Exception {
-        return getAssestTypeIdVsModuleId();
+        return getAssetTypeIdVsModuleId();
     }
 
     @Override
@@ -62,19 +65,60 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule("assettype");
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
+        SelectRecordsBuilder<V3AssetTypeContext> builder = new SelectRecordsBuilder<V3AssetTypeContext>()
+                .table(module.getTableName())
+                .select(moduleBean.getAllFields(module.getName()))
+                .beanClass(V3AssetTypeContext.class)
+                .module(module);
+        List<V3AssetTypeContext> assetTypeContexts = builder.get();
+        List<Map<String,Object>> createAssetTypeDatas = new ArrayList<>();
+        List<Map<String,Object>> updateAssetTypeDatas = new ArrayList<>();
+        List<Map<String,Object>> oldUpdateAssetTypeDatas = new ArrayList<>();
+        List<Long> keyList = new ArrayList<>();
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder assetTypeElement = idVsData.getValue();
-            String moduleName = new String();
-            V3AssetTypeContext assetTypeContext = constructAssetTypeFromBuilder(assetTypeElement);
-            long assetTypeContextModuleId = assetTypeContext.getModuleId();
-            if (CollectionUtils.isNotEmpty(Collections.singleton(assetTypeContextModuleId))) {
-                FacilioModule module = moduleBean.getModule(assetTypeContextModuleId);
-                moduleName = module.getName();
+            String assetTypeName = assetTypeElement.getElement(PackageConstants.AssetTypeConstants.ASSET_TYPE_NAME).getText();
+            boolean containsName = false;
+            Long id = -1L;
+            for (V3AssetTypeContext assetTypeContext : assetTypeContexts) {
+                if (assetTypeContext.getName().equals(assetTypeName)) {
+                    containsName = true;
+                    id = assetTypeContext.getId();
+                    keyList.add(id);
+                    Map<String, Object> oldUpdateAssetTypeData = FieldUtil.getAsProperties(assetTypeContext);
+                    oldUpdateAssetTypeDatas.add(oldUpdateAssetTypeData);
+                    break;
+                }
             }
-            long assetTypeId = addAssetType(moduleName, assetTypeContext);
-            assetTypeContext.setId(assetTypeId);
-            uniqueIdentifierVsComponentId.put(idVsData.getKey(), assetTypeId);
+            V3AssetTypeContext v3AssetTypeContext = constructAssetTypeFromBuilder(assetTypeElement);
+            if (!containsName) {
+                Map<String, Object> data = addAssetType(idVsData.getKey(), v3AssetTypeContext);
+                createAssetTypeDatas.add(data);
+            }else{
+                v3AssetTypeContext.setId(id);
+                Map<String, Object> data = updateAssetType(idVsData.getKey(),v3AssetTypeContext);
+                updateAssetTypeDatas.add(data);
+            }
+        }
+        if(CollectionUtils.isNotEmpty(createAssetTypeDatas)) {
+            FacilioContext context = V3Util.createRecordList(module,createAssetTypeDatas, null, null);
+            Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+            List<V3AssetTypeContext> assetTypesFromContext = recordMap.get(FacilioConstants.ContextNames.ASSET_TYPE);
+            for (V3AssetTypeContext assetTypeFromContext : assetTypesFromContext) {
+                uniqueIdentifierVsComponentId.put((String) assetTypeFromContext.getData().get("xmlDataKey"), assetTypeFromContext.getId());
+            }
+        }
+        if(CollectionUtils.isNotEmpty(updateAssetTypeDatas)) {
+            V3Config v3Config = ChainUtil.getV3Config(module);
+            List<ModuleBaseWithCustomFields> oldRecords = (List<ModuleBaseWithCustomFields>) PackageBeanUtil.getModuleDataListsForIds(keyList, module, V3AssetTypeContext.class);
+            FacilioContext context = V3Util.updateBulkRecords(module, v3Config, oldRecords, updateAssetTypeDatas, keyList, null, null, null, null, null, null, null, null, false, false);
+            Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+            List<V3AssetTypeContext> updatedAssetTypesFromContext = recordMap.get(FacilioConstants.ContextNames.ASSET_TYPE);
+            for (V3AssetTypeContext assetTypeFromContext : updatedAssetTypesFromContext) {
+                uniqueIdentifierVsComponentId.put((String) assetTypeFromContext.getData().get("xmlDataKey"), assetTypeFromContext.getId());
+            }
         }
         return uniqueIdentifierVsComponentId;
     }
@@ -82,46 +126,48 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
     @Override
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
-        for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
-            long assetTypeId = idVsData.getKey();
-            XMLBuilder assetTypeElement = idVsData.getValue();
-            String moduleName = new String();
-            V3AssetTypeContext assetTypeContext = constructAssetTypeFromBuilder(assetTypeElement);
-            assetTypeContext.setId(assetTypeId);
-            long assetTypeModuleId = assetTypeContext.getModuleId();
-            if (CollectionUtils.isNotEmpty(Collections.singleton(assetTypeModuleId))) {
-                FacilioModule module = moduleBean.getModule(assetTypeModuleId);
-                moduleName = module.getName();
+        FacilioModule module = moduleBean.getModule("assetdepartment");
+        List<Long> keyList = new ArrayList<>(idVsXMLComponents.keySet());
+        if(CollectionUtils.isNotEmpty(keyList)) {
+            List<ModuleBaseWithCustomFields> oldRecords = (List<ModuleBaseWithCustomFields>) PackageBeanUtil.getModuleDataListsForIds(keyList, module, V3AssetTypeContext.class);
+            List<Map<String, Object>> newAssetTypeDatas = new ArrayList<>();
+            for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
+                long assetTypeId = idVsData.getKey();
+                XMLBuilder assetTypeElement = idVsData.getValue();
+                V3AssetTypeContext assetTypeContext = constructAssetTypeFromBuilder(assetTypeElement);
+                assetTypeContext.setId(assetTypeId);
+                Map<String, Object> data = updateAssetType(null,assetTypeContext);
+                newAssetTypeDatas.add(data);
             }
-            updateAssetType(moduleName, assetTypeContext);
+            V3Config v3Config = ChainUtil.getV3Config(module);
+            V3Util.updateBulkRecords(module, v3Config, oldRecords, newAssetTypeDatas, keyList, null, null, null, null, null, null, null, null, false, false);
         }
     }
 
     @Override
     public void deleteComponentFromXML(List<Long> ids) throws Exception {
-        JSONObject data = new JSONObject();
         for (long id : ids) {
+            JSONObject data = new JSONObject();
             data.put("assettype", id);
             V3Util.deleteRecords("assettype", data,null,null,false);
-            data.clear();
         }
     }
-    public Map<Long, Long> getAssestTypeIdVsModuleId() throws Exception {
-        Map<Long, Long> AssetTypeIdVsModuleId = new HashMap<>();
+    public Map<Long, Long> getAssetTypeIdVsModuleId() throws Exception {
+        Map<Long, Long> assetTypeIdVsModuleId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule assetTypeModule = moduleBean.getModule("assettype");
-        List<V3AssetTypeContext> props = (List<V3AssetTypeContext>) PackageBeanUtil.getContextIdVsParentId(null, assetTypeModule,V3AssetTypeContext.class);
+        List<V3AssetTypeContext> props = (List<V3AssetTypeContext>) PackageBeanUtil.getModuleDataIdVsModuleId(null, assetTypeModule,V3AssetTypeContext.class);
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3AssetTypeContext prop : props) {
-                AssetTypeIdVsModuleId.put(prop.getId(), prop.getModuleId());
+                assetTypeIdVsModuleId.put(prop.getId(), prop.getModuleId());
             }
         }
-        return AssetTypeIdVsModuleId;
+        return assetTypeIdVsModuleId;
     }
     public List<V3AssetTypeContext> getAssetTypeForIds(Collection<Long> ids) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule assetTypeModule = moduleBean.getModule("assettype");
-        List<V3AssetTypeContext> assetTypes = (List<V3AssetTypeContext>) PackageBeanUtil.getContextListsForIds(ids,assetTypeModule, V3AssetTypeContext.class);
+        List<V3AssetTypeContext> assetTypes = (List<V3AssetTypeContext>) PackageBeanUtil.getModuleDataListsForIds(ids,assetTypeModule, V3AssetTypeContext.class);
         return assetTypes;
     }
     public static V3AssetTypeContext constructAssetTypeFromBuilder(XMLBuilder assetTypeElement) throws Exception {
@@ -135,29 +181,15 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
         assetTypeContext.setModuleId(module.getModuleId());
         return assetTypeContext;
     }
-    private long addAssetType(String module, V3AssetTypeContext v3AssetTypeContext) throws Exception {
-        FacilioModule assetTypeModule = ChainUtil.getModule(module);
-        V3AssetTypeContext assetTypeContext = new V3AssetTypeContext();
-        assetTypeContext.setName(v3AssetTypeContext.getName());
-        assetTypeContext.setMovable(v3AssetTypeContext.getMovable());
-        Map<String, Object> assetTypeData = FieldUtil.getAsProperties(assetTypeContext);
-        FacilioContext context = V3Util.createRecord(assetTypeModule, assetTypeData);
-        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<V3AssetTypeContext> assetType = recordMap.get(FacilioConstants.ContextNames.ASSET_TYPE);
-        if(CollectionUtils.isNotEmpty(assetType)){
-            for(V3AssetTypeContext type : assetType){
-                return type.getId();
-            }
-        }
-        return -1;
+    private Map<String,Object> addAssetType( String xmlDataKey, V3AssetTypeContext v3AssetTypeContext) throws Exception {
+        Map<String, Object> assetTypeData = FieldUtil.getAsProperties(v3AssetTypeContext);
+        assetTypeData.put("xmlDataKey", xmlDataKey);
+        return assetTypeData;
     }
-    public void updateAssetType(String module, V3AssetTypeContext v3AssetTypeContext) throws Exception {
-        FacilioModule assetTypeModule = ChainUtil.getModule(module);
-        V3AssetTypeContext assetTypeContext = new V3AssetTypeContext();
-        assetTypeContext.setId(v3AssetTypeContext.getId());
-        assetTypeContext.setName(v3AssetTypeContext.getName());
-        Map<String, Object> assetTypeData = FieldUtil.getAsProperties(assetTypeContext);
-        V3Util.processAndUpdateSingleRecord(assetTypeModule.getName(), assetTypeContext.getId(), assetTypeData, null, null, null, null, null, null, null, null);
+    public Map<String, Object> updateAssetType(String xmlDataKey,V3AssetTypeContext v3AssetTypeContext) throws Exception {
+        Map<String, Object> assetTypeData = FieldUtil.getAsProperties(v3AssetTypeContext);
+        assetTypeData.put("xmlDataKey", xmlDataKey);
+        return assetTypeData;
     }
 
 }

@@ -9,6 +9,9 @@ import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
@@ -62,19 +65,60 @@ public class AssetDepartmentPackageBeanImpl implements PackageBean<V3AssetDepart
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule("assetdepartment");
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
+        SelectRecordsBuilder<V3AssetDepartmentContext> builder = new SelectRecordsBuilder<V3AssetDepartmentContext>()
+                .table(module.getTableName())
+                .select(moduleBean.getAllFields(module.getName()))
+                .beanClass(V3AssetDepartmentContext.class)
+                .module(module);
+        List<V3AssetDepartmentContext> assetDepartmentContexts = builder.get();
+        List<Map<String,Object>> createAssetDepartmentDatas = new ArrayList<>();
+        List<Map<String,Object>> updateAssetDepartmentDatas = new ArrayList<>();
+        List<Map<String,Object>> oldUpdateAssetDepartmentDatas = new ArrayList<>();
+        List<Long> keyList = new ArrayList<>();
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder assetDepartmentElement = idVsData.getValue();
-            String moduleName = new String();
-            V3AssetDepartmentContext assetDepartmentContext = constructAssetDepartmentFromBuilder(assetDepartmentElement);
-            long assetDepartmentModuleId = assetDepartmentContext.getModuleId();
-            if (CollectionUtils.isNotEmpty(Collections.singleton(assetDepartmentModuleId))) {
-                FacilioModule module = moduleBean.getModule(assetDepartmentModuleId);
-                moduleName = module.getName();
+            String assetDepartmentName = assetDepartmentElement.getElement(PackageConstants.AssetDepartmentConstants.ASSET_DEPARTMENT_NAME).getText();
+            boolean containsName = false;
+            Long id = -1L;
+            for (V3AssetDepartmentContext assetDepartmentContext : assetDepartmentContexts) {
+                if (assetDepartmentContext.getName().equals(assetDepartmentName)) {
+                    containsName = true;
+                    id = assetDepartmentContext.getId();
+                    keyList.add(id);
+                    Map<String, Object> oldUpdateAssetDepartmentData = FieldUtil.getAsProperties(assetDepartmentContext);
+                    oldUpdateAssetDepartmentDatas.add(oldUpdateAssetDepartmentData);
+                    break;
+                }
             }
-            long assetDepartmentId = addAssetDepartment(moduleName, assetDepartmentContext);
-            assetDepartmentContext.setId(assetDepartmentId);
-            uniqueIdentifierVsComponentId.put(idVsData.getKey(), assetDepartmentId);
+            V3AssetDepartmentContext v3AssetDepartmentContext = constructAssetDepartmentFromBuilder(assetDepartmentElement);
+            if (!containsName) {
+                Map<String, Object> data = addAssetDepartment(idVsData.getKey(), v3AssetDepartmentContext);
+                createAssetDepartmentDatas.add(data);
+            }else{
+                v3AssetDepartmentContext.setId(id);
+                Map<String, Object> data = updateAssetDepartment(idVsData.getKey(),v3AssetDepartmentContext);
+                updateAssetDepartmentDatas.add(data);
+            }
+        }
+        if(CollectionUtils.isNotEmpty(createAssetDepartmentDatas)) {
+            FacilioContext context = V3Util.createRecordList(module,createAssetDepartmentDatas, null, null);
+            Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+            List<V3AssetDepartmentContext> assetDepartmentsFromContext = recordMap.get(FacilioConstants.ContextNames.ASSET_DEPARTMENT);
+            for (V3AssetDepartmentContext assetDepartmentFromContext : assetDepartmentsFromContext) {
+                uniqueIdentifierVsComponentId.put((String) assetDepartmentFromContext.getData().get("xmlDataKey"), assetDepartmentFromContext.getId());
+            }
+        }
+        if(CollectionUtils.isNotEmpty(updateAssetDepartmentDatas)) {
+            V3Config v3Config = ChainUtil.getV3Config(module);
+            List<ModuleBaseWithCustomFields> oldRecords = (List<ModuleBaseWithCustomFields>) PackageBeanUtil.getModuleDataListsForIds(keyList, module, V3AssetDepartmentContext.class);
+            FacilioContext context = V3Util.updateBulkRecords(module, v3Config, oldRecords, updateAssetDepartmentDatas, keyList, null, null, null, null, null, null, null, null, false, false);
+            Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+            List<V3AssetDepartmentContext> updatedAssetDepartmentsFromContext = recordMap.get(FacilioConstants.ContextNames.ASSET_DEPARTMENT);
+            for (V3AssetDepartmentContext assetDepartmentFromContext : updatedAssetDepartmentsFromContext) {
+                uniqueIdentifierVsComponentId.put((String) assetDepartmentFromContext.getData().get("xmlDataKey"), assetDepartmentFromContext.getId());
+            }
         }
         return uniqueIdentifierVsComponentId;
     }
@@ -82,29 +126,30 @@ public class AssetDepartmentPackageBeanImpl implements PackageBean<V3AssetDepart
     @Override
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
-        for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
-            long assetDepartmentId = idVsData.getKey();
-            XMLBuilder assetDepartmentElement = idVsData.getValue();
-            String moduleName = new String();
-            V3AssetDepartmentContext assetDepartmentContext = constructAssetDepartmentFromBuilder(assetDepartmentElement);
-            assetDepartmentContext.setId(assetDepartmentId);
-            long assetDepartmentModuleId = assetDepartmentContext.getModuleId();
-            if (CollectionUtils.isNotEmpty(Collections.singleton(assetDepartmentModuleId))) {
-                FacilioModule module = moduleBean.getModule(assetDepartmentModuleId);
-                moduleName = module.getName();
+        FacilioModule module = moduleBean.getModule("assetdepartment");
+        List<Long> keyList = new ArrayList<>(idVsXMLComponents.keySet());
+        if(CollectionUtils.isNotEmpty(keyList)) {
+            List<ModuleBaseWithCustomFields> oldRecords = (List<ModuleBaseWithCustomFields>) PackageBeanUtil.getModuleDataListsForIds(keyList, module, V3AssetDepartmentContext.class);
+            List<Map<String, Object>> newAssetDepartmentDatas = new ArrayList<>();
+            for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
+                long assetDepartmentId = idVsData.getKey();
+                XMLBuilder assetDepartmentElement = idVsData.getValue();
+                V3AssetDepartmentContext assetDepartmentContext = constructAssetDepartmentFromBuilder(assetDepartmentElement);
+                assetDepartmentContext.setId(assetDepartmentId);
+                Map<String, Object> data = updateAssetDepartment(null, assetDepartmentContext);
+                newAssetDepartmentDatas.add(data);
             }
-            updateAssetDepartment(moduleName, assetDepartmentContext);
+            V3Config v3Config = ChainUtil.getV3Config(module);
+            V3Util.updateBulkRecords(module, v3Config, oldRecords, newAssetDepartmentDatas, keyList, null, null, null, null, null, null, null, null, false, false);
         }
-
     }
 
     @Override
     public void deleteComponentFromXML(List<Long> ids) throws Exception {
-        JSONObject data = new JSONObject();
         for (long id : ids) {
+            JSONObject data = new JSONObject();
             data.put("assetdepartment", id);
             V3Util.deleteRecords("assetdepartment", data,null,null,false);
-            data.clear();
         }
     }
     public static V3AssetDepartmentContext constructAssetDepartmentFromBuilder(XMLBuilder assetDepartmentElement) throws Exception {
@@ -118,34 +163,21 @@ public class AssetDepartmentPackageBeanImpl implements PackageBean<V3AssetDepart
         return assetDepartmentContext;
 
     }
-    private long addAssetDepartment(String module, V3AssetDepartmentContext v3AssetDepartmentContext) throws Exception {
-        FacilioModule assetDepartmentModule = ChainUtil.getModule(module);
-        V3AssetDepartmentContext assetDepartmentContext = new V3AssetDepartmentContext();
-        assetDepartmentContext.setName(v3AssetDepartmentContext.getName());
-        Map<String, Object> assetDepartmentData = FieldUtil.getAsProperties(assetDepartmentContext);
-        FacilioContext context = V3Util.createRecord(assetDepartmentModule, assetDepartmentData);
-        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<V3AssetDepartmentContext> assetDepartment = recordMap.get(FacilioConstants.ContextNames.ASSET_DEPARTMENT);
-        if(CollectionUtils.isNotEmpty(assetDepartment)){
-            for(V3AssetDepartmentContext department : assetDepartment){
-                return department.getId();
-            }
-        }
-        return -1;
+    private Map<String,Object> addAssetDepartment(String xmlDataKey, V3AssetDepartmentContext v3AssetDepartmentContext) throws Exception {
+        Map<String, Object> assetDepartmentData = FieldUtil.getAsProperties(v3AssetDepartmentContext);
+        assetDepartmentData.put("xmlDataKey",xmlDataKey);
+        return assetDepartmentData;
     }
-    public void updateAssetDepartment(String module, V3AssetDepartmentContext v3AssetDepartmentContext) throws Exception {
-        FacilioModule assetDepartmentModule = ChainUtil.getModule(module);
-        V3AssetDepartmentContext assetDepartmentContext = new V3AssetDepartmentContext();
-        assetDepartmentContext.setId(v3AssetDepartmentContext.getId());
-        assetDepartmentContext.setName(v3AssetDepartmentContext.getName());
-        Map<String, Object> assetDepartmentData = FieldUtil.getAsProperties(assetDepartmentContext);
-        V3Util.processAndUpdateSingleRecord(assetDepartmentModule.getName(), assetDepartmentContext.getId(), assetDepartmentData, null, null, null, null, null, null, null, null);
+    public Map<String,Object> updateAssetDepartment(String xmlDataKey, V3AssetDepartmentContext v3AssetDepartmentContext) throws Exception {
+        Map<String, Object> assetDepartmentData = FieldUtil.getAsProperties(v3AssetDepartmentContext);
+        assetDepartmentData.put("xmlDataKey",xmlDataKey);
+        return assetDepartmentData;
     }
     public Map<Long, Long> getAssetDepartmentIdVsModuleId() throws Exception {
         Map<Long, Long> AssetDepartmentIdVsModuleId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule assetDepartmentModule = moduleBean.getModule("assetdepartment");
-        List<V3AssetDepartmentContext> props = (List<V3AssetDepartmentContext>) PackageBeanUtil.getContextIdVsParentId(null, assetDepartmentModule, V3AssetDepartmentContext.class);
+        List<V3AssetDepartmentContext> props = (List<V3AssetDepartmentContext>) PackageBeanUtil.getModuleDataIdVsModuleId(null, assetDepartmentModule, V3AssetDepartmentContext.class);
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3AssetDepartmentContext prop : props) {
                 AssetDepartmentIdVsModuleId.put(prop.getId(), prop.getModuleId());
@@ -156,7 +188,7 @@ public class AssetDepartmentPackageBeanImpl implements PackageBean<V3AssetDepart
     public List<V3AssetDepartmentContext> getAssetDepartmentForIds(Collection<Long> ids) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule assetDepartmentModule = moduleBean.getModule("assetdepartment");
-        List<V3AssetDepartmentContext> assetDepartments = (List<V3AssetDepartmentContext>) PackageBeanUtil.getContextListsForIds(ids,assetDepartmentModule, V3AssetDepartmentContext.class);
+        List<V3AssetDepartmentContext> assetDepartments = (List<V3AssetDepartmentContext>) PackageBeanUtil.getModuleDataListsForIds(ids,assetDepartmentModule, V3AssetDepartmentContext.class);
         return assetDepartments;
     }
 }

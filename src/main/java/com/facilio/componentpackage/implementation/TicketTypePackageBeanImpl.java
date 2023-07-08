@@ -15,6 +15,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
@@ -66,25 +67,35 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
 
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule ticketTypeModule = moduleBean.getModule("tickettype");;
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
+        SelectRecordsBuilder<TicketTypeContext> builder = new SelectRecordsBuilder<TicketTypeContext>()
+                .table(ticketTypeModule.getTableName())
+                .select(moduleBean.getAllFields(ticketTypeModule.getName()))
+                .module(ticketTypeModule)
+                .beanClass(TicketTypeContext.class);
+        List<TicketTypeContext> ticketTypes = builder.get();
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder ticketTypeElement = idVsData.getValue();
             TicketTypeContext ticketTypeContext = constructTicketTypeFromBuilder(ticketTypeElement);
-            FacilioModule ticketTypeModule = ModuleFactory.getTicketTypeModule();
-            List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
-                add(FieldFactory.getStringField("name", "NAME", ticketTypeModule));
-            }};
-            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                    .table(ticketTypeModule.getTableName())
-                    .select(selectableFields)
-                    .andCondition(CriteriaAPI.getCondition("NAME", "name", ticketTypeContext.getName(), StringOperators.IS));
-            List<Map<String, Object>> props = builder.get();
-            if(CollectionUtils.isEmpty(props)) {
+            boolean containsName = false;
+            Long id = -1L;
+            for(TicketTypeContext ticketType : ticketTypes) {
+                if (ticketType.getName().equals(ticketTypeContext.getName())) {
+                    id = ticketType.getId();
+                    containsName = true;
+                    break;
+                }
+            }
+            if (!containsName) {
                 long ticketTypeId = addTicketType(ticketTypeContext);
-                ticketTypeContext.setId(ticketTypeId);
                 uniqueIdentifierVsComponentId.put(idVsData.getKey(), ticketTypeId);
-            }else{
+            }
+            else{
+                ticketTypeContext.setId(id);
                 updateTicketType(ticketTypeContext);
+                uniqueIdentifierVsComponentId.put(idVsData.getKey(), id);
             }
         }
         return uniqueIdentifierVsComponentId;
@@ -103,9 +114,9 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
 
     @Override
     public void deleteComponentFromXML(List<Long> ids) throws Exception {
-        FacilioChain deleteTicketTypeChain = FacilioChainFactory.getDeleteTicketTypeChain();
-        FacilioContext context = deleteTicketTypeChain.getContext();
         for (long id : ids) {
+            FacilioChain deleteTicketTypeChain = FacilioChainFactory.getDeleteTicketTypeChain();
+            FacilioContext context = deleteTicketTypeChain.getContext();
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(id));
             deleteTicketTypeChain.execute();
         }
@@ -114,9 +125,7 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
         Map<Long, Long> ticketTypeIdVsModuleId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule ticketTypeModule = moduleBean.getModule("tickettype");
-        TicketTypeContext ticketTypeContext = new TicketTypeContext();
-
-        List<TicketTypeContext> props = (List<TicketTypeContext>)PackageBeanUtil.getContextIdVsParentId(null,ticketTypeModule, TicketTypeContext.class);
+        List<TicketTypeContext> props = (List<TicketTypeContext>)PackageBeanUtil.getModuleDataIdVsModuleId(null,ticketTypeModule, TicketTypeContext.class);
         if (CollectionUtils.isNotEmpty(props)) {
             for (TicketTypeContext prop : props) {
                 ticketTypeIdVsModuleId.put( prop.getId(), prop.getModuleId());
@@ -127,7 +136,7 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
     public List<TicketTypeContext> getTicketTypeForIds(Collection<Long> ids) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule ticketTypeModule = moduleBean.getModule("tickettype");
-        List<TicketTypeContext> ticketTypes = (List<TicketTypeContext>) PackageBeanUtil.getContextListsForIds(ids,ticketTypeModule, TicketTypeContext.class);
+        List<TicketTypeContext> ticketTypes = (List<TicketTypeContext>) PackageBeanUtil.getModuleDataListsForIds(ids,ticketTypeModule, TicketTypeContext.class);
         return ticketTypes;
     }
     public static TicketTypeContext constructTicketTypeFromBuilder(XMLBuilder ticketTypeElement) throws Exception {
@@ -139,7 +148,6 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule("tickettype");
         ticketTypeContext.setModuleId(module.getModuleId());
-
         return ticketTypeContext;
 
     }

@@ -299,7 +299,21 @@
 		<action name="metaMigration" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/metaMigration.jsp</result>
 		</action>
-
+		<action name="orgSetup" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/orgSetup.jsp</result>
+		</action>
+		<action name="addOrgInfoData" class="com.facilio.componentpackage.action.PackageAction" method = "addOrgInfoData">
+			<result name="success" type="json">
+				<param name="root">result</param>
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+			</result>
+		</action>
 	</package>
 
 </struts>

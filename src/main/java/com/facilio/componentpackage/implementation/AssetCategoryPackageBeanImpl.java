@@ -12,9 +12,9 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
@@ -84,42 +84,43 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
     public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule assetCategoryModule = moduleBean.getModule("assetcategory");
-        List<FacilioField> assetCategoryField = new ArrayList<>();
-        assetCategoryField.add(FieldFactory.getField("id", "ID", FieldType.NUMBER ));
-        Map<String, Long> uniqueIdentifierVsFieldId = new HashMap<>();
-
+        Map<String, Long> uniqueIdentifierVsAssetCategoryId = new HashMap<>();
+        SelectRecordsBuilder<V3AssetCategoryContext> assetCategoryBuilder = new SelectRecordsBuilder<V3AssetCategoryContext>()
+                .select(moduleBean.getAllFields(assetCategoryModule.getName()))
+                .beanClass(V3AssetCategoryContext.class)
+                .module(assetCategoryModule)
+                .table(assetCategoryModule.getTableName());
+        List<V3AssetCategoryContext> assetCategories = assetCategoryBuilder.get();
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             String uniqueIdentifier = idVsData.getKey();
             XMLBuilder assetCategoryElement = idVsData.getValue();
             V3AssetCategoryContext assetCategoryContext = constructAssetCategoryFromBuilder(assetCategoryElement);
             boolean isDefault = Boolean.parseBoolean(assetCategoryElement.getElement(PackageConstants.AssetCategoryConstants.IS_DEFAULT).getText());
             if (isDefault) {
-                GenericSelectRecordBuilder assetCategoryBuilder = new GenericSelectRecordBuilder()
-                        .select(assetCategoryField)
-                        .table(assetCategoryModule.getTableName())
-                        .andCondition((CriteriaAPI.getCondition("NAME", "name", String.valueOf(assetCategoryContext.getName()), StringOperators.IS)));
-                List<Map<String, Object>> assetCategoryId = assetCategoryBuilder.get();
-                if (assetCategoryId.size()!=0) {
-                    uniqueIdentifierVsFieldId.put(uniqueIdentifier, (Long) assetCategoryId.get(0).get("id"));
+                for(V3AssetCategoryContext assetCategory : assetCategories) {
+                    if (assetCategory.getName().equals(assetCategoryContext.getName())) {
+                        uniqueIdentifierVsAssetCategoryId.put(uniqueIdentifier, assetCategory.getId());
+                        break;
+                    }
                 }
             }
         }
-        return uniqueIdentifierVsFieldId;
+        return uniqueIdentifierVsAssetCategoryId;
     }
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule("assetcategory");
-        Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         SelectRecordsBuilder<V3AssetCategoryContext> assetCategoriesBuilder = new SelectRecordsBuilder<V3AssetCategoryContext>()
                 .select(moduleBean.getAllFields(module.getName()))
                 .module(module)
                 .beanClass(V3AssetCategoryContext.class)
                 .table(module.getTableName());
         List<V3AssetCategoryContext> assetCategories = assetCategoriesBuilder.get();
+        Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
+        List<Map<String,Object>> assetCategoryDatas = new ArrayList<>();
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder assetCategoryElement = idVsData.getValue();
-            String moduleName = new String();
             V3AssetCategoryContext assetCategoryContext = constructAssetCategoryFromBuilder(assetCategoryElement);
             XMLBuilder parentCategory = assetCategoryElement.getElement(PackageConstants.AssetCategoryConstants.PARENT_CATEGORY_NAME);
             if(parentCategory!=null) {
@@ -131,14 +132,16 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
                     }
                 }
             }
-            long assetCategoryModuleId = assetCategoryContext.getModuleId();
-            if (CollectionUtils.isNotEmpty(Collections.singleton(assetCategoryModuleId))) {
-                FacilioModule assetmodule = moduleBean.getModule(assetCategoryModuleId);
-                moduleName = assetmodule.getName();
+            Map<String, Object> data = addAssetCategory(idVsData.getKey(), assetCategoryContext);
+            assetCategoryDatas.add(data);
+        }
+        if(CollectionUtils.isNotEmpty(assetCategoryDatas)) {
+            FacilioContext context = V3Util.createRecordList(module, assetCategoryDatas, null, null);
+            Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+            List<V3AssetCategoryContext> assetCategoriesFromContext = recordMap.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
+            for (V3AssetCategoryContext assetCategoryFromContext : assetCategoriesFromContext) {
+                uniqueIdentifierVsComponentId.put((String) assetCategoryFromContext.getData().get("xmlDataKey"), assetCategoryFromContext.getId());
             }
-            long assetCategoryId = addAssetCategory(moduleName, assetCategoryContext);
-            assetCategoryContext.setId(assetCategoryId);
-            uniqueIdentifierVsComponentId.put(idVsData.getKey(), assetCategoryId);
         }
         return uniqueIdentifierVsComponentId;
     }
@@ -146,43 +149,45 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule("assetcategory");
-        SelectRecordsBuilder<V3AssetCategoryContext> assetCategoriesBuilder = new SelectRecordsBuilder<V3AssetCategoryContext>()
-                .select(moduleBean.getAllFields(module.getName()))
-                .module(module)
-                .beanClass(V3AssetCategoryContext.class)
-                .table(module.getTableName());
-        List<V3AssetCategoryContext> assetCategories = assetCategoriesBuilder.get();
-        for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
-            long assetCategoryId = idVsData.getKey();
-            XMLBuilder assetCategoryElement = idVsData.getValue();
-            String moduleName = new String();
-            V3AssetCategoryContext assetCategoryContext = constructAssetCategoryFromBuilder(assetCategoryElement);
-            assetCategoryContext.setId(assetCategoryId);
-            XMLBuilder parentCategory = assetCategoryElement.getElement(PackageConstants.AssetCategoryConstants.PARENT_CATEGORY_NAME);
-            if(parentCategory!=null) {
-                String parentName = assetCategoryElement.getElement(PackageConstants.AssetCategoryConstants.PARENT_CATEGORY_NAME).getText();
-                for (V3AssetCategoryContext assetCategory : assetCategories) {
-                    if((assetCategory.getName()).equals(parentName)){
-                        assetCategoryContext.setParentCategoryId(assetCategory.getId());
-                        break;
+        List<Long> keyList = new ArrayList<>(idVsXMLComponents.keySet());
+        if(CollectionUtils.isNotEmpty(keyList)) {
+            List<ModuleBaseWithCustomFields> oldRecords = (List<ModuleBaseWithCustomFields>) PackageBeanUtil.getModuleDataListsForIds(keyList, module, V3AssetCategoryContext.class);
+            List<Map<String, Object>> newAssetCategoryDatas = new ArrayList<>();
+            SelectRecordsBuilder<V3AssetCategoryContext> assetCategoriesBuilder = new SelectRecordsBuilder<V3AssetCategoryContext>()
+                    .select(moduleBean.getAllFields(module.getName()))
+                    .module(module)
+                    .beanClass(V3AssetCategoryContext.class)
+                    .table(module.getTableName());
+            List<V3AssetCategoryContext> assetCategories = assetCategoriesBuilder.get();
+            for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
+                long assetCategoryId = idVsData.getKey();
+                XMLBuilder assetCategoryElement = idVsData.getValue();
+                V3AssetCategoryContext assetCategoryContext = constructAssetCategoryFromBuilder(assetCategoryElement);
+                assetCategories.add(assetCategoryContext);
+                assetCategoryContext.setId(assetCategoryId);
+                XMLBuilder parentCategory = assetCategoryElement.getElement(PackageConstants.AssetCategoryConstants.PARENT_CATEGORY_NAME);
+                if (parentCategory != null) {
+                    String parentName = assetCategoryElement.getElement(PackageConstants.AssetCategoryConstants.PARENT_CATEGORY_NAME).getText();
+                    for (V3AssetCategoryContext assetCategory : assetCategories) {
+                        if ((assetCategory.getName()).equals(parentName)) {
+                            assetCategoryContext.setParentCategoryId(assetCategory.getId());
+                            break;
+                        }
                     }
                 }
+                Map<String, Object> data = updateAssetCategory(assetCategoryContext);
+                newAssetCategoryDatas.add(data);
             }
-            long assetCategoryModuleId = assetCategoryContext.getModuleId();
-            if (CollectionUtils.isNotEmpty(Collections.singleton(assetCategoryModuleId))) {
-                FacilioModule assetModule = moduleBean.getModule(assetCategoryModuleId);
-                moduleName = assetModule.getName();
-            }
-            updateAssetCategory(moduleName, assetCategoryContext);
+            V3Config v3Config = ChainUtil.getV3Config(module);
+            V3Util.updateBulkRecords(module, v3Config, oldRecords, newAssetCategoryDatas, keyList, null, null, null, null, null, null, null, null, false, false);
         }
     }
     @Override
     public void deleteComponentFromXML(List<Long> ids) throws Exception {
-        JSONObject data = new JSONObject();
         for (long id : ids) {
+            JSONObject data = new JSONObject();
             data.put("assetcategory", id);
             V3Util.deleteRecords("assetcategory", data,null,null,false);
-            data.clear();
         }
     }
     public static V3AssetCategoryContext constructAssetCategoryFromBuilder(XMLBuilder assetCategoryElement) throws Exception {
@@ -212,7 +217,7 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
     public List<V3AssetCategoryContext> getAssetCategoryForIds(Collection<Long> ids) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         FacilioModule assetCategoryModule = modBean.getModule("assetcategory");
-        List<V3AssetCategoryContext> assetCategories = (List<V3AssetCategoryContext>) PackageBeanUtil.getContextListsForIds(ids,assetCategoryModule, V3AssetCategoryContext.class);
+        List<V3AssetCategoryContext> assetCategories = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleDataListsForIds(ids,assetCategoryModule, V3AssetCategoryContext.class);
         if(CollectionUtils.isNotEmpty(assetCategories)){
             for(V3AssetCategoryContext assetCategory : assetCategories){
                 if(assetCategory.getData()!=null)
@@ -222,26 +227,17 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
         return assetCategories;
     }
 
-    private long addAssetCategory(String module, V3AssetCategoryContext v3AssetCategoryContext) throws Exception {
-        FacilioModule assetCategoryModule = ChainUtil.getModule(module);
+    private Map<String,Object> addAssetCategory(String xmlDataKey, V3AssetCategoryContext v3AssetCategoryContext) throws Exception {
         V3AssetCategoryContext assetCategoryContext = new V3AssetCategoryContext();
         assetCategoryContext.setName(v3AssetCategoryContext.getName());
         assetCategoryContext.setDisplayName(v3AssetCategoryContext.getDisplayName());
         assetCategoryContext.setType(v3AssetCategoryContext.getType());
         assetCategoryContext.setParentCategoryId(v3AssetCategoryContext.getParentCategoryId());
         Map<String, Object> assetCategoryData = FieldUtil.getAsProperties(assetCategoryContext);
-        FacilioContext context = V3Util.createRecord(assetCategoryModule, assetCategoryData);
-        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-        List<V3AssetCategoryContext> assetCategory = recordMap.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
-        if (CollectionUtils.isNotEmpty(assetCategory)) {
-            for (V3AssetCategoryContext category : assetCategory) {
-                    return category.getId();
-            }
-        }
-        return -1;
+        assetCategoryData.put("xmlDataKey", xmlDataKey);
+        return assetCategoryData;
     }
-    public void updateAssetCategory(String module, V3AssetCategoryContext v3AssetCategoryContext) throws Exception {
-        FacilioModule assetCategoryModule = ChainUtil.getModule(module);
+    public Map<String,Object> updateAssetCategory(V3AssetCategoryContext v3AssetCategoryContext) throws Exception {
         V3AssetCategoryContext assetCategoryContext = new V3AssetCategoryContext();
         assetCategoryContext.setId(v3AssetCategoryContext.getId());
         assetCategoryContext.setName(v3AssetCategoryContext.getName());
@@ -250,7 +246,7 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
         assetCategoryContext.setParentCategoryId(v3AssetCategoryContext.getParentCategoryId());
         assetCategoryContext.setAssetModuleID(v3AssetCategoryContext.getAssetModuleID());
         Map<String, Object> assetCategoryData = FieldUtil.getAsProperties(assetCategoryContext);
-        V3Util.updateBulkRecords(assetCategoryModule.getName(), assetCategoryData, Collections.singletonList(assetCategoryContext.getId()), null, null, false,false);
+        return assetCategoryData;
     }
     public Map<Long, Long> getAssetCategoryIdVsModuleId(Boolean fetchSystem) throws Exception {
         Map<Long, Long> assetCategoryIdVsModuleId = new HashMap<>();
@@ -259,7 +255,7 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(fetchSystem), BooleanOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", String.valueOf(false), BooleanOperators.IS));
-        List<V3AssetCategoryContext> props = (List<V3AssetCategoryContext>) PackageBeanUtil.getContextIdVsParentId(criteria, assetCategoryModule, V3AssetCategoryContext.class);
+        List<V3AssetCategoryContext> props = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleDataIdVsModuleId(criteria, assetCategoryModule, V3AssetCategoryContext.class);
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3AssetCategoryContext prop : props) {
                 assetCategoryIdVsModuleId.put( prop.getId(), prop.getModuleId());

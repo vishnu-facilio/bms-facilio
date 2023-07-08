@@ -33,7 +33,7 @@ public enum ComponentType implements FacilioIntEnum {
     TICKET_CATEGORY(TicketCategoryPackageBeanImpl.class, MODULE, false),
     TICKET_TYPE(TicketTypePackageBeanImpl.class, MODULE, false),
     TICKET_PRIORITY(TicketPriorityPackageBeanImpl.class, MODULE, false),
-    SPACE_TYPE(null, null, false),
+    SPACE_CATEGORY(SpaceCategoryPackageBeanImpl.class, MODULE, false),
 
     USER(null, APP, false),
     TEAM(null, APP, false),
@@ -52,8 +52,8 @@ public enum ComponentType implements FacilioIntEnum {
     VALIDATION_RULE(null, MODULE, false),
     NAMED_CRITERIA(null, MODULE, false),
     CUSTOM_BUTTON(null, MODULE, false),
-    RELATIONSHIP(null, MODULE, false),
-    PERMISSION(null, null, false)
+    RELATIONSHIP(RelationshipPackageBeanImpl.class, MODULE, false),
+    PERMISSION(NewPermissionPackageBeanImpl.class, null, false)
     ;
 
     public static final List<ComponentType> ORDERED_COMPONENT_TYPE_LIST = Collections.unmodifiableList(initOrderedList());
@@ -71,6 +71,7 @@ public enum ComponentType implements FacilioIntEnum {
             add(TICKET_CATEGORY);
             add(TICKET_TYPE);
             add(TICKET_PRIORITY);
+            add(SPACE_CATEGORY);
             add(FIELD);
             add(SITE);
             add(NAMED_CRITERIA);

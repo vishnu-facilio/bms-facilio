@@ -2,6 +2,7 @@ package com.facilio.componentpackage.implementation;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -9,15 +10,11 @@ import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
@@ -69,39 +66,62 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
     public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule ticketPriorityModule = moduleBean.getModule("ticketpriority");
-        List<FacilioField> ticketPriorityField = new ArrayList<>();
-        ticketPriorityField.add(FieldFactory.getField("id", "ID", FieldType.NUMBER));
-        Map<String, Long> uniqueIdentifierVsFieldId = new HashMap<>();
-
+        Map<String, Long> uniqueIdentifierVsTicketPriorityId = new HashMap<>();
+        SelectRecordsBuilder<TicketPriorityContext> ticketPriorityBuilder = new SelectRecordsBuilder<TicketPriorityContext>()
+                .select(moduleBean.getAllFields(ticketPriorityModule.getName()))
+                .beanClass(TicketPriorityContext.class)
+                .module(ticketPriorityModule)
+                .table(ticketPriorityModule.getTableName());
+        List<TicketPriorityContext> ticketPriorities = ticketPriorityBuilder.get();
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             String uniqueIdentifier = idVsData.getKey();
             XMLBuilder ticketPriorityElement = idVsData.getValue();
             TicketPriorityContext ticketPriorityContext = constructTicketPriorityFromBuilder(ticketPriorityElement);
             boolean isDefault = Boolean.parseBoolean(ticketPriorityElement.getElement(PackageConstants.TicketPriorityConstants.IS_DEFAULT).getText());
-
             if (isDefault) {
-                GenericSelectRecordBuilder ticketPriorityBuilder = new GenericSelectRecordBuilder()
-                        .select(ticketPriorityField)
-                        .table(ticketPriorityModule.getTableName())
-                        .andCondition((CriteriaAPI.getCondition("PRIORITY", "priority", String.valueOf(ticketPriorityContext.getPriority()), StringOperators.IS)));
-                List<Map<String,Object>> ticketPriorityId = ticketPriorityBuilder.get();
-                if (ticketPriorityId.size()!=0) {
-                    uniqueIdentifierVsFieldId.put(uniqueIdentifier, (Long) ticketPriorityId.get(0).get("id"));
+                for(TicketPriorityContext ticketPriority : ticketPriorities) {
+                    if (ticketPriority.getPriority().equals(ticketPriorityContext.getPriority())) {
+                        uniqueIdentifierVsTicketPriorityId.put(uniqueIdentifier, ticketPriority.getId());
+                        break;
+                    }
                 }
             }
         }
-        return uniqueIdentifierVsFieldId;
+        return uniqueIdentifierVsTicketPriorityId;
     }
 
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule ticketPriorityModule = moduleBean.getModule("ticketpriority");
+        SelectRecordsBuilder<TicketPriorityContext> builder = new SelectRecordsBuilder<TicketPriorityContext>()
+                .table(ticketPriorityModule.getTableName())
+                .select(moduleBean.getAllFields(ticketPriorityModule.getName()))
+                .module(ticketPriorityModule)
+                .beanClass(TicketPriorityContext.class);
+        List<TicketPriorityContext> ticketPriorities = builder.get();
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder ticketPriorityElement = idVsData.getValue();
             TicketPriorityContext ticketPriorityContext = constructTicketPriorityFromBuilder(ticketPriorityElement);
-            long ticketPriorityId = addTicketPriority(ticketPriorityContext);
-            ticketPriorityContext.setId(ticketPriorityId);
-            uniqueIdentifierVsComponentId.put(idVsData.getKey(), ticketPriorityId);
+            boolean containsName = false;
+            Long id = -1L;
+            for(TicketPriorityContext ticketPriority : ticketPriorities) {
+                if (ticketPriority.getPriority().equals(ticketPriorityContext.getPriority())) {
+                    containsName = true;
+                    id = ticketPriority.getId();
+                    break;
+                }
+            }
+            if (!containsName) {
+                long ticketPriorityId = addTicketPriority(ticketPriorityContext);
+                uniqueIdentifierVsComponentId.put(idVsData.getKey(), ticketPriorityId);
+            }
+            else{
+                ticketPriorityContext.setId(id);
+                updateTicketPriority(ticketPriorityContext);
+                uniqueIdentifierVsComponentId.put(idVsData.getKey(), id);
+            }
         }
         return uniqueIdentifierVsComponentId;
     }
@@ -119,9 +139,9 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
 
     @Override
     public void deleteComponentFromXML(List<Long> ids) throws Exception {
-        FacilioChain deleteTicketPriorityChain = FacilioChainFactory.getDeleteTicketPriorityChain();
-        FacilioContext context = deleteTicketPriorityChain.getContext();
         for (long id : ids) {
+            FacilioChain deleteTicketPriorityChain = FacilioChainFactory.getDeleteTicketPriorityChain();
+            FacilioContext context = deleteTicketPriorityChain.getContext();
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(id));
             deleteTicketPriorityChain.execute();
         }
@@ -133,7 +153,7 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
 
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("ISDEFAULT", "isDefault", String.valueOf(fetchSystem), BooleanOperators.IS));
-        List<TicketPriorityContext> props = (List<TicketPriorityContext>) PackageBeanUtil.getContextIdVsParentId(criteria, ticketPriorityModule, TicketPriorityContext.class );
+        List<TicketPriorityContext> props = (List<TicketPriorityContext>) PackageBeanUtil.getModuleDataIdVsModuleId(criteria, ticketPriorityModule, TicketPriorityContext.class );
         if (CollectionUtils.isNotEmpty(props)) {
             for (TicketPriorityContext prop : props) {
                 ticketPriorityIdVsModuleId.put(prop.getId(), prop.getModuleId());
@@ -144,7 +164,7 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
     public List<TicketPriorityContext> getTicketPriorityForIds(Collection<Long> ids) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule ticketPriorityModule = moduleBean.getModule("ticketpriority");
-        List<TicketPriorityContext> ticketPriorities = (List<TicketPriorityContext>) PackageBeanUtil.getContextListsForIds(ids,ticketPriorityModule, TicketPriorityContext.class );;
+        List<TicketPriorityContext> ticketPriorities = (List<TicketPriorityContext>) PackageBeanUtil.getModuleDataListsForIds(ids,ticketPriorityModule, TicketPriorityContext.class );;
         return ticketPriorities;
     }
     public static TicketPriorityContext constructTicketPriorityFromBuilder(XMLBuilder ticketPriorityElement) throws Exception {

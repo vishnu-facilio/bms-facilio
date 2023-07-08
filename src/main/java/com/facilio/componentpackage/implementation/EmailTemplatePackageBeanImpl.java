@@ -3,6 +3,8 @@ package com.facilio.componentpackage.implementation;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.TicketTypeContext;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -13,11 +15,9 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.emailtemplate.action.EMailTemplateAction;
 import com.facilio.emailtemplate.context.EMailStructure;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.context.RelationContext;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflows.context.ExpressionContext;
@@ -68,7 +68,6 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
 
         XMLBuilder workFlowElementsList = element.element(PackageConstants.EmailConstants.WORKFLOW);
         if (component.getWorkflow()!=null) {
-
             XMLBuilder parametersElement = workFlowElementsList.element(PackageConstants.WorkFlowConstants.PARAMETERS);
             if (CollectionUtils.isNotEmpty(component.getWorkflow().getParameters())) {
                 XMLBuilder parameterElement = parametersElement.element(PackageConstants.WorkFlowConstants.PARAMETER);
@@ -120,6 +119,7 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
+        List<EMailStructure> eMailTemplates = FieldUtil.getAsBeanListFromMapList(getEmailTemplatesProps(), EMailStructure.class);
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder emailElement = idVsData.getValue();
             String moduleName = new String();
@@ -129,11 +129,40 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
                 FacilioModule module = moduleBean.getModule(eMailStructureModuleId);
                 moduleName = module.getName();
             }
-            long eMailStructureId = addEMailStructure(moduleName, eMailStructure);
-            eMailStructure.setId(eMailStructureId);
-            uniqueIdentifierVsComponentId.put(idVsData.getKey(), eMailStructureId);
+            boolean containsName = false;
+            Long id = -1L;
+            for(EMailStructure eMailTemplate : eMailTemplates) {
+                if (eMailStructure.getName().equals(eMailTemplate.getName())) {
+                    id = eMailTemplate.getId();
+                    containsName = true;
+                    break;
+                }
+            }
+            if (!containsName) {
+                long emailStructureId = addEMailStructure(moduleName, eMailStructure);
+                uniqueIdentifierVsComponentId.put(idVsData.getKey(), emailStructureId);
+            }else{
+                eMailStructure.setId(id);
+                updateEmailStructure(moduleName,eMailStructure);
+                uniqueIdentifierVsComponentId.put(idVsData.getKey(), id);
+            }
         }
         return uniqueIdentifierVsComponentId;
+    }
+
+    private List<Map<String, Object>> getEmailTemplatesProps() throws Exception {
+        FacilioModule eMailStructureModule = ModuleFactory.getEMailStructureModule();
+        FacilioModule templateModule = ModuleFactory.getTemplatesModule();
+        List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
+            add(FieldFactory.getNumberField("id", "ID", eMailStructureModule));
+            add(FieldFactory.getStringField("name", "NAME", templateModule));
+        }};
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(eMailStructureModule.getTableName())
+                .select(selectableFields)
+                .innerJoin(templateModule.getTableName()).on("EMail_Structure.ID = Templates.ID");
+        List<Map<String, Object>> props = builder.get();
+        return props;
     }
 
     @Override
@@ -156,10 +185,9 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
 
     @Override
     public void deleteComponentFromXML(List<Long> ids) throws Exception {
-        FacilioChain chain = TransactionChainFactory.getDeleteEmailStructureChain();
-        FacilioContext context = chain.getContext();
-
         for (long id : ids) {
+            FacilioChain chain = TransactionChainFactory.getDeleteEmailStructureChain();
+            FacilioContext context = chain.getContext();
             context.put(FacilioConstants.ContextNames.ID, id);
             chain.execute();
         }
@@ -191,16 +219,11 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
     public static EMailStructure constructEmailFromBuilder(XMLBuilder EmailElement) throws Exception {
         XMLBuilder workFlowElementLists = EmailElement.getElement(PackageConstants.EmailConstants.WORKFLOW);
         XMLBuilder userWorkFlowElementLists = EmailElement.getElement(PackageConstants.EmailConstants.USER_WORKFLOW);
-        XMLBuilder isV2ScriptElement = userWorkFlowElementLists.getElement(PackageConstants.EmailConstants.IS_V2_SCRIPT);
-        XMLBuilder workflowV2StringElement = userWorkFlowElementLists.getElement(PackageConstants.EmailConstants.WORKFLOW_V2_STRING);
-        List<XMLBuilder> parametersLists =  workFlowElementLists.getElementList(PackageConstants.WorkFlowConstants.PARAMETERS);
-        List<XMLBuilder> expressionsLists =  workFlowElementLists.getElementList(PackageConstants.WorkFlowConstants.EXPRESSIONS);
         String name = EmailElement.getElement(PackageConstants.EmailConstants.NAME).getText();
         String subject = EmailElement.getElement(PackageConstants.EmailConstants.SUBJECT).getText();
         String message = EmailElement.getElement(PackageConstants.EmailConstants.MESSAGE).getCData();
         boolean html = Boolean.parseBoolean(EmailElement.getElement(PackageConstants.EmailConstants.HTML).getText());
         boolean draft = Boolean.parseBoolean(EmailElement.getElement(PackageConstants.EmailConstants.DRAFT).getText());
-
         EMailStructure eMailStructure = new EMailStructure();
         eMailStructure.setName(name);
         eMailStructure.setSubject(subject);
@@ -214,6 +237,8 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
         List<Object> parameterKeyEmail = new ArrayList<>();
 
         if(workFlowElementLists!=null) {
+            List<XMLBuilder> parametersLists =  workFlowElementLists.getElementList(PackageConstants.WorkFlowConstants.PARAMETERS);
+            List<XMLBuilder> expressionsLists =  workFlowElementLists.getElementList(PackageConstants.WorkFlowConstants.EXPRESSIONS);
             if(parametersLists!=null) {
                 for (XMLBuilder paramList : parametersLists) {
                     XMLBuilder param = paramList.getElement(PackageConstants.WorkFlowConstants.PARAMETER);
@@ -246,6 +271,8 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
         WorkflowContext userWorkflowContext = new WorkflowContext();
 
         if(userWorkFlowElementLists!=null) {
+            XMLBuilder isV2ScriptElement = userWorkFlowElementLists.getElement(PackageConstants.EmailConstants.IS_V2_SCRIPT);
+            XMLBuilder workflowV2StringElement = userWorkFlowElementLists.getElement(PackageConstants.EmailConstants.WORKFLOW_V2_STRING);
             if (isV2ScriptElement != null) {
                 boolean isv2script = Boolean.parseBoolean(userWorkFlowElementLists.getElement(PackageConstants.EmailConstants.IS_V2_SCRIPT).getText());
                 userWorkflowContext.setIsV2Script(isv2script);

@@ -594,7 +594,7 @@ public class PackageBeanUtil {
         }
         return actionContextList;
     }
-    public static List<?> getContextListsForIds( Collection<Long> ids, FacilioModule module, Class<?> clazz) throws Exception {
+    public static List<?> getModuleDataListsForIds( Collection<Long> ids, FacilioModule module, Class<?> clazz) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
                 .table(module.getTableName())
@@ -604,7 +604,7 @@ public class PackageBeanUtil {
                 .andCondition(CriteriaAPI.getIdCondition(ids, module));
         return builder.get();
     }
-    public static List<?> getContextIdVsParentId( Criteria criteria,FacilioModule module ,Class<?> clazz) throws Exception {
+    public static List<?> getModuleDataIdVsModuleId( Criteria criteria,FacilioModule module ,Class<?> clazz) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordBuilder = new SelectRecordsBuilder<>()
                 .table(module.getTableName())

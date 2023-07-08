@@ -1,5 +1,6 @@
 package com.facilio.componentpackage.action;
 
+import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -13,7 +14,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.simple.JSONObject;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
 @Getter @Setter @Log4j
@@ -24,6 +28,10 @@ public class PackageAction extends FacilioAction {
     private Long sourceOrgId;
     private Long targetOrgId;
     private File file;
+
+    private Long orgId;
+    private String name;
+    private String value;
 
     public String getDisplayName() {
         if(StringUtils.isEmpty(displayName)) {
@@ -107,6 +115,26 @@ public class PackageAction extends FacilioAction {
         setResult("result", "success");
         AccountUtil.cleanCurrentAccount();
 
+        return SUCCESS;
+    }
+    public String addOrgInfoData() throws Exception {
+        OrgBean orgBean = AccountUtil.getOrgBean();
+        AccountUtil.setCurrentAccount(orgId);
+        if(orgBean.getOrg(orgId)!=null){
+            Map<String, Object> orgProps = getOrgInfo(orgId,name);
+            if(orgProps == null) {
+                insertOrgInfo(name,value);
+            }
+            else{
+                updateOrgInfo(name,value);
+            }
+        }
+        JSONObject result = new JSONObject();
+        result.put("name", name);
+        result.put("value", value);
+        ServletActionContext.getResponse().setStatus(200);
+        setResult("result", "success");
+        AccountUtil.cleanCurrentAccount();
         return SUCCESS;
     }
 }

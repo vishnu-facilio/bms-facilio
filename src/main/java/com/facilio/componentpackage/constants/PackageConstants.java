@@ -177,6 +177,7 @@ public class PackageConstants {
         public static final String SORT_FIELD_NAME = "Sort_Field_Name";
         public static final String VIEW_SHARING = "View_Sharing";
     }
+    
 
     public static class CriteriaConstants {
         public static final String CRITERIA = "Criteria";
@@ -290,85 +291,122 @@ public class PackageConstants {
         public static final String RUN_AS_ADMIN = "Run_AsAdmin";
     }
     public static class EmailConstants {
-        public static final String NAME = "name";
-        public static final String SUBJECT = "subject";
-        public static final String MESSAGE = "message";
-        public static final String HTML = "html";
-        public static final String DRAFT = "draft";
-        public static final String WORKFLOW = "workflow";
-        public static final String USER_WORKFLOW = "userWorkflow";
-        public static final String IS_V2_SCRIPT = "isV2Script";
-        public static final String WORKFLOW_V2_STRING = "workflowV2String";
-        public static final String ATTACHMENT_LIST = "attachmentList";
+        public static final String NAME = "Name";
+        public static final String SUBJECT = "Subject";
+        public static final String MESSAGE = "Message";
+        public static final String HTML = "Html";
+        public static final String DRAFT = "Draft";
+        public static final String WORKFLOW = "Workflow";
+        public static final String USER_WORKFLOW = "UserWorkflow";
+        public static final String IS_V2_SCRIPT = "IsV2Script";
+        public static final String WORKFLOW_V2_STRING = "WorkflowV2String";
+        public static final String ATTACHMENT_LIST = "AttachmentList";
 
     }
     public static class WorkFlowConstants{
-        public static final String PARAMETERS = "parameters";
-        public static final String PARAMETER = "parameter";
-        public static final String EXPRESSIONS = "expressions";
-        public static final String EXPRESSION = "expression";
+        public static final String PARAMETERS = "Parameters";
+        public static final String PARAMETER = "Parameter";
+        public static final String EXPRESSIONS = "Expressions";
+        public static final String EXPRESSION = "Expression";
 
     }
     public static class AssetCategoryConstants{
-        public static final String ASSET_CATEGORY_NAME = "asset_category_name";
-        public static final String ASSET_TYPE = "asset_type";
-        public static final String DISPLAY_NAME = "display_name";
-        public static final String PARENT_CATEGORY_NAME = "parent_category_name";
-        public static final String ASSET_MODULE_NAME = "asset_module_name";
+        public static final String ASSET_CATEGORY_NAME = "Asset_Category_Name";
+        public static final String ASSET_TYPE = "Asset_Type";
+        public static final String DISPLAY_NAME = "Display_Name";
+        public static final String PARENT_CATEGORY_NAME = "Parent_Category_Name";
+        public static final String ASSET_MODULE_NAME = "Asset_Module_Name";
         public static final String IS_DEFAULT = "Is_Default";
 
     }
     public static class AssetDepartmentConstants{
-        public static final String ASSET_DEPARTMENT_NAME = "asset_department_name";
-
+        public static final String ASSET_DEPARTMENT_NAME = "Asset_Department_Name";
     }
     public static class AssetTypeConstants{
-        public static final String ASSET_TYPE_NAME = "asset_type_name";
-        public static final String IS_MOVABLE = "isMovable";
+        public static final String ASSET_TYPE_NAME = "Asset_Type_Name";
+        public static final String IS_MOVABLE = "Is_Movable";
 
     }
     public static class TicketCategoryConstants{
-        public static final String TICKET_CATEGORY_NAME = "ticket_category_name";
-        public static final String TICKET_DISPLAY_NAME = "ticket_display_name";
-        public static final String DESCRIPTION = "description";
+        public static final String TICKET_CATEGORY_NAME = "Ticket_Category_Name";
+        public static final String TICKET_DISPLAY_NAME = "Ticket_Display_Name";
+        public static final String DESCRIPTION = "Description";
 
     }
     public static class TicketTypeConstants{
-        public static final String TICKET_TYPE_NAME = "asset_type_name";
-        public static final String DESCRIPTION = "description";
+        public static final String TICKET_TYPE_NAME = "Asset_Type_Name";
+        public static final String DESCRIPTION = "Description";
 
     }
     public static class TicketPriorityConstants{
-        public static final String PRIORITY = "priority";
-        public static final String SEQUENCE_NUMBER = "sequence_number";
-        public static final String COLOUR = "colour";
-        public static final String DISPLAY_NAME = "display_name";
-        public static final String DESCRIPTION = "description";
+        public static final String PRIORITY = "Priority";
+        public static final String SEQUENCE_NUMBER = "Sequence_Number";
+        public static final String COLOUR = "Colour";
+        public static final String DISPLAY_NAME = "Display_name";
+        public static final String DESCRIPTION = "Description";
         public static final String IS_DEFAULT = "Is_Default";
     }
+    public static class SpaceCategoryConstants{
+        public static final String SPACE_CATEGORY_NAME = "Space_Category_Name";
+        public static final String DESCRIPTION = "Description";
+
+        public static final String COMMON_AREA = "Common_Area";
+        public static final String SPACE_MODULE_NAME = "Space_Module_Name";
+    }
+
+
     public static class RelationRequestConstants{
-        public static final String NAME = "name";
-        public static final String DESCRIPTION = "description";
-        public static final String LINK_NAME = "link_name";
-        public static final String FROM_MODULE_NAME = "from_module_name";
-        public static final String TO_MODULE_NAME = "display_name";
-        public static final String FORWARD_RELATION_NAME = "relation_name";
-        public static final String REVERSE_RELATION_NAME = "reverse_relation_name";
-        public static final String RELATION_TYPE = "relation_type";
+        public static final String NAME = "Name";
+        public static final String DESCRIPTION = "Description";
+        public static final String FROM_MODULE_NAME = "From_Module_Name";
+        public static final String TO_MODULE_NAME = "Display_Name";
+        public static final String FORWARD_RELATION_NAME = "Relation_Name";
+        public static final String REVERSE_RELATION_NAME = "Reverse_Relation_Name";
+        public static final String RELATION_TYPE = "Relation_Type";
     }
     public static class SitePackageConstants{
-        public static final String NAME = "name";
-        public static final String DESCRIPTION = "description";
-        public static final String MANAGED_BY = "managed_by";
-        public static final String SITE_TYPE = "site_type";
-        public static final String GROSS_FLOOR_AREA = "gross_floor_area";
-        public static final String AREA = "area";
-        public static final String CDD_BASE_TEMPERATURE = "cdd_base_temperature";
-        public static final String HDD_BASE_TEMPERATURE = "hdd_base_temperature";
-        public static final String WDD_BASE_TEMPERATURE = "wdd_base_temperature";
-        public static final String TIMEZONE = "timezone";
-        public static final String BOUNDARY_RADIUS = "boundary_radius";
-        public static final String FAILURE_CLASS = "failure_class";
-        public static final String FORM_NAME = "form_name";
+        public static final String NAME = "Name";
+        public static final String DESCRIPTION = "Description";
+        public static final String MANAGED_BY = "Managed_By";
+        public static final String SITE_TYPE = "Site_Type";
+        public static final String GROSS_FLOOR_AREA = "Gross_Floor_Area";
+        public static final String AREA = "Area";
+        public static final String CDD_BASE_TEMPERATURE = "Cdd_Base_Temperature";
+        public static final String HDD_BASE_TEMPERATURE = "Hdd_Base_Temperature";
+        public static final String WDD_BASE_TEMPERATURE = "Wdd_Base_Temperature";
+        public static final String TIMEZONE = "TimeZone";
+        public static final String BOUNDARY_RADIUS = "Boundary_Radius";
+        public static final String FAILURE_CLASS = "Failure_Class";
+        public static final String FORM_NAME = "Form_Name";
+    }
+
+    public static final class NamedCriteriaConstants {
+        public static final String NAMED_CRITERIA_NAME = "Named_Criteria_Name";
+        public static final String NAMED_CONDITION_NAME = "Named_Condition_Name";
+        public static final String NAMED_CONDITION_TYPE = "Named_Condition_Type";
+
+        public static final String NAMED_CRITERIA_PATTERN = "Named_Criteria_Pattern";
+        public static final String NAMED_CONDITION = "Named_Condition";
+        public static final String NAMED_CONDITION_SEQUENCE = "Named_Condition_Sequence";
+        public static final String NAMED_CONDITIONS_LIST = "Named_Conditions_List";
+    }
+    public static class NewPermissionConstants {
+        public static final String ROLE_NAME = "Role_Name";
+        public static final String ROUTE_NAME = "Route_Name";
+        public static final String PERMISSION = "Permission";
+        public static final String APP_LINK_NAME = "App_Link_Name";
+    }
+    public static class GroupConstants {
+        public static final String NAME = "Name";
+        public static final String DESCRIPTION = "Description";
+        public static final String SITE_NAME = "Site_Name";
+        public static final String EMAIL = "Email";
+        public static final String PHONE = "Phone";
+        public static final String PEOPLE_GROUP_MEMBER = "People_Group_Member";
+        public static final String IS_ACTIVE = "Is_Active";
+    }
+    public static class PeopleGroupMembersConstants {
+        public static final String PEOPLE = "People";
+        public static final String EMAIL = "Email";
     }
 }

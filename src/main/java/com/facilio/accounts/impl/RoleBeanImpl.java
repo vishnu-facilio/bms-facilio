@@ -7,10 +7,7 @@ import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -417,6 +414,25 @@ public class RoleBeanImpl implements RoleBean {
 				.table(ModuleFactory.getNewPermissionModule().getTableName())
 				.fields(FieldFactory.getNewPermissionFields());
 		builder.insert(FieldUtil.getAsProperties(permissions));
+	}
+
+	@Override
+	public void deleteSingleNewPermission(long roleId) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getNewPermissionModule().getTableName())
+				.andCustomWhere("ROLE_ID = ?", roleId);
+		builder.delete();
+		deleteV3Permissions(roleId);
+	}
+
+	@Override
+	public long addSingleNewPermission(long roleId, NewPermission permissions) throws Exception {
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getNewPermissionModule().getTableName())
+				.fields(FieldFactory.getNewPermissionFields());
+		long permissionId = builder.insert(FieldUtil.getAsProperties(permissions));
+		V3PermissionUtil.addPermissionV3(roleId,permissions);
+		return permissionId;
 	}
 
 	@Override
