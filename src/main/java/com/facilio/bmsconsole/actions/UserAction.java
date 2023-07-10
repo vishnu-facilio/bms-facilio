@@ -623,10 +623,13 @@ public class UserAction extends FacilioAction {
 	
 	public String updateMyProfile() throws Exception{
 		subscriptionInfo();
-		user.setUid(AccountUtil.getCurrentAccount().getUser().getUid());
-		PeopleAPI.updatePeopleOnUserUpdate(user);
-		AccountUtil.getUserBean().updateUser(user);
-		PeopleAPI.updatePeopleNotificationSettings(peopleNotificationSettingsList);
+		if(AccountUtil.getCurrentUser() != null){
+			user.setUid(AccountUtil.getCurrentUser().getUid());
+			user.setEmail(AccountUtil.getCurrentUser().getEmail());
+			PeopleAPI.updatePeopleOnUserUpdate(user);
+			AccountUtil.getUserBean().updateUser(user);
+			PeopleAPI.updatePeopleNotificationSettings(peopleNotificationSettingsList);
+		}
 		return SUCCESS;
 	}
 
