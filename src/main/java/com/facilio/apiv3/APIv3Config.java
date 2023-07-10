@@ -1329,6 +1329,8 @@ public class APIv3Config {
         return () -> new V3Config(BaseMailMessageContext.class, null)
                 .create()
                 .afterTransaction(new UpdateLatestMessageUIDCommandV3())
+                .list()
+                .afterFetch(new UpdateMailRecordsCommand())
                 .update()
                 .build();
     }

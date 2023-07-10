@@ -30,6 +30,12 @@ public class EmailConversationThreadingContext extends BaseMailMessageContext {
 	String noteNotifyTo;
 	From_Type fromType;
 	Message_Type messageType;
+	public Long getParentBaseMailId(){
+		if(getParentBaseMail() != null) {
+			return this.getParentBaseMail().getId();
+		}
+		return null;
+	}
 	
 	
 	public enum Email_Status_Type implements FacilioIntEnum {

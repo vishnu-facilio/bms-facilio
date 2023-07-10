@@ -546,6 +546,15 @@ public class FieldFactory extends BaseFieldFactory {
                 "status",
                 "logType"
         }).collect(Collectors.toList()));
+        public static final List<String> BASEMAIL_LOG_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.stream(new String[]{
+                "bcc",
+                "cc",
+                "contentType",
+                "from",
+                "recipient",
+                "subject",
+                "to"
+        }).collect(Collectors.toList()));
 
     }
 

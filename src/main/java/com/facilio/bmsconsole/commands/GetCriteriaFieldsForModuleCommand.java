@@ -165,6 +165,8 @@ public class GetCriteriaFieldsForModuleCommand extends FacilioCommand {
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.AGENT_ALARM_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 case FacilioConstants.Workflow.WORKFLOW_LOG:
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.WORKFLOW_LOG_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
+                case FacilioConstants.ContextNames.BASE_MAIL_MESSAGE:
+                    return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.BASEMAIL_LOG_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 case FacilioConstants.ContextNames.AGENT:
                     return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.AGENT_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
                 case FacilioConstants.ContextNames.SHIFT:

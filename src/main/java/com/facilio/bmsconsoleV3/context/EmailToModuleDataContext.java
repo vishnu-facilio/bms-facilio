@@ -14,4 +14,11 @@ public class EmailToModuleDataContext extends BaseMailMessageContext {
 	Long dataModuleId;
 	Long recordId;
 	BaseMailMessageContext parentBaseMail;
+
+	public Long getParentBaseMailId(){
+		if(getParentBaseMail() != null) {
+			return this.getParentBaseMail().getId();
+		}
+		return null;
+	}
 }
