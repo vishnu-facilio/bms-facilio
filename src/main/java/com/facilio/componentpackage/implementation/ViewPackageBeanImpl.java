@@ -301,6 +301,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
     private Map<Long, Long> getViewIdVsModuleId(boolean fetchSystem) throws Exception {
         Map<Long, Long> viewIdVsModuleId = new HashMap<>();
         FacilioModule viewsModule = ModuleFactory.getViewsModule();
+        List<Long> applicationIds = ApplicationApi.getAllApplicationIds(true);
 
         List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
             add(FieldFactory.getModuleIdField(viewsModule));
@@ -310,6 +311,9 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         Criteria filterCriteria = new Criteria();
         filterCriteria.addAndCondition(CriteriaAPI.getCondition("ISDEFAULT", "isDefault", String.valueOf(fetchSystem), BooleanOperators.IS));
         filterCriteria.addAndCondition(CriteriaAPI.getCondition("VIEW_TYPE", "type", String.valueOf(FacilioView.ViewType.TABLE_LIST.getIntVal()), NumberOperators.EQUALS));
+        if (CollectionUtils.isNotEmpty(applicationIds)) {
+            filterCriteria.addAndCondition(CriteriaAPI.getCondition("APP_ID", "appId", StringUtils.join(applicationIds, ","), NumberOperators.EQUALS));
+        }
 
         List<Map<String, Object>> propsList = getViewProps(selectableFields, filterCriteria);
 

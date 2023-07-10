@@ -9,23 +9,23 @@
 <h1>Copy Customization Console</h1>
 <table>
   <tr>
-    <td class="table-head"><h4>Source OrgId</h4></td>
-    <td><input type="text" id="sourceOrgId" required class="input-field"/></td>
-  </tr>
-  <tr>
-    <td class="table-head"><h4>Target OrgId</h4></td>
-    <td><input type="text" id="targetOrgId" required class="input-field"/></td>
-  </tr>
-  <tr>
     <td class="table-head"><h4>Action</h4></td>
     <td>
       <label class="radio-text">
-        <input class="radio-label" type="radio" name="fileVisibility" id="showFileRadio" value="hide" checked="checked" /> Create
+        <input class="radio-label" type="radio" name="fileVisibility" id="showFileRadio" value="create" checked="checked"> Create
       </label>
       <label class="radio-text">
-        <input class="radio-label" type="radio" name="fileVisibility" id="hideFileRadio" value="show" /> Install
+        <input class="radio-label" type="radio" name="fileVisibility" id="hideFileRadio" value="install"> Install
       </label>
     </td>
+  </tr>
+  <tr id="sourceOrgIdRow">
+    <td class="table-head"><h4>Source OrgId</h4></td>
+    <td><input type="text" id="sourceOrgId" required class="input-field"></td>
+  </tr>
+  <tr id="targetOrgIdRow">
+    <td class="table-head"><h4>Target OrgId</h4></td>
+    <td><input type="text" id="targetOrgId" required class="input-field"></td>
   </tr>
   <tr id="fileRow">
     <td class="table-head"><h4>File Upload</h4></td>
@@ -43,27 +43,27 @@
 <div id="result"></div>
 
 <script>
-  // Show/hide the file upload row based on the radio button
-  $('input[name="fileVisibility"]').change(function () {
-    const selectedValue = $(this).val();
-    if (selectedValue === "show") {
-      $("#fileRow").show();
-    } else {
-      $("#fileRow").hide();
-    }
-  });
-  // Hide the file upload row on page load
   $(window).on('load', function() {
-    $("#fileRow").hide();
+    hideOrShowFields();
+    $('input[name="fileVisibility"]').change(hideOrShowFields);
   });
+
+  function hideOrShowFields() {
+    const showFileRadioChecked = $("#showFileRadio").is(":checked");
+    $("#sourceOrgIdRow").toggle(showFileRadioChecked);
+    $("#targetOrgIdRow").toggle(!showFileRadioChecked);
+    $("#fileRow").toggle(!showFileRadioChecked);
+  }
 
   function sendAjax() {
-    if (document.getElementById("showFileRadio").checked) {
-      const dataObject = {};
-      dataObject.fromAdminTool = true;
-      dataObject.sourceOrgId = $('#sourceOrgId').val();
-      dataObject.targetOrgId = $('#targetOrgId').val();
+    const showFileRadioChecked = $("#showFileRadio").is(":checked");
+    const dataObject = {
+      fromAdminTool: true,
+      sourceOrgId: $("#sourceOrgId").val(),
+      targetOrgId: $("#targetOrgId").val()
+    };
 
+    if (showFileRadioChecked) {
       $.ajax({
         url: "/admin/createPackage",
         type: "POST",
@@ -72,8 +72,9 @@
         success: function(data) {
           const downloadUrl = data.downloadUrl;
           if (downloadUrl) {
-            $("#downloadButton").show();
-            $("#downloadButton").attr("onclick", "window.location.href='" + downloadUrl + "'");
+            $("#downloadButton").show().click(function() {
+              window.location.href = downloadUrl;
+            });
           }
         },
         error: function(xhr, status, error) {
@@ -112,16 +113,6 @@
 
     $('#submitBtn').attr("disabled", true);
   }
-
-  function downloadFile(downloadUrl) {
-    // Create a hidden link to initiate the download
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-
 </script>
 
 <style>

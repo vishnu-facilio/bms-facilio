@@ -17,6 +17,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -213,6 +214,8 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
 
     private Map<Long, Long> getWebTabIdVsAppId() throws Exception {
         FacilioModule facilioModule = ModuleFactory.getWebTabModule();
+        List<Long> applicationIds = ApplicationApi.getAllApplicationIds(true);
+
         List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
             add(FieldFactory.getIdField(facilioModule));
             add(FieldFactory.getNumberField("applicationId", "APPLICATION_ID", facilioModule));
@@ -221,6 +224,10 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(facilioModule.getTableName())
                 .select(selectableFields);
+
+        if (CollectionUtils.isNotEmpty(applicationIds)) {
+            builder.andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", StringUtils.join(applicationIds, ","), StringOperators.IS));
+        }
 
         List<Map<String, Object>> propsList = builder.get();
 

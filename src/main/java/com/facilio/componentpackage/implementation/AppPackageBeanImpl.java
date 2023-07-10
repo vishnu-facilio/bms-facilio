@@ -1,7 +1,6 @@
 package com.facilio.componentpackage.implementation;
 
 import com.facilio.componentpackage.constants.PackageConstants;
-import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -168,7 +167,7 @@ public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
     }
 
     private Map<Long, Long> getAppIdVsParentId(boolean fetchSystem) throws Exception {
-        List<Long> applicationIds = ApplicationApi.getAllApplicationIds(fetchSystem);
+        List<Long> applicationIds = ApplicationApi.getApplicationIds(fetchSystem, true);
 
         if (CollectionUtils.isEmpty(applicationIds)) {
             LOGGER.info("####Sandbox - ApplicationIds is null");

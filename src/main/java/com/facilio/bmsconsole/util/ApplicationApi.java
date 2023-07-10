@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,7 +11,6 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.DefaultTabsAndTabGroups;
 
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
-import com.facilio.bmsconsoleV3.util.V3ModuleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -26,7 +23,6 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
@@ -498,7 +494,27 @@ public class ApplicationApi {
         return -1;
     }
 
-    public static List<Long> getAllApplicationIds(boolean fetchSystem) throws Exception {
+    public static List<Long> getAllApplicationIds(boolean skipFacilioMainApp) throws Exception {
+        List<Long> appIds = null;
+        FacilioModule applicationModule = ModuleFactory.getApplicationModule();
+        FacilioField appIdField = FieldFactory.getIdField(applicationModule);
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(applicationModule.getTableName())
+                .select(Collections.singletonList(appIdField));
+
+        if (skipFacilioMainApp) {
+            builder.andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, StringOperators.ISN_T));
+        }
+
+        List<Map<String, Object>> props = builder.get();
+        if (CollectionUtils.isNotEmpty(props)) {
+            appIds = props.stream().map(prop -> (Long) prop.get("id")).collect(Collectors.toList());
+        }
+        return appIds;
+    }
+
+    public static List<Long> getApplicationIds(boolean fetchSystem, boolean skipFacilioMainApp) throws Exception {
         List<Long> appIds = null;
         FacilioModule applicationModule = ModuleFactory.getApplicationModule();
         FacilioField appIdField = FieldFactory.getIdField(applicationModule);
@@ -507,6 +523,10 @@ public class ApplicationApi {
                 .table(applicationModule.getTableName())
                 .select(Collections.singletonList(appIdField))
                 .andCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(fetchSystem), BooleanOperators.IS));
+
+        if (skipFacilioMainApp) {
+            builder.andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, StringOperators.ISN_T));
+        }
 
         List<Map<String, Object>> props = builder.get();
         if (CollectionUtils.isNotEmpty(props)) {

@@ -16,9 +16,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,7 +142,7 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
     
     private Map<Long, Long> getAllLayoutIds(boolean fetchSystem) throws Exception {
         Map<Long, Long> layoutIdVsAppId = null;
-        List<Long> applicationIds = ApplicationApi.getAllApplicationIds(fetchSystem);
+        List<Long> applicationIds = ApplicationApi.getApplicationIds(fetchSystem, true);
 
         if (CollectionUtils.isNotEmpty(applicationIds)) {
             layoutIdVsAppId = new HashMap<>();

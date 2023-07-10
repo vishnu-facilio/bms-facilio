@@ -27,7 +27,7 @@ public class PackageAction extends FacilioAction {
 
     public String getDisplayName() {
         if(StringUtils.isEmpty(displayName)) {
-            displayName = "package_" + sourceOrgId + "_" + targetOrgId + "_" + System.currentTimeMillis();
+            displayName = "package_" + sourceOrgId + "_" + System.currentTimeMillis();
         }
         return displayName;
     }

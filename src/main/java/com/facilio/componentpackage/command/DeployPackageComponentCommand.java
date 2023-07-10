@@ -123,7 +123,12 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 				systemComponentIds = componentType.getPackageComponentClassInstance().getExistingIdsByXMLData(idsToFetch);
 				if (MapUtils.isNotEmpty(systemComponentIds)) {
 					for (Map.Entry<String, XMLBuilder> updateXMLs : idsToFetch.entrySet()) {
-						updateComponentList.put(systemComponentIds.get(updateXMLs.getKey()), updateXMLs.getValue());
+						// Skipping if System ComponentID is not found
+						if (systemComponentIds.containsKey(updateXMLs.getKey())) {
+							updateComponentList.put(systemComponentIds.get(updateXMLs.getKey()), updateXMLs.getValue());
+						} else {
+							LOGGER.info("####Sandbox - System ComponentID not found for UID " + updateXMLs.getKey());
+						}
 					}
 				}
 			}

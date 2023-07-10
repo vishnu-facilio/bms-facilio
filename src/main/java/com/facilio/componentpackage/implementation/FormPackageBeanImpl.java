@@ -7,12 +7,12 @@ import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -250,6 +250,7 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
     private Map<Long, Long> getFormIdVsModuleId (boolean fetchSystem) throws Exception {
         Map<Long, Long> formIdVsModuleId = new HashMap<>();
         FacilioModule formsModule = ModuleFactory.getFormModule();
+        ApplicationContext mainApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 
         List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
             add(FieldFactory.getModuleIdField(formsModule));
@@ -260,6 +261,10 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
                 .table(formsModule.getTableName())
                 .select(selectableFields)
                 .andCondition(CriteriaAPI.getCondition("IS_SYSTEM_FORM", "isSystemForm", String.valueOf(fetchSystem), BooleanOperators.IS));
+
+        if (mainApp != null) {
+            selectRecordBuilder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(mainApp.getId()), NumberOperators.NOT_EQUALS));
+        }
 
         List<Map<String, Object>> propsList = selectRecordBuilder.get();
 

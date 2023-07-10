@@ -8,6 +8,7 @@ import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.operators.NumberOperators;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.modules.fields.FacilioField;
@@ -31,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j
 public class RolePackageBeanImpl implements PackageBean<Role> {
     // TODO - Handle Permission (Module) & NewPermission (Tabs)
     @Override
@@ -124,6 +126,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
 
             // Skip adding/ updating role if Role_App mapping is empty
             if (CollectionUtils.isEmpty(roleAppList)) {
+                LOGGER.info("####Sandbox - Skipping adding role since RoleAppList is null");
                 continue;
             }
 
@@ -152,9 +155,11 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
             List<RoleApp> roleAppList = constructRoleAppsFromBuilder(roleElement, appNameVsAppId);
 
             if (CollectionUtils.isEmpty(roleAppList)) {
+                LOGGER.info("####Sandbox - Skipping updating role since RoleAppList is null");
                 continue;
             }
 
+            role.setRoleId(roleId);
             updateRole(role, null, roleAppList);
         }
     }

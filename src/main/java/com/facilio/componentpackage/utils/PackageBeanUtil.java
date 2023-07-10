@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -58,7 +59,10 @@ public class PackageBeanUtil {
         List<ApplicationContext> applicationContexts = ApplicationApi.getAllApplicationsWithOutFilter();
         Map<String, Long> appNameVsAppId = new HashMap<>();
         if (CollectionUtils.isNotEmpty(applicationContexts)) {
-            appNameVsAppId = applicationContexts.stream().collect(Collectors.toMap(ApplicationContext::getLinkName, ApplicationContext::getId));
+            for (ApplicationContext applicationContext : applicationContexts) {
+                if (applicationContext.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {continue;}
+                appNameVsAppId.put(applicationContext.getLinkName(), applicationContext.getId());
+            }
         }
 
         return appNameVsAppId;

@@ -156,14 +156,22 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
 
     private Map<Long, Long> getWebTabGroupIdVsLayoutId() throws Exception {
         FacilioModule webTabGroupModule = ModuleFactory.getWebTabGroupModule();
+        List<Long> applicationIds = ApplicationApi.getAllApplicationIds(true);
+
+        String webTabGroupTableName = webTabGroupModule.getTableName();
+        String applicationLayoutTableName = ModuleFactory.getApplicationLayoutModule().getTableName();
+
         List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
             add(FieldFactory.getIdField(webTabGroupModule));
             add(FieldFactory.getNumberField("layoutId", "LAYOUT_ID", webTabGroupModule));
         }};
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(webTabGroupModule.getTableName())
-                .select(selectableFields);
+                .table(webTabGroupTableName)
+                .select(selectableFields)
+                .innerJoin(applicationLayoutTableName)
+                .on(applicationLayoutTableName + ".ID = " + webTabGroupTableName + ".LAYOUT_ID")
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", StringUtils.join(applicationIds, ","), NumberOperators.EQUALS));
 
         List<Map<String, Object>> propsList = builder.get();
 
