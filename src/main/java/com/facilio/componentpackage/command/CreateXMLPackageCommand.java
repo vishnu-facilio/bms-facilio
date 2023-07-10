@@ -55,7 +55,10 @@ public class CreateXMLPackageCommand extends FacilioCommand {
 			Map idVsComponent = componentImplClass.fetchComponents(componentIds);
 
 			for(PackageChangeSetMappingContext componentMapping : typeVsComponent.getValue()) {
-				XMLBuilder componentXML = componentsXML.element(componentType.getValue());
+				if (!idVsComponent.containsKey(componentMapping.getComponentId())) {
+					continue;
+				}
+ 				XMLBuilder componentXML = componentsXML.element(componentType.getValue());
 				componentXML.attr(PackageConstants.PackageXMLConstants.UNIQUE_IDENTIFIER, componentMapping.getUniqueIdentifier());
 				componentXML.attr(PackageConstants.PackageXMLConstants.COMPONENT_TYPE,  String.valueOf(componentType.getIndex()));
 				componentXML.attr(PackageConstants.PackageXMLConstants.COMPONENT_STATUS, componentMapping.getStatusEnum().getValue());

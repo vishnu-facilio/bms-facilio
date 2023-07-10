@@ -121,8 +121,10 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 			Map<String, Long> systemComponentIds = new HashMap<>();
 			if(MapUtils.isNotEmpty(idsToFetch)) {
 				systemComponentIds = componentType.getPackageComponentClassInstance().getExistingIdsByXMLData(idsToFetch);
-				for(Map.Entry<String, XMLBuilder> updateXMLs : idsToFetch.entrySet()) {
-					updateComponentList.put(systemComponentIds.get(updateXMLs.getKey()), updateXMLs.getValue());
+				if (MapUtils.isNotEmpty(systemComponentIds)) {
+					for (Map.Entry<String, XMLBuilder> updateXMLs : idsToFetch.entrySet()) {
+						updateComponentList.put(systemComponentIds.get(updateXMLs.getKey()), updateXMLs.getValue());
+					}
 				}
 			}
 
