@@ -48,7 +48,7 @@ public enum ComponentType implements FacilioIntEnum {
     CONNECTED_APP_WIDGETS(null, CONNECTED_APP, false),
     CONNECTED_APP_VARIABLES(null, CONNECTED_APP, false),
     CONNECTED_APP_CONNECTORS(null, CONNECTED_APP, false),
-    FORM_RULE(FormRulePackageImpl.class, FORM, false),
+    FORM_RULE(FormRulePackageBeanImpl.class, FORM, false),
     VALIDATION_RULE(null, MODULE, false),
     NAMED_CRITERIA(NamedCriteriaPackageBeanImpl.class, MODULE, false),
     CUSTOM_BUTTON(null, MODULE, false),

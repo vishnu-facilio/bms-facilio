@@ -34,8 +34,8 @@ public class AddOrUpdateFacilioStatusCommand extends FacilioCommand {
 			else {
 				TicketAPI.addStatus(facilioStatus, module);
 			}
+			context.put(FacilioConstants.ContextNames.ID,facilioStatus.getId());
 		}
-		context.put(FacilioConstants.ContextNames.ID,facilioStatus.getId());
 		return false;
 	}
 

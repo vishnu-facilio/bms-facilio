@@ -146,7 +146,7 @@ public class TicketStatePackageBeanImpl implements PackageBean<FacilioStatus> {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateTicketStatusChain();
         chain.execute(context);
 
-        long statusId = (long) context.get(FacilioConstants.ContextNames.ID);
+        long statusId = (long) context.getOrDefault(FacilioConstants.ContextNames.ID, -1L);
 
         return statusId;
     }

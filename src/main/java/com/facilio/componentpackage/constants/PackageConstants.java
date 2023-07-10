@@ -425,4 +425,28 @@ public class PackageConstants {
         public static final String PEOPLE = "People";
         public static final String EMAIL = "Email";
     }
+
+    public static class FormRuleConstants {
+
+        public static final String FORM_RULE_CRITERIA = "Form_Rule_Criteria";
+        public static final String SUB_FORM_RULE_CRITERIA = "Sub_Form_Rule_Criteria";
+        public static final String RULE_TYPE = "Rule_Type";
+        public static final String TYPE = "Type";
+        public static final String TRIGGER_TYPE = "Trigger_Type";
+        public static final String FORM_NAME = "Form_Name";
+        public static final String SUB_FORM_NAME = "Sub_Form_Name";
+        public static final String FORM_ON_LOAD_RULE_TYPE = "Form_On_Load_Rule_Type";
+        public static final String EXECUTE_TYPE = "Execute_Type";
+        public static final String TRIGGER_FIELDS_LIST = "Trigger_Fields_List";
+        public static final String TRIGGER_FIELD = "Trigger_Field";
+        public static final String STATUS = "Status";
+        public static final String FORM_ACTIONS_LIST = "Form_Rule_Action_List";
+        public static final String FORM_RULE_ACTION = "Form_Rule_Action";
+        public static final String FORM_RULE_ACTION_TYPE = "Form_Rule_Action_Type";
+        public static final String FORM_RULE_ACTION_FIELD = "Form_Rule_Action_Field";
+        public static final String FORM_RULE_ACTION_META = "Form_Rule_Action_Meta";
+
+        public static final String FILTER_CRITERIA = "Filter_Criteria";
+        public static final String FORM_FIELD_DISPLAY_NAME = "Form_Field_Display_Name";
+    }
 }
