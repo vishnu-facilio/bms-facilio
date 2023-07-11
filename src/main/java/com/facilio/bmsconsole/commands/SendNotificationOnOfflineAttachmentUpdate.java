@@ -73,7 +73,7 @@ public class SendNotificationOnOfflineAttachmentUpdate extends FacilioCommand im
 
             OfflineSupportUtil.sendNotificationOnOfflineRecordUpdate(module, recordIds, type);
         }catch(Exception e){
-            LOGGER.info("Exception at SendNotificationOnOfflineAttachmentUpdate: ", e);
+            LOGGER.debug("Exception at SendNotificationOnOfflineAttachmentUpdate: ", e);
         }
 
         return false;

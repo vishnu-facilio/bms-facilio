@@ -66,7 +66,7 @@ public class SendNotificationForOfflineRecordUpdate extends FacilioCommand imple
 
             OfflineSupportUtil.sendNotificationOnOfflineRecordUpdate(module, recordIds, type);
         }catch(Exception e){
-            LOGGER.info("Exception at SendNotificationForOfflineRecordUpdate: ", e);
+            LOGGER.debug("Exception at SendNotificationForOfflineRecordUpdate: ", e);
         }
 
         return false;

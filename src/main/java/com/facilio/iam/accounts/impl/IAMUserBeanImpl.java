@@ -1713,6 +1713,25 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
+	public List<UserMobileSetting> getUserMobileInstance(List<Long> intanceIds) throws Exception {
+		// TODO Auto-generated method stub
+		List<FacilioField> fields = new ArrayList<>();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getUserMobileSettingFields());
+
+		fields.add(fieldMap.get("mobileInstanceId"));
+		fields.add(fieldMap.get("fromPortal"));
+		fields.add(fieldMap.get("userId"));
+		fields.add(fieldMap.get("userMobileSettingId"));
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("User_Mobile_Setting")
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userMobileSettingId"), intanceIds, NumberOperators.EQUALS))
+				.orderBy("USER_MOBILE_SETTING_ID");
+
+		List<UserMobileSetting> props = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(),UserMobileSetting.class);
+		return props;
+	}
+
+	@Override
 	public Organization getOrgv2(String currentOrgDomain, long uid) throws Exception {
 		// TODO Auto-generated method stub
 		

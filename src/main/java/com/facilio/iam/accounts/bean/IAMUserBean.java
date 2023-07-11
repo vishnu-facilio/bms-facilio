@@ -92,6 +92,8 @@ public interface IAMUserBean {
 
 	public List<UserMobileSetting> getMobileInstanceIds(List<Long> uIds, String appLinkName) throws Exception;
 
+	public List<UserMobileSetting> getUserMobileInstance(List<Long> mobileInstanceIds) throws Exception;
+
 	public Object getPermalinkDetails(String token) throws Exception;
 
 	public Map<String, Object> validateAndGenerateTokenV3(String emailaddress, String password, String appDomainName, String userAgent, String userType,

@@ -1,15 +1,17 @@
 package com.facilio.wmsv2.handler;
 
+import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.context.OfflineRecordRegisterContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.wmsv2.message.Message;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class UpdateOnOfflineRecordHandler extends BaseHandler{
     private static final Logger LOGGER = LogManager.getLogger(UpdateOnOfflineRecordHandler.class.getName());
@@ -32,39 +35,49 @@ public class UpdateOnOfflineRecordHandler extends BaseHandler{
             Long moduleId = ((Number) message.getContent().get("moduleId")).longValue();
             String moduleName = (String) message.getContent().get("moduleName");
             List<Long> recordIds = (List<Long>) message.getContent().get("recordIds");
-            String registerTableName = ModuleFactory.getOfflineRecordRegisterModule().getTableName();
-            String userMobileSettingTableName = IAMAccountConstants.getUserMobileSettingModule().getTableName();
             String type = (String) message.getContent().get("type");
 
-            List<FacilioField> fields = new ArrayList<>();
-            fields.addAll(FieldFactory.getOfflineRecordRegisterFields());
-            fields.addAll(IAMAccountConstants.getUserMobileSettingFields());
-
             GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                    .select(fields)
-                    .table(registerTableName)
-                    .innerJoin(IAMAccountConstants.getUserMobileSettingModule().getTableName())
-                    .on(userMobileSettingTableName + ".USER_MOBILE_SETTING_ID = " + registerTableName + ".USER_MOBILE_SETTING_ID")
-                    .andCondition(CriteriaAPI.getCondition(registerTableName + ".RECORD_ID", "recordId", StringUtils.join(recordIds, ','), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition(registerTableName + ".MODULE_ID", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS));
+                    .select(FieldFactory.getOfflineRecordRegisterFields())
+                    .table(ModuleFactory.getOfflineRecordRegisterModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", StringUtils.join(recordIds, ','), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS));
 
-            List<Map<String, Object>> registeredRecords = null;
+
+            List<OfflineRecordRegisterContext> registeredRecords = null;
+            List<UserMobileSetting> mobileSettings = new ArrayList<>();
+
             try {
-                registeredRecords = selectBuilder.get();
+                registeredRecords = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), OfflineRecordRegisterContext.class);
+                if(CollectionUtils.isNotEmpty(registeredRecords)) {
+                    List<Long> mobileInstanceIds = registeredRecords.stream().map(OfflineRecordRegisterContext::getUserMobileSettingId).collect(Collectors.toList());
+                    mobileSettings = IAMUserUtil.getUserMobileSettings(mobileInstanceIds);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
+            if(CollectionUtils.isEmpty(mobileSettings)){
+                LOGGER.debug("Mobile Instance not found");
+                return;
+            }
+
+            HashMap<Long,UserMobileSetting> mobileSettingHashMap = new HashMap<>();
+            for(UserMobileSetting mobileSetting: mobileSettings){
+                mobileSettingHashMap.put(mobileSetting.getUserMobileSettingId(),mobileSetting);
+            }
+
             if (CollectionUtils.isNotEmpty(registeredRecords)) {
                 long orgId = AccountUtil.getCurrentOrg().getOrgId();
-                for (Map<String, Object> registeredRecord : registeredRecords) {
+                for (OfflineRecordRegisterContext registeredRecord : registeredRecords) {
                     if (registeredRecord != null) {
-                        String mobileInstanceId = (String) registeredRecord.get("mobileInstanceId");
-                        Boolean isFromPortal = (Boolean) registeredRecord.get("fromPortal");
+                        UserMobileSetting mobileSetting = mobileSettingHashMap.get((registeredRecord.getUserMobileSettingId()));
+                        String mobileInstanceId = mobileSetting.getMobileInstanceId();
+                        Boolean isFromPortal = mobileSetting.getFromPortal();
 
                         HashMap<String, Object> data = new HashMap<>();
                         data.put("moduleName", moduleName);
-                        data.put("recordId", registeredRecord.get("recordId"));
+                        data.put("recordId", registeredRecord.getRecordId());
                         data.put("orgId", orgId);
                         data.put("type", "OFFLINE_" + type + "_UPDATE");
 

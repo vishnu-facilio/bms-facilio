@@ -49,7 +49,7 @@ public class SendNotificationOnOfflineTaskUpdate extends FacilioCommand implemen
 
             OfflineSupportUtil.sendNotificationOnOfflineRecordUpdate(module, recordIds, type);
         }catch (Exception e){
-            LOGGER.info("Exception at SendNotificationOnOfflineTaskUpdate: ", e);
+            LOGGER.debug("Exception at SendNotificationOnOfflineTaskUpdate: ", e);
         }
 
         return false;

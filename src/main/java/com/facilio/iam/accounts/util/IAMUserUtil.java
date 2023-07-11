@@ -291,6 +291,10 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getMobileInstanceIds(uIds,appLinkName));
 	}
 
+	public static List<UserMobileSetting> getUserMobileSettings(List<Long> mobileInstanceIds) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getUserMobileInstance(mobileInstanceIds));
+	}
+
 	public static Organization getOrg(String currentOrgDomain, long uId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getOrgv2(currentOrgDomain, uId));
 	}
