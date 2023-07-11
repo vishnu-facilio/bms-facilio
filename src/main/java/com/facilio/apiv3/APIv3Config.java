@@ -100,10 +100,7 @@ import com.facilio.bmsconsoleV3.commands.service.GetServiceVendorListCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateStatusCommandV3;
 import com.facilio.bmsconsoleV3.commands.service.UpdateVendorV3;
 import com.facilio.bmsconsoleV3.commands.servicerequest.LoadServiceRequestLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.site.AddOrUpdateSiteLocationCommand;
-import com.facilio.bmsconsoleV3.commands.site.CreateSiteAfterSave;
-import com.facilio.bmsconsoleV3.commands.site.SetSiteRelatedContextCommand;
-import com.facilio.bmsconsoleV3.commands.site.SiteFillLookupFieldsCommand;
+import com.facilio.bmsconsoleV3.commands.site.*;
 import com.facilio.bmsconsoleV3.commands.space.*;
 import com.facilio.bmsconsoleV3.commands.storeroom.LoadStoreRoomLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.FillTenantsLookupCommand;
@@ -2065,7 +2062,7 @@ public class APIv3Config {
         return () -> new V3Config(V3SiteContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(new AddOrUpdateSiteLocationCommand(), new SetSiteRelatedContextCommand())
-                .afterSave(new CreateSiteAfterSave(), getSpaceReadingsChain(),
+                .afterSave(new UpdateQRValueCommandV3(),new CreateSiteAfterSave(), getSpaceReadingsChain(),
                         new InsertReadingDataMetaForNewResourceCommand(), new ConstructAddCustomActivityCommandV3(),
                         new AddActivitiesCommand(FacilioConstants.ContextNames.SITE_ACTIVITY))
                 .update()
@@ -2089,7 +2086,7 @@ public class APIv3Config {
         return () -> new V3Config(V3BuildingContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(new AddOrUpdateBuildingLocation(), new SetBuildingRelatedContextCommand())
-                .afterSave(new CreateBuildingAfterSave(), getSpaceReadingsChain(),
+                .afterSave(new UpdateQRValueCommandV3(),new CreateBuildingAfterSave(), getSpaceReadingsChain(),
                         new InsertReadingDataMetaForNewResourceCommand(), new ConstructAddCustomActivityCommandV3(),
                         new AddActivitiesCommand(FacilioConstants.ContextNames.BUILDING_ACTIVITY))
                 .update()
@@ -2112,7 +2109,7 @@ public class APIv3Config {
         return () -> new V3Config(V3FloorContext.class, new ModuleCustomFieldCount30())
                 .create()
                 .beforeSave(new SetFloorRelatedContextCommand())
-                .afterSave(new CreateFloorAfterSave(), getSpaceReadingsChain(),
+                .afterSave(new UpdateQRValueCommandV3(),new CreateFloorAfterSave(), getSpaceReadingsChain(),
                         new InsertReadingDataMetaForNewResourceCommand(), new ConstructAddCustomActivityCommandV3(),
                         new AddActivitiesCommand(FacilioConstants.ContextNames.FLOOR_ACTIVITY))
                 .update()
@@ -2136,7 +2133,7 @@ public class APIv3Config {
                 .create()
                 .beforeSave(new AddOrUpdateSpaceLocation(), new SetSpaceRelatedContextCommand(),
                         new AddSpaceCategoryExtendedModuleCommandV3())
-                .afterSave(new CreateSpaceAfterSave(), getSpaceReadingsChain(),
+                .afterSave(new UpdateQRValueCommandV3(),new CreateSpaceAfterSave(), getSpaceReadingsChain(),
                         new InsertReadingDataMetaForNewResourceCommand(), new ConstructAddCustomActivityCommandV3(),
                         new AddActivitiesCommand(FacilioConstants.ContextNames.SPACE_ACTIVITY))
                 .update()
