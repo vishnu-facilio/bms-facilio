@@ -22,7 +22,7 @@ datacenters:
     region: eu-central-1
 
   4:
-    mainapp: sg.facilio.com
+    mainapp: app.facilio.sg
     region: ap-southeast-1
 
   5:
