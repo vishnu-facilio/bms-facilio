@@ -70,11 +70,10 @@ public class InventoryCategoryModule extends BaseModuleConfig{
         inventoryCategoryForm.setName("web_default");
         inventoryCategoryForm.setModule(inventoryCategoryModule);
         inventoryCategoryForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        inventoryCategoryForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        inventoryCategoryForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         List<FormField> inventoryCategoryFormFields = new ArrayList<>();
         inventoryCategoryFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
-        inventoryCategoryFormFields.add(new FormField("displayName", FacilioField.FieldDisplayType.TEXTBOX, "Display Name", FormField.Required.REQUIRED, 1, 1));
         inventoryCategoryFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
 //        inventoryCategoryForm.setFields(inventoryCategoryFormFields);
 

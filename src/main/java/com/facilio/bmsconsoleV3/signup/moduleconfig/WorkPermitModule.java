@@ -48,8 +48,6 @@ public class WorkPermitModule extends BaseModuleConfig{
 
         List<FormField> workPermitFormFields = new ArrayList<>();
         workPermitFormFields.addAll(workPermitFormDefaultFields);
-        workPermitFormFields.addAll(checklistFields);
-
 
         FormSection defaultSection = new FormSection("PERMIT INFORMATION", 1, workPermitFormFields, true);
         defaultSection.setSectionType(FormSection.SectionType.FIELDS);
