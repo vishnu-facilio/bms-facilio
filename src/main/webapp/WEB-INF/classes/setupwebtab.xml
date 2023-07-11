@@ -784,4 +784,11 @@
             <param name="setupTab">READINGS</param>
         </action>
     </package>
+
+    <package name="role" namespace="/api/v1/setup/role" extends="v2Api">
+        <action name="fetchRolesApps" class="com.facilio.bmsconsole.actions.RoleAppAction" method="getRolesApps">
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
+        </action>
+    </package>
 </struts>
