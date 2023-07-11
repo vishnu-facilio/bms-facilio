@@ -2781,5 +2781,11 @@
         </urlparams>
     </request>
 
-
+    <request path="/api/v1/setup/role/fetchRolesApps" method="POST">
+        <requestbody type="object">
+            <property name="appIds" type="array">
+                <items type="number"/>
+            </property>
+        </requestbody>
+    </request>
 </config>

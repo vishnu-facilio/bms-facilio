@@ -3433,4 +3433,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new ExportUserListAsXLSCommand());
 		return c;
 	}
+
+	public static FacilioChain fetchRolesAppsChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetRolesAppsCommand());
+		return c;
+	}
 }
