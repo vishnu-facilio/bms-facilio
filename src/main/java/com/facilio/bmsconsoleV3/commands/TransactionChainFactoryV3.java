@@ -84,6 +84,7 @@ import com.facilio.readingrule.command.*;
 import com.facilio.utility.commands.*;
 
 import com.facilio.v3.commands.*;
+import com.facilio.remotemonitoring.commands.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -752,6 +753,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddWorkorderHazardPrecautionsFromSafetyPlanCommandV3());
         c.addCommand(new UpdateAttachmentCountCommand());
         c.addCommand(new UpdateCloseAllFromBulkActionCommandV3());
+        c.addCommand(new FlaggedEventWorkorderCloseCommand());
         return c;
     }
 
@@ -3744,6 +3746,12 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain generateRawAlarms(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GenerateRawAlarmsCommand());
+        return c;
+    }
+
     public static FacilioChain getCalendarAfterCreateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new MakeEventTimeAsCalendarTimeSlotCommand());
@@ -3955,5 +3963,39 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain createFlaggedEventWorkorder(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CreateFlaggedEventWorkorderCommand());
+        return c;
+    }
 
+    public static FacilioChain flaggedEventTakeCustody(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FlaggedEventTakeCustodyCommand());
+        return c;
+    }
+
+    public static FacilioChain passToNextBureau(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PassToNextBureauCommand());
+        return c;
+    }
+
+    public static FacilioChain inhibit(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new InhibitFlaggedEventCommand());
+        return c;
+    }
+
+    public static FacilioChain closeFlaggedEvent(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CloseFlaggedEventCommand());
+        return c;
+    }
+
+    public static FacilioChain isAllAlarmClosed(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CloseFlaggedEventCommand());
+        return c;
+    }
 }

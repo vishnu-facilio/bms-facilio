@@ -91,7 +91,9 @@ public class PermissionSetUtil {
         if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PERMISSION_SET)) {
             return true;
         }
-
+        if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().isSuperAdmin()) {
+            return true;
+        }
         if((type.getHandler().getDefaultValue(queryProp) && type.getHandler().getIsDisabled(queryProp))){
             return true;
         }

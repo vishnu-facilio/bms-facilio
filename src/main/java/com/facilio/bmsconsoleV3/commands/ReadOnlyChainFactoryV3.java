@@ -64,6 +64,7 @@ import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.permission.commands.*;
 import com.facilio.relation.command.*;
+import com.facilio.remotemonitoring.commands.*;
 
 public class ReadOnlyChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -609,4 +610,25 @@ public class ReadOnlyChainFactoryV3 {
     }
 
 
+    public static FacilioChain getAlarmFilterRuleSummaryAfterFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchFilterRuleCriteriaForFilterRuleCommand());
+        c.addCommand(new SetSiteAndControllerCriteriaCommand());
+        return c;
+    }
+    public static FacilioChain getFlaggedEventRuleSummaryAfterFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetFlaggedEventRuleRelatedRecordsCommand());
+        return c;
+    }
+    public static FacilioChain getFlaggedEventActionSummaryAfterFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetFlaggedEventBureauActionRelatedRecordsCommand());
+        return c;
+    }
+    public static FacilioChain closeButtonDetails(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CloseButtonDetailsCommand());
+        return c;
+    }
 }

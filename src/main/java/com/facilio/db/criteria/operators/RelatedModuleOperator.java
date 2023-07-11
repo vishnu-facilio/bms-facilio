@@ -5,6 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -109,13 +119,61 @@ public enum RelatedModuleOperator implements Operator<Criteria> {
 	@Override
 	public FacilioModulePredicate getPredicate(String fieldName, Criteria value) {
 		// TODO Auto-generated method stub
-		/*if(fieldName != null && !fieldName.isEmpty() && value != null) {
+		if(fieldName != null && !fieldName.isEmpty() && value != null) {
 			String[] module = fieldName.split("\\.");
 			if(module.length > 1) {
-				return new FacilioModulePredicate(module[1], value.computePredicate());
+				return new FacilioModulePredicate("id", new RelatedModPredcate(value, fieldName));
 			}
-		}*/
+		}
 		return null;
+	}
+
+	public static class RelatedModPredcate implements Predicate {
+		private Criteria value;
+		private String fieldName;
+		public RelatedModPredcate(Criteria value,String fieldName) {
+			this.value = value;
+			this.fieldName = fieldName;
+		}
+
+		@Override
+		public boolean evaluate(Object object) {
+			// TODO Auto-generated method stub
+			if(object != null) {
+				try {
+					if(fieldName != null && !fieldName.isEmpty() && value != null) {
+						String[] module = fieldName.split("\\.");
+						if(module.length > 1) {
+							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							LookupField field = (LookupField) modBean.getField(module[1], module[0]);
+							FacilioModule mod = modBean.getModule(module[0]);
+
+							long currentId;
+							if(object instanceof Long) {
+								currentId = (long) object;
+							}
+							else if(PropertyUtils.isReadable(object, "id")) {
+								currentId = (long) PropertyUtils.getProperty(object, "id");
+							}
+							else {
+								return false;
+							}
+							SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordsBuilder = new SelectRecordsBuilder<>();
+							selectRecordsBuilder.moduleName(module[0]);
+							selectRecordsBuilder.beanClass(ModuleBaseWithCustomFields.class);
+							selectRecordsBuilder.select(Collections.singletonList(FieldFactory.getIdField(mod)));
+							selectRecordsBuilder.andCriteria(value);
+							selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(field,String.valueOf(currentId),NumberOperators.EQUALS));
+							return CollectionUtils.isNotEmpty(selectRecordsBuilder.get());
+						}
+					}
+				}
+				catch(Exception e) {
+					log.info("Exception occurred ", e);
+				}
+			}
+			return false;
+		}
 	}
 
 	@Override

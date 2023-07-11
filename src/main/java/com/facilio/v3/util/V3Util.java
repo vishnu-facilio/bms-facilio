@@ -221,8 +221,6 @@ public class V3Util {
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
         FacilioContext context = V3Util.updateBulkRecords(module, v3Config, moduleBaseWithCustomFields, values,
                 ids, bodyParams, queryParams, null, null, null,null,null,null,restrictredAction,skipApproval,patchFieldNames,null);
-
-
         return context;
     }
 

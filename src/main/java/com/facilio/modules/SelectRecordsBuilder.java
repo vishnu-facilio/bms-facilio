@@ -4,8 +4,10 @@ import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.apiv3.APIv3Config;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.*;
 import com.facilio.db.criteria.Condition;
@@ -639,7 +641,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				isDeletedField = FieldFactory.getIsDeletedField(parentModule);
 				deleteFields.add(isDeletedField);
 				deleteFields.add(FieldFactory.getSysDeletedTimeField(parentModule));
-				deleteFields.add(FieldFactory.getSysDeletedByField(parentModule));
+				if(V3RecordAPI.markAsDeleteEnabled(parentModule)) {
+					deleteFields.add(FieldFactory.getSysDeletedPeopleByField(parentModule));
+				} else {
+					deleteFields.add(FieldFactory.getSysDeletedByField(parentModule));
+				}
 			}
 			
 			FacilioModule prevModule = module;

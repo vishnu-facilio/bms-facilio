@@ -3418,4 +3418,42 @@
         </requestbody>
     </request>
 
+    <request path="/api/v3/flaggedEvent/:id/createworkorder" method="POST">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/flaggedEvent/:id/takecustody" method="POST">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/flaggedEvent/:id/pass" method="POST">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/flaggedEvent/:id/inhibit" method="POST">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="inhibitReasonId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/flaggedEvent/:id/close" method="POST">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="closeIssueValues" type="array">
+                <items type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/flaggedEvent/:id/closeButtonDetail" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
 </config>

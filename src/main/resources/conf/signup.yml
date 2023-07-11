@@ -490,3 +490,39 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityDisputeAttachmentModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationMeterActivityModule
 
+
+  - com.facilio.remotemonitoring.signup.AlarmCategoryModule
+  - com.facilio.remotemonitoring.signup.AlarmTypeModule
+  - com.facilio.remotemonitoring.signup.AlarmDefinitionModule
+  - com.facilio.remotemonitoring.signup.AlarmDefinitionMappingModule
+  - com.facilio.remotemonitoring.signup.RawAlarmModule
+  - com.facilio.remotemonitoring.signup.FlaggedEventRuleModule
+  - com.facilio.remotemonitoring.signup.FlaggedEventModule
+  - com.facilio.remotemonitoring.signup.AlarmFilterRuleModule
+  - com.facilio.remotemonitoring.signup.FilteredAlarmModule
+  - com.facilio.remotemonitoring.signup.AlarmDefinitionTaggingModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmCategoryModuleConfig
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmTypeModuleConfig
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmDefinitionModuleConfig
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmDefinitionMappingModuleConfig
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.RawAlarmModuleConfig
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmFilterRuleModuleConfig
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.FilteredAlarmModuleConfig
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.FlaggedEventRuleModuleConfig
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.FlaggedEventModuleConfig
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmDefinitionTaggingModuleConfig
+  - com.facilio.remotemonitoring.signup.DefaultAlarmTypeAndCategory
+  - com.facilio.remotemonitoring.signup.AlarmFilterRuleCriteriaModule
+  - com.facilio.remotemonitoring.signup.ControllerAlarmInfoModule
+  - com.facilio.remotemonitoring.signup.FlaggedEventAlarmTypeRelModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.ControllerModule
+  - com.facilio.remotemonitoring.signup.FlaggedEventBureauEvaluationModule
+  - com.facilio.remotemonitoring.signup.FlaggedEventBureauActionModule
+  - com.facilio.remotemonitoring.signup.BureauInhibitReasonListModule
+  - com.facilio.remotemonitoring.signup.BureauCauseListModule
+  - com.facilio.remotemonitoring.signup.BureauCloseIssueReasonOptionListModule
+  - com.facilio.remotemonitoring.signup.BureauResolutionListModule
+  - com.facilio.remotemonitoring.signup.AddSubModuleRelations
+  - com.facilio.remotemonitoring.signup.AddFlaggedEventClosureConfigModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmFilterRuleCriteriaModuleConfig
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.FlaggedEventActionModuleConfig

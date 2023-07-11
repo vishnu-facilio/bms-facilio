@@ -283,7 +283,7 @@ public class SignupUtil {
                                 return true;
                         }
                 } catch(Exception e) {
-                        LOGGER.info("Unable to check feature license for maintenance app signup");
+                        LOGGER.info("Unable to check feature license for maintenance app signup",e);
                 }
                 return false;
         }

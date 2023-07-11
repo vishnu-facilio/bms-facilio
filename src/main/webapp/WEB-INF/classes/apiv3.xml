@@ -1893,5 +1893,66 @@
     <package name="v2Analytics" namespace="/api/v3/analytics" extends="v3Api">
         <action name="criteria/module" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="getModuleFromCategory"/>
     </package>
+    <package name="remotemonitor" extends="v3Api" namespace="/api/v3/alarms">
+        <action name="generateRawAlarms" class="com.facilio.remotemonitoring.action.RawAlarmAction" method="generateRawAlarms"/>
+    </package>
 
+    <package name="flaggedEventActions" extends="v3Api" namespace="/api/v3/flaggedEvent">
+        <action name="*/createworkorder" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="createWorkorder">
+            <param name="moduleName">flaggedEvent</param>
+            <param name="id">{1}</param>
+            <param name="permission">PATCH:UPDATE</param>
+            <param name="checkPermission">true</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">flagged_event_create_workorder</param>
+            <param name="buttonPermission">true</param>
+        </action>
+        <action name="*/takecustody" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="takeCustody">
+            <param name="moduleName">flaggedEvent</param>
+            <param name="id">{1}</param>
+            <param name="permission">PATCH:UPDATE</param>
+            <param name="checkPermission">true</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">flagged_event_take_custody</param>
+            <param name="buttonPermission">true</param>
+        </action>
+        <action name="*/pass" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="passToNextBureau">
+            <param name="moduleName">flaggedEvent</param>
+            <param name="id">{1}</param>
+            <param name="permission">PATCH:UPDATE</param>
+            <param name="checkPermission">true</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">pass_to_next_bureau_flagged_event_button</param>
+            <param name="buttonPermission">true</param>
+        </action>
+        <action name="*/inhibit" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="inhibit">
+            <param name="moduleName">flaggedEvent</param>
+            <param name="id">{1}</param>
+            <param name="permission">PATCH:UPDATE</param>
+            <param name="checkPermission">true</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">inhibit_flagged_event_button</param>
+            <param name="buttonPermission">true</param>
+        </action>
+        <action name="*/close" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="close">
+            <param name="moduleName">flaggedEvent</param>
+            <param name="id">{1}</param>
+            <param name="permission">PATCH:UPDATE</param>
+            <param name="checkPermission">true</param>
+<!--            <param name="recordId">{1}</param>-->
+<!--            <param name="buttonAction">systemButton</param>-->
+<!--            <param name="identifier">{2}</param>-->
+<!--            <param name="buttonPermission">true</param>-->
+        </action>
+        <action name="*/closeButtonDetail" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="closeButtonDetail">
+            <param name="moduleName">flaggedEvent</param>
+            <param name="id">{1}</param>
+            <param name="permission">GET:READ</param>
+            <param name="checkPermission">true</param>
+        </action>
+    </package>
 </struts>

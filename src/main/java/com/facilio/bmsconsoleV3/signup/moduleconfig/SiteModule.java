@@ -173,6 +173,7 @@ public class SiteModule extends BaseModuleConfig {
         appNameList.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
@@ -198,6 +199,7 @@ public class SiteModule extends BaseModuleConfig {
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -239,9 +241,44 @@ public class SiteModule extends BaseModuleConfig {
         defaultSiteForm.setIsSystemForm(true);
         defaultSiteForm.setType(FacilioForm.Type.FORM);
 
-        return Collections.singletonList(defaultSiteForm);
+        return Arrays.asList(defaultSiteForm,remoteMonitoringSiteForm());
     }
 
+    private FacilioForm remoteMonitoringSiteForm() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
+
+        FacilioForm defaultSiteForm = new FacilioForm();
+        defaultSiteForm.setName("default_site_web_remotemonitor");
+        defaultSiteForm.setModule(siteModule);
+        defaultSiteForm.setDisplayName("Site");
+        defaultSiteForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        defaultSiteForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        defaultSiteForm.setShowInWeb(true);
+
+        List<FormField> defaultSiteFormFields = new ArrayList<>();
+        defaultSiteFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        defaultSiteFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        defaultSiteFormFields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.REQUIRED, "client",3, 2));
+        defaultSiteFormFields.add(new FormField("managedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Managed By", FormField.Required.OPTIONAL, 4, 2));
+        defaultSiteFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 5, 1));
+        defaultSiteFormFields.add(new FormField("siteType", FacilioField.FieldDisplayType.SELECTBOX, "Site Type", FormField.Required.OPTIONAL, 6, 3));
+        defaultSiteFormFields.add(new FormField("grossFloorArea", FacilioField.FieldDisplayType.DECIMAL, "Gross Floor Area", FormField.Required.OPTIONAL, 7, 2));
+        defaultSiteFormFields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Total Area", FormField.Required.OPTIONAL, 8, 3));
+        defaultSiteFormFields.add(new FormField("cddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "CDD Base Temperature", FormField.Required.OPTIONAL, 9, 2));
+        defaultSiteFormFields.add(new FormField("hddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "HDD Base Temperature", FormField.Required.OPTIONAL, 10, 3));
+        defaultSiteFormFields.add(new FormField("wddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "WDD Base Temperature", FormField.Required.OPTIONAL, 11, 2));
+        defaultSiteFormFields.add(new FormField("timeZone", FacilioField.FieldDisplayType.TIMEZONE, "Time Zone", FormField.Required.OPTIONAL, 12, 3));
+        defaultSiteFormFields.add(new FormField("boundaryRadius", FacilioField.FieldDisplayType.NUMBER, "Boundary Radius", FormField.Required.OPTIONAL, 13, 2));
+
+
+        FormSection section = new FormSection("Default", 1, defaultSiteFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        defaultSiteForm.setSections(Collections.singletonList(section));
+        defaultSiteForm.setIsSystemForm(true);
+        defaultSiteForm.setType(FacilioForm.Type.FORM);
+        return defaultSiteForm;
+    }
     @Override
     public List<GlimpseContext> getModuleGlimpse() throws Exception{
 

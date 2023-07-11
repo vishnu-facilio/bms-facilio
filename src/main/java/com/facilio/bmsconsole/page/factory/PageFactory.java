@@ -1085,8 +1085,7 @@ public class PageFactory {
 		FORM,
 		FORM_SECTION,
 		ALPHA,
-		CUSTOM
-		;
+		CUSTOM;
 
 		public String getValue() {
 			return name();

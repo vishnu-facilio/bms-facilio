@@ -114,7 +114,7 @@ public class Constants {
         return (Map<String, List<Object>>) context.get(QUERY_PARAMS);
     }
 
-    private static final String OLD_RECORD_MAP = "oldRecordMap";
+    public static final String OLD_RECORD_MAP = "oldRecordMap";
     public static <T extends ModuleBaseWithCustomFields> void addToOldRecordMap (Context context, String moduleName, T record) {
         addToOldRecordMap(context, moduleName, Collections.singletonList(record));
     }

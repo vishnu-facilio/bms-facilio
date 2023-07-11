@@ -148,6 +148,7 @@ public class SpaceModule extends BaseModuleConfig {
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -166,6 +167,8 @@ public class SpaceModule extends BaseModuleConfig {
         appNameList.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
         for (String appName : appNameList) {
@@ -374,7 +377,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebSiteForm.setName("default_space_web_site");
         defaultSpaceWebSiteForm.setModule(spaceModule);
         defaultSpaceWebSiteForm.setDisplayName("Standard Form From Site");
-        defaultSpaceWebSiteForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        defaultSpaceWebSiteForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         defaultSpaceWebSiteForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultSpaceWebSiteForm.setShowInWeb(true);
 
@@ -410,7 +413,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebBuildingForm.setName("default_space_web_building");
         defaultSpaceWebBuildingForm.setModule(spaceModule);
         defaultSpaceWebBuildingForm.setDisplayName("Standard Form From Building");
-        defaultSpaceWebBuildingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
+        defaultSpaceWebBuildingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         defaultSpaceWebBuildingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultSpaceWebBuildingForm.setShowInWeb(true);
 
@@ -446,7 +449,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebFloorForm.setName("default_space_web_floor");
         defaultSpaceWebFloorForm.setModule(spaceModule);
         defaultSpaceWebFloorForm.setDisplayName("Standard Form From Floor");
-        defaultSpaceWebFloorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
+        defaultSpaceWebFloorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         defaultSpaceWebFloorForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultSpaceWebFloorForm.setShowInWeb(true);
 
@@ -480,7 +483,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebSpaceForm.setName("default_space_web_space");
         defaultSpaceWebSpaceForm.setModule(spaceModule);
         defaultSpaceWebSpaceForm.setDisplayName("Standard Form From Space");
-        defaultSpaceWebSpaceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
+        defaultSpaceWebSpaceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         defaultSpaceWebSpaceForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultSpaceWebSpaceForm.setShowInWeb(true);
 

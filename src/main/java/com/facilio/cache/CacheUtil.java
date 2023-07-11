@@ -190,6 +190,10 @@ public class CacheUtil {
 		return APP_ID + KEY_SEPARATOR + appId;
 	}
 
+
+	public static String ALARM_TYPE_KEY(long alarmTypeId) {
+		return ALARM_TYPE + KEY_SEPARATOR + alarmTypeId;
+	}
 	public static String SCOPEID_KEY(long scopeId) {
 		return SCOPE_ID + KEY_SEPARATOR + scopeId;
 	}
@@ -224,6 +228,37 @@ public class CacheUtil {
 
 	public static String CONTROLLER_KEY(long orgId, long agentId, int controllerType , String controllerIdentifier){
 		return ORG_KEY(orgId) + KEY_SEPARATOR + AGENT_ID + KEY_SEPARATOR + agentId + KEY_SEPARATOR + CONTROLLER_TYPE + KEY_SEPARATOR + controllerType + KEY_SEPARATOR + CONTROLLER_IDENTIFIER + KEY_SEPARATOR + controllerIdentifier;
+	}
+
+
+	public static final String CLIENT_ID = "clientId";
+	public static final String ALARM_DEFINITION_TAGGING = "alarmDefinitionTagging";
+
+	public static final String ALARM_TYPE = "alarmType";
+
+	public static String CLIENTID_KEY(long clientId) {
+		return CLIENT_ID + KEY_SEPARATOR + clientId;
+	}
+
+	public static String CLIENT_ID_KEY(long orgId, long clientId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR  + CLIENTID_KEY(clientId);
+	}
+
+	public static String ALARM_DEFINITION_TAGGING_KEY(long alarmDefinitionId) {
+		return ALARM_DEFINITION_TAGGING + KEY_SEPARATOR + alarmDefinitionId;
+	}
+
+	public static String ALARM_DEFINITION_TAGGING_ID_KEY(long orgId, long alarmDefinitionId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR  + ALARM_DEFINITION_TAGGING_KEY(alarmDefinitionId);
+	}
+
+	private static final String FLAGGED_EVENT = "flaggedEvent";
+	public static String FLAGGED_EVENT_KEY(long flaggedEventId) {
+		return FLAGGED_EVENT + KEY_SEPARATOR + flaggedEventId;
+	}
+
+	public static String FLAGGED_EVENT_ID_KEY(long orgId, long flaggedEventId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR  + FLAGGED_EVENT_KEY(flaggedEventId);
 	}
 
 	public static boolean isCacheEnabled() {

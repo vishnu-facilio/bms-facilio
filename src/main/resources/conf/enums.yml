@@ -367,8 +367,6 @@ enums:
   - name: VirtualMeterTemplateStatus
     enumClassName: com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext$VMTemplateStatus
 
-
-
   - name: BacnetPointInstanceType
     enumClassName: com.facilio.bacnet.BACNetUtil$InstanceType
 
@@ -456,3 +454,29 @@ enums:
   - name: MeterType
     enumClassName: com.facilio.bmsconsoleV3.context.meter.V3MeterContext$MeterType
 
+  - name: ControllerType
+    enumClassName: com.facilio.bmsconsole.context.ControllerType
+
+  - name: AlarmStrategy
+    enumClassName: com.facilio.remotemonitoring.context.AlarmStrategy
+
+  - name: AlarmFilterCriteriaType
+    enumClassName: com.facilio.remotemonitoring.context.AlarmFilterCriteriaType
+
+  - name: RawAlarmSourceType
+    enumClassName: com.facilio.remotemonitoring.context.RawAlarmContext$RawAlarmSourceType
+
+  - name: FlaggedEventExecutionType
+    enumClassName: com.facilio.remotemonitoring.context.FlaggedEventRuleContext$FlaggedEventExecutionType
+
+  - name: FlaggedEventStatus
+    enumClassName: com.facilio.remotemonitoring.context.FlaggedEventContext$FlaggedEventStatus
+
+  - name: FlaggedEventBureauActionStatus
+    enumClassName: com.facilio.remotemonitoring.context.FlaggedEventBureauActionsContext$FlaggedEventBureauActionStatus
+
+  - name: ClosureType
+    enumClassName: com.facilio.remotemonitoring.context.FlaggedEventRuleClosureConfigContext$ClosureType
+
+  - name: ClosureRestriction
+    enumClassName: com.facilio.remotemonitoring.context.FlaggedEventRuleClosureConfigContext$ClosureRestriction

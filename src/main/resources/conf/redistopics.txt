@@ -32,3 +32,9 @@ clientAppInfo
 secretsCache
 clientAppOrgGrouping
 clientAppOrgGroupingOrgDomain
+alarmTypeCache
+alarmDefinitionMappingCache
+alarmDefinitionTaggingCache
+alarmFilterRuleCache
+flaggedEventsRuleCache
+flaggedEventRuleCache

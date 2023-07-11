@@ -7,6 +7,7 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
@@ -1858,7 +1859,6 @@ public class FieldFactory extends BaseFieldFactory {
     }
 
     public static FacilioField getSystemField(String fieldName, FacilioModule module) {
-
         switch (fieldName) {
             case "siteId":
                 return getSiteIdField(module);
@@ -1887,10 +1887,31 @@ public class FieldFactory extends BaseFieldFactory {
                 modifiedBy.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
                 modifiedBy.setDefault(true);
                 return modifiedBy;
+            case "sysCreatedByPeople":
+                LookupField createdByPeople = (LookupField) getField("sysCreatedByPeople", "Created By", "SYS_CREATED_BY_PEOPLE", module, FieldType.LOOKUP);
+                createdByPeople.setLookupModule(getPeopleModule());
+                createdByPeople.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+                createdByPeople.setDefault(true);
+                return createdByPeople;
+            case "sysModifiedByPeople":
+                LookupField modifiedByPeople = (LookupField) getField("sysModifiedByPeople", "Modified By", "SYS_MODIFIED_BY_PEOPLE", module, FieldType.LOOKUP);
+                modifiedByPeople.setLookupModule(getPeopleModule());
+                modifiedByPeople.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+                modifiedByPeople.setDefault(true);
+                return modifiedByPeople;
         }
         return null;
     }
 
+    private static FacilioModule getPeopleModule() {
+        try {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            return modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        } catch (Exception e) {
+            e.getStackTrace();
+        }
+        return null;
+    }
     private static final List<String> baseModuleSystemFields = Collections.unmodifiableList(FieldFactory.getBaseModuleSystemFields(null).stream().map(FacilioField::getName).collect(Collectors.toList()));
 
     public static boolean isBaseModuleSystemField(String fieldName) {
@@ -2031,6 +2052,12 @@ public class FieldFactory extends BaseFieldFactory {
         LookupField deletedBy = (LookupField) getField("sysDeletedBy", "SYS_DELETED_BY", module, FieldType.LOOKUP);
         deletedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
         return deletedBy;
+    }
+
+    public static FacilioField getSysDeletedPeopleByField(FacilioModule module) {
+        LookupField deletedByPeople = (LookupField) getField("sysDeletedByPeople", "Deleted By", "SYS_DELETED_BY_PEOPLE", module, FieldType.LOOKUP);
+        deletedByPeople.setLookupModule(LookupSpecialTypeUtil.getModule(FacilioConstants.ContextNames.PEOPLE));
+        return deletedByPeople;
     }
 
     public static FacilioField getSysDeletedByPeopleField(FacilioModule module) throws Exception {
@@ -12238,12 +12265,25 @@ public class FieldFactory extends BaseFieldFactory {
         fieldList.add(getNumberField("markupDefaultValue","DEFAULT_MARKUP_VALUE",module));
         fieldList.add(getNumberField("markupdisplayMode","MARKUP_DISPLAY_MODE",module));
         fieldList.add(getNumberField("globalMarkupValue","GLOBAL_MARKUP_VALUE",module));
-
+        return fieldList;
+    }
+    public static List<FacilioField> getFlaggedEventWorkorderTemplateFieldMappingField(){
+        FacilioModule module = ModuleFactory.getflaggedEventWorkorderTemplateFieldMappingModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getNumberField("parentId","PARENT_ID",module));
+        fieldList.add(getNumberField("leftFieldId","LEFT_FIELD_ID",module));
+        fieldList.add(getNumberField("rightFieldId","RIGHT_FIELD_ID",module));
+        fieldList.add(getStringField("valueText","VALUE_TEXT",module));
         return fieldList;
     }
 
-
-
+    public static List<FacilioField> getFlaggedEventClosureStatusFields(){
+        FacilioModule module = ModuleFactory.getFlaggedEventClosureStatusModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getNumberField("parentId","PARENT_ID",module));
+        fieldList.add(getStringField("value","VALUE",module));
+        return fieldList;
+    }
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:

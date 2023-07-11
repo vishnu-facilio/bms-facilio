@@ -76,5 +76,16 @@ public class AddDefaultGlobalScopeVariable extends SignUpData {
         clientUserScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
         clientUserScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.ClientValueGenerator").getId());
         scopeBean.addScopeVariable(clientUserScopeVariable);
+
+        GlobalScopeVariableContext clientScopeVariable = new GlobalScopeVariableContext();
+        clientScopeVariable.setLinkName("default_remotemonitor_client");
+        clientScopeVariable.setApplicableModuleId(modBean.getModule(FacilioConstants.ContextNames.CLIENT).getModuleId());
+        clientScopeVariable.setStatus(true);
+        clientScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        clientScopeVariable.setDescription("Default Client Scope Variable");
+        clientScopeVariable.setDisplayName("Client Scope Variable");
+        clientScopeVariable.setType(GlobalScopeVariableContext.Type.ALL.getIndex());
+        clientScopeVariable.setShowSwitch(true);
+        scopeBean.addScopeVariable(clientScopeVariable);
     }
 }

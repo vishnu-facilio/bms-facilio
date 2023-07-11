@@ -1,11 +1,14 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.AttachmentV3Context;
@@ -47,5 +50,15 @@ public class V3AttachmentAPI {
 
         List<AttachmentV3Context> records = builder.get();
         return records;
+    }
+
+    public static final void addAttachments(List<AttachmentV3Context> attachments, String moduleName) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(moduleName);
+        InsertRecordBuilder<AttachmentV3Context> attachmentBuilder = new InsertRecordBuilder<AttachmentV3Context>()
+                .module(module)
+                .fields(modBean.getAllFields(moduleName))
+                .addRecords(attachments);
+        attachmentBuilder.save();
     }
 }

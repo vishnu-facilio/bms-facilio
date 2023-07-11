@@ -361,8 +361,9 @@ public class Controller extends AssetContext {
                 throw new Exception("agent can't be null");
             }
         } else {
-            throw new Exception("agentId can't be less than 0 -> for controllerId " + getControllerId());
+//            throw new Exception("agentId can't be less than 0 -> for controllerId " + getControllerId());
         }
+        return null;
     }
 
     @JsonIgnore

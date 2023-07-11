@@ -6,6 +6,8 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.remotemonitoring.signup.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -122,6 +124,16 @@ public class V3ModuleAPI {
         UTILITY_INTEGRATION_TARIFF(FacilioConstants.UTILITY_INTEGRATION_TARIFF, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         UTILITY_DISPUTE(FacilioConstants.UTILITY_DISPUTE, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
+//        RAW_ALARM(RawAlarmModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+//        ALARM_REGEX_MATCHING(AlarmDefinitionMappingModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+//        ALARM_DEFINITION_TAGGIND(AlarmDefinitionTaggingModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+//        ALARM_TYPE(AlarmTypeModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+//        ALARM_CATEGORY(AlarmCategoryModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+//        ALARM_DEFINITION(AlarmDefinitionModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+//        FILTERED_ALARMS(FilteredAlarmModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+//        FILTERED_ALARM_RULES(AlarmFilterRuleModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+//        FLAGGED_EVENTS(FlaggedEventModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+//        FLAGGED_EVENT_RULES(FlaggedEventRuleModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
 
         private String moduleName;
         private List<String> applicationLinkNames;

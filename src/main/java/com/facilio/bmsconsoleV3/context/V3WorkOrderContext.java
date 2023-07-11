@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.remotemonitoring.context.FlaggedEventContext;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 import lombok.Getter;
@@ -785,4 +786,7 @@ public class V3WorkOrderContext extends V3TicketContext {
     @Setter
     private List<String> sectionNameList;
 
+    @Getter
+    @Setter
+    private FlaggedEventContext flaggedEvent;
 }
