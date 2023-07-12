@@ -98,20 +98,28 @@ public class ServiceAppointmentContext extends V3Context {
 
     private DueStatus responseDueStatus;
     private DueStatus resolutionDueStatus;
-    public int getResponseDueStatus() {
+    public Integer getResponseDueStatus() {
         if (responseDueStatus != null) {
             return responseDueStatus.getIndex();
         }
-        return -1;
+        return null;
     }
-    public void setResponseDueStatus(int responseDueStatus) {
-        this.responseDueStatus = DueStatus.valueOf(responseDueStatus);
+    public void setResponseDueStatus(Integer responseDueStatus) {
+        if(responseDueStatus != null) {
+            this.responseDueStatus = DueStatus.valueOf(responseDueStatus);
+        }
     }
-    public DueStatus getResponseDueStatusEnum() {
-        return responseDueStatus;
+
+    public Integer getResolutionDueStatus() {
+        if (resolutionDueStatus != null) {
+            return resolutionDueStatus.getIndex();
+        }
+        return null;
     }
-    public void setResponseDueStatus(DueStatus responseDueStatus) {
-        this.responseDueStatus = responseDueStatus;
+    public void setResolutionDueStatus(Integer resolutionDueStatus) {
+        if(resolutionDueStatus != null) {
+            this.resolutionDueStatus = DueStatus.valueOf(resolutionDueStatus);
+        }
     }
 
     public static enum DueStatus implements FacilioIntEnum {
