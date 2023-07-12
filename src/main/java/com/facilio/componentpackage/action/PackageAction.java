@@ -75,7 +75,6 @@ public class PackageAction extends FacilioAction {
         FacilioContext context = createPackageChain.getContext();
         context.put(PackageConstants.DISPLAY_NAME, getDisplayName());
         context.put(PackageConstants.SOURCE_ORG_ID, sourceOrgId);
-        context.put(PackageConstants.TARGET_ORG_ID, targetOrgId);
         context.put(PackageConstants.FROM_ADMIN_TOOL, fromAdminTool);
         context.put(PackageConstants.PACKAGE_TYPE, PackageContext.PackageType.valueOf(packageType));
         createPackageChain.execute();
@@ -98,7 +97,6 @@ public class PackageAction extends FacilioAction {
         FacilioChain deployPackageChain = PackageChainFactory.getDeployPackageChain();
         FacilioContext deployContext = deployPackageChain.getContext();
         deployContext.put(PackageConstants.FILE, file);
-        deployContext.put(PackageConstants.SOURCE_ORG_ID, sourceOrgId);
         deployContext.put(PackageConstants.TARGET_ORG_ID, targetOrgId);
         deployContext.put(PackageConstants.FROM_ADMIN_TOOL, fromAdminTool);
         deployPackageChain.execute();

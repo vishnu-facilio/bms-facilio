@@ -12,6 +12,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -250,7 +251,7 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
     private Map<Long, Long> getFormIdVsModuleId (boolean fetchSystem) throws Exception {
         Map<Long, Long> formIdVsModuleId = new HashMap<>();
         FacilioModule formsModule = ModuleFactory.getFormModule();
-        ApplicationContext mainApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        List<Long> applicationIds = ApplicationApi.getAllApplicationIds(true);
 
         List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
             add(FieldFactory.getModuleIdField(formsModule));
@@ -262,8 +263,9 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
                 .select(selectableFields)
                 .andCondition(CriteriaAPI.getCondition("IS_SYSTEM_FORM", "isSystemForm", String.valueOf(fetchSystem), BooleanOperators.IS));
 
-        if (mainApp != null) {
-            selectRecordBuilder.andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(mainApp.getId()), NumberOperators.NOT_EQUALS));
+        if (CollectionUtils.isNotEmpty(applicationIds)) {
+            Criteria appIdCriteria = PackageBeanUtil.getFormAppIdCriteria(applicationIds);
+            selectRecordBuilder.andCriteria(appIdCriteria);
         }
 
         List<Map<String, Object>> propsList = selectRecordBuilder.get();

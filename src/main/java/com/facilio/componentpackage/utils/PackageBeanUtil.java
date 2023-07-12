@@ -167,6 +167,13 @@ public class PackageBeanUtil {
         return MapUtils.isNotEmpty(prop) ? (Long) prop.get("id") : -1;
     }
 
+    public static Criteria getFormAppIdCriteria(List<Long> applicationIds) {
+        Criteria appIdCriteria = new Criteria();
+        appIdCriteria.addAndCondition(CriteriaAPI.getCondition("APP_ID", "appId", StringUtils.join(applicationIds, ","), NumberOperators.EQUALS));
+        appIdCriteria.addOrCondition(CriteriaAPI.getCondition("APP_ID", "appId", "NULL", CommonOperators.IS_EMPTY));
+        return appIdCriteria;
+    }
+
     public static XMLBuilder constructBuilderFromCriteria(Criteria criteria, XMLBuilder xmlBuilder, String moduleName) throws Exception {
         if (criteria == null || criteria.isEmpty()) {
             return xmlBuilder;

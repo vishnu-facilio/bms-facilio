@@ -2,6 +2,7 @@ package com.facilio.componentpackage.implementation;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
@@ -10,7 +11,10 @@ import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -180,6 +184,7 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
     private Map<Long, Long> getSectionIdVsFormId() throws Exception {
         Map<Long, Long> sectionIdVsFormId = new HashMap<>();
         FacilioModule sectionModule = ModuleFactory.getFormSectionModule();
+        List<Long> applicationIds = ApplicationApi.getAllApplicationIds(true);
 
         List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
             add(FieldFactory.getNumberField("formId", "FORMID", sectionModule));
@@ -190,6 +195,13 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
                 .table(sectionModule.getTableName())
                 .select(selectableFields)
                 ;
+
+        if (CollectionUtils.isNotEmpty(applicationIds)) {
+            Criteria appIdCriteria = PackageBeanUtil.getFormAppIdCriteria(applicationIds);
+            selectRecordBuilder.innerJoin(ModuleFactory.getFormModule().getTableName())
+                    .on(ModuleFactory.getFormModule().getTableName() + ".ID = " + sectionModule.getTableName() + ".FORMID");
+            selectRecordBuilder.andCriteria(appIdCriteria);
+        }
 
         List<Map<String, Object>> propsList = selectRecordBuilder.get();
 

@@ -57,13 +57,13 @@
 
   function sendAjax() {
     const showFileRadioChecked = $("#showFileRadio").is(":checked");
-    const dataObject = {
-      fromAdminTool: true,
-      sourceOrgId: $("#sourceOrgId").val(),
-      targetOrgId: $("#targetOrgId").val()
-    };
 
     if (showFileRadioChecked) {
+      const dataObject = {
+        fromAdminTool: true,
+        sourceOrgId: $("#sourceOrgId").val()
+      };
+
       $.ajax({
         url: "/admin/createPackage",
         type: "POST",
@@ -89,7 +89,6 @@
       const formData = new FormData();
       formData.append('file', file);
       formData.append('fromAdminTool', true);
-      formData.append('sourceOrgId', $('#sourceOrgId').val());
       formData.append('targetOrgId', $('#targetOrgId').val());
 
       $.ajax({

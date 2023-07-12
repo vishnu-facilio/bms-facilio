@@ -18,7 +18,6 @@ public class ValidatePackageCreationPermission extends FacilioCommand {
             return false;
         }
 
-        long sourceOrgId = (long) context.get(PackageConstants.SOURCE_ORG_ID);
         long targetOrgId = (long) context.get(PackageConstants.TARGET_ORG_ID);
 
         Map<String, Object> metaMigrationPermission = CommonCommandUtil.getOrgInfo(targetOrgId, "metaMigration");

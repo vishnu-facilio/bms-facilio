@@ -1,5 +1,6 @@
 package com.facilio.componentpackage.implementation;
 
+import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.componentpackage.constants.PackageConstants;
@@ -11,6 +12,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import lombok.extern.log4j.Log4j;
@@ -92,12 +94,17 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         viewElement.element(PackageConstants.DISPLAY_NAME).text(view.getDisplayName());
         viewElement.element(PackageConstants.IS_DEFAULT).text(String.valueOf(view.isDefault()));
         viewElement.element(PackageConstants.ViewConstants.VIEW_TYPE).text(String.valueOf(view.getType()));
-        viewElement.element(PackageConstants.AppXMLConstants.APP_LINK_NAME).text(application.getLinkName());
         viewElement.element(PackageConstants.ViewConstants.IS_LOCKED).text(String.valueOf(view.isLocked()));
         viewElement.element(PackageConstants.SEQUENCE_NUMBER).text(String.valueOf(view.getSequenceNumber()));
         viewElement.element(PackageConstants.ViewConstants.IS_LIST_VIEW).text(String.valueOf(view.isListView()));
         viewElement.element(PackageConstants.ViewConstants.IS_CALENDAR_VIEW).text(String.valueOf(view.isCalendarView()));
         viewElement.element(PackageConstants.ViewConstants.EXCLUDE_MODULE_CRITERIA).text(String.valueOf(view.isExcludeModuleCriteria()));
+
+        if (LoadViewCommand.HIDDEN_VIEW_NAMES.contains(view.getName())) {
+            viewElement.element(PackageConstants.AppXMLConstants.APP_LINK_NAME).text(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        } else {
+            viewElement.element(PackageConstants.AppXMLConstants.APP_LINK_NAME).text(application.getLinkName());
+        }
 
         // View Group
         if (view.getGroupId() > 0) {
@@ -313,6 +320,9 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         filterCriteria.addAndCondition(CriteriaAPI.getCondition("VIEW_TYPE", "type", String.valueOf(FacilioView.ViewType.TABLE_LIST.getIntVal()), NumberOperators.EQUALS));
         if (CollectionUtils.isNotEmpty(applicationIds)) {
             filterCriteria.addAndCondition(CriteriaAPI.getCondition("APP_ID", "appId", StringUtils.join(applicationIds, ","), NumberOperators.EQUALS));
+        }
+        if (fetchSystem) {
+            filterCriteria.addOrCondition(CriteriaAPI.getCondition("NAME", "name", "hidden-all,pendingapproval", StringOperators.IS));
         }
 
         List<Map<String, Object>> propsList = getViewProps(selectableFields, filterCriteria);
