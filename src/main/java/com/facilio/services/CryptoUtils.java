@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,4 +75,15 @@ public class CryptoUtils {
         return headers;
     }
 
+    public static String encodeToBase64(String data) {
+        Base64.Encoder encoder = Base64.getEncoder();
+        String encodedData = encoder.encodeToString(data.getBytes());
+        return encodedData;
+    }
+
+    public static String decodeFromBase64(String encodedData) {
+        Base64.Decoder decoder = Base64.getDecoder();
+        String decodedData = new String(decoder.decode(encodedData));
+        return decodedData;
+    }
 }

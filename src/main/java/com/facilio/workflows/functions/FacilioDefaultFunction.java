@@ -16,7 +16,9 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.scriptengine.annotation.ScriptNameSpace;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
+import com.facilio.services.CryptoUtils;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
@@ -1157,5 +1159,20 @@ public class FacilioDefaultFunction  {
 		if (objects.length <= 0) {
 			throw new FunctionParamException("Required Object is null");
 		}
+	}
+
+	public Object encodeToBase64(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
+		String data = objects[0].toString();
+		return CryptoUtils.encodeToBase64(data);
+	}
+
+	public Object decodeBase64(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
+		String data = objects[0].toString();
+		return CryptoUtils.decodeFromBase64(data);
+	}
+
+	public Object sha256(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
+		String data = objects[0].toString();
+		return CryptoUtils.hash256(data);
 	}
 }
