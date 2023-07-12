@@ -49,12 +49,16 @@ public class UpdateOnOfflineRecordHandler extends BaseHandler{
 
             try {
                 registeredRecords = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), OfflineRecordRegisterContext.class);
+                if(CollectionUtils.isEmpty(registeredRecords)){
+                    LOGGER.debug("recordIds -> " + recordIds);
+                    LOGGER.debug("select query of registeredRecords -> " + selectBuilder.constructSelectStatement());
+                }
                 if(CollectionUtils.isNotEmpty(registeredRecords)) {
                     List<Long> mobileInstanceIds = registeredRecords.stream().map(OfflineRecordRegisterContext::getUserMobileSettingId).collect(Collectors.toList());
                     mobileSettings = IAMUserUtil.getUserMobileSettings(mobileInstanceIds);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("Error fetching mobile Instance",e);
             }
 
             if(CollectionUtils.isEmpty(mobileSettings)){
