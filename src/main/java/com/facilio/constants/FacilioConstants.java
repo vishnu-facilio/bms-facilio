@@ -327,6 +327,7 @@ public class FacilioConstants {
 
 		public static final String SITE_MAP_VIEW = "siteMapView";
 		public static final String GLIMPSE_META_DATA = "glimpseMetaData";
+		public static final String GLIMPSE_RECORD = "glimpseRecord";
 		public static final String GLIMPSE_CONTEXT = "glimpseContext";
 		public static final String GLIMPSE_FIELDS = "glimpseFields";
 		public static final String MODULE_CONFIGURATION = "ModuleConfiguration";
@@ -1033,6 +1034,7 @@ public class FacilioConstants {
 
 		public static final String MODULE_FIELD = "moduleField";
 		public static final String MODULE_FIELD_NAME = "fieldName";
+		public static final String GLIMPSE_FIELD_NAME = "glimpseFieldName";
 		public static final String MODULE_FIELD_LIST = "moduleFields";
 		public static final String MODULE_FIELD_MAP = "moduleFieldMap";
 		public static final String EXISTING_FIELD_LIST = "existingFields";

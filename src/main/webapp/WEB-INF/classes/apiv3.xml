@@ -1676,6 +1676,14 @@
         </action>
     </package>
 
+    <package name="glimpseAction" extends="v3Api" namespace="/api/v3/glimpse">
+        <action name="*/*/*" class="com.facilio.bmsconsoleV3.actions.GlimpseAction">
+            <param name="moduleName">{1}</param>
+            <param name="recordId">{2}</param>
+            <param name="glimpseFieldName">{3}</param>
+        </action>
+    </package>
+
     <package name="relationAction" namespace="/api/v3/modules" extends="v3Api">
         <action name="*/*/relationship/*" class="com.facilio.bmsconsoleV3.actions.RelatedDataAction">
             <param name="moduleName">{1}</param>

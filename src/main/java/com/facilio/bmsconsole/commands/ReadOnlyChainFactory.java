@@ -2316,6 +2316,13 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetFormFieldUsageCommand());
 		return chain;
 	}
+
+	public static FacilioChain getGlimpseDetailsChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetGlimpseDetailsCommand());
+		return chain;
+	}
+
 	public static FacilioChain getStateTransitionDetailsFromPermalink() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetPermalinkDetailsCommand());

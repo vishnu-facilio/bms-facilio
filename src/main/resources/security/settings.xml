@@ -677,7 +677,13 @@
     </request>
     <request path="/api/v3/modules/list/all">
     </request>
-
+    <request path="/api/v3/glimpse/:moduleName/:recordId/:glimpseFieldName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="glimpseFieldName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
     <!--<request path="/api/v3/modules/:moduleName/view/:viewName/count" method="GET">
            <urlparams>
                <property name="moduleName" type="string" mandatory="true"/>
