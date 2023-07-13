@@ -4,10 +4,10 @@ import com.amazonaws.regions.Regions;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.AddOrUpdateSLABreachJobCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.util.SLAWorkflowAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.chain.FacilioChain;
@@ -23,14 +23,16 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.taskengine.job.JobContext;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.util.FacilioUtil;
 import io.opentelemetry.extension.annotations.WithSpan;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.json.simple.JSONObject;
 
 import java.util.Collections;
 import java.util.List;
@@ -55,16 +57,6 @@ public class AddOrUpdateSLABreachJobCommandV3 extends FacilioCommand {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule module = modBean.getModule(moduleName);
 
-                if (!addMode) {
-                    if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && AccountUtil.getCurrentOrg().getOrgId() == 583) {
-                        try {
-                            LOGGER.info("SLA Breach Job Entry -" + "\n Record Id - " + records + "\n Module Name - " + moduleName);
-                        } catch (Exception e) {
-
-                        }
-                    }
-                    deleteAllExistingSLASingleRecordJob(records, "_Breach", StringOperators.ENDS_WITH, module);
-                }
 
                 FacilioChain slaEntityChain = ReadOnlyChainFactory.getAllSLAEntityChain();
                 FacilioContext slaEntityContext = slaEntityChain.getContext();
@@ -72,25 +64,76 @@ public class AddOrUpdateSLABreachJobCommandV3 extends FacilioCommand {
                 slaEntityContext.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, true);
                 slaEntityChain.execute();
 
+
                 List<SLAEntityContext> slaEntityList = (List<SLAEntityContext>) slaEntityContext.get(FacilioConstants.ContextNames.SLA_ENTITY_LIST);
                 if (CollectionUtils.isNotEmpty(slaEntityList)) {
+                    long currentTime = System.currentTimeMillis();
+
+                    if (!addMode){
+                        deleteAllExistingSLASingleRecordJob(records, "_Breach", StringOperators.ENDS_WITH, module);
+                    }
+
                     for (ModuleBaseWithCustomFields record : records) {
                         for (SLAEntityContext entity : slaEntityList) {
                             long dueFieldId = entity.getDueFieldId();
-                            FacilioField field = modBean.getField(dueFieldId, moduleName);
-                            Object value;
-                            value=FieldUtil.getValue(record,field);
-                            if (value instanceof Long && !FacilioUtil.isEmptyOrNull(value) && ((Long) value) > System.currentTimeMillis()) {
-                                addSLAEntityBreachJob(entity.getName() + "_" + record.getId() + "_Breach", module, record, entity.getCriteria(),
-                                        field, entity);
-                            }else {
-                                if (Regions.US_WEST_2.getName().equals(FacilioProperties.getRegion()) && AccountUtil.getCurrentOrg().getOrgId() == 583) {
-                                    try {
-                                        LOGGER.info("SLA Breach Job Entry -" + "\n Entity Name - " + entity.getName() + "\n Record Id - " + record.getId() + "\n Module Name - " + moduleName + "\n Value - " + value);
-                                    }catch (Exception e){
 
-                                    }
+
+                            FacilioField field = modBean.getField(dueFieldId, moduleName);
+                            Object value = FieldUtil.getValue(record, field);
+
+
+                            Criteria criteria = new Criteria();
+                            criteria.addAndCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", String.valueOf(record.getId()), NumberOperators.EQUALS));
+                            criteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+                            criteria.addAndCondition(CriteriaAPI.getCondition("SLA_ENTITY_ID", "slaEntityId", String.valueOf(entity.getId()), NumberOperators.EQUALS));
+                            SLABreachJobExecution existingSLABreachJobExecution = SLAWorkflowAPI.getSLABreachJobExecution(criteria);
+
+                            if (!(value instanceof Long)) {
+                                // delete existing sla breach entry
+                                if (existingSLABreachJobExecution != null) {
+                                    deleteBreachEntryAndJob(existingSLABreachJobExecution.getId());
                                 }
+                                continue;
+                            }
+
+                            Long dateValue = (Long) value;
+
+                            long breachJobId = -1l;
+
+                            boolean deleteExistingEscalation = false;
+
+                            SLABreachJobExecution slaBreachJobExecution = new SLABreachJobExecution();
+                            slaBreachJobExecution.setSlaPolicyId(record.getSlaPolicyId());
+                            slaBreachJobExecution.setModuleId(module.getModuleId());
+                            slaBreachJobExecution.setRecordId(record.getId());
+                            slaBreachJobExecution.setDueDateValue(dateValue);
+                            slaBreachJobExecution.setSlaEntityId(entity.getId());
+
+
+                            if (existingSLABreachJobExecution != null &&
+                                    convertToSecond(existingSLABreachJobExecution.getDueDateValue()).equals(convertToSecond(dateValue))) {
+                                continue;
+                            }
+
+                            if (existingSLABreachJobExecution != null &&
+                                    !(convertToSecond(existingSLABreachJobExecution.getDueDateValue()).equals(convertToSecond(dateValue)))){
+                                deleteBreachEntryAndJob(existingSLABreachJobExecution.getId());
+                            }
+
+                            if (dateValue > currentTime) {
+                                deleteExistingEscalation = !addMode;
+                                breachJobId = SLAWorkflowAPI.addSLABreachJobExecution(slaBreachJobExecution);
+                                addSLAEntityBreachJob(breachJobId, dateValue);
+                            }
+
+                            try {
+                                LOGGER.debug("Adding or updating the record ---------- \n" + "Breach Job relation table Entry " + existingSLABreachJobExecution + "due date value in record " + dateValue);
+                            }catch (Exception e){
+
+                            }
+
+                            if (deleteExistingEscalation) {
+                                AddOrUpdateSLABreachJobCommand.deleteAllExistingSLASingleRecordJob(Collections.singletonList(record), "SLAEntity_" + entity.getId() + "_Escalation_", StringOperators.STARTS_WITH, module);
                             }
                         }
                     }
@@ -100,11 +143,30 @@ public class AddOrUpdateSLABreachJobCommandV3 extends FacilioCommand {
         return false;
     }
 
+    private Long convertToSecond(Long dateValue){
+        Long convertedValue = null;
+        if (dateValue != null && dateValue > 0){
+            convertedValue = dateValue/1000;
+        }
+        return convertedValue;
+    }
+
+    private void deleteBreachEntryAndJob(long breachJobId) throws Exception{
+        SLAWorkflowAPI.deleteSLABreachJobExecution(breachJobId);
+        FacilioTimer.deleteJob(breachJobId, FacilioConstants.Job.BREACH_JOB);
+    }
+
+    private void addSLAEntityBreachJob(long breachJobId, Long dueFieldValue) throws Exception {
+        if (breachJobId > 0 && dueFieldValue > 0) {
+            long executionTime = dueFieldValue / 1000;
+            FacilioTimer.scheduleOneTimeJobWithTimestampInSec(breachJobId, FacilioConstants.Job.BREACH_JOB, executionTime, "priority");
+        }
+    }
+
     public static void deleteAllExistingSLASingleRecordJob(List<ModuleBaseWithCustomFields> records,
                                                            String ruleName, Operator operator, FacilioModule module) throws Exception {
         for (ModuleBaseWithCustomFields record : records) {
             long parentId = record.getId();
-
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("NAME", "name", ruleName, operator));
@@ -117,40 +179,4 @@ public class AddOrUpdateSLABreachJobCommandV3 extends FacilioCommand {
         }
     }
 
-    private void addSLAEntityBreachJob(String name, FacilioModule module, ModuleBaseWithCustomFields moduleRecord, Criteria criteria, FacilioField dueField, SLAEntityContext entity) throws Exception {
-        WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
-        workflowRuleContext.setName(name);
-        workflowRuleContext.setRuleType(WorkflowRuleContext.RuleType.RECORD_SPECIFIC_RULE);
-        workflowRuleContext.setActivityType(EventType.SCHEDULED);
-        workflowRuleContext.setModule(module);
-        workflowRuleContext.setParentId(moduleRecord.getId());
-
-        workflowRuleContext.setCriteria(criteria);
-        workflowRuleContext.setDateFieldId(dueField.getFieldId());
-
-        workflowRuleContext.setInterval(0);
-        workflowRuleContext.setScheduleType(WorkflowRuleContext.ScheduledRuleType.ON);
-
-        FacilioChain recordRuleChain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
-        FacilioContext recordRuleContext = recordRuleChain.getContext();
-        recordRuleContext.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
-
-        ActionContext actionContext = getDefaultSLAMetAction(module, entity);
-
-        recordRuleContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(actionContext));
-        recordRuleChain.execute();
-    }
-
-    private ActionContext getDefaultSLAMetAction(FacilioModule module, SLAEntityContext entity) {
-        ActionContext actionContext = new ActionContext();
-        actionContext.setActionType(ActionType.ACTIVITY_FOR_MODULE_RECORD);
-        JSONObject json = new JSONObject();
-        json.put("activityType", WorkOrderActivityType.SLA_MEET.getValue());
-        JSONObject infoJson = new JSONObject();
-        infoJson.put("message", module.getDisplayName() + " overshot its " + entity.getName());
-        json.put("info", infoJson);
-        actionContext.setTemplateJson(json);
-        actionContext.setStatus(true);
-        return actionContext;
-    }
 }

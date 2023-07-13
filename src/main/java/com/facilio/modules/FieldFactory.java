@@ -2149,6 +2149,20 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getSLABreachJobExecutionFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getSLABreachJobExecution();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("recordId","RECORD_ID",module));
+        fields.add(getNumberField("moduleId","MODULEID",module));
+        fields.add(getNumberField("slaEntityId","SLA_ENTITY_ID",module));
+        fields.add(getNumberField("dueDateValue","DUE_DATE_VALUE",module));
+        fields.add(getNumberField("slaPolicyId","SLA_POLICY_ID",module));
+
+        return fields;
+    }
+
     public static List<FacilioField> getWorkflowRuleRCAMapping() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getWorkflowRuleRCAMapping();

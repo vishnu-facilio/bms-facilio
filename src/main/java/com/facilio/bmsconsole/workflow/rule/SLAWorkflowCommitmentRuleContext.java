@@ -148,14 +148,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                     }
                 }
                 LOGGER.info("Updating Date field '"+dueField.getName()+"' to "+FieldUtil.getAsProperties(moduleRecord)+"\nQuery => "+update);
-
-                if (MapUtils.isNotEmpty(escalationMap)) {
-                    SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityDuration.getSlaEntityId());
-                    if (slaPolicyEntityEscalationContext != null && CollectionUtils.isNotEmpty(slaPolicyEntityEscalationContext.getLevels())) {
-                        slaPolicyEntityEscalationContext.setLevels(SLAWorkflowAPI.getEscalations(slaPolicy.getId(), slaPolicyEntityEscalationContext.getSlaEntityId()));
-                        addEscalationJobs(getParentRuleId(), slaPolicyEntityEscalationContext.getLevels(), module, dueField, slaEntity.getCriteria(), moduleRecord, slaEntity);
-                    }
-                }
+                
             }
         }
 

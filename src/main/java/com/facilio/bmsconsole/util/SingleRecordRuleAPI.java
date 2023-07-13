@@ -131,6 +131,7 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 			if(rule.getTimeObj() != null) {
 			  fieldVal += rule.getTimeObj().toSecondOfDay();
 			}
+
 			if(fieldVal != -1) {
 				//assuming date field val in millis,rule interval in seconds
 				long nextExecutionTime = 0l;

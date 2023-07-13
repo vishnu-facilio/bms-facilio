@@ -112,6 +112,46 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
         return slaEntityContext;
     }
 
+    public static long addSLABreachJobExecution(SLABreachJobExecution slaBreachJobExecution) throws Exception{
+        if (slaBreachJobExecution == null){
+            return -1l;
+        }
+
+        Map<String, Object> slaBreachJobProps = FieldUtil.getAsProperties(slaBreachJobExecution);
+
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getSLABreachJobExecution().getTableName())
+                .fields(FieldFactory.getSLABreachJobExecutionFields())
+                .addRecord(slaBreachJobProps);
+        builder.save();
+
+        long breachJobId = (long) slaBreachJobProps.get("id");
+        return breachJobId;
+    }
+
+    public static SLABreachJobExecution getSLABreachJobExecution(Criteria criteria) throws Exception{
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getSLABreachJobExecution().getTableName())
+                .select(FieldFactory.getSLABreachJobExecutionFields())
+                .andCriteria(criteria);
+
+        SLABreachJobExecution slaBreachJobExecution = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), SLABreachJobExecution.class);
+
+        return slaBreachJobExecution;
+    }
+
+    public static void deleteSLABreachJobExecution(long breachJobId) throws Exception{
+        if (breachJobId <= 0){
+            return;
+        }
+
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getSLABreachJobExecution().getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(breachJobId,ModuleFactory.getSLABreachJobExecution()));
+        builder.delete();
+
+    }
+
     public static List<SLAWorkflowCommitmentRuleContext.SLAEntityDuration> getSLAEntitiesForCommitment(long commitmentId) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getSLACommitmentDurationModule().getTableName())

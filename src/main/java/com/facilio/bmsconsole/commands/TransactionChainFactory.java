@@ -451,7 +451,7 @@ public class TransactionChainFactory {
 				}
 			});
 			c.addCommand(getWorkOrderWorkflowsChain(true));
-			c.addCommand(new AddOrUpdateSLABreachJobCommand(true));
+			c.addCommand(new AddOrUpdateSLABreachJobCommandV3(true));
 			c.addCommand(new AddActivitiesCommand());
 			c.addCommand(new PushDataToESCommand());
 			return c;
@@ -527,7 +527,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_STATE_FLOW));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.TRANSACTION_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
-		c.addCommand(new AddOrUpdateSLABreachJobCommand(false));
+		c.addCommand(new AddOrUpdateSLABreachJobCommandV3(false));
 		c.addCommand(new ExecuteSLACommitmentWorkflowsCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		c.addCommand(new ExecuteSpecificWorkflowsCommand(RuleType.CUSTOM_BUTTON));

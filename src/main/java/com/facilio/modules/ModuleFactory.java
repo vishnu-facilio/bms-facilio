@@ -848,7 +848,13 @@ public class ModuleFactory {
 
 		return module;
 	}
-
+	public static FacilioModule getSLABreachJobExecution(){
+		FacilioModule module = new FacilioModule();
+		module.setName("slaBreachJobExecution");
+		module.setDisplayName("SLA Breach Job Execution");
+		module.setTableName("SLA_Breach_job_execution");
+		return module;
+	}
 	public static FacilioModule getSLAWorkflowEscalationModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("slaWorkflowEscalation");

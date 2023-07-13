@@ -271,6 +271,7 @@ public class FacilioConstants {
 		public static final String RELATED_MODULE_NAME = "relatedModuleName";
 		public static final String RELATED_FIELD_NAME = "relatedFieldName";
 		public static final String AUTO_CAD_FILE_IMPORT ="autoCadFileImport";
+
 		public static final String ODATA_READING_VIEW ="odataReadingView";
 		public static final String MODULE_AND_FIELDS ="moduleAndFields";
 		public static final String READING_IMPORT_APP = "readingimport";
@@ -3441,6 +3442,7 @@ public class FacilioConstants {
 
 		public static final String RECORD_SPECIFIC_RULE_JOB_NAME = "singleRecordRuleExecution";
 
+		public static final String BREACH_JOB = "AddBreachJob";
 		public static final String DIGEST_JOB_NAME = "ScheduledActionExecution";
 		public static final String AUTO_CHECKOUT_JOB_NAME = "AutoCheckOutVisitors";
 		public static final String CLOUD_AGENT_JOB_NAME = "CloudAgent";

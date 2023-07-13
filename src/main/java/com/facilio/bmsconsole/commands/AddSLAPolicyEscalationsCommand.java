@@ -37,54 +37,6 @@ public class AddSLAPolicyEscalationsCommand extends FacilioCommand {
             SLAWorkflowAPI.deleteSLAPolicyEscalation(slaPolicy);
             slaPolicy.setEscalations(slaEscalations);
             SLAWorkflowAPI.addEscalations(slaPolicy);
-
-            FacilioChain allSLAChain = ReadOnlyChainFactory.getAllSLAChain();
-            FacilioContext slaContext = allSLAChain.getContext();
-            slaContext.put(FacilioConstants.ContextNames.SLA_POLICY_ID, slaPolicyId);
-            allSLAChain.execute();
-            List<SLAWorkflowCommitmentRuleContext> slaCommitments = (List<SLAWorkflowCommitmentRuleContext>) slaContext.get(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST);
-
-            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                    .table(ModuleFactory.getSLAEscalationWorkflowRuleRelModule().getTableName())
-                    .select(FieldFactory.getSLAEscalationWorkflowRuleRelFields())
-                    .andCondition(CriteriaAPI.getCondition("SLA_POLICY_ID", "slaPolicyId", String.valueOf(slaPolicyId), NumberOperators.EQUALS));
-            List<Map<String, Object>> maps = builder.get();
-            if (CollectionUtils.isNotEmpty(maps)) {
-                List<Long> workflowRuleIds = new ArrayList<>();
-                for (Map<String, Object> map : maps) {
-                    Long workflowRuleId = (Long) map.get("workflowRuleId");
-                    workflowRuleIds.add(workflowRuleId);
-                }
-                WorkflowRuleAPI.inActivateWorkFlowRules(workflowRuleIds);
-
-                GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
-                        .table(ModuleFactory.getSLAEscalationWorkflowRuleRelModule().getTableName())
-                        .andCondition(CriteriaAPI.getCondition("SLA_POLICY_ID", "slaPolicyId", String.valueOf(slaPolicyId), NumberOperators.EQUALS));
-                deleteRecordBuilder.delete();
-            }
-
-            if (CollectionUtils.isNotEmpty(slaEscalations)) {
-                Map<Long, SLAPolicyContext.SLAPolicyEntityEscalationContext> escalationMap =
-                        slaEscalations.stream().collect(Collectors.toMap(
-                                SLAPolicyContext.SLAPolicyEntityEscalationContext::getSlaEntityId, Function.identity()));
-
-                List<Map<String, Object>> slaEditJobDetails = new ArrayList<>();
-                for (SLAPolicyContext.SLAPolicyEntityEscalationContext escalation : slaEscalations) {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("slaEntityId", escalation.getSlaEntityId());
-                    map.put("slaPolicyId", slaPolicyId);
-                    slaEditJobDetails.add(map);
-                }
-                SLAWorkflowAPI.addSLAEditJobDetails(slaEditJobDetails);
-                JobContext slaEditJob = FacilioTimer.getJob(slaPolicyId, "SLAEditJob");
-                if (slaEditJob != null) {
-                    if (slaEditJob.isActive()) {
-                        throw new IllegalArgumentException("Previous edit process is still active. Please try after sometime");
-                    }
-                    FacilioTimer.deleteJob(slaPolicyId, "SLAEditJob");
-                }
-                FacilioTimer.scheduleOneTimeJobWithDelay(slaPolicyId, "SLAEditJob", 1, "priority");
-            }
         }
         return false;
     }
