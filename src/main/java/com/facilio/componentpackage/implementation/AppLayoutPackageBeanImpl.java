@@ -15,6 +15,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,20 +71,26 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
     @Override
     public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
+        Map<Long, Map<Integer, Long>> appIdVsDeviceIdVsLayoutId = PackageBeanUtil.getAllLayoutConfiguration();
 
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         ApplicationLayoutContext layoutContext;
-        long layoutId;
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
+            long layoutId = -1;
             XMLBuilder layoutElement = idVsData.getValue();
             layoutContext = getLayoutFromXMLComponent(layoutElement, appNameVsAppId);
 
-            ApplicationLayoutContext dBLayout = ApplicationApi.getLayoutForAppTypeDeviceType(layoutContext.getApplicationId(),
-                    layoutContext.getAppType(), layoutContext.getLayoutDeviceType());
+            long applicationId = layoutContext.getApplicationId();
+            int layoutDeviceTypeInt = layoutContext.getLayoutDeviceType();
 
-            if (dBLayout != null) {
-                layoutId = dBLayout.getId();
+            if (MapUtils.isNotEmpty(appIdVsDeviceIdVsLayoutId) && appIdVsDeviceIdVsLayoutId.containsKey(applicationId)) {
+                if (appIdVsDeviceIdVsLayoutId.get(applicationId).containsKey(layoutDeviceTypeInt)) {
+                    layoutId = appIdVsDeviceIdVsLayoutId.get(applicationId).get(layoutDeviceTypeInt);
+                }
+            }
+
+            if (layoutId > 0) {
                 uniqueIdentifierVsComponentId.put(idVsData.getKey(), layoutId);
             }
         }
@@ -93,22 +101,29 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
+        Map<Long, Map<Integer, Long>> appIdVsDeviceIdVsLayoutId = PackageBeanUtil.getAllLayoutConfiguration();
 
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         ApplicationLayoutContext layoutContext;
-        long layoutId;
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
+            long layoutId = -1;
             XMLBuilder layoutElement = idVsData.getValue();
             layoutContext = getLayoutFromXMLComponent(layoutElement, appNameVsAppId);
 
             // check and add layoutContext
-            ApplicationLayoutContext dBLayout = ApplicationApi.getLayoutForAppTypeDeviceType(layoutContext.getApplicationId(),
-                                                                layoutContext.getAppType(), layoutContext.getLayoutDeviceType());
-            if (dBLayout == null) {
+            long applicationId = layoutContext.getApplicationId();
+            int layoutDeviceTypeInt = layoutContext.getLayoutDeviceType();
+
+            if (MapUtils.isNotEmpty(appIdVsDeviceIdVsLayoutId) && appIdVsDeviceIdVsLayoutId.containsKey(applicationId)) {
+                if (appIdVsDeviceIdVsLayoutId.get(applicationId).containsKey(layoutDeviceTypeInt)) {
+                    layoutId = appIdVsDeviceIdVsLayoutId.get(applicationId).get(layoutDeviceTypeInt);
+                }
+            }
+
+            if (layoutId < 0) {
                 layoutId = ApplicationApi.getAddApplicationLayout(layoutContext);
             } else {
-                layoutId = dBLayout.getId();
                 layoutContext.setId(layoutId);
                 updateApplicationLayoutCommand(layoutContext);
             }
@@ -185,7 +200,7 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
         versionNumber = Integer.parseInt(layoutElement.getElement(PackageConstants.AppXMLConstants.VERSION_NUMBER).getText());
 
         layoutType = ApplicationLayoutContext.AppLayoutType.valueOf(layoutTypeStr);
-        layoutDeviceType = ApplicationLayoutContext.LayoutDeviceType.valueOf(deviceTypeStr);
+        layoutDeviceType = StringUtils.isNotEmpty(deviceTypeStr) ? ApplicationLayoutContext.LayoutDeviceType.valueOf(deviceTypeStr) : null;
         applicationId = appNameVsAppId.containsKey(appLinkName) ? appNameVsAppId.get(appLinkName) : -1;
 
         layoutContext = new ApplicationLayoutContext(applicationId, layoutType, layoutDeviceType, appType);

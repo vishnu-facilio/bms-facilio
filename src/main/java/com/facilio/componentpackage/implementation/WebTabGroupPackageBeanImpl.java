@@ -41,7 +41,7 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
 
     @Override
     public Map<Long, WebTabGroupContext> fetchComponents(List<Long> ids) throws Exception {
-        List<WebTabGroupContext> webTabGroups = getWebTabGroups(ids);
+        List<WebTabGroupContext> webTabGroups = ApplicationApi.getWebTabGroups(ids);
 
         Map<Long, WebTabGroupContext> groupIdVsGroup = new HashMap<>();
         if (CollectionUtils.isNotEmpty(webTabGroups)) {
@@ -89,16 +89,25 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
     @Override
     public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
+        Map<Long, Map<String, Long>> layoutIdVsRouteVsGroupId = PackageBeanUtil.getAllWebTabGroups();
+        Map<Long, Map<Integer, Long>> appIdVsDeviceIdVsLayoutId = PackageBeanUtil.getAllLayoutConfiguration();
 
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         WebTabGroupContext webTabGroupContext;
-        long webTabGroupId;
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
+            long webTabGroupId = -1, layoutId = -1;
             XMLBuilder tabGroupElement = idVsData.getValue();
-            webTabGroupContext = getWebTabGroupContextFromXMLBuilder(tabGroupElement, appNameVsAppId);
+            webTabGroupContext = getWebTabGroupContextFromXMLBuilder(tabGroupElement, appNameVsAppId, appIdVsDeviceIdVsLayoutId);
 
-            webTabGroupId = ApplicationApi.getTabGroupIdForRoute(webTabGroupContext);
+            layoutId = webTabGroupContext.getLayoutId();
+            if (layoutId > 0) {
+                if (MapUtils.isNotEmpty(layoutIdVsRouteVsGroupId) && layoutIdVsRouteVsGroupId.containsKey(layoutId)) {
+                    if (layoutIdVsRouteVsGroupId.get(layoutId).containsKey(webTabGroupContext.getRoute())) {
+                        webTabGroupId = layoutIdVsRouteVsGroupId.get(layoutId).get(webTabGroupContext.getRoute());
+                    }
+                }
+            }
 
             if (webTabGroupId > 0) {
                 uniqueIdentifierVsComponentId.put(idVsData.getKey(), webTabGroupId);
@@ -111,17 +120,26 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
+        Map<Long, Map<String, Long>> layoutIdVsRouteVsGroupId = PackageBeanUtil.getAllWebTabGroups();
+        Map<Long, Map<Integer, Long>> appIdVsDeviceIdVsLayoutId = PackageBeanUtil.getAllLayoutConfiguration();
 
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         WebTabGroupContext webTabGroupContext;
-        long webTabGroupId;
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
+            long webTabGroupId = -1, layoutId = -1;
             XMLBuilder tabGroupElement = idVsData.getValue();
-            webTabGroupContext = getWebTabGroupContextFromXMLBuilder(tabGroupElement, appNameVsAppId);
+            webTabGroupContext = getWebTabGroupContextFromXMLBuilder(tabGroupElement, appNameVsAppId, appIdVsDeviceIdVsLayoutId);
 
             // check and add
-            webTabGroupId = ApplicationApi.getTabGroupIdForRoute(webTabGroupContext);
+            layoutId = webTabGroupContext.getLayoutId();
+            if (layoutId > 0) {
+                if (MapUtils.isNotEmpty(layoutIdVsRouteVsGroupId) && layoutIdVsRouteVsGroupId.containsKey(layoutId)) {
+                    if (layoutIdVsRouteVsGroupId.get(layoutId).containsKey(webTabGroupContext.getRoute())) {
+                        webTabGroupId = layoutIdVsRouteVsGroupId.get(layoutId).get(webTabGroupContext.getRoute());
+                    }
+                }
+            }
             if (webTabGroupId > 0) {
                 webTabGroupContext.setId(webTabGroupId);
             }
@@ -136,12 +154,13 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
 
     @Override
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+        Map<Long, Map<Integer, Long>> appIdVsDeviceIdVsLayoutId = PackageBeanUtil.getAllLayoutConfiguration();
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
         WebTabGroupContext webTabGroupContext;
 
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             XMLBuilder tabGroupElement = idVsData.getValue();
-            webTabGroupContext = getWebTabGroupContextFromXMLBuilder(tabGroupElement, appNameVsAppId);
+            webTabGroupContext = getWebTabGroupContextFromXMLBuilder(tabGroupElement, appNameVsAppId, appIdVsDeviceIdVsLayoutId);
             webTabGroupContext.setId(idVsData.getKey());
             addOrUpdateTabGroup(webTabGroupContext);
         }
@@ -189,23 +208,12 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
         return groupIdVsLayoutId;
     }
 
-    public static List<WebTabGroupContext> getWebTabGroups(List<Long> ids) throws Exception {
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getWebTabGroupModule().getTableName())
-                .select(FieldFactory.getWebTabGroupFields())
-                .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getWebTabGroupModule()));
-
-        List<WebTabGroupContext> webTabGroups = FieldUtil.getAsBeanListFromMapList(builder.get(), WebTabGroupContext.class);
-
-        return webTabGroups;
-    }
-
-    private WebTabGroupContext getWebTabGroupContextFromXMLBuilder(XMLBuilder tabGroupElement, Map<String, Long> appNameVsAppId) throws Exception {
+    private WebTabGroupContext getWebTabGroupContextFromXMLBuilder(XMLBuilder tabGroupElement, Map<String, Long> appNameVsAppId, Map<Long, Map<Integer, Long>> appIdVsDeviceIdVsLayoutId) throws Exception {
         String name, route, iconTypeString, appType, appLinkName, deviceTypeStr;
         ApplicationLayoutContext.LayoutDeviceType layoutDeviceType;
         long featureLicense, layoutId = -1, applicationId;
         WebTabGroupContext webTabGroupContext;
-        int order, iconTypeInt;
+        int order, iconTypeInt, layoutDeviceTypeInt;
         IconType iconType;
 
         name = tabGroupElement.getElement(PackageConstants.NAME).getText();
@@ -222,12 +230,14 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
             deviceTypeStr = layoutElement.getElement(PackageConstants.AppXMLConstants.DEVICE_TYPE).getText();
             appLinkName = layoutElement.getElement(PackageConstants.AppXMLConstants.APP_LINK_NAME).getText();
 
-            layoutDeviceType = ApplicationLayoutContext.LayoutDeviceType.valueOf(deviceTypeStr);
+            layoutDeviceType = StringUtils.isNotEmpty(deviceTypeStr) ? ApplicationLayoutContext.LayoutDeviceType.valueOf(deviceTypeStr) : null;
             applicationId = appNameVsAppId.containsKey(appLinkName) ? appNameVsAppId.get(appLinkName) : -1;
+            layoutDeviceTypeInt = (layoutDeviceType != null) ? layoutDeviceType.getIndex() : 0;
 
-            ApplicationLayoutContext layoutsForAppLayoutType = ApplicationApi.getLayoutForAppTypeDeviceType(applicationId, appType, layoutDeviceType.getIndex());
-            if (layoutsForAppLayoutType != null) {
-                layoutId = layoutsForAppLayoutType.getId();
+            if (MapUtils.isNotEmpty(appIdVsDeviceIdVsLayoutId) && appIdVsDeviceIdVsLayoutId.containsKey(applicationId)) {
+                if (appIdVsDeviceIdVsLayoutId.get(applicationId).containsKey(layoutDeviceTypeInt)) {
+                    layoutId = appIdVsDeviceIdVsLayoutId.get(applicationId).get(layoutDeviceTypeInt);
+                }
             }
         }
 

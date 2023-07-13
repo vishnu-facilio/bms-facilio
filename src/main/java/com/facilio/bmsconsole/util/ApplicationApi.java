@@ -11,12 +11,15 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.DefaultTabsAndTabGroups;
 
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
+import com.facilio.cache.CacheUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.fw.cache.FacilioCache;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.modules.*;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
@@ -263,6 +266,59 @@ public class ApplicationApi {
         List<ApplicationLayoutContext> applicationLayouts = FieldUtil.getAsBeanListFromMapList(builder.get(),
                 ApplicationLayoutContext.class);
         return applicationLayouts;
+    }
+
+    public static List<WebTabGroupContext> getWebTabGroups(Collection<Long> ids) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabGroupModule().getTableName())
+                .select(FieldFactory.getWebTabGroupFields())
+                .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getWebTabGroupModule()));
+
+        List<WebTabGroupContext> webTabGroups = FieldUtil.getAsBeanListFromMapList(builder.get(), WebTabGroupContext.class);
+
+        return webTabGroups;
+    }
+
+    public static List<ApplicationLayoutContext> getAllLayouts() throws Exception {
+        FacilioModule module = ModuleFactory.getApplicationLayoutModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(FieldFactory.getApplicationLayoutFields());
+        return FieldUtil.getAsBeanListFromMapList(builder.get(), ApplicationLayoutContext.class);
+    }
+
+    public static List<WebTabContext> getAllWebTabs() throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabModule().getTableName())
+                .select(FieldFactory.getWebTabFields());
+        return FieldUtil.getAsBeanListFromMapList(builder.get(), WebTabContext.class);
+    }
+
+    public static void deleteWebTabWebGroupForTabIdAndGroupIds(long webTabId, Collection<Long> webTabGroupIds) throws Exception {
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getWebTabWebGroupModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("WEBTAB_ID", "webTabId", String.valueOf(webTabId), NumberOperators.EQUALS));
+
+        if (CollectionUtils.isNotEmpty(webTabGroupIds)) {
+            builder.andCondition(CriteriaAPI.getCondition("WEBTAB_GROUP_ID", "tab_groupId", StringUtils.join(webTabGroupIds, ","), NumberOperators.EQUALS));
+        }
+
+        builder.delete();
+    }
+
+    public static void clearWebTabWebGroupCacheForGroupIds(Collection<Long> webTabGroupIds) throws Exception {
+        if (CollectionUtils.isEmpty(webTabGroupIds)) {
+            return;
+        }
+        List<WebTabGroupContext> webTabGroups = getWebTabGroups(webTabGroupIds);
+        FacilioCache<String, List<WebTabCacheContext>> tabsCache = LRUCache.getWebTabsCache();
+        FacilioCache<String, List<WebTabGroupCacheContext>> tabGroupCache = LRUCache.getWebTabGroupCache();
+
+        for (WebTabGroupContext webTabGroup : webTabGroups) {
+            long groupId = webTabGroup.getId();
+            tabsCache.remove(CacheUtil.ORG_TAB_GROUP_KEY(AccountUtil.getCurrentOrg().getId(), groupId));
+            tabGroupCache.remove(CacheUtil.ORG_APP_LAYOUT_KEY(AccountUtil.getCurrentOrg().getId(), webTabGroup.getLayoutId()));
+        }
     }
 
     public static List<WebTabGroupContext> getWebTabGroupForLayoutID(ApplicationLayoutContext layout) throws Exception {

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
@@ -16,8 +17,7 @@ public class DeleteWebTabWebGroupForTabId extends FacilioCommand {
         Collection<Long> webTabGroupIds = (Collection<Long>) context.get(PackageConstants.AppXMLConstants.WEB_TAB_GROUP_IDS);
 
         if(webTabId > 0) {
-            WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
-            tabBean.deleteWebTabWebGroupForTabId(webTabId, webTabGroupIds);
+            ApplicationApi.deleteWebTabWebGroupForTabIdAndGroupIds(webTabId, webTabGroupIds);
         }
 
         return false;

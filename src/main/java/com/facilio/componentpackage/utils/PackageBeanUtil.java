@@ -5,9 +5,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.SharingContext;
-import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -66,6 +64,66 @@ public class PackageBeanUtil {
         }
 
         return appNameVsAppId;
+    }
+
+    public static Map<Long, Map<Integer, Long>> getAllLayoutConfiguration() throws Exception {
+        Map<Long, Map<Integer, Long>> appIdVsDeviceIdVsLayoutId = new HashMap<>();
+        List<ApplicationLayoutContext> allLayouts = ApplicationApi.getAllLayouts();
+        if (CollectionUtils.isEmpty(allLayouts)) {
+            return null;
+        }
+        for (ApplicationLayoutContext applicationLayout : allLayouts) {
+            long layoutId = applicationLayout.getId();
+            long appId = applicationLayout.getApplicationId();
+            int deviceType = applicationLayout.getLayoutDeviceType();
+            if (appId < 0 || deviceType < 0) {
+                continue;
+            }
+            if (!appIdVsDeviceIdVsLayoutId.containsKey(appId)) {
+                appIdVsDeviceIdVsLayoutId.put(appId, new HashMap<>());
+            }
+            appIdVsDeviceIdVsLayoutId.get(appId).put(deviceType, layoutId);
+        }
+        return appIdVsDeviceIdVsLayoutId;
+    }
+
+    public static Map<Long, Map<String, Long>> getAllWebTabGroups() throws Exception {
+        Map<Long, Map<String, Long>> layoutIdVsRouteVsGroupId = new HashMap<>();
+        List<WebTabGroupContext> webTabGroups = ApplicationApi.getWebTabgroups();
+        if (CollectionUtils.isEmpty(webTabGroups)) {
+            return null;
+        }
+        for (WebTabGroupContext webTabGroup : webTabGroups) {
+            long groupId = webTabGroup.getId();
+            String route = webTabGroup.getRoute();
+            long layoutId = webTabGroup.getLayoutId();
+            if (layoutId < 0 || StringUtils.isEmpty(route)) {
+                continue;
+            }
+            if (!layoutIdVsRouteVsGroupId.containsKey(layoutId)) {
+                layoutIdVsRouteVsGroupId.put(layoutId, new HashMap<>());
+            }
+            layoutIdVsRouteVsGroupId.get(layoutId).put(route, groupId);
+        }
+        return layoutIdVsRouteVsGroupId;
+    }
+
+    public static Map<Long, Map<String, Long>> getAllWebTabs() throws Exception {
+        Map<Long, Map<String, Long>> appIdVsRouteNameVsTabId = new HashMap<>();
+        List<WebTabContext> allWebTabs = ApplicationApi.getAllWebTabs();
+        if (CollectionUtils.isEmpty(allWebTabs)) {
+            return null;
+        }
+        for (WebTabContext webTab : allWebTabs) {
+            long webTabId = webTab.getId();
+            String route = webTab.getRoute();
+            long applicationId = webTab.getApplicationId();
+            if (!appIdVsRouteNameVsTabId.containsKey(applicationId)) {
+                appIdVsRouteNameVsTabId.put(applicationId, new HashMap<>());
+            }
+            appIdVsRouteNameVsTabId.get(applicationId).put(route, webTabId);
+        }
+        return appIdVsRouteNameVsTabId;
     }
 
     public static FacilioForm getFormFromId(long formId) throws Exception {
