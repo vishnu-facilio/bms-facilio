@@ -98,7 +98,7 @@ public class CustomPageAction extends FacilioAction {
             }
         }
 
-        if(!isNewPage || customPage == null) {
+        if(customPage == null) {
             setResult("isNewPage", false);
         }
         return SUCCESS;
