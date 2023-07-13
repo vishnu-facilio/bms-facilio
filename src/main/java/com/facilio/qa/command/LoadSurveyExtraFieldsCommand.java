@@ -7,6 +7,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -27,7 +28,17 @@ public class LoadSurveyExtraFieldsCommand extends FacilioCommand {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
             Map<String, FacilioField> allFieldsAsMap = FieldFactory.getAsMap(allFields);
-            String[] extraFieldNames = new String[]{"parentId","fullScore","totalScore"};
+            List<String> extraFieldNames = new ArrayList<>();
+            extraFieldNames.add("fullScore");
+            extraFieldNames.add("totalScore");
+            if(context.get("currentModuleName")!=null){
+                if(context.get("currentModuleName").equals(FacilioConstants.ContextNames.WORK_ORDER)){
+                    extraFieldNames.add("workOrderId");
+
+                } else if(context.get("currentModuleName").equals(FacilioConstants.ContextNames.SERVICE_REQUEST)){
+                    extraFieldNames.add("serviceRequestId");
+                }
+            }
             for (String fieldName : extraFieldNames) {
                 extraReceivableFields.add((allFieldsAsMap.get(fieldName)));
             }

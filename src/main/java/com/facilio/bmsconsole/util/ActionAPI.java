@@ -463,7 +463,7 @@ public class ActionAPI {
 								setFormTemplate(action, SourceType.EMAIL_REQUEST);
 								break;
 							case CREATE_SATISFACTION_SURVEY:
-								setSatisfactionSurveyTemplate (action,rule);
+								setSatisfactionSurveyRuleTemplate (action,rule);
 								break;
 							default:
 								break;
@@ -482,15 +482,24 @@ public class ActionAPI {
 		return actions;
 	}
 
-	private static void setSatisfactionSurveyTemplate (ActionContext action,WorkflowRuleContext rule ) throws IOException {
-		SatisfactionSurveyTemplate template = FieldUtil.getAsBeanFromJson(action.getTemplateJson(),SatisfactionSurveyTemplate.class);
-		if (StringUtils.isEmpty(template.getName())) {
-			template.setName(rule.getName() + "_Satisfaction_Action_Template");
+	private static void setSatisfactionSurveyRuleTemplate (ActionContext action,WorkflowRuleContext rule ) throws Exception {
+		if(rule.getModuleName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+			WorkOrderSatisfactionSurveyRuleTemplateContext template = FieldUtil.getAsBeanFromJson(action.getTemplateJson(), WorkOrderSatisfactionSurveyRuleTemplateContext.class);
+			if (StringUtils.isEmpty(template.getName())) {
+				template.setName(rule.getName() + "_Satisfaction_Action_Template");
+			}
+			action.setTemplate(template);
+			checkAndSetWorkflow(action.getTemplateJson(), template);
 		}
-		action.setTemplate (template);
-		checkAndSetWorkflow(action.getTemplateJson(), template);
+		if(rule.getModuleName().equals(FacilioConstants.ContextNames.SERVICE_REQUEST)) {
+			ServiceRequestSatisfactionSurveyRuleTemplateContext template = FieldUtil.getAsBeanFromJson(action.getTemplateJson(), ServiceRequestSatisfactionSurveyRuleTemplateContext.class);
+			if (StringUtils.isEmpty(template.getName())) {
+				template.setName(rule.getName() + "_ServiceRequest_Satisfaction_Action_Template");
+			}
+			action.setTemplate(template);
+			checkAndSetWorkflow(action.getTemplateJson(), template);
+		}
 	}
-
 	private static void setControlActionTemplate(ActionContext action, WorkflowRuleContext rule) throws IOException {
 		ControlActionTemplate template = FieldUtil.getAsBeanFromJson(action.getTemplateJson(), ControlActionTemplate.class);
 		if (StringUtils.isEmpty(template.getName())) {

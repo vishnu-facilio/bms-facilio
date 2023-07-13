@@ -40,10 +40,12 @@ public class SurveySupplementSupplyCommand extends FacilioCommand {
 	        if(fieldMap.containsKey("assignedTo")) {
 	        	supplements.add((SupplementRecord) fieldMap.get("assignedTo"));
 	        }
-			if(fieldMap.containsKey("parentId")) {
-				supplements.add((SupplementRecord) fieldMap.get("parentId"));
+			if(fieldMap.containsKey("workOrderId")) {
+				supplements.add((SupplementRecord) fieldMap.get("workOrderId"));
 			}
-
+			if(fieldMap.containsKey("serviceRequestId")) {
+				supplements.add((SupplementRecord) fieldMap.get("serviceRequestId"));
+			}
 	        context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplements);
 	        
 			return false;

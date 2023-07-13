@@ -10,8 +10,6 @@ import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.context.survey.SurveyResponseContext;
 import com.facilio.bmsconsoleV3.context.survey.SurveyTemplateContext;
-import com.facilio.bmsconsoleV3.context.workordersurvey.WorkOrderSurveyResponseContext;
-import com.facilio.bmsconsoleV3.context.workordersurvey.WorkOrderSurveyTemplateContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioIntEnum;
 
@@ -24,7 +22,6 @@ public enum QAndAType implements FacilioIntEnum {
     INSPECTION ("Inspection",FacilioConstants.Inspection.INSPECTION_TEMPLATE, InspectionTemplateContext.class, FacilioConstants.Inspection.INSPECTION_RESPONSE, InspectionResponseContext.class),
     INDUCTION ("Induction",FacilioConstants.Induction.INDUCTION_TEMPLATE, InductionTemplateContext.class, FacilioConstants.Induction.INDUCTION_RESPONSE, InductionResponseContext.class),
     SURVEY ("Survey",FacilioConstants.Survey.SURVEY_TEMPLATE, SurveyTemplateContext.class, FacilioConstants.Survey.SURVEY_RESPONSE, SurveyResponseContext.class),
-	WORKORDER_SURVEY("WorkOrderSurvey",FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE, WorkOrderSurveyTemplateContext.class,FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE, WorkOrderSurveyResponseContext.class)
     ;
 
 	String name;

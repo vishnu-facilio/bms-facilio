@@ -1,8 +1,19 @@
 package com.facilio.bmsconsole.page.factory;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsoleV3.context.survey.SurveyResponseContext;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -70,7 +81,9 @@ public class ServiceRequestPageFactory extends PageFactory {
                     page.addTab(tab3);
                 }
             }
-            
+            if (!AccountUtil.getCurrentUser().isPortalUser()) {
+                addMetricandTimelogTab(page, record.getId(), module.getModuleId());
+            }
             if (!AccountUtil.getCurrentUser().isPortalUser()) {
                 Page.Tab tab4 = page.new Tab("History");;
                 page.addTab(tab4);
@@ -84,4 +97,56 @@ public class ServiceRequestPageFactory extends PageFactory {
 
             return page;
     }
+    private static void addMetricandTimelogTab(Page page, long serviceRequestId,long moduleId) throws Exception {
+        Page.Tab metricandTimelogTab = page.new Tab("timelog and metrics");
+        page.addTab(metricandTimelogTab);
+
+        addWorkOrderSurveyPageWidget(page, metricandTimelogTab,serviceRequestId,moduleId);
+
+//        Page.Section metrictimelogSection = page.new Section();
+//        metricandTimelogTab.addSection(metrictimelogSection);
+//
+//        // metric and timelog widget
+//        PageWidget stateTransitionTimelogWidget = new PageWidget(PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG);
+//        stateTransitionTimelogWidget.addToLayoutParams(metrictimelogSection, 24, 8);
+//        metrictimelogSection.addWidget(stateTransitionTimelogWidget);
+
+    }
+
+    private static void addWorkOrderSurveyPageWidget(Page page, Page.Tab metricandTimelogTab, long serviceRequestId, long moduleId) throws Exception{
+
+        if(isSurveyAvailable(serviceRequestId,moduleId)){
+
+            Page.Section surveyTimeLogSection = page.new Section();
+            metricandTimelogTab.addSection(surveyTimeLogSection);
+
+            PageWidget surveyTimelogWidget = new PageWidget(PageWidget.WidgetType.SURVEY_RESPONSE_WIDGET);
+            surveyTimelogWidget.addToLayoutParams(surveyTimeLogSection, 24, 8);
+            surveyTimeLogSection.addWidget(surveyTimelogWidget);
+        }
+    }
+
+    private static boolean isSurveyAvailable(long serviceRequestId,long moduleId) throws Exception{
+
+        ModuleBean bean = Constants.getModBean();
+        FacilioModule module = bean.getModule(FacilioConstants.Survey.SURVEY_RESPONSE);
+        List<FacilioField> fields  = bean.getAllFields(module.getName());
+
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<SurveyResponseContext> builder = new SelectRecordsBuilder<SurveyResponseContext>()
+                .select(fields)
+                .moduleName(module.getName())
+                .beanClass(SurveyResponseContext.class)
+                .andCondition(CriteriaAPI.getCondition(module.getTableName()+".SERVICE_REQUEST_ID",module.getTableName()+".serviceRequestId",String.valueOf(serviceRequestId), StringOperators.IS));
+
+        if(!AccountUtil.getCurrentUser().isSuperAdmin()){
+            builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()), NumberOperators.EQUALS));
+        }
+
+        List<SurveyResponseContext> surveyResponseRecords = builder.get();
+
+        return surveyResponseRecords.size() > 0;
+    }
+
 }

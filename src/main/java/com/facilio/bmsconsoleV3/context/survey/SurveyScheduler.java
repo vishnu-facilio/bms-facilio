@@ -14,7 +14,6 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ScheduleTypeInterface;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.util.BulkResourceAllocationUtil;
 import com.facilio.bmsconsoleV3.util.SurveyAPI;
 import com.facilio.bmsconsoleV3.util.V3VisitorManagementAPI;
@@ -97,7 +96,7 @@ public class SurveyScheduler implements ScheduleTypeInterface {
 		return null;
 	}
 	
-	public List<SurveyResponseContext> getResponses(SurveyTemplateContext template,BaseScheduleContext baseScheduleContext,List<DateRange> times) throws Exception {
+	public List<SurveyResponseContext> getResponses(SurveyTemplateContext template, BaseScheduleContext baseScheduleContext, List<DateRange> times) throws Exception {
 		
 		
 		

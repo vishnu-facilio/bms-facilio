@@ -6,6 +6,8 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsoleV3.context.V3ServiceRequestContext;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.qa.context.ResponseContext;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -41,6 +43,8 @@ public class SurveyResponseContext extends ResponseContext <SurveyTemplateContex
     private Long actualWorkEnd;
     private PeopleContext assignedTo;
 	private Long ruleId;
+	private V3WorkOrderContext workOrderId;
+	private V3ServiceRequestContext serviceRequestId;
 
     public void setStatus(Integer status) { // Using wrapper object to avoid -1 being inserted
     	this.status = status == null ? null : Status.valueOf(status);

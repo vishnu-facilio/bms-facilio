@@ -9,6 +9,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.context.ResponseContext;
@@ -30,9 +31,26 @@ public class SupplySurveyCriteriaCommand extends FacilioCommand{
 		Criteria criteria = new Criteria();
 		ModuleBean modBean = Constants.getModBean();
 		List<FacilioField> selectFields = new ArrayList<FacilioField>();
-		selectFields.addAll(modBean.getAllFields(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE));
+		selectFields.addAll(modBean.getAllFields(FacilioConstants.Survey.SURVEY_RESPONSE));
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(selectFields);
 
+		List<Object> currentModuleParams = queryParameters.getOrDefault("currentModuleName",null);
+		List<Object> recordIdParams = queryParameters.getOrDefault("recordId",null);
+		if(CollectionUtils.isNotEmpty(currentModuleParams) && CollectionUtils.isNotEmpty(recordIdParams)) {
+			Long recordId = Long.parseLong((String) recordIdParams.get(0));
+			String currentModuleName = (String) currentModuleParams.get(0);
+			if(currentModuleName != null && recordId!=null){
+				context.put("currentModuleName",currentModuleName);
+				if(currentModuleName.equals(FacilioConstants.ContextNames.WORK_ORDER)){
+					criteria.addAndCondition(CriteriaAPI.getCondition("WORKORDER_ID","workOrderId",String.valueOf(recordId), StringOperators.IS));
+
+				} else if(currentModuleName.equals(FacilioConstants.ContextNames.SERVICE_REQUEST)){
+					criteria.addAndCondition(CriteriaAPI.getCondition("SERVICE_REQUEST_ID","serviceRequestId",String.valueOf(recordId), StringOperators.IS));
+				}
+			}
+		}
+
+		// To be removed...
 		List<Object> params = queryParameters.getOrDefault("workOrderId",null);
 
 		if(CollectionUtils.isNotEmpty(params)) {

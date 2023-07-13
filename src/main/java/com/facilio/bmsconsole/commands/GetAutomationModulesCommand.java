@@ -118,6 +118,9 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WORKPLACE_APPS)) {
             modules.add(modBean.getModule(ContextNames.Floorplan.DESKS));
         }
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SURVEY)) {
+            modules.add(modBean.getModule(FacilioConstants.Survey.SURVEY_RESPONSE));
+        }
         
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
 

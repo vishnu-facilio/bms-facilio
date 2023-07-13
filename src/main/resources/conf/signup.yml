@@ -121,9 +121,6 @@ classes:
   # Adding default ML params
   - com.facilio.modules.signup.AddMLModelParams
 
-  #WorkOrder survey Modules
-  - com.facilio.bmsconsoleV3.signup.workordersurvey.AddWorkOrderSurveyModules
-
     #Adding stateflow Rfq
     #  - com.facilio.bmsconsoleV3.signup.requestForQuotation.RequestForQuotationStateTransition
   - com.facilio.bmsconsoleV3.signup.requestForQuotation.RequestForQuotationDefaultStateFlow
@@ -391,6 +388,7 @@ classes:
 
     #Adding Default Survey
   - com.facilio.bmsconsoleV3.signup.workordersurvey.AddDefaultSurveyConfig
+  - com.facilio.bmsconsoleV3.signup.workordersurvey.AddServiceRequestDeafultSurvey
 
   # controlActionCommand Module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddControlActionCommandModule

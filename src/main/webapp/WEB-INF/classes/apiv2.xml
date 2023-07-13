@@ -7528,12 +7528,16 @@
 				class="com.facilio.bmsconsole.actions.ScopingAction" method="addOrUpdateScoping">
 		</action>
 	</package>
-    <package name="wosurvey" namespace="/api/v2/wosurvey" extends="v2Api">
 
-        <action name="*" class="com.facilio.bmsconsole.actions.WorkOrderSurveyAction" method="fetchWorkOrderSurvey">
-            <param name="workOrderId">{1}</param>
-        </action>
-    </package>
+	<package name="survey" namespace="/api/v2/survey" extends="v2Api">
+		<action name="modules" class="com.facilio.survey.SurveyAction" method="getSurveySupportedModules">
+		</action>
+		<action name="fetch/*/*" class="com.facilio.survey.SurveyAction" method="fetchSurvey">
+			<param name="moduleName">{1}</param>
+			<param name="recordId">{2}</param>
+		</action>
+	</package>
+
 	<package name="colorPalette" namespace="/api/v2/colorPalette" extends="v2Api">
 		<action name="add"
 				class="com.facilio.bmsconsole.actions.ColorPaletteAction"

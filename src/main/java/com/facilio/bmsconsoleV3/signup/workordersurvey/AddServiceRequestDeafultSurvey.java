@@ -41,8 +41,7 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 
-public class AddDefaultSurveyConfig extends SignUpData {
-
+public class AddServiceRequestDeafultSurvey extends SignUpData {
     @Override
     public void addData() throws Exception {
         addDefaultSurveyTemplate();
@@ -59,23 +58,23 @@ public class AddDefaultSurveyConfig extends SignUpData {
         eMailStructureObj.setDraft(false);
         eMailStructureObj.setHtml(true);
 
-        String redirectURL= getPortalURL()+"/tenant/surveys/response/${surveyResponse.id}/attend?name=workorder&recordId=${surveyResponse.workOrderId}";
+        String redirectURL= getPortalURL()+"/tenant/surveys/response/${surveyResponse.id}/attend";
 
-        eMailStructureObj.setMessage("<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Default Email Template</title>\n  </head>\n  <body\n    style=\"\n      background-color: #5735b7;\n      font-family: Helvetica;\n      text-align: center;\n    \"\n  >\n    <div\n      class=\"email-template-parent-div\"\n      style=\"\n        margin: 30px;\n        max-width: 45%;\n        background-color: white;\n        padding: 20px;\n        display: inline-block;\n      \"\n    >\n  <div\n        class=\"email-template-header\"\n        style=\"color: #202020; text-align: center\"\n      >\n        <h1>We'd love your feedback!</h1>\n      </div>\n      <div\n        class=\"email-template-content\"\n        style=\"text-align: justify; color: #202020\";width=\"100%\"\n        height=\"auto\"\n      >\n        <span\n          >We noticed that you recently raised a work request about ${surveyResponse.workOrderId.subject}. Please take a minute to provide your feedback to help us improve and serve you better.</span\n        >\n      </div>\n      <div\n        class=\"email-template-takesurvey-button\"\n        style=\"text-align: center; margin-top: 30px\"\n      >\n        <a\n          style=\"\n            border: 1px solid #5735b7;\n            text-decoration: none;\n            padding-top:15px; padding-right: 20px; padding-bottom:15px;padding-left: 20px;\n            color: white;\n            background-color: #5735b7;\n            font-weight: bold;\n            border-radius: 25px;\n          \"\n          class=\"take-survey-button\"\n          href=\""+redirectURL+"\"\n          target=\"_blank\"\n          >Take Survey</a\n        >\n      </div>\n      <div\n        class=\"break-line\"\n        style=\"\n          margin-top: 40px;\n          margin-right: -20px;\n          margin-left: -20px;\n          border-top: 2px solid #cecaca;\n        \"\n      ></div>\n      <div>\n        <footer>\n          <div\n            class=\"email-template-footer-content\"\n            style=\"\n              color: #656565;\n              font-size: 11px;\n              text-align: center;\n              margin-top: 20px;\n              font-weight: bold;\n            \"\n          >\n            <span>Powered by </span>\n          </div>\n          <div\n            class=\"email-template-footer-img\"\n            style=\"text-align: center; margin-bottom: -10px\"\n          >\n            <img\n              src=\"https://media.licdn.com/dms/image/C510BAQE2Uw6HD7nQZA/company-logo_200_200/0/1536843205636?e=2147483647&v=beta&t=Z546XssB6CwBt-LhLUHKJgRWFJTuf0laE_Pmx6-r2vc\"\n              width=\"60\"\n              height=\"50\"\n            />\n          </div>\n        </footer>\n      </div>\n    </div>\n </body>\n</html>\n  </body>\n</html>\n");
-        eMailStructureObj.setName("Default WorkOrder Survey Email Template");
+        eMailStructureObj.setMessage("<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Default Email Template</title>\n  </head>\n  <body\n    style=\"\n      background-color: #5735b7;\n      font-family: Helvetica;\n      text-align: center;\n    \"\n  >\n    <div\n      class=\"email-template-parent-div\"\n      style=\"\n        margin: 30px;\n        max-width: 45%;\n        background-color: white;\n        padding: 20px;\n        display: inline-block;\n      \"\n    >\n  <div\n        class=\"email-template-header\"\n        style=\"color: #202020; text-align: center\"\n      >\n        <h1>We'd love your feedback!</h1>\n      </div>\n      <div\n        class=\"email-template-content\"\n        style=\"text-align: justify; color: #202020\";width=\"100%\"\n        height=\"auto\"\n      >\n        <span\n          >We noticed that you recently raised a work request about ${surveyResponse.serviceRequestId.subject}. Please take a minute to provide your feedback to help us improve and serve you better.</span\n        >\n      </div>\n      <div\n        class=\"email-template-takesurvey-button\"\n        style=\"text-align: center; margin-top: 30px\"\n      >\n        <a\n          style=\"\n            border: 1px solid #5735b7;\n            text-decoration: none;\n            padding-top:15px; padding-right: 20px; padding-bottom:15px;padding-left: 20px;\n            color: white;\n            background-color: #5735b7;\n            font-weight: bold;\n            border-radius: 25px;\n          \"\n          class=\"take-survey-button\"\n          href=\""+redirectURL+"\"\n          target=\"_blank\"\n          >Take Survey</a\n        >\n      </div>\n      <div\n        class=\"break-line\"\n        style=\"\n          margin-top: 40px;\n          margin-right: -20px;\n          margin-left: -20px;\n          border-top: 2px solid #cecaca;\n        \"\n      ></div>\n      <div>\n        <footer>\n          <div\n            class=\"email-template-footer-content\"\n            style=\"\n              color: #656565;\n              font-size: 11px;\n              text-align: center;\n              margin-top: 20px;\n              font-weight: bold;\n            \"\n          >\n            <span>Powered by </span>\n          </div>\n          <div\n            class=\"email-template-footer-img\"\n            style=\"text-align: center; margin-bottom: -10px\"\n          >\n            <img\n              src=\"https://media.licdn.com/dms/image/C510BAQE2Uw6HD7nQZA/company-logo_200_200/0/1536843205636?e=2147483647&v=beta&t=Z546XssB6CwBt-LhLUHKJgRWFJTuf0laE_Pmx6-r2vc\"\n              width=\"60\"\n              height=\"50\"\n            />\n          </div>\n        </footer>\n      </div>\n    </div>\n </body>\n</html>\n  </body>\n</html>\n");
+        eMailStructureObj.setName("Default Service Request Survey Email Template");
         eMailStructureObj.setSubject("Your feedback matters to us!");
 
         WorkflowContext workflowContextObj=new WorkflowContext();
         JSONArray jsonArrayObj=new JSONArray();
         Map<String,Object> expression1=new HashMap<>();
-        expression1.put("constant","${surveyResponse.workOrderId.subject}");
-        expression1.put("name","surveyResponse.workOrderId.subject");
+        expression1.put("constant","${surveyResponse.serviceRequestId.subject}");
+        expression1.put("name","surveyResponse.serviceRequestId.subject");
         Map<String,Object> expression2=new HashMap<>();
         expression2.put("constant","${surveyResponse.id}");
         expression2.put("name","surveyResponse.id");
         Map<String,Object> expression3=new HashMap<>();
-        expression3.put("constant","${surveyResponse.workOrderId}");
-        expression3.put("name","surveyResponse.workOrderId");
+        expression3.put("constant","${surveyResponse.serviceRequestId}");
+        expression3.put("name","surveyResponse.serviceRequestId");
         jsonArrayObj.add(expression1);
         jsonArrayObj.add(expression2);
         jsonArrayObj.add(expression3);
@@ -83,13 +82,13 @@ public class AddDefaultSurveyConfig extends SignUpData {
 
         List<ParameterContext> ParameterContextKey=new ArrayList<>();
         ParameterContext parameterContext1=new ParameterContext();
-        parameterContext1.setName("surveyResponse.workOrderId.subject");
+        parameterContext1.setName("surveyResponse.serviceRequestId.subject");
         parameterContext1.setTypeString("String");
         ParameterContext parameterContext2=new ParameterContext();
         parameterContext2.setName("surveyResponse.id");
         parameterContext2.setTypeString("String");
         ParameterContext parameterContext3=new ParameterContext();
-        parameterContext3.setName("surveyResponse.workOrderId");
+        parameterContext3.setName("surveyResponse.serviceRequestId");
         parameterContext3.setTypeString("String");
         ParameterContextKey.add(parameterContext1);
         ParameterContextKey.add(parameterContext2);
@@ -118,7 +117,7 @@ public class AddDefaultSurveyConfig extends SignUpData {
 
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(emailFromAddressField);
 
-        long idd=AccountUtil.getCurrentOrg().getOrgId();
+        long idd= AccountUtil.getCurrentOrg().getOrgId();
 
         SelectRecordsBuilder<EmailFromAddress> select = new SelectRecordsBuilder<EmailFromAddress>()
                 .beanClass(EmailFromAddress.class)
@@ -140,7 +139,7 @@ public class AddDefaultSurveyConfig extends SignUpData {
         templateJsonObj.put("html",false);
         templateJsonObj.put("isPushNotification",false);
         templateJsonObj.put("message","");
-        templateJsonObj.put("name","New WorkOrder Email Template");
+        templateJsonObj.put("name","New Service Request Survey Email Template");
         templateJsonObj.put("sendAsSeparateMail",true);
         templateJsonObj.put("subject","");
         templateJsonObj.put("templateFiles",new ArrayList<>());
@@ -192,7 +191,7 @@ public class AddDefaultSurveyConfig extends SignUpData {
         FacilioModule module = modBean.getModule(FacilioConstants.Survey.SURVEY_TEMPLATE);
 
         SurveyTemplateContext defaultTemplateObj = new SurveyTemplateContext();
-        defaultTemplateObj.setName("Customer Satisfaction Survey");
+        defaultTemplateObj.setName("Customer Satisfaction Survey For SR");
         Map<String, Object> dataMap = FieldUtil.getAsProperties(defaultTemplateObj);
         FacilioContext surveyTemplatecontext = V3Util.createRecord(module, dataMap);
 
@@ -420,12 +419,12 @@ public class AddDefaultSurveyConfig extends SignUpData {
 
         WorkflowRuleContext rule = new WorkflowRuleContext();
 
-        rule.setName(request.get(0).getName());
+        rule.setName("Customer Satisfaction Survey");
         ActionContext action = new ActionContext();
         action.setActionType(36);
         JSONObject jsonObj = new JSONObject();
         Map<String, Object> map = new HashMap<>();
-        map.put("fieldId", Constants.getModBean().getField("requester", "workorder").getFieldId());
+        map.put("fieldId", Constants.getModBean().getField("requester", "serviceRequest").getFieldId());
         map.put("expiryDay", 3);
         map.put("isRetakeAllowed", false);
         map.put("retakeExpiryDay", 3);
@@ -436,9 +435,9 @@ public class AddDefaultSurveyConfig extends SignUpData {
 
         WorkflowEventContext event = new WorkflowEventContext();
         event.setActivityType(1048576);
-        event.setModuleName("workorder");
+        event.setModuleName("serviceRequest");
 
-        FacilioStatus closed = TicketAPI.getStatus("Closed");
+        FacilioStatus closed = TicketAPI.getStatus(Constants.getModBean().getModule(FacilioConstants.ContextNames.SERVICE_REQUEST),"Closed");
         //criteria for default survey
 
         Criteria criteriaMap1=new Criteria();
@@ -457,7 +456,7 @@ public class AddDefaultSurveyConfig extends SignUpData {
         //Get FieldId for WO
 
         ModuleBean moduleBean2=Constants.getModBean();
-        List<FacilioField> woFields=moduleBean2.getAllFields("workorder");
+        List<FacilioField> woFields=moduleBean2.getAllFields("serviceRequest");
         Map<String,FacilioField> woFieldMap=FieldFactory.getAsMap(woFields);
 
         fieldObj1.setField(woFieldMap.get("moduleState"));
@@ -512,5 +511,4 @@ public class AddDefaultSurveyConfig extends SignUpData {
         return appUrl;
 
     }
-
 }

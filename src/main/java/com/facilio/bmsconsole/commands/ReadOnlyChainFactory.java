@@ -20,6 +20,8 @@ import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPick
 import com.facilio.bmsconsole.commands.picklist.SpecialPickListFieldsCommand;
 import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
 import com.facilio.bmsconsole.formCommands.GetSupportedFieldTypesCommand;
+import com.facilio.bmsconsole.commands.util.FetchSurveyCommand;
+import com.facilio.bmsconsole.commands.util.GetSurveySupportedModules;
 import com.facilio.bmsconsole.localization.fetchtranslationfields.GetAllTranslationFieldsCommand;
 import com.facilio.bmsconsole.localization.translation.CreateTranslationJSONCommand;
 import com.facilio.bmsconsole.localization.translation.FetchFieldsListCommand;
@@ -2335,6 +2337,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetClassificationModulesCommand());
 		return chain;
 	}
+
+	public static FacilioChain getSurveySupportedModules() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSurveySupportedModules());
+		return chain;
+	}
 	public static FacilioChain fetchVisitorTypePicklistData() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVisitorType());
@@ -3305,9 +3313,9 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain fetchWorkOrderSurveyChain() {
+	public static FacilioChain fetchSurveyChain() {
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new FetchWorkOrderSurveyCommand());
+		chain.addCommand(new FetchSurveyCommand());
 		return chain;
 	}
 

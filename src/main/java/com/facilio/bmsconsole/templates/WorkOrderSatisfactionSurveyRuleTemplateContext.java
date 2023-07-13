@@ -1,13 +1,12 @@
 package com.facilio.bmsconsole.templates;
 
-import com.facilio.bmsconsole.context.SingleSharingContext;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
 
 @Setter
 @Getter
-public class SatisfactionSurveyTemplate extends Template{
+public class WorkOrderSatisfactionSurveyRuleTemplateContext extends Template{
 
 	private long qandaTemplateId;
 	private Integer sharingType;

@@ -38,7 +38,13 @@ public class ModuleWorkflowRuleAction extends FacilioAction {
     }
 
     private int ruleType;
-
+    public String searchText;
+    public String getSearchText() {
+        return searchText;
+    }
+    public void setSearchText(String searchText) {
+        this.searchText = searchText;
+    }
     public int getRuleType() {
         return ruleType;
     }
@@ -55,6 +61,7 @@ public class ModuleWorkflowRuleAction extends FacilioAction {
         FacilioContext context = c.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
         context.put(FacilioConstants.ContextNames.RULE_TYPE, ruleType);
+        context.put(FacilioConstants.ContextNames.SEARCH,getSearchText());
         constructListContext(context);
         c.execute();
 

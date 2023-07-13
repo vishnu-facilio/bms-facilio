@@ -474,12 +474,14 @@ public class QAndAUtil {
 		Constants.setModuleName(context,moduleName);
 		Constants.setRecordId(context,(Long)template.get("qandaTemplateId"));
 		context.put("ruleId",ruleId);
+        context.put("ruleName",template.get("ruleName"));
 		context.put("expiryDay",template.get("expiryDay"));
 		context.put("isRetakeAllowed",template.get("isRetakeAllowed"));
 		context.put("retakeExpiryDay",template.get("retakeExpiryDay"));
 		context.put("retakeExpiryDuration",template.get("retakeExpiryDuration"));
-		context.put("parentId",template.get("parentId"));
+		context.put("recordMap",template.get("recordMap"));
 		context.put("assignedTo",template.get("assignedTo"));
+        context.put("currentModuleName",template.get("currentModuleName"));
 		context.put(FacilioConstants.ContextNames.RESOURCE_LIST,resources);
 		executeTemplateChain.execute();
 	}

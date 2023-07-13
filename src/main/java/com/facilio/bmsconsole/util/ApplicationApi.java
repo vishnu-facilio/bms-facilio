@@ -3017,7 +3017,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Localization", "localization", WebTabContext.Type.LOCALIZATION, null, appId, null,AccountUtil.FeatureLicense.MULTI_LANGUAGE_TRANSLATION.getFeatureId()));
             webTabs.add(new WebTabContext("Tabs and Layouts", "tabsandlayouts", WebTabContext.Type.TABS_AND_LAYOUTS, null, appId, null));
             webTabs.add(new WebTabContext("Classifications","classifications",WebTabContext.Type.CLASSIFICATIONS,null,appId,null,AccountUtil.FeatureLicense.CLASSIFICATION.getFeatureId()));
-
+            webTabs.add(new WebTabContext("Survey Templates", "surveytemplates", WebTabContext.Type.SETUP_SURVEY, null, appId, null,AccountUtil.FeatureLicense.SURVEY.getFeatureId()));
 
             groupNameVsWebTabsMap.put("customization", webTabs);
 
@@ -3062,7 +3062,6 @@ public class ApplicationApi {
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Email Settings", "emailsettings", WebTabContext.Type.EMAIL_SETTINGS, null, appId, null));
             webTabs.add(new WebTabContext("Customization", "customization", WebTabContext.Type.WORKORDER_CUSTOMIZATION, null, appId, null));
-            webTabs.add(new WebTabContext("Survey", "survey", WebTabContext.Type.SETUP_SURVEY, null, appId, null,AccountUtil.FeatureLicense.SURVEY.getFeatureId()));
             groupNameVsWebTabsMap.put("workordersettings", webTabs);
 
             webTabGroups.add(new WebTabGroupContext( "Logs","logs", layout.getId(),207, groupOrder++));

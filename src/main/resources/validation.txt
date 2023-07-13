@@ -2780,3 +2780,5 @@
 /api/v3/myApps/:listMyApps
 /api/v3/qanda/answers/executeDisplayLogic
 /api/v2/multicurrency/list
+/api/v2/survey/modules
+/api/v2/survey/fetch/:moduleName/:recordId

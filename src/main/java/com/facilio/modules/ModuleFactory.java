@@ -3430,15 +3430,6 @@ public class ModuleFactory {
 		return formTemplate;
 	}
 
-	public static FacilioModule getSatisfactionSurveyTemplateModule () {
-		FacilioModule satisfactionSurveyTemplateModule = new FacilioModule();
-		satisfactionSurveyTemplateModule.setName("satisfactionSurveyTemplate");
-		satisfactionSurveyTemplateModule.setDisplayName("Satisfaction Survey Templates");
-		satisfactionSurveyTemplateModule.setTableName("Satisfaction_Survey_Templates");
-		satisfactionSurveyTemplateModule.setExtendModule(getTemplatesModule());
-		return satisfactionSurveyTemplateModule;
-	}
-	
 	public static FacilioModule getSatisfactionSurveyRuleModule() {
 		FacilioModule satisfactionSurveyRuleModule = new FacilioModule();
 		satisfactionSurveyRuleModule.setName("satisfactionSurveyRule");
@@ -3446,6 +3437,24 @@ public class ModuleFactory {
 		satisfactionSurveyRuleModule.setTableName("Satisfaction_Survey_Rules");
 		satisfactionSurveyRuleModule.setExtendModule(getWorkflowRuleModule());
 		return satisfactionSurveyRuleModule;
+	}
+
+	public static FacilioModule getWorkOrderSatisfactionSurveyRuleTemplateModule () {
+		FacilioModule satisfactionSurveyTemplateModule = new FacilioModule();
+		satisfactionSurveyTemplateModule.setName("workOrderSatisfactionSurveyRuleTemplate");
+		satisfactionSurveyTemplateModule.setDisplayName("WorkOrder Satisfaction Survey Rule Templates");
+		satisfactionSurveyTemplateModule.setTableName("WO_SatisfactionSurveyRule_Templates");
+		satisfactionSurveyTemplateModule.setExtendModule(getTemplatesModule());
+		return satisfactionSurveyTemplateModule;
+	}
+
+	public static FacilioModule getServiceRequestSatisfactionSurveyRuleTemplateModule () {
+		FacilioModule satisfactionSurveyTemplateModule = new FacilioModule();
+		satisfactionSurveyTemplateModule.setName("serviceRequestSatisfactionSurveyRuleTemplate");
+		satisfactionSurveyTemplateModule.setDisplayName("Service Requests Satisfaction Survey Rule Templates");
+		satisfactionSurveyTemplateModule.setTableName("SR_SatisfactionSurveyRule_Templates");
+		satisfactionSurveyTemplateModule.setExtendModule(getTemplatesModule());
+		return satisfactionSurveyTemplateModule;
 	}
 
 	public static FacilioModule getSurveyResponseRuleModule() {

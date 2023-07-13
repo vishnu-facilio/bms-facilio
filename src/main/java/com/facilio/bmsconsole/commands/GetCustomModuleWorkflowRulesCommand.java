@@ -8,6 +8,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
@@ -24,6 +25,7 @@ public class GetCustomModuleWorkflowRulesCommand extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         Integer ruleType = (Integer) context.get(FacilioConstants.ContextNames.RULE_TYPE);
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+        String searchText = (String) context.get(FacilioConstants.ContextNames.SEARCH);
 
         WorkflowRuleContext.RuleType type = null;
         if (ruleType != null) {
@@ -40,6 +42,9 @@ public class GetCustomModuleWorkflowRulesCommand extends FacilioCommand {
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 
+            if (StringUtils.isNotEmpty(searchText)) {
+                criteria.addAndCondition(CriteriaAPI.getCondition("NAME", "name", searchText, StringOperators.CONTAINS));
+            }
             if (type == null) {
                 type = WorkflowRuleContext.RuleType.MODULE_RULE;
             }

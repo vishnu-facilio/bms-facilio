@@ -7,7 +7,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.WidgetGroup;
-import com.facilio.bmsconsoleV3.context.workordersurvey.WorkOrderSurveyResponseContext;
+import com.facilio.bmsconsoleV3.context.survey.SurveyResponseContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -395,11 +395,11 @@ public class WorkorderPageFactory extends PageFactory {
         addRelatedListWidgets(relatedRecordsSection, module.getModuleId());
     }
 
-    private static void addMetricandTimelogTab(Page page, long workOrderId) throws Exception {
+    private static void addMetricandTimelogTab(Page page, long workOrderId,long moduleId) throws Exception {
         Page.Tab metricandTimelogTab = page.new Tab("timelog and metrics");
         page.addTab(metricandTimelogTab);
 
-        addWorkOrderSurveyPageWidget(page, metricandTimelogTab,workOrderId);
+        addWorkOrderSurveyPageWidget(page, metricandTimelogTab,workOrderId,moduleId);
 
         Page.Section metrictimelogSection = page.new Section();
         metricandTimelogTab.addSection(metrictimelogSection);
@@ -411,9 +411,9 @@ public class WorkorderPageFactory extends PageFactory {
 
     }
 
-    private static void addWorkOrderSurveyPageWidget(Page page, Page.Tab metricandTimelogTab, long workOrderId) throws Exception{
+    private static void addWorkOrderSurveyPageWidget(Page page, Page.Tab metricandTimelogTab, long workOrderId,long moduleId) throws Exception{
 
-        if(isSurveyAvailable(workOrderId)){
+        if(isSurveyAvailable(workOrderId,moduleId)){
 
             Page.Section surveyTimeLogSection = page.new Section();
             metricandTimelogTab.addSection(surveyTimeLogSection);
@@ -424,19 +424,20 @@ public class WorkorderPageFactory extends PageFactory {
         }
     }
 
-    private static boolean isSurveyAvailable(long workOrderId) throws Exception{
+    private static boolean isSurveyAvailable(long workOrderId,long moduleId) throws Exception{
 
         ModuleBean bean = Constants.getModBean();
-        FacilioModule module = bean.getModule(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE);
+        FacilioModule module = bean.getModule(FacilioConstants.Survey.SURVEY_RESPONSE);
         List<FacilioField> fields  = bean.getAllFields(module.getName());
 
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
-        SelectRecordsBuilder<WorkOrderSurveyResponseContext> builder = new SelectRecordsBuilder<WorkOrderSurveyResponseContext>()
+        SelectRecordsBuilder<SurveyResponseContext> builder = new SelectRecordsBuilder<SurveyResponseContext>()
                 .select(fields)
                 .moduleName(module.getName())
-                .beanClass(WorkOrderSurveyResponseContext.class)
-                .andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_ID",module.getTableName()+".parentId",String.valueOf(workOrderId), StringOperators.IS));
+                .beanClass(SurveyResponseContext.class)
+                .andCondition(CriteriaAPI.getCondition(module.getTableName()+".WORKORDER_ID",module.getTableName()+".workOrderId",String.valueOf(workOrderId), StringOperators.IS));
+
         if(!AccountUtil.getCurrentUser().isSuperAdmin()){
             builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("assignedTo"),String.valueOf(AccountUtil.getCurrentUser().getPeopleId()), NumberOperators.EQUALS));
         }
@@ -556,7 +557,7 @@ public class WorkorderPageFactory extends PageFactory {
         }
         addRelatedRecordsTab(page, workorder.getModuleId());
 
-        addMetricandTimelogTab(page, workorder.getId());
+        addMetricandTimelogTab(page, workorder.getId(),workorder.getModuleId());
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FAILURE_CODES) &&
                 workorder.getFailureClass() != null) {
             addFailureReportTab(page);

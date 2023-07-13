@@ -33,7 +33,7 @@ public class SurveyUtil{
 		Long workFlowRuleId = workflowRule.getId();
 		SurveyResponseRuleContext surveyResponseRule = new SurveyResponseRuleContext();
 		surveyResponseRule.setSurveyParentRuleId(workFlowRuleId);
-		surveyResponseRule.setModuleName(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_RESPONSE);
+		surveyResponseRule.setModuleName(FacilioConstants.Survey.SURVEY_RESPONSE);
 		surveyResponseRule.setRuleType(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE);
 
 

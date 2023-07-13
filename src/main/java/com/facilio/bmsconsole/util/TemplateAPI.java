@@ -239,11 +239,14 @@ public class TemplateAPI {
 			id = addFormTemplate((FormTemplate) template);
 			template.setId(id);
 		}
-		else if (template instanceof SatisfactionSurveyTemplate){
-			id = addSatisfactionSurveyTemplate (( SatisfactionSurveyTemplate ) template);
+		else if (template instanceof WorkOrderSatisfactionSurveyRuleTemplateContext){
+			id = addSatisfactionSurveyTemplate ((WorkOrderSatisfactionSurveyRuleTemplateContext) template);
 			template.setId (id);
 		}
-		
+		else if (template instanceof ServiceRequestSatisfactionSurveyRuleTemplateContext){
+			id = addServiceRequestSatisfactionSurveyTemplate ((ServiceRequestSatisfactionSurveyRuleTemplateContext) template);
+			template.setId (id);
+		}
 		if (template.getAttachments() != null) {
 			TemplateAttachmentUtil.addAttachments(template.getId(), template.getAttachments());
 		}
@@ -270,12 +273,17 @@ public class TemplateAPI {
 
 	
 
-	private static long addSatisfactionSurveyTemplate (SatisfactionSurveyTemplate template) throws Exception {
+	private static long addSatisfactionSurveyTemplate (WorkOrderSatisfactionSurveyRuleTemplateContext template) throws Exception {
 		addDefaultProps (template);
 		template.setType(Type.SATISFACTION_SURVEY_EXECUTION);
-		return insertTemplateWithExtendedProps(ModuleFactory.getSatisfactionSurveyTemplateModule (), FieldFactory.getSatisfactionSurveyTemplateFields (), FieldUtil.getAsProperties(template));
+		return insertTemplateWithExtendedProps(ModuleFactory.getWorkOrderSatisfactionSurveyRuleTemplateModule (), FieldFactory.getWorkOrderSatisfactionSurveyRuleTemplateFields (), FieldUtil.getAsProperties(template));
 	}
 
+	private static long addServiceRequestSatisfactionSurveyTemplate (ServiceRequestSatisfactionSurveyRuleTemplateContext template) throws Exception {
+		addDefaultProps (template);
+		template.setType(Type.SERVICEREQUEST_SATISFACTION_SURVEY_EXECUTION);
+		return insertTemplateWithExtendedProps(ModuleFactory.getServiceRequestSatisfactionSurveyRuleTemplateModule (), FieldFactory.getServiceRequetSatisfactionSurveyRuleTemplateFields (), FieldUtil.getAsProperties(template));
+	}
 
 	public static List<Template> getTemplatesOfType(Type type) throws Exception {
 		FacilioModule module = ModuleFactory.getTemplatesModule();
@@ -587,10 +595,18 @@ public class TemplateAPI {
 			}break;
 			case SATISFACTION_SURVEY_EXECUTION:
 			{
-				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getSatisfactionSurveyTemplateModule (), FieldFactory.getSatisfactionSurveyTemplateFields (), id);
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getWorkOrderSatisfactionSurveyRuleTemplateModule (), FieldFactory.getWorkOrderSatisfactionSurveyRuleTemplateFields (), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					template = getSatisfactionSurveyTemplateFromMap (templateMap);
+				}
+			}break;
+			case SERVICEREQUEST_SATISFACTION_SURVEY_EXECUTION:
+			{
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getServiceRequestSatisfactionSurveyRuleTemplateModule(), FieldFactory.getServiceRequetSatisfactionSurveyRuleTemplateFields(), id);
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					template = getServiceRequestSatisfactionSurveyTemplateFromMap(templateMap);
 				}
 			}break;
 			default: break;
@@ -617,8 +633,11 @@ public class TemplateAPI {
 		return template;
 	}
 
-	private static SatisfactionSurveyTemplate getSatisfactionSurveyTemplateFromMap (Map<String, Object> templateMap) throws Exception {
-		return FieldUtil.getAsBeanFromMap(templateMap, SatisfactionSurveyTemplate.class);
+	private static WorkOrderSatisfactionSurveyRuleTemplateContext getSatisfactionSurveyTemplateFromMap (Map<String, Object> templateMap) throws Exception {
+		return FieldUtil.getAsBeanFromMap(templateMap, WorkOrderSatisfactionSurveyRuleTemplateContext.class);
+	}
+	private static ServiceRequestSatisfactionSurveyRuleTemplateContext getServiceRequestSatisfactionSurveyTemplateFromMap (Map<String, Object> templateMap) throws Exception {
+		return FieldUtil.getAsBeanFromMap(templateMap, ServiceRequestSatisfactionSurveyRuleTemplateContext.class);
 	}
 
 	public static void setFormInTemplate(FormTemplate template) throws Exception {

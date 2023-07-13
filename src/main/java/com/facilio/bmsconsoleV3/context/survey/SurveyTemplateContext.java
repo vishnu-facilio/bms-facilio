@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -87,8 +85,8 @@ public class SurveyTemplateContext extends QAndATemplateContext <SurveyResponseC
 
     @Override
     protected SurveyResponseContext newResponseObject() {
-        
-    	SurveyResponseContext surveyResponse = new SurveyResponseContext();
+
+		SurveyResponseContext surveyResponse = new SurveyResponseContext();
         
     	surveyResponse.setData(this.getData());
         
@@ -158,4 +156,9 @@ public class SurveyTemplateContext extends QAndATemplateContext <SurveyResponseC
 		}
 	}
 
+	@Override
+	public SurveyResponseContext constructResponse(){
+
+		return (SurveyResponseContext) super.constructResponse();
+	}
 }

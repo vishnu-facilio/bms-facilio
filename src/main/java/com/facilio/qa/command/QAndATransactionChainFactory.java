@@ -53,13 +53,6 @@ public class QAndATransactionChainFactory {
         return c;
     }
 
-    public static FacilioChain workOrderSurveyTemplateBeforeSaveChain() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(commonQAndABeforeSave());
-        c.addCommand(new WorkOrderSurveyTemplateBeforeSaveCommand());
-        return c;
-    }
-
     public static FacilioChain commonBeforeQAndAResponseUpdate() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ExecuteOnSubmitProcessOfResponse());

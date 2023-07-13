@@ -3905,8 +3905,24 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getSatisfactionSurveyTemplateFields() {
-        FacilioModule module = ModuleFactory.getSatisfactionSurveyTemplateModule();
+    public static List<FacilioField> getWorkOrderSatisfactionSurveyRuleTemplateFields() {
+        FacilioModule module = ModuleFactory.getWorkOrderSatisfactionSurveyRuleTemplateModule();
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getField("qandaTemplateId", "Q_AND_A_TEMPLATE_ID", module, FieldType.NUMBER));
+        fields.add(getField("userId", "USER_ID", module, FieldType.NUMBER));
+        fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("sharingType", "SHARING_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("expiryDay", "EXPIRY_DAY", module, FieldType.NUMBER));
+        fields.add(getField("isRetakeAllowed", "IS_RETAKE", module, FieldType.BOOLEAN));
+        fields.add(getField("retakeExpiryDay", "RETAKE_EXPIRY_DAY", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getServiceRequetSatisfactionSurveyRuleTemplateFields() {
+        FacilioModule module = ModuleFactory.getServiceRequestSatisfactionSurveyRuleTemplateModule();
 
         List<FacilioField> fields = new ArrayList<>();
 
