@@ -27,6 +27,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -99,7 +100,11 @@ public class fsmAction extends V3Action {
         context.put(FacilioConstants.ContextNames.PAGE,getPage());
         context.put(FacilioConstants.ContextNames.PER_PAGE,getPerPage());
         context.put(FacilioConstants.ContextNames.SEARCH,getSearch());
-        context.put(FacilioConstants.ContextNames.FILTERS,getFilters());
+        if (StringUtils.isNotEmpty(getFilters())) {
+            JSONParser parser = new JSONParser();
+            JSONObject filterJson = (JSONObject) parser.parse(getFilters());
+            context.put(FacilioConstants.ContextNames.FILTERS, filterJson);
+        }
         context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         context.put(FacilioConstants.ContextNames.ORDER_BY,getOrderBy());
         context.put(FacilioConstants.ContextNames.ORDER_TYPE,getOrderType());

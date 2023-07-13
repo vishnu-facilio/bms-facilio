@@ -27,7 +27,7 @@ public class FetchServiceAppointmentListCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         Long boardId = (Long) context.getOrDefault(FacilioConstants.Dispatcher.BOARD_ID,-1L);
-        long criteriaId = (long) context.get(FacilioConstants.ContextNames.CRITERIA);
+        Long criteriaId = (Long) context.getOrDefault(FacilioConstants.ContextNames.CRITERIA,-1L);
         String orderBy = (String) context.get(FacilioConstants.ContextNames.ORDER_BY);
         String orderType = (String) context.getOrDefault(FacilioConstants.ContextNames.ORDER_TYPE,"desc");
         ModuleBean moduleBean = Constants.getModBean();
@@ -60,10 +60,12 @@ public class FetchServiceAppointmentListCommand extends FacilioCommand {
         Criteria serverCriteria = new Criteria();
         serverCriteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID","fieldAgent",null, CommonOperators.IS_EMPTY));
 
-        Criteria viewCriteria = CriteriaAPI.getCriteria(orgId, criteriaId);
+        if(criteriaId != null && criteriaId>0) {
+            Criteria viewCriteria = CriteriaAPI.getCriteria(orgId, criteriaId);
 
-        if(viewCriteria != null){
-            serverCriteria.andCriteria(viewCriteria);
+            if (viewCriteria != null) {
+                serverCriteria.andCriteria(viewCriteria);
+            }
         }
         if(boardId != null && boardId > 0) {
             DispatcherSettingsContext board = DispatcherUtil.getDispatcher(boardId);
