@@ -127,6 +127,14 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "ae-production-user" ]; then
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
+if [ "$DEPLOYMENT_GROUP_NAME" = "ae-preprod" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-ae-preprod.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/log4j-ae-preprod.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
 if [ "$DEPLOYMENT_GROUP_NAME" = "ae-production-scheduler" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/awsprops-ae-scheduler.properties $CONF_DIR/awsprops.properties
@@ -171,6 +179,15 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "sp-production-user" ]; then
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
+if [ "$DEPLOYMENT_GROUP_NAME" = "sp-preprod" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-sp-preprod.properties $CONF_DIR/awsprops.properties
+	cp $FACILIO_HOME/deployment-files/log4j-sp-preprod.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/deployment-files/service-sp.yml $CONF_DIR/service.yml
+    cp $FACILIO_HOME/setenv-sp.sh $APP_HOME/bin/setenv.sh
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
 if [ "$DEPLOYMENT_GROUP_NAME" = "syd-kafka" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/awsprops-syd-kafka.properties $CONF_DIR/awsprops.properties
@@ -193,6 +210,17 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "syd-production-user-critical" ]; then
        cp $FACILIO_HOME/deployment-files/executors-production-au.xml $CONF_DIR/executors.xml
        cp $FACILIO_HOME/deployment-files/instantjobexecutors-production-au.yml $CONF_DIR/instantjobexecutors.yml
        cp $FACILIO_HOME/deployment-files/log4j-syd-user.properties $CLASSES_DIR/log4j.properties
+       cp $FACILIO_HOME/deployment-files/service-syd.yml $CONF_DIR/service.yml
+       cp $FACILIO_HOME/setenv-syd.sh $APP_HOME/bin/setenv.sh
+       echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "syd-preprod" ]; then
+   echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+       cp $FACILIO_HOME/deployment-files/awsprops-syd-preprod.properties $CONF_DIR/awsprops.properties
+       cp $FACILIO_HOME/deployment-files/executors-production-au.xml $CONF_DIR/executors.xml
+       cp $FACILIO_HOME/deployment-files/instantjobexecutors-production-au.yml $CONF_DIR/instantjobexecutors.yml
+       cp $FACILIO_HOME/deployment-files/log4j-syd-preprod.properties $CLASSES_DIR/log4j.properties
        cp $FACILIO_HOME/deployment-files/service-syd.yml $CONF_DIR/service.yml
        cp $FACILIO_HOME/setenv-syd.sh $APP_HOME/bin/setenv.sh
        echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
@@ -243,6 +271,14 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "uk-production-user" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/awsprops-uk-user.properties $CONF_DIR/awsprops.properties
     cp $FACILIO_HOME/deployment-files/log4j-uk-user.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/deployment-files/service-uk.yml $CONF_DIR/service.yml
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "uk-preprod" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-uk-preprod.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/log4j-uk-preprod.properties $CLASSES_DIR/log4j.properties
     cp $FACILIO_HOME/deployment-files/service-uk.yml $CONF_DIR/service.yml
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi

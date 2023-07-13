@@ -75,6 +75,8 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-ae-user.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-ae-preprod.properties
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-demo.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-user.properties
@@ -101,13 +103,19 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-syd-user.properties
     destination: /home/facilio/deployment-files/
+  - source: /log4j-syd-preprod.properties
+    destination: /home/facilio/deployment-files/
   - source: /log4j-syd-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-ae-user.properties
     destination: /home/facilio/deployment-files/
+  - source: /log4j-ae-preprod.properties
+    destination: /home/facilio/deployment-files/
   - source: /log4j-ae-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-uk-user.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-uk-preprod.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-uk-scheduler.properties
     destination: /home/facilio/deployment-files/
@@ -116,6 +124,8 @@ files:
   - source: /awsprops-uk-kafka.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-sp-user.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-sp-preprod.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-sp-scheduler.properties
     destination: /home/facilio/deployment-files/
@@ -127,13 +137,19 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-sp-user.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-sp-preprod.properties
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-uk-scheduler.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-uk-user.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-uk-preprod.properties
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-scheduler-critical.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-user-critical.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-syd-preprod.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-scheduler.properties
     destination: /home/facilio/deployment-files/

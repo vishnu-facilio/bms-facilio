@@ -169,6 +169,9 @@ public class FacilioProperties {
 
     private static String cloudAgentUrl;
     private static int maxProcessorThreads;
+
+    @Getter
+    private static String isNewVersion;
     @Getter
     private static String developerAppDomain;
 
@@ -432,6 +435,8 @@ public class FacilioProperties {
             thresholdWhiteListedUrls = parseCommaSeparatedProps("response.size.threshold.whitelist", whiteListedUrls);
             esDomain = PROPERTIES.getProperty("es.domain");
             esIndex = PROPERTIES.getProperty("es.index");
+            isNewVersion = PROPERTIES.getProperty("build.isNewVersion", "false");
+
 
             wmsBroadcaster = PROPERTIES.getProperty("wms.broadcaster");
             wmsConsumerEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("wms.enableConsumer", "true"));
