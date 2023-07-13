@@ -124,6 +124,12 @@
             <param name="viewName">{1}</param>
             <param name="type">count</param>
         </action>
+        <action name="picklist/*"
+                class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction"
+                method="pickList">
+            <param name="moduleName">{1}</param>
+            <param name="translationImpl">V3PickListTranslation</param>
+        </action>
         <action name="serviceAppointment/dispatch" class="com.facilio.fsm.actions.fsmAction" method="dispatchServiceAppointment">
         </action>
     </package>
