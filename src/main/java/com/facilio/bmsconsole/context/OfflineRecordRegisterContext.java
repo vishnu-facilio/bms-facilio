@@ -1,12 +1,10 @@
 package com.facilio.bmsconsole.context;
+import com.facilio.v3.context.V3Context;
 
-import com.facilio.chain.FacilioContext;
-
-public class OfflineRecordRegisterContext extends FacilioContext {
+public class OfflineRecordRegisterContext extends V3Context {
 
     private Long userMobileSettingId;
     private Long recordId;
-    private Long moduleId;
 
     public Long getUserMobileSettingId() {
         return userMobileSettingId;
@@ -23,12 +21,4 @@ public class OfflineRecordRegisterContext extends FacilioContext {
     public void setRecordId(Long recordId) {
         this.recordId = recordId;
     }
-
-    public Long getModuleId() {
-        return moduleId;
-    }
-
-    public void setModuleId(Long moduleId) {
-        this.moduleId = moduleId;
-    }
-}
+ }

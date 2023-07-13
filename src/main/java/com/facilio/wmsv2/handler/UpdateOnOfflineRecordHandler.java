@@ -5,7 +5,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.OfflineRecordRegisterContext;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.iam.accounts.util.IAMUserUtil;
@@ -73,9 +75,16 @@ public class UpdateOnOfflineRecordHandler extends BaseHandler{
 
             if (CollectionUtils.isNotEmpty(registeredRecords)) {
                 long orgId = AccountUtil.getCurrentOrg().getOrgId();
+                List<Long> recordsToBeDeleted = new ArrayList<>();
                 for (OfflineRecordRegisterContext registeredRecord : registeredRecords) {
                     if (registeredRecord != null) {
                         UserMobileSetting mobileSetting = mobileSettingHashMap.get((registeredRecord.getUserMobileSettingId()));
+
+                        if(mobileSetting == null){
+                            recordsToBeDeleted.add(registeredRecord.getId());
+                            continue;
+                        }
+
                         String mobileInstanceId = mobileSetting.getMobileInstanceId();
                         Boolean isFromPortal = mobileSetting.getFromPortal();
 
@@ -104,9 +113,22 @@ public class UpdateOnOfflineRecordHandler extends BaseHandler{
                         }
                     }
                 }
+                if(CollectionUtils.isNotEmpty(recordsToBeDeleted)){
+                    deleteOfflineRegisteredRecord(recordsToBeDeleted);
+                }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Exception on sending push notification ",e);
         }
+    }
+    public static void deleteOfflineRegisteredRecord(List<Long> ids) throws Exception {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(ids,","), NumberOperators.EQUALS));
+
+        GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getOfflineRecordRegisterModule().getTableName())
+                .andCriteria(criteria);
+
+        deleteBuilder.delete();
     }
 }
