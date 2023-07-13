@@ -55,6 +55,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private Collection<FacilioModule> joinModules;
 	private boolean ignoreSplNullHandling;
 	private boolean skipModuleCriteria = false;
+	private boolean skipScopeCriteria = false;
 	private StringJoiner sql = new StringJoiner(",");
 	private boolean allowSysModifiedFieldsProps = false;
 
@@ -235,6 +236,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 
+	public UpdateRecordBuilder<E> skipScopeCriteria() {
+		this.skipScopeCriteria = true;
+		this.selectBuilder.skipScopeCriteria();
+		return this;
+	}
+
 	@Override
 	public int update(E bean) throws Exception {
 		this.bean = bean;
@@ -315,8 +322,10 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 					whereCondition.andCondition(moduleCondition);
 
-					if (scopeFieldsAndCriteria != null && scopeFieldsAndCriteria.getCriteria() != null && !scopeFieldsAndCriteria.getCriteria().isEmpty()) {
-						whereCondition.andCriteria(scopeFieldsAndCriteria.getCriteria());
+					if(!skipScopeCriteria) {
+						if (scopeFieldsAndCriteria != null && scopeFieldsAndCriteria.getCriteria() != null && !scopeFieldsAndCriteria.getCriteria().isEmpty()) {
+							whereCondition.andCriteria(scopeFieldsAndCriteria.getCriteria());
+						}
 					}
 
 					if (module.isTrashEnabled() && !withDeleted) {
@@ -493,9 +502,10 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			prevModule = extendedModule;
 			extendedModule = extendedModule.getExtendModule();
 		}
-
-		if (scopeFieldsAndCriteria != null && CollectionUtils.isNotEmpty(scopeFieldsAndCriteria.getFields())) {
-			updateFields.addAll(scopeFieldsAndCriteria.getFields());
+		if(!skipScopeCriteria) {
+			if (scopeFieldsAndCriteria != null && CollectionUtils.isNotEmpty(scopeFieldsAndCriteria.getFields())) {
+				updateFields.addAll(scopeFieldsAndCriteria.getFields());
+			}
 		}
 		if (FieldUtil.isSystemFieldsPresent(module)) {
 			FacilioField sysCreatedTimeField = FieldFactory.getSystemField("sysCreatedTime",module.getParentModule());

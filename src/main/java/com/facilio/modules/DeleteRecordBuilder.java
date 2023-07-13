@@ -300,6 +300,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		List<Long> ids = getIds();
 		if(CollectionUtils.isNotEmpty(ids)) {
 			Condition idCondition = CriteriaAPI.getCondition(FieldFactory.getIdField(module.getParentModule()),ids, NumberOperators.EQUALS);
+			updateBuilder.skipModuleCriteria().skipScopeCriteria();
 			updateBuilder.fields(fields)
 							.andCondition(idCondition);
 			return updateBuilder.updateViaMap(prop);
