@@ -9,6 +9,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.command.PackageChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageContext;
+import org.apache.commons.collections4.CollectionUtils;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
@@ -16,13 +17,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Getter @Setter @Log4j
 public class PackageAction extends FacilioAction {
     private boolean fromAdminTool = false;
+    private List<Integer> skipComponents;
     private int packageType = 1;
     private String displayName;
     private Long sourceOrgId;
@@ -40,6 +43,13 @@ public class PackageAction extends FacilioAction {
         return displayName;
     }
 
+    public List<Integer> getSkipComponents() {
+        if (CollectionUtils.isEmpty(skipComponents)) {
+            skipComponents = new ArrayList<>();
+        }
+        return skipComponents;
+    }
+
     public String createAndInstallPackage() throws Exception{
         AccountUtil.setCurrentAccount(sourceOrgId);
 
@@ -50,6 +60,7 @@ public class PackageAction extends FacilioAction {
         context.put(PackageConstants.SOURCE_ORG_ID, sourceOrgId);
         context.put(PackageConstants.TARGET_ORG_ID, targetOrgId);
         context.put(PackageConstants.FROM_ADMIN_TOOL, fromAdminTool);
+        context.put(PackageConstants.SKIP_COMPONENTS, getSkipComponents());
         context.put(PackageConstants.PACKAGE_TYPE, PackageContext.PackageType.valueOf(packageType));
         createPackageChain.execute();
         LOGGER.info("####Sandbox - Completed Package creation");
@@ -84,6 +95,7 @@ public class PackageAction extends FacilioAction {
         context.put(PackageConstants.DISPLAY_NAME, getDisplayName());
         context.put(PackageConstants.SOURCE_ORG_ID, sourceOrgId);
         context.put(PackageConstants.FROM_ADMIN_TOOL, fromAdminTool);
+        context.put(PackageConstants.SKIP_COMPONENTS, getSkipComponents());
         context.put(PackageConstants.PACKAGE_TYPE, PackageContext.PackageType.valueOf(packageType));
         createPackageChain.execute();
         LOGGER.info("####Sandbox - Completed Package creation");
@@ -121,12 +133,12 @@ public class PackageAction extends FacilioAction {
         OrgBean orgBean = AccountUtil.getOrgBean();
         AccountUtil.setCurrentAccount(orgId);
         if(orgBean.getOrg(orgId)!=null){
-            Map<String, Object> orgProps = getOrgInfo(orgId,name);
+            Map<String, Object> orgProps = CommonCommandUtil.getOrgInfo(orgId,name);
             if(orgProps == null) {
-                insertOrgInfo(name,value);
+                CommonCommandUtil.insertOrgInfo(name,value);
             }
             else{
-                updateOrgInfo(name,value);
+                CommonCommandUtil.updateOrgInfo(name,value);
             }
         }
         JSONObject result = new JSONObject();

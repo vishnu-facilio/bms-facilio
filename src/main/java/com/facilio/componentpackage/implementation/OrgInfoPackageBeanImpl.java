@@ -1,7 +1,6 @@
 package com.facilio.componentpackage.implementation;
 
 import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
@@ -98,7 +97,7 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         IAMOrgBean orgBean = IAMUtil.getOrgBean();
         for (Map.Entry<Long, XMLBuilder> uniqueIdentifierVsComponent : idVsXMLComponents.entrySet()) {
             Long orgId = uniqueIdentifierVsComponent.getKey();

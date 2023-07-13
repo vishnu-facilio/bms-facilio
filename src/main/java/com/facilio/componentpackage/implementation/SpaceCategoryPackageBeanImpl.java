@@ -136,7 +136,7 @@ public class SpaceCategoryPackageBeanImpl implements PackageBean<V3SpaceCategory
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule("spacecategory");
         List<Long> keyList = new ArrayList<>(idVsXMLComponents.keySet());

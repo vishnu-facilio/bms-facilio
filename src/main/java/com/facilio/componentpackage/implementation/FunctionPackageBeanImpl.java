@@ -23,6 +23,8 @@ import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.lang3.StringUtils;
 import com.facilio.v3.context.Constants;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,6 +126,8 @@ public class FunctionPackageBeanImpl implements PackageBean<WorkflowUserFunction
             XMLBuilder element = idVsData.getValue();
 
             WorkflowUserFunctionContext userFunction = constructFunctionFromBuilder(element, linkNameVsNameSpaceId);
+            // create empty function & update function body on updateComponentFromXML
+            constructEmptyWorkFlowStr(userFunction);
             FacilioContext context = scriptBean.addFunction(userFunction);
 
             uniqueIdentifierVsComponentId.put(idVsData.getKey(), userFunction.getId());
@@ -132,7 +136,7 @@ public class FunctionPackageBeanImpl implements PackageBean<WorkflowUserFunction
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         ScriptBean scriptBean = Constants.getScriptBean();
         Map<String, Long> linkNameVsNameSpaceId = getNameSpaceLinkNameVsId();
 
@@ -140,6 +144,7 @@ public class FunctionPackageBeanImpl implements PackageBean<WorkflowUserFunction
             XMLBuilder element = idVsData.getValue();
 
             WorkflowUserFunctionContext userFunction = constructFunctionFromBuilder(element, linkNameVsNameSpaceId);
+            userFunction.setId(idVsData.getKey());
             FacilioContext context = scriptBean.updateFunction(userFunction);
         }
     }
@@ -221,5 +226,26 @@ public class FunctionPackageBeanImpl implements PackageBean<WorkflowUserFunction
             linkNameVsNameSpaceId = allNameSpace.stream().collect(Collectors.toMap(WorkflowNamespaceContext::getLinkName, WorkflowNamespaceContext::getId));
         }
         return linkNameVsNameSpaceId;
+    }
+
+    private void constructEmptyWorkFlowStr(WorkflowUserFunctionContext workflowUserFunctionContext) {
+        StringBuilder resultWorkFlowString = new StringBuilder();
+        String workflowV2String = workflowUserFunctionContext.getWorkflowV2String();
+        WorkflowFieldType returnTypeEnum = workflowUserFunctionContext.getReturnTypeEnum();
+
+        Pattern pattern = Pattern.compile("^[^{]*");
+        Matcher matcher = pattern.matcher(workflowV2String);
+        String functionCall = matcher.find() ? matcher.group().trim() : null;
+
+        if (StringUtils.isNotEmpty(functionCall)) {
+            resultWorkFlowString.append(functionCall);
+            resultWorkFlowString.append(" {\n");
+            if (returnTypeEnum != WorkflowFieldType.VOID) {
+                resultWorkFlowString.append("return null;");
+            }
+            resultWorkFlowString.append("\n}");
+
+            workflowUserFunctionContext.setWorkflowV2String(resultWorkFlowString.toString());
+        }
     }
 }

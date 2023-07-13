@@ -7,13 +7,10 @@ import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -220,7 +217,7 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
         ModuleBean moduleBean = Constants.getModBean();
         FacilioForm facilioForm;

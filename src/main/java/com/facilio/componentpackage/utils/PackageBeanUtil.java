@@ -29,6 +29,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -315,6 +316,31 @@ public class PackageBeanUtil {
             newCriteria.setConditions(newCriteriaConditions);
         }
         return newCriteria;
+    }
+
+    public static XMLBuilder constructBuilderFromWorkFlowContext(WorkflowContext workflowContext, XMLBuilder workFlowBuilder) throws Exception {
+        if (workflowContext == null) {
+            return workFlowBuilder;
+        }
+
+        workFlowBuilder.element(PackageConstants.WorkFlowRuleConstants.IS_V2_SCRIPT).text(String.valueOf(workflowContext.isV2Script()));
+        workFlowBuilder.element(PackageConstants.WorkFlowRuleConstants.WORKFLOW_STRING).cData(workflowContext.getWorkflowV2String());
+
+        return workFlowBuilder;
+    }
+
+    public static WorkflowContext constructWorkflowContextFromBuilder(XMLBuilder workFlowBuilder) {
+        if (workFlowBuilder == null) {
+            return null;
+        }
+
+        String v2WorkFlowStr = workFlowBuilder.getElement(PackageConstants.WorkFlowRuleConstants.WORKFLOW_STRING).getCData();
+        boolean isV2Script = Boolean.parseBoolean(workFlowBuilder.getElement(PackageConstants.WorkFlowRuleConstants.IS_V2_SCRIPT).getText());
+
+        WorkflowContext workflowContext = new WorkflowContext();
+        workflowContext.setWorkflowV2String(v2WorkFlowStr);
+        workflowContext.setIsV2Script(isV2Script);
+        return workflowContext;
     }
 
     public static List<Role> getAllRoles() throws Exception {

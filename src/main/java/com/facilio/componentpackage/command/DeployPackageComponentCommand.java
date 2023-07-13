@@ -1,5 +1,7 @@
 package com.facilio.componentpackage.command;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.cache.CacheUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
 import com.facilio.componentpackage.constants.ComponentType;
@@ -9,6 +11,7 @@ import com.facilio.componentpackage.context.PackageContext;
 import com.facilio.componentpackage.context.PackageFileContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.componentpackage.utils.PackageUtil;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -37,6 +40,7 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 		List<XMLBuilder> allComponents = packageConfigXML.getElement(PackageConstants.PackageXMLConstants.COMPONENTS)
 									.getFirstLevelElementListForTagName(PackageConstants.PackageXMLConstants.COMPONENT);
 		PackageFolderContext componentsFolder = rootFolder.getFolder(PackageConstants.COMPONENTS_FOLDER_NAME);
+		Map<ComponentType, Map<Long, XMLBuilder>> componentTypeVsUpdateComponentsList = new LinkedHashMap<>();
 
 		for(XMLBuilder component : allComponents) {
 			ComponentType componentType = ComponentType.valueOf(component.getAttribute(PackageConstants.PackageXMLConstants.COMPONENT_TYPE));
@@ -141,10 +145,16 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 			PackageUtil.addComponentsUIdVsComponentId(componentType, createdComponentIds);
 			checkForDuplicateUIds(componentType, mappingToAdd);
 
+			//Components - With ReUpdate
+			if (componentType.isReUpdateRequired()) {
+				Map<Long, XMLBuilder> componentIdVsXMLBuilderToReUpdate = getComponentIdVsXMLBuilderToReUpdate(createdComponentIds, createComponentList);
+				componentTypeVsUpdateComponentsList.put(componentType, componentIdVsXMLBuilderToReUpdate);
+			}
+
 			computeAndAddPackageChangeset(mappingToAdd, createdComponentIds);
 
 			//Update
-			componentType.getPackageComponentClassInstance().updateComponentFromXML(updateComponentList);
+			componentType.getPackageComponentClassInstance().updateComponentFromXML(updateComponentList, false);
 			if(CollectionUtils.isNotEmpty(mappingToUpdate)) {
 				PackageUtil.updatePackageMappingChangesets(mappingToUpdate);
 			}
@@ -157,8 +167,27 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 			LOGGER.info("####Sandbox - Completed Deploying ComponentType - " + componentType.name());
 		}
 
-		PackageUtil.clearInstallThread();
+		//ReUpdate
+		if (MapUtils.isNotEmpty(componentTypeVsUpdateComponentsList)) {
+			for (ComponentType componentType : componentTypeVsUpdateComponentsList.keySet()) {
+				LOGGER.info("####Sandbox - Started ReUpdate for ComponentType - " + componentType.name());
+				Map<Long, XMLBuilder> componentIdVsXMLBuilder = componentTypeVsUpdateComponentsList.get(componentType);
+				componentType.getPackageComponentClassInstance().updateComponentFromXML(componentIdVsXMLBuilder, true);
+				LOGGER.info("####Sandbox - Completed ReUpdate for ComponentType - " + componentType.name());
+			}
+		}
+
 		return false;
+	}
+
+	private Map<Long, XMLBuilder> getComponentIdVsXMLBuilderToReUpdate(Map<String, Long> createdComponentIds, Map<String, XMLBuilder> createComponentList) {
+		if(MapUtils.isNotEmpty(createdComponentIds)) {
+			Map<Long, XMLBuilder> componentIdVsXMLBuilder = createComponentList.keySet().stream()
+					.filter(createComponentList::containsKey)
+					.collect(Collectors.toMap(createdComponentIds::get, createComponentList::get, (a, b) -> b));
+			return componentIdVsXMLBuilder;
+		}
+		return null;
 	}
 
 	private void computeAndAddPackageChangeset(Map<String, PackageChangeSetMappingContext> uniqueIdVsMapping, Map<String, Long> uniqueIdVsComponentId) throws Exception {
@@ -200,11 +229,14 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 
 	@Override
 	public boolean postExecute() throws Exception {
+		LRUCache.purgeAllCache();
+		PackageUtil.clearInstallThread();
 		return false;
 	}
 
 	@Override
 	public void onError() throws Exception {
+		LRUCache.purgeAllCache();
 		PackageUtil.clearInstallThread();
 	}
 

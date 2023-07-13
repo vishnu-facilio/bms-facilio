@@ -1,9 +1,7 @@
 package com.facilio.componentpackage.implementation;
 
-import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.NewPermission;
-import com.facilio.accounts.impl.RoleBeanImpl;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -12,7 +10,6 @@ import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -105,7 +102,7 @@ public class NewPermissionPackageBeanImpl implements PackageBean<NewPermission> 
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         List<Map<String, Object>> tabProp = getTabProp();
         List<Map<String, Object>> roleProp = getRoleProp();
         for(Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()){

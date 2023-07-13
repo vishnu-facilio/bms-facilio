@@ -24,7 +24,8 @@ public class ValidateAndCreatePackageCommand extends FacilioCommand {
 		}
 		long createdUserId = (long) context.getOrDefault(PackageConstants.CREATED_USER_ID, -1l);
 		if(createdUserId <= 0) {
-			createdUserId = AccountUtil.getCurrentUser().getId();
+			createdUserId = AccountUtil.getCurrentUser() != null ? AccountUtil.getCurrentUser().getId()
+					: AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId()).getOuid();
 		}
 		packageContext = PackageUtil.createPackage(packageName, packageDisplayName, packageType, 1.0D, createdUserId);
 

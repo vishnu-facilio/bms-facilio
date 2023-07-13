@@ -139,7 +139,7 @@ public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> uniqueIdentifierVsComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> uniqueIdentifierVsComponents, boolean isReUpdate) throws Exception {
         String displayName, linkName, description;
         ApplicationContext applicationContext;
         long appId;

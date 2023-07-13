@@ -195,7 +195,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
         Map<Long, Map<String, Long>> layoutIdVsRouteVsGroupId = PackageBeanUtil.getAllWebTabGroups();
         Map<Long, Map<Integer, Long>> appIdVsDeviceIdVsLayoutId = PackageBeanUtil.getAllLayoutConfiguration();

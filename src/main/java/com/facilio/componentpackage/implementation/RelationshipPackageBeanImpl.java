@@ -2,7 +2,6 @@ package com.facilio.componentpackage.implementation;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
@@ -16,7 +15,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.EnumFieldValue;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationMappingContext;
@@ -130,7 +128,7 @@ public class RelationshipPackageBeanImpl implements PackageBean<RelationRequestC
 
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             long relationId = idVsData.getKey();
             XMLBuilder relationRequestElement = idVsData.getValue();

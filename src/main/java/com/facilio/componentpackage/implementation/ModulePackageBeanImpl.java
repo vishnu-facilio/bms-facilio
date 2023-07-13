@@ -3,7 +3,6 @@ package com.facilio.componentpackage.implementation;
 import com.facilio.componentpackage.constants.PackageConstants.ModuleXMLConstants;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
-import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -182,7 +181,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         String name, displayName, description;
         boolean stateFlowEnabled, isCustom;
 
@@ -218,6 +217,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
                 .select(Collections.singletonList(moduleIdField))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(1), NumberOperators.NOT_EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("custom"), String.valueOf(fetchCustom), BooleanOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("tableName"), "AssetCustomModuleData", StringOperators.ISN_T))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("type"), StringUtils.join(PackageBeanUtil.INCLUDE_MODULE_TYPES, ","), NumberOperators.EQUALS));
 
         List<Map<String, Object>> props = selectBuilder.get();
@@ -242,6 +242,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
         context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, null);
         context.put(FacilioConstants.ContextNames.FAILURE_REPORTING_ENABLED, false);
         context.put(PackageConstants.USE_LINKNAME_FROM_CONTEXT, true);
+        context.put(FacilioConstants.Module.SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK, true);
         addModulesChain.execute();
 
         FacilioModule newModule = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);

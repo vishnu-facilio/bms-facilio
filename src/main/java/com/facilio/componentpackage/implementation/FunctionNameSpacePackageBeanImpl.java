@@ -96,7 +96,7 @@ public class FunctionNameSpacePackageBeanImpl implements PackageBean<WorkflowNam
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         ScriptBean scriptBean = Constants.getScriptBean();
 
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {

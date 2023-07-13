@@ -16,6 +16,7 @@ public class PackageConstants {
     public static final String VALUE_ELEMENT = "Value_Element";
     public static final String PACKAGE_TYPE = "packageType";
     public static final String FROM_ADMIN_TOOL = "fromAdminTool";
+    public static final String SKIP_COMPONENTS = "skipComponents";
     public static final String COMPONENTS_FOLDER_NAME = "components";
     public static final String XML_FILE_EXTN = "xml";
     public static final String PACKAGE_CONTEXT = "packageContext";

@@ -3,21 +3,14 @@ package com.facilio.componentpackage.implementation;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
@@ -102,7 +95,7 @@ public class TicketCategoryPackageBeanImpl implements PackageBean<TicketCategory
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             long ticketCategoryId = idVsData.getKey();
             XMLBuilder ticketCategoryElement = idVsData.getValue();

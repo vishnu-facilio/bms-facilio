@@ -17,7 +17,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.xml.builder.XMLBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Command;
 import com.facilio.modules.FieldFactory;
 import com.facilio.accounts.dto.Role;
@@ -126,7 +125,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
 
             // Skip adding/ updating role if Role_App mapping is empty
             if (CollectionUtils.isEmpty(roleAppList)) {
-                LOGGER.info("####Sandbox - Skipping adding role since RoleAppList is null");
+                LOGGER.info("####Sandbox - Skipping adding role since RoleAppList is null for Rolename - " + role.getName());
                 continue;
             }
 
@@ -146,7 +145,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             long roleId = idVsData.getKey();

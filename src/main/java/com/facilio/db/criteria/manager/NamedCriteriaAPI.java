@@ -166,6 +166,33 @@ public class NamedCriteriaAPI {
         }
     }
 
+    public static void bulkDeleteCriteria(Collection<Long> ids) throws Exception {
+        try {
+            GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                    .table(ModuleFactory.getNamedCriteriaModule().getTableName())
+                    .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getNamedCriteriaModule()));
+            builder.delete();
+        } catch (SQLException ex) {
+            throw new IllegalArgumentException("Cannot delete this condition");
+        }
+    }
+
+    public static Map<Long, NamedCriteria> getAllNamedCriteriaAsMap(boolean populateChildren) throws Exception {
+        Map<Long, NamedCriteria> namedCriteriaMap = null;
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getNamedCriteriaModule().getTableName())
+                .select(FieldFactory.getNamedCriteriaFields());
+
+        List<NamedCriteria> namedCriteriaList = FieldUtil.getAsBeanListFromMapList(builder.get(), NamedCriteria.class);
+        if (populateChildren) {
+            populateChildren(namedCriteriaList);
+        }
+        if (CollectionUtils.isNotEmpty(namedCriteriaList)) {
+            namedCriteriaMap = namedCriteriaList.stream().collect(Collectors.toMap(NamedCriteria::getId, Function.identity()));
+        }
+        return namedCriteriaMap;
+    }
+
 //    public static NamedCriteria convertCriteriaToNamedCriteria(String name, long moduleId, Criteria criteria) throws Exception {
 //        NamedCriteria namedCriteria = new NamedCriteria();
 //        namedCriteria.setName(name);

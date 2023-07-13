@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,14 +20,15 @@ public class PopulateExistingChangesetMappingCommand extends FacilioCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-
+		List<Integer> skipComponents = (List<Integer>) context.getOrDefault(PackageConstants.SKIP_COMPONENTS, new ArrayList<>());
 		PackageContext packageContext = (PackageContext) context.get(PackageConstants.PACKAGE_CONTEXT);
 		for(ComponentType componentType : ComponentType.ORDERED_COMPONENT_TYPE_LIST) {
-			if(componentType.getComponentClass() == null) {
+			if(componentType.getComponentClass() == null || skipComponents.contains(componentType.getIndex()) ) {
 				continue;
 			}
 			PackageBean implClass = componentType.getPackageComponentClassInstance();
 
+			LOGGER.info("####Sandbox - Started Populating Changeset Mapping for ComponentType - " + componentType.name());
 			Map<Long, Long> systemComponentIdVsParentId = implClass.fetchSystemComponentIdsToPackage();
 			if (MapUtils.isNotEmpty(systemComponentIdVsParentId)) {
 				PackageUtil.createBulkChangesetMapping(packageContext.getId(), systemComponentIdVsParentId, packageContext.getVersion(),
@@ -38,6 +40,7 @@ public class PopulateExistingChangesetMappingCommand extends FacilioCommand {
 				PackageUtil.createBulkChangesetMapping(packageContext.getId(), customComponentIdVsParentId, packageContext.getVersion(),
 						componentType, false);
 			}
+			LOGGER.info("####Sandbox - Completed Populating Changeset Mapping for ComponentType - " + componentType.name());
 		}
 
 		return false;

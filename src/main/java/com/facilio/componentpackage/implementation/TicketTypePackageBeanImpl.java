@@ -9,14 +9,8 @@ import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
@@ -102,7 +96,7 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             long ticketTypeId = idVsData.getKey();
             XMLBuilder ticketTypeElement = idVsData.getValue();

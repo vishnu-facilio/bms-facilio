@@ -3,7 +3,6 @@ package com.facilio.componentpackage.implementation;
 import com.facilio.componentpackage.constants.PackageConstants.FieldXMLConstants;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
-import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
@@ -222,7 +221,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         for (Map.Entry<Long, XMLBuilder> uniqueIdentifierVsComponent : idVsXMLComponents.entrySet()) {
             Long fieldId = uniqueIdentifierVsComponent.getKey();
@@ -272,7 +271,8 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
                 .select(selectableFields)
                 .table(fieldsModule.getTableName())
                 .innerJoin("Modules").on("Fields.MODULEID = Modules.MODULEID")
-                .andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "type", StringUtils.join(PackageBeanUtil.INCLUDE_MODULE_TYPES, ","), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("Modules.TABLE_NAME", "tableName", "AssetCustomModuleData", StringOperators.ISN_T))
+                .andCondition(CriteriaAPI.getCondition("Modules.MODULE_TYPE", "type", StringUtils.join(PackageBeanUtil.INCLUDE_MODULE_TYPES, ","), NumberOperators.EQUALS))
                 ;
 
         if (!fetchCustom) {

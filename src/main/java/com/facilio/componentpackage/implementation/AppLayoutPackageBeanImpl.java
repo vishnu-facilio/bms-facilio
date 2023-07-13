@@ -134,7 +134,7 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
 
         ApplicationLayoutContext layoutContext;

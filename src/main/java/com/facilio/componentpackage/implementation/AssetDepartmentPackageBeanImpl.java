@@ -124,7 +124,7 @@ public class AssetDepartmentPackageBeanImpl implements PackageBean<V3AssetDepart
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule("assetdepartment");
         List<Long> keyList = new ArrayList<>(idVsXMLComponents.keySet());

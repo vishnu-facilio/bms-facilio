@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public enum ComponentType implements FacilioIntEnum {
 
     MODULE(ModulePackageBeanImpl.class, null, false),
-    FIELD(FieldPackageBeanImpl.class, MODULE, true),
+    FIELD(FieldPackageBeanImpl.class, MODULE, false),
     APP(AppPackageBeanImpl.class, null, false),
     ORG_INFO(OrgInfoPackageBeanImpl.class, null, false),
     ROLE(RolePackageBeanImpl.class, null, false),
@@ -50,7 +50,7 @@ public enum ComponentType implements FacilioIntEnum {
     CONNECTED_APP_CONNECTORS(null, CONNECTED_APP, false),
     FORM_RULE(FormRulePackageImpl.class, FORM, false),
     VALIDATION_RULE(null, MODULE, false),
-    NAMED_CRITERIA(null, MODULE, false),
+    NAMED_CRITERIA(NamedCriteriaPackageBeanImpl.class, MODULE, false),
     CUSTOM_BUTTON(null, MODULE, false),
     RELATIONSHIP(RelationshipPackageBeanImpl.class, MODULE, false),
     PERMISSION(NewPermissionPackageBeanImpl.class, null, false)

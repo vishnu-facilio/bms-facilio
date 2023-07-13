@@ -152,7 +152,7 @@ public class WorkflowRulePackageBeanImpl implements PackageBean<WorkflowRuleCont
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         WorkflowRuleContext workflowRuleContext;
 

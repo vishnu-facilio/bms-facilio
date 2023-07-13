@@ -2,13 +2,10 @@ package com.facilio.componentpackage.implementation;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
-import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.modules.fields.FacilioField;
@@ -18,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.xml.builder.XMLBuilder;
 import com.facilio.chain.FacilioContext;
@@ -26,7 +22,6 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioChain;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContext> {
     @Override
@@ -153,7 +148,7 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
         Map<Long, Map<Integer, Long>> appIdVsDeviceIdVsLayoutId = PackageBeanUtil.getAllLayoutConfiguration();
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
         WebTabGroupContext webTabGroupContext;
