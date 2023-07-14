@@ -10,23 +10,27 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.util.Collections;
 import java.util.List;
 @Getter @Setter
 public class NewUserListAction extends FacilioAction{
     private long appId;
-    private int page;
-    private int perPage = -1;
-
+    private List<Long> applicationIds;
+    private List<Long> teamIds;
+    private List<Long> defaultIds;
+    private String orderBy;
+    private String orderType;
+    private int page = 1;
+    private int perPage = 50;
     private SetupLayout setup;
 
     private List<User> users = null;
 
     private String filters;
-
-    private List<Long> defaultIds;
 
     private String search;
 
@@ -93,6 +97,23 @@ public class NewUserListAction extends FacilioAction{
         context.put(FacilioConstants.ContextNames.APP_ID, appId);
         chain.execute();
         setResult("users",context.get(FacilioConstants.ContextNames.USERS));
+        return SUCCESS;
+    }
+
+    public String getApplicationUsers() throws Exception {
+        if(page <= 0){
+            page = 1;
+        }
+        if (perPage == -1) {
+            perPage = 50;
+        }
+        int offset = ((page - 1) * perPage);
+        if (offset < 0) {
+            offset = 0;
+        }
+        List<User> users = AccountUtil.getOrgBean().getAppUsers(AccountUtil.getCurrentOrg().getOrgId(), -1, -1, false,
+                false, offset, perPage, search, null, true, teamIds, applicationIds, defaultIds, null, orderBy, orderType);
+        setResult("users",users);
         return SUCCESS;
     }
 }

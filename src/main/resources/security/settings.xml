@@ -1338,6 +1338,25 @@
             <property name="filters" type="string"/>
         </requestbody>
     </request>
+    <request path="/api/v1/setup/applicationUsers">
+        <requestbody type="object">
+            <property name="applicationIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+            <property name="teamIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+            <property name="defaultIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="search" type="string"/>
+            <property name="orderBy" type="string"/>
+            <property name="orderType" type="string"/>
+        </requestbody>
+    </request>
     <request path="/api/v2/forms/formSharing/addOrUpdate">
         <requestbody type="object">
             <property name="form" type="object">

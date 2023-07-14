@@ -614,6 +614,9 @@
             <param name="cache">org</param>
             <param name="permission">USER_MANAGEMENT,REQUESTERS</param>
         </action>
+        <action name="applicationUsers" class="com.facilio.bmsconsole.actions.NewUserListAction" method="getApplicationUsers">
+            <param name="permission">USER_MANAGEMENT,ALL</param>
+        </action>
     </package>
     <package name="decommission" namespace="/api/v1/setup/decommission" extends="v2Api">
         <action name="getChild" class="com.facilio.bmsconsole.actions.DecommissionAction" method="getChildOfResource" />
