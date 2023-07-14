@@ -76,18 +76,26 @@ public class CustomPageAction extends FacilioAction {
         boolean isNewPage = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PAGE_BUILDER) &&
                 ModuleSettingConfigUtil.isConfigEnabledForModule(moduleName, FacilioConstants.SettingConfigurationContextNames.PAGE_BUILDER);
         if(isNewPage || showNewPageBuilder) {
-            FacilioChain chain = ReadOnlyChainFactory.getPageForRecordChain();
-            FacilioContext context = chain.getContext();
-            context.put(FacilioConstants.ContextNames.APP_ID, getAppId());
-            context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
-            context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-            context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
-            context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, false);
-            context.put(FacilioConstants.CustomPage.TAB_NAME, getTabName());
-            chain.execute();
-            customPage = (PagesContext) context.get(FacilioConstants.CustomPage.CUSTOM_PAGE);
-            setResult("isNewPage", true);
-            setResult(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
+            try {
+                FacilioChain chain = ReadOnlyChainFactory.getPageForRecordChain();
+                FacilioContext context = chain.getContext();
+                context.put(FacilioConstants.ContextNames.APP_ID, getAppId());
+                context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+                context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+                context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
+                context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, false);
+                context.put(FacilioConstants.CustomPage.TAB_NAME, getTabName());
+                chain.execute();
+                customPage = (PagesContext) context.get(FacilioConstants.CustomPage.CUSTOM_PAGE);
+                setResult("isNewPage", true);
+                setResult(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
+            }
+            catch (Exception e) {
+                //temp hanlding of exception in fetching  new page
+                //TODO remove once every module is migrated with default page for all apps
+                LOGGER.error("Error occured while fetch new page for module -- "+moduleName+" and appId -- "+appId +" ##error, "+e);
+                customPage = null;
+            }
         }
 
         if(!isNewPage || customPage == null) {
@@ -169,6 +177,7 @@ public class CustomPageAction extends FacilioAction {
     }
 
     //Temp handlings
+    //TODO move this criteria api to fieldFramework, once it is completed
     public String getPageCriteriaFieldsForModule() throws Exception{
         FacilioChain chain = ReadOnlyChainFactory.getCriteriaFieldsForPageBuilderChain();
         FacilioContext context = chain.getContext();
