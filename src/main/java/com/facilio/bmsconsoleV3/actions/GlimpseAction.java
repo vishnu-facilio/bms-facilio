@@ -55,7 +55,7 @@ public class GlimpseAction extends RESTAPIHandler {
                 JSONObject result = (JSONObject) context.getOrDefault(FacilioConstants.ContextNames.GLIMPSE_RECORD, null);
 
                 if(result == null){
-                    this.setData("message","The information you were looking for does not exist, please contact your administrator.");
+                    this.setData("message","The information you were looking for does not exist.");
                     return ERROR;
                 }else{
                     this.setData(result);
