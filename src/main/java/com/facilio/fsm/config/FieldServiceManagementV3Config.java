@@ -118,5 +118,16 @@ public class FieldServiceManagementV3Config {
                 .delete()
                 .build();
     }
+    @Module(FacilioConstants.TimeSheet.TIME_SHEET)
+    public static Supplier<V3Config> getTimeSheet(){
+        return () -> new V3Config(TimeSheetContext.class,new ModuleCustomFieldCount30_BS2())
+                .create()
+                .update()
+                .list()
+                .summary()
+                .pickList()
+                .delete()
+                .build();
+    }
 
 }

@@ -73,6 +73,7 @@ public class GetModulesListCommand extends FacilioCommand {
 			FacilioConstants.TimeOff.TIME_OFF,
 			FacilioConstants.Territory.TERRITORY,
 			FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,
+			FacilioConstants.TimeSheet.TIME_SHEET,
 			ContextNames.FieldServiceManagement.SERVICE_ORDER,
 			ContextNames.FieldServiceManagement.SERVICE_TASK,
 			ContextNames.FieldServiceManagement.WORK_TYPE,

@@ -4606,4 +4606,9 @@ public class FacilioConstants {
 	public static class PeopleSkillLevel{
 		public static final String PEOPLE_SKILL_LEVEL = "peopleskilllevel";
 	}
+
+	public static class TimeSheet{
+		public static final String TIME_SHEET = "timeSheet";
+		public static final String TIME_SHEET_TASK = "timeSheetTask";
+	}
 }

@@ -9,9 +9,11 @@ import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.StringField;
 import com.facilio.v3.context.Constants;
 
@@ -28,6 +30,7 @@ public class TerritoryModule extends BaseModuleConfig {
         addTerritoryLookupInSite();
     }
     private void addTerritoryModule() throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
         List<FacilioModule> modules = new ArrayList<>();
         FacilioModule territoryModule = new FacilioModule(FacilioConstants.Territory.TERRITORY,"Territory","TERRITORY", FacilioModule.ModuleType.BASE_ENTITY,true);
         List<FacilioField> territoryFields = new ArrayList<>();
@@ -35,6 +38,26 @@ public class TerritoryModule extends BaseModuleConfig {
         territoryFields.add(new StringField(territoryModule,"description","Description",FacilioField.FieldDisplayType.TEXTAREA,"DESCRIPTION",FieldType.STRING,false,false,true,false));
         territoryFields.add(new StringField(territoryModule,"color","Territory Color",FacilioField.FieldDisplayType.COLOR_PICKER,"COLOR",FieldType.STRING,true,false,true,false));
         territoryFields.add(new StringField(territoryModule,"geography","Geography",FacilioField.FieldDisplayType.TEXTAREA,"GEO_JSON",FieldType.STRING,true,false,true,false));
+
+        LookupField moduleStateField = FieldFactory.getDefaultField("moduleState", "Status", "MODULE_STATE", FieldType.LOOKUP);
+        moduleStateField.setDefault(true);
+        moduleStateField.setLookupModule(moduleBean.getModule("ticketstatus"));
+        territoryFields.add(moduleStateField);
+
+        NumberField stateFlowIdField = FieldFactory.getDefaultField("stateFlowId", "State Flow Id", "STATE_FLOW_ID", FieldType.NUMBER);
+        stateFlowIdField.setDefault(true);
+        territoryFields.add(stateFlowIdField);
+
+        LookupField approvalStateField = FieldFactory.getDefaultField("approvalStatus", "Approval Status", "APPROVAL_STATE", FieldType.LOOKUP);
+        approvalStateField.setDefault(true);
+        approvalStateField.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        approvalStateField.setLookupModule(moduleBean.getModule("ticketstatus"));
+        territoryFields.add(approvalStateField);
+
+        NumberField approvalFlowIdField = FieldFactory.getDefaultField("approvalFlowId", "Approval Flow Id", "APPROVAL_FLOW_ID", FieldType.NUMBER);
+        approvalFlowIdField.setDefault(true);
+        territoryFields.add(approvalFlowIdField);
+
         territoryModule.setFields(territoryFields);
         modules.add(territoryModule);
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();

@@ -543,6 +543,7 @@ classes:
   - com.facilio.fsm.signup.ServiceOrderPlannedItemsModule
   - com.facilio.fsm.signup.ServiceOrderPlannedToolsModule
   - com.facilio.fsm.signup.ServiceOrderPlannedServicesModule
+  - com.facilio.fsm.signup.TimeSheetModule
 
   #Adding Location History Module
   - com.facilio.fsm.signup.LoctionHistoryModule

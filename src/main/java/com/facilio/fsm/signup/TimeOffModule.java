@@ -28,6 +28,7 @@ public class TimeOffModule extends BaseModuleConfig {
 
     @Override
     public void addData() throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
         List<FacilioModule> modules = new ArrayList<>();
         FacilioModule timeOffModule = new FacilioModule(FacilioConstants.TimeOff.TIME_OFF,"Time Off","Time_Off", FacilioModule.ModuleType.BASE_ENTITY,true);
 
@@ -48,6 +49,25 @@ public class TimeOffModule extends BaseModuleConfig {
         }).collect(Collectors.toList());
         EnumField typeField = new EnumField(timeOffModule,"type","Type", FacilioField.FieldDisplayType.SELECTBOX,"TYPE",FieldType.ENUM,true,false,true,true,typeValues);
         timeOffFields.add(typeField);
+
+        LookupField moduleStateField = FieldFactory.getDefaultField("moduleState", "Status", "MODULE_STATE", FieldType.LOOKUP);
+        moduleStateField.setDefault(true);
+        moduleStateField.setLookupModule(moduleBean.getModule("ticketstatus"));
+        timeOffFields.add(moduleStateField);
+
+        NumberField stateFlowIdField = FieldFactory.getDefaultField("stateFlowId", "State Flow Id", "STATE_FLOW_ID", FieldType.NUMBER);
+        stateFlowIdField.setDefault(true);
+        timeOffFields.add(stateFlowIdField);
+
+        LookupField approvalStateField = FieldFactory.getDefaultField("approvalStatus", "Approval Status", "APPROVAL_STATE", FieldType.LOOKUP);
+        approvalStateField.setDefault(true);
+        approvalStateField.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        approvalStateField.setLookupModule(moduleBean.getModule("ticketstatus"));
+        timeOffFields.add(approvalStateField);
+
+        NumberField approvalFlowIdField = FieldFactory.getDefaultField("approvalFlowId", "Approval Flow Id", "APPROVAL_FLOW_ID", FieldType.NUMBER);
+        approvalFlowIdField.setDefault(true);
+        timeOffFields.add(approvalFlowIdField);
 
         timeOffModule.setFields(timeOffFields);
         modules.add(timeOffModule);
