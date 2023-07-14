@@ -205,6 +205,7 @@ public class FacilioConstants {
 
 	public static class Module {
 		public static final String SYS_FIELDS_NEEDED = "sysFieldsNeeded";
+		public static final String USE_PEOPLE_LOOKUP = "usePeopleLookup";
 		public static final String IGNORE_MODIFIED_SYS_FIELDS = "ignoreModifiedSysFields";
 		public static final String SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK = "skipExistingModuleWithSameNameCheck";
 	}
@@ -2872,6 +2873,10 @@ public class FacilioConstants {
 			public static final String SERVICE_TASK = "serviceTask";
 			public static final String SERVICE_TASK_ATTACHMENTS = "serviceTaskAttachments";
 			public static final String SERVICE_TASK_SKILLS = "serviceTaskSkills";
+			public static final String SERVICE_ORDER_PLANNED_ITEMS = "serviceOrderPlannedItems";
+			public static final String SERVICE_ORDER_PLANNED_TOOLS = "serviceOrderPlannedTools";
+			public static final String SERVICE_ORDER_PLANNED_SERVICES = "serviceOrderPlannedServices";
+
 		}
 		// etisalat changes
 		public static final String BILL_ALERT = "custom_alert";
