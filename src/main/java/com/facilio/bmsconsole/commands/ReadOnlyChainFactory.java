@@ -3545,6 +3545,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain fetchRolesAppsChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetRolesAppsCommand());
+	    return c;
 	}
 	public static FacilioChain getDispatcherConfig(){
 		FacilioChain c = getDefaultChain();

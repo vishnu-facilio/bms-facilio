@@ -4566,7 +4566,6 @@ public class FacilioConstants {
     public static class Relationship {
 		public static final String INCLUDE_HIDDEN_RELATIONS = "includeHiddenRelations";
 	}
-	public static class Dispatcher{
 	public static class Dispatcher {
 		public static final String DISPATCHER_CONFIG = "dispatcherConfig";
 		public static final String DISPATCHER = "dispatcher";
