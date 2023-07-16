@@ -8,13 +8,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormActionType;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormRuleActionContext;
@@ -237,17 +238,13 @@ public class FormRuleAPI {
 			if(formRuleActionFields.getCriteria() != null) {
 
 				long formFieldId = formRuleActionFields.getFormFieldId();
-				FormField formField = null;
-				FacilioForm facilioForm = null;
-				if(formFieldId>0) {
-					formField = FormsAPI.getFormFieldFromId(formFieldId);
+
+				String moduleName = getModuleNameFromFormField(formFieldId,formRuleActionContext);
+				
+				if(StringUtils.isNotEmpty(moduleName) && formRuleActionFields.getCriteria()!=null) {
+					CriteriaAPI.updateConditionField(moduleName, formRuleActionFields.getCriteria());
 				}
-				if(formField!=null && formField.getFormId()>0) {
-					facilioForm = FormsAPI.getFormFromDB(formField.getFormId());
-				}
-				if(facilioForm != null && facilioForm.getModule().getName()!=null) {
-					CriteriaAPI.updateConditionField(facilioForm.getModule().getName(), formRuleActionFields.getCriteria());
-				}
+
 				long id = CriteriaAPI.addCriteria(formRuleActionFields.getCriteria(), AccountUtil.getCurrentOrg().getId());
 				formRuleActionFields.setCriteriaId(id);
 			}
@@ -260,7 +257,36 @@ public class FormRuleAPI {
 		insertBuilder.save();
 
 	}
-	
+
+	public static String getModuleNameFromFormField(long formFieldId, FormRuleActionContext formRuleActionContext) throws Exception{
+
+		FormField formField = null;
+		String moduleName = null;
+		FacilioField field = null;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		if(formFieldId>0) {
+			formField = FormsAPI.getFormFieldFromId(formFieldId);
+		}
+
+		FacilioUtil.throwIllegalArgumentException(formField == null, "Invalid Form Field Configured.");
+
+		if(formField.getField()==null && formField.getFieldId()>0){
+			field = modBean.getField(formField.getFieldId());
+		}else{
+			field=formField.getField();
+		}
+
+		if(field!=null && formRuleActionContext.getActionTypeEnum() == FormActionType.APPLY_FILTER && field instanceof LookupField){
+			moduleName = ((LookupField) field).getLookupModule().getName();
+		}
+		if(field!=null && formRuleActionContext.getActionTypeEnum() != FormActionType.APPLY_FILTER){
+			moduleName = field.getModule().getName();
+		}
+
+		return moduleName;
+
+	}
 	public static void updateFormRuleContext(FormRuleContext formRuleContext) throws Exception {
 		
 		
