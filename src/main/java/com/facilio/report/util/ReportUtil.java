@@ -368,13 +368,16 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 			}
 			if(moduleIds != null && !moduleIds.isEmpty())
 			{
-				FacilioChain chain = ReadOnlyChainFactory.getAutomationModules();
+				FacilioChain chain = ReadOnlyChainFactory.geAllModulesChain();
 				FacilioContext context = chain.getContext();
 				chain.execute();
-				List<FacilioModule> modules = (ArrayList) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+				List<JSONObject> modules = (ArrayList<JSONObject>)context.get("systemModules");
+				List<JSONObject> customModules = (ArrayList<JSONObject>)context.get("customModules");
+				modules.addAll(customModules);
+
 				List<Long> moduleIds_list = new ArrayList<>();
-				for(FacilioModule module_obj : modules){
-					moduleIds_list.add(module_obj.getModuleId());
+				for(JSONObject module_obj : modules){
+					moduleIds_list.add((Long)module_obj.get("moduleId"));
 				}
 				if(isPivot || isAnalyticsReport)
 				{
