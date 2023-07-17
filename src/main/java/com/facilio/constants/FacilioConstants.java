@@ -4600,6 +4600,7 @@ public class FacilioConstants {
 		public static final String FIELD_AGENT_ID = "fieldAgentId";
 		public static final String FIELD_AGENT = "fieldAgent";
 		public static final String SERVICE_APPOINTMENT_ACTIVITY = "serviceAppointmentActivity";
+		public static final String SERVICE_APPOINTMENT_CRAFT = "serviceAppointmentCraft";
 	}
 
 

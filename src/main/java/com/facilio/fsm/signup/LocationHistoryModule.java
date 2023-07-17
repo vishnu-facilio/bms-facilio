@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class LoctionHistoryModule extends SignUpData {
+public class LocationHistoryModule extends SignUpData {
     @Override
     public void addData() throws Exception {
         try {

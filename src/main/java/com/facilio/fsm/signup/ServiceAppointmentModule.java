@@ -33,6 +33,9 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             addServiceTasksField();
             addServiceAppointmentFieldInServiceTask();
             addStateFlow();
+            addServiceAppointmentCraftModule();
+            addCraftField();
+            addServiceAppointmentFieldInCraft();
     }
     private void addServiceAppointmentModule() throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
@@ -138,7 +141,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         responseDueStatus.setEnumName("AppointmentDueStatus");
         serviceAppointmentFields.add(responseDueStatus);
 
-        SystemEnumField resolutionDueStatus = FieldFactory.getDefaultField("resolutionDuesStatus","Resolution Due Status","RESOLUTION_DUE_STATUS",FieldType.SYSTEM_ENUM);
+        SystemEnumField resolutionDueStatus = FieldFactory.getDefaultField("resolutionDueStatus","Resolution Due Status","RESOLUTION_DUE_STATUS",FieldType.SYSTEM_ENUM);
         resolutionDueStatus.setEnumName("AppointmentDueStatus");
         serviceAppointmentFields.add(resolutionDueStatus);
 
@@ -311,6 +314,46 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         stateFlowRuleContext.setDefaultStateId(scheduledStatus.getId());
         stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
         WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
+    }
+    private static void addServiceAppointmentCraftModule() throws Exception{
+        List<FacilioModule> modules = new ArrayList<>();
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule craftModule = modBean.getModule(FacilioConstants.ContextNames.SKILL);
+        FacilioModule serviceAppointmentModule = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        FacilioModule serviceAppointmentCraftModule = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_CRAFT,"Service Appointment Crafts","SERVICE_APPOINTMENT_CRAFT_REL",FacilioModule.ModuleType.SUB_ENTITY,true);
+        List<FacilioField> fields = new ArrayList<>();
+        LookupField craftField = new LookupField(serviceAppointmentCraftModule,"right","Crafts",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"CRAFT_ID",FieldType.LOOKUP,true,false,true,false,"Crafts",craftModule);
+        fields.add(craftField);
+        LookupField serviceAppointmentField = new LookupField(serviceAppointmentCraftModule,"left","Service Appointment", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_APPOINTMENT_ID",FieldType.LOOKUP,true,false,true,true,"Service Appointments",serviceAppointmentModule);
+        fields.add(serviceAppointmentField);
+        serviceAppointmentCraftModule.setFields(fields);
+        modules.add(serviceAppointmentCraftModule);
+        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+        addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain.execute();
+    }
+    private static void addCraftField() throws Exception{
+        ModuleBean modBean = Constants.getModBean();
+        List<FacilioField>fields = new ArrayList<>();
+        MultiLookupField multiLookupCraftField = FieldFactory.getDefaultField("crafts", "Crafts", null, FieldType.MULTI_LOOKUP);
+        multiLookupCraftField.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
+        multiLookupCraftField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
+        multiLookupCraftField.setLookupModule( modBean.getModule(FacilioConstants.ContextNames.SKILL));
+        multiLookupCraftField.setRelModule(modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_CRAFT));
+        multiLookupCraftField.setRelModuleId(modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_CRAFT).getModuleId());
+        fields.add(multiLookupCraftField);
+        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
+        chain.execute();
+    }
+    private void addServiceAppointmentFieldInCraft() throws Exception{
+        ModuleBean bean = Constants.getModBean();
+        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Service Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
+        serviceAppointment.setModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.SKILL),"Craft module doesn't exist."));
+        serviceAppointment.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),"Service Appointment module doesn't exist."));
+        bean.addField(serviceAppointment);
     }
 
 }
