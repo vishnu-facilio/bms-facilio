@@ -8,7 +8,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.report.context.ReportPivotParamsContext;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -28,6 +33,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.util.ReportUtil;
+import org.json.simple.parser.JSONParser;
 
 public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(GetDbTimeLineFilterToWidgetMapping.class.getName());
@@ -104,7 +110,20 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 					chartWidget.getNewReportId();
 					ReportContext report = ReportUtil.getReport(chartWidget.getNewReportId(), true);
 
-					if (report.getTypeEnum() == ReportType.WORKORDER_REPORT)// modular report
+					if(report.getTypeEnum() == ReportType.PIVOT_REPORT){
+						JSONParser parser = new JSONParser();
+						ReportPivotParamsContext pivotparams = FieldUtil.getAsBeanFromJson(
+								(JSONObject) parser.parse(report.getTabularState()), ReportPivotParamsContext.class);
+						if(pivotparams.getDateOperator() > 0 && pivotparams.getDateFieldId() > 0)
+						{
+							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							FacilioField field = modBean.getField(pivotparams.getDateFieldId());
+							if(field != null){
+								dateField=new HashMap<>(Collections.singletonMap("dateField", field.getName()));
+							}
+						}
+					}
+					else if (report.getTypeEnum() == ReportType.WORKORDER_REPORT)// modular report
 					{
 
 						if (report.getDateOperator() > -1) {

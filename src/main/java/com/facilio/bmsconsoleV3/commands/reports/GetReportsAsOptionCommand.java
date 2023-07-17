@@ -34,7 +34,7 @@ public class GetReportsAsOptionCommand extends FacilioCommand {
         Boolean isPivot = (Boolean) context.get("isPivot");
         Long appId = (Long) context.get("appId");
         String moduleName = (String) context.get("moduleName");
-        if (false && webtabId != null && webtabId > 0) {
+        if (webtabId != null && webtabId > 0) {
             List<Long> moduleIds = getAllWebTabModules(webtabId, isPivot);
             if (moduleIds != null) {
                 HashMap<Long, Long> moduleId_vs_id = new HashMap<>();
