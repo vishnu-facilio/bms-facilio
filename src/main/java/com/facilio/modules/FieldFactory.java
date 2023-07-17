@@ -2306,6 +2306,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("commentsJsonStr","COMMENTS",module,FieldType.STRING));
         fields.add(getField("isSkip","IS_SKIP",module,FieldType.BOOLEAN));
         fields.add(getField("woCriteriaId","CRITERIA_ID",module,FieldType.LOOKUP));
+        fields.add(getField("isRecommendationAsTask","IS_WO_TASK_ENABLED",module,FieldType.BOOLEAN));
+        fields.add(getField("isPossibleCauseAsDesc","IS_WO_DESC_ENABLED",module,FieldType.BOOLEAN));
 
         return fields;
     }

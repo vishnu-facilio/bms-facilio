@@ -9,7 +9,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
-import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -17,9 +16,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 @Log4j
@@ -34,30 +31,35 @@ public class ReadingRuleWorkOrderRelContext extends WorkflowRuleContext {
     Boolean isSkip;
     Long woCriteriaId;
     Criteria woCriteria;
-
-    public JSONObject  getComments(){
+    Boolean isRecommendationAsTask;
+    Boolean isPossibleCauseAsDesc;
+    public JSONObject getComments() {
         return comments;
     }
-    public void setComments(JSONObject jsonStr){
-        this.comments=jsonStr;
+
+    public void setComments(JSONObject jsonStr) {
+        this.comments = jsonStr;
     }
+
     public String getCommentsJsonStr() {
-        if(comments != null) {
+        if (comments != null) {
             return comments.toJSONString();
         }
         return null;
     }
+
     public void setCommentsJsonStr(String jsonStr) throws ParseException {
-        if(jsonStr != null) {
+        if (jsonStr != null) {
             JSONParser parser = new JSONParser();
             comments = (JSONObject) parser.parse(jsonStr);
         }
     }
+
     public Map<String, Object> constructPlaceHolders(String moduleName, Object record, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
-        BaseAlarmContext baseAlarm=(BaseAlarmContext)record;
-        Long ruleId=((ReadingAlarm)baseAlarm).getRule().getId();
-        NewReadingRuleContext newReadingRule= NewReadingRuleAPI.getReadingRules(Collections.singletonList(ruleId)).get(0);
-        recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(FacilioConstants.ReadingRules.NEW_READING_RULE,newReadingRule,recordPlaceHolders);
+        BaseAlarmContext baseAlarm = (BaseAlarmContext) record;
+        Long ruleId = ((ReadingAlarm) baseAlarm).getRule().getId();
+        NewReadingRuleContext newReadingRule = NewReadingRuleAPI.getReadingRules(Collections.singletonList(ruleId)).get(0);
+        recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(FacilioConstants.ReadingRules.NEW_READING_RULE, newReadingRule, recordPlaceHolders);
         Map<String, Object> rulePlaceHolders = super.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
         return rulePlaceHolders;
     }

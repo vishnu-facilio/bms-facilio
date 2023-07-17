@@ -114,7 +114,7 @@ public class NewReadingRuleAPI {
         readingRule.setNs(nsCtx);
     }
 
-    private static void fetchAndUpdateAlarmDetails(NewReadingRuleContext readingRule) throws Exception {
+    public static void fetchAndUpdateAlarmDetails(NewReadingRuleContext readingRule) throws Exception {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
         selectBuilder.select(FieldFactory.getRuleAlarmDetailsFields())
                 .table(ModuleFactory.getRuleAlarmDetailsModule().getTableName()) //Table:New_Reading_Rule_AlarmDetails

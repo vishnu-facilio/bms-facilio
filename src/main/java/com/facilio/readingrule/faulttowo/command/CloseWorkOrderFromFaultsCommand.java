@@ -1,6 +1,7 @@
 package com.facilio.readingrule.faulttowo.command;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.UpdateWorkOrderCommand;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
@@ -14,8 +15,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
-import com.facilio.readingrule.faulttowo.RuleWoAPI;
 import com.facilio.readingrule.faulttowo.ReadingRuleWorkOrderRelContext;
+import com.facilio.readingrule.faulttowo.RuleWoAPI;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -30,18 +31,22 @@ public class CloseWorkOrderFromFaultsCommand extends FacilioCommand {
                 JSONObject template = (JSONObject) context.get(FacilioConstants.ContextNames.TEMPLATE_JSON);
                 workflowRuleContext.setCriteria(CriteriaAPI.getCriteria(workflowRuleContext.getWoCriteriaId()));
                 WorkOrderContext workOrderContext = WorkOrderAPI.getWorkOrderByCriteria(baseAlarmContext.getLastWoId(), workflowRuleContext.getCriteria());
+
                 if (workOrderContext != null) {
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                     FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TICKET);
                     context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrderContext);
+
                     Object obj = template.get("new_state");
                     Long statusVal = Long.parseLong((String) obj);
                     FacilioStatus status = TicketAPI.getStatus(statusVal);
+
                     if (workOrderContext.getStatus() != status) {
                         StateFlowRulesAPI.updateState(workOrderContext, module, status, false, context);
                         NoteContext note = addWoStateChangeNotes(workflowRuleContext, baseAlarmContext, workOrderContext.getId());
                         RuleWoAPI.addWorkOrderNotesFromAlarms(note, context);
                     }
+
                 }
             }
         }
