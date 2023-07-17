@@ -129,5 +129,15 @@ public class FieldServiceManagementV3Config {
                 .delete()
                 .build();
     }
+    @Module(FacilioConstants.Trip.TRIP)
+    public static Supplier<V3Config> getTrip(){
+        return () -> new V3Config(TripContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
 
 }

@@ -4612,4 +4612,7 @@ public class FacilioConstants {
 		public static final String TIME_SHEET = "timeSheet";
 		public static final String TIME_SHEET_TASK = "timeSheetTask";
 	}
+	public static class Trip{
+		public static final String TRIP = "trip";
+	}
 }
