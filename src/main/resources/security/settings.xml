@@ -2040,6 +2040,18 @@
         </urlparams>
     </request>
 
+    <request path="/api/v2/fields/advancedFilter/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/fields/sortable/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v3/internal/dc/getConnectedDevice">
         <urlparams>
             <property name="connectedDeviceId" type="number" mandatory="true"/>
