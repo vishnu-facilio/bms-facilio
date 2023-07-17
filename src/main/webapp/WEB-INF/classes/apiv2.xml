@@ -2807,6 +2807,19 @@
 		</action>
 	</package>
 
+	<package name="fieldsAPI" namespace="/api/v2/fields" extends="v2Api">
+		<action name="advancedFilter/*"
+				class="com.facilio.fields.actions.FieldsAction"
+				method="fetchFilterFields">
+		<param name="moduleName">{1}</param>
+		</action>
+		<action name="sortable/*"
+				class="com.facilio.fields.actions.FieldsAction"
+				method="fetchSortableFields">
+		<param name="moduleName">{1}</param>
+		</action>
+	</package>
+
 	<package name="readingFieldLatestValuesApiv2"
 		namespace="/api/v2/reading" extends="v2Api">
 		<action name="set"

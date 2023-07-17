@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.commands.anomaly.GetEnergyByCDDCommand;
 import com.facilio.bmsconsole.commands.filters.FetchOperatorsForFiltersCommand;
 import com.facilio.bmsconsole.commands.filters.HandleFilterFieldsCommand;
 import com.facilio.bmsconsole.commands.module.GetAllModulesCommand;
+import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
 import com.facilio.bmsconsole.commands.people.FetchScopingForPeopleCommand;
 import com.facilio.bmsconsole.commands.picklist.ConstructFieldOptionForPicklist;
 import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPicklist;
@@ -40,6 +41,7 @@ import com.facilio.delegate.command.GetAllMyDelegationCommand;
 import com.facilio.emailtemplate.command.GetAllEmailTemplatesCommand;
 import com.facilio.emailtemplate.command.GetEmailStructureCommand;
 import com.facilio.energystar.command.*;
+import com.facilio.fields.commands.FilterFieldsByPermissionCommand;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.permission.commands.FetchPermissionSetsForUserCommand;
 import com.facilio.readingkpi.commands.list.FetchResourceNamesForKpiLogger;
@@ -3061,6 +3063,22 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getAdvancedFilterFieldsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetFieldsByAccessType());
+		chain.addCommand(new FilterFieldsByPermissionCommand());
+		chain.addCommand(new HandleFilterFieldsCommand());
+
+		return chain;
+	}
+
+	public static FacilioChain getSortableFieldsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetFieldsByAccessType());
+		c.addCommand(new FilterFieldsByPermissionCommand());
+		c.addCommand(new GetSortableFieldsCommand());
+		return c;
+	}
 	public static FacilioChain getFilterOperators() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new FetchOperatorsForFiltersCommand());
