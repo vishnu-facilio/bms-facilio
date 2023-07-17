@@ -1753,4 +1753,46 @@
        <action name="migrateTabs" class="com.facilio.bmsconsoleV3.actions.MigrationAction" method="oldAppMigration"/>
        <action name="appRedirection" class="com.facilio.bmsconsoleV3.actions.MigrationAction" method="getProperRedirectUrl"/>
    </package>
+    <package name="workorderBulkUpdate" extends="v3Api" namespace="/api/v3/bulkupdate/workorder">
+        <action name="update"
+                class="com.facilio.bulkUpdateV2.WorkorderBulkUpdateAction"
+                method="workorderBulkUpdate">
+            <param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;</param>
+            <param name="checkPermission">true</param>
+        </action>
+        <action name="fetchFields"
+                class="com.facilio.bulkUpdateV2.WorkorderBulkUpdateAction"
+                method="fetchBulkUpdateWorkorderFields">
+            <param name="moduleName">workorder</param>
+        </action>
+    </package>
+
+    <package name="ppmBulkUpdate" extends="v3Api" namespace="/api/v3/bulkupdate/plannedmaintenance">
+        <action name="update"
+                class="com.facilio.bulkUpdateV2.WorkorderBulkUpdateAction"
+                method="pmBulkUpdate">
+            <param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;</param>
+            <param name="checkPermission">true</param>
+        </action>
+        <action name="fetchFields"
+                class="com.facilio.bulkUpdateV2.WorkorderBulkUpdateAction"
+                method="fetchBulkUpdatePmFields">
+            <param name="moduleName">plannedmaintenance</param>
+        </action>
+
+        <action name="publish"
+                class="com.facilio.bulkUpdateV2.WorkorderBulkUpdateAction"
+                method="pmBulkPublish">
+        </action>
+    </package>
+
+    <package name="bulkActionLimit" extends="v3Api" namespace="/api/v3/bulkaction/limit">
+        <action name="fetch"
+                class="com.facilio.bulkUpdateV2.WorkorderBulkUpdateAction"
+                method="fetchBulkActionLimit">
+            <param name="moduleName">{1}</param>
+        </action>
+    </package>
+
+
 </struts>

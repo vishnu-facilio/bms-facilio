@@ -3328,6 +3328,10 @@ public class FacilioConstants {
 		public static final String NOTES_EDIT_AVAILABLE = "notesEditAvailable";
 		public static final String ODATA_READING_RECORDS_LIMIT = "odataReadingRecordsLimit";
 		public static final String ODATA_MODULE_RECORDS_LIMIT = "odataModuleRecordsLimit";
+
+		public static final String WORK_ORDER_BULKUPDATE = "workorderbulkupdate";
+		public static final String PPM_BULKUPDATE = "ppmbulkupdate";
+		public static final String PPM_BULKPUBLISH = "ppmbulkpublish";
 	}
 
 	public static class Services {

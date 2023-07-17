@@ -2703,4 +2703,60 @@
             </property>
         </requestbody>
     </request>
+
+    <request path="/api/v3/bulkupdate/workorder/update" method="POST">
+        <requestbody type="object">
+            <property name="count" type="number"/>
+            <property name="data" type="object" >
+                <property name="workorder" type="array">
+                    <items type="object"/>
+                </property>
+            </property>
+            <property name="moduleName" type="string"/>
+            <property name="viewName" type="string"/>
+            <property name="filters" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/bulkupdate/plannedmaintenance/update" method="POST">
+        <requestbody type="object">
+            <property name="count" type="number"/>
+            <property name="data" type="object" >
+                <property name="plannedmaintenance" type="array">
+                    <items type="object"/>
+                </property>
+            </property>
+            <property name="moduleName" type="string"/>
+            <property name="viewName" type="string"/>
+            <property name="filters" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/bulkupdate/plannedmaintenance/publish" method="POST">
+        <requestbody type="object">
+            <property name="moduleName" type="string"/>
+            <property name="viewName" type="string"/>
+            <property name="filters" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/bulkupdate/workorder/fetchFields" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/bulkupdate/plannedmaintenance/fetchFields" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/bulkaction/limit/fetch" method="GET">
+        <urlparams>
+            <property name="actionName" type="string" />
+        </urlparams>
+    </request>
+
+
 </config>

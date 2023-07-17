@@ -38,8 +38,22 @@ public class WorkpermitPageFactory extends PageFactory {
 		addPortalDetailsWidget(tab1Sec1);
 		Section tab1Sec3 = page.new Section();
 		tab1.addSection(tab1Sec3);
-		addRelatedListWidgets(tab1Sec3, module.getModuleId());
 		addCommonSubModuleWidget(tab1Sec3, module, workpermit);
+
+		Page.Tab tab2 = page.new Tab("History");
+		page.addTab(tab2);
+		Page.Section tab2Sec1 = page.new Section();
+		tab2.addSection(tab2Sec1);
+		PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY);
+		activityWidget.addToLayoutParams(tab2Sec1, 24, 3);
+		activityWidget.addToWidgetParams("activityModuleName", FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_ACTIVITY);
+		tab2Sec1.addWidget(activityWidget);
+
+		Page.Tab tab3 = page.new Tab("Related");
+		page.addTab(tab3);
+		Section tab3Sec1 = getRelatedListSectionObj(page);
+		tab3.addSection(tab3Sec1);
+		addRelatedListWidgets(tab3Sec1, module.getModuleId());
 
 		return page;
 	}
@@ -57,17 +71,21 @@ public class WorkpermitPageFactory extends PageFactory {
 		tab1Sec1.addWidget(previewWidget);
 
 
-		Page.Tab tab2 = page.new Tab("Notes & Attachments");
+		Page.Tab tab2 = page.new Tab("Notes & Information");
 		page.addTab(tab2);
 		Page.Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
+		addPortalDetailsWidget(tab2Sec1);
+		Page.Section tab2Sec2 = page.new Section();
+		tab2.addSection(tab2Sec2);
+
 		PageWidget notesWidget = new PageWidget(PageWidget.WidgetType.COMMENT);
 		notesWidget.setTitle("Notes");
-		notesWidget.addToLayoutParams(tab2Sec1, 24, 8);
+		notesWidget.addToLayoutParams(tab2Sec2, 24, 8);
 		tab2Sec1.addWidget(notesWidget);
 
 		PageWidget attachmentWidget = new PageWidget(PageWidget.WidgetType.ATTACHMENT);
-		attachmentWidget.addToLayoutParams(tab2Sec1, 24, 6);
+		attachmentWidget.addToLayoutParams(tab2Sec2, 24, 6);
 		attachmentWidget.setTitle("Attachments");
 		tab2Sec1.addWidget(attachmentWidget);
 
@@ -82,14 +100,22 @@ public class WorkpermitPageFactory extends PageFactory {
 		tab4Sec1.addWidget(activityWidget);
 
 		Page.Tab tab5 = page.new Tab("Related");
-		boolean isRelationshipNeeded = addRelationshipSection(page, tab5, module.getModuleId());
-		Page.Section tab5Sec1 = getRelatedListSectionObj(page);
+		page.addTab(tab5);
+		Page.Section tab5Sec1 = page.new Section();
 		tab5.addSection(tab5Sec1);
-
 		addRelatedListWidgets(tab5Sec1, module.getModuleId());
+		addCommonSubModuleWidget(tab5Sec1, module, record);
 
-		if ((tab5Sec1.getWidgets() != null && !tab5Sec1.getWidgets().isEmpty()) || isRelationshipNeeded) {
-			page.addTab(tab5);
+
+		Page.Tab tab6 = page.new Tab("Related");
+		boolean isRelationshipNeeded = addRelationshipSection(page, tab6, module.getModuleId());
+		Page.Section tab6Sec1 = getRelatedListSectionObj(page);
+		tab5.addSection(tab6Sec1);
+
+		addRelatedListWidgets(tab6Sec1, module.getModuleId());
+
+		if ((tab6Sec1.getWidgets() != null && !tab6Sec1.getWidgets().isEmpty()) || isRelationshipNeeded) {
+			page.addTab(tab6);
 		}
 		return page;
 	}
