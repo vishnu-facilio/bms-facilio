@@ -238,6 +238,15 @@ public class FieldFactory extends BaseFieldFactory {
                     ).collect(Collectors.toList());
         }
 
+        public static final List<String> WORKFLOW_RULE_LOGS_FIELDS_INCLUDE=Collections.unmodifiableList(Arrays.asList(new String[]{
+                "workflowRuleName",
+                "recordModuleId",
+                "workflowLoggableRuleType",
+                "ruleStatus",
+                "executedBy",
+        }));
+
+
         public static final List<String> ALARMS_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{
                 "isAcknowledged",
                 "sourceType",

@@ -259,6 +259,7 @@ public class FacilioConstants {
 	}
 
 	public static class ContextNames {
+		public static final String WORKFLOW_RULE_LOGS="workflowRuleLogs";
 		public static final String ONE_LEVEL_LOOKUP="oneLevelLookup";
 		public static final String IS_ONE_LEVEL_FIELDS="isOneLevelFields";
 		public static final String CURRENCY = "currency";

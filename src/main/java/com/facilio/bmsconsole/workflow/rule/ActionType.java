@@ -92,7 +92,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public enum ActionType {
+public enum ActionType implements FacilioIntEnum {
 
 	EMAIL_NOTIFICATION(1, true, true) {
 		@Override

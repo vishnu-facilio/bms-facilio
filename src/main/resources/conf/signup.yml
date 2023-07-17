@@ -2,6 +2,9 @@ version: 1.0
 
 # The following classes should implement SignUpData interface and shouldn't have any state variables as only one instance will be created
 classes:
+  # Adding workflowRuleLog modules
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AddWorkflowRuleLogModules
+
   # Adding system fields/ modules
   - com.facilio.modules.signup.AddSystemLookupModules
 

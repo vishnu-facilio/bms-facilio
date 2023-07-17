@@ -335,3 +335,15 @@ enums:
 
   - name: JPScopeAssignmentType
     enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext$JPScopeAssignmentType
+
+  - name: RuleActionStatus
+    enumClassName: com.facilio.bmsconsole.context.WorkflowRuleActionLogContext$ActionStatus
+
+  - name: WorkflowLoggableRuleType
+    enumClassName: com.facilio.bmsconsole.context.WorkflowRuleLogContext$WorkflowLoggableRuleType
+
+  - name: RuleActionType
+    enumClassName: com.facilio.bmsconsole.workflow.rule.ActionType
+
+  - name: WorkflowRuleStatus
+    enumClassName: com.facilio.bmsconsole.context.WorkflowRuleLogContext$RuleStatus
