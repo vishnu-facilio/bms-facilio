@@ -3,6 +3,7 @@ package com.facilio.multiImport.util;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -1068,6 +1069,23 @@ public class MultiImportApi {
         message.setSessionInfo(sessionInfo.toJson());
         SessionManager.getInstance().sendMessage(message);
     }
+    private static boolean canAddRecordId(String moduleName) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        List<FacilioField> facilioFields = modBean.getAllFields(moduleName);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(facilioFields);
+
+        if(moduleName.equals("workorder")){
+            return false;
+        }
+
+        if (!moduleName.equals("asset") &&
+                !moduleName.equals("tenant") &&
+                !moduleName.equals("serviceRequest") &&  // Asset,tenant and serviceRequest module has local Id but we export record id
+                fieldsMap.containsKey("localId")) {
+            return false;
+        }
+        return true;
+    }
     public static List<MultiImportField> getMultiImportFieldsList(String moduleName) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(moduleName);
@@ -1075,6 +1093,11 @@ public class MultiImportApi {
         FacilioUtil.throwIllegalArgumentException(module == null ,"Module not found");
 
         List<FacilioField> facilioFields = modBean.getAllFields(moduleName);
+
+        if(canAddRecordId(moduleName)){
+            FacilioField idField = FieldFactory.getIdField(module);
+            facilioFields.add(idField);
+        }
 
         if (Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER,
                 FacilioConstants.ContextNames.TENANT,
@@ -1175,6 +1198,7 @@ public class MultiImportApi {
         public static final String LOOKUP_UNIQUE_FIELDS_MAP = "lookupUniqueFieldsMap";
         public static final String LOAD_LOOK_UP_EXTRA_SELECT_FIELDS_MAP = "loadLookUpExtraSelectFields";
         public static final String BATCH_COLLECT_FIELD_NAMES= "batchCollectFieldNames";
+        public static final String SKIP_LOOKUP_NOT_FOUND_EXCEPTION= "skipLookupNotFoundExceptionFields";
         public static final String BATCH_COLLECT_MAP= "batchCollectMap";
         public static final String BATCH_ROWS= "batchRows";
         public static final String INSERT_RECORDS = "insertRecords";

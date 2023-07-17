@@ -86,6 +86,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
 
     List<ImportRowContext> batchRows = null;
     Map<String,Object> batchCollectMap = null;
+    Set<String> skipLookupNotFoundExceptionFields = null;
     int pointer=0;
     boolean ignoreProgressSendingToClient;
     int one_percentage_records;
@@ -134,7 +135,10 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
 
         batchRows = (List<ImportRowContext>) context.get(MultiImportApi.ImportProcessConstants.BATCH_ROWS);
         batchCollectMap = (Map<String,Object>) context.getOrDefault(MultiImportApi.ImportProcessConstants.BATCH_COLLECT_MAP,new HashMap<>());
-
+        skipLookupNotFoundExceptionFields = (Set<String >) context.get(MultiImportApi.ImportProcessConstants.SKIP_LOOKUP_NOT_FOUND_EXCEPTION);
+        if(skipLookupNotFoundExceptionFields == null){
+            skipLookupNotFoundExceptionFields = new HashSet<>();
+        }
         requiredFields = (ArrayList<FacilioField>) context.get(ImportAPI.ImportProcessConstants.REQUIRED_FIELDS);
         if (CollectionUtils.isEmpty(requiredFields)) {
             requiredFields = MultiImportApi.getRequiredFields(moduleName);
@@ -518,7 +522,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                     }
                     Object value = nameVsIds.get(name);
 
-                    if(value == null){
+                    if(value == null && !skipLookupNotFoundExceptionFields.contains(field.getName())){
                         throw new ImportLookupModuleValueNotFoundException(lookUpModuleDisplayName,sheetColumnName,null);
                     }
 
@@ -540,7 +544,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 }
                 Object value = nameVsIds.get(name);
 
-                if(value == null){ //lookup record not in DP and not in Sheet means mark error
+                if(value == null && !skipLookupNotFoundExceptionFields.contains(field.getName())){ //lookup record not in DP and not in Sheet means mark error
                     throw new ImportLookupModuleValueNotFoundException(lookUpModuleName,sheetColumnName,null);
                 }
 
@@ -819,6 +823,11 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
     }
 
     private SelectRecordsBuilder<ModuleBaseWithCustomFields> getSelectBuilderForLoadLookUpMap(BaseLookupField lookupField, Map<String, Map<String, Object>> nameIdMap, List<FacilioField> uniqueFields) throws Exception {
+
+        if(MapUtils.isEmpty(nameIdMap)){
+            return null;
+        }
+
         List<FacilioField> fieldsList = new ArrayList<>();
         List<FacilioField> extraSelectFields = getLoadLookUpExtraSelectFields(lookupField.getLookupModule().getName());
         if(CollectionUtils.isNotEmpty(extraSelectFields)){
@@ -828,7 +837,6 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         fieldsList.add(FieldFactory.getIdField(lookupField.getLookupModule()));
         fieldsList.addAll(uniqueFields);
 
-        FacilioField primaryField = uniqueFields.get(0);
 
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
                 .module(lookupField.getLookupModule())
@@ -839,19 +847,6 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         } else if (lookupField.getName().equals("approvalStatus")) {
             selectBuilder.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", null, CommonOperators.IS_EMPTY));
         }
-
-        Set<String> set = new HashSet<>();
-
-        for (String uniqueValues : nameIdMap.keySet()) {
-            String name = uniqueValues.split(VALUES_SEPARATOR)[0];
-            set.add(name.replace(",", StringOperators.DELIMITED_COMMA));
-        }
-
-        if(CollectionUtils.isEmpty(set)){
-           return null;
-        }
-
-        selectBuilder.andCondition(CriteriaAPI.getCondition(primaryField, StringUtils.join(set, ","), StringOperators.IS));
 
         Criteria uniqueFieldsCriteria = getCriteriaForLoadLookUpMap(uniqueFields, nameIdMap,selectBuilder,lookupField);
         if (!uniqueFieldsCriteria.isEmpty()) {
@@ -864,7 +859,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         Criteria criteria = new Criteria();
         List<SupplementRecord> supplementRecords= new ArrayList<>();
         Set<String> canBeEmptyFieldNames = getCanBeEmptyFieldNames(parentLookUpField);
-        for (int i = 1; i < uniqueFields.size(); i++) {
+        for (int i = 0; i < uniqueFields.size(); i++) {
             Condition condition = new Condition();
             Set<String> set = new HashSet<>();
 
@@ -881,7 +876,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 if (uniqueValue.equals("null")) {
                     continue;
                 }
-                set.add(uniqueValue);
+                set.add(uniqueValue.replace(",", StringOperators.DELIMITED_COMMA));
             }
             if(CollectionUtils.isEmpty(set)){
                 continue;

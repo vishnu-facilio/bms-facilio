@@ -919,6 +919,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new CheckActivitiesForPortalCommand());
+		c.addCommand(new SetUserNameInDoneByObjectInActivitiesCommand());
 		return c;
 	}
 

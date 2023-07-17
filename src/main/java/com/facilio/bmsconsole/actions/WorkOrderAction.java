@@ -2614,7 +2614,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		FacilioChain workOrderActivity = ReadOnlyChainFactory.getActivitiesChain();
 		workOrderActivity.execute(context);
-		List<ActivityContext> activity =  (List<ActivityContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);		
+		List<ActivityContext> activity =  (List<ActivityContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		setResult("activity", activity);
 		return SUCCESS;
 	}

@@ -5,6 +5,8 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
+import java.util.Map;
+
 public class ActivityAction extends FacilioAction {
 
 
@@ -51,7 +53,6 @@ public class ActivityAction extends FacilioAction {
             FacilioChain activitives = ReadOnlyChainFactory.getActivitiesChain();
             activitives.execute(context);
             setResult("activity", context.get(FacilioConstants.ContextNames.RECORD_LIST));
-
         }
         return SUCCESS;
     }

@@ -10,6 +10,7 @@ import com.facilio.multiImport.annotations.RowFunction;
 import com.facilio.multiImport.command.*;
 import com.facilio.multiImport.config.*;
 import com.facilio.multiImport.enums.MultiImportSetting;
+import com.facilio.v3.commands.AddMultiSelectFieldsCommand;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.CustomModuleDataV3;
 import com.facilio.v3.context.V3Context;
@@ -125,6 +126,7 @@ public class MultiImportChainUtil {
         Map<String, List<String>> lookupUniqueFieldsMap = null;
         Map<String,List<String>> loadLookUpExtraSelectFields = null;
         Set<String> batchCollectFieldNames = null;
+        Set<String> skipLookupNotFoundExceptionFields = null;
 
         if (importConfig != null) {
             ImportHandler importHandler = importConfig.getImportHandler();
@@ -137,6 +139,7 @@ public class MultiImportChainUtil {
                 lookupUniqueFieldsMap = importHandler.getLookupUniqueFieldsMap();
                 loadLookUpExtraSelectFields = importHandler.getLoadLookUpExtraSelectFields();
                 batchCollectFieldNames = importHandler.getBatchCollectFieldNames();
+                skipLookupNotFoundExceptionFields = importHandler.getSkipLookupNotFoundExceptionFields();
             }
         }
 
@@ -154,6 +157,7 @@ public class MultiImportChainUtil {
         context.put(MultiImportApi.ImportProcessConstants.LOOKUP_UNIQUE_FIELDS_MAP, lookupUniqueFieldsMap);
         context.put(MultiImportApi.ImportProcessConstants.LOAD_LOOK_UP_EXTRA_SELECT_FIELDS_MAP,loadLookUpExtraSelectFields);
         context.put(MultiImportApi.ImportProcessConstants.BATCH_COLLECT_FIELD_NAMES,batchCollectFieldNames);
+        context.put(MultiImportApi.ImportProcessConstants.SKIP_LOOKUP_NOT_FOUND_EXCEPTION,skipLookupNotFoundExceptionFields);
         return chain;
     }
     public static FacilioChain getImportChain(String moduleName, MultiImportSetting setting) throws Exception {
@@ -193,6 +197,7 @@ public class MultiImportChainUtil {
 
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeSaveCommand);
+        transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new ImportSaveCommand(module));
         addIfNotNull(transactionChain, afterSaveCommand);
         addIfNotNull(transactionChain, afterTransactionCommand);
@@ -225,6 +230,7 @@ public class MultiImportChainUtil {
 
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeUpdateCommand);
+        transactionChain.addCommand(new SetSupplementsForImportUpdateCommand());
         transactionChain.addCommand(new ImportUpdateCommand(module));
         addIfNotNull(transactionChain, afterUpdateCommand);
         addIfNotNull(transactionChain, afterTransactionCommand);

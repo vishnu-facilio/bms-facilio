@@ -19,6 +19,7 @@ public class ImportHandler {
     private  Map<String, List<String>> lookupUniqueFieldsMap;
     private  Map<String,List<String>> loadLookUpExtraSelectFields;
     private  Set<String> batchCollectFieldNames;
+    private Set<String> skipLookupNotFoundExceptionFields;
 
     public Command getBeforeImportCommand() {
         return beforeImportCommand;
@@ -42,6 +43,7 @@ public class ImportHandler {
         return lookupUniqueFieldsMap;
     }
     public Set<String> getBatchCollectFieldNames() {return batchCollectFieldNames;}
+    public Set<String> getSkipLookupNotFoundExceptionFields() { return skipLookupNotFoundExceptionFields; }
 
     public ImportHandler(ImportHandlerBuilder importHandlerBuilder) {
         this.beforeImportCommand = importHandlerBuilder.beforeImportCommand;
@@ -52,6 +54,7 @@ public class ImportHandler {
         this.lookupUniqueFieldsMap = importHandlerBuilder.lookupUniqueFieldsMap;
         this.loadLookUpExtraSelectFields = importHandlerBuilder.loadLookUpExtraSelectFields;
         this.batchCollectFieldNames = importHandlerBuilder.batchCollectFieldNames;
+        this.skipLookupNotFoundExceptionFields = importHandlerBuilder.skipLookupNotFoundExceptionFields;
     }
 
     public static class ImportHandlerBuilder extends NesterBuilder<ImportConfig.ImportConfigBuilder> {
@@ -62,6 +65,7 @@ public class ImportHandler {
         private RowFunction afterProcessRowFunction;
         private Map<String, List<String>> lookupUniqueFieldsMap;
         private Set<String> batchCollectFieldNames;
+        private Set<String> skipLookupNotFoundExceptionFields;
 
         private Map<String, List<String>> loadLookUpExtraSelectFields;
         public ImportHandlerBuilder beforeImportCommand(Command... command) {
@@ -96,6 +100,13 @@ public class ImportHandler {
                 loadLookUpExtraSelectFields = new HashMap<>();
             }
             loadLookUpExtraSelectFields.put(moduleName, fieldNames);
+            return this;
+        }
+        public ImportHandlerBuilder skipLookupNotFoundExceptionFields(List<String> fieldNames){
+            if(skipLookupNotFoundExceptionFields == null){
+                skipLookupNotFoundExceptionFields = new HashSet<>();
+            }
+            skipLookupNotFoundExceptionFields.addAll(fieldNames);
             return this;
         }
         public ImportHandlerBuilder setBatchCollectFieldNames(List<String> fieldNames){

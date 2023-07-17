@@ -839,7 +839,7 @@ public class AssetAction extends FacilioAction {
 		FacilioChain assetActivity = ReadOnlyChainFactory.getActivitiesChain();
 		assetActivity.execute(context);
 		setResult("activity", context.get(FacilioConstants.ContextNames.RECORD_LIST));
-		
+
 		return SUCCESS;
 	}
 	
