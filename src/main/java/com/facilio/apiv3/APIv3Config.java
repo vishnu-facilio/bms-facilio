@@ -1330,7 +1330,6 @@ public class APIv3Config {
                 .create()
                 .afterTransaction(new UpdateLatestMessageUIDCommandV3())
                 .list()
-                .afterFetch(new UpdateMailRecordsCommand())
                 .update()
                 .build();
     }

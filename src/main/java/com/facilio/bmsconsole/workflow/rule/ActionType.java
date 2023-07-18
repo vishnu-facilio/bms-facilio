@@ -19,7 +19,6 @@ import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.util.*;
-import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
@@ -36,9 +35,7 @@ import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -55,6 +52,7 @@ import com.facilio.pdf.PdfUtil;
 import com.facilio.qa.QAndAUtil;
 import com.facilio.readingrule.faulttowo.ReadingRuleWorkOrderRelContext;
 import com.facilio.service.FacilioService;
+import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.filestore.PublicFileUtil;
@@ -1592,8 +1590,10 @@ public enum ActionType implements FacilioIntEnum {
 			WorkOrderContext workorderContext = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
 			workorderContext.setSourceType(SourceType.EMAIL_REQUEST);
 			workorderContext.setSiteId(supportEmailContext.getSiteId());
-			if(workorderContext.getDescription().length() > 2000){
-				workorderContext.setDescription(workorderContext.getDescription().substring(0, 2000));
+			if(StringUtils.isNotEmpty(workorderContext.getDescription())) {
+				if (workorderContext.getDescription().length() > 2000) {
+					workorderContext.setDescription(workorderContext.getDescription().substring(0, 2000));
+				}
 			}
 			List<File> attachedFiles = new ArrayList<>();
 			List<String> attachedFilesFileName = new ArrayList<>();
@@ -1613,9 +1613,11 @@ public enum ActionType implements FacilioIntEnum {
 					attachedFilesContentType.add(attachment.getFileContentType());
 				}
 			}
-			bean.addWorkOrderFromEmail(workorderContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+			Long workOrderId = bean.addWorkOrderFromEmail(workorderContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
 			
-			MailMessageUtil.addEmailToModuleDataContext(mailContext, workorderContext.getId(), ChainUtil.getModule(FacilioConstants.ContextNames.WORK_ORDER).getModuleId());
+			MailMessageUtil.addEmailToModuleDataContext(mailContext, workOrderId , ChainUtil.getModule(FacilioConstants.ContextNames.WORK_ORDER).getModuleId());
+
+			MailMessageUtil.updateBaseMailConvertionData(mailContext , workOrderId, ChainUtil.getModule(FacilioConstants.ContextNames.WORK_ORDER).getModuleId() , null , BaseMailMessageContext.BaseMailType.RECORD , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
 			LOGGER.info("Added Workorder from Action Type MAIL_TO_CREATEWO : "  );
 			
 			
@@ -1641,7 +1643,7 @@ public enum ActionType implements FacilioIntEnum {
 				ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromJson(obj, beanClassName);
 				Map<String,Object> recordMap=FieldUtil.getAsProperties(record);
 				handleFileAttachmentField(currentRecord, record, module, obj,recordMap);
-				
+
 				BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
 
 				FacilioContext contextNew = V3Util.createRecord(module,recordMap,null,null);
@@ -1650,6 +1652,8 @@ public enum ActionType implements FacilioIntEnum {
 		        ModuleBaseWithCustomFields resultRecord = resultRecordMap.get(moduleName).get(0);
 
 				MailMessageUtil.addEmailToModuleDataContext(mailContext, resultRecord.getId(), module.getModuleId());
+
+				MailMessageUtil.updateBaseMailConvertionData(mailContext , resultRecord.getId(), module.getModuleId() , null , BaseMailMessageContext.BaseMailType.RECORD , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
 			}
 		}
 	},
@@ -1709,10 +1713,9 @@ public enum ActionType implements FacilioIntEnum {
 	EMAIL_CONVERSATION(35) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
 			try {
-				BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
-
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 				long formId = (long) obj.get("formId");
 				if (formId > -1) {
@@ -1779,7 +1782,6 @@ public enum ActionType implements FacilioIntEnum {
 							}
 						}
 					}
-
 					if(!module.getName().equals(FacilioConstants.ContextNames.SERVICE_REQUEST)) {	// only SR module is allowed to thread.other modules are not allowed.
 						recordId = null;
 					}
@@ -1799,8 +1801,9 @@ public enum ActionType implements FacilioIntEnum {
 						emailConversationContext.setFromType(EmailConversationThreadingContext.From_Type.CLIENT.getIndex());
 						emailConversationContext.setMessageType(EmailConversationThreadingContext.Message_Type.REPLY.getIndex());
 
-
 						FacilioContext contextNew = V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME), Collections.singletonList(emailConversationContext));
+						Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) contextNew.get(Constants.RECORD_MAP);
+						MailMessageUtil.updateBaseMailConvertionData(mailContext , recordId, module.getModuleId() , recordMap.get(modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME).getName()).get(0).getId() , BaseMailMessageContext.BaseMailType.CONVERSATION , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
 					}
 
 					if (recordId == null) {
@@ -1825,18 +1828,24 @@ public enum ActionType implements FacilioIntEnum {
 						EmailToModuleDataContext emailToModuleData = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(mailContext), EmailToModuleDataContext.class);
 
 						emailToModuleData.setParentBaseMail(mailContext);
-						emailToModuleData.setRecordId(recordMap.get(module.getName()).get(0).getId());
+						Long parentRecordId = recordMap.get(module.getName()).get(0).getId();
+						emailToModuleData.setRecordId(parentRecordId);
 						emailToModuleData.setDataModuleId(module.getModuleId());
 
 						addAttachments(mailContext, emailToModuleData, MailMessageUtil.EMAIL_TO_MODULE_DATA_ATTACHMENT_MODULE);
 
 						V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME), Collections.singletonList(emailToModuleData));
+
+						MailMessageUtil.updateBaseMailConvertionData(mailContext , parentRecordId , module.getModuleId() , null , BaseMailMessageContext.BaseMailType.RECORD , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
+
 					}
+
 				}
 			}
 			catch (Exception e)
 			{
 				if((Long) context.get(FacilioConstants.ContextNames.REQUEST_EMAIL_ID)!=null) {
+					MailMessageUtil.updateBaseMailConvertionData(mailContext , null, null , null , BaseMailMessageContext.BaseMailType.ERROR , BaseMailMessageContext.BaseMailLogStatus.FAILURE);
 					FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() -> EmailProcessHandler.markAsFailed( (Long) context.get(FacilioConstants.ContextNames.REQUEST_EMAIL_ID)));
 				}
 				throw e;

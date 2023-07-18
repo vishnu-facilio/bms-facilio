@@ -1,26 +1,26 @@
 package com.facilio.bmsconsoleV3.context;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.amazonaws.util.CollectionUtils;
+import com.facilio.bmsconsole.util.MailMessageUtil;
+import com.facilio.modules.FacilioIntEnum;
+import com.facilio.util.EmailMessageParser;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.V3Context;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import com.amazonaws.util.CollectionUtils;
-import com.facilio.bmsconsole.util.MailMessageUtil;
-import com.facilio.util.EmailMessageParser;
-import com.facilio.v3.context.V3Context;
-
-import lombok.Getter;
-import lombok.Setter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Getter @Setter
 public class BaseMailMessageContext extends V3Context {
@@ -47,6 +47,14 @@ public class BaseMailMessageContext extends V3Context {
     private String htmlContent;
     private String textContent;
     private String recipient;
+    private BaseMailLogStatus status;
+    private BaseMailType mailType;
+    private Long parentRecordId;
+    private Long parentModuleId;
+
+   //Getting Module Display Name For logs UI
+    private String parentModuleName;
+    private Long conversationId;
 //    public void setCc(List<String> ccList) {
 //    	
 //    	if(ccList != null && !ccList.isEmpty()) {
@@ -58,6 +66,66 @@ public class BaseMailMessageContext extends V3Context {
 //    		bcc = bccList.stream().collect(Collectors.joining(","));
 //    	}
 //    }
+    public Integer getStatus(){
+        return status == null ? null : status.getIndex();
+    }
+    public Integer getMailType(){
+        return mailType == null ? null : mailType.getIndex();
+    }
+    public void setStatus(Integer status){
+        this.status = status == null ? null : BaseMailLogStatus.valueOf(status);
+    }
+    public void setMailType(Integer mailType){
+        this.mailType =  mailType == null ? null : BaseMailType.valueOf(mailType);
+    }
+    public String getParentModuleName() throws Exception {
+        return this.getParentModuleId() == null ? null : Constants.getModBean().getModule(this.getParentModuleId()).getDisplayName();
+    }
+    @AllArgsConstructor
+    @Getter
+    public enum BaseMailType implements FacilioIntEnum {
+        CONVERSATION("Conversation"),
+        RECORD( "Record"),
+        ERROR("Error")
+        ;
+        String name;
+        public String getValue() {
+            return this.name;
+        }
+        public  int getVal() {
+            return ordinal() + 1;
+        }
+        private static final BaseMailType[] CREATION_TYPES = BaseMailType.values();
+        public static BaseMailType valueOf(int type) {
+            if (type > 0 && type <= CREATION_TYPES.length) {
+                return CREATION_TYPES[type - 1];
+            }
+            return null;
+        }
+    }
+    @AllArgsConstructor
+    @Getter
+    public enum BaseMailLogStatus implements FacilioIntEnum {
+        SUCCESS("Success"),
+        FAILURE( "Failure")
+        ;
+
+        String name;
+        @Override
+        public String getValue() {
+            return this.name;
+        }
+        public  int getVal() {
+            return ordinal() + 1;
+        }
+        private static final BaseMailLogStatus[] CREATION_TYPES = BaseMailLogStatus.values();
+        public static BaseMailLogStatus valueOf(int type) {
+            if (type > 0 && type <= CREATION_TYPES.length) {
+                return CREATION_TYPES[type - 1];
+            }
+            return null;
+        }
+    }
 
     public static BaseMailMessageContext instance(Message message) throws Exception {
         BaseMailMessageContext mailContext = new BaseMailMessageContext();

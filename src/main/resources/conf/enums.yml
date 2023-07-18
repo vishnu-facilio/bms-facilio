@@ -347,3 +347,9 @@ enums:
 
   - name: WorkflowRuleStatus
     enumClassName: com.facilio.bmsconsole.context.WorkflowRuleLogContext$RuleStatus
+    
+  - name: BaseMailLogState
+    enumClassName: com.facilio.bmsconsoleV3.context.BaseMailMessageContext$BaseMailLogStatus
+
+  - name: BaseMailTypeState
+    enumClassName: com.facilio.bmsconsoleV3.context.BaseMailMessageContext$BaseMailType

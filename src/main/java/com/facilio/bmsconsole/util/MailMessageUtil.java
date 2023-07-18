@@ -24,6 +24,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.services.email.EmailClient;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.io.FileUtils;
@@ -42,6 +44,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.logging.Level;
 
 public class MailMessageUtil {
 
@@ -526,5 +529,26 @@ public class MailMessageUtil {
             
         return attachmentsList;
     }
+	public static void updateBaseMailConvertionData(BaseMailMessageContext mailMessageContext , Long parentRecordId , Long parentModuleId , Long conversationId, BaseMailMessageContext.BaseMailType mailType  , BaseMailMessageContext.BaseMailLogStatus status) throws Exception {
+		try {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule baseMailModule = modBean.getModule(FacilioConstants.ContextNames.BASE_MAIL_MESSAGE);
+			List<FacilioField> baseMailMessageFields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_MAIL_MESSAGE);
+			UpdateRecordBuilder<BaseMailMessageContext> baseMailMessageUpdateBuilder = new UpdateRecordBuilder<BaseMailMessageContext>()
+					.module(baseMailModule)
+					.fields(baseMailMessageFields)
+					.andCondition(CriteriaAPI.getIdCondition(mailMessageContext.getId(), baseMailModule));
+			Map<String, Object> props = new HashMap<>();
+			props.put(FacilioConstants.ContextNames.PARENT_RECORD_ID, parentRecordId);
+			props.put(FacilioConstants.ContextNames.PARENT_MODULE_ID, parentModuleId);
+			props.put(FacilioConstants.ContextNames.CONVERSATION_ID, conversationId);
+			props.put(EmailClient.MAIL_TYPE, mailType.getVal());
+			props.put(FacilioConstants.ContextNames.STATUS, status.getVal());
+			baseMailMessageUpdateBuilder.update(FieldUtil.getAsBeanFromMap(props, BaseMailMessageContext.class));
+		}
+		catch (Exception e){
+			LOGGER.error( "Error While Updating Status in Base Mail Message ", e);
+		}
+	}
 
 }

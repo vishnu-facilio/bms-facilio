@@ -562,7 +562,9 @@ public class FieldFactory extends BaseFieldFactory {
                 "from",
                 "recipient",
                 "subject",
-                "to"
+                "to",
+                "status",
+                "parentRecordId"
         }).collect(Collectors.toList()));
 
     }
