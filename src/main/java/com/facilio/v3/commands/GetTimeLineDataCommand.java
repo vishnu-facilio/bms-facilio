@@ -114,7 +114,7 @@ public class GetTimeLineDataCommand extends FacilioCommand {
         if(Boolean.TRUE.equals(viewObj.isExcludeModuleCriteria())){
             builder.skipModuleCriteria();
         }
-        builder.andCustomWhere("FIND_IN_SET(" + idFieldColumnName + ", " + GROUP_CONCAT_FIELD_NAME + ") <= " + timelineRequest.getMaxResultPerCell());
+        builder.andCustomWhere("FIND_IN_SET(" + idFieldColumnName + ", " + GROUP_CONCAT_FIELD_NAME + ") BETWEEN 1 AND " + timelineRequest.getMaxResultPerCell());
 
         // Reconstructing criteria for select builder
         mainCriteria = TimelineViewUtil.buildMainCriteria(startTimeField, viewObj.getEndDateField(), timelineRequest,

@@ -48,7 +48,7 @@ public class CalendarViewDataCommand extends FacilioCommand {
         selectiveFields.add(FieldFactory.getStringField(DATE_FORMAT, "groupMax." + DATE_FORMAT, null));
 
         // Construct Sub-Query for Group_Concat() (obtain all recordIds that match mainCriteria)
-        SelectRecordsBuilder subQueryBuilder = getGroupConcatQuery(module, mainCriteria, startTimeField, endTimeField, idFieldColumnName, calendarViewRequest.getDateAggregator());
+        SelectRecordsBuilder subQueryBuilder = getGroupConcatQuery(context, mainCriteria, startTimeField, endTimeField, idFieldColumnName, calendarViewRequest.getDateAggregator(), moduleBean);
         String subQueryString = subQueryBuilder.constructQueryString();
 
         SelectRecordsBuilder<ModuleBaseWithCustomFields> recordsBuilder = CalendarViewUtil.getSelectRecordsBuilder(context, moduleBean, true);
@@ -60,7 +60,7 @@ public class CalendarViewDataCommand extends FacilioCommand {
 
         // Filter MAX Number of Records per cell
         recordsBuilder.andCustomWhere("FIND_IN_SET(" + idFieldColumnName + ", " + GROUP_CONCAT_FIELD_NAME + ") BETWEEN 1 AND " + (calendarViewRequest.getMaxResultPerCell() + 1));
-        
+
         if (endTimeField != null) {
             FacilioField differenceField = new FacilioField();
             differenceField.setName(DIFFERENCE);
@@ -69,6 +69,8 @@ public class CalendarViewDataCommand extends FacilioCommand {
             recordsBuilder.orderBy("groupMax." + DATE_FORMAT + ", " + differenceField.getCompleteColumnName() + " " + "desc");
             selectiveFields.add(differenceField);
         }
+
+        recordsBuilder.addWhereValue(Arrays.asList(subQueryBuilder.paramValues()), 0);
 
         List<? extends ModuleBaseWithCustomFields> records = recordsBuilder.get();
 
@@ -79,12 +81,11 @@ public class CalendarViewDataCommand extends FacilioCommand {
         return false;
     }
 
-    private SelectRecordsBuilder getGroupConcatQuery(FacilioModule module, Criteria timeCriteria, FacilioField startTimeField, FacilioField endTimeField, String idFieldColumnName,
-                                                     BmsAggregateOperators.DateAggregateOperator dateAggregator) throws Exception {
-        SelectRecordsBuilder groupConcatQuery = new SelectRecordsBuilder()
-                .module(module)
-                .beanClass(V3Context.class)
-                .andCriteria(timeCriteria);
+    private SelectRecordsBuilder getGroupConcatQuery(Context context, Criteria timeCriteria, FacilioField startTimeField, FacilioField endTimeField, String idFieldColumnName,
+                                                     BmsAggregateOperators.DateAggregateOperator dateAggregator, ModuleBean moduleBean) throws Exception {
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> groupConcatQuery = CalendarViewUtil.getSelectRecordsBuilder(context, moduleBean, false);
+        groupConcatQuery.andCriteria(timeCriteria);
+        groupConcatQuery.setAggregation();
 
         Collection<FacilioField> fields = new ArrayList<>();
         StringJoiner groupByJoiner = new StringJoiner(",");
