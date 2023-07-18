@@ -8,7 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.Map;
 
-@Getter @Setter
+@Getter
+@Setter
 public class BMSEventContext extends BaseEventContext {
 
     /**
@@ -16,45 +17,14 @@ public class BMSEventContext extends BaseEventContext {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String condition;
-    public String getCondition() {
-        return condition;
-    }
-    public void setCondition(String condition) {
-        this.condition = condition;
-    }
 
     private String source;
-    public String getSource() {
-        return source;
-    }
-    public void setSource(String source) {
-        this.source = source;
-    }
 
     private long controller = -1;
-    public long getController() {
-        return controller;
-    }
-    public void setController(long controller) {
-        this.controller = controller;
-    }
-    	
+
     private long agentId = -1;
     private List<Map<String,Object>> sources;
-    public long getAgentId() {
-		return agentId;
-	}
-	public void setAgentId(long agentId) {
-		this.agentId = agentId;
-	}
-
     private String alarmClass;
-    public String getAlarmClass() {
-        return alarmClass;
-    }
-    public void setAlarmClass(String alarmClass) {
-        this.alarmClass = alarmClass;
-    }
 
 	@Override
     public boolean shouldIgnore() {

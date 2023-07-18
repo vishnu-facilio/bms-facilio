@@ -82,6 +82,7 @@ import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingR
 import com.facilio.readingrule.faulttowo.command.*;
 import com.facilio.relation.command.AddOrUpdateRelationCommand;
 import com.facilio.relation.command.DeleteRelationCommand;
+import com.facilio.storm.command.StormAddEventPayloadCommand;
 import com.facilio.storm.command.StormHistoricalProxyCommand;
 import com.facilio.storm.command.StormInstructionPublishCommand;
 import com.facilio.trigger.context.TriggerType;
@@ -3844,6 +3845,12 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new JsonToV2EventCommand());
 			c.addCommand(getV2AddEventChain(false));
+			return c;
+		}
+
+		public static FacilioChain addEventChain(boolean isHistorical) {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new StormAddEventPayloadCommand(isHistorical));
 			return c;
 		}
 

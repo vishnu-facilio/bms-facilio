@@ -1,39 +1,29 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.IOException;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BMSEventContext;
+import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.util.EventAPI;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
+import lombok.extern.log4j.Log4j;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import com.facilio.beans.ModuleBean;
-import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.util.DBConf;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
-import lombok.extern.log4j.Log4j;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.BMSEventContext;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.events.constants.EventConstants;
-import com.facilio.events.context.EventContext;
-import com.facilio.events.util.EventAPI;
-import com.facilio.time.DateTimeUtil;
-import org.apache.commons.collections4.MapUtils;
 
 @Log4j
 public class InsertNewEventsCommand extends FacilioCommand {
@@ -77,11 +67,9 @@ public class InsertNewEventsCommand extends FacilioCommand {
 				}
 			}
 			if (baseEvent.getResource() == null) {
-				throw new IllegalArgumentException("No resource is mapped for the given source");
+				LOGGER.info("No resource is mapped for the given source " + baseEvent);
 			}
-			else if (ResourceAPI.getResource(baseEvent.getResource().getId()) == null) {
-				throw new IllegalArgumentException("Resource with id ("+ baseEvent.getResource().getId() +") cannot be found");
-			}
+
 			if(((BMSEventContext)baseEvent).getSources() != null && !(((BMSEventContext)baseEvent).getSources().isEmpty())){
 				EventAPI.addBulkSources(((BMSEventContext)baseEvent).getSources(),((BMSEventContext)baseEvent).getAgentId());
 			}

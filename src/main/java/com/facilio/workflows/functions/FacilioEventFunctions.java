@@ -60,7 +60,7 @@ public class FacilioEventFunctions {
 			break;
 		}
 
-		Chain chain = TransactionChainFactory.getV2AddEventChain(isHistorical);
+		Chain chain = TransactionChainFactory.addEventChain(isHistorical);
 		chain.execute(context);
 
 		return true;
