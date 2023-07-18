@@ -31,7 +31,8 @@ import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
+import com.facilio.fw.cache.RedisManager;
+import redis.clients.jedis.Jedis;
 import java.util.*;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
@@ -100,6 +101,8 @@ public class V3AnalyticsReportAction extends V3Action {
     private ReadingAnalysisContext.ReportFilterMode xCriteriaMode;
     private AggregateOperator groupByTimeAggr;
     private JSONObject templateJSON;
+    private boolean unsavedReport;
+    private String reportDataId;
 
     public void setTemplateString(String templateJSON) throws Exception {
         JSONObject jsonObject = (JSONObject) new JSONParser().parse(templateJSON);
@@ -150,6 +153,22 @@ public class V3AnalyticsReportAction extends V3Action {
     }
     public void setEmailTemplate(EMailTemplate emailTemplate) {
         this.emailTemplate = emailTemplate;
+    }
+
+    public boolean isUnsavedReport() {
+        return unsavedReport;
+    }
+
+    public void setUnsavedReport(boolean unsavedReport) {
+        this.unsavedReport = unsavedReport;
+    }
+
+    public String getReportDataId() {
+        return reportDataId;
+    }
+
+    public void setReportDataId(String reportDataId) {
+        this.reportDataId = reportDataId;
     }
 
     private void setReadingsDataContext(FacilioContext context) throws Exception {
@@ -478,6 +497,24 @@ public class V3AnalyticsReportAction extends V3Action {
 
     public String viewData() throws Exception
     {
+        if(isUnsavedReport()) {
+            RedisManager redis = RedisManager.getInstance();
+            try (Jedis jedis = redis.getJedis()){
+                JSONParser parser = new JSONParser();
+                String reportDataJSON = jedis.get(getReportDataId());
+                if(reportDataJSON !=null){
+                    JSONObject result = (JSONObject) parser.parse(reportDataJSON);
+                    ReportContext reportContext = FieldUtil.getAsBeanFromJson((JSONObject) result.get("report"), ReportContext.class);
+                    setData("report",reportContext);
+                    setData("reportData",result.get("reportData"));
+                }
+                return SUCCESS;
+            }
+            catch(Exception e){
+              LOGGER.info("error in report Data fetching",e);
+              throw new Exception("error in report Data fetching",e);
+            }
+        }
         FacilioChain chain = TransactionChainFactoryV3.getReadingDataChain(-1, null, newFormat, true);
         FacilioContext context = chain.getContext();
         setReportWithDataContext(context); //This could be moved to a command

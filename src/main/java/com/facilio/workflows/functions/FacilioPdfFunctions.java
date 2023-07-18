@@ -25,7 +25,7 @@ import java.util.List;
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.PDF)
 public class FacilioPdfFunctions {
 
-    public static final List<String> reportsName = Arrays.asList("readingReport","modulereport","alarmReport");
+    public static final List<String> reportsName = Arrays.asList(FacilioConstants.ContextNames.READING_REPORT,FacilioConstants.ContextNames.MODULE_REPORT,FacilioConstants.ContextNames.ALARM_REPORT);
     public Object pageToPDF(ScriptContext scriptContext,  Map<String, Object> globalParam, Object... objects) throws Exception {
 
         checkParam(objects);
@@ -64,6 +64,9 @@ public class FacilioPdfFunctions {
 
         String fileUrl = null;
         if (fileId > 0) {
+            if(pageName == FacilioConstants.ContextNames.READING_REPORT_EDIT){
+                return fileId;
+            }
             fileUrl = FileStoreFactory.getInstance().getFileStore().getDownloadUrl(fileId);
         }
 

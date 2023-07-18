@@ -9,3 +9,5 @@ pdf_pages:
     url: "/pdf/readingReport/${reportId}?daterange=${dateRange:-null}&filters=${filters:-null}&excludeParams=${excludeParams:-null}&showOnlyImage=${showOnlyImage:-false}"
   alarmReport:
     url: "/pdf/alarmReport?alarmId=${alarmId}&daterange=${dateRange:-null}&excludeParams=${excludeParams:-null}&isWithPrerequsite=${isWithPrerequsite:-true}&showOnlyImage=${showOnlyImage:-false}"
+  readingReportEdit:
+    url: "/pdf/readingreportedit?reportDataId=${id:-null}&unsavedReport=true&daterange=${dateRange:-null}"

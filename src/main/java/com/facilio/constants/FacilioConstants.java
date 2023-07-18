@@ -1079,6 +1079,12 @@ public class FacilioConstants {
 		public static final String REPORT_ID = "reportId";
 		public static final String REPORT_INFO = "reportInfo";
 		public static final String ANALYTICS_TYPE = "analyticsType";
+
+		public static final String UNSAVED_REPORT = "unsavedReport";
+		public static final String READING_REPORT_EDIT = "readingReportEdit";
+		public static final String READING_REPORT = "readingReport";
+		public static final String MODULE_REPORT = "modulereport";
+		public static final String ALARM_REPORT = "alarmReport";
 		public static final String TOTAL_AREA = "totalArea";
 
 		public static final String BUILDING = "building";

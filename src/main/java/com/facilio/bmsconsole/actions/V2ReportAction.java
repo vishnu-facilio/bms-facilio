@@ -148,6 +148,15 @@ public class V2ReportAction extends FacilioAction {
     public void setReportId(Long reportId) {
         this.reportId = reportId;
     }
+    private boolean unsavedReport;
+
+    public boolean isUnsavedReport() {
+        return unsavedReport;
+    }
+
+    public void setUnsavedReport(boolean unsavedReport) {
+        this.unsavedReport = unsavedReport;
+    }
 
     String moduleName;
 
@@ -404,6 +413,10 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
         context.put(FacilioConstants.ContextNames.DEFAULT_DATE, defaultDate);
         context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, analyticsType);
+        if(isUnsavedReport()) {
+            context.put(FacilioConstants.ContextNames.UNSAVED_REPORT, unsavedReport);
+            context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
+        }
         if (trendLine != null) {
             context.put(FacilioConstants.ContextNames.TREND_LINE, trendLine);
         }

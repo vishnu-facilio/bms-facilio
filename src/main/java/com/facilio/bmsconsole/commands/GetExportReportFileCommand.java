@@ -10,8 +10,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.FieldUtil;
 import com.facilio.report.util.ReportUtil;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -34,6 +38,10 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.fw.cache.RedisManager;
+import redis.clients.jedis.Jedis;
+import com.facilio.workflows.functions.FacilioPdfFunctions;
+import com.facilio.scriptengine.context.ScriptContext;
 
 public class GetExportReportFileCommand extends FacilioCommand {
 	
@@ -51,7 +59,7 @@ public class GetExportReportFileCommand extends FacilioCommand {
 		if (isS3Url == null) {
 			isS3Url = false;
 		}
-		
+		boolean is_unsaved_report = (boolean) context.getOrDefault(FacilioConstants.ContextNames.UNSAVED_REPORT,false);
 		report = (com.facilio.report.context.ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		FileFormat fileFormat = (FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		String fileUrl = null;
@@ -93,15 +101,47 @@ public class GetExportReportFileCommand extends FacilioCommand {
 			table.put("headers", headers);
 			table.put("records", records);
 			fileUrl = ExportUtil.exportData(fileFormat, fileName, table, isS3Url);
+		} else if(context.get(FacilioConstants.ContextNames.JOB_ID) != null){
+			fileUrl = ReportUtil.getFileUrl(report, fileFormat, fileName);
 		}
-		else {
-			if(context.get(FacilioConstants.ContextNames.JOB_ID) != null){
-				fileUrl = ReportUtil.getFileUrl(report, fileFormat, fileName);
+		else if(is_unsaved_report){
+				RedisManager redis = RedisManager.getInstance();
+
+				if(redis == null){
+					return false;
+				}
+
+                try (Jedis jedis = redis.getJedis()){
+					JSONObject reportData = new JSONObject();
+					reportData.put("report", FieldUtil.getAsJSON(report));
+					reportData.put("reportData",context.get(FacilioConstants.ContextNames.REPORT_DATA));
+
+					String reportDataId = "unsavedReport:"+AccountUtil.getCurrentOrg().getId()+":"+ System.currentTimeMillis();
+					jedis.set(reportDataId, reportData.toJSONString());
+					jedis.expire(reportDataId,300);
+					String reportName = "download-" + System.currentTimeMillis() + ".pdf";
+
+					FacilioPdfFunctions pdfFunction = new FacilioPdfFunctions();
+					Map<String,Object> params = new HashMap<>();
+					params.put("id",ReportsUtil.encodeURIComponent(reportDataId));
+					long fileId = (long) pdfFunction.pageToPDF(null,null,"readingReportEdit",params,reportName,null);
+					FileStore fs = FacilioFactory.getFileStore();
+					if (isS3Url) {
+						fileUrl = fs.getOrgiDownloadUrl(fileId);
+					}
+					else {
+						fileUrl = fs.getDownloadUrl(fileId);
+					}
+				}
+				catch(Exception e){
+					LOGGER.info("Error occurred while fileURL construction",e);
+					throw new Exception("Error occurred while fileURL construction",e);
+				}
 			}
 			else {
 				fileUrl = ReportExportUtil.exportPdf(report.getDataPoints().get(0).getxAxis().getModule(), fileFormat, report, isS3Url, fileName, context);
 			}
-		}
+
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);
 		context.put(FacilioConstants.ContextNames.FILE_NAME, fileName);
 		
