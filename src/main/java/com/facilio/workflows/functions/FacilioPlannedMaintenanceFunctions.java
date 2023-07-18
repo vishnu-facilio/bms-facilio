@@ -41,7 +41,7 @@ public class FacilioPlannedMaintenanceFunctions {
             else if(!field.getModule().getName().equals(plannedMaintenanceModule.getName())){
                 continue;
             }
-            else if((field.getName().equals("name") && field.getDefault()) || !field.getDefault()){
+            else if((field.getName().equals("name") && field.isDefault()) || !field.isDefault()){
                 updateMap.put(key,map.get(key));
             }
         }
