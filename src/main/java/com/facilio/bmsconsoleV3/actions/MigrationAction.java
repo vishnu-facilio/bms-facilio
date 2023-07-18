@@ -112,6 +112,9 @@ public class MigrationAction extends V3Action {
                                     if(moduleName.equals("workorder")){
                                         redirectUrl = "/" + appLinkName + "/pdf/summarydownloadreport";
                                     }
+                                    if(moduleName.equals("quote")){
+                                        redirectUrl = "/" + appLinkName + "/pdf/quotationpdf";
+                                    }
                                     break;
                             }
                         }
