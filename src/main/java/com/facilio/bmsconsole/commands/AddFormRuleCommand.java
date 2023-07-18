@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.db.criteria.CriteriaAPI;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -38,7 +39,12 @@ public class AddFormRuleCommand extends FacilioCommand {
 		long id = CriteriaAPI.addCriteria(formRule.getCriteria(), AccountUtil.getCurrentOrg().getId());
 		formRule.setCriteriaId(id);
 		
-		if(formRule.getSubFormCriteria() != null) {
+		if(formRule.getSubFormCriteria() != null && formRule.getSubFormId()>0) {
+			long subFormId = formRule.getSubFormId();
+			FacilioForm subForm = FormsAPI.getFormFromDB(subFormId);
+			if(subForm!=null && StringUtils.isNotEmpty(subForm.getModule().getName())){
+				CriteriaAPI.updateConditionField(subForm.getModule().getName(),formRule.getSubFormCriteria());
+			}
 			long subFormCriteriaId = CriteriaAPI.addCriteria(formRule.getSubFormCriteria(), AccountUtil.getCurrentOrg().getId());
 			formRule.setSubFormCriteriaId(subFormCriteriaId);
 		}
