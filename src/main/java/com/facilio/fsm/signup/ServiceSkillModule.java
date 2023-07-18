@@ -26,7 +26,6 @@ public class ServiceSkillModule  extends BaseModuleConfig {
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(serviceSkillModule));
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
-        addModuleChain.getContext().put(FacilioConstants.Module.USE_PEOPLE_LOOKUP, true);
         addModuleChain.execute();
     }
 

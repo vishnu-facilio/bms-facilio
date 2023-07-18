@@ -2876,7 +2876,9 @@ public class FacilioConstants {
 			public static final String SERVICE_ORDER_PLANNED_ITEMS = "serviceOrderPlannedItems";
 			public static final String SERVICE_ORDER_PLANNED_TOOLS = "serviceOrderPlannedTools";
 			public static final String SERVICE_ORDER_PLANNED_SERVICES = "serviceOrderPlannedServices";
-
+			public static final String SERVICE_ORDER_ITEMS = "serviceOrderItems";
+			public static final String SERVICE_ORDER_TOOLS = "serviceOrderTools";
+			public static final String SERVICE_ORDER_SERVICES = "serviceOrderServices";
 		}
 		// etisalat changes
 		public static final String BILL_ALERT = "custom_alert";

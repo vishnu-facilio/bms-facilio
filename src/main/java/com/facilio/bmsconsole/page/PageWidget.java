@@ -585,6 +585,7 @@ public class PageWidget {
 		CALENDAR_EVENT_LIST("calendarEventList"),
 		COMMANDS_LIST_VIEW("commandsListView"),
 		ACTIONS_LIST_VIEW("actionsListView")
+		SERVICE_TASK_WIDGET("serviceTaskWidget");
 		;
 
 		private String name;

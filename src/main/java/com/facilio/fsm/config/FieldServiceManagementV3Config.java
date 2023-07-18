@@ -67,6 +67,36 @@ public class FieldServiceManagementV3Config {
                 .delete()
                 .build();
     }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS)
+    public static Supplier<V3Config> getServiceOrderPlannedItems() {
+        return () -> new V3Config(ServiceOrderPlannedItemsContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS)
+    public static Supplier<V3Config> getServiceOrderPlannedTools() {
+        return () -> new V3Config(ServiceOrderPlannedToolsContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES)
+    public static Supplier<V3Config> getServiceOrderPlannedServices() {
+        return () -> new V3Config(ServiceOrderPlannedServicesContext.class, null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
     @Module(FacilioConstants.TimeOff.TIME_OFF)
     public static Supplier<V3Config> getTimeOff(){
         return () -> new V3Config(TimeOffContext.class,new ModuleCustomFieldCount30_BS2())

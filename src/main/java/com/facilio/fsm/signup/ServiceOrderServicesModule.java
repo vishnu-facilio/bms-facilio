@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
-    public ServiceOrderPlannedServicesModule(){
-        setModuleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES);
+public class ServiceOrderServicesModule  extends BaseModuleConfig {
+    public ServiceOrderServicesModule(){
+        setModuleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES);
     }
     @Override
     public void addData() throws Exception {
@@ -28,21 +28,21 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
         FacilioModule serviceTask = bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
         FacilioModule service = bean.getModule(FacilioConstants.ContextNames.SERVICE);
 
-        if(serviceOrder!=null && serviceOrder.getModuleId()>0 && service!=null && service.getModuleId()>0){
+        if(serviceOrder!=null && serviceOrder.getModuleId()>0 && serviceTask!=null && serviceTask.getModuleId()>0 && service!=null && service.getModuleId()>0){
 
-            FacilioModule serviceOrderPlannedServicesModule = constructServiceOrderPlannedServicesModule(serviceOrder,serviceTask,service);
+            FacilioModule serviceOrderServicesModule = constructServiceOrderServicesModule(serviceOrder,serviceTask,service);
 
             FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
-            addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(serviceOrderPlannedServicesModule));
+            addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(serviceOrderServicesModule));
             addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
             addModuleChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE, serviceOrder.getName());
             addModuleChain.execute();
-            bean.addSubModule(serviceOrder.getModuleId(), serviceOrderPlannedServicesModule.getModuleId());
+            bean.addSubModule(serviceOrder.getModuleId(), serviceOrderServicesModule.getModuleId());
         }
 
     }
-    private FacilioModule constructServiceOrderPlannedServicesModule(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule serviceMod){
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES, "Service Order Planned Services", "Service_Order_Planned_Services", FacilioModule.ModuleType.SUB_ENTITY);
+    private FacilioModule constructServiceOrderServicesModule(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule serviceMod){
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES, "Service Order Services", "Service_Order_Services", FacilioModule.ModuleType.SUB_ENTITY);
 
         List<FacilioField> fields = new ArrayList<>();
 
@@ -55,8 +55,7 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
         serviceTask.setLookupModule(serviceTaskMod);
         fields.add(serviceTask);
 
-        LookupField service = FieldFactory.getDefaultField("service","Service","SERVICE",FieldType.LOOKUP, true);
-        service.setRequired(true);
+        LookupField service = FieldFactory.getDefaultField("service","Service","SERVICE",FieldType.LOOKUP);
         service.setLookupModule(serviceMod);
         fields.add(service);
 
@@ -64,8 +63,12 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
         fields.add(FieldFactory.getDefaultField("quantity","Quantity","QUANTITY",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("unitPrice","Unit Price","UNIT_PRICE",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("totalCost","Total Cost","TOTAL_COST",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
+        fields.add(FieldFactory.getDefaultField("startTime","Start Time","START_TIME",FieldType.DATE_TIME, FacilioField.FieldDisplayType.DATETIME));
+        fields.add(FieldFactory.getDefaultField("endTime","End Time","END_TIME",FieldType.DATE_TIME, FacilioField.FieldDisplayType.DATETIME));
+
         module.setFields(fields);
 
         return module;
     }
+
 }

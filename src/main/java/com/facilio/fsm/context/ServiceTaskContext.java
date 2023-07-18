@@ -114,10 +114,10 @@ public class ServiceTaskContext extends V3Context {
         SCHEDULED("Scheduled"),
         DISPATCHED("Dispatched"),
         IN_PROGRESS("In Progress"),
-        PARTIALLY_COMPLETE("Partially Complete"),
+        ON_HOLD("On Hold"),
         COMPLETED("Completed"),
         REOPENED("Reopened"),
-        NOT_COMPLETED("Not Completed");
+        CANCELLED("Cancelled");
 
         private String name;
 

@@ -10,16 +10,15 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ServiceOrderPlannedItemsModule extends BaseModuleConfig {
-    public ServiceOrderPlannedItemsModule(){
-        setModuleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS);
+public class ServiceOrderItemsModule extends BaseModuleConfig {
+    public ServiceOrderItemsModule(){
+        setModuleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS);
     }
     @Override
     public void addData() throws Exception {
@@ -28,27 +27,29 @@ public class ServiceOrderPlannedItemsModule extends BaseModuleConfig {
         FacilioModule serviceOrder = bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
         FacilioModule serviceTask = bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
         FacilioModule itemType = bean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
+        FacilioModule item = bean.getModule(FacilioConstants.ContextNames.ITEM);
         FacilioModule storeRoom = bean.getModule(FacilioConstants.ContextNames.STORE_ROOM);
+        FacilioModule asset = bean.getModule(FacilioConstants.ContextNames.ASSET);
 
-        if(serviceOrder!=null && serviceOrder.getModuleId()>0 && itemType!=null && itemType.getModuleId()>0 && storeRoom!=null && storeRoom.getModuleId()>0 && serviceTask!=null && serviceTask.getModuleId()>0){
+        if(serviceOrder!=null && serviceOrder.getModuleId()>0 && serviceTask!=null && serviceTask.getModuleId()>0 && itemType!=null && itemType.getModuleId()>0 && storeRoom!=null && storeRoom.getModuleId()>0 && item!=null && item.getModuleId()>0 && asset!=null && asset.getModuleId()>0){
 
-            FacilioModule serviceOrderPlannedItemsModule = constructServiceOrderPlannedItemsModule(serviceOrder,serviceTask,itemType,storeRoom);
+            FacilioModule serviceOrderItemsModule = constructServiceOrderItemsModule(serviceOrder,serviceTask,itemType,storeRoom,item,asset);
 
             FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
-            addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(serviceOrderPlannedItemsModule));
+            addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(serviceOrderItemsModule));
             addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
             addModuleChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE, serviceOrder.getName());
             addModuleChain.execute();
-            bean.addSubModule(serviceOrder.getModuleId(), serviceOrderPlannedItemsModule.getModuleId());
+            bean.addSubModule(serviceOrder.getModuleId(), serviceOrderItemsModule.getModuleId());
         }
 
     }
-    private FacilioModule constructServiceOrderPlannedItemsModule(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule itemTypeMod, FacilioModule storeRoomMod){
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, "Service Order Planned Items", "Service_Order_Planned_Items", FacilioModule.ModuleType.SUB_ENTITY);
+    private FacilioModule constructServiceOrderItemsModule(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule itemTypeMod, FacilioModule storeRoomMod,FacilioModule itemMod, FacilioModule assetMod){
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, "Service Order Items", "Service_Order_Items", FacilioModule.ModuleType.SUB_ENTITY);
 
         List<FacilioField> fields = new ArrayList<>();
 
-        LookupField parent = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER",FieldType.LOOKUP);
+        LookupField parent = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER", FieldType.LOOKUP);
         parent.setRequired(true);
         parent.setLookupModule(serviceOrderMod);
         fields.add(parent);
@@ -57,23 +58,27 @@ public class ServiceOrderPlannedItemsModule extends BaseModuleConfig {
         serviceTask.setLookupModule(serviceTaskMod);
         fields.add(serviceTask);
 
-        LookupField itemType = FieldFactory.getDefaultField("itemType","Item Type","ITEM_TYPE",FieldType.LOOKUP, true);
-        itemType.setRequired(true);
+        LookupField itemType = FieldFactory.getDefaultField("itemType","Item Type","ITEM_TYPE",FieldType.LOOKUP);
         itemType.setLookupModule(itemTypeMod);
         fields.add(itemType);
+
+        LookupField item = FieldFactory.getDefaultField("item","Item","ITEM",FieldType.LOOKUP,true);
+        item.setRequired(true);
+        item.setLookupModule(itemMod);
+        fields.add(item);
 
         LookupField storeRoom = FieldFactory.getDefaultField("storeRoom","Storeroom","STOREROOM",FieldType.LOOKUP);
         storeRoom.setLookupModule(storeRoomMod);
         fields.add(storeRoom);
 
+        LookupField rotatingAsset = FieldFactory.getDefaultField("rotatingAsset","Rotating Asset","ROTATING_ASSET",FieldType.LOOKUP);
+        rotatingAsset.setLookupModule(assetMod);
+        fields.add(rotatingAsset);
+
         fields.add(FieldFactory.getDefaultField("quantity","Quantity","QUANTITY",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("unitPrice","Unit Price","UNIT_PRICE",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("totalCost","Total Cost","TOTAL_COST",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
-        fields.add(FieldFactory.getDefaultField("isReserved","Is Reserved","IS_RESERVED",FieldType.BOOLEAN));
 
-        SystemEnumField reservationType = FieldFactory.getDefaultField("reservationType","Reservation Type","RESERVATION_TYPE",FieldType.SYSTEM_ENUM);
-        reservationType.setEnumName("ReservationType");
-        fields.add(reservationType);
         module.setFields(fields);
 
         return module;
