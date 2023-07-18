@@ -20,16 +20,17 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PointsConfigurationCompleteCommand extends AgentV2Command{
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<String>pointNames = (List<String>) context.get(AgentConstants.POINT_NAMES);
         Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
+        int interval = 0;
+        if(context.containsKey(AgentConstants.DATA_INTERVAL)){
+            interval = Integer.parseInt(context.get(AgentConstants.DATA_INTERVAL).toString());
+        }
         FacilioAgent agent = controller.getAgent();
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
@@ -43,7 +44,12 @@ public class PointsConfigurationCompleteCommand extends AgentV2Command{
             criteria.addAndCondition(PointsAPI.getNameCondition(pointNames));
             criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(pointModule), String.valueOf(controller.getId()), NumberOperators.EQUALS));
             editChainContext.put(FacilioConstants.ContextNames.CRITERIA, criteria);
-            editChainContext.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.CONFIGURED.getIndex()));
+            Map<String, Object> toUpdateMap = new HashMap<>();
+            toUpdateMap.put(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.CONFIGURED.getIndex());
+            if(interval > 0){
+                toUpdateMap.put(AgentConstants.DATA_INTERVAL, interval);
+            }
+            editChainContext.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, toUpdateMap);
             editChain.execute();
             if (agent.getAgentType() == AgentType.NIAGARA.getKey()){
                 context.put(AgentConstants.POINT_NAMES,mlPointsToTag(pointNames,controller));

@@ -7,6 +7,8 @@ import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.FacilioTimer;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -14,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import java.net.HttpURLConnection;
 import java.util.List;
 
+@Getter @Setter
 public class IdsAction extends AgentActionV2
 {
     private static final Logger LOGGER = LogManager.getLogger(IdsAction.class.getName());
@@ -25,7 +28,7 @@ public class IdsAction extends AgentActionV2
     @NotNull
     private List<Long> recordIds;
 
-
+    private Integer timeoutInSeconds = 0;
 
     public String deleteControllers(){
         try {
@@ -53,10 +56,11 @@ public class IdsAction extends AgentActionV2
             List<Long> controllerIds = getRecordIds();
             if(!controllerIds.isEmpty()){
                 if(controllerIds.size() == 1){
-                    AgentConstants.getControllerBean().discoverPoint(controllerIds.get(0));
+                    AgentConstants.getControllerBean().discoverPoint(controllerIds.get(0), timeoutInSeconds);
                 } else {
                     FacilioContext context = new FacilioContext();
                     context.put(AgentConstants.RECORD_IDS, recordIds);
+                    context.put(AgentConstants.TIMEOUT_SEC, timeoutInSeconds);
                     FacilioTimer.scheduleInstantJob("BulkPointDiscoverJob", context);
                 }
                 setResult(AgentConstants.RESULT,SUCCESS);

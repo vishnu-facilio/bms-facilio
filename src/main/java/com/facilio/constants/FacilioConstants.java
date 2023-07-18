@@ -3669,6 +3669,7 @@ public class FacilioConstants {
 		public static final String ML_BMS_POINTS_TAGGING_JOB = "MLBmsPointsTaggingJob";
 
 		public static final String DATA_LOG_DELETE_RECORDS_JOB = "DeleteDataLogsRecordsJob";
+		public static final String DATA_UN_MODELED_RECORDS_JOB = "DeleteUnModeledRecordsJob";
 
 	}
 

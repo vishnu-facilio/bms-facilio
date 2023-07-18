@@ -239,9 +239,9 @@ public class DataProcessorV2 {
     private boolean processAck(FacilioAgent agent, JSONObject payload) {
         try {
             payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
+            IotMessage iotMessage = IotMessageApiV2.getIotMessage(AckUtil.getMessageIdFromPayload(payload));
             if (containsCheck(AgentConstants.CONTROLLER, payload)) {
                 Controller controller = AgentConstants.getControllerBean().getController(payload, agent.getId());
-                IotMessage iotMessage = IotMessageApiV2.getIotMessage(AckUtil.getMessageIdFromPayload(payload));
                 //for modbus device points are sent as ACK's,
                 //so redirecting to devicePoints from ack
                 if (iotMessage.getCommand()== FacilioCommand.CONFIGURE.asInt()
@@ -254,6 +254,8 @@ public class DataProcessorV2 {
                 if (AckUtil.handleConfigurationAndSubscription(iotMessage, controller, payload)) {
                     return true;
                 }
+            } else if (iotMessage.getCommand() == FacilioCommand.CONFIGURE_ALL_POINTS.asInt() && containsCheck(AgentConstants.DATA, payload)) {
+                    return AckUtil.configureAllPoints(payload, agent);
             } else {
                 return AckUtil.processAgentAck(payload, agent.getId(), orgId);
             }

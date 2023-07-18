@@ -37,6 +37,10 @@ public class BACNetUtil {
 
     private static final String FILTER_JOIN = StringUtils.join(FILTER_INSTANCES, ",");
 
+    public static List<Integer> getBacnetFilterInstanceTypes(){
+        return FILTER_INSTANCES;
+    }
+
     public static Criteria getBacnetInstanceTypeCriteria() throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule bacnetPointModule = moduleBean.getModule(AgentConstants.BACNET_IP_POINT_MODULE);
@@ -87,15 +91,15 @@ public class BACNetUtil {
         ACCESS_ZONE(36, "Access zone", false, false),
         CREDENTIAL_DATA_INPUT(37, "Credential data input", false, false),
         NETWORK_SECURITY(38, "Network security", false, false),
-        BITSTRING_VALUE(39, "Bit string value", false, false),
-        CHARACTERSTRING_VALUE(40, "Character string value", false, false),
+        BIT_STRING_VALUE(39, "Bit string value", false, false),
+        CHARACTER_STRING_VALUE(40, "Character string value", false, false),
         DATE_PATTERN_VALUE(41, "Data pattern value", false, false),
         DATE_VALUE(42, "Data value", false, false),
         DATETIME_PATTERN_VALUE(43, "Datetime pattern value", false, false),
         DATETIME_VALUE(44, "Datetime value", false, false),
         INTEGER_VALUE(45, "Integer value", false, false),
         LARGE_ANALOG_VALUE(46, "Large analog value", false, false),
-        OCTETSTRING_VALUE(47, "Octet string value", false, false),
+        OCTET_STRING_VALUE(47, "Octet string value", false, false),
         POSITIVE_INTEGER_VALUE(48, "Positive integer value", false, false),
         TIME_PATTERN_VALUE(49, "Time pattern value", false, false),
         TIME_VALUE(50, "Time value", false, false),

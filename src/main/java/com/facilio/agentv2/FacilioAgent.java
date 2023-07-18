@@ -57,6 +57,7 @@ public class FacilioAgent implements Serializable {
     private String password;
     private Integer port;
     private String agentSourceType = AgentConstants.AgentSourceType.WEB.getValue();
+    private Integer pointAlarmInterval = null;
 
     public Integer getPort() {
         return port;

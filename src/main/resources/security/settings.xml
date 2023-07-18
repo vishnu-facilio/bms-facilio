@@ -3473,4 +3473,17 @@
         <requestbody type="object">
         </requestbody>
     </request>
+
+
+    <request path="/api/v2/point/configureAll" method="POST">
+        <requestbody>
+            <property name="agentId" type="number"/>
+            <property name="recordIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="controllerType" type="number"/>
+            <property name="interval" type="number"/>
+        </requestbody>
+    </request>
+
 </config>

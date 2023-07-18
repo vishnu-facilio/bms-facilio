@@ -185,7 +185,7 @@
         <dependency>
             <groupId>com.facilio</groupId>
             <artifactId>agent-framework</artifactId>
-            <version>0.0.31</version>
+            <version>0.0.33</version>
         </dependency>
         <dependency>
             <groupId>com.facilio.framework</groupId>

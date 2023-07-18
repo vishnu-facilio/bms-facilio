@@ -79,6 +79,24 @@ public class ControllerBeanImpl implements ControllerBean {
         return controller;
     }
 
+    @Override
+    public List<Controller> getControllers(int type, long agentId) throws Exception {
+        List<Controller> controllers = new ArrayList<>();
+        FacilioControllerType controllerType = FacilioControllerType.valueOf(type);
+        try {
+            if (controllerType != null) {
+                GetControllerRequest getControllerRequest = new GetControllerRequest()
+                        .withAgentId(agentId)
+                        .ofType(controllerType);
+                controllers = getControllerRequest.getControllers();
+            }
+        } catch (Exception e){
+            LOGGER.info("Exception while fetching controller ",e);
+        }
+
+        return controllers;
+    }
+
 
     /**
      * This method adds controller to db verifying if it can be added.
@@ -732,12 +750,11 @@ public class ControllerBeanImpl implements ControllerBean {
 //        }
 //    }
 
-    public boolean discoverPoint(long controllerId) throws Exception {
+    public void discoverPoint(long controllerId, int timeout) throws Exception {
         try {
             Controller controller = getController(controllerId,null);
             Objects.requireNonNull(controller,"Controller doesn't exist");
-            ControllerMessenger.discoverPoints(controller);
-            return true;
+            ControllerMessenger.discoverPoints(controller, timeout);
         }catch (Exception e){
             LOGGER.error("Exception while discoverPoints -> ", e);
             throw e;

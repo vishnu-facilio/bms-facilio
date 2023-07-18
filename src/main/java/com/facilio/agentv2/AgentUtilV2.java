@@ -315,7 +315,7 @@ public class AgentUtilV2
         String diffInMinutes = "(" + currentTime + "-" + fieldMap.get(AgentConstants.LAST_RECORDED_TIME).getCompleteColumnName() + ") / (" + 60 * 1000 + ")";
         FacilioField difference = FieldFactory.getField("difference", diffInMinutes, FieldType.NUMBER);
 
-        String interval = "2 * COALESCE(" + fieldMap.get(AgentConstants.DATA_INTERVAL).getCompleteColumnName() + "," + agent.getInterval() + ")";
+        String interval = "2 * COALESCE(" + fieldMap.get(AgentConstants.DATA_INTERVAL).getCompleteColumnName() + "," + agent.getPointAlarmInterval() + "," + agent.getInterval() + ")";
 
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(jobId), NumberOperators.EQUALS));
@@ -655,13 +655,13 @@ public class AgentUtilV2
         FacilioTimer.scheduleCalendarJob(orgId, FacilioConstants.Job.ML_BMS_POINTS_TAGGING_JOB, System.currentTimeMillis(), scheduleInfo, "facilio");
     }
 
-    public static void scheduleDataLogDeleteJob(long orgId) throws Exception{
+    public static void scheduleDataLogDeleteJob(long orgId, String jobName) throws Exception{
 
         ScheduleInfo scheduleInfo = new ScheduleInfo();
         scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
         LocalTime time = LocalTime.of(1, 0);
         scheduleInfo.addTime(time);
-        FacilioTimer.scheduleCalendarJob(orgId, FacilioConstants.Job.DATA_LOG_DELETE_RECORDS_JOB, System.currentTimeMillis(), scheduleInfo, "facilio");
+        FacilioTimer.scheduleCalendarJob(orgId, jobName, System.currentTimeMillis(), scheduleInfo, "facilio");
     }
 
     public static boolean sendClearPointAlarm(FacilioAgent agent) {

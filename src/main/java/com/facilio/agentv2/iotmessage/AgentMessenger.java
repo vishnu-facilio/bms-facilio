@@ -13,7 +13,10 @@ import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
+import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.rdm.RdmControllerContext;
+import com.facilio.bacnet.BACNetUtil;
+import com.facilio.bmsconsole.commands.GetPointsdataCommand;
 import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
@@ -32,9 +35,7 @@ public class AgentMessenger {
 
 
     private static IotData constructNewIotAgentMessage(long agentId, FacilioCommand command, FacilioContext extraMsgContent, FacilioControllerType type) throws Exception {
-        AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
-        FacilioAgent agent = agentBean.getAgent(agentId);
-
+        FacilioAgent agent = AgentConstants.getAgentBean().getAgent(agentId);
         Objects.requireNonNull(agent, "Agent can't be null");
         return constructNewIotAgentMessage(command, agent, extraMsgContent, type);
     }
@@ -50,7 +51,7 @@ public class AgentMessenger {
         messageBody.put(AgentConstants.AGENT, agent.getName());
         if (type != null) {
             messageBody.put(AgentConstants.CONTROLLER_TYPE, type.asInt());
-            }
+        }
         messageBody.put(AgentConstants.TIMESTAMP, System.currentTimeMillis());
         messageBody.put(AgentConstants.AGENT_ID, agent.getId());
         messageBody.put(AgentConstants.COMMAND, command.asInt());
@@ -100,7 +101,17 @@ public class AgentMessenger {
                 case UPGRADE:
                     messageBody.putAll(extraMsgContent);
                     break;
-
+                case CONFIGURE_ALL_POINTS:
+                    if(extraMsgContent.containsKey(AgentConstants.CONTROLLERS)){
+                        messageBody.put(AgentConstants.CONTROLLERS, extraMsgContent.get(AgentConstants.CONTROLLERS));
+                    }
+                    if (extraMsgContent.containsKey(AgentConstants.DATA_INTERVAL)) {
+                        messageBody.put(AgentConstants.DATA_INTERVAL, Integer.parseInt(extraMsgContent.get(AgentConstants.DATA_INTERVAL).toString()));
+                    }
+                    if(FacilioControllerType.BACNET_IP == type){
+                        messageBody.put(AgentConstants.FILTER_INSTANCE_TYPES, BACNetUtil.getBacnetFilterInstanceTypes());
+                    }
+                    break;
                 case ADD_CONTROLLER:
                     if (extraMsgContent.containsKey(AgentConstants.DATA)) {
                         messageBody.put(AgentConstants.CONTROLLERS, extraMsgContent.get(AgentConstants.DATA));
@@ -124,6 +135,19 @@ public class AgentMessenger {
         context.put(AgentConstants.DATA, data);
         IotData iotData = constructNewIotAgentMessage(controller.getAgentId(), command, context, FacilioControllerType.valueOf(controller.getControllerType()));
         return MessengerUtil.addAndPublishNewAgentData(iotData);
+    }
+
+    public static void configureAll(List<JSONObject> controllers, int interval, long agentId, FacilioControllerType type) throws Exception {
+        FacilioContext context = new FacilioContext();
+        context.put(AgentConstants.CONTROLLERS, controllers);
+        IotData iotData;
+        if (interval > 0) {
+            context.put(AgentConstants.DATA_INTERVAL, interval);
+            iotData = constructNewIotAgentMessage(agentId, FacilioCommand.CONFIGURE_ALL_POINTS, context, type);
+        } else {
+            iotData = constructNewIotAgentMessage(agentId, FacilioCommand.CONFIGURE_ALL_POINTS, context, type);
+        }
+        MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 
 

@@ -62,14 +62,6 @@ public class PointsDataMissingAlarmJob extends FacilioJob {
             fields.add(FieldFactory.getIdField(pointModule));
             fieldMap = FieldFactory.getAsMap(fields);
         }
-        /*GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                .table(ModuleFactory.getPointModule().getTableName())
-                .fields(FieldFactory.getPointFields())
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getIdCondition(pointIds, ModuleFactory.getPointModule()));
-        Map<String, Object> toUpdate = new HashMap<>();
-        toUpdate.put(AgentConstants.DATA_MISSING, true);
-        builder.update(toUpdate);*/
 
         List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
 

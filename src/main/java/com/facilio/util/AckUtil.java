@@ -4,15 +4,17 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.iotmessage.IotMessage;
-import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,6 +24,7 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AckUtil
 {
@@ -61,10 +64,9 @@ public class AckUtil
 
     public static boolean handleConfigurationAndSubscription(IotMessage iotMessage, Controller controller, JSONObject payload) {
         try {
-
             if ( iotMessage != null ) {
                 List<String> pointNames = getPointsNameFromPayload(payload);
-                return PointsAPI.handlePointConfigurationAndSubscription(FacilioCommand.valueOf(iotMessage.getCommand()),controller.getId(),pointNames);
+                return PointsAPI.handlePointConfigurationAndSubscription(FacilioCommand.valueOf(iotMessage.getCommand()),controller,pointNames, -1);
             }else {
                 LOGGER.info("Exception occurred, iotmessage is null");
             }
@@ -72,6 +74,58 @@ public class AckUtil
             LOGGER.info("Exception while handling subscription and configuration handling",e);
         }
         return false;
+    }
+
+    public static boolean configureAllPoints(JSONObject payload, FacilioAgent agent) throws Exception {
+        List<JSONObject> jsonControllers = (List<JSONObject>) payload.get(AgentConstants.DATA);
+        int controllerType = Integer.parseInt(payload.get(AgentConstants.CONTROLLER_TYPE).toString());
+        int interval = 0;
+        if(payload.containsKey(AgentConstants.DATA_INTERVAL)){
+            interval = Integer.parseInt(payload.get(AgentConstants.DATA_INTERVAL).toString());
+        }
+        List<Controller> controllers = getControllers(jsonControllers, agent, controllerType);
+        for (Controller controller : controllers) {
+            List<Map<String, Object>> data = getPoints(agent, controllerType, controller, AgentConstants.UNCONFIGURED);
+            List<String> pointNames = data.stream()
+                    .map(point -> (String) point.get(AgentConstants.NAME))
+                    .collect(Collectors.toList());
+            if(!pointNames.isEmpty()){
+                PointsAPI.handlePointConfigurationAndSubscription(FacilioCommand.CONFIGURE, controller, pointNames, interval);
+            }
+        }
+        return true;
+    }
+
+    private static List<Controller> getControllers(List<JSONObject> jsonControllers, FacilioAgent agent, int controllerType) throws Exception {
+        List<Controller> controllers = new ArrayList<>();
+        if(jsonControllers.isEmpty()){
+            controllers = AgentConstants.getControllerBean().getControllers(controllerType, agent.getId());
+        } else {
+            JSONObject object = new JSONObject();
+            object.put(AgentConstants.CONTROLLER_TYPE, controllerType);
+            for (JSONObject controllerObj : jsonControllers) {
+                object.put(AgentConstants.CONTROLLER, controllerObj);
+                Controller controller = AgentConstants.getControllerBean().getController(object, agent.getId());
+                if(controller!=null){
+                    controllers.add(controller);
+                }
+            }
+        }
+        return controllers;
+    }
+
+    private static List<Map<String, Object>> getPoints(FacilioAgent agent, int controllerType, Controller controller, String status) throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getPointsdataCommand();
+        FacilioContext context = chain.getContext();
+        context.put(AgentConstants.CONTROLLER_ID, controller.getId());
+        context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.POINTS);
+        context.put(AgentConstants.AGENT_ID, agent.getId());
+        context.put(AgentConstants.CONTROLLERIDS, new ArrayList<>());
+        context.put(AgentConstants.STATUS, status);
+        context.put("limit", -1);
+        chain.execute();
+        return (List<Map<String, Object>>) context.get("data");
     }
 
     public static boolean containsCheck(String key, Map map){
