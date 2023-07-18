@@ -1143,6 +1143,7 @@ public class TransactionChainFactory {
 		public static FacilioChain scheduledRuleExecutionChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new FetchScheduledRuleMatchingRecordsCommand());
+			c.addCommand(new CreateOneTimeExecutableJobs());
 			c.addCommand(new ExecuteSingleWorkflowRuleCommand());
 			return c;
 		}
@@ -1166,6 +1167,7 @@ public class TransactionChainFactory {
 		public static FacilioChain previousRecordRuleExecutionChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new FetchPreviousRecordsRuleMatchingRecordsCommand());
+			c.addCommand(new CreateOneTimeExecutableJobs());
 			c.addCommand(new ExecuteSingleWorkflowRuleCommand());
 			return c;
 		}

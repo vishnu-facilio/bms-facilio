@@ -2146,6 +2146,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("time", "JOB_TIME", module, FieldType.STRING));
         fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
         fields.add(getField("lastScheduleRuleExecutedTime", "LAST_SCHEDULE_RULE_EXECUTED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("ruleEndTime", "RULE_END_TIME", module, FieldType.NUMBER));
+
         fields.add(getBooleanField("locked", "IS_LOCKED", module));
 
         fields.add(getModuleIdField(module));
@@ -11946,6 +11948,19 @@ public class FieldFactory extends BaseFieldFactory {
         fieldList.add(getStringField("moduleId","MODULE_ID",module));
         fieldList.add(getDateField("registeredTime","REGISTERED_TIME",module));
         fieldList.add(getDateField("userMobileSettingId","USER_MOBILE_SETTING_ID",module));
+
+        return fieldList;
+    }
+
+    public static List<FacilioField> getScheduleOneTimeRuleExecutionFields() {
+        FacilioModule module = ModuleFactory.getscheduleRuleRecordRelationModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getIdField(module));
+        fieldList.add(getNumberField("recordId","RECORD_ID",module));
+        fieldList.add(getNumberField("ruleId","RULE_ID",module));
+        fieldList.add(getNumberField("moduleId","MODULE_ID",module));
+        fieldList.add(getNumberField("dateFieldValue","DATE_FIELD_VALUE",module));
+        fieldList.add(getNumberField("executionTime","EXECUTION_TIME",module));
 
         return fieldList;
     }

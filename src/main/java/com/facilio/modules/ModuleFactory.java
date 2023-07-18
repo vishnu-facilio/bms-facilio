@@ -5770,4 +5770,12 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setDisplayName("Offline Record Register");
 		return module;
 	}
+
+	public static FacilioModule getscheduleRuleRecordRelationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("scheduleRuleRecordRelation");
+		module.setTableName("WorkFlow_Schedule_Rule_Record_Relation");
+		module.setDisplayName("Schedule Rule Record Relation");
+		return module;
+	}
 }

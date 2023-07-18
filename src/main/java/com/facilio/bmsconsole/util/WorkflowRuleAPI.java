@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingEventContext;
+import com.facilio.bmsconsole.context.WorkflowRuleRecordRelationshipContext;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleAPI;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -33,6 +34,7 @@ import com.facilio.scriptengine.context.ScriptContext.WorkflowUIMode;
 import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.util.TriggerUtil;
@@ -40,10 +42,12 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -1534,5 +1538,129 @@ public class WorkflowRuleAPI {
 		}
 
 		return ruleIdVsRuleMap;
+	}
+	public static Long addScheduledRuleRecordRelation(Long recordId,WorkflowRuleContext rule, Long dateField,Long executionTime) throws Exception {
+		if(executionTime < (System.currentTimeMillis() / 1000)){
+			return null;
+		}
+
+		FacilioModule module = ModuleFactory.getscheduleRuleRecordRelationModule();
+		List<FacilioField> fields = FieldFactory.getScheduleOneTimeRuleExecutionFields();
+		HashMap<String,Object> record = new HashMap<>();
+		record.put("recordId",recordId);
+		record.put("ruleId",rule.getId());
+		record.put("moduleId",rule.getModuleId());
+		record.put("dateFieldValue",dateField);
+		record.put("executionTime",executionTime);
+
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields)
+				.addRecord(record);
+
+		insertBuilder.save();
+		Long id = (Long) record.get("id");
+
+		if(id != null) {
+			FacilioTimer.scheduleOneTimeJobWithTimestampInSec(id, rule.getScheduleRuleOneTimeJobName(),executionTime,"priority");
+		}
+
+		return id;
+	}
+
+	public static Long getOneTimeRuleExecutionTime(WorkflowRuleContext rule, Long dateFieldValue) {
+		Long interval = rule.getInterval();
+		Long executionTime = -1L;
+
+		if(dateFieldValue == null){
+			return null;
+		}
+
+		dateFieldValue = dateFieldValue / 1000;
+
+		switch (rule.getScheduleTypeEnum()) {
+			case BEFORE:
+				executionTime = dateFieldValue - interval;
+				break;
+			case ON:
+				executionTime = dateFieldValue;
+				break;
+			case AFTER:
+				executionTime = dateFieldValue + interval;
+				break;
+		}
+
+		return executionTime;
+	}
+
+	public static void executeSingleWorkflowRuleCommand(Context context) throws Exception {
+		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
+		LOGGER.debug("Record Map : "+recordMap);
+
+		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+
+		if (rule != null && recordMap != null && !recordMap.isEmpty()) {
+			Map<String, Object> placeHolders = getOrgPlaceHolders();
+			for (Map.Entry<String, List> entry : recordMap.entrySet()) {
+				String moduleName = entry.getKey();
+				if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
+					LOGGER.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+entry.getValue());
+					continue;
+				}
+				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
+
+				for (Object record : entry.getValue()) {
+					List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
+					Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, placeHolders);
+					boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(rule, moduleName, record, changeSet, recordPlaceHolders, (FacilioContext) context);
+					LOGGER.info("Result of record : "+((ModuleBaseWithCustomFields) record).getId()+" for for rule : "+rule.getId()+" is "+result);
+				}
+
+			}
+		}
+	}
+
+	public static List<WorkflowRuleRecordRelationshipContext> getRuleFromRuleAndRecordRelationshipTable(Long recordId, List<Long> ruleIds) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getScheduleOneTimeRuleExecutionFields())
+				.table(ModuleFactory.getscheduleRuleRecordRelationModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("RECORD_ID","recordId", String.valueOf(recordId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("RULE_ID","ruleId", StringUtils.join(ruleIds,","), NumberOperators.EQUALS));
+
+		return FieldUtil.getAsBeanListFromMapList(builder.get(),WorkflowRuleRecordRelationshipContext.class);
+	}
+
+	public static List<WorkflowRuleRecordRelationshipContext> getRuleFromRuleAndRecordRelationshipTable(List<Long> recordIds,Long moduleId, List<Long> ruleIds) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getScheduleOneTimeRuleExecutionFields())
+				.table(ModuleFactory.getscheduleRuleRecordRelationModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("MODULE_ID","moduleId", String.valueOf(moduleId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("RECORD_ID","recordId", StringUtils.join(recordIds,","), NumberOperators.EQUALS));
+
+		if(ruleIds != null) {
+			builder.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", StringUtils.join(ruleIds, ","), NumberOperators.EQUALS));
+		}
+
+		return FieldUtil.getAsBeanListFromMapList(builder.get(),WorkflowRuleRecordRelationshipContext.class);
+	}
+
+	public static List<WorkflowRuleRecordRelationshipContext> getRuleFromRuleAndRecordRelationshipTable(List<Long> recordIds,Long moduleId) throws Exception {
+		return getRuleFromRuleAndRecordRelationshipTable(recordIds,moduleId, null);
+	}
+
+	public static int deleteRuleFromRuleAndRecordRelationshipTable(
+			List<WorkflowRuleRecordRelationshipContext> ruleRecordRelList) throws Exception {
+		List<Long> ruleRecordRelIds = ruleRecordRelList.stream().map(ruleRecordRel -> ruleRecordRel.getId())
+				.collect(Collectors.toList());
+
+		FacilioTimer.deleteJobs(ruleRecordRelIds, "ScheduleOneTimeRuleExecution");
+
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getscheduleRuleRecordRelationModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(ruleRecordRelIds,ModuleFactory.getscheduleRuleRecordRelationModule()));
+
+		int rowsDeleted = builder.delete();
+		return rowsDeleted;
 	}
 }

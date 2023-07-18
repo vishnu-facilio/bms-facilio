@@ -609,7 +609,8 @@ public class AccountUtil {
 		FIELD_LIST_PERMISSION(144,getExponentValue(17),LicenseMapping.GROUP3LICENSE),//2^17
 		SENSOR_RULE(145,getExponentValue(18),new String[]{ContextNames.SENSOR_ROLLUP_ALARM},LicenseMapping.GROUP3LICENSE),//2^18
 		AGENT_INTERVAL(146,getExponentValue(19),LicenseMapping.GROUP3LICENSE),//2^19
-		BULK_UPDATE(147,getExponentValue(20),LicenseMapping.GROUP3LICENSE);
+		BULK_UPDATE(147,getExponentValue(20),LicenseMapping.GROUP3LICENSE),
+		NEW_SCHEDULED_WORKFLOW_RULE(148,getExponentValue(21),LicenseMapping.GROUP3LICENSE);
 
 		public int featureId;
 		private long license;

@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPicklist;
 import com.facilio.bmsconsole.enums.OfflineUpdateType;
+import com.facilio.bmsconsole.context.WorkflowRuleRecordRelationshipContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
@@ -306,6 +307,7 @@ public class ChainUtil {
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "afterTransactionCommand", moduleName));
 
         transactionChain.addCommand(new AddActivitiesCommandV3());
+        transactionChain.addCommand(new AddOneTimeJobForScheduledRule(WorkflowRuleRecordRelationshipContext.EventType.CREATE));
 
         return transactionChain;
     }
@@ -465,6 +467,7 @@ public class ChainUtil {
         addIfNotNull(transactionChain, afterDeleteCommand);
         addWorkflowChain(transactionChain);
         addIfNotNull(transactionChain, afterTransactionCommand);
+        transactionChain.addCommand(new AddOneTimeJobForScheduledRule(WorkflowRuleRecordRelationshipContext.EventType.DELETE));
 
         return transactionChain;
     }
@@ -552,6 +555,8 @@ public class ChainUtil {
         addIfNotNull(transactionChain, afterTransactionCommand);
 
         transactionChain.addCommand(new AddActivitiesCommandV3());
+         transactionChain.addCommand(new AddOneTimeJobForScheduledRule(WorkflowRuleRecordRelationshipContext.EventType.PATCH));
+
         return transactionChain;
     }
 

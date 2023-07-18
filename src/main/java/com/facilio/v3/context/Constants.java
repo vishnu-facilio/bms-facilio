@@ -220,6 +220,24 @@ public class Constants {
         return getRecordListFromContext(context, moduleName);
     }
 
+    public static <E extends ModuleBaseWithCustomFields> List<E> getRecordsFromContext (FacilioContext context) {
+        String moduleName = Constants.getModuleName(context);
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = getRecordMap(context);
+        List<ModuleBaseWithCustomFields> records = null;
+        if (recordMap == null) {
+            records = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+            if (CollectionUtils.isEmpty(records)) {
+                ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
+                if (record != null) {
+                    records = Collections.singletonList(record);
+                } else return null;
+            }
+        } else {
+            records = recordMap.get(moduleName);
+        }
+        return (List<E>) records;
+    }
+
     public static <E extends ModuleBaseWithCustomFields> void setRecordList (FacilioContext context, List<E> records) {
         String moduleName = Constants.getModuleName(context);
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);

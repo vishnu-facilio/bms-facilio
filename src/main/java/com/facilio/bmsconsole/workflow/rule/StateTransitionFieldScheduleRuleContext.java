@@ -1,12 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.chain.FacilioContext;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.chain.Context;
 
@@ -35,6 +30,34 @@ public class StateTransitionFieldScheduleRuleContext extends WorkflowRuleContext
         }
 
         return false;
+    }
+
+    @Override
+    public boolean canAddOneTimeJob(ModuleBaseWithCustomFields moduleRecord) throws Exception {
+        long stateTransitionId = getParentRuleId();
+        StateflowTransitionContext stateTransition = (StateflowTransitionContext) StateFlowRulesAPI.getStateTransition(stateTransitionId);
+        if (stateTransition == null) {
+            // invalid transition
+            return false;
+        }
+        if (stateTransition.getStateFlowId() == moduleRecord.getStateFlowId()
+                && stateTransition.getFromStateId() == moduleRecord.getModuleState().getId()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Long validatedExecutionTime(Long executionTime){
+        if(executionTime == null){
+            return null;
+        }
+
+        long currentTime = (System.currentTimeMillis() / 1000);
+        if(executionTime < currentTime) {
+            executionTime = currentTime + 30;
+        }
+        return executionTime;
     }
 
     @Override

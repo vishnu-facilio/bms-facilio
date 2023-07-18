@@ -42,7 +42,7 @@ public class FetchScheduledRuleMatchingRecordsCommand extends FacilioCommand {
 
 	private DateRange getRange(WorkflowRuleContext rule, JobContext jc) {
 		long startTime = -1, endTime = -1;
-		if (rule.getTime() == null) { //DATE_TIME field
+		if(rule.getTime() == null){ //DATE_TIME field
 			startTime = jc.getExecutionTime() * 1000;
 			endTime =  (jc.getNextExecutionTime() * 1000) - 1;
 		}
@@ -50,7 +50,7 @@ public class FetchScheduledRuleMatchingRecordsCommand extends FacilioCommand {
 			startTime = DateTimeUtil.getDayStartTime();
 			endTime = DateTimeUtil.getDayStartTime(1) - 1;
 		}
-		
+
 		switch (rule.getScheduleTypeEnum()) {
 			case BEFORE:
 				long interval = rule.getInterval() * 1000;
@@ -91,6 +91,7 @@ public class FetchScheduledRuleMatchingRecordsCommand extends FacilioCommand {
 		addSkipModuleCriteriaForModules(rule, module, selectBuilder);
 		
 		List<ModuleBaseWithCustomFields> records = selectBuilder.get();
+		rule.setRuleEndTime(range.getEndTime());
 		// LOGGER.info(selectBuilder.toString());
 		return records;
 	}

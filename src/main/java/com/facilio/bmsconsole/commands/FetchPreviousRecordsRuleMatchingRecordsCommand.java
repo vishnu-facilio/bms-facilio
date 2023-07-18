@@ -43,6 +43,8 @@ public class FetchPreviousRecordsRuleMatchingRecordsCommand extends FacilioComma
                 break;
         }
 
+        rule.setRuleEndTime(endTime);
+
         FacilioField dateField = rule.getDateField();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()

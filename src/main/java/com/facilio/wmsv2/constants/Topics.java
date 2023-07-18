@@ -45,4 +45,7 @@ public interface Topics {
         String agentPointAlarm = "__agent__/point/alarm/org/";
     }
 
+    interface AddOneTimeJobForScheduledRule{
+        String addOneTimeJobForScheduledRule = "__one_time_job_for_scheduled_rule__";
+    }
 }

@@ -14,7 +14,6 @@ import java.util.Map;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -171,7 +170,15 @@ public class WorkflowRuleContext implements Serializable {
 	public void setLastScheduleRuleExecutedTime(long lastScheduleRuleExecutedTime) {
 		this.lastScheduleRuleExecutedTime = lastScheduleRuleExecutedTime;
 	}
-	
+
+	private long ruleEndTime = -1;
+	public long getRuleEndTime() {
+		return ruleEndTime;
+	}
+	public void setRuleEndTime(long ruleEndTime) {
+		this.ruleEndTime = ruleEndTime;
+	}
+
 	private long interval = -1; //In Seconds
 	public long getInterval() {
 		return interval;
@@ -577,6 +584,15 @@ public class WorkflowRuleContext implements Serializable {
 	}
 	
 	private static final RuleType[] RULE_TYPES = RuleType.values();
+
+	public boolean canAddOneTimeJob(ModuleBaseWithCustomFields record) throws Exception {
+		return true;
+	}
+
+	public Long validatedExecutionTime(Long executionTime){
+		return executionTime;
+	}
+
 	public static enum RuleType {
 		READING_RULE(false, false, false, true, false), // reading
 		WORKORDER_AGENT_NOTIFICATION_RULE(false,false,false, false, true),
@@ -828,5 +844,11 @@ public class WorkflowRuleContext implements Serializable {
 	@JSON(serialize = false)
 	public String getScheduleRuleJobName() {
 		return "ScheduleRuleCreateJob";
+	}
+
+	@JsonIgnore
+	@JSON(serialize = false)
+	public String getScheduleRuleOneTimeJobName() {
+		return "ScheduleOneTimeRuleExecution";
 	}
 }
