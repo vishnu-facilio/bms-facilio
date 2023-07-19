@@ -29,7 +29,7 @@ import java.util.*;
 
 public class ApplicationUserUtil {
 
-    public static void  addAppUser(long orgId, long appId,boolean isPortal, PeopleUserContext peopleUser, boolean sendInvitation, String password) throws Exception{
+    public static void  addAppUser(long orgId,boolean isPortal, PeopleUserContext peopleUser, boolean sendInvitation, String password) throws Exception{
        User iamUser;
 
         if(sendInvitation)

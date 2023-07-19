@@ -2598,6 +2598,7 @@ public class FacilioChainFactory {
 	public static FacilioChain addOrUpdatePortalUserChain(){
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddOrUpdatePortalUserCommand());
+		c.addCommand(new AddPeopleRelatedDataCommand());
 		return c;
 	}
 	public static FacilioChain revokeAppAccessChain(){

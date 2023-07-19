@@ -24,7 +24,7 @@ public class AddOrUpdatePortalUserCommand extends FacilioCommand {
         String appLinkName = (String) context.get(FacilioConstants.ContextNames.APP_LINKNAME);
         String password=(String) context.getOrDefault(FacilioConstants.ContextNames.PASSWORD,null);
 
-        AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(user.getApplicationId());
+        com.facilio.identity.client.dto.AppDomain appDomainObj = ApplicationApi.getAppDomainForApp(user.getApplicationId());
         if(appDomainObj == null) {
             throw new IllegalArgumentException("Invalid App Domain");
         }
@@ -38,8 +38,6 @@ public class AddOrUpdatePortalUserCommand extends FacilioCommand {
             User existingUser = IdentityClient.getDefaultInstance().getUserBean().getUser(existingPeople.getEmail(), appDomainObj.getIdentifier());
             if (existingUser == null) {
 
-                com.facilio.identity.client.dto.AppDomain appDomain = IdentityClient.getDefaultInstance().getAppDomainBean().getAppDomain(appDomainObj.getDomain());
-
                 User newUser = new User();
                 newUser.setOrgId(user.getUser().getOrgId());
                 newUser.setName(existingPeople.getName());
@@ -49,12 +47,12 @@ public class AddOrUpdatePortalUserCommand extends FacilioCommand {
                 newUser.setPhone(existingPeople.getPhone());
                 newUser.setLanguage(existingPeople.getLanguage());
                 newUser.setInvitedBy(AccountUtil.getCurrentUser().getUid());
-                newUser.setAppDomain(appDomain);
+                newUser.setAppDomain(appDomainObj);
                 newUser.setTimezone(existingPeople.getTimezone());
                 newUser.setMobile(existingPeople.getMobile());
                 newUser.setSecurityPolicyId(user.getUser().getSecurityPolicyId());
                 user.setUser(newUser);
-                ApplicationUserUtil.addAppUser(user.getUser().getOrgId(), user.getApplicationId(),true, user, sendInvitation, password);
+                ApplicationUserUtil.addAppUser(user.getUser().getOrgId(),true, user, sendInvitation, password);
             } else {
                 existingUser.setSecurityPolicyId(user.getUser().getSecurityPolicyId());
                 user.setUser(existingUser);

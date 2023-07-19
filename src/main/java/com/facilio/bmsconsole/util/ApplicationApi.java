@@ -20,6 +20,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.cache.FacilioCache;
 import com.facilio.fw.cache.LRUCache;
+import com.facilio.identity.client.IdentityClient;
 import com.facilio.modules.*;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
@@ -751,6 +752,26 @@ public class ApplicationApi {
             List<AppDomain> appDomains = IAMAppUtil.getAppDomainForType(type, orgId);
             if (CollectionUtils.isNotEmpty(appDomains)) {
                 return appDomains.get(0);
+            }
+        }
+        return null;
+    }
+
+    public static com.facilio.identity.client.dto.AppDomain getAppDomainForApp(long appId) throws Exception {
+        List<FacilioField> fields = FieldFactory.getApplicationFields();
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(ModuleFactory.getApplicationModule().getTableName());
+        selectBuilder.andCondition(
+                CriteriaAPI.getCondition("ID", "id", String.valueOf(appId), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> application = selectBuilder.get();
+        if (CollectionUtils.isNotEmpty(application)) {
+            Integer appDomainType = (Integer) application.get(0).get("domainType");
+            Long orgId = (Long) application.get(0).get("orgId");
+            com.facilio.identity.client.dto.AppDomain appDomains = IdentityClient.getDefaultInstance().getAppDomainBean().getDefaultAppDomain(orgId, com.facilio.identity.client.dto.AppDomain.AppDomainType.valueOf(appDomainType));
+            if (appDomains != null) {
+                return appDomains;
             }
         }
         return null;

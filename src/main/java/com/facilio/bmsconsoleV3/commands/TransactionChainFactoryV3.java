@@ -13,9 +13,11 @@ import com.facilio.alarms.sensor.commands.SetRecordModuleAndFieldIdCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.asset.*;
 import com.facilio.bmsconsoleV3.commands.attendance.*;
+import com.facilio.bmsconsoleV3.commands.client.GetOldClienContactRecordMap;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.announcement.*;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
 import com.facilio.bmsconsoleV3.commands.decommission.*;
+import com.facilio.bmsconsoleV3.commands.employee.GetOldEmployeeRecordMap;
 import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.lineitems.LoadExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.FilterItemTransactionsCommandV3;
@@ -39,6 +41,7 @@ import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
 import com.facilio.bmsconsoleV3.commands.storeroom.SetLocationObjectFromSiteV3;
 import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
+import com.facilio.bmsconsoleV3.commands.tenantcontact.GetOldTenantContactRecordMap;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsAndConditionsExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.LoadTermsLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.tool.*;
@@ -51,6 +54,7 @@ import com.facilio.bmsconsoleV3.commands.vendorQuotes.CheckVendorPortalAccessibi
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.LoadVendorQuotesLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.SetVendorQuotesLineItemsCommandV3;
+import com.facilio.bmsconsoleV3.commands.vendorcontact.GetOldVendorContactRecordMap;
 import com.facilio.bmsconsoleV3.commands.visitorlog.*;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.*;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.*;
@@ -98,7 +102,6 @@ import com.facilio.bmsconsoleV3.commands.budget.ValidateChartOfAccountTypeComman
 import com.facilio.bmsconsoleV3.commands.budget.ValidationForScopeCommandV3;
 import com.facilio.bmsconsoleV3.commands.client.UpdateClientIdInSiteCommandV3;
 import com.facilio.bmsconsoleV3.commands.clientcontact.CheckForMandatoryClientIdCommandV3;
-import com.facilio.bmsconsoleV3.commands.clientcontact.UpdateClientAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.AddOrUpdateAdminDocumentsSharingCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.admindocuments.ValidateContactDirectoryEmailCommand;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.contactdirectory.AddOrUpdateContactDirectorySharingCommandV3;
@@ -192,7 +195,6 @@ import com.facilio.bmsconsoleV3.commands.tasks.ValidateTasksCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantSpaceRelationCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenant.AddTenantUserCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.CheckForMandatoryTenantIdCommandV3;
-import com.facilio.bmsconsoleV3.commands.tenantcontact.UpdateTenantAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.ReviseTandCCommand;
 import com.facilio.bmsconsoleV3.commands.transferRequest.SetLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.UpdateCurrentBalanceAfterTransferCommandV3;
@@ -212,7 +214,6 @@ import com.facilio.bmsconsoleV3.commands.usernotification.UserNotificationSeenCo
 import com.facilio.bmsconsoleV3.commands.vendor.AddInsuranceVendorRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.AddVendorContactsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorcontact.CheckForMandatoryVendorIdCommandV3;
-import com.facilio.bmsconsoleV3.commands.vendorcontact.UpdateVendorContactAppPortalAccessCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.AddOrUpdateLocationForVisitorCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitor.CheckForVisitorDuplicationCommandV3;
 import com.facilio.bmsconsoleV3.commands.visitorlogging.AddNdaForVisitorLogCommandV3;
@@ -756,11 +757,18 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getTenantContactBeforeUpdateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PeopleValidationCommandV3());
+        c.addCommand(new GetOldTenantContactRecordMap());
+        return c;
+    }
+
     public static FacilioChain getTenantContactAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
-        c.addCommand(new UpdateTenantAppPortalAccessCommandV3());
-        c.addCommand(new AddOrUpdatePeopleScopingCommandV3());
+        c.addCommand(new AddOrUpdatePortalUserCommandV3());
+        c.addCommand(new AddOrUpdateScopingAndPermissionCommandV3());
         return c;
     }
 
@@ -772,11 +780,18 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getVendorContactBeforeUpdateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PeopleValidationCommandV3());
+        c.addCommand(new GetOldVendorContactRecordMap());
+        return c;
+    }
+
     public static FacilioChain getVendorContactAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
-        c.addCommand(new UpdateVendorContactAppPortalAccessCommandV3());
-        c.addCommand(new AddOrUpdatePeopleScopingCommandV3());
+        c.addCommand(new AddOrUpdatePortalUserCommandV3());
+        c.addCommand(new AddOrUpdateScopingAndPermissionCommandV3());
         return c;
     }
 
@@ -787,11 +802,18 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getEmployeeBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PeopleValidationCommandV3());
+        c.addCommand(new GetOldEmployeeRecordMap());
+        return c;
+    }
+
     public static FacilioChain getEmployeeAfterSaveChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommandV3());
+        c.addCommand(new AddOrUpdatePortalUserCommandV3());
         c.addCommand(new AssignDefaultShift());
-        c.addCommand(new AddOrUpdatePeopleScopingCommandV3());
+        c.addCommand(new AddOrUpdateScopingAndPermissionCommandV3());
         return c;
     }
 
@@ -817,11 +839,18 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getClientContactBeforeUpdateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PeopleValidationCommandV3());
+        c.addCommand(new GetOldClienContactRecordMap());
+        return c;
+    }
+
     public static FacilioChain getClientContactAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
-        c.addCommand(new UpdateClientAppPortalAccessCommandV3());
-        c.addCommand(new AddOrUpdatePeopleScopingCommandV3());
+        c.addCommand(new AddOrUpdatePortalUserCommandV3());
+        c.addCommand(new AddOrUpdateScopingAndPermissionCommandV3());
         return c;
     }
 

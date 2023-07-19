@@ -220,7 +220,12 @@ public class IAMUserManagementAction extends FacilioAction{
                     user.getUser().setOrgId(orgId);
                     user.setApplicationId(appId);
                     user.setPeopleId(peopleId);
-
+                    PeopleContext people = user.getPeople();
+                    if(people!= null){
+                        if((people.getId()<0)) {
+                            people.setId(peopleId);
+                        }
+                    }
                     FacilioContext context = new FacilioContext();
                     context.put(FacilioConstants.ContextNames.USER, user);
                     context.put(FacilioConstants.ContextNames.SEND_INVITE, sendInvitation);
@@ -264,12 +269,11 @@ public class IAMUserManagementAction extends FacilioAction{
         if(CollectionUtils.isNotEmpty(userIds)) {
             for (Long userId : userIds) {
                 user.setUser(IdentityClient.getDefaultInstance().getUserBean().getUser(orgId, userId));
-                AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(user.getApplicationId());
+                com.facilio.identity.client.dto.AppDomain appDomainObj = ApplicationApi.getAppDomainForApp(user.getApplicationId());
                 if (appDomainObj == null) {
                     throw new IllegalArgumentException("Invalid App Domain");
                 }
-                com.facilio.identity.client.dto.AppDomain appDomain = IdentityClient.getDefaultInstance().getAppDomainBean().getAppDomain(appDomainObj.getDomain());
-                user.getUser().setAppDomain(appDomain);
+                user.getUser().setAppDomain(appDomainObj);
                 user.getUser().setInvitedBy(AccountUtil.getCurrentUser().getUid());
 
                 IdentityClient.getDefaultInstance().getUserBean().inviteUser(orgId, user.getUser());
@@ -329,13 +333,12 @@ public class IAMUserManagementAction extends FacilioAction{
         if(user != null ) {
             user.setUser(IdentityClient.getDefaultInstance().getUserBean().getUser(orgId, user.getUid()));
 
-            AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(user.getApplicationId());
+            com.facilio.identity.client.dto.AppDomain appDomainObj = ApplicationApi.getAppDomainForApp(user.getApplicationId());
             if (appDomainObj == null) {
                 throw new IllegalArgumentException("Invalid App Domain");
             }
-            com.facilio.identity.client.dto.AppDomain appDomain = IdentityClient.getDefaultInstance().getAppDomainBean().getAppDomain(appDomainObj.getDomain());
 
-            user.getUser().setAppDomain(appDomain);
+            user.getUser().setAppDomain(appDomainObj);
             user.getUser().setInvitedBy(AccountUtil.getCurrentUser().getUid());
 
             IdentityClient.getDefaultInstance().getUserBean().inviteUser(orgId, user.getUser());
