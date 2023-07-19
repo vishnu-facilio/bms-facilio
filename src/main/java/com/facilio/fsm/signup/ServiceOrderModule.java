@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -19,9 +20,8 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.modules.fields.*;
+import com.facilio.v3.context.Constants;
 
 import java.util.*;
 
@@ -33,13 +33,103 @@ public class ServiceOrderModule extends BaseModuleConfig {
     @Override
     public void addData() throws Exception {
         FacilioModule serviceOrderModule = constructServiceOrderModule();
-        serviceOrderModule.setStateFlowEnabled(true);
 
-        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
-        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(serviceOrderModule));
-//        addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
-        addModuleChain.execute();
-        addStateFlow();
+        addServiceOrderAttachmentsModule(Constants.getModBean(),AccountUtil.getCurrentOrg().getId(), serviceOrderModule);
+
+        constructServiceOrderNotesModule(Constants.getModBean(), AccountUtil.getCurrentOrg().getId(), serviceOrderModule);
+    }
+
+    private FacilioModule constructServiceOrderNotesModule(ModuleBean modBean,long orgId, FacilioModule serviceOrderModule) throws Exception {
+        ModuleBean bean = Constants.getModBean();
+        FacilioModule serviceOrderNotesModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_NOTES, "ServiceOrder Notes",
+                "ServiceOrder_Notes", FacilioModule.ModuleType.NOTES, null,
+                null);
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        FacilioField createdTimeField = new FacilioField(serviceOrderNotesModule, "createdTime", "Created Time",
+                FacilioField.FieldDisplayType.DATETIME, "CREATED_TIME", FieldType.DATE_TIME,
+                true, false, true, false);
+        fields.add(createdTimeField);
+
+        LookupField createdByField = SignupUtil.getLookupField(serviceOrderNotesModule, null, "createdBy",
+                "Created By", "CREATED_BY", "users", FacilioField.FieldDisplayType.LOOKUP_POPUP,
+                false, false, true, orgId);
+        fields.add(createdByField);
+
+        NumberField parentIdField = SignupUtil.getNumberField(serviceOrderNotesModule,
+                "parentId", "Parent", "PARENT_ID", FacilioField.FieldDisplayType.NUMBER,
+                true, false, true, orgId);
+        fields.add(parentIdField);
+
+        StringField titleField = SignupUtil.getStringField(serviceOrderNotesModule,
+                "title", "Title",  "TITLE", FacilioField.FieldDisplayType.TEXTBOX,
+                false, false, true, false,orgId);
+        fields.add(titleField);
+
+        StringField bodyField = SignupUtil.getStringField(serviceOrderNotesModule,
+                "body", "Body", "BODY", FacilioField.FieldDisplayType.TEXTAREA,
+                false, false, true, false,orgId);
+        fields.add(bodyField);
+
+        StringField bodyHtmlField = SignupUtil.getStringField(serviceOrderNotesModule,
+                "bodyHTML", "Body HTML", "BODY_HTML", FacilioField.FieldDisplayType.TEXTAREA,
+                false, false, true, false,orgId);
+        fields.add(bodyHtmlField);
+
+        LookupField parentNote = SignupUtil.getLookupField(serviceOrderNotesModule, serviceOrderModule, "parentNote", "Parent Note",
+                "PARENT_NOTE", null, FacilioField.FieldDisplayType.LOOKUP_POPUP,
+                false, false, true, orgId);
+        fields.add(parentNote);
+
+        serviceOrderNotesModule.setFields(fields);
+
+        SignupUtil.addModules(serviceOrderNotesModule);
+
+        modBean.addSubModule(serviceOrderModule.getModuleId(), serviceOrderNotesModule.getModuleId());
+
+        return serviceOrderNotesModule;
+    }
+
+    private FacilioModule addServiceOrderAttachmentsModule(ModuleBean modBean, long orgId, FacilioModule serviceOrderModule) throws Exception {
+        ModuleBean bean = Constants.getModBean();
+        FacilioModule serviceOrderAttachmentsModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ATTACHMENTS, "Service Order Attachments",
+                "ServiceOrder_Attachments", FacilioModule.ModuleType.ATTACHMENTS, null,
+                null);
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        NumberField fieldIdField = SignupUtil.getNumberField(serviceOrderAttachmentsModule, "fileId", "File ID",
+                "FILE_ID", FacilioField.FieldDisplayType.NUMBER,
+                true, false, true, orgId);
+        fieldIdField.setMainField(true);
+        fields.add(fieldIdField);
+
+        LookupField parentIdField = SignupUtil.getLookupField(serviceOrderAttachmentsModule, serviceOrderModule, "parentId",
+                "Parent", "PARENT_ID", "serviceOrder", FacilioField.FieldDisplayType.LOOKUP_POPUP,
+                false, false, true, orgId);
+        fields.add(parentIdField);
+
+        FacilioField createdTimeField = SignupUtil.getNumberField(serviceOrderAttachmentsModule,
+                "createdTime", "Created Time","CREATED_TIME",
+                FacilioField.FieldDisplayType.NUMBER,
+                true, false, true, orgId);
+        fields.add(createdTimeField);
+
+        FacilioField attachmentTypeField = SignupUtil.getNumberField(serviceOrderAttachmentsModule,
+                "type", "Type", "ATTACHMENT_TYPE",
+                FacilioField.FieldDisplayType.NUMBER,
+                true, false, true, orgId);
+        fields.add(attachmentTypeField);
+
+
+        serviceOrderAttachmentsModule.setFields(fields);
+
+        SignupUtil.addModules(serviceOrderAttachmentsModule);
+
+        modBean.addSubModule(serviceOrderModule.getModuleId(), serviceOrderAttachmentsModule.getModuleId());
+
+        return serviceOrderAttachmentsModule;
     }
 
     private FacilioModule constructServiceOrderModule() throws Exception{
@@ -120,18 +210,18 @@ public class ServiceOrderModule extends BaseModuleConfig {
         sourceType.setEnumName("ServiceOrderSourceType");
         fields.add(sourceType);
 
-        LookupField createdby = FieldFactory.getDefaultField("createdBy","CreatedBy","CREATED_BY",FieldType.LOOKUP);
+        LookupField createdby = FieldFactory.getDefaultField("createdBy","CreatedBy","SYS_CREATED_BY",FieldType.LOOKUP);
         createdby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(createdby);
 
-        FacilioField createdTime = FieldFactory.getDefaultField("createdTime","CreatedTime","CREATED_TIME", FieldType.DATE_TIME);
+        FacilioField createdTime = FieldFactory.getDefaultField("createdTime","CreatedTime","SYS_CREATED_TIME", FieldType.DATE_TIME);
         fields.add(createdTime);
 
-        LookupField modifiedby = FieldFactory.getDefaultField("modifiedBy","ModifiedBy","MODIFIED_BY",FieldType.LOOKUP);
+        LookupField modifiedby = FieldFactory.getDefaultField("modifiedBy","ModifiedBy","SYS_MODIFIED_BY",FieldType.LOOKUP);
         modifiedby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(modifiedby);
 
-        FacilioField modifiedTime = FieldFactory.getDefaultField("modifiedTime","ModifiedTime","MODIFIED_TIME", FieldType.DATE_TIME);
+        FacilioField modifiedTime = FieldFactory.getDefaultField("modifiedTime","ModifiedTime","SYS_MODIFIED_TIME", FieldType.DATE_TIME);
         fields.add(modifiedTime);
 
         LookupField sysdeletedby = FieldFactory.getDefaultField("sysdeletedby","SysDeletedBy","SYS_DELETED_BY",FieldType.LOOKUP);
@@ -252,6 +342,10 @@ public class ServiceOrderModule extends BaseModuleConfig {
         fields.add(localid);
 
         module.setFields(fields);
+
+        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain.execute();
 
         return module;
     }
