@@ -361,3 +361,21 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "azure-production-processor" ]; then
     echo "$(<FACILIO_HOME/deployment-files/service-stage.yml)" >> /home/facilio/deployment.log
     echo "===============================" >> /home/facilio/deployment.log
 fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "stage-scheduler-uk" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-stage-scheduler-uk.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/clientAppConfig-stage.yml $CONF_DIR/clientAppConfig.ymlOapp
+    cp $FACILIO_HOME/deployment-files/log4j-stage-scheduler-uk.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/deployment-files/service-uk.yml $CONF_DIR/service.yml
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "stage-user-uk" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-stage-user-uk.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/clientAppConfig-stage.yml $CONF_DIR/clientAppConfig.yml
+    cp $FACILIO_HOME/deployment-files/log4j-stage-user-uk.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/deployment-files/service-uk.yml $CONF_DIR/service.yml
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi

@@ -119,6 +119,10 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-uk-scheduler.properties
     destination: /home/facilio/deployment-files/
+  - source: /log4j-stage-user-uk.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-stage-scheduler-uk.properties
+    destination: /home/facilio/deployment-files/
   - source: /log4j-uk-kafka.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-uk-kafka.properties
@@ -144,6 +148,10 @@ files:
   - source: /awsprops-uk-user.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-uk-preprod.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-stage-scheduler-uk.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-stage-user-uk.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-scheduler-critical.properties
     destination: /home/facilio/deployment-files/
