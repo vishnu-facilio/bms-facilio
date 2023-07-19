@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.bmsconsole.context.WorkflowRuleActionLogContext;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.TemplateAttachment;
@@ -108,13 +109,13 @@ public class ActionContext implements Serializable {
 		return false;
 	}
 	
-	public boolean executeAction(Map<String, Object> placeHolders, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+	public WorkflowRuleActionLogContext.ActionStatus executeAction(Map<String, Object> placeHolders, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 
 		Boolean onlyPermittedActions = context != null && (Boolean) context.getOrDefault(ContextNames.ONLY_PERMITTED_ACTIONS,false);
 		if(onlyPermittedActions && !actionType.isPermitted()){
-			return true;
+			return WorkflowRuleActionLogContext.ActionStatus.SKIPPED;
 		}
-		
+		Boolean result;
 		if(template != null) {
 			JSONObject actionObj = template.getTemplate(placeHolders);
 			
@@ -138,12 +139,13 @@ public class ActionContext implements Serializable {
 				}
 			}
 
-			actionType.performAction(actionObj, context, currentRule, currentRecord);
+			 result =actionType.performAction(actionObj, context, currentRule, currentRecord);
+			return result? WorkflowRuleActionLogContext.ActionStatus.SUCCESS: WorkflowRuleActionLogContext.ActionStatus.FAILED;
 		}
 		else {
-			actionType.performAction(FieldUtil.getAsJSON(placeHolders), context, currentRule, currentRecord);
+			result= actionType.performAction(FieldUtil.getAsJSON(placeHolders), context, currentRule, currentRecord);
+			return result? WorkflowRuleActionLogContext.ActionStatus.SUCCESS: WorkflowRuleActionLogContext.ActionStatus.FAILED;
 		}
-		return true;
 	}
 	
 	@Override

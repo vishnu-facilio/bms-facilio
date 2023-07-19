@@ -94,8 +94,8 @@ public enum ActionType implements FacilioIntEnum {
 
 	EMAIL_NOTIFICATION(1, true, true) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) {
 			// TODO Auto-generated method stub
 			if (obj != null) {
 				try {
@@ -118,22 +118,24 @@ public enum ActionType implements FacilioIntEnum {
 									filesMap.put(names[i], urls[i]);
 								}
 								FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(obj, filesMap);
-								return;
+								return true;
 							}
 						}
 						FacilioFactory.getEmailClient().sendEmailWithActiveUserCheck(obj);
-						
+
 					}
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
+					return false;
 				}
 			}
+			return true;
 		}
 	},
 	SMS_NOTIFICATION(2, true, true) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) {
 			// TODO Auto-generated method stub
 			if (obj != null && FacilioProperties.isProduction()) {
 				try {
@@ -143,15 +145,17 @@ public enum ActionType implements FacilioIntEnum {
 					}
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
+					return false;
 				}
 			}
+			return true;
 		}
 	},
 	BULK_EMAIL_NOTIFICATION(3, true, true) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) {
 			// TODO Auto-generated method stub
 			if (obj != null) {
 				try {
@@ -199,15 +203,17 @@ public enum ActionType implements FacilioIntEnum {
 					}
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
+					return false;
 				}
 			}
+			return true;
 		}
 	},
 	BULK_SMS_NOTIFICATION(4, true, true) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) {
 			// TODO Auto-generated method stub
 			if (obj != null && FacilioProperties.isProduction()) {
 				try {
@@ -230,16 +236,18 @@ public enum ActionType implements FacilioIntEnum {
 					}
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
+					return false;
 				}
 			}
+			return true;
 		}
 
 	},
 	WEB_NOTIFICATION(5, true, true) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) {
 			// TODO Auto-generated method stub
 			if (obj != null) {
 				try {
@@ -266,13 +274,15 @@ public enum ActionType implements FacilioIntEnum {
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					LOGGER.error("Exception occurred ", e);
+					return false;
 				}
 			}
+			return true;
 		}
 	},
 	ADD_ALARM(6, true, true) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
 			try {
 				Boolean onlyPrequisiteReadingsPresent = (Boolean) context.get(FacilioConstants.ContextNames.ONLY_PREQUISITE_READINGS_PRESENT);
 				onlyPrequisiteReadingsPresent = onlyPrequisiteReadingsPresent == null ? Boolean.FALSE : onlyPrequisiteReadingsPresent;
@@ -369,7 +379,9 @@ public enum ActionType implements FacilioIntEnum {
 				}
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred ", e);
+				return false;
 			}
+			return true;
 		}
 
 		//Assuming readings will come in ascending order of time
@@ -424,8 +436,8 @@ public enum ActionType implements FacilioIntEnum {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -435,14 +447,16 @@ public enum ActionType implements FacilioIntEnum {
 				Boolean isPushNotification = (obj!=null )?(Boolean) obj.getOrDefault("isSendNotification",false):false;
 				NotificationAPI.pushNotification(obj,idLongList,isPushNotification,currentRecord,module,currentRule);
 			} catch (Exception e) {
-				LOGGER.error("Exception occurred ", e);
+				LOGGER.error("Exception occurred while performing pushNotification ", e);
+				return false;
 			}
+			return true;
 		}
 	},
 	EXECUTE_PM(8) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
 				executePM(currentRule, currentRecord, context);
@@ -458,8 +472,9 @@ public enum ActionType implements FacilioIntEnum {
 				}
 				CommonCommandUtil.emailException("ExecutePMAction", builder.toString(), e);
 				LOGGER.error(builder.toString(), e);
+				return false;
 			}
-
+			return true;
 		}
 
 		private void executePM(WorkflowRuleContext currentRule, Object currentRecord, Context context) throws Exception {
@@ -515,7 +530,7 @@ public enum ActionType implements FacilioIntEnum {
 		}
 	},
 	ASSIGNMENT_ACTION(9) {
-		private void performActionForWO(Context context, Object currentRecord, long userID, long groupID) {
+		private boolean performActionForWO(Context context, Object currentRecord, long userID, long groupID) {
 
 			WorkOrderContext workOrder = (WorkOrderContext) currentRecord;
 			WorkOrderContext updateWO = new WorkOrderContext();
@@ -559,7 +574,9 @@ public enum ActionType implements FacilioIntEnum {
 				}
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred ", e);
+				return false;
 			}
+			return true;
 		}
 
 		private void performActionForV3WO(Context context, Object currentRecord, long userID, long groupID) throws Exception {
@@ -615,8 +632,8 @@ public enum ActionType implements FacilioIntEnum {
 		}
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) throws Exception {
 
 			long assignedToUserId = -1, assignGroupId = -1;
 
@@ -630,21 +647,22 @@ public enum ActionType implements FacilioIntEnum {
 				LOGGER.trace("performing assignment action for v2 WO context");
 				performActionForWO(context, currentRecord, assignedToUserId, assignGroupId);
 			}
+			return true;
 		}
 
 	},
 	SLA_ACTION(10) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) {
 
 //			long duedate = -1;
 			V3WorkOrderContext workOrder = (V3WorkOrderContext) currentRecord;
 			if (workOrder.getPriority() == null) {
-				return;
+				return false;
 			}
 			if (workOrder.getDueDate() != -1) {
-				return;
+				return false;
 			}
 			long workorderpriority = workOrder.getPriority().getId();
 			Long duration = null;
@@ -676,19 +694,19 @@ public enum ActionType implements FacilioIntEnum {
 							.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
 							.andCondition(CriteriaAPI.getIdCondition(((V3WorkOrderContext) currentRecord).getId(), woModule));
 					updateBuilder.update(updateWO);
-
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
+					return false;
 				}
 
 			}
-
+			return true;
 		}
 	},
 	CREATE_WO_FROM_ALARM(11) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
@@ -783,14 +801,16 @@ public enum ActionType implements FacilioIntEnum {
 				// TODO Auto-generated catch block
 				System.out.println(e);
 				LOGGER.error("Exception occurred during creating Workorder from Alarm", e);
+				return false ;
 			}
+			return true;
 		}
 	},
 	CLOSE_WO_FROM_ALARM(12) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) throws Exception {
 			// TODO Auto-generated method stub
 			try {
 				WorkOrderContext wo = null;
@@ -825,11 +845,13 @@ public enum ActionType implements FacilioIntEnum {
 						StateFlowRulesAPI.updateState(wo, module, status, false, context);
 					}
 
-                }
-            } catch (Exception e) {
-                LOGGER.error("Exception occurred during closing Workorder from Alarm", e);
-            }
-        }
+				}
+			} catch (Exception e) {
+				LOGGER.error("Exception occurred during closing Workorder from Alarm", e);
+				return false;
+			}
+			return true;
+		}
 
 		@Override
 		public boolean isTemplateNeeded() {
@@ -841,78 +863,81 @@ public enum ActionType implements FacilioIntEnum {
 	FIELD_CHANGE(13, true, true) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) throws Exception {
 			// TODO Auto-generated method stub
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			try {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 //			WorkflowEventContext event = currentRule.getEvent();
-			List<FacilioField> fields = new ArrayList<>();
-			long currentTime = System.currentTimeMillis();
-			for (Object key : obj.keySet()) {
-				FacilioField field = modBean.getField((String) key, currentRule.getModule().getName());
-				if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 324 && field == null){
-					LOGGER.info("perform action : key : " + key + ", field : " + field + ", module : " + currentRule.getModule() + " , current rule : "+ currentRule.getId());
-				}
-				if (field != null) {
-					Object val = obj.get(key);
-					if (val != null) {
-						switch (field.getDataTypeEnum()) {
-							case LOOKUP:
-								Object id = ((Map<String, Object>)val).get("id");
-								if ( FacilioConstants.ContextNames.USERS.equals(((LookupField) field).getSpecialType()) && FacilioConstants.Criteria.LOGGED_IN_USER.equals(id)) {
-									val = AccountUtil.getCurrentUser();
-								}
-								else {
-									val = FieldUtil.getEmptyLookupVal((LookupField) field, FacilioUtil.parseLong(id));
-								}
-								obj.put(key, FieldUtil.getAsProperties(val));
-								break;
-							case DATE:
-							case DATE_TIME:
-								val = currentTime + FacilioUtil.parseLong(val);
-								obj.put(key, val);	// setting newly updated value if any
-								break;
-							case ENUM:
-								val = FacilioUtil.parseInt(val);
-								obj.put(key, val);
-								break;
-							default:
-								break;
-						}
-						fields.add(field);
-						if (field.isDefault()) {
-							BeanUtils.setProperty(currentRecord, field.getName(), val);
-						}
-						else {
-							((ModuleBaseWithCustomFields) currentRecord).setDatum(field.getName(), val);
+				List<FacilioField> fields = new ArrayList<>();
+				long currentTime = System.currentTimeMillis();
+				for (Object key : obj.keySet()) {
+					FacilioField field = modBean.getField((String) key, currentRule.getModule().getName());
+					if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 324 && field == null) {
+						LOGGER.info("perform action : key : " + key + ", field : " + field + ", module : " + currentRule.getModule() + " , current rule : " + currentRule.getId());
+					}
+					if (field != null) {
+						Object val = obj.get(key);
+						if (val != null) {
+							switch (field.getDataTypeEnum()) {
+								case LOOKUP:
+									Object id = ((Map<String, Object>) val).get("id");
+									if (FacilioConstants.ContextNames.USERS.equals(((LookupField) field).getSpecialType()) && FacilioConstants.Criteria.LOGGED_IN_USER.equals(id)) {
+										val = AccountUtil.getCurrentUser();
+									} else {
+										val = FieldUtil.getEmptyLookupVal((LookupField) field, FacilioUtil.parseLong(id));
+									}
+									obj.put(key, FieldUtil.getAsProperties(val));
+									break;
+								case DATE:
+								case DATE_TIME:
+									val = currentTime + FacilioUtil.parseLong(val);
+									obj.put(key, val);    // setting newly updated value if any
+									break;
+								case ENUM:
+									val = FacilioUtil.parseInt(val);
+									obj.put(key, val);
+									break;
+								default:
+									break;
+							}
+							fields.add(field);
+							if (field.isDefault()) {
+								BeanUtils.setProperty(currentRecord, field.getName(), val);
+							} else {
+								((ModuleBaseWithCustomFields) currentRecord).setDatum(field.getName(), val);
+							}
 						}
 					}
 				}
+
+				UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+						.fields(fields)
+						.module(currentRule.getModule())
+						.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), currentRule.getModule()));
+				updateBuilder.updateViaMap(obj);
+			}catch (Exception e) {
+				LOGGER.error("Exception occurred on workflow Action", e);
+				return false;
 			}
-
-			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-					.fields(fields)
-					.module(currentRule.getModule())
-					.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), currentRule.getModule()))
-					;
-			updateBuilder.updateViaMap(obj);
-
+			return true;
 		}
 
 	},
 	CREATE_WORK_ORDER(14) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) throws Exception {
 			addWorkOrder(obj, SourceType.WORKFLOW_RULE, null);
+			return true;
 		}
 
 	},
 	CLEAR_ALARM(15,false) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
 				ReadingRuleContext alarmTriggerRule = (ReadingRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_ALARM_TRIGGER_RULES);
@@ -936,7 +961,7 @@ public enum ActionType implements FacilioIntEnum {
 					AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
 					long clearTime = ((ReadingRuleContext) currentRule).getReadingRuleTypeEnum() == ReadingRuleType.THRESHOLD_RULE ? ((ReadingContext) currentRecord).getTtime() : (long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
 					if (alarm.getModifiedTime() == clearTime) {
-						return;
+						return true;
 					}
 					ReadingContext reading = (ReadingContext) currentRecord;
 					if (reading != null) {
@@ -946,12 +971,13 @@ public enum ActionType implements FacilioIntEnum {
 					}
 				}
 			}
+			return true;
 		}
 	},
 	FORMULA_FIELD_CHANGE(16, true, true) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception {
 			// TODO Auto-generated method stub
 //			if (currentRule.getEvent() == null) {
 //				currentRule.setEvent(WorkflowRuleAPI.getWorkflowEvent(currentRule.getEventId()));
@@ -1020,13 +1046,14 @@ public enum ActionType implements FacilioIntEnum {
 					.andCondition(CriteriaAPI.getIdCondition(id, module))
 					;
 			updateBuilder.updateViaMap(props);
+			return true;
 		}
 
 	},
 	ALARM_IMPACT_ACTION(17) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception {
 			// TODO Auto-generated method stub
 //			if (currentRule.getEvent() == null) {
 //				currentRule.setEvent(WorkflowRuleAPI.getWorkflowEvent(currentRule.getEventId()));
@@ -1093,12 +1120,13 @@ public enum ActionType implements FacilioIntEnum {
 					.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), currentRule.getModule()))
 					;
 			updateBuilder.updateViaMap(props);
+			return true;
 		}
 
 	},
 	CONTROL_ACTION (18) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			LOGGER.info("Performing Control action : "+obj.toJSONString());
 			String val = (String) obj.get("val");
 			if(AccountUtil.getCurrentOrg().getId() == 104l) {
@@ -1162,28 +1190,36 @@ public enum ActionType implements FacilioIntEnum {
 					executeControlActionCommandChain.execute(context);
 				}
 			}
+			return true;
 		}
 	},
 	CHANGE_STATE (19, true, true) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) throws Exception {
-			Object newState = obj.get("new_state");
-			long newStateId = newState != null ? Long.parseLong(newState.toString()) : -1;
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) throws Exception {
+			try {
+				Object newState = obj.get("new_state");
+				long newStateId = newState != null ? Long.parseLong(newState.toString()) : -1;
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(currentRule.getModuleName());
 
-			FacilioStatus status = TicketAPI.getStatus(newStateId);
-			changeState(status, module, context, currentRecord);
+				FacilioStatus status = TicketAPI.getStatus(newStateId);
+				changeState(status, module, context, currentRecord);
+			}catch (Exception e) {
+				LOGGER.error("Exception occurred on workflow Action", e);
+				return false;
+			}
+			return true;
 		}
 	},
 	ML_JOB_ACTION (20) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
 		{
 			FacilioTimer.scheduleOneTimeJobWithTimestampInSec(FacilioUtil.parseLong(context.get("jobid")), "DefaultMLJob", System.currentTimeMillis(), "ml");
+			return true;
 		}
 
 		@Override
@@ -1196,7 +1232,7 @@ public enum ActionType implements FacilioIntEnum {
 	WORKFLOW_ACTION (21, true) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
 		{
 
 			try {
@@ -1236,8 +1272,9 @@ public enum ActionType implements FacilioIntEnum {
 			}
 			catch (Exception e) {
 				LOGGER.error("Exception occurred on workflow Action", e);
+				return false;
 			}
-
+			return true;
 		}
 
 		@Override
@@ -1249,7 +1286,7 @@ public enum ActionType implements FacilioIntEnum {
 	},
 	REPORT_DOWNTIME_ACTION (22) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
 		{
 			if (currentRecord != null) {
 				if (currentRecord instanceof ReadingAlarmContext) {
@@ -1281,19 +1318,21 @@ public enum ActionType implements FacilioIntEnum {
 					newAssetBreakdown.execute(context);
 				}
 			}
+			return true;
 		}
 	},
 	ASSET_EXPIRE_ACTION (23) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) throws Exception {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule("asset");
 			
 			FacilioStatus expiredStatus = TicketAPI.getStatus(module, "Expired");
 			changeState(expiredStatus, module, context, currentRecord);
+			return true;
 		}
-		
+
 		@Override
 		public boolean isTemplateNeeded() {
 			return false;
@@ -1302,8 +1341,8 @@ public enum ActionType implements FacilioIntEnum {
 	CREATE_DEVIATION_WORK_ORDER(24) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-								  Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) throws Exception {
 			try {
 				TaskContext task = (TaskContext) currentRecord;
 				long pmId = task.getParentWo().getPm().getId();
@@ -1331,7 +1370,9 @@ public enum ActionType implements FacilioIntEnum {
 			}
 			catch(Exception e) {
 				LOGGER.error("Exception occurred on creating deviation workorders", e);
+				return false;
 			}
+			return true;
 		}
 
 	},
@@ -1339,8 +1380,8 @@ public enum ActionType implements FacilioIntEnum {
 	ADD_VIOLATION_ALARM (25) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+									 Object currentRecord) throws Exception {
 			try {
 				
 				obj.remove("alarmType");
@@ -1361,14 +1402,16 @@ public enum ActionType implements FacilioIntEnum {
 				event = null;
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred ", e);
+				return false;
 			}
+			return true;
 		}
-		
+
 	},
 	WHATSAPP_MESSAGE(26, true, true) {
 		
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
+		public  boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
 			if (obj != null) {  //&& FacilioProperties.isProduction() add this on commit
 				try {
 					String to = (String) obj.get("to");
@@ -1406,14 +1449,15 @@ public enum ActionType implements FacilioIntEnum {
 				} catch (Exception e) {
 					e.printStackTrace();
 					LOGGER.error("Exception occurred ", e);
-					
+					return false;
 				}
 			}
+			return true;
 		}
 	},
 	MAKE_CALL(27, true, true) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
 			// TODO Auto-generated method stub
 			if (obj != null) { //&& FacilioProperties.isProduction() add this on commit
 				try {
@@ -1424,14 +1468,16 @@ public enum ActionType implements FacilioIntEnum {
 					}
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
+					return false;
 				}
 			}
+			return true;
 		}
 	},
 	IMPACTS(28) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-		// 	context.put("impact_value", val);
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			// 	context.put("impact_value", val);
 			try {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				List<FacilioField> fields = new ArrayList<>();
@@ -1463,7 +1509,9 @@ public enum ActionType implements FacilioIntEnum {
 			catch (Exception e) {
 				LOGGER.info("Error in impact value for currentRule: "+currentRule+" currentRecord : "+currentRecord);
 				System.out.println(e);
+				return false;
 			}
+			return true;
 		}
 		@Override
 		public boolean isTemplateNeeded() {
@@ -1473,7 +1521,7 @@ public enum ActionType implements FacilioIntEnum {
 	CHAT_BOT_INTENT_RESPONSE (29) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
 		{
 				
 			ChatBotIntent chatBotIntent = (ChatBotIntent)context.get(ChatBotConstants.CHAT_BOT_INTENT);
@@ -1481,7 +1529,7 @@ public enum ActionType implements FacilioIntEnum {
 			String response = ChatBotConstants.getDefaultIntentResponse(chatBotIntent.getName());
 			
 			context.put(WorkflowV2Util.WORKFLOW_RESPONSE, Collections.singletonMap(ChatBotConstants.CHAT_BOT_WORKFLOW_RETURN_TEXT, response));
-				
+				return true;
 		}
 
 		@Override
@@ -1495,7 +1543,7 @@ public enum ActionType implements FacilioIntEnum {
 	WORKFLOW_ACTION_WITH_LIST_PARAMS(30, true) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
 		{
 
 			try {
@@ -1527,8 +1575,9 @@ public enum ActionType implements FacilioIntEnum {
 			}
 			catch (Exception e) {
 				LOGGER.error("Exception occurred on workflow Action", e);
+				return false;
 			}
-
+			return true;
 		}
 
 		@Override
@@ -1540,7 +1589,7 @@ public enum ActionType implements FacilioIntEnum {
 	},
 	ACTIVITY_FOR_MODULE_RECORD(31, true, true) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			try {
 				if (currentRecord instanceof ModuleBaseWithCustomFields) {
 					ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) currentRecord;
@@ -1576,12 +1625,14 @@ public enum ActionType implements FacilioIntEnum {
 			}
 			catch (Exception ex) {
 				LOGGER.error("Exception occurred ", ex);
+				return false;
 			}
+			return true;
 		}
 	},
 	MAIL_TO_CREATEWO(32) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			LOGGER.info("MAIL_TO_CREATEWO === >"+ currentRecord);
 
 			SupportEmailContext supportEmailContext = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
@@ -1619,8 +1670,8 @@ public enum ActionType implements FacilioIntEnum {
 
 			MailMessageUtil.updateBaseMailConvertionData(mailContext , workOrderId, ChainUtil.getModule(FacilioConstants.ContextNames.WORK_ORDER).getModuleId() , null , BaseMailMessageContext.BaseMailConversionType.RECORD , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
 			LOGGER.info("Added Workorder from Action Type MAIL_TO_CREATEWO : "  );
-			
-			
+			return true;
+
 		}
 		@Override
 		public boolean isTemplateNeeded()
@@ -1630,7 +1681,7 @@ public enum ActionType implements FacilioIntEnum {
 	} ,
 	MAIL_TO_CUSTOM_MODULE_RECORD(33) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			long formId = (long) obj.get("formId");
 
 			if (formId > -1) {
@@ -1654,14 +1705,15 @@ public enum ActionType implements FacilioIntEnum {
 				MailMessageUtil.addEmailToModuleDataContext(mailContext, resultRecord.getId(), module.getModuleId());
 				MailMessageUtil.updateBaseMailConvertionData(mailContext , resultRecord.getId(), module.getModuleId() , null , BaseMailMessageContext.BaseMailConversionType.RECORD , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
 			}
+			return true;
 		}
 	},
 	INVOKE_TRIGGER(34, true, true) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			Long triggerId = (Long) obj.get(TriggerUtil.TRIGGER_ID);
 			if (triggerId == null) {
-				return;
+				return false;
 			}
 
 			List<ModuleBaseWithCustomFields> records = null;
@@ -1706,12 +1758,13 @@ public enum ActionType implements FacilioIntEnum {
 				triggerExecutionContext.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 				triggerExecuteChain.execute();
 			}
+			return true;
 		}
 	},
 	
 	EMAIL_CONVERSATION(35) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
 			try {
@@ -1851,12 +1904,12 @@ public enum ActionType implements FacilioIntEnum {
 				}
 				throw e;
 			}
-			
+			return true;
 		}
 	},
 	CREATE_SATISFACTION_SURVEY(36){
 		@Override
-		public void performAction (JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+		public boolean performAction (JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			try {
 				Long woId = -1L;
 				Map<String, Object> props = new HashMap<>();
@@ -1909,12 +1962,14 @@ public enum ActionType implements FacilioIntEnum {
 				QAndAUtil.executeTemplate(FacilioConstants.WorkOrderSurvey.WORK_ORDER_SURVEY_TEMPLATE, obj, new ArrayList<>(), currentRule.getId());
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred while creating survey for records : ", e);
+				return false;
 			}
+			return true;
 		}
 	},
 	CREATE_RECORD(37,true){
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			String moduleName = (String) obj.get("moduleName");
 			FacilioModule module = moduleBean.getModule(moduleName);
@@ -1922,6 +1977,7 @@ public enum ActionType implements FacilioIntEnum {
 				Map<String,Object> data = (Map<String, Object>) obj.get("data");
 				V3Util.createRecord(module, data,false,null,null,true);
 			}
+			return true;
 		}
 	},
 
@@ -1982,8 +2038,8 @@ public enum ActionType implements FacilioIntEnum {
 		return isPermitted;
 	}
 
-	abstract public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-									   Object currentRecord) throws Exception;
+	abstract public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+										  Object currentRecord) throws Exception;
 
 	public static ActionType getActionType(int actionTypeVal) {
 		return TYPE_MAP.get(actionTypeVal);

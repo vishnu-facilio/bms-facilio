@@ -303,8 +303,9 @@ public class WebTabContext implements Serializable {
         NEW_DASHBOARD ("New Dashboard", false,TabType.NORMAL,null), // 94
         ODATA_CONFIGURATION("OData Configuration",false,TabType.SETUP,new SetupTypeHandler()), //95
         KPI_EXEC_LOGS("KPI Execution Logs", false, TabType.SETUP, new SetupTypeHandler()), // 96
-        RULE_LOGS("Rule Logs", false, TabType.SETUP, new SetupTypeHandler()),// 97
-        INBOUND_MAIL_CONVERSION("Inbound Mail Conversion",false,TabType.SETUP,new SetupTypeHandler());
+        RULE_LOGS("Rule Logs", false, TabType.SETUP, new SetupTypeHandler()), // 97
+        INBOUND_MAIL_CONVERSION("Inbound Mail Conversion",false,TabType.SETUP,new SetupTypeHandler()),//98
+        WORKFLOW_RULE_LOGS("Workflow Rule Logs",false,TabType.SETUP,new SetupTypeHandler()); //99
         public void setName(String name) {
             this.name = name;
         }

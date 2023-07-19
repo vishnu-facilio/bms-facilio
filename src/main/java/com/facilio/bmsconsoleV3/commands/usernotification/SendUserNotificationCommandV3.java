@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.usernotification;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.command.FacilioCommand;
@@ -41,20 +42,20 @@ public class SendUserNotificationCommandV3 extends FacilioCommand implements Pos
           records = recordMap.get(moduleName);
         }
         Boolean isPushNotification = (bodyParams!=null)? (Boolean) bodyParams.getOrDefault("isPushNotification",false) :false;
-        if (isPushNotification && FacilioProperties.isProduction()) {
+        if (isPushNotification && FacilioProperties.isProduction() ) {
 
-                List<Long> recordId = new ArrayList<>();
+                List<Long> recordIdsList = new ArrayList<>();
                 for (UserNotificationContext userNotificationContext : records) {
                     long id = userNotificationContext.getId();
-                    recordId.add(id);
+                    recordIdsList.add(id);
                 }
                 JSONObject ids = new JSONObject();
-                ids.put("recordIds", recordId);
-                if (CollectionUtils.isNotEmpty(recordId)) {
+                ids.put("recordIds", recordIdsList);
+                if (CollectionUtils.isNotEmpty(recordIdsList)) {
                     Message message = new Message();
-                    message.setTopic(pushNotification);
+                    message.setTopic(pushNotification+"/"+recordIdsList.get(0));
                     message.setContent(ids);
-                    LOGGER.info("Sending push notifications for ids to wms: " + recordId);
+                    LOGGER.info("Sending push notifications for ids to wms: " + recordIdsList);
                     WmsBroadcaster.getBroadcaster().sendMessage(message);
                 }
         }

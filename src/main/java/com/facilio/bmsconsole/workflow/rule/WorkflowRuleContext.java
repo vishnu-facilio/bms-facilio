@@ -1,16 +1,17 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLTimeoutException;
 import java.text.MessageFormat;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
+import com.facilio.modules.*;
+import com.facilio.bmsconsole.context.WorkflowRuleActionLogContext;
+import com.facilio.bmsconsole.context.WorkflowRuleLogContext;
+import com.facilio.bmsconsole.scoringrule.ScoringRuleAPI;
+import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
+import com.facilio.bmsconsole.util.*;
+import com.facilio.modules.*;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
 
@@ -19,14 +20,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -34,10 +34,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
@@ -561,16 +557,28 @@ public class WorkflowRuleContext implements Serializable {
 			actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
 		}
 		LOGGER.debug("Time taken to fetch actions for workflowrule id : "+ruleId+" with actions : "+actions+" is "+(System.currentTimeMillis() - startTime));
+
+		List<WorkflowRuleActionLogContext> actionLogContextList=new LinkedList<>();
 		if(actions != null) {
 			for(ActionContext action : actions) {
 				if (this.getId() == 6448) {
 					LOGGER.info("Place holders during action : "+placeHolders);
 				}
-				action.executeAction(placeHolders, context, this, record);
+				WorkflowRuleActionLogContext.ActionStatus status = action.executeAction(placeHolders, context, this, record);
+                actionLogContextList.add(new WorkflowRuleActionLogContext(action.getActionTypeEnum(),status));
 			}
 		}
+		try {
+			if (this.getRuleTypeEnum().isLoggable && record instanceof ModuleBaseWithCustomFields) {
+				ModuleBaseWithCustomFields recordData = (ModuleBaseWithCustomFields) record;
+				String linkConfig=WorkflowRuleLogUtil.linkConfigForRuleType(this);
+				WorkflowRuleLogUtil.sendWorkflowRuleLogs(new WorkflowRuleLogContext(recordData.getId(), this, true, true, true, true, true, actionLogContextList,linkConfig));
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception occurred in workflowRuleLog", e);
+		}
 	}
-	
+
 	public void executeFalseActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		//TODO Add true or false boolean in actions
 	}
@@ -594,35 +602,35 @@ public class WorkflowRuleContext implements Serializable {
 	}
 
 	public static enum RuleType {
-		READING_RULE(false, false, false, true, false), // reading
-		WORKORDER_AGENT_NOTIFICATION_RULE(false,false,false, false, true),
-		WORKORDER_REQUESTER_NOTIFICATION_RULE(false,false,false, false, true), //3
+		READING_RULE(false, false, false, true, false,false), // reading
+		WORKORDER_AGENT_NOTIFICATION_RULE(false,false,false, false, true,false),
+		WORKORDER_REQUESTER_NOTIFICATION_RULE(false,false,false, false, true,false), //3
 
-		ALARM_NOTIFICATION_RULE(false,false,false, false, true),
+		ALARM_NOTIFICATION_RULE(false,false,false, false, true,false),
 		SLA_RULE (true),	// Not in use
-		ASSIGNMENT_RULE (true), //6
+		ASSIGNMENT_RULE (true,false,false,false,false,true), //6
 		
 		PM_READING_RULE,
 		IMPACT_RULE(false),
 		VALIDATION_RULE, //9
 		
 		ASSET_ACTION_RULE,
-		SLA_WORKFLOW_RULE(true),
-		SLA_POLICY_RULE(true, false, false, true, false), //12
+		SLA_WORKFLOW_RULE(true,false,false,false,false,true),
+		SLA_POLICY_RULE(true, false, false, true, false,true), //12
 		
-		APPROVAL_RULE(true, true),
-		REQUEST_APPROVAL_RULE(true),
-		REQUEST_REJECT_RULE(true), //15
+		APPROVAL_RULE(true, true,false,false,false,false),
+		REQUEST_APPROVAL_RULE(true,false,false,false,false,false),
+		REQUEST_REJECT_RULE(true,false,false,false,false,false), //15
 		
 		CHILD_APPROVAL_RULE(true),
 		PM_ALARM_RULE,
-		ALARM_TRIGGER_RULE(false,true,true, true, false), //18
+		ALARM_TRIGGER_RULE(false,true,true, true, false,false), //18
 		
 		ALARM_CLEAR_RULE(false,false,true),
 		WORKORDER_CUSTOM_CHANGE,
-		APPROVAL_STATE_FLOW(true),    //21
+		APPROVAL_STATE_FLOW(true,false,false,false,false,true),    //21
 
-		APPROVAL_STATE_TRANSITION,
+		APPROVAL_STATE_TRANSITION(true,false,false,false,false,true),
 		PM_NOTIFICATION_RULE,
 		READING_ALARM_RULE,			//24
 		
@@ -630,8 +638,8 @@ public class WorkflowRuleContext implements Serializable {
 		STATE_TRANSACTION_FIELD_SCHEDULED,
 		PM_READING_TRIGGER,			// 27
 		
-		STATE_RULE(true),
-		STATE_FLOW(true),
+		STATE_RULE(true,false,false,false,false,true),
+		STATE_FLOW(true,false,false,false,false,true),
 
 		BUSSINESS_LOGIC_ASSET_RULE, //30
 		REPORT_DOWNTIME_RULE, //31
@@ -641,11 +649,11 @@ public class WorkflowRuleContext implements Serializable {
 		RECORD_SPECIFIC_RULE, //34
 		CONTROL_ACTION_READING_ALARM_RULE,
 		CONTROL_ACTION_SCHEDULED_RULE,
-		MODULE_RULE(false,false,false, false, true), // 37
-		MODULE_RULE_NOTIFICATION(false,false,false, false, true),
+		MODULE_RULE(false,false,false, false, true,true), // 37
+		MODULE_RULE_NOTIFICATION(false,false,false, false, true,true),
 		
 		READING_VIOLATION_RULE, // 39
-		CUSTOM_BUTTON,	// 40
+		CUSTOM_BUTTON(false,false,false,false,false,true),	// 40
 		ALARM_WORKFLOW_RULE,
 		PM_CUSTOM_TRIGGER_RULE,
 		TRANSACTION_RULE, //43
@@ -660,7 +668,7 @@ public class WorkflowRuleContext implements Serializable {
 		
 		
 		private boolean stopFurtherExecution = false, versionSupported = false,isChildType = false;
-		private boolean childSupport = false, isPostExecute = false;
+		private boolean childSupport = false, isPostExecute = false , isLoggable=false;
 		private RuleType() {
 		}
 		
@@ -673,15 +681,16 @@ public class WorkflowRuleContext implements Serializable {
 		}
 		
 		private RuleType(boolean stopFurtherExecution, boolean versionSupported,boolean isChildType) {
-			this(stopFurtherExecution, versionSupported, isChildType, false, false);
+			this(stopFurtherExecution, versionSupported, isChildType, false, false,false);
 		}
 
-		RuleType(boolean stopFurtherExecution, boolean versionSupported,boolean isChildType, boolean childSupport, boolean isPostExecute) {
+		RuleType(boolean stopFurtherExecution, boolean versionSupported,boolean isChildType, boolean childSupport, boolean isPostExecute,boolean isLoggable) {
 			this.stopFurtherExecution = stopFurtherExecution;
 			this.versionSupported = versionSupported;
 			this.isChildType = isChildType;
 			this.childSupport = childSupport;
 			this.isPostExecute = isPostExecute;
+			this.isLoggable=isLoggable;
 		}
 		
 		public boolean isChildType() {
@@ -709,7 +718,9 @@ public class WorkflowRuleContext implements Serializable {
 		public boolean isPostExecute() {
 			return isPostExecute;
 		}
-
+		public boolean isLoggable(){
+			return isLoggable;
+		}
 		public static RuleType valueOf(int val) {
 			try {
 				return RULE_TYPES[val - 1];

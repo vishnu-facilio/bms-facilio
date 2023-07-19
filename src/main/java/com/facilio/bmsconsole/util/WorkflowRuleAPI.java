@@ -4,10 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ReadingEventContext;
-import com.facilio.bmsconsole.context.WorkflowRuleRecordRelationshipContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleAPI;
 import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -1192,6 +1189,15 @@ public class WorkflowRuleAPI {
 			}
 			else {
 				workflowRule.executeFalseActions(record, context, rulePlaceHolders);
+				try {
+					if (workflowRule.getRuleTypeEnum().isLoggable() && record instanceof ModuleBaseWithCustomFields) {
+						ModuleBaseWithCustomFields recordData = (ModuleBaseWithCustomFields) record;
+						String linkConfig=WorkflowRuleLogUtil.linkConfigForRuleType(workflowRule);
+						WorkflowRuleLogUtil.sendWorkflowRuleLogs(new WorkflowRuleLogContext(recordData.getId(), workflowRule, workflowFlag, fieldChangeFlag, siteId, miscFlag, criteriaFlag, null,linkConfig));
+					}
+				} catch (Exception e) {
+					LOGGER.error("Exception occurred in workflowRuleLog", e);
+				}
 			}
 		}
 		LOGGER.debug("Time taken to execute readingRule actions: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - actionExecutionStartTime));

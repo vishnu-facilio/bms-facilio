@@ -18,6 +18,7 @@ import com.facilio.backgroundactivity.context.BackgroundActivity;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmContext;
+import com.facilio.bmsconsole.context.WorkflowRuleLogContext;
 import com.facilio.bmsconsole.util.MLServiceUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
@@ -3198,4 +3199,11 @@ public class APIv3Config {
     }
 
 
+    @Module(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGS)
+    public static Supplier<V3Config> getWorkflowRuleLogs(){
+        return () -> new V3Config(WorkflowRuleLogContext.class,null)
+                .list()
+                .afterFetch(new GetWorkflowRuleActionLogs())
+                .build();
+    }
 }

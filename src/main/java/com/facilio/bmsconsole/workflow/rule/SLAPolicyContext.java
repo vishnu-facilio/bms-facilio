@@ -44,6 +44,7 @@ public class SLAPolicyContext extends WorkflowRuleContext {
                     .fields(Collections.singletonList(slaPolicyField))
                     .andCondition(CriteriaAPI.getIdCondition(r.getId(), getModule()));
             builder.update(r);
+            super.executeTrueActions(record, context, placeHolders);
         }
     }
 

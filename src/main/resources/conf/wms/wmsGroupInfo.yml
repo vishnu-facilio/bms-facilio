@@ -21,7 +21,7 @@ groups:
     topics:
       - { topic: alarm-delete, handler: com.facilio.wmsv2.handler.AlarmDeleteHandler, isLiveMessage: false }
       - { topic: __audit_logs__, handler: com.facilio.wmsv2.handler.AuditLogHandler, isLiveMessage: false }
-      - { topic: __pushnotification__, handler: com.facilio.wmsv2.handler.PushNotificationHandler, priority: -6, recordTimeout: 60, isLiveMessage: false }
+      - { topic: __pushnotification__/#, handler: com.facilio.wmsv2.handler.PushNotificationHandler, priority: -6, recordTimeout: 60, isLiveMessage: false }
       - { topic: __mailresponse__/#, handler: com.facilio.wmsv2.handler.MailResponseParsingHandler, recordTimeout: 5, isLiveMessage: false }
       - { topic: __update_on_offline_record__/#, handler: com.facilio.wmsv2.handler.UpdateOnOfflineRecordHandler, priority: -6, recordTimeout: 60, isLiveMessage: false}
       - { topic: resource-decommission, handler: com.facilio.wmsv2.handler.ResourceDecommissioningHandler,recordTimeout: 60,isLiveMessage: false }
@@ -30,7 +30,7 @@ groups:
       - { topic: __agent__/point/alarm/org/#, handler: com.facilio.wmsv2.handler.agent.ClearPointAlarmHandler, isLiveMessage: false }
       - { topic: __dashboard_update__, handler: com.facilio.wmsv2.handler.DashboardUpdateHandler, isLiveMessage: false }
       - { topic: __one_time_job_for_scheduled_rule__/#/#, handler: com.facilio.wmsv2.handler.AddOneTimeJobForScheduledRuleHandler,priority: -6,recordTimeout: 60, isLiveMessage: false }
-
+      - {topic: __workflow_rule_logs__/#/#/#, handler: com.facilio.wmsv2.handler.WorkFlowRuleLogHandler,priority: -5,deliverTo: SESSION,isLiveMessage: false}
 
   - group: receive-mail
     sendToAll: false

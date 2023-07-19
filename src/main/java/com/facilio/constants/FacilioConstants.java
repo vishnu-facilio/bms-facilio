@@ -2070,6 +2070,7 @@ public class FacilioConstants {
 		public static final String PENDING_APPROVAL_LIST = "pendingApprovalList";
 
 		public static final String AUDIT_LOGS = "auditLogs";
+		public static final String WORKFLOW_RULE_ACTION_LOGS = "workflowRuleActionLogs";
 
 		public static final String ROTATING_ASSET = "rotatingAsset";
 

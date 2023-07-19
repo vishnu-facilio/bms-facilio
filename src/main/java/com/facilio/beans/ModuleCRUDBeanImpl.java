@@ -3,7 +3,6 @@ package com.facilio.beans;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.BatchUpdateException;
-import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,13 +14,8 @@ import com.facilio.bmsconsole.jobs.DataProcessingAlertJob;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.SupplementRecord;
-import com.facilio.plannedmaintenance.ExecutorBase;
 import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
-import com.facilio.plannedmaintenance.ScheduleExecutor;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.util.V3Util;
 import com.facilio.wmsv2.handler.AuditLogHandler;
@@ -1431,6 +1425,10 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FacilioModule module = modBean.getModule(MLServiceUtil.ML_SERVICE_MODULE);
 		V3Util.createRecord(module, mlServiceData);
 //		MLServiceAction.initMLServiceV3FromAdmin(mlServiceData);
+	}
+	@Override
+	public void addWorkflowRuleLog(WorkflowRuleLogContext workflowRuleLog, List<WorkflowRuleActionLogContext> workflowRuleActionLogContext) throws Exception{
+		WorkflowRuleLogUtil.insertWorkflowRuleLog(workflowRuleLog,workflowRuleActionLogContext);
 	}
 
 	@Override

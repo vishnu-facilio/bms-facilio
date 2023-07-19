@@ -9,6 +9,8 @@ public interface Topics {
         String unsubscribe = "__unsubscribe__";
         String ping = "__ping__";
         String auditLogs = "__audit_logs__";
+        String workflowLogs = "__workflow_rule_logs__";
+
     }
 
     interface InApp{
