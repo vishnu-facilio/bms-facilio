@@ -9,8 +9,12 @@ public class WorkOrderNotesDestructureCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
         String parentModuleName = (String) context.get("oldParentName");
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
+        if( moduleName != null && !moduleName.isEmpty()){
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        }
+        if( parentModuleName != null && !parentModuleName.isEmpty()){
+            context.put(FacilioConstants.ContextNames.PARENT_MODULE_NAME, parentModuleName);
+        }
         return false;
     }
 }
