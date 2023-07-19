@@ -145,6 +145,11 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         resolutionDueStatus.setEnumName("AppointmentDueStatus");
         serviceAppointmentFields.add(resolutionDueStatus);
 
+        LookupField status = FieldFactory.getDefaultField("status","Status","STATUS",FieldType.LOOKUP);
+        status.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        status.setLookupModule(moduleBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS));
+        serviceAppointmentFields.add(status);
+
         serviceAppointmentModule.setFields(serviceAppointmentFields);
         modules.add(serviceAppointmentModule);
 
@@ -339,7 +344,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         MultiLookupField multiLookupCraftField = FieldFactory.getDefaultField("crafts", "Crafts", null, FieldType.MULTI_LOOKUP);
         multiLookupCraftField.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
         multiLookupCraftField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
-        multiLookupCraftField.setLookupModule( modBean.getModule(FacilioConstants.ContextNames.SKILL));
+        multiLookupCraftField.setLookupModule( modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_SKILL));
         multiLookupCraftField.setRelModule(modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_CRAFT));
         multiLookupCraftField.setRelModuleId(modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_CRAFT).getModuleId());
         fields.add(multiLookupCraftField);

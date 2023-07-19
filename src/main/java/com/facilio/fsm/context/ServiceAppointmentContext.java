@@ -5,6 +5,7 @@ import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
+import com.facilio.fsm.signup.ServiceAppointmentTicketStatus;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
@@ -20,6 +21,7 @@ public class ServiceAppointmentContext extends V3Context {
     private ServiceOrderContext.ServiceOrderPriority priority;
     private TerritoryContext territory;
     private List<ServiceAppointmentTaskContext> serviceTasks;
+    private List<ServiceAppointmentSkillContext> crafts;
     private Long scheduledStartTime;
     private Long scheduledEndTime;
     private Long estimatedDuration;
@@ -33,6 +35,7 @@ public class ServiceAppointmentContext extends V3Context {
     private V3SiteContext site;
     private V3PeopleContext fieldAgent;
     private Boolean isAllTasksClosed;
+    private ServiceAppointmentTicketStatus status;
     public int getPriority() {
         if (priority != null) {
             return priority.getIndex();

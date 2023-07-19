@@ -2881,6 +2881,8 @@ public class FacilioConstants {
 			public static final String SERVICE_ORDER_ITEMS = "serviceOrderItems";
 			public static final String SERVICE_ORDER_TOOLS = "serviceOrderTools";
 			public static final String SERVICE_ORDER_SERVICES = "serviceOrderServices";
+			public static final String SERVICE_TASK_IDS = "serviceTaskIds";
+
 		}
 		// etisalat changes
 		public static final String BILL_ALERT = "custom_alert";
@@ -4605,6 +4607,7 @@ public class FacilioConstants {
 		public static final String FIELD_AGENT = "fieldAgent";
 		public static final String SERVICE_APPOINTMENT_ACTIVITY = "serviceAppointmentActivity";
 		public static final String SERVICE_APPOINTMENT_CRAFT = "serviceAppointmentCraft";
+		public static final String SERVICE_APPOINTMENT_TICKET_STATUS = "serviceAppointmentTicketStatus";
 	}
 
 

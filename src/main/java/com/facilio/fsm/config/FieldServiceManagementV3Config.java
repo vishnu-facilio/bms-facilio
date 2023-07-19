@@ -131,6 +131,7 @@ public class FieldServiceManagementV3Config {
         return () -> new V3Config(ServiceAppointmentContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
                 .beforeSave(new rollupServiceAppointmentFieldsCommand())
+                .afterSave(new rollUpServiceTaskCommand())
                 .update()
                 .list()
                 .beforeFetch(new FetchServiceAppointmentSupplementsCommand())

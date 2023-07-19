@@ -539,6 +539,7 @@ classes:
   - com.facilio.fsm.signup.TimeOffModule
   - com.facilio.fsm.signup.ServiceTaskModule
   - com.facilio.fsm.signup.ServiceTaskAttachmentsModule
+  - com.facilio.fsm.signup.ServiceAppointmentTicketStatus
   - com.facilio.fsm.signup.ServiceAppointmentModule
   - com.facilio.fsm.signup.ServiceOrderPlannedItemsModule
   - com.facilio.fsm.signup.ServiceOrderPlannedToolsModule
