@@ -219,12 +219,14 @@ public class ScriptValidator extends CommonParser<Value> {
     	
 			WorkflowModuleRelContext workflowModuleRel=new WorkflowModuleRelContext();
 	        String moduleName = ctx.expr().getText();
+            char moduleNameStart = moduleName.charAt(0);
+            char moduleNameEnd = moduleName.charAt(moduleName.length()-1);
 
 	        moduleName = moduleName.substring(1, moduleName.length()-1);
 	        
         	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         	FacilioModule module = modBean.getModule(moduleName);
-	        if(module == null) {
+	        if(module == null && (moduleNameStart == '"' && moduleNameEnd=='"')) {
 	            throw new ScriptValidationException("Module "+moduleName+ " Does not exist");
 	        }
 //	        Will be enabled after migration
