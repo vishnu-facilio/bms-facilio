@@ -61,6 +61,7 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
         }
         if (CollectionUtils.isNotEmpty(newCtx.getAssets())) {
             oldRule.setAssets(newCtx.getAssets());
+            newCtx.getNs().setIncludedAssetIds(newCtx.getAssets());
         } else {
             removeIncludedAssets(oldRule, newCtx);
         }

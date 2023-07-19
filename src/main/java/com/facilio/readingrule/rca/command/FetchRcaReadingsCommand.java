@@ -64,7 +64,7 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
 
                 for (Iterator<RCAScoreReadingContext> iterator = readings.iterator(); iterator.hasNext(); ) {
                     RCAScoreReadingContext reading = iterator.next();
-                    if (!setParentFault(alarmsMap, reading) && !setRcaRule(reading) && !setRcaFault(alarmsMap, reading)) {
+                    if (!(setParentFault(alarmsMap, reading) && setRcaRule(reading) && setRcaFault(alarmsMap, reading))) {
                         iterator.remove();
                     }
                 }
