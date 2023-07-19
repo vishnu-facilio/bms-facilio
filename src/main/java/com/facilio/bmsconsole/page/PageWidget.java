@@ -584,8 +584,13 @@ public class PageWidget {
 		TENANT_RECENTLY_CLOSED_WORKORDER("tenantrecentlyclosedworkorder"),
 		CALENDAR_EVENT_LIST("calendarEventList"),
 		COMMANDS_LIST_VIEW("commandsListView"),
-		ACTIONS_LIST_VIEW("actionsListView")
-		SERVICE_TASK_WIDGET("serviceTaskWidget");
+		ACTIONS_LIST_VIEW("actionsListView"),
+		SERVICE_TASK_WIDGET("serviceTaskWidget"),
+		LAST_KNOW_LOCATION("lastKnownLocation"),
+		CURRENT_STATUS("currentStatus"),
+		SKILL("skill"),
+		TERRITORIES("territories"),
+		WORK_SCHEDULE("workSchedule");
 		;
 
 		private String name;

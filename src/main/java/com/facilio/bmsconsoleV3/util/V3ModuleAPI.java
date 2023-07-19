@@ -143,7 +143,8 @@ public class V3ModuleAPI {
         TERRITORY(FacilioConstants.Territory.TERRITORY,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         TIME_OFF(FacilioConstants.TimeOff.TIME_OFF,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         SERVICE_APPOINTMENT(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        TIME_SHEET(FacilioConstants.TimeSheet.TIME_SHEET,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP))
+        TIME_SHEET(FacilioConstants.TimeSheet.TIME_SHEET,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        TRIP(FacilioConstants.Trip.TRIP,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP))
         ;
 
 
