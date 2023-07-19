@@ -5,6 +5,10 @@ import com.facilio.bmsconsole.calendarview.CalendarViewContext;
 import com.facilio.bmsconsole.calendarview.CalendarViewUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.command.FacilioCommand;
@@ -42,6 +46,14 @@ public class CalendarViewListCommand extends FacilioCommand {
         // CalendarView Criteria
         Criteria mainCriteria = CalendarViewUtil.calendarTimeCriteria(startTimeField, endTimeField, calendarViewRequest);
         selectRecordsBuilder.andCriteria(mainCriteria);
+
+        // Skip record if startDateField value > endDateField value
+        if (endTimeField != null) {
+            Criteria negativeCaseCriteria = new Criteria();
+            negativeCaseCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, calendarViewRequest.getDateValue(), DateOperators.BETWEEN));
+            negativeCaseCriteria.addOrCondition(CriteriaAPI.getCondition("(" + endTimeField.getCompleteColumnName() + " > " + startTimeField.getCompleteColumnName() + ")", "__difference", Boolean.TRUE.toString(), BooleanOperators.IS));
+            selectRecordsBuilder.andCriteria(negativeCaseCriteria);
+        }
 
         JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
         int page;
