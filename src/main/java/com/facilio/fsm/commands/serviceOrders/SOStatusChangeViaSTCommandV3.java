@@ -29,7 +29,8 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
                     ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,orderId);
                     if(task.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex() || task.getStatus() == ServiceTaskContext.ServiceTaskStatus.REOPENED.getIndex()){
                         if(serviceOrderInfo.getStatus() != ServiceOrderContext.ServiceOrderStatus.NEW.getIndex()){
-                            serviceOrderInfo.setStatus( (task.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex()) ? ServiceOrderContext.ServiceOrderStatus.NEW : ServiceOrderContext.ServiceOrderStatus.IN_PROGRESS);
+                            serviceOrderInfo.setStatus(ServiceOrderContext.ServiceOrderStatus.IN_PROGRESS);
+                            //serviceOrderInfo.setStatus( (task.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex()) ? ServiceOrderContext.ServiceOrderStatus.NEW : ServiceOrderContext.ServiceOrderStatus.IN_PROGRESS);
                             if(task.getStatus() == ServiceTaskContext.ServiceTaskStatus.REOPENED.getIndex()){
                                 serviceOrderInfo.setActualEndTime(null);
                                 serviceOrderInfo.setActualDuration(null);
@@ -43,7 +44,9 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
                             updateServiceOrder(serviceOrderInfo);
                         } else if ( task.getStatus() == ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex() &&  serviceOrderInfo.getStatus() < ServiceOrderContext.ServiceOrderStatus.IN_PROGRESS.getIndex()){
                             serviceOrderInfo.setStatus(ServiceOrderContext.ServiceOrderStatus.IN_PROGRESS);
-                            serviceOrderInfo.setActualStartTime(System.currentTimeMillis());
+                            if(serviceOrderInfo.getActualStartTime() == null){
+                                serviceOrderInfo.setActualStartTime(System.currentTimeMillis());
+                            }
                             updateServiceOrder(serviceOrderInfo);
                         }
                         else{

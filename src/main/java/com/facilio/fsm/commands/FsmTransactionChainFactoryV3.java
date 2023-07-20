@@ -82,8 +82,6 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain getSOBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new VerifySOStatusUpdate());
-        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
-        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY));
         return c;
     }
 }

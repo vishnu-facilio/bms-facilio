@@ -62,8 +62,7 @@ public class FieldServiceManagementV3Config {
                 .afterSave(new FsmTransactionChainFactoryV3().afterSOCreateChain())
                 .update()
                 .beforeSave(FsmTransactionChainFactoryV3.getSOBeforeUpdateChain())
-                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
-                        new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
+                .afterSave(FsmTransactionChainFactoryV3.afterSOUpdaqteChain())
                 .list()
                 .summary()
                 .delete()

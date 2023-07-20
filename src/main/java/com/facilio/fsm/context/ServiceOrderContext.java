@@ -122,13 +122,13 @@ public class ServiceOrderContext extends V3Context {
         }
     }
 
-    public int getMaintenancetype() {
+    public int getMaintenanceType() {
         if (maintenanceType != null) {
             return maintenanceType.getIndex();
         }
         return -1;
     }
-    public void setMaintenancetype(int maintenancetype) {
+    public void setMaintenanceType(int maintenancetype) {
         this.maintenanceType = ServiceOrderMaintenanceType.valueOf(maintenancetype);
     }
     public ServiceOrderMaintenanceType getServiceOrderMaintenanceTypeEnum() {
