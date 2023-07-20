@@ -12,8 +12,11 @@ public class TripContext extends V3Context {
     private V3PeopleContext people;
     private LocationContext startLocation;
     private LocationContext endLocation;
+    private ServiceOrderContext serviceOrder;
     private ServiceAppointmentContext serviceAppointment;
     private long startTime;
     private long endTime;
+    private long tripDuration;
+    private Double tripDistance;
 
 }

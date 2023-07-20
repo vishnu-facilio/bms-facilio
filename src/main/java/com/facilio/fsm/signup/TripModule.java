@@ -45,7 +45,7 @@ public class TripModule extends BaseModuleConfig {
 
         List<FacilioField> fields = new ArrayList<>();
 
-        LookupField peopleId = FieldFactory.getDefaultField("people", "Field Agent", "PEOPLE_ID", FieldType.LOOKUP);
+        LookupField peopleId = FieldFactory.getDefaultField("people", "Field Agent", "PEOPLE_ID", FieldType.LOOKUP,true);
         peopleId.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(peopleId);
 
@@ -67,6 +67,16 @@ public class TripModule extends BaseModuleConfig {
 
         DateField endTime = FieldFactory.getDefaultField("endTime", "End Time", "END_TIME", FieldType.DATE_TIME);
         fields.add(endTime);
+
+        NumberField tripDuration = FieldFactory.getDefaultField("tripDuration", "Trip Duration", "TRIP_DURATION", FieldType.NUMBER);
+        fields.add(tripDuration);
+
+        fields.add(FieldFactory.getDefaultField("tripDistance","Trip Distance","TRIP_DISTANCE",FieldType.DECIMAL));
+
+
+        LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER_ID",FieldType.LOOKUP);
+        serviceOrder.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER));
+        fields.add(serviceOrder);
 
         LookupField moduleStateField = FieldFactory.getDefaultField("moduleState", "Status", "MODULE_STATE", FieldType.LOOKUP);
         moduleStateField.setDefault(true);

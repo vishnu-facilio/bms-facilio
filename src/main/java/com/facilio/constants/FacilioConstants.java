@@ -4622,5 +4622,6 @@ public class FacilioConstants {
 	}
 	public static class Trip{
 		public static final String TRIP = "trip";
+		public static final String TRIP_LOCATION_HISTORY = "tripLocationHistory";
 	}
 }
