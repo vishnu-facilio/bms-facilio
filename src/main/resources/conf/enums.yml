@@ -500,6 +500,9 @@ enums:
   - name: ServiceOrderMaintenanceType
     enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderMaintenanceType
 
+  - name: ServiceOrderRequestResponseStatus
+    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderRequestResponseStatus
+
   - name: ServiceOrderCategory
     enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderCategory
 

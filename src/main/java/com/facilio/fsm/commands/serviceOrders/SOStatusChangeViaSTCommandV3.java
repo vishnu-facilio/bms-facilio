@@ -43,6 +43,7 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
                             updateServiceOrder(serviceOrderInfo);
                         } else if ( task.getStatus() == ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex() &&  serviceOrderInfo.getStatus() < ServiceOrderContext.ServiceOrderStatus.IN_PROGRESS.getIndex()){
                             serviceOrderInfo.setStatus(ServiceOrderContext.ServiceOrderStatus.IN_PROGRESS);
+                            serviceOrderInfo.setActualStartTime(System.currentTimeMillis());
                             updateServiceOrder(serviceOrderInfo);
                         }
                         else{
@@ -56,6 +57,10 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
                             }
                             if(serviceTasks.size() == completedCount){
                                 serviceOrderInfo.setStatus(ServiceOrderContext.ServiceOrderStatus.COMPLETED);
+                                Long startDuration = serviceOrderInfo.getActualStartTime();
+                                Long endDuration = System.currentTimeMillis();
+                                serviceOrderInfo.setActualEndTime(endDuration);
+                                serviceOrderInfo.setActualDuration(endDuration - startDuration);
                                 updateServiceOrder(serviceOrderInfo);
                             }
 

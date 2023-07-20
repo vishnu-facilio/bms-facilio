@@ -210,6 +210,12 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField resolutionDueDate = FieldFactory.getDefaultField("resolutionDueDate","ResolutionDueDate","RESOLUTION_DUE_DATE", FieldType.DATE_TIME);
         fields.add(resolutionDueDate);
 
+        FacilioField responseDueDuration = FieldFactory.getDefaultField("responseDueDuration","ResponseDueDuration","RESPONSE_DUE_DURATION", FieldType.DATE_TIME);
+        fields.add(responseDueDuration);
+
+        FacilioField resolutionDueDuration = FieldFactory.getDefaultField("resolutionDueDuration","ResolutionDueDuration","RESOLUTION_DUE_DURATION", FieldType.DATE_TIME);
+        fields.add(resolutionDueDuration);
+
         FacilioField resolvedTime = FieldFactory.getDefaultField("resolvedTime","ResolvedTime","RESOLVED_TIME", FieldType.DATE_TIME);
         fields.add(resolvedTime);
 
@@ -217,23 +223,27 @@ public class ServiceOrderModule extends BaseModuleConfig {
         sourceType.setEnumName("ServiceOrderSourceType");
         fields.add(sourceType);
 
-        LookupField createdby = FieldFactory.getDefaultField("createdBy","CreatedBy","SYS_CREATED_BY",FieldType.LOOKUP);
-        createdby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
-        fields.add(createdby);
-
-        FacilioField createdTime = FieldFactory.getDefaultField("createdTime","CreatedTime","SYS_CREATED_TIME", FieldType.DATE_TIME);
-        fields.add(createdTime);
-
-        LookupField modifiedby = FieldFactory.getDefaultField("modifiedBy","ModifiedBy","SYS_MODIFIED_BY",FieldType.LOOKUP);
-        modifiedby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
-        fields.add(modifiedby);
-
-        FacilioField modifiedTime = FieldFactory.getDefaultField("modifiedTime","ModifiedTime","SYS_MODIFIED_TIME", FieldType.DATE_TIME);
-        fields.add(modifiedTime);
+//        LookupField createdby = FieldFactory.getDefaultField("createdBy","CreatedBy","SYS_CREATED_BY",FieldType.LOOKUP);
+//        createdby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
+//        fields.add(createdby);
+//
+//        FacilioField createdTime = FieldFactory.getDefaultField("createdTime","CreatedTime","SYS_CREATED_TIME", FieldType.DATE_TIME);
+//        fields.add(createdTime);
+//
+//        LookupField modifiedby = FieldFactory.getDefaultField("modifiedBy","ModifiedBy","SYS_MODIFIED_BY",FieldType.LOOKUP);
+//        modifiedby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
+//        fields.add(modifiedby);
+//
+//        FacilioField modifiedTime = FieldFactory.getDefaultField("modifiedTime","ModifiedTime","SYS_MODIFIED_TIME", FieldType.DATE_TIME);
+//        fields.add(modifiedTime);
 
         LookupField sysdeletedby = FieldFactory.getDefaultField("sysdeletedby","SysDeletedBy","SYS_DELETED_BY",FieldType.LOOKUP);
         sysdeletedby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(sysdeletedby);
+
+        LookupField territory = FieldFactory.getDefaultField("territory","Territory","Territory",FieldType.LOOKUP);
+        territory.setLookupModule(bean.getModule(FacilioConstants.Territory.TERRITORY));
+        fields.add(territory);
 
         FacilioField sysdeleted = FieldFactory.getDefaultField("sysDeleted","SysDeleted","SYS_DELETED", FieldType.BOOLEAN);
         fields.add(sysdeleted);
@@ -320,6 +330,10 @@ public class ServiceOrderModule extends BaseModuleConfig {
         pm.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE));
         fields.add(pm);
 
+        LookupField fieldAgent = FieldFactory.getDefaultField("fieldAgent","Field Agent","FIELD_AGENT",FieldType.LOOKUP);
+        fieldAgent.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
+        fields.add(fieldAgent);
+
         //doubt need to remove?? starts
 //        LookupField pmresourceplanner = FieldFactory.getDefaultField("pmresourceplanner","PmResourcePlanner","PmResourcePlanner",FieldType.LOOKUP);
 //        pmresourceplanner.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE));
@@ -352,6 +366,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.execute();
 
         return module;
@@ -361,7 +376,6 @@ public class ServiceOrderModule extends BaseModuleConfig {
     public List<FacilioForm> getModuleForms() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
-        //FacilioModule serviceOrderModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, "Service Order", "ServiceOrders", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         FacilioForm webWorkOrderForm = new FacilioForm();
         webWorkOrderForm.setDisplayName("Standard");
@@ -370,38 +384,58 @@ public class ServiceOrderModule extends BaseModuleConfig {
         webWorkOrderForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
         webWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
-        List<FormField> webWorkOrderFormDefaultFields = new ArrayList<>();
-        webWorkOrderFormDefaultFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
-        webWorkOrderFormDefaultFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, FacilioConstants.ContextNames.SITE, 2, 1));
-        webWorkOrderFormDefaultFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
-        webWorkOrderFormDefaultFields.add(new FormField("maintenancetype", FacilioField.FieldDisplayType.SELECTBOX, "Maintenance Type", FormField.Required.OPTIONAL, 4, 1));
-        webWorkOrderFormDefaultFields.add(new FormField("priority", FacilioField.FieldDisplayType.SELECTBOX, "Priority", FormField.Required.OPTIONAL, 5, 1));
-        webWorkOrderFormDefaultFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.VENDORS, 6, 1));
-//        webWorkOrderFormDefaultFields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.CLIENT, 7, 2));
-//        webWorkOrderFormDefaultFields.add(new FormField("parentSo", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent SO", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, 8, 2));
-        webWorkOrderFormDefaultFields.add(new FormField("actualStartTime", FacilioField.FieldDisplayType.DATETIME, "Actual Start Time", FormField.Required.OPTIONAL, 7, 2));
-        webWorkOrderFormDefaultFields.add(new FormField("actualEndTime", FacilioField.FieldDisplayType.DATETIME, "Actual End Time", FormField.Required.OPTIONAL, 8, 2));
-        webWorkOrderFormDefaultFields.add(new FormField("preferredStartTime", FacilioField.FieldDisplayType.DATETIME, "Preferred Start Time", FormField.Required.REQUIRED, 9, 2));
-        webWorkOrderFormDefaultFields.add(new FormField("preferredEndTime", FacilioField.FieldDisplayType.DATETIME, "Preferred End Time", FormField.Required.REQUIRED, 10, 2));
-        webWorkOrderFormDefaultFields.add(new FormField("autoCreateSa", FacilioField.FieldDisplayType.DECISION_BOX, "Auto Create SA", FormField.Required.OPTIONAL, 11, 2));
+        List<FormField> generalInformationFields = new ArrayList<>();
+        generalInformationFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        generalInformationFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
+        generalInformationFields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.REQUIRED, 3, 2));
+        generalInformationFields.add(new FormField("maintenanceType", FacilioField.FieldDisplayType.SELECTBOX, "Maintenance Type", FormField.Required.OPTIONAL, 4, 2));
+        generalInformationFields.add(new FormField("priority", FacilioField.FieldDisplayType.SELECTBOX, "Priority", FormField.Required.REQUIRED, 5, 2));
+        generalInformationFields.add(new FormField("autoCreateSa", FacilioField.FieldDisplayType.DECISION_BOX, "Auto Create SA", FormField.Required.OPTIONAL, 6, 2));
 
+        FormSection generalInfoSection = new FormSection("General Information", 1, generalInformationFields, true);
+        generalInfoSection.setSectionType(FormSection.SectionType.FIELDS);
 
-        List<FormField> webWorkOrderFormFields = new ArrayList<>();
-        webWorkOrderFormFields.addAll(webWorkOrderFormDefaultFields);
+        List<FormField> siteClientFields = new ArrayList<>();
+        siteClientFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, FacilioConstants.ContextNames.SITE, 1, 2));
+        siteClientFields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.CLIENT, 2, 2));
+        siteClientFields.add(new FormField("space", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space", FormField.Required.OPTIONAL,FacilioConstants.ContextNames.SPACE, 3, 2));
+        siteClientFields.add(new FormField("asset", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.ASSET,4, 2));
 
-        FormSection defaultSection = new FormSection("SERVICEORDER", 1, webWorkOrderFormDefaultFields, true);
-        defaultSection.setSectionType(FormSection.SectionType.FIELDS);
+        FormSection siteClientSection = new FormSection("Site & Client Information", 2, siteClientFields, true);
+        siteClientSection.setSectionType(FormSection.SectionType.FIELDS);
 
+        List<FormField> assignmentDetailFields = new ArrayList<>();
+        assignmentDetailFields.add(new FormField("fieldAgent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Field Agent", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.PEOPLE,1, 2));
+        assignmentDetailFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.VENDORS, 2, 2));
 
-//        List<FormSection> webWorkOrderFormSections = new ArrayList<>();
-//        webWorkOrderFormSections.add(defaultSection);
+        FormSection assignmentDetailsSection = new FormSection("Assignment Details", 3, assignmentDetailFields, true);
+        assignmentDetailsSection.setSectionType(FormSection.SectionType.FIELDS);
 
-        webWorkOrderForm.setSections(Collections.singletonList(defaultSection));
+        List<FormField> lineItemFields = new ArrayList<>();
+        lineItemFields.add(new FormField("taskItems", FacilioField.FieldDisplayType.SERVICE_TASK_ITEMS, "Tasks", FormField.Required.REQUIRED, 1, 1));
+
+        FormSection serviceTaskSection = new FormSection("Task", 4, lineItemFields, true);
+        serviceTaskSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        List<FormField> scheduleAppointmentFields = new ArrayList<>();
+        scheduleAppointmentFields.add(new FormField("preferredStartTime", FacilioField.FieldDisplayType.DATETIME, "Preferred Start Time", FormField.Required.REQUIRED, 10, 2));
+        scheduleAppointmentFields.add(new FormField("preferredEndTime", FacilioField.FieldDisplayType.DATETIME, "Preferred End Time", FormField.Required.REQUIRED, 11, 2));
+        scheduleAppointmentFields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DATETIME, "Response Due Duration", FormField.Required.OPTIONAL, 8, 2));
+        scheduleAppointmentFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DATETIME, "Resolution Due Duration", FormField.Required.OPTIONAL, 9, 2));
+
+        FormSection scheduleAppointmentSection = new FormSection("Schedule and Appointment", 4, scheduleAppointmentFields, true);
+        scheduleAppointmentSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        List<FormSection> webWorkOrderFormSections = new ArrayList<>();
+        webWorkOrderFormSections.add(generalInfoSection);
+        webWorkOrderFormSections.add(siteClientSection);
+        webWorkOrderFormSections.add(assignmentDetailsSection);
+        webWorkOrderFormSections.add(serviceTaskSection);
+        webWorkOrderFormSections.add(scheduleAppointmentSection);
+
+        webWorkOrderForm.setSections(webWorkOrderFormSections);
         webWorkOrderForm.setIsSystemForm(true);
         webWorkOrderForm.setType(FacilioForm.Type.FORM);
-
-//        List<FacilioForm> serviceOrderModuleForms = new ArrayList<>();
-//        serviceOrderModuleForms.add(webWorkOrderForm);
 
         return Collections.singletonList(webWorkOrderForm);
     }
@@ -427,10 +461,10 @@ public class ServiceOrderModule extends BaseModuleConfig {
     private static FacilioView getAllServiceOrders() {
         FacilioModule serviceOrderModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, "Service Order", "ServiceOrders", FacilioModule.ModuleType.BASE_ENTITY, true);
         FacilioField createdTime = new FacilioField();
-        createdTime.setName("createdTime");
+        createdTime.setName("sysCreatedTime");
         createdTime.setDataType(FieldType.NUMBER);
-        createdTime.setName("CREATED_TIME");
-        createdTime.setColumnName("CREATED_TIME");
+        createdTime.setName("SYS_CREATED_TIME");
+        createdTime.setColumnName("SYS_CREATED_TIME");
         createdTime.setModule(serviceOrderModule);
         List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
         FacilioView allView = new FacilioView();
@@ -553,7 +587,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .addWebTab("task", "TASK", true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("task", "Tasks", "List of Tasks created for this Service Order")
-                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0,  null, null)
+                .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_22_6", 0, 0,  null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -574,7 +608,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField priorityField = moduleBean.getField("priority", moduleName);
 
         FacilioField sourceTypeField = moduleBean.getField("sourceType", moduleName);
-        FacilioField maintenanceTypeField = moduleBean.getField("maintenancetype", moduleName);
+        FacilioField maintenanceTypeField = moduleBean.getField("maintenanceType", moduleName);
 //        FacilioField priorityField = moduleBean.getField("priority", moduleName);
         FacilioField acsaField = moduleBean.getField("autoCreateSa", moduleName);
 

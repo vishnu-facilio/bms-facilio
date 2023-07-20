@@ -580,4 +580,12 @@ public class APIModuleWidgets {
                 .done()
                 ;
     }
+
+    @WidgetsForModule("serviceOrder")
+    public static Supplier<ModuleWidgets> getServiceOrderWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("tasklist","Tasks",PageWidget.WidgetType.SERVICE_TASK_WIDGET)
+                .addWidgetConfigs("webtasklist_22_6","Web Task List - 22 - 6",22,6, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
 }

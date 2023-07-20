@@ -60,6 +60,7 @@ public class FieldServiceManagementV3Config {
                 .beforeSave(FsmTransactionChainFactoryV3.getServiceOrderBeforeSaveCreateChain())
                 .afterSave(new FsmTransactionChainFactoryV3().afterSOCreateChain())
                 .update()
+                .beforeSave(FsmTransactionChainFactoryV3.getSOBeforeUpdateChain())
                 .afterSave(new ConstructUpdateCustomActivityCommandV3(),
                         new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY))
                 .list()
