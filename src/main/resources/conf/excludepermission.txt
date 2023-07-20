@@ -3118,3 +3118,8 @@
 /api/v2/portal/visitorLogging/delete
 /api/v2/portal/visitorLogging/details
 /api/v2/portal/visitorLogging/preRegister
+/api/v1/setup/fields/sortable/:moduleName
+/api/v1/setup/people/applicationList
+/api/v1/setup/people/addAppAccess
+/api/v1/setup/people/updateAppAccess
+/api/v1/setup/people/convert

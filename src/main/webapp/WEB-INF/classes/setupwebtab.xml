@@ -698,4 +698,16 @@
         </action>
 
     </package>
+    <package name="peopleSetUp" namespace="/api/v1/setup/people" extends="v3Api">
+        <action name="applicationList" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="fetchAppListForPeople"/>
+        <action name="addAppAccess" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="addAppAccess"/>
+        <action name="convert" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="convertPeopleType"/>
+        <action name="updateAppAccess" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="updateAppAccess"/>
+    </package>
+    <package name="fieldsApiv3" namespace="/api/v1/setup/fields" extends="v3Api">
+        <action name="sortable/*" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="sortableFields">
+            <param name="moduleName">{1}</param>
+            <param name="translationImpl">FieldTranslationV3</param>
+        </action>
+    </package>
 </struts>

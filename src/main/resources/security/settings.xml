@@ -1818,6 +1818,12 @@
         </urlparams>
     </request>
 
+    <request path="/api/v1/setup/fields/sortable/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v3/internal/dc/getConnectedDevice">
         <urlparams>
             <property name="connectedDeviceId" type="number" mandatory="true"/>
@@ -2174,13 +2180,13 @@
         <requestbody type="object">
         </requestbody>
     </request>
-    <request path="/api/v3/people/util/applicationList">
+    <request path="/api/v1/setup/people/applicationList">
         <requestbody type="object">
             <property name="id" type="number"/>
         </requestbody>
     </request>
 
-    <request path="/api/v3/people/util/addAppAccess">
+    <request path="/api/v1/setup/people/addAppAccess">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="roleId" type="number" mandatory="true"/>
@@ -2189,7 +2195,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/people/util/updateAppAccess">
+    <request path="/api/v1/setup/people/updateAppAccess">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="roleId" type="number" mandatory="true"/>
@@ -2200,7 +2206,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/people/util/convert">
+    <request path="/api/v1/setup/people/convert">
         <requestbody type="object">
             <property name="peopleIds" type="array">
                 <items type="number"/>
