@@ -20,7 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
-public class ValidatePeopleEmailBeforeAddOrUpdateImportCommand extends FacilioCommand {
+public class ValidateTenantPeopleEmailBeforeAddOrUpdateImportCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -41,13 +41,17 @@ public class ValidatePeopleEmailBeforeAddOrUpdateImportCommand extends FacilioCo
         if(CollectionUtils.isEmpty(tenants)) {
             return false;
         }
-        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) || MapUtils.isEmpty(emailVsPeople)) {
-            return false;
-        }
 
         Map<Long,V3TenantContactContext> tenantIdVsPrimaryTenantContactMap = null;
         if(eventType == EventType.EDIT ){
             tenantIdVsPrimaryTenantContactMap = getTenantIdVsPrimaryTenantContactMap(tenants);
+        }
+        context.put(FacilioConstants.ContextNames.TENANT_ID_VS_PRIMARY_TENANT_CONTACT,tenantIdVsPrimaryTenantContactMap);
+        context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.TENANT_ACTIVITY);
+
+
+        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) || MapUtils.isEmpty(emailVsPeople)) {
+            return false;
         }
 
 
@@ -84,8 +88,6 @@ public class ValidatePeopleEmailBeforeAddOrUpdateImportCommand extends FacilioCo
             }
 
         }
-        context.put(FacilioConstants.ContextNames.TENANT_ID_VS_PRIMARY_TENANT_CONTACT,tenantIdVsPrimaryTenantContactMap);
-        context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.TENANT_ACTIVITY);
         return false;
     }
     private V3TenantContactContext getDefaultTenantContact(V3TenantContext tenant) throws Exception {
@@ -106,11 +108,10 @@ public class ValidatePeopleEmailBeforeAddOrUpdateImportCommand extends FacilioCo
                     return true;
                 }
             }
-        }else{
-            if(StringUtils.isNotEmpty(tc.getEmail())){
+        }else if(StringUtils.isNotEmpty(tc.getEmail())){
                 return true;
-            }
         }
+
         return false;
     }
     private Map<Long,V3TenantContactContext> getTenantIdVsPrimaryTenantContactMap(List<Pair<Long,ModuleBaseWithCustomFields>> tenants) throws Exception {

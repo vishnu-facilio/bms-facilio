@@ -79,6 +79,29 @@ public class V3PeopleAPI {
         }
         return records;
     }
+    public static List<V3VendorContactContext> getVendorContacts(Set<Long> vendorIds, boolean fetchPrimaryContact,boolean fetchDeleted) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.VENDOR_CONTACT);
+
+        SelectRecordsBuilder<V3VendorContactContext> builder = new SelectRecordsBuilder<V3VendorContactContext>()
+                .module(module)
+                .beanClass(V3VendorContactContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition("VENDOR_ID", "vendor", StringUtils.join(vendorIds,","), NumberOperators.EQUALS));
+
+        if (fetchPrimaryContact) {
+            builder.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS));
+        }
+        List<V3VendorContactContext> records;
+        if(fetchDeleted){
+            records = builder.fetchDeleted().get();
+        }
+        else {
+            records = builder.get();
+        }
+        return records;
+    }
 
     public static List<V3TenantContactContext> getTenantContacts(Long tenantId, boolean fetchOnlyPrimaryContact, boolean fetchOnlyWithAccess) throws Exception {
         return getTenantContacts(tenantId, fetchOnlyPrimaryContact, fetchOnlyWithAccess, false);

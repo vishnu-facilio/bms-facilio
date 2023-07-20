@@ -23,6 +23,8 @@ public class DefaultBulkInit extends FacilioCommand {
     FacilioModule module = null;
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
+
         if (MapUtils.isNotEmpty(ImportConstants.getInsertRecordMap(context))) {
             return false;
         }
@@ -66,7 +68,6 @@ public class DefaultBulkInit extends FacilioCommand {
 
         ImportConstants.setInsertRecordMap(context, insertRecordMap);
         Constants.setRecordMap(context, recordMap);
-        context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
 
         if (module.isCustom()) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

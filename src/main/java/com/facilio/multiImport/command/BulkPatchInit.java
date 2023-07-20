@@ -19,9 +19,12 @@ import java.util.*;
 public class BulkPatchInit extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+
         if(MapUtils.isNotEmpty(ImportConstants.getUpdateRecordMap(context))) {
             return false;
         }
+
         Collection<Pair<Long, Map<String, Object>>> updateRecords = ImportConstants.getUpdateRecords(context);
         Map<Long,V3Context> logIdVsOldRecord = ImportConstants.getOldRecordsMap(context);
         Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
@@ -70,7 +73,6 @@ public class BulkPatchInit extends FacilioCommand {
 
         ImportConstants.setUpdateRecordMap(context, updateRecordMap);
         Constants.setRecordMap(context,recordMap);
-        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
         return false;
     }
 }

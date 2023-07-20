@@ -11,7 +11,8 @@ import com.facilio.bmsconsoleV3.commands.space.multi_import.CreateSpaceAfterSave
 import com.facilio.bmsconsoleV3.commands.tenant.multi_import.AddTenantUserImportCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.multi_import.BeforeTenantImportProcessCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.multi_import.UpdateTenantUserImportCommand;
-import com.facilio.bmsconsoleV3.commands.tenant.multi_import.ValidatePeopleEmailBeforeAddOrUpdateImportCommand;
+import com.facilio.bmsconsoleV3.commands.tenant.multi_import.ValidateTenantPeopleEmailBeforeAddOrUpdateImportCommand;
+import com.facilio.bmsconsoleV3.commands.vendor.multi_import.*;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.constants.FacilioConstants;
@@ -138,13 +139,32 @@ public class MultiImportConfigurations {
                 .beforeImportCommand(new BeforeTenantImportProcessCommand())
                 .done()
                 .createHandler()
-                .beforeSaveCommand(new SetLocalIdCommandV3(),new ValidatePeopleEmailBeforeAddOrUpdateImportCommand())
+                .beforeSaveCommand(new SetLocalIdCommandV3(),new ValidateTenantPeopleEmailBeforeAddOrUpdateImportCommand())
                 .afterSaveCommand(new AddTenantUserImportCommand())
                 .done()
                 .updateHandler()
-                .beforeUpdateCommand(new ValidatePeopleEmailBeforeAddOrUpdateImportCommand())
+                .beforeUpdateCommand(new ValidateTenantPeopleEmailBeforeAddOrUpdateImportCommand())
                 .afterUpadteCommand(new UpdateTenantUserImportCommand())
                 .done()
                 .build();
+    }
+    @ImportModule("vendors")
+    public static Supplier<ImportConfig> getVendorImportConfig(){
+        return () -> new ImportConfig.ImportConfigBuilder(V3VendorContext.class)
+                .importHandler()
+                .setBatchCollectFieldNames(Arrays.asList("primaryContactEmail"))
+                .beforeImportCommand(new BeforeVendorImportProcessCommand())
+                .done()
+                .createHandler()
+                .beforeSaveCommand(new ValidateVendorPeopleEmailBeforeAddOrUpdateImportCommand())
+                .afterSaveCommand(new AddVendorUserImportCommand())
+                .done()
+                .updateHandler()
+                .beforeUpdateCommand(new ValidateVendorPeopleEmailBeforeAddOrUpdateImportCommand())
+                .afterUpadteCommand(new UpdateVendorUserImportCommand())
+                .done()
+                .build();
+
+
     }
 }

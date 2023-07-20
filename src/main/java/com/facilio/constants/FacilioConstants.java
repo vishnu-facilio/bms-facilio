@@ -2306,6 +2306,7 @@ public class FacilioConstants {
 
 		public static final String TENANT_CONTACT = "tenantcontact";
 		public static final String TENANT_ID_VS_PRIMARY_TENANT_CONTACT = "tenantIdVsPrimaryTenantContactMap";
+		public static final String VENDOR_ID_VS_PRIMARY_TENANT_CONTACT = "vendorIdVsPrimaryTenantContactMap";
 
 		public static final String TENANT_CONTACTS = "tenantcontacts";
 
