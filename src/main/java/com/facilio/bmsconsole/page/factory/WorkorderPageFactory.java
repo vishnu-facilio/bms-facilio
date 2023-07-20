@@ -302,16 +302,6 @@ public class WorkorderPageFactory extends PageFactory {
         actualsPageWidgetGroup.addToWidgetParams("type", WidgetGroup.WidgetGroupType.TAB);
         actualsSection.addWidget(actualsPageWidgetGroup);
 
-        PageWidget labourWidget = new PageWidget();
-        labourWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_LABOUR);
-        actualsPageWidgetGroup.addToWidget(labourWidget);
-        labourWidget.setName("Labors");
-        labourWidget.setTitle("Labor");
-        JSONObject labourRelatedList = new JSONObject();
-        labourRelatedList.put("summaryWidgetName","actualsLabourWidget");
-        labourWidget.setWidgetParams(labourRelatedList);
-        labourWidget.setRelatedList(labourRelatedList);
-
         PageWidget itemsWidget = new PageWidget();
         itemsWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_ITEMS);
         actualsPageWidgetGroup.addToWidget(itemsWidget);
@@ -338,6 +328,16 @@ public class WorkorderPageFactory extends PageFactory {
         JSONObject servicesRelatedList = new JSONObject();
         servicesRelatedList.put("summaryWidgetName","workorderServicesWidget");
         serviceWidget.setRelatedList(servicesRelatedList);
+
+        PageWidget labourWidget = new PageWidget();
+        labourWidget.setWidgetType(PageWidget.WidgetType.WORK_ORDER_LABOUR);
+        actualsPageWidgetGroup.addToWidget(labourWidget);
+        labourWidget.setName("Labors");
+        labourWidget.setTitle("Labor");
+        JSONObject labourRelatedList = new JSONObject();
+        labourRelatedList.put("summaryWidgetName","actualsLabourWidget");
+        labourWidget.setWidgetParams(labourRelatedList);
+        labourWidget.setRelatedList(labourRelatedList);
     }
 
     private static void addFailureReportTab(Page page){
