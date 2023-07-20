@@ -2,7 +2,7 @@ package com.facilio.fsm.signup;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class LocationHistoryModule extends SignUpData {
+public class LocationHistoryModule extends BaseModuleConfig {
+    public LocationHistoryModule(){setModuleName(FacilioConstants.LocationHistory.LOCATION_HISTORY);}
+
     @Override
     public void addData() throws Exception {
         try {
@@ -30,7 +32,7 @@ public class LocationHistoryModule extends SignUpData {
     }
     private FacilioModule addLocationHistoryModule() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = new FacilioModule("locationhistory",
+        FacilioModule module = new FacilioModule(FacilioConstants.LocationHistory.LOCATION_HISTORY,
                 "Location History",
                 "Location_History",
                 FacilioModule.ModuleType.BASE_ENTITY,
@@ -39,7 +41,7 @@ public class LocationHistoryModule extends SignUpData {
 
         List<FacilioField> fields = new ArrayList<>();
 
-        LookupField peopleId = FieldFactory.getDefaultField("peopleId", "People ID", "PEOPLE_ID", FieldType.LOOKUP);
+        LookupField peopleId = FieldFactory.getDefaultField("people", "People", "PEOPLE_ID", FieldType.LOOKUP,true);
         peopleId.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(peopleId);
 

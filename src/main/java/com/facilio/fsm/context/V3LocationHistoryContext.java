@@ -1,5 +1,6 @@
 package com.facilio.fsm.context;
 
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +13,7 @@ import org.json.simple.parser.ParseException;
 public class V3LocationHistoryContext extends V3Context {
 
     private long time;
-    private long peopleId;
+    private V3PeopleContext people;
     public String getLocation(){
         return (location != null) ? location.toJSONString() : null;
     }

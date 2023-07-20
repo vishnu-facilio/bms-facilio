@@ -21,7 +21,7 @@ public class ServiceAppointmentContext extends V3Context {
     private ServiceOrderContext.ServiceOrderPriority priority;
     private TerritoryContext territory;
     private List<ServiceAppointmentTaskContext> serviceTasks;
-    private List<ServiceAppointmentSkillContext> crafts;
+    private List<ServiceAppointmentSkillContext> skills;
     private Long scheduledStartTime;
     private Long scheduledEndTime;
     private Long estimatedDuration;

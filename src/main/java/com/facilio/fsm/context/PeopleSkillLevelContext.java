@@ -1,5 +1,6 @@
 package com.facilio.fsm.context;
 
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
@@ -8,8 +9,8 @@ import lombok.Setter;
 @Getter @Setter
 public class PeopleSkillLevelContext extends V3Context {
     private Double rate;
-    private int skill;
-    private int peopleId;
+    private ServiceSkillsContext skill;
+    private V3PeopleContext people;
 
     public  int getLevel() {
         return this.level != null ? this.level.getIndex() : -1;

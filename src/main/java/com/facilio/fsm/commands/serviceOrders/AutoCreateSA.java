@@ -7,11 +7,13 @@ import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.*;
-import com.facilio.fw.BeanFactory;
 
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -24,13 +26,22 @@ public class AutoCreateSA extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         HashMap<String,Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
         List<ServiceOrderContext> serviceOrders = (List<ServiceOrderContext>) recordMap.get(context.get("moduleName"));
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule serviceAppointmentModule = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        List<ModuleBaseWithCustomFields> recordList = new ArrayList<>();
+        List<ServiceAppointmentContext> serviceAppointmentList = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(serviceOrders)){
         for(ServiceOrderContext order : serviceOrders) {
             if(order.getAutoCreateSa()){
                 ServiceAppointmentContext sa = new ServiceAppointmentContext();
                 sa.setAppointmentType(ServiceAppointmentContext.AppointmentType.SERVICE_WORK_ORDER);
                 sa.setName("Service Appointment for "+ order.getName() + "(AC)");
-                sa.setActualStartTime(order.getActualStartTime());
-                sa.setActualEndTime(order.getActualEndTime());
+                sa.setDescription(order.getDescription());
+                sa.setScheduledStartTime(order.getPreferredStartTime());
+                sa.setScheduledEndTime(order.getPreferredEndTime());
+                sa.setServiceOrder(order);
+//                sa.setActualStartTime(order.getActualStartTime());
+//                sa.setActualEndTime(order.getActualEndTime());
                 V3SiteContext site = order.getSite();
                 if (site != null) {
                     sa.setSite(order.getSite());
@@ -54,23 +65,13 @@ public class AutoCreateSA extends FacilioCommand {
                     }
                 }
                 sa.setServiceTasks(serviceAppointmentTaskContextList);
+                serviceAppointmentList.add(sa);
 
 
-//
-//                SelectRecordsBuilder<ServiceTaskContext> serviceTasksBuilder = new SelectRecordsBuilder<ServiceTaskContext>();
-//                serviceTasksBuilder.select(serviceTaskFields)
-//                        .module(serviceTaskModule)
-//                        .beanClass(ServiceTaskContext.class)
-//                        .andCondition(CriteriaAPI.getCondition(serviceTaskMap.get("serviceOrder"),String.valueOf(order.getId()), StringOperators.IS ));
-//                //Need to add it against the service appointment
-//                List<ServiceTaskContext> serviceTaskList = serviceTasksBuilder.get();
-//                if(CollectionUtils.isNotEmpty(serviceTaskList)) {
-//                    for (ServiceTaskContext st : serviceTaskList) {
-//
-//                    }
-//                }
-//                sa.setServiceTasks(order.getServiceTasks());
             }
+        }
+            recordList.addAll(serviceAppointmentList);
+            V3Util.createRecord(serviceAppointmentModule,recordList);
         }
 
         return false;

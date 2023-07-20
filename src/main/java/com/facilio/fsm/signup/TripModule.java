@@ -2,7 +2,7 @@ package com.facilio.fsm.signup;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TripModule extends SignUpData {
+public class TripModule extends BaseModuleConfig {
+    public TripModule(){setModuleName(FacilioConstants.Trip.TRIP);}
+
     @Override
     public void addData() throws Exception {
         try {
@@ -34,7 +36,7 @@ public class TripModule extends SignUpData {
     }
     private FacilioModule addTripModule() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = new FacilioModule("trip",
+        FacilioModule module = new FacilioModule(FacilioConstants.Trip.TRIP,
                 "Trip",
                 "TRIP",
                 FacilioModule.ModuleType.BASE_ENTITY,

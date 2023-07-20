@@ -3,10 +3,10 @@ package com.facilio.fsm.commands;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fsm.commands.serviceOrders.AutoCreateSA;
 import com.facilio.fsm.commands.serviceOrders.SOStatusChangeCommandV3;
 import com.facilio.fsm.commands.serviceOrders.SOStatusChangeViaSTCommandV3;
 import com.facilio.fsm.commands.serviceTasks.TaskStatusUpdate;
-import com.facilio.fsm.commands.serviceTasks.UpdateServiceOrderTime;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 
 public class FsmTransactionChainFactoryV3 {
@@ -17,6 +17,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain getServiceOrderBeforeSaveCreateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SOStatusChangeCommandV3());
+//        c.addCommand(new AutoCreateSA());
         return c;
     }
 
