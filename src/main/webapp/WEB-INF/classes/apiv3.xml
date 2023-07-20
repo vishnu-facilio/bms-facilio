@@ -1642,6 +1642,7 @@
     </package>
     <package name="peopleUtils" namespace="/api/v3/people/util" extends="v3Api">
         <action name="recordPeople" class="com.facilio.bmsconsoleV3.actions.V3RecordPeopleAction" method="getPeopleFromRecordFields"/>
+       <action name="shiftDetailsForCurrentDay" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="getShiftDetailsForCurrentDay"/>
     </package>
 
     <package name="group" namespace="/api/v3/group" extends="v3Api">

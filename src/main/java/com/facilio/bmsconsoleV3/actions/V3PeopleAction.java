@@ -1,15 +1,22 @@
 package com.facilio.bmsconsoleV3.actions;
 
+import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.attendance.Attendance;
+import com.facilio.bmsconsoleV3.context.shift.ShiftSlot;
+import com.facilio.bmsconsoleV3.util.AttendanceAPI;
+import com.facilio.bmsconsoleV3.util.ShiftAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -79,6 +86,18 @@ public class V3PeopleAction extends V3Action {
         context.put(FacilioConstants.ContextNames.SECURITY_POLICY_ID,getSecurityPolicyId());
         context.put(FacilioConstants.ContextNames.USER_ID,getUserId());
         chain.execute();
+        return SUCCESS;
+    }
+    public String getShiftDetailsForCurrentDay() throws Exception {
+        if(getId() > 0){
+            long currentTime = DateTimeUtil.getCurrenTime();
+            List<ShiftSlot> shift = ShiftAPI.fetchShiftSlots(Collections.singletonList(getId()),DateTimeUtil.getDayStartTimeOf(currentTime),DateTimeUtil.getDayEndTimeOf(currentTime));
+            Attendance attendance = AttendanceAPI.getAttendanceForToday(getId());
+            JSONObject result = new JSONObject();
+            result.put(FacilioConstants.ContextNames.SHIFT,shift);
+            result.put(FacilioConstants.ContextNames.ATTENDANCE,attendance);
+            setData(result);
+        }
         return SUCCESS;
     }
 }
