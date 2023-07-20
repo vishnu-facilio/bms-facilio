@@ -8,6 +8,7 @@ import com.facilio.fsm.commands.serviceOrders.AutoCreateSA;
 import com.facilio.fsm.commands.serviceOrders.SOStatusChangeCommandV3;
 import com.facilio.fsm.commands.serviceOrders.SOStatusChangeViaSTCommandV3;
 import com.facilio.fsm.commands.serviceOrders.VerifySOStatusUpdate;
+import com.facilio.fsm.commands.serviceTasks.CreatePlansCommandV3;
 import com.facilio.fsm.commands.serviceTasks.TaskStatusUpdate;
 import com.facilio.fsm.commands.serviceTasks.UpdateServiceOrderStatus;
 import com.facilio.fsm.commands.serviceTasks.UpdateServiceOrderTime;
@@ -37,6 +38,7 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         //update the task status before creation
         c.addCommand(new SOStatusChangeViaSTCommandV3());
+        c.addCommand(new CreatePlansCommandV3());
         return c;
     }
     public static FacilioChain getTaskAfterUpdateChain() {

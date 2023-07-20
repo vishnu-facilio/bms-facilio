@@ -6,6 +6,7 @@ import com.facilio.v3.context.V3Context;
 public class ServiceOrderPlannedServicesContext extends V3Context {
     private ServiceOrderContext serviceOrder;
     private ServiceTaskContext serviceTask;
+    private Long unitOfMeasure;
     private V3ServiceContext service;
     private Double unitPrice;
     private Double quantity;
@@ -66,5 +67,13 @@ public class ServiceOrderPlannedServicesContext extends V3Context {
 
     public void setTotalCost(Double totalCost) {
         this.totalCost = totalCost;
+    }
+
+    public Long getUnitOfMeasure() {
+        return unitOfMeasure;
+    }
+
+    public void setUnitOfMeasure(Long unitOfMeasure) {
+        this.unitOfMeasure = unitOfMeasure;
     }
 }

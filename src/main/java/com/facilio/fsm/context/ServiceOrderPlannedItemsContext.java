@@ -8,6 +8,7 @@ import com.facilio.v3.context.V3Context;
 public class ServiceOrderPlannedItemsContext  extends V3Context {
     private ServiceOrderContext serviceOrder;
     private ServiceTaskContext serviceTask;
+    private Long unitOfMeasure;
     private V3ItemTypesContext itemType;
     private Double unitPrice;
     private Double quantity;
@@ -86,5 +87,13 @@ public class ServiceOrderPlannedItemsContext  extends V3Context {
 
     public void setReservationType(ReservationType reservationType) {
         this.reservationType = reservationType;
+    }
+
+    public Long getUnitOfMeasure() {
+        return unitOfMeasure;
+    }
+
+    public void setUnitOfMeasure(Long unitOfMeasure) {
+        this.unitOfMeasure = unitOfMeasure;
     }
 }

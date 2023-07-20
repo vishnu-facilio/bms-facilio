@@ -8,14 +8,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServiceOrderPlannedItemsModule extends BaseModuleConfig {
     public ServiceOrderPlannedItemsModule(){
@@ -70,6 +70,16 @@ public class ServiceOrderPlannedItemsModule extends BaseModuleConfig {
         fields.add(FieldFactory.getDefaultField("unitPrice","Unit Price","UNIT_PRICE",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("totalCost","Total Cost","TOTAL_COST",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("isReserved","Is Reserved","IS_RESERVED",FieldType.BOOLEAN));
+
+        EnumField unitOfMeasure = FieldFactory.getDefaultField("unitOfMeasure","Unit of Measure","UNIT_OF_MEASURE", FieldType.ENUM);
+        List<String> unitOfMeasures = Arrays.asList("Each", "kg", "Hour");
+
+        List<EnumFieldValue<Integer>> unitOfMeasureValues = unitOfMeasures.stream().map(val -> {
+            int index = unitOfMeasures.indexOf(val)+1;
+            return new EnumFieldValue<>(index, val, index, true);
+        }).collect(Collectors.toList());
+        unitOfMeasure.setValues(unitOfMeasureValues);
+        fields.add(unitOfMeasure);
 
         SystemEnumField reservationType = FieldFactory.getDefaultField("reservationType","Reservation Type","RESERVATION_TYPE",FieldType.SYSTEM_ENUM);
         reservationType.setEnumName("ReservationType");

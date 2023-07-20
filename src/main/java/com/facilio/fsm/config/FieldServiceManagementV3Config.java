@@ -25,6 +25,7 @@ public class FieldServiceManagementV3Config {
                 .list()
                 .beforeFetch(new LoadWorkTypeLookupsCommandV3())
                 .summary()
+                .afterFetch(new LoadWorkTypeLineItemsCommandV3())
                 .delete()
                 .build();
     }

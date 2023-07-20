@@ -1,5 +1,6 @@
 package com.facilio.fsm.context;
 
+import com.facilio.fsm.signup.ServiceOrderPlannedToolsModule;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
@@ -21,6 +22,11 @@ public class ServiceTaskContext extends V3Context {
     private String remarks;
     private ServiceOrderContext serviceOrder;
     private ServiceAppointmentContext serviceAppointment;
+    private Boolean isPhotoMandatory;
+    private List<ServiceOrderPlannedItemsContext> serviceOrderPlannedItems;
+    private List<ServiceOrderPlannedToolsContext> serviceOrderPlannedTools;
+    private List<ServiceOrderPlannedServicesContext> serviceOrderPlannedServices;
+
 
     public String getName() {
         return name;
@@ -165,5 +171,40 @@ public class ServiceTaskContext extends V3Context {
 
     public void setServiceAppointment(ServiceAppointmentContext serviceAppointment) {
         this.serviceAppointment = serviceAppointment;
+    }
+
+    public Boolean getIsPhotoMandatory() {
+        if(isPhotoMandatory!=null){
+            return isPhotoMandatory.booleanValue();
+        }
+        return false;
+    }
+
+    public void setIsPhotoMandatory(Boolean photoMandatory) {
+        isPhotoMandatory = photoMandatory;
+    }
+
+    public List<ServiceOrderPlannedItemsContext> getServiceOrderPlannedItems() {
+        return serviceOrderPlannedItems;
+    }
+
+    public void setServiceOrderPlannedItems(List<ServiceOrderPlannedItemsContext> serviceOrderPlannedItems) {
+        this.serviceOrderPlannedItems = serviceOrderPlannedItems;
+    }
+
+    public List<ServiceOrderPlannedToolsContext> getServiceOrderPlannedTools() {
+        return serviceOrderPlannedTools;
+    }
+
+    public void setServiceOrderPlannedTools(List<ServiceOrderPlannedToolsContext> serviceOrderPlannedTools) {
+        this.serviceOrderPlannedTools = serviceOrderPlannedTools;
+    }
+
+    public List<ServiceOrderPlannedServicesContext> getServiceOrderPlannedServices() {
+        return serviceOrderPlannedServices;
+    }
+
+    public void setServiceOrderPlannedServices(List<ServiceOrderPlannedServicesContext> serviceOrderPlannedServices) {
+        this.serviceOrderPlannedServices = serviceOrderPlannedServices;
     }
 }

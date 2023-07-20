@@ -7,6 +7,7 @@ import com.facilio.v3.context.V3Context;
 public class ServiceOrderPlannedToolsContext extends V3Context {
     private ServiceOrderContext serviceOrder;
     private ServiceTaskContext serviceTask;
+    private Long unitOfMeasure;
     private V3ToolTypesContext toolType;
     private Double rate;
     private Double quantity;
@@ -76,5 +77,13 @@ public class ServiceOrderPlannedToolsContext extends V3Context {
 
     public void setStoreRoom(V3StoreRoomContext storeRoom) {
         this.storeRoom = storeRoom;
+    }
+
+    public Long getUnitOfMeasure() {
+        return unitOfMeasure;
+    }
+
+    public void setUnitOfMeasure(Long unitOfMeasure) {
+        this.unitOfMeasure = unitOfMeasure;
     }
 }

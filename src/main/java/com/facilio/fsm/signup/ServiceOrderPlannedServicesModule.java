@@ -8,13 +8,17 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.EnumFieldValue;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
     public ServiceOrderPlannedServicesModule(){
@@ -59,6 +63,16 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
         service.setRequired(true);
         service.setLookupModule(serviceMod);
         fields.add(service);
+
+        EnumField unitOfMeasure = FieldFactory.getDefaultField("unitOfMeasure","Unit of Measure","UNIT_OF_MEASURE", FieldType.ENUM);
+        List<String> unitOfMeasures = Arrays.asList("Each", "kg", "Hour");
+
+        List<EnumFieldValue<Integer>> unitOfMeasureValues = unitOfMeasures.stream().map(val -> {
+            int index = unitOfMeasures.indexOf(val)+1;
+            return new EnumFieldValue<>(index, val, index, true);
+        }).collect(Collectors.toList());
+        unitOfMeasure.setValues(unitOfMeasureValues);
+        fields.add(unitOfMeasure);
 
         fields.add(FieldFactory.getDefaultField("duration","Duration","DURATION",FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION));
         fields.add(FieldFactory.getDefaultField("quantity","Quantity","QUANTITY",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
