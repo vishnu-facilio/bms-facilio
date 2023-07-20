@@ -699,15 +699,29 @@
 
     </package>
     <package name="peopleSetUp" namespace="/api/v1/setup/people" extends="v3Api">
-        <action name="applicationList" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="fetchAppListForPeople"/>
-        <action name="addAppAccess" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="addAppAccess"/>
-        <action name="convert" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="convertPeopleType"/>
-        <action name="updateAppAccess" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="updateAppAccess"/>
+        <action name="applicationList" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="fetchAppListForPeople">
+            <param name="permission">ALL</param>
+            <param name="setupTab">PEOPLE</param>
+        </action>
+        <action name="addAppAccess" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="addAppAccess">
+            <param name="permission">ALL</param>
+            <param name="setupTab">PEOPLE</param>
+        </action>
+        <action name="convert" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="convertPeopleType">
+            <param name="permission">ALL</param>
+            <param name="setupTab">PEOPLE</param>
+        </action>
+        <action name="updateAppAccess" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="updateAppAccess">
+            <param name="permission">ALL</param>
+            <param name="setupTab">PEOPLE</param>
+        </action>
     </package>
     <package name="fieldsApiv3" namespace="/api/v1/setup/fields" extends="v3Api">
         <action name="sortable/*" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="sortableFields">
             <param name="moduleName">{1}</param>
             <param name="translationImpl">FieldTranslationV3</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">PEOPLE</param>
         </action>
     </package>
 </struts>
