@@ -1705,6 +1705,7 @@ public class FacilioConstants {
 		public static final String EXCLUDE_FORECAST = "excludeForecast";
 		public static final String FETCH_CONTROLLABLE_FIELDS = "fetchControllableFields";
 		public static final String WITH_READINGS = "withReadings";
+		public static final String DEFAULT_FIELD_IDS = "sortFieldId";
 		public static final String WITH_WRITABLE_READINGS = "withWritableReadings";
 		public static final String READING_ID = "readingId";
 		public static final String INPUT_TYPE = "inputtype";

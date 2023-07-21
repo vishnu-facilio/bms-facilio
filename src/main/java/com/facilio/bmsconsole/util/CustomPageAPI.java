@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.ModuleSettingConfigUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -15,6 +16,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.fields.FacilioField;
@@ -412,6 +414,19 @@ public class CustomPageAPI {
         name = CustomPageAPI.generateUniqueName(name, existingNamesMap.get(parentId), isSystem);
 
         return name;
+    }
+
+    //Temp handling for mobile pageBuilder
+    public static boolean checkMobileTabAvailability(String moduleName, long appId) throws Exception {
+        ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modbean.getModule(moduleName);
+        //exception handles in CustomPageAction
+        boolean isMobilePageAvailable = false;
+        PagesContext defaultPage = getDefaultPage(appId, module.getModuleId());
+        long layoutId = getLayoutIdForPageId(defaultPage.getId(), PagesContext.PageLayoutType.MOBILE);
+        List<PageTabContext> mobTabs = fetchTabs(layoutId, false);
+        isMobilePageAvailable = CollectionUtils.isNotEmpty(mobTabs);
+        return isMobilePageAvailable;
     }
 
     public static List<PageTabContext> fetchTabs(Long layoutId, Boolean isBuilderRequest) throws Exception {

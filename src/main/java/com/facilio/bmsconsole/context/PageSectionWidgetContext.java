@@ -69,18 +69,18 @@ public class PageSectionWidgetContext {
     private Long sysModifiedBy;
     private Long sysModifiedTime;
 
-    public void setWidgetParams(JSONObject widgetParams){
-        this.widgetParams = widgetParams;
-    }
-    public void setWidgetParams(String widgetParams) throws Exception {
-        if (StringUtils.isNotEmpty(widgetParams)) {
-            this.widgetParams = (JSONObject) new JSONParser().parse(widgetParams);
+    public void setWidgetParams(Object widgetParams) throws Exception{
+        if(widgetParams != null) {
+            if (widgetParams instanceof String) {
+                if (StringUtils.isNotEmpty((String) widgetParams)) {
+                    this.widgetParams = (JSONObject) new JSONParser().parse((String) widgetParams);
+                }
+            } else if (widgetParams instanceof JSONObject) {
+                this.widgetParams = (JSONObject) widgetParams;
+            } else {
+                this.widgetParams = FieldUtil.getAsJSON(widgetParams);
+            }
         }
-    }
-
-
-    public JSONObject getWidgetParams(){
-        return this.widgetParams;
     }
     @JsonIgnore
     public String getWidgetParamsAsString(){

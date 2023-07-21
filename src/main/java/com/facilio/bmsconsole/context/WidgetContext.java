@@ -5,6 +5,7 @@ import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -60,7 +61,15 @@ public class WidgetContext {
       this.widgetType = PageWidget.WidgetType.valueOf(widgetType);
    }
 
-   public WidgetContext addWidgetConfigs(String name, String displayName, long minHeight, PagesContext.PageLayoutType layoutType) {
+   public WidgetContext addWidgetConfig(String name, String displayName, @NonNull WidgetConfigContext.ConfigType configType, long minHeight, long minWidth, PagesContext.PageLayoutType layoutType) {
+      if(configType == WidgetConfigContext.ConfigType.FLEXIBLE) {
+         return addFlexibleWidgetConfig(name, displayName, minHeight, layoutType);
+      }
+      else {
+         return addFixedWidgetConfig(name, displayName, minHeight, minWidth, layoutType);
+      }
+   }
+   public WidgetContext addFlexibleWidgetConfig(String name, String displayName, long minHeight, PagesContext.PageLayoutType layoutType) {
       layoutType = layoutType != null? layoutType: PagesContext.PageLayoutType.WEB;
       if(this.getWidgetConfigs() == null) {
          this.setWidgetConfigs(new ArrayList<>());
@@ -68,7 +77,7 @@ public class WidgetContext {
       this.getWidgetConfigs().add(new WidgetConfigContext(name, displayName, minHeight, layoutType));
       return this;
    }
-   public WidgetContext addWidgetConfigs(String name, String displayName, long minHeight, long minWidth, PagesContext.PageLayoutType layoutType) {
+   public WidgetContext addFixedWidgetConfig(String name, String displayName, long minHeight, long minWidth, PagesContext.PageLayoutType layoutType) {
       layoutType = layoutType != null? layoutType: PagesContext.PageLayoutType.WEB;
       if(this.getWidgetConfigs() == null) {
          this.setWidgetConfigs(new ArrayList<>());

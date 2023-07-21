@@ -1360,6 +1360,7 @@
     <request path="/api/v2/moduleSetting/status/pageBuilder/:moduleName">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
+            <property name="appId" type="number" mandatory="true"/>
         </urlparams>
     </request>
 
@@ -1809,12 +1810,14 @@
     <request path="/api/v2/fields/advancedFilter/:moduleName">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
+            <property name="defaultFieldIds" type="array"/>
         </urlparams>
     </request>
 
     <request path="/api/v2/fields/sortable/:moduleName">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
+            <property name="defaultFieldIds" type="array"/>
         </urlparams>
     </request>
 

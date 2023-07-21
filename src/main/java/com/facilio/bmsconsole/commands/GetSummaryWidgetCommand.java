@@ -32,7 +32,9 @@ public class GetSummaryWidgetCommand extends FacilioCommand {
             //this is to fetch displayType of field in response of JSONObject as getAsJSON ignore displayType in FacilioField
             summaryWidget.getGroups().stream()
                     .map(SummaryWidgetGroup::getFields).collect(Collectors.toList())
-                    .stream().flatMap(List::stream).forEach(f->f.setDisplayType(f.getField().getDisplayType()));
+                    .stream().flatMap(List::stream).forEach(f->{if(f.getField() != null){
+                        f.setDisplayType(f.getField().getDisplayType());
+                    }});
         }
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, summaryWidget);
         return false;

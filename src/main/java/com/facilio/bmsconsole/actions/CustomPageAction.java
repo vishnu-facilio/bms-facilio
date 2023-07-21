@@ -188,14 +188,17 @@ public class CustomPageAction extends FacilioAction {
         return SUCCESS;
     }
 
+    //TODO remove api once mobile pageBuilder is enabled for all modules
     public String checkPageBuilderEnabled() throws Exception {
         status = false;
         if(StringUtils.isNotEmpty(moduleName)) {
             try {
-                status = ModuleSettingConfigUtil.isConfigEnabledForModule(moduleName, FacilioConstants.SettingConfigurationContextNames.PAGE_BUILDER);
+                status = ModuleSettingConfigUtil.isConfigEnabledForModule(moduleName, FacilioConstants.SettingConfigurationContextNames.PAGE_BUILDER)
+                 && CustomPageAPI.checkMobileTabAvailability(moduleName, appId);
             }
             catch (Exception e) {
-                throw new IllegalArgumentException(e.getMessage(), e);
+                LOGGER.error("Exception occured on checkPageBuilderEnabled mobile -- " + e);
+                status = false;
             }
         }
         setResult("status", status);

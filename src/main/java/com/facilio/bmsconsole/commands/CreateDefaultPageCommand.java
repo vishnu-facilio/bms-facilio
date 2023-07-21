@@ -89,7 +89,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                         .addWebTab("summary", "SUMMARY", true, null)
                             .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                                 .addSection("summaryfields", null, null)
-                                    .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(module.getName()))
+                                    .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
                                     .widgetDone()
                                 .sectionDone()
                                 .addSection("widgetGroup", null, null)
@@ -145,7 +145,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                         .addMobileTab("summary", "SUMMARY",true, null)
                             .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                                 .addSection("summaryfields", null,  null)
-                                    .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_8", 0, 0,  null, getSummaryWidgetDetails(module.getName()))
+                                    .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_8", 0, 0,  null, getSummaryWidgetDetails(module.getName(), app))
                                     .widgetDone()
                                 .sectionDone()
                                 .addSection("widgetGroup", null,  null)
@@ -179,7 +179,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                             .addWebTab("summary", "SUMMARY", true, null)
                                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                                     .addSection("summaryfields", null, null)
-                                        .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0,  null, getSummaryWidgetDetails(module.getName()))
+                                        .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0,  null, getSummaryWidgetDetails(module.getName(), app))
                                         .widgetDone()
                                     .sectionDone()
                                     .addSection("widgetGroup", null, null)
@@ -219,7 +219,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                             .addMobileTab("summary", "SUMMARY",true, null)
                                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                                     .addSection("summaryfields", null,  null)
-                                        .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_8", 0, 0,  null, getSummaryWidgetDetails(module.getName()))
+                                        .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_8", 0, 0,  null, getSummaryWidgetDetails(module.getName(), app))
                                         .widgetDone()
                                     .sectionDone()
                                     .addSection("widgetGroup", null,  null)
@@ -249,7 +249,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
         }
         }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(String moduleName, ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -280,7 +280,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
