@@ -3,8 +3,10 @@ package com.facilio.fsm.signup;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -12,6 +14,7 @@ import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TimeSheetModule extends BaseModuleConfig {
@@ -82,6 +85,8 @@ public class TimeSheetModule extends BaseModuleConfig {
 
         addTimeSheetTaskModule();
         addTimeSheetTasksField();
+        addActivityModuleForTimeSheet();
+        SignupUtil.addNotesAndAttachmentModule(timeSheetModule);
 
     }
     private void addTimeSheetTaskModule() throws Exception {
@@ -116,5 +121,49 @@ public class TimeSheetModule extends BaseModuleConfig {
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.TimeSheet.TIME_SHEET);
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
         chain.execute();
+    }
+    public void addActivityModuleForTimeSheet() throws Exception {
+        // TODO Auto-generated method stub
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule timeSheet = modBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
+
+        FacilioModule module = new FacilioModule(FacilioConstants.TimeSheet.TIME_SHEET_ACTIVITY,
+                "Time Sheet Activity",
+                "Time_Sheet_Activity",
+                FacilioModule.ModuleType.ACTIVITY
+        );
+
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        NumberField parentId = FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.NUMBER);
+        fields.add(parentId);
+
+        FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
+
+        fields.add(timefield);
+
+        NumberField type = FieldFactory.getDefaultField("type", "Type", "ACTIVITY_TYPE", FieldType.NUMBER);
+        fields.add(type);
+
+        LookupField doneBy = FieldFactory.getDefaultField("doneBy", "Done By", "DONE_BY_ID", FieldType.LOOKUP);
+        doneBy.setSpecialType("users");
+        fields.add(doneBy);
+
+        FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING);
+
+        fields.add(info);
+
+
+        module.setFields(fields);
+
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain1.execute();
+
+        modBean.addSubModule(timeSheet.getModuleId(), module.getModuleId());
     }
 }

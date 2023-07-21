@@ -2,11 +2,14 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -14,12 +17,20 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.v3.context.Constants;
 
 import java.util.*;
 
 public class VendorContactModule extends BaseModuleConfig{
     public VendorContactModule(){
         setModuleName(FacilioConstants.ContextNames.VENDOR_CONTACT);
+    }
+
+    public void addData() throws Exception {
+        addActivityModuleForVendorContacts();
+        SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.ContextNames.VENDOR_CONTACT));
     }
 
     @Override
@@ -114,4 +125,48 @@ public class VendorContactModule extends BaseModuleConfig{
         return Collections.singletonList(newVendorContactForm);
     }
 
+    public void addActivityModuleForVendorContacts() throws Exception {
+        // TODO Auto-generated method stub
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule vc = modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT);
+
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.VENDOR_CONTACTS_ACTIVITY,
+                "Vendor Contact Activity",
+                "Vendor_Contacts_Activity",
+                FacilioModule.ModuleType.ACTIVITY
+        );
+
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        NumberField parentId = FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.NUMBER);
+        fields.add(parentId);
+
+        FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
+
+        fields.add(timefield);
+
+        NumberField type = FieldFactory.getDefaultField("type", "Type", "ACTIVITY_TYPE", FieldType.NUMBER);
+        fields.add(type);
+
+        LookupField doneBy = FieldFactory.getDefaultField("doneBy", "Done By", "DONE_BY_ID", FieldType.LOOKUP);
+        doneBy.setSpecialType("users");
+        fields.add(doneBy);
+
+        FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING);
+
+        fields.add(info);
+
+
+        module.setFields(fields);
+
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain1.execute();
+
+        modBean.addSubModule(vc.getModuleId(), module.getModuleId());
+    }
 }

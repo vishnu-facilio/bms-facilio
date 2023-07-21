@@ -1,11 +1,14 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -13,6 +16,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.v3.context.Constants;
 
 import java.util.*;
 
@@ -21,6 +27,10 @@ public class EmployeeModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.EMPLOYEE);
     }
 
+    public void addData() throws Exception {
+        addActivityModuleForEmployee();
+        SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.ContextNames.EMPLOYEE));
+    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -100,6 +110,51 @@ public class EmployeeModule extends BaseModuleConfig{
         employeeContactForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(employeeContactForm);
+    }
+
+    public void addActivityModuleForEmployee() throws Exception {
+        // TODO Auto-generated method stub
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule employee = modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE);
+
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.EMPLOYEE_ACTIVITY,
+                "Employee Activity",
+                "Employee_Activity",
+                FacilioModule.ModuleType.ACTIVITY
+        );
+
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        NumberField parentId = FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.NUMBER);
+        fields.add(parentId);
+
+        FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
+
+        fields.add(timefield);
+
+        NumberField type = FieldFactory.getDefaultField("type", "Type", "ACTIVITY_TYPE", FieldType.NUMBER);
+        fields.add(type);
+
+        LookupField doneBy = FieldFactory.getDefaultField("doneBy", "Done By", "DONE_BY_ID", FieldType.LOOKUP);
+        doneBy.setSpecialType("users");
+        fields.add(doneBy);
+
+        FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING);
+
+        fields.add(info);
+
+
+        module.setFields(fields);
+
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain1.execute();
+
+        modBean.addSubModule(employee.getModuleId(), module.getModuleId());
     }
 
 }

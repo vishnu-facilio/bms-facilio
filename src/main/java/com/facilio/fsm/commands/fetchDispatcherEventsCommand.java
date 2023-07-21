@@ -3,13 +3,13 @@ package com.facilio.fsm.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.fsm.context.DispatcherEventContext;
+import com.facilio.fsm.context.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fsm.context.ServiceAppointmentContext;
-import com.facilio.fsm.context.TimeOffContext;
+import com.facilio.fsm.signup.ServiceAppointmentTicketStatus;
+import com.facilio.fsm.util.TimeOffUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -64,6 +64,7 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
             saSelectFields.add(saFieldMap.get("responseDueStatus"));
             saSelectFields.add(saFieldMap.get("resolutionDueStatus"));
             saSelectFields.add(saFieldMap.get("site"));
+            saSelectFields.add(saFieldMap.get("status"));
             saSelectFields.add(FieldFactory.getIdField(serviceAppointment));
 
 
@@ -72,7 +73,8 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
                     .select(timeOffFields)
                     .module(timeOff)
                     .beanClass(TimeOffContext.class)
-                    .andCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.PEOPLE), StringUtils.join(peopleIds, ","), NumberOperators.EQUALS));
+                    .andCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.PEOPLE), StringUtils.join(peopleIds, ","), NumberOperators.EQUALS))
+                    .fetchSupplement((LookupField) timeOffFieldMap.get("type"));
             Criteria timeCrit = new Criteria();
             timeCrit.addAndCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.START_TIME), startTime+","+endTime, DateOperators.BETWEEN));
             timeCrit.addOrCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.END_TIME), startTime+","+endTime, DateOperators.BETWEEN));
@@ -82,12 +84,16 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
                 timeOffMap = timeOffData.stream().collect(Collectors.groupingBy(data -> data.getPeople().getId()));
             }
 
+            List<LookupField> saSupplements = new ArrayList<>();
+            saSupplements.add((LookupField) saFieldMap.get("site"));
+            saSupplements.add((LookupField) saFieldMap.get("status"));
+
             SelectRecordsBuilder<ServiceAppointmentContext> serviceAppointmentBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>()
                     .select(saSelectFields)
                     .module(serviceAppointment)
                     .beanClass(ServiceAppointmentContext.class)
                     .andCondition(CriteriaAPI.getCondition(saFieldMap.get("fieldAgent"), StringUtils.join(peopleIds, ","), NumberOperators.EQUALS))
-                    .fetchSupplements(Collections.singletonList((LookupField) saFieldMap.get("site")));
+                    .fetchSupplements(saSupplements);
             Criteria saTimeCrit = new Criteria();
             saTimeCrit.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get("scheduledStartTime"), startTime+","+endTime, DateOperators.BETWEEN));
             saTimeCrit.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get("scheduledEndTime"), startTime+","+endTime, DateOperators.BETWEEN));
@@ -107,7 +113,8 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
                         dispatcherTOEvent.setTypeEnum(enumVal);
                         dispatcherTOEvent.setEventType(DispatcherEventContext.EventType.TIME_OFF.getIndex());
                         dispatcherTOEvent.setTimeOff(timeOffEvent);
-                        dispatcherTOEvent.setBackgroundColor(timeOffEvent.getTypeColor());
+                        TimeOffTypeContext timeOffType = timeOffEvent.getType();
+                        dispatcherTOEvent.setBackgroundColor(timeOffType.getColor());
                         pplEvents.add(dispatcherTOEvent);
                     }
                 }
@@ -121,6 +128,8 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
                         dispatcherSAEvent.setAllowReschedule(true);
                         dispatcherSAEvent.setStartTime(saEvent.getScheduledStartTime());
                         dispatcherSAEvent.setEndTime(saEvent.getScheduledEndTime());
+                        ServiceAppointmentTicketStatusContext saStatus = saEvent.getStatus();
+                        dispatcherSAEvent.setBackgroundColor(saStatus.getColor());
                         pplEvents.add(dispatcherSAEvent);
                     }
                 }

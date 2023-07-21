@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.*;
@@ -32,7 +33,7 @@ public class AutoCreateSA extends FacilioCommand {
         List<ServiceAppointmentContext> serviceAppointmentList = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(serviceOrders)){
         for(ServiceOrderContext order : serviceOrders) {
-            if(order.getAutoCreateSa()){
+            if(order.isAutoCreateSa()){
                 ServiceAppointmentContext sa = new ServiceAppointmentContext();
                 sa.setAppointmentType(ServiceAppointmentContext.AppointmentType.SERVICE_WORK_ORDER);
                 sa.setName("Service Appointment for "+ order.getName() + "(AC)");
@@ -44,12 +45,13 @@ public class AutoCreateSA extends FacilioCommand {
 //                sa.setActualEndTime(order.getActualEndTime());
                 V3SiteContext site = order.getSite();
                 if (site != null) {
-                    sa.setSite(order.getSite());
-                    LocationContext location = site.getLocation();
+                    V3SiteContext siteObj = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SITE,site.getId(), V3SiteContext.class);
+                    sa.setSite(siteObj);
+                    LocationContext location = siteObj.getLocation();
                     if (location != null) {
                         sa.setLocation(FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(location), LocationContextV3.class));
                     }
-                    sa.setTerritory(site.getTerritory());
+                    sa.setTerritory(siteObj.getTerritory());
                 }
                 List<ServiceTaskContext> serviceTaskList= order.getServiceTask();
                 //fetch the list of all tasks against the service order

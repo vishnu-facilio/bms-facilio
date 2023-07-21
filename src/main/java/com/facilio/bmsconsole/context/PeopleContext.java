@@ -9,6 +9,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,6 @@ import java.util.Map;
 public class PeopleContext extends ModuleBaseWithCustomFields{
 
 	private static final long serialVersionUID = 1L;
-
 	private String name;
 	private String email;
 	private String phone;
@@ -275,4 +275,9 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private boolean trackGeoLocation;
 	private Double batteryInfo;
 	private Double signalInfo;
+	private long avatarId;
+	private String avatarUrl;
+	private File avatar;
+	private String avatarFileName;
+	private  String avatarContentType;
 }

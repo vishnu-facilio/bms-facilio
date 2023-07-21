@@ -5141,6 +5141,9 @@ INSERT INTO NumberFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${o
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) VALUES (${orgId}, @PEOPLE_MODULE_ID, 'signalInfo', 'Signal Info', 13 , 'SIGNAL_INFO', 3, false, false, true);
 INSERT INTO NumberFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
+INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) VALUES (${orgId}, @PEOPLE_MODULE_ID, 'avatar', 'Avatar', 57, 'AVATAR_ID', 9, false, false, true);
+INSERT INTO FileFields (FIELDID, ORGID, FORMAT) VALUES ((SELECT LAST_INSERT_ID()), ${orgId}, 6);
+
 
 --Service request module
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE, IS_TRASH_ENABLED,STATE_FLOW_ENABLED, DESCRIPTION) VALUES (${orgId}, 'serviceRequest', 'Service Request', 'Service_Requests', @BASE_ENTITY_MODULE_TYPE, 1,1,'Management of maintenance and repair requests for a facility through a digital platform.');

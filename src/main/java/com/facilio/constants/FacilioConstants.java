@@ -2464,6 +2464,7 @@ public class FacilioConstants {
 
 		public static final String EMPLOYEE = "employee";
 		public static final String EMPLOYEES = "employees";
+		public static final String EMPLOYEE_ACTIVITY = "employeeActivity";
 
 		public static final String TENANT_CONTACT = "tenantcontact";
 		public static final String TENANT_ID_VS_PRIMARY_TENANT_CONTACT = "tenantIdVsPrimaryTenantContactMap";
@@ -2480,6 +2481,7 @@ public class FacilioConstants {
 
 		public static final String VENDOR_CONTACT = "vendorcontact";
 		public static final String VENDOR_CONTACTS = "vendorcontacts";
+		public static final String VENDOR_CONTACTS_ACTIVITY = "vendorContactsActivity";
 
 		public static final String PEOPLE = "people";
 		public static final String EMAIL_VS_PEOPLE_MAP = "emailVsPeopleMap";
@@ -4591,10 +4593,14 @@ public class FacilioConstants {
 	}
 	public static class TimeOff{
 		public static final String TIME_OFF = "timeOff";
+		public static final String TIME_OFF_TYPE = "timeOffType";
+		public static final String TIME_OFF_ACTIVITY = "timeOffActivity";
 	}
 
 	public static class Territory{
 		public static final String TERRITORY = "territory";
+		public static final String PEOPLE_TERRITORY = "peopleTerritory";
+		public static final String TERRITORY_ACTIVITY = "territoryActivity";
 	}
 
 	public static class LocationHistory{
@@ -4609,6 +4615,9 @@ public class FacilioConstants {
 		public static final String SERVICE_APPOINTMENT_ACTIVITY = "serviceAppointmentActivity";
 		public static final String SERVICE_APPOINTMENT_SKILL = "serviceAppointmentSkill";
 		public static final String SERVICE_APPOINTMENT_TICKET_STATUS = "serviceAppointmentTicketStatus";
+		public static final String SERVICE_APPOINTMENT_STATUS = "serviceAppointmentStatus";
+		public static final String SERVICE_APPOINTMENT_NOTES = "serviceAppointmentNotes";
+		public static final String SERVICE_APPOINTMENT_ATTACHMENTS = "serviceAppointmentAttachments";
 	}
 
 
@@ -4619,9 +4628,11 @@ public class FacilioConstants {
 	public static class TimeSheet{
 		public static final String TIME_SHEET = "timeSheet";
 		public static final String TIME_SHEET_TASK = "timeSheetTask";
+		public static final String TIME_SHEET_ACTIVITY = "timeSheetActivity";
 	}
 	public static class Trip{
 		public static final String TRIP = "trip";
 		public static final String TRIP_LOCATION_HISTORY = "tripLocationHistory";
+		public static final String TRIP_ACTIVITY = "tripActivity";
 	}
 }

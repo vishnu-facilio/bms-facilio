@@ -6,8 +6,10 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -28,6 +30,8 @@ public class TerritoryModule extends BaseModuleConfig {
         addTerritoryModule();
         addTerritoryLookupInPeople();
         addTerritoryLookupInSite();
+        addActivityModuleForTerritory();
+        SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.Territory.TERRITORY));
     }
     private void addTerritoryModule() throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
@@ -104,5 +108,50 @@ public class TerritoryModule extends BaseModuleConfig {
         List<FacilioForm> territoryModuleForms = new ArrayList<>();
         territoryModuleForms.add(territoryForm);
         return territoryModuleForms;
+    }
+
+    public void addActivityModuleForTerritory() throws Exception {
+        // TODO Auto-generated method stub
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule territory = modBean.getModule(FacilioConstants.Territory.TERRITORY);
+
+        FacilioModule module = new FacilioModule(FacilioConstants.Territory.TERRITORY_ACTIVITY,
+                "Territory Activity",
+                "Territory_Activity",
+                FacilioModule.ModuleType.ACTIVITY
+        );
+
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        NumberField parentId = FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.NUMBER);
+        fields.add(parentId);
+
+        FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
+
+        fields.add(timefield);
+
+        NumberField type = FieldFactory.getDefaultField("type", "Type", "ACTIVITY_TYPE", FieldType.NUMBER);
+        fields.add(type);
+
+        LookupField doneBy = FieldFactory.getDefaultField("doneBy", "Done By", "DONE_BY_ID", FieldType.LOOKUP);
+        doneBy.setSpecialType("users");
+        fields.add(doneBy);
+
+        FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING);
+
+        fields.add(info);
+
+
+        module.setFields(fields);
+
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain1.execute();
+
+        modBean.addSubModule(territory.getModuleId(), module.getModuleId());
     }
 }

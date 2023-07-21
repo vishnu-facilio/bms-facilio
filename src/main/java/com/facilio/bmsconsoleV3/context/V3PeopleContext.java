@@ -10,13 +10,13 @@ import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
 @Getter@Setter
 public class V3PeopleContext extends V3Context {
     private static final long serialVersionUID = 1L;
-
     private String name;
     private String email;
     private String phone;
@@ -261,4 +261,9 @@ public class V3PeopleContext extends V3Context {
             return null;
         }
     }
+    private long avatarId;
+    private String avatarUrl;
+    private File avatar;
+    private String avatarFileName;
+    private  String avatarContentType;
 }

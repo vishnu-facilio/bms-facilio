@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -35,7 +36,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             addStateFlow();
             addServiceAppointmentSkillModule();
             addServiceSkillField();
-            addServiceAppointmentFieldInSkill();
+            addActivityModuleForServiceAppointment();
+            SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
     }
     private void addServiceAppointmentModule() throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
@@ -144,6 +146,9 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         SystemEnumField resolutionDueStatus = FieldFactory.getDefaultField("resolutionDueStatus","Resolution Due Status","RESOLUTION_DUE_STATUS",FieldType.SYSTEM_ENUM);
         resolutionDueStatus.setEnumName("AppointmentDueStatus");
         serviceAppointmentFields.add(resolutionDueStatus);
+
+        FacilioField mismatch = FieldFactory.getDefaultField("mismatch","IS MISMATCH","MISMATCH", FieldType.BOOLEAN);
+        serviceAppointmentFields.add(mismatch);
 
         LookupField status = FieldFactory.getDefaultField("status","Status","STATUS",FieldType.LOOKUP);
         status.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
@@ -352,12 +357,49 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
         chain.execute();
     }
-    private void addServiceAppointmentFieldInSkill() throws Exception{
-        ModuleBean bean = Constants.getModBean();
-        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Service Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
-        serviceAppointment.setModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_SKILL),"Service Skill module doesn't exist."));
-        serviceAppointment.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),"Service Appointment module doesn't exist."));
-        bean.addField(serviceAppointment);
-    }
 
+    public void addActivityModuleForServiceAppointment() throws Exception {
+        // TODO Auto-generated method stub
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule serviceAppointment = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+
+        FacilioModule module = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY,
+                "Service Appointment Activity",
+                "Service_Appointment_Activity",
+                FacilioModule.ModuleType.ACTIVITY
+        );
+
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        NumberField parentId = FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.NUMBER);
+        fields.add(parentId);
+
+        FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
+
+        fields.add(timefield);
+
+        NumberField type = FieldFactory.getDefaultField("type", "Type", "ACTIVITY_TYPE", FieldType.NUMBER);
+        fields.add(type);
+
+        LookupField doneBy = FieldFactory.getDefaultField("doneBy", "Done By", "DONE_BY_ID", FieldType.LOOKUP);
+        doneBy.setSpecialType("users");
+        fields.add(doneBy);
+
+        FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING);
+
+        fields.add(info);
+
+
+        module.setFields(fields);
+
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain1.execute();
+
+        modBean.addSubModule(serviceAppointment.getModuleId(), module.getModuleId());
+    }
 }

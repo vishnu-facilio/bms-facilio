@@ -1,5 +1,6 @@
 package com.facilio.fsm.context;
 
+import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
@@ -35,7 +36,8 @@ public class ServiceAppointmentContext extends V3Context {
     private V3SiteContext site;
     private V3PeopleContext fieldAgent;
     private Boolean isAllTasksClosed;
-    private ServiceAppointmentTicketStatus status;
+    private boolean mismatch;
+    private ServiceAppointmentTicketStatusContext status;
     public int getPriority() {
         if (priority != null) {
             return priority.getIndex();
@@ -112,6 +114,9 @@ public class ServiceAppointmentContext extends V3Context {
             this.responseDueStatus = DueStatus.valueOf(responseDueStatus);
         }
     }
+    public DueStatus getResponseDueStatusEnum() {
+        return responseDueStatus;
+    }
 
     public Integer getResolutionDueStatus() {
         if (resolutionDueStatus != null) {
@@ -123,6 +128,9 @@ public class ServiceAppointmentContext extends V3Context {
         if(resolutionDueStatus != null) {
             this.resolutionDueStatus = DueStatus.valueOf(resolutionDueStatus);
         }
+    }
+    public DueStatus getResolutionDueStatusEnum() {
+        return resolutionDueStatus;
     }
 
     public static enum DueStatus implements FacilioIntEnum {

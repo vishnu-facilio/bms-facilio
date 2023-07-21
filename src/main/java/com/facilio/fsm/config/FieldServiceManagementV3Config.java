@@ -1,6 +1,7 @@
 package com.facilio.fsm.config;
 
 
+import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
@@ -104,7 +105,9 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTimeOff(){
         return () -> new V3Config(TimeOffContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeOff.TIME_OFF_ACTIVITY))
                 .update()
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeOff.TIME_OFF_ACTIVITY))
                 .list()
                 .summary()
                 .pickList()
@@ -122,7 +125,9 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTerritory(){
         return () -> new V3Config(TerritoryContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.Territory.TERRITORY_ACTIVITY))
                 .update()
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.Territory.TERRITORY_ACTIVITY))
                 .list()
                 .summary()
                 .pickList()
@@ -134,9 +139,11 @@ public class FieldServiceManagementV3Config {
         return () -> new V3Config(ServiceAppointmentContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
                 .beforeSave(new rollupServiceAppointmentFieldsCommand())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY))
 //                .afterSave(new rollUpServiceTaskCommand())
                 .update()
                 .beforeSave(new rollupServiceAppointmentFieldsCommand())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY))
 //                .afterSave(new rollUpServiceTaskCommand())
                 .list()
                 .beforeFetch(new FetchServiceAppointmentSupplementsCommand())
@@ -158,7 +165,9 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTimeSheet(){
         return () -> new V3Config(TimeSheetContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeSheet.TIME_SHEET))
                 .update()
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeSheet.TIME_SHEET))
                 .list()
                 .summary()
                 .pickList()
@@ -168,6 +177,19 @@ public class FieldServiceManagementV3Config {
     @Module(FacilioConstants.Trip.TRIP)
     public static Supplier<V3Config> getTrip(){
         return () -> new V3Config(TripContext.class,null)
+                .create()
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.Trip.TRIP_ACTIVITY))
+                .update()
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.Trip.TRIP_ACTIVITY))
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.Territory.PEOPLE_TERRITORY)
+    public static Supplier<V3Config> getPeopleTerritory(){
+        return () -> new V3Config(PeopleTerritoryContext.class,null)
                 .create()
                 .update()
                 .list()

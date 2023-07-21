@@ -19,7 +19,7 @@ public class SOStatusChangeCommandV3 extends FacilioCommand {
         List<ServiceOrderContext> serviceOrdersNew = new ArrayList<>();
         for(ServiceOrderContext order : dataList) {
             if(order.getStatus() < 0){
-                if(order.getAutoCreateSa() != null && order.getAutoCreateSa() ){
+                if(order.isAutoCreateSa()){
                     order.setStatus(ServiceOrderContext.ServiceOrderStatus.SCHEDULED);
                 }
                 else {

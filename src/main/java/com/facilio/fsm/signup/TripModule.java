@@ -3,6 +3,7 @@ package com.facilio.fsm.signup;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -13,6 +14,7 @@ import com.facilio.modules.fields.DateField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +32,8 @@ public class TripModule extends BaseModuleConfig {
             addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(trip));
             addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
             addModuleChain.execute();
+            addActivityModuleForTrip();
+            SignupUtil.addNotesAndAttachmentModule(trip);
         }catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -100,5 +104,50 @@ public class TripModule extends BaseModuleConfig {
         module.setFields(fields);
         return module;
 
+    }
+
+    public void addActivityModuleForTrip() throws Exception {
+        // TODO Auto-generated method stub
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule trip = modBean.getModule(FacilioConstants.Trip.TRIP);
+
+        FacilioModule module = new FacilioModule(FacilioConstants.Trip.TRIP_ACTIVITY,
+                "Trip Activity",
+                "Trip_Activity",
+                FacilioModule.ModuleType.ACTIVITY
+        );
+
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        NumberField parentId = FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.NUMBER);
+        fields.add(parentId);
+
+        FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
+
+        fields.add(timefield);
+
+        NumberField type = FieldFactory.getDefaultField("type", "Type", "ACTIVITY_TYPE", FieldType.NUMBER);
+        fields.add(type);
+
+        LookupField doneBy = FieldFactory.getDefaultField("doneBy", "Done By", "DONE_BY_ID", FieldType.LOOKUP);
+        doneBy.setSpecialType("users");
+        fields.add(doneBy);
+
+        FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING);
+
+        fields.add(info);
+
+
+        module.setFields(fields);
+
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain1.execute();
+
+        modBean.addSubModule(trip.getModuleId(), module.getModuleId());
     }
 }
