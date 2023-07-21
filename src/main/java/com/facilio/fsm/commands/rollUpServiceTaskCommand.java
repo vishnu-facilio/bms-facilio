@@ -57,17 +57,15 @@ public class rollUpServiceTaskCommand extends FacilioCommand {
                     }
 
                 }
-//                ServiceAppointmentContext serviceAppointment = serviceAppointments.get(0);
+                else {
 
-//            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//            FacilioField serviceAppointmentId = modBean.getField("serviceAppointment", "serviceTask");
-//            FacilioModule serviceTaskModule = Constants.getModBean().getModule("serviceTask");
-//                for (Long serviceTaskId : serviceTaskIds) {
-//                    ServiceTaskContext serviceTask = new ServiceTaskContext();
-//                    serviceTask.setId(serviceTaskId);
-//                    serviceTask.setServiceAppointment(serviceAppointment);
-//                    V3RecordAPI.updateRecord(serviceTask, serviceTaskModule, Collections.singletonList(serviceAppointmentId));
-//                }
+                for (Long serviceTaskId : serviceTaskIds) {
+                    ServiceTaskContext serviceTask = new ServiceTaskContext();
+                    serviceTask.setId(serviceTaskId);
+                    serviceTask.setServiceAppointment(serviceAppointment);
+                    V3RecordAPI.updateRecord(serviceTask, serviceTaskModule, Collections.singletonList(serviceAppointmentId));
+                }
+                }
             }
         }
 

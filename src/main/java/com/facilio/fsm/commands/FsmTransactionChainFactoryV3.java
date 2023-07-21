@@ -21,7 +21,7 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SOStatusChangeCommandV3());
         c.addCommand(new SOAddOnCommandV3());
-//        c.addCommand(new AutoCreateSA());
+        c.addCommand(new AutoCreateSA());
         return c;
     }
 

@@ -64,52 +64,52 @@ public class rollupServiceAppointmentFieldsCommand extends FacilioCommand {
                 }
 
                 List<ServiceAppointmentTaskContext> serviceAppointmentTaskContextList = serviceAppointment.getServiceTasks();
-//                if(eventType == EventType.EDIT) {
-//                    //fetching old service task ids from serviceAppointmenttask table
-//                    FacilioField taskField = modBean.getField("right", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
-//
-//                    GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-//                            .select(Collections.singleton(taskField))
-//                            .table("SERVICE_APPOINTMENT_TASK_REL")
-//                            .andCondition(CriteriaAPI.getCondition("LEFT_ID", "left", String.valueOf(serviceAppointment.getId()), NumberOperators.EQUALS));
-//                    List<Map<String, Object>> maps = selectBuilder.get();
-//                    List<Long> oldTaskIds = new ArrayList<>();
-//                    if (CollectionUtils.isNotEmpty(maps)) {
-//                        oldTaskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
-//                    }
-//                    context.put(FacilioConstants.ContextNames.FieldServiceManagement.OLD_SERVICE_TASK_IDS, oldTaskIds);
-//                }
-                //fetching updated service task ids
-//                if (CollectionUtils.isNotEmpty(serviceAppointmentTaskContextList)) {
-//                    List<Long> serviceTaskIds = serviceAppointmentTaskContextList
-//                            .stream()
-//                            .filter(a -> a != null)
-//                            .map(a -> a.getId())
-//                            .collect(Collectors.toList());
-//                    context.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_IDS,serviceTaskIds);
+                if(eventType == EventType.EDIT) {
+                    //fetching old service task ids from serviceAppointmenttask table
+                    FacilioField taskField = modBean.getField("right", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
 
-                    //fetching skills associated with service tasks
+                    GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                            .select(Collections.singleton(taskField))
+                            .table("SERVICE_APPOINTMENT_TASK_REL")
+                            .andCondition(CriteriaAPI.getCondition("SERVICE_APPOINTMENT_ID", "left", String.valueOf(serviceAppointment.getId()), NumberOperators.EQUALS));
+                    List<Map<String, Object>> maps = selectBuilder.get();
+                    List<Long> oldTaskIds = new ArrayList<>();
+                    if (CollectionUtils.isNotEmpty(maps)) {
+                        oldTaskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
+                    }
+                    context.put(FacilioConstants.ContextNames.FieldServiceManagement.OLD_SERVICE_TASK_IDS, oldTaskIds);
+                }
+//                fetching updated service task ids
+                if (CollectionUtils.isNotEmpty(serviceAppointmentTaskContextList)) {
+                    List<Long> serviceTaskIds = serviceAppointmentTaskContextList
+                            .stream()
+                            .filter(a -> a != null)
+                            .map(a -> a.getId())
+                            .collect(Collectors.toList());
+                    context.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_IDS,serviceTaskIds);
 
-//                    FacilioField field = modBean.getField("right",FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_SKILLS);
-//                    GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-//                            .select(Collections.singleton(field))
-//                            .table("Service_Task_Skills")
-//                            .andCondition(CriteriaAPI.getCondition("LEFT_ID","left", StringUtils.join(serviceTaskIds,","),NumberOperators.EQUALS ));
-//                    List<Map<String, Object>> props = selectRecordBuilder.get();
-//                    List<Long> skillIds = new ArrayList<>();
-//                    if (CollectionUtils.isNotEmpty(props)) {
-//                        skillIds = props.stream().map(prop -> (long) prop.get("right")).collect(Collectors.toList());
-//                        List<ServiceAppointmentSkillContext> skills = new ArrayList<>();
-//                        if(CollectionUtils.isNotEmpty(skillIds)) {
-//                            for (Long skillId : skillIds) {
-//                                ServiceAppointmentSkillContext skill = new ServiceAppointmentSkillContext();
-//                                skill.setId(skillId);
-//                                skills.add(skill);
-//                            }
-//                        }
-//                        serviceAppointment.setSkills(skills);
-//                    }
-//                }
+//                    fetching skills associated with service tasks
+
+                    FacilioField field = modBean.getField("right",FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_SKILLS);
+                    GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                            .select(Collections.singleton(field))
+                            .table("Service_Task_Skills")
+                            .andCondition(CriteriaAPI.getCondition("LEFT_ID","left", StringUtils.join(serviceTaskIds,","),NumberOperators.EQUALS ));
+                    List<Map<String, Object>> props = selectRecordBuilder.get();
+                    List<Long> skillIds = new ArrayList<>();
+                    if (CollectionUtils.isNotEmpty(props)) {
+                        skillIds = props.stream().map(prop -> (long) prop.get("right")).collect(Collectors.toList());
+                        List<ServiceAppointmentSkillContext> skills = new ArrayList<>();
+                        if(CollectionUtils.isNotEmpty(skillIds)) {
+                            for (Long skillId : skillIds) {
+                                ServiceAppointmentSkillContext skill = new ServiceAppointmentSkillContext();
+                                skill.setId(skillId);
+                                skills.add(skill);
+                            }
+                        }
+                        serviceAppointment.setSkills(skills);
+                    }
+                }
             }
         }
         return false;
