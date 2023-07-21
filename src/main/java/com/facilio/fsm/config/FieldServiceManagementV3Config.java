@@ -6,6 +6,7 @@ import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.commands.*;
+import com.facilio.fsm.commands.serviceTasks.LoadTaskPlansCommandV3;
 import com.facilio.fsm.context.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -51,6 +52,7 @@ public class FieldServiceManagementV3Config {
                 .list()
                 .beforeFetch(new LoadServiceTaskLookupCommandV3())
                 .summary()
+                .afterFetch(new LoadTaskPlansCommandV3())
                 .delete()
                 .build();
     }
