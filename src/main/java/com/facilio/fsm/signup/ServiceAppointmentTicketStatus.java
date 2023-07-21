@@ -60,48 +60,58 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
                 .fields(modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS));
 
         List<ServiceAppointmentTicketStatusContext> ticketStatusContextList = new ArrayList<>();
-        ServiceAppointmentTicketStatusContext ticketStatus = new ServiceAppointmentTicketStatusContext();
-        ticketStatus.setStatus("new");
-        ticketStatus.setDisplayName("New");
-        ticketStatus.setColor("#0492AE");
-        ticketStatus.setTypeCode(1);
-        ticketStatus.setRecordLocked(false);
-        ticketStatusContextList.add(ticketStatus);
+        ServiceAppointmentTicketStatusContext newState = new ServiceAppointmentTicketStatusContext();
+        newState.setStatus("new");
+        newState.setDisplayName("New");
+        newState.setColor("#0492AE");
+        newState.setTypeCode(1);
+        newState.setRecordLocked(false);
+        ticketStatusContextList.add(newState);
 
-        ticketStatus.setStatus("scheduled");
-        ticketStatus.setDisplayName("Scheduled");
-        ticketStatus.setColor("#51049F");
-        ticketStatus.setTypeCode(1);
-        ticketStatus.setRecordLocked(false);
-        ticketStatusContextList.add(ticketStatus);
+        ServiceAppointmentTicketStatusContext scheduledState = new ServiceAppointmentTicketStatusContext();
 
-        ticketStatus.setStatus("dispatched");
-        ticketStatus.setDisplayName("Dispatched");
-        ticketStatus.setColor("#C70566");
-        ticketStatus.setTypeCode(1);
-        ticketStatus.setRecordLocked(false);
-        ticketStatusContextList.add(ticketStatus);
+        scheduledState.setStatus("scheduled");
+        scheduledState.setDisplayName("Scheduled");
+        scheduledState.setColor("#51049F");
+        scheduledState.setTypeCode(1);
+        scheduledState.setRecordLocked(false);
+        ticketStatusContextList.add(scheduledState);
 
-        ticketStatus.setStatus("inProgress");
-        ticketStatus.setDisplayName("In Progress");
-        ticketStatus.setColor("#F7BA02");
-        ticketStatus.setTypeCode(2);
-        ticketStatus.setRecordLocked(false);
-        ticketStatusContextList.add(ticketStatus);
+        ServiceAppointmentTicketStatusContext dispatchedState = new ServiceAppointmentTicketStatusContext();
 
-        ticketStatus.setStatus("completed");
-        ticketStatus.setDisplayName("Completed");
-        ticketStatus.setColor("#058545");
-        ticketStatus.setTypeCode(3);
-        ticketStatus.setRecordLocked(false);
-        ticketStatusContextList.add(ticketStatus);
+        dispatchedState.setStatus("dispatched");
+        dispatchedState.setDisplayName("Dispatched");
+        dispatchedState.setColor("#C70566");
+        dispatchedState.setTypeCode(1);
+        dispatchedState.setRecordLocked(false);
+        ticketStatusContextList.add(dispatchedState);
 
-        ticketStatus.setStatus("cancelled");
-        ticketStatus.setDisplayName("Cancelled");
-        ticketStatus.setColor("#D12806");
-        ticketStatus.setTypeCode(3);
-        ticketStatus.setRecordLocked(false);
-        ticketStatusContextList.add(ticketStatus);
+        ServiceAppointmentTicketStatusContext inProgressState = new ServiceAppointmentTicketStatusContext();
+
+        inProgressState.setStatus("inProgress");
+        inProgressState.setDisplayName("In Progress");
+        inProgressState.setColor("#F7BA02");
+        inProgressState.setTypeCode(2);
+        inProgressState.setRecordLocked(false);
+        ticketStatusContextList.add(inProgressState);
+
+        ServiceAppointmentTicketStatusContext completedState = new ServiceAppointmentTicketStatusContext();
+
+        completedState.setStatus("completed");
+        completedState.setDisplayName("Completed");
+        completedState.setColor("#058545");
+        completedState.setTypeCode(3);
+        completedState.setRecordLocked(false);
+        ticketStatusContextList.add(completedState);
+
+        ServiceAppointmentTicketStatusContext cancelledState = new ServiceAppointmentTicketStatusContext();
+
+        cancelledState.setStatus("cancelled");
+        cancelledState.setDisplayName("Cancelled");
+        cancelledState.setColor("#D12806");
+        cancelledState.setTypeCode(3);
+        cancelledState.setRecordLocked(false);
+        ticketStatusContextList.add(cancelledState);
 
 
         insertRecordBuilder.addRecords(ticketStatusContextList);
