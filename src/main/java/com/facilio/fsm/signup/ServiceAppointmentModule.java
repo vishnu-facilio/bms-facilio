@@ -33,7 +33,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             addServiceAppointmentTaskModule();
             addServiceTasksField();
             addServiceAppointmentFieldInServiceTask();
-            addStateFlow();
+//            addStateFlow();
             addServiceAppointmentSkillModule();
             addServiceSkillField();
             addActivityModuleForServiceAppointment();
