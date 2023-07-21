@@ -101,7 +101,8 @@ public class rollupServiceAppointmentFieldsCommand extends FacilioCommand {
                         skillIds = props.stream().map(prop -> (long) prop.get("right")).collect(Collectors.toList());
                         List<ServiceAppointmentSkillContext> skills = new ArrayList<>();
                         if(CollectionUtils.isNotEmpty(skillIds)) {
-                            for (Long skillId : skillIds) {
+                            Set<Long> skillSet = new HashSet<>(skillIds);
+                            for (Long skillId : skillSet) {
                                 ServiceAppointmentSkillContext skill = new ServiceAppointmentSkillContext();
                                 skill.setId(skillId);
                                 skills.add(skill);

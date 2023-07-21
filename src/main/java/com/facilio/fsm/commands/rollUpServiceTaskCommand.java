@@ -34,22 +34,18 @@ public class rollUpServiceTaskCommand extends FacilioCommand {
                 if (eventType == EventType.EDIT) {
 
                     List<Long> oldTaskIds = (List<Long>) context.get(FacilioConstants.ContextNames.FieldServiceManagement.OLD_SERVICE_TASK_IDS);
-                    List<Long> sameTaskIds = oldTaskIds;
-                    List<Long> differentTaskIds = serviceTaskIds;
-                    sameTaskIds.retainAll(differentTaskIds);
-                    differentTaskIds.removeAll(sameTaskIds);
-                    List<Long> intersect = new ArrayList<>(differentTaskIds);
-                    intersect.retainAll(oldTaskIds);
-                    List<Long> intersect2 = new ArrayList<>(differentTaskIds);
-                    intersect2.retainAll(serviceTaskIds);
+                    List<Long> disjunction = (List<Long>) CollectionUtils.disjunction(oldTaskIds, serviceTaskIds);
+                    List<Long> oldIds = (List<Long>) CollectionUtils.intersection(oldTaskIds, disjunction);
+                    List<Long> newIds = (List<Long>) CollectionUtils.intersection(serviceTaskIds, disjunction);
 
-                    for (Long id : intersect) {
+
+                    for (Long id : oldIds) {
                         ServiceTaskContext serviceTask = new ServiceTaskContext();
                         serviceTask.setId(id);
                         serviceTask.setServiceAppointment(null);
                         V3RecordAPI.updateRecord(serviceTask, serviceTaskModule, Collections.singletonList(serviceAppointmentId));
                     }
-                    for (Long taskId : intersect2) {
+                    for (Long taskId : newIds) {
                         ServiceTaskContext serviceTask = new ServiceTaskContext();
                         serviceTask.setId(taskId);
                         serviceTask.setServiceAppointment(serviceAppointment);
