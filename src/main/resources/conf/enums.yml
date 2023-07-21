@@ -327,6 +327,11 @@ enums:
   - name: Notification_Type_Enum
     enumClassName: com.facilio.bmsconsoleV3.context.PeopleNotificationSettings$Notification_Types
 
+  - name: Agent_Message_Status
+    enumClassName: com.facilio.bmsconsoleV3.context.DataLogContextV3$Agent_Message_Status
+
+  - name: TimeSeries_Status
+    enumClassName: com.facilio.bmsconsoleV3.context.DataLogSummaryContextV3$TimeSeries_Status
   - name: RfqTypes
     enumClassName: com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext$RfqTypes
 

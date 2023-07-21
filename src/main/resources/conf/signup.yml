@@ -402,3 +402,6 @@ classes:
 
   #sensorRuleModule
   - com.facilio.alarms.sensor.signup.AddSensorRuleModules #Sensor
+   #agentDataLog Module
+#  - com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataLoggerModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataProcessingLoggerModule

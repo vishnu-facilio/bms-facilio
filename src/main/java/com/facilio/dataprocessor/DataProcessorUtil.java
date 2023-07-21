@@ -430,7 +430,7 @@ public class DataProcessorUtil {
                 }
                 boolean processed = true;
                 for (JSONObject jsonObject : payloads) {
-                    processed = processed && dataProcessorV2.processRecord(jsonObject, eventUtil, agent);
+                    processed = processed && dataProcessorV2.processRecord(jsonObject, eventUtil, agent,recordId,partitionId,messageSource.getName());
                 }
                 if (processed) {
                     updateAgentMessage(recordId, partitionId, MessageStatus.PROCESSED);
@@ -730,7 +730,7 @@ public class DataProcessorUtil {
         return addOrUpdateAgentMessage(recordId, partitionId, messageStatus);
     }
 
-    private boolean addOrUpdateAgentMessage(long recordId, int partitionId, MessageStatus messageStatus) throws Exception {
+    private boolean  addOrUpdateAgentMessage(long recordId, int partitionId, MessageStatus messageStatus) throws Exception {
         boolean status = false;
 
         Map<String, Object> map = new HashMap<>();

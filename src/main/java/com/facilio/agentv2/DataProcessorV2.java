@@ -1,6 +1,7 @@
 package com.facilio.agentv2;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentType;
 import com.facilio.agent.alarms.AgentEvent;
 import com.facilio.agent.controller.FacilioControllerType;
@@ -14,10 +15,12 @@ import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.agentv2.point.PointsUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.context.DataLogContextV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -36,11 +39,11 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.util.AckUtil;
 import com.facilio.util.FacilioUtil;
-
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
-import io.opentelemetry.api.metrics.*;
+import io.opentelemetry.api.metrics.LongHistogram;
+import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -76,7 +79,7 @@ public class DataProcessorV2 {
     }
 
 
-    public boolean processRecord(JSONObject payload, EventUtil eventUtil, FacilioAgent agent) {
+    public boolean processRecord(JSONObject payload, EventUtil eventUtil, FacilioAgent agent,long recordId,int partitionId,String messageSource) {
         boolean processStatus = false;
         try {
 
@@ -96,11 +99,13 @@ public class DataProcessorV2 {
             }
 
             if (!payload.containsKey(AgentConstants.PUBLISH_TYPE)) {
+                //add datalog entry with exception here
                 LOGGER.info("Exception Occurred, " + AgentConstants.PUBLISH_TYPE + " is mandatory in payload " + payload);
                 return false;
             }
             PublishType publishType = PublishType.valueOf(JsonUtil.getInt((payload.get(AgentConstants.PUBLISH_TYPE)))); // change it to Type
             if (publishType == null) {
+                //add datalog entry with exception here
                 throw new Exception(" publish type cant be null " + JsonUtil.getInt((payload.get(AgentConstants.PUBLISH_TYPE))));
             }
 
@@ -126,9 +131,14 @@ public class DataProcessorV2 {
                     processStatus = processAck(agent, payload);
                     break;
                 case TIMESERIES:
+
+
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
                     Controller timeseriesController = getOrAddController(payload, agent);
                     int messagePartition = 0;
+
+
+
                     if (payload.containsKey(AgentConstants.MESSAGE_PARTITION)) {
                         messagePartition = Integer.parseInt(payload.get(AgentConstants.MESSAGE_PARTITION).toString());
                     }
@@ -140,9 +150,9 @@ public class DataProcessorV2 {
                         controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp + "#" + messagePartition);
 
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
-                        processStatus = processTimeSeries(agent, timeSeriesPayload, timeseriesController, true);
-
+                        processStatus = processTimeSeries(agent, timeSeriesPayload, timeseriesController, true,recordId,partitionId,messageSource,publishType);
                     } else {
+                        //add datalog table entry with this exception
                         LOGGER.info("Duplicate message for controller id : " + timeseriesController.getId() +
                                 " a_timestamp : " + timeStamp);
                     }
@@ -155,7 +165,7 @@ public class DataProcessorV2 {
                     } else {
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, null);
                     }
-                    processStatus = processTimeSeries(agent, timeSeriesPayload, controller, false);
+                    processStatus = processTimeSeries(agent, timeSeriesPayload, controller, false,recordId,partitionId,messageSource,publishType);
                     break;
                     //processTimeSeries(payload,)
                 case AGENT_EVENTS:
@@ -174,11 +184,11 @@ public class DataProcessorV2 {
                     
                     JSONArray events;
                     if(payload.containsKey(AgentConstants.EVENT_VERSION) && FacilioUtil.parseInt(payload.get(AgentConstants.EVENT_VERSION)) == 2){
-                    	events = (JSONArray) payload.get(EventConstants.EventContextNames.EVENT_LIST);
+                        events = (JSONArray) payload.get(EventConstants.EventContextNames.EVENT_LIST);
                     }
                     else {
-                    	events = new JSONArray();
-                    	events.add(payload);
+                        events = new JSONArray();
+                        events.add(payload);
                     }
                     
                     processStatus = eventUtil.processEvents(timeStamp, events, orgId, eventRules);
@@ -187,6 +197,7 @@ public class DataProcessorV2 {
                     throw new Exception("No such Publish type " + publishType.name());
             }
         } catch (Exception e) {
+            //add datalog entry for exception
             LOGGER.info("Exception occurred ,", e);
         }
         LOGGER.debug(" process status " + processStatus);
@@ -280,8 +291,8 @@ public class DataProcessorV2 {
         context.put(FacilioConstants.ContextNames.INSTANT_JOB_NAME, "PostTimeseriesWorkflowExecutionJob");
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.TIMESERIES_COMPLETE);
         context.put(FacilioConstants.ContextNames.TRIGGER_TYPE, TriggerType.AGENT_TRIGGER);
-        
-		Map<String, FacilioField> triggerFields = FieldFactory.getAsMap(FieldFactory.getAgentTriggerFields());
+
+        Map<String, FacilioField> triggerFields = FieldFactory.getAsMap(FieldFactory.getAgentTriggerFields());
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(triggerFields.get("agentId"), String.valueOf(agent.getId()), NumberOperators.EQUALS));
         context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
@@ -455,12 +466,17 @@ public class DataProcessorV2 {
         return false;
     }
 
-    private boolean processTimeSeries(FacilioAgent agent, JSONObject payload, Controller controller, boolean isTimeSeries) {
+    private boolean processTimeSeries(FacilioAgent agent, JSONObject payload, Controller controller, boolean isTimeSeries,long recordId,int partitionId,String messageSource,PublishType publishType) throws Exception {
         try {
             FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
             FacilioContext context = chain.getContext();
+            context.put(AgentConstants.RECORD_ID,recordId);
+            context.put(AgentConstants.PARTITION_ID,partitionId);
             context.put(AgentConstants.AGENT, agent);
             context.put(AgentConstants.IS_NEW_AGENT, true);
+            context.put(AgentConstants.MESSAGE_SOURCE,messageSource);
+            context.put(AgentConstants.PUBLISH_TYPE,publishType);
+            context.put(AgentKeys.START_TIME,System.currentTimeMillis());
             //TODO
             if (controller != null) {
                 context.put(AgentConstants.CONTROLLER, controller);
@@ -501,9 +517,37 @@ public class DataProcessorV2 {
             /*ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             bean.processNewTimeSeries(payload,controllerTs);*/
         } catch (Exception e) {
+            addAgentDataLogForError(e,recordId,agent.getId(),controller.getId(),messageSource,partitionId,payload,publishType);
+
+
             LOGGER.info("Exception while processing timeseries data ", e);
+            //add log
         }
         return false;
+    }
+
+    private void addAgentDataLogForError(Exception e,long recordId,long agentId,long controllerId,String messageSource,int partitionId,JSONObject payload,PublishType publishType) throws Exception {
+
+        DataLogContextV3 datalog = new DataLogContextV3();
+        datalog.setRecordId(recordId);
+        datalog.setPartitionId(partitionId);
+        datalog.setAgentId(agentId);
+        datalog.setControllerId(controllerId);
+        datalog.setMessageSource(messageSource);
+        datalog.setPayload(payload.toJSONString());
+        datalog.setMessageStatus(DataLogContextV3.Agent_Message_Status.FAILURE.getKey());
+        datalog.setErrorStackTrace(e.toString());
+        datalog.setPublishType(publishType.asInt());
+
+        ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule agentDataModule = modbean.getModule(FacilioConstants.ContextNames.AGENT_DATA_LOGGER);
+        List<FacilioField> agentDataFields = modbean.getAllFields(FacilioConstants.ContextNames.AGENT_DATA_LOGGER);
+        InsertRecordBuilder<DataLogContextV3> builder1 = new InsertRecordBuilder<DataLogContextV3>()
+                .module(agentDataModule)
+                .fields(agentDataFields)
+                .addRecord(datalog);
+        builder1.save();
+
     }
 
     private boolean processCustom(FacilioAgent agent,JSONObject payload) {

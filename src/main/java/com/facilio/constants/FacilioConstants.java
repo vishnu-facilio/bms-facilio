@@ -626,6 +626,10 @@ public class FacilioConstants {
 		public static final String ACCOUNT_TYPE = "accounttype";
 		public static final String POINTS = "points";
 		public static final String COMMISSIONING_LOG = "commissioninglog";
+
+		public static final String AGENT_DATA_LOGGER = "agentDataLogger";
+
+		public static final String AGENT_DATA_PROCESSING_LOGGER = "agentDataProcessingLogger";
 		public static final String WORK_ORDER_LIST = "workorders";
 		public static final String BULK_WORK_ORDER_CONTEXT = "bulkworkorders";
 		public static final String WORK_ORDER_COUNT = "workorderscount";
@@ -3463,6 +3467,8 @@ public class FacilioConstants {
 		public static final String POINTS_DATA_MISSING_ALARM_JOB_NAME = "PointsDataMissingAlarmJob";
 
 		public static final String ML_BMS_POINTS_TAGGING_JOB = "MLBmsPointsTaggingJob";
+
+		public static final String DATA_LOG_DELETE_RECORDS_JOB = "DeleteDataLogsRecordsJob";
 
 	}
 

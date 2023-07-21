@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.agent.AgentKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.commands.AgentV2Command;
@@ -40,7 +41,8 @@ public class ModeledDataCommandV2 extends AgentV2Command {
 
     private Map<String, ReadingContext> getModuleVsReading(Context context, Map<String, Point> dataPointsRecords, Long timeStamp, Map<String, Object> data) throws Exception {
     	FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
-    	int agentInterval = (int)agent.getInterval(); 
+        Map<String,String> errorPoints = new HashMap<>();
+    	int agentInterval = (int)agent.getInterval();
     	
     	Map<Long, Map<String, Integer>> inputValues = fetchInputValues(dataPointsRecords.values());
     	
@@ -78,7 +80,10 @@ public class ModeledDataCommandV2 extends AgentV2Command {
                         reading.addReading(field.getName(), value);
                         
                     } catch (NumberFormatException ex) {
-                        LOGGER.info(MessageFormat.format("Error while converting to reading. Field: {0}, Parent: {1}, Value: {2}", field, resourceId, pointValue), ex);
+                        String exception = MessageFormat.format("Number Format Exception. Error while converting to reading for Point : {0} , Reading : {1} , VALUE : {2} ",pointName,field.getDisplayName() ,pointValue);
+                        errorPoints.put(pointName,exception);
+                        String errorMessage = MessageFormat.format("Error while converting to reading. Field: {0}, Parent: {1}, Value: {2} , Point: {3}", field, resourceId, pointValue,pointName);
+                        LOGGER.info(errorMessage,ex);
                     }
 
                 } else {
@@ -87,6 +92,7 @@ public class ModeledDataCommandV2 extends AgentV2Command {
             }
         }
         context.put(FacilioConstants.ContextNames.DataProcessor.UNMODELED, unmodelled);
+        context.put("errorPoints",errorPoints);
         return iModuleVsReading;
     }
 

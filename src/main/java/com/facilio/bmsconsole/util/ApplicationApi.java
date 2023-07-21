@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.DefaultTabsAndTabGroups;
 
+import com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataLoggerModule;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.cache.CacheUtil;
 import com.facilio.chain.FacilioChain;
@@ -1148,10 +1149,19 @@ public class ApplicationApi {
             configJSON.put("type", "log");
             webTabs.add(new WebTabContext("Command Log", "log", WebTabContext.Type.CUSTOM, null,
                     layout.getApplicationId(), configJSON));
+//            configJSON = new JSONObject();
+//            configJSON.put("type", "agent_data");
+//            webTabs.add(new WebTabContext("Agent Data", "data", WebTabContext.Type.CUSTOM, null,
+//                    layout.getApplicationId(), configJSON));
+
+            AgentDataLoggerModule agentModule = new AgentDataLoggerModule();
+            agentModule.addData();
             configJSON = new JSONObject();
-            configJSON.put("type", "agent_data");
-            webTabs.add(new WebTabContext("Agent Data", "data", WebTabContext.Type.CUSTOM, null,
-                    layout.getApplicationId(), configJSON));
+            configJSON.put("type", "logs");
+            webTabs.add(new WebTabContext("Logs", "logs", WebTabContext.Type.CUSTOM,
+                    Arrays.asList(modBean.getModule("agentDataLogger").getModuleId()), layout.getApplicationId(), configJSON));
+
+
             groupNameVsWebTabsMap.put("agent", webTabs);
 
             for (WebTabGroupContext webTabGroupContext : webTabGroups) {

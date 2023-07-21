@@ -6,6 +6,9 @@ import com.facilio.alarms.sensor.commands.FetchSensorRuleSummaryCommand;
 import com.facilio.alarms.sensor.commands.PrepareSensorRuleForUpdateCommand;
 import com.facilio.alarms.sensor.commands.UpdateSensorRuleCommand;
 import com.facilio.alarms.sensor.context.SensorRuleContext;
+import com.facilio.agent.commands.AgentLoggerSummaryAfterFetchCommand;
+import com.facilio.agent.commands.FetchAgentDataLoggerSupplementsCommand;
+import com.facilio.agent.commands.FetchAgentDataSummarySupplementsCommand;
 import com.facilio.attribute.chain.ClassificationAttributeChain;
 import com.facilio.attribute.command.BeforeSaveClassificationAttributeCommand;
 import com.facilio.attribute.command.BeforeUpdateClassificationAttributeCommand;
@@ -3177,4 +3180,23 @@ public class APIv3Config {
                 .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
+
+
+    @Module(FacilioConstants.ContextNames.AGENT_DATA_LOGGER)
+    public static Supplier<V3Config> getAgentData() {
+        return () -> new V3Config(DataLogContextV3.class, null)
+                .list()
+                .beforeFetch(new FetchAgentDataLoggerSupplementsCommand() )
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.AGENT_DATA_PROCESSING_LOGGER)
+    public static Supplier<V3Config> getAgentDataSummary(){
+        return () -> new V3Config(DataLogSummaryContextV3.class,null)
+                .list()
+                .beforeFetch(new FetchAgentDataSummarySupplementsCommand() )
+                .afterFetch(new AgentLoggerSummaryAfterFetchCommand())
+                .build();
+    }
+
+
 }

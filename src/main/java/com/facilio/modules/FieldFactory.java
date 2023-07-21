@@ -869,7 +869,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDefaultField(AgentConstants.SITE_ID, "Site Id", "SITE_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentKeys.WRITABLE, "Writable", "WRITABLE", module, FieldType.BOOLEAN));
         fields.add(getDefaultField(AgentConstants.PROCESSOR_VERSION, "Process Version", "PROCESSOR_VERSION", module, FieldType.NUMBER));
-        fields.add(getDefaultField(AgentConstants.DELETED_TIME, "Deleted Time", "DELETED_TIME", FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.DELETED_TIME, "Deleted Time", "DELETED_TIME",module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentKeys.TRANSFORM_WORKFLOW_ID, "Transform workfloe Id", "TRANSFORM_WORKFLOW_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentKeys.COMMAND_WORKFLOW_ID, "Command Workflow Id", "COMMAND_WORKFLOW_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("isDisable", "Is Disable", "IS_DISABLE", module, FieldType.BOOLEAN));

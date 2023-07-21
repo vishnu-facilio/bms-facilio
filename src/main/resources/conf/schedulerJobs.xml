@@ -253,5 +253,8 @@
 	<job name="inspectionMonitoringToolJob" classname="com.facilio.bmsconsole.jobs.InspectionMonitoringToolJob" transactionTimeout="300000"/>
 
 	<job name='getVerifiedEmailAddressFromAWS' classname='com.facilio.bmsconsole.jobs.GetVerifiedEmailAddressFromAWSJob' transactionTimeout='900000'/>
+	<!-- Delete dataLog records-->
+
+	<job name="DeleteDataLogsRecordsJob" classname="com.facilio.bmsconsole.jobs.DeleteDataLogsRecordsJob" transactionTimeout="7200000"/>
 
 </scheduler>

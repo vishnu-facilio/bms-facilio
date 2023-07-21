@@ -625,6 +625,15 @@ public class AgentUtilV2
         FacilioTimer.scheduleCalendarJob(orgId, FacilioConstants.Job.ML_BMS_POINTS_TAGGING_JOB, System.currentTimeMillis(), scheduleInfo, "facilio");
     }
 
+    public static void scheduleDataLogDeleteJob(long orgId) throws Exception{
+
+        ScheduleInfo scheduleInfo = new ScheduleInfo();
+        scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
+        LocalTime time = LocalTime.of(1, 0);
+        scheduleInfo.addTime(time);
+        FacilioTimer.scheduleCalendarJob(orgId, FacilioConstants.Job.DATA_LOG_DELETE_RECORDS_JOB, System.currentTimeMillis(), scheduleInfo, "facilio");
+    }
+
     public static boolean sendClearPointAlarm(FacilioAgent agent) {
         long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : -1;
 

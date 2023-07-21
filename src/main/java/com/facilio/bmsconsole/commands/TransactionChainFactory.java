@@ -1579,6 +1579,7 @@ public class TransactionChainFactory {
 		chain.addCommand(new ModeledDataCommandV2());
 		chain.addCommand(new UnModeledDataCommandV2());
 		chain.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
+		chain.addCommand(new AddAgentDataCommand());
 		return chain;
 	}
 

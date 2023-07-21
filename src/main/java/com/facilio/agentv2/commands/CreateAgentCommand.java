@@ -63,6 +63,11 @@ public class CreateAgentCommand extends AgentV2Command {
                 if (job == null){
                     AgentUtilV2.scheduleMlBmsJob(currentOrg.getOrgId());
                 }
+                JobContext jc =  FacilioTimer.getJob(currentOrg.getOrgId(),FacilioConstants.Job.DATA_LOG_DELETE_RECORDS_JOB);
+                if(jc == null){
+                    AgentUtilV2.scheduleDataLogDeleteJob(currentOrg.getOrgId());
+                }
+
             if (agentType.isAgentService()) {
                 CloudAgentUtil.addCloudServiceAgent(agent);
             }
