@@ -28,7 +28,7 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
                 if(orderId != null){
                     ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,orderId);
                     if(task.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex() || task.getStatus() == ServiceTaskContext.ServiceTaskStatus.REOPENED.getIndex()){
-                        if(serviceOrderInfo.getStatus() != ServiceOrderContext.ServiceOrderStatus.NEW.getIndex()){
+                        if(serviceOrderInfo.getStatus() != ServiceOrderContext.ServiceOrderStatus.NEW.getIndex() && serviceOrderInfo.getStatus() != ServiceOrderContext.ServiceOrderStatus.SCHEDULED.getIndex()){
                             serviceOrderInfo.setStatus(ServiceOrderContext.ServiceOrderStatus.IN_PROGRESS);
                             //serviceOrderInfo.setStatus( (task.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex()) ? ServiceOrderContext.ServiceOrderStatus.NEW : ServiceOrderContext.ServiceOrderStatus.IN_PROGRESS);
                             if(task.getStatus() == ServiceTaskContext.ServiceTaskStatus.REOPENED.getIndex()){
