@@ -76,8 +76,9 @@ public class AddOneTimeJobForScheduledRule extends FacilioCommand {
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getCondition("JOB_TIME", "time", null, CommonOperators.IS_EMPTY));
             criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", null, CommonOperators.IS_EMPTY));
+            WorkflowRuleContext.RuleType[] supportedRuleTypes = WorkflowRuleAPI.getScheduledWorkflowSupportedRuleTypes();
 
-            List<? extends WorkflowRuleContext> rules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, Collections.singletonList(EventType.SCHEDULED), criteria, false, true);
+            List<? extends WorkflowRuleContext> rules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, Collections.singletonList(EventType.SCHEDULED), criteria, false, true,supportedRuleTypes);
 
             if (CollectionUtils.isEmpty(rules)) {
                 return false;

@@ -12,6 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ public class CreateOneTimeExecutableJobs extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         try {
             WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+            WorkflowRuleContext.RuleType[] supportedRuleTypes = WorkflowRuleAPI.getScheduledWorkflowSupportedRuleTypes();
 
             if(rule == null){
                 return false;
@@ -31,7 +33,7 @@ public class CreateOneTimeExecutableJobs extends FacilioCommand {
             List<ModuleBaseWithCustomFields> records = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
             boolean isNotValid = CollectionUtils.isEmpty(records) || rule.getTime() != null;
 
-            if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_SCHEDULED_WORKFLOW_RULE) || isNotValid) {
+            if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_SCHEDULED_WORKFLOW_RULE) || !Arrays.asList(supportedRuleTypes).contains(rule.getRuleTypeEnum()) || isNotValid) {
                 updateRuleEndTime(rule);
                 return false;
             }

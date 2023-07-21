@@ -1663,4 +1663,15 @@ public class WorkflowRuleAPI {
 		int rowsDeleted = builder.delete();
 		return rowsDeleted;
 	}
+
+	public static RuleType[] getScheduledWorkflowSupportedRuleTypes(){
+		ArrayList<RuleType> ruleTypes = new ArrayList<RuleType>();
+		ruleTypes.add(RuleType.MODULE_RULE);
+		ruleTypes.add(RuleType.MODULE_RULE_NOTIFICATION);
+		ruleTypes.add(RuleType.STATE_TRANSACTION_FIELD_SCHEDULED);
+		ruleTypes.add(RuleType.BUSSINESS_LOGIC_ASSET_RULE);
+
+		RuleType[] ruleTypesList = new RuleType[ruleTypes.size()];
+		return ruleTypes.toArray(ruleTypesList);
+	}
 }
