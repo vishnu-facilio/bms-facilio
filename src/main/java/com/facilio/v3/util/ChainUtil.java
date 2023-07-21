@@ -1,11 +1,13 @@
 package com.facilio.v3.util;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.SendNotificationForOfflineRecordUpdate;
 import com.facilio.bmsconsole.activity.CommonActivityType;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.commands.picklist.HandleDefaultIdAndOrderByForPicklist;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.enums.OfflineUpdateType;
 import com.facilio.bmsconsole.context.WorkflowRuleRecordRelationshipContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -24,6 +26,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
@@ -32,6 +35,7 @@ import com.facilio.v3.commands.*;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.CustomModuleDataV3;
 import com.facilio.v3.context.V3Context;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
@@ -46,6 +50,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+@Log4j
 public class ChainUtil {
     private static final Map<String, Supplier<V3Config>> MODULE_HANDLER_MAP = new HashMap<>();
     private static final Map<FacilioModule.ModuleType, Supplier<V3Config>> MODULE_TYPE_HANDLER_MAP = new HashMap<>();
@@ -170,7 +175,10 @@ public class ChainUtil {
         if (listHandler != null && listHandler.isShowStateFlowList()) {
             nonTransactionChain.addCommand(new StateFlowListCommand());
         }
-        nonTransactionChain.addCommand(new CustomButtonForDataListCommand());
+
+        if(!skipCustomButtonForDataListCommand()){
+            nonTransactionChain.addCommand(new CustomButtonForDataListCommand());
+        }
         //nonTransactionChain.addCommand(new SystemButtonForDataListCommand());
 
         addIfNotNull(nonTransactionChain, afterFetchCommand);
@@ -185,6 +193,20 @@ public class ChainUtil {
         nonTransactionChain.addCommand(new TransformResponseForV4());
 
         return nonTransactionChain;
+    }
+    private static boolean skipCustomButtonForDataListCommand()  {
+        try{
+            long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
+            Map<String,Object> map = CommonCommandUtil.getOrgInfo(orgId,"skipCustomButtonForDataListCommand");
+            if(map!=null){
+                Object value = map.getOrDefault("value",false);
+                return FacilioUtil.parseBoolean(value);
+            }
+        }catch (Exception e){
+            LOGGER.info("CustomButtonForDataListCommand error:"+e.getMessage());
+        }
+        return false;
+
     }
 
     public  static FacilioChain getPickListChain(String moduleName)throws Exception {

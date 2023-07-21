@@ -28,9 +28,6 @@ public class CustomButtonForDataListCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        if(skipCustomButtonForDataListCommand()){
-            return false;
-        }
 
         Object withoutCustomButton = context.get(Constants.WITHOUT_CUSTOMBUTTONS); ;
         if (withoutCustomButton != null && (Boolean)withoutCustomButton){
@@ -39,8 +36,6 @@ public class CustomButtonForDataListCommand extends FacilioCommand {
         }
 
         String moduleName = Constants.getModuleName(context);
-
-        LOGGER.info("CustomButtonForDataListCommand called for moduleName:"+moduleName);
 
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<? extends ModuleBaseWithCustomFields> records = recordMap.get(moduleName);
@@ -71,19 +66,5 @@ public class CustomButtonForDataListCommand extends FacilioCommand {
             context.put(Constants.CUSTOM_BUTTONS, evaluatedCustomButtons);
         }
         return false;
-    }
-    private static boolean skipCustomButtonForDataListCommand()  {
-        try{
-            long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
-            Map<String,Object> map = CommonCommandUtil.getOrgInfo(orgId,"skipCustomButtonForDataListCommand");
-            if(map!=null){
-                Object value = map.getOrDefault("value",false);
-                return FacilioUtil.parseBoolean(value);
-            }
-        }catch (Exception e){
-            LOGGER.info("CustomButtonForDataListCommand error:"+e.getMessage());
-        }
-        return false;
-
     }
 }
