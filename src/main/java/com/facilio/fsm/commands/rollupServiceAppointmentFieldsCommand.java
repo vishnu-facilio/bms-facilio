@@ -11,6 +11,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fsm.context.*;
+import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
@@ -28,10 +29,24 @@ public class rollupServiceAppointmentFieldsCommand extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         HashMap<String,Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
         List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName"));
-//        EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
+        EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 
         if(CollectionUtils.isNotEmpty(serviceAppointments)) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
+                if(eventType == EventType.CREATE){
+                    if (serviceAppointment.getScheduledStartTime() != null && serviceAppointment.getScheduledEndTime() != null) {
+                        if(serviceAppointment.getFieldAgent() != null){
+                            ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("dispatched");
+                            serviceAppointment.setStatus(appointmentStatus);
+                        } else {
+                            ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("scheduled");
+                            serviceAppointment.setStatus(appointmentStatus);
+                        }
+                    } else {
+                        ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("new");
+                        serviceAppointment.setStatus(appointmentStatus);
+                    }
+                }
                 if (serviceAppointment.getAppointmentType() == ServiceAppointmentContext.AppointmentType.SERVICE_WORK_ORDER.getIndex()) {
                     ServiceOrderContext serviceOrder = serviceAppointment.getServiceOrder();
                     if (serviceOrder != null) {

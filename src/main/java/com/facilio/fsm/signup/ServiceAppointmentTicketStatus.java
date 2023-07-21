@@ -63,43 +63,43 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         ServiceAppointmentTicketStatusContext ticketStatus = new ServiceAppointmentTicketStatusContext();
         ticketStatus.setStatus("new");
         ticketStatus.setDisplayName("New");
-//        ticketStatus.setColor("");
+        ticketStatus.setColor("#0492AE");
         ticketStatus.setTypeCode(1);
         ticketStatus.setRecordLocked(false);
         ticketStatusContextList.add(ticketStatus);
 
         ticketStatus.setStatus("scheduled");
         ticketStatus.setDisplayName("Scheduled");
-//        ticketStatus.setColor("");
+        ticketStatus.setColor("#51049F");
         ticketStatus.setTypeCode(1);
         ticketStatus.setRecordLocked(false);
         ticketStatusContextList.add(ticketStatus);
 
         ticketStatus.setStatus("dispatched");
         ticketStatus.setDisplayName("Dispatched");
-//        ticketStatus.setColor("");
+        ticketStatus.setColor("#C70566");
         ticketStatus.setTypeCode(1);
         ticketStatus.setRecordLocked(false);
         ticketStatusContextList.add(ticketStatus);
 
         ticketStatus.setStatus("inProgress");
         ticketStatus.setDisplayName("In Progress");
-//        ticketStatus.setColor("");
-        ticketStatus.setTypeCode(1);
+        ticketStatus.setColor("#F7BA02");
+        ticketStatus.setTypeCode(2);
         ticketStatus.setRecordLocked(false);
         ticketStatusContextList.add(ticketStatus);
 
         ticketStatus.setStatus("completed");
         ticketStatus.setDisplayName("Completed");
-//        ticketStatus.setColor("");
-        ticketStatus.setTypeCode(1);
+        ticketStatus.setColor("#058545");
+        ticketStatus.setTypeCode(3);
         ticketStatus.setRecordLocked(false);
         ticketStatusContextList.add(ticketStatus);
 
         ticketStatus.setStatus("cancelled");
         ticketStatus.setDisplayName("Cancelled");
-//        ticketStatus.setColor("");
-        ticketStatus.setTypeCode(1);
+        ticketStatus.setColor("#D12806");
+        ticketStatus.setTypeCode(3);
         ticketStatus.setRecordLocked(false);
         ticketStatusContextList.add(ticketStatus);
 
