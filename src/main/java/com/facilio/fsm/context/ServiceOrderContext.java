@@ -21,7 +21,7 @@ public class ServiceOrderContext extends V3Context {
     private V3SiteContext site;
     private ClientContext client;
     private ServiceOrderMaintenanceType maintenanceType;
-    private List<ServiceTaskContext> serviceTasks;
+    private List<ServiceTaskContext> serviceTask;
     private ServiceOrderCategory category;
     private ServiceOrderPriority priority;
     private SpaceContext space;
@@ -421,4 +421,11 @@ public class ServiceOrderContext extends V3Context {
         }
     }
 
+    public List<ServiceTaskContext> getServiceTask() {
+        return serviceTask;
+    }
+
+    public void setServiceTask(List<ServiceTaskContext> serviceTask) {
+        this.serviceTask = serviceTask;
+    }
 }

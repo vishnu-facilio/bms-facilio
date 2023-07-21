@@ -8,10 +8,7 @@ import com.facilio.fsm.commands.serviceOrders.AutoCreateSA;
 import com.facilio.fsm.commands.serviceOrders.SOStatusChangeCommandV3;
 import com.facilio.fsm.commands.serviceOrders.SOStatusChangeViaSTCommandV3;
 import com.facilio.fsm.commands.serviceOrders.VerifySOStatusUpdate;
-import com.facilio.fsm.commands.serviceTasks.CreatePlansCommandV3;
-import com.facilio.fsm.commands.serviceTasks.TaskStatusUpdate;
-import com.facilio.fsm.commands.serviceTasks.UpdateServiceOrderStatus;
-import com.facilio.fsm.commands.serviceTasks.UpdateServiceOrderTime;
+import com.facilio.fsm.commands.serviceTasks.*;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 
@@ -32,13 +29,14 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         //update the task status before creation
         c.addCommand(new TaskStatusUpdate());
+        c.addCommand(new SetPlansCommandV3());
         return c;
     }
     public static FacilioChain getTaskAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         //update the task status before creation
         c.addCommand(new SOStatusChangeViaSTCommandV3());
-        c.addCommand(new CreatePlansCommandV3());
+       // c.addCommand(new CreatePlansCommandV3());
         return c;
     }
     public static FacilioChain getTaskAfterUpdateChain() {
@@ -62,6 +60,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain afterSOCreateChain() {
         FacilioChain c = getDefaultChain();
         //for handling the activity
+        //c.addCommand(new CreatePlansCommandV3());
         c.addCommand(new ConstructAddCustomActivityCommandV3());
         c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY));
         //for auto creating the Service appointment

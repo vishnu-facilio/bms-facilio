@@ -51,7 +51,7 @@ public class AutoCreateSA extends FacilioCommand {
                     }
                     sa.setTerritory(site.getTerritory());
                 }
-                List<ServiceTaskContext> serviceTaskList= order.getServiceTasks();
+                List<ServiceTaskContext> serviceTaskList= order.getServiceTask();
                 //fetch the list of all tasks against the service order
 
 
