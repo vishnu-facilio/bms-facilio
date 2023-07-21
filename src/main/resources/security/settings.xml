@@ -2051,12 +2051,14 @@
     <request path="/api/v2/fields/advancedFilter/:moduleName">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
+            <property name="defaultFieldIds" type="array"/>
         </urlparams>
     </request>
 
     <request path="/api/v2/fields/sortable/:moduleName">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
+            <property name="defaultFieldIds" type="array"/>
         </urlparams>
     </request>
 
