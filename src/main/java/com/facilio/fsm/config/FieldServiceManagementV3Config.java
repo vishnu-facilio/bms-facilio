@@ -53,6 +53,7 @@ public class FieldServiceManagementV3Config {
                 .list()
                 .beforeFetch(new LoadServiceTaskLookupCommandV3())
                 .summary()
+                .beforeFetch(new LoadServiceTaskLookupCommandV3())
                 .afterFetch(new LoadTaskPlansCommandV3())
                 .delete()
                 .build();

@@ -36,7 +36,6 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         //update the task status before creation
         c.addCommand(new SOStatusChangeViaSTCommandV3());
-       // c.addCommand(new CreatePlansCommandV3());
         return c;
     }
     public static FacilioChain getTaskAfterUpdateChain() {

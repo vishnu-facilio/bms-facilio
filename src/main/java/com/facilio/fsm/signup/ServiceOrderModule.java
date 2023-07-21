@@ -412,7 +412,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         assignmentDetailsSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormField> lineItemFields = new ArrayList<>();
-        lineItemFields.add(new FormField("taskItems", FacilioField.FieldDisplayType.SERVICE_TASK_ITEMS, "Tasks", FormField.Required.REQUIRED, 1, 1));
+        lineItemFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.SERVICE_TASK_ITEMS, "Tasks", FormField.Required.REQUIRED, 1, 1));
 
         FormSection serviceTaskSection = new FormSection("Task", 4, lineItemFields, true);
         serviceTaskSection.setSectionType(FormSection.SectionType.FIELDS);
