@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.RelatedListWidgetContext;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
@@ -15,10 +16,11 @@ public class RemoveBuilderUsedRelatedModules extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<Map<String, Object>> relatedFieldsVsModulesMap = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-        Long pageWidgetId = (Long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
+        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
+        WidgetWrapperType widgetWrapperType = (WidgetWrapperType) context.get(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE);
 
         if(CollectionUtils.isNotEmpty(relatedFieldsVsModulesMap)) {
-            List<RelatedListWidgetContext> usedRelListOfWidget = RelatedListWidgetUtil.getRelatedListsOfWidgetId(pageWidgetId, false);
+            List<RelatedListWidgetContext> usedRelListOfWidget = RelatedListWidgetUtil.getRelatedListsOfWidgetId(widgetId, widgetWrapperType, false);
 
             if(usedRelListOfWidget != null) {
                 List<Long> usedRelListFieldId = usedRelListOfWidget.stream()

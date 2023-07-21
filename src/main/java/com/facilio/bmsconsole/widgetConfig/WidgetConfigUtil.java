@@ -2,8 +2,9 @@ package com.facilio.bmsconsole.widgetConfig;
 
 import com.facilio.bmsconsole.context.PageSectionWidgetContext;
 import com.facilio.bmsconsole.context.PagesContext;
-import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.context.WidgetGroupWidgetContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
+import com.facilio.bmsconsole.util.WidgetAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -25,6 +26,7 @@ public class WidgetConfigUtil {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.CustomPage.SECTION_ID, sectionId);
         context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, WidgetWrapperType.DEFAULT);
         context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET, widget);
         context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGETS_POSITIONS, widgetPositions);
 
@@ -62,7 +64,7 @@ public class WidgetConfigUtil {
 
             context.put(FacilioConstants.ContextNames.APP_ID, appId);
             context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-            context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+            context.put(FacilioConstants.CustomPage.WIDGETID, pageWidgetId);
             context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET, pageWidget);
 
             fetchWidgetDetailChain.execute();
@@ -74,7 +76,7 @@ public class WidgetConfigUtil {
             return context;
     }
 
-    public static void setWidgetDetailForWidgets(long appId, String moduleName, Map<Long, PageSectionWidgetContext> pageWidgetIdMap)throws Exception {
+    public static void setWidgetDetailForWidgets(long appId, String moduleName, Map<Long, PageSectionWidgetContext> pageWidgetIdMap, WidgetWrapperType widgetWrapperType)throws Exception {
         if (MapUtils.isNotEmpty(pageWidgetIdMap)) {
 
             for (Map.Entry<Long, PageSectionWidgetContext> entry : pageWidgetIdMap.entrySet()) {
@@ -85,7 +87,8 @@ public class WidgetConfigUtil {
 
                 context.put(FacilioConstants.ContextNames.APP_ID, appId);
                 context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-                context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, entry.getValue().getId());
+                context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
+                context.put(FacilioConstants.CustomPage.WIDGETID, entry.getValue().getId());
                 context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET, entry.getValue());
 
                 fetchWidgetDetailChain.execute();
@@ -104,9 +107,23 @@ public class WidgetConfigUtil {
         FacilioChain deleteChain = WidgetConfigChain.getDeleteWidgetChain(pageWidget.getWidgetType().name());
 
         FacilioContext context = deleteChain.getContext();
-        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGETID, pageWidgetId);
         context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGETS_POSITIONS, widgetPositions);
         deleteChain.execute();
 
+    }
+
+    public static void addWidgetDetail(Long appId, String moduleName, WidgetGroupWidgetContext widget, WidgetWrapperType widgetWrapperType) throws Exception {
+        FacilioChain addWidgetDetailChain = WidgetConfigChain.addWidgetDetailChain(widget.getWidgetType().name());
+
+        FacilioContext context = addWidgetDetailChain.getContext();
+
+        context.put(FacilioConstants.ContextNames.APP_ID, appId);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.CustomPage.WIDGETID, widget.getId());
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
+        context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, WidgetAPI.parsePageWidgetDetails(widget.getWidgetType(), widget.getWidgetDetail()));
+
+        addWidgetDetailChain.execute();
     }
 }

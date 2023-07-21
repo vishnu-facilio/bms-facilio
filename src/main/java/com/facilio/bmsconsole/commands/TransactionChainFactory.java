@@ -7041,6 +7041,11 @@ public class TransactionChainFactory {
 		chain.addCommand(new ChangePageTabStatusCommand());
 		return chain;
 	}
+	public static FacilioChain getCloneCustomPageChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new CloneCustomPageCommand());
+		return chain;
+	}
 	public static FacilioChain getChangeDefaultPageChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new ChangeDefaultPageCommand());
@@ -7119,6 +7124,18 @@ public class TransactionChainFactory {
 	public static FacilioChain getUpdateBulkRelatedListCommand() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new UpdateBulkRelatedListWidgetCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAddOrUpdateRelatedListWidgetDetailChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateRelatedListWidgetDetailCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAddOrUpdateRelationshipWidgetDetailChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateRelationshipWidgetDetailCommand());
 		return chain;
 	}
 	public static FacilioChain getKioskVendorCheckoutChain(){

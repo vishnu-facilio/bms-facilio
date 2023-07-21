@@ -11,7 +11,7 @@ import org.apache.commons.chain.Context;
 public class GetWidgetGroupConfigCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
+        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
         if(widgetId != null){
             WidgetGroupContext widgetGroup = new WidgetGroupContext();
             WidgetGroupConfigContext config = WidgetGroupUtil.getWidgetGroupConfig(widgetId);

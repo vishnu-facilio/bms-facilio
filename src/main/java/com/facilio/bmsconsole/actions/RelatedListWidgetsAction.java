@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BulkRelatedListContext;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -16,6 +17,7 @@ public class RelatedListWidgetsAction extends FacilioAction {
 
     private String moduleName;
     private long pageWidgetId;
+    private WidgetWrapperType widgetWrapperType = WidgetWrapperType.DEFAULT;
     private BulkRelatedListContext bulkRelatedList;
 
     public String getRelatedModules() throws Exception {
@@ -23,7 +25,8 @@ public class RelatedListWidgetsAction extends FacilioAction {
 
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGETID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
         chain.execute();
 
         setResult("modules", context.get(FacilioConstants.ContextNames.MODULE_LIST));
@@ -34,7 +37,8 @@ public class RelatedListWidgetsAction extends FacilioAction {
         FacilioChain  chain = TransactionChainFactory.getAddBulkRelatedListCommand();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGETID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, bulkRelatedList);
         chain.execute();
         setResult(FacilioConstants.CustomPage.WIDGET_DETAIL, FieldUtil.getAsJSON(context.get(FacilioConstants.WidgetNames.BULK_RELATED_LIST_WIDGET)));
@@ -44,7 +48,8 @@ public class RelatedListWidgetsAction extends FacilioAction {
         FacilioChain  chain = TransactionChainFactory.getUpdateBulkRelatedListCommand();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGETID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, bulkRelatedList);
         chain.execute();
         setResult(FacilioConstants.CustomPage.WIDGET_DETAIL, FieldUtil.getAsJSON(context.get(FacilioConstants.WidgetNames.BULK_RELATED_LIST_WIDGET)));
@@ -53,7 +58,8 @@ public class RelatedListWidgetsAction extends FacilioAction {
     public String fetchBulkRelatedList() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getBulkRelatedListChain();
         FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGETID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
         chain.execute();
 
         bulkRelatedList = (BulkRelatedListContext) context.get(FacilioConstants.CustomPage.WIDGET_DETAIL);

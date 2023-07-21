@@ -7,6 +7,7 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3WorkOrderModuleSettingAPI;
@@ -11764,6 +11765,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField("displayName","DISPLAY_NAME",module));
         fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.DECIMAL));
         fields.add(getBooleanField("status","STATUS",module));
+        fields.add(getStringField("tabType","TAB_TYPE",module));
         fields.add(getNumberField("featureLicense", "FEATURE_LICENSE_ID", module));
         fields.add(getSystemField("sysCreatedBy",module));
         fields.add(getSystemField("sysCreatedTime",module));
@@ -11863,7 +11865,9 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module=ModuleFactory.getPageSummaryWidgetModule();
         fields.add(getNumberField("summaryWidgetId", "SUMMARY_WIDGET_ID", module));
-        fields.add(getNumberField("pageWidgetId", "PAGE_WIDGET_ID", module));
+        fields.add(getNumberField("pageWidgetId", "PAGE_WIDGET_ID", module));//TODO remove this once PAGE_WIDGET_ID once column is migrated
+        fields.add(getNumberField("widgetId", "WIDGETID", module));
+        fields.add(getNumberField("widgetGroupWidgetId", "WIDGETGROUP_WIDGET_ID", module));
         return fields;
     }
     public static List<FacilioField> getPageRelatedListWidgetsFields(){
@@ -11872,11 +11876,23 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.DECIMAL));
         fields.add(getNumberField("widgetId","WIDGETID",module));
+        fields.add(getNumberField("widgetGroupWidgetId", "WIDGETGROUP_WIDGET_ID", module));
         fields.add(getNumberField("subModuleId","SUB_MODULE_ID",module));
         fields.add(getStringField("subModuleName", "SUB_MODULE_NAME", module));
         fields.add(getBooleanField("status","STATUS",module));
         fields.add(getNumberField("fieldId","FIELDID",module));
         return fields;
+    }
+
+    public static FacilioField getWidgetIdField(FacilioModule module, WidgetWrapperType type) {
+        switch (type) {
+            case DEFAULT:
+                return getNumberField("widgetId","WIDGETID",module);
+            case WIDGET_GROUP:
+                return getNumberField("widgetGroupWidgetId", "WIDGETGROUP_WIDGET_ID", module);
+            default:
+                return new FacilioField();
+        }
     }
 
     public static List<FacilioField> getPageRelationShipWidgetsFields() {
@@ -11886,6 +11902,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getNumberField("relationMappingId","RELATION_MAPPING_ID",module));
         fields.add(getNumberField("widgetId","WIDGETID",module));
+        fields.add(getNumberField("widgetGroupWidgetId", "WIDGETGROUP_WIDGET_ID", module));
         fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.DECIMAL));
         return fields;
     }

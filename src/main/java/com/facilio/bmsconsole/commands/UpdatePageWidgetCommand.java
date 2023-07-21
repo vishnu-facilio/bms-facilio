@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.PageSectionWidgetContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
+import com.facilio.bmsconsole.util.WidgetAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
@@ -14,9 +15,9 @@ public class UpdatePageWidgetCommand extends FacilioCommand {
             CustomPageAPI.updatePageSectionWidgets(widget);
 
             context.put(FacilioConstants.CustomPage.WIDGET_DETAIL,
-                    CustomPageAPI.parsePageWidgetDetails(widget.getWidgetType(), widget.getWidgetDetail()));
+                    WidgetAPI.parsePageWidgetDetails(widget.getWidgetType(), widget.getWidgetDetail()));
         }
-        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, widget.getId());
+        context.put(FacilioConstants.CustomPage.WIDGETID, widget.getId());
         return false;
     }
 }

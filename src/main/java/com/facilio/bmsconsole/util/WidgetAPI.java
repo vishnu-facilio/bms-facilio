@@ -22,6 +22,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -242,5 +243,25 @@ public class WidgetAPI {
         List<Map<String, Object>> withLayoutTypeProps = withLayoutTypeBuilder.get();
 
         return CollectionUtils.isNotEmpty(withLayoutTypeProps);
+    }
+
+    public static PageSectionWidgetContext parsePageWidgetDetails(PageWidget.WidgetType type, JSONObject widgetDetails) throws Exception {
+        switch (type){
+            case SUMMARY_FIELDS_WIDGET:
+                return  FieldUtil.getAsBeanFromJson(widgetDetails, SummaryWidget.class);
+            case BULK_RELATED_LIST:
+                return FieldUtil.getAsBeanFromJson(widgetDetails, BulkRelatedListContext.class);
+            case WIDGET_GROUP:
+                return FieldUtil.getAsBeanFromJson(widgetDetails, WidgetGroupContext.class);
+            case BULK_RELATION_SHIP_WIDGET:
+                return FieldUtil.getAsBeanFromJson(widgetDetails, BulkRelationshipWidget.class);
+            case RELATED_LIST:
+                return FieldUtil.getAsBeanFromJson(widgetDetails, RelatedListWidgetContext.class);
+            case RELATIONSHIP_WIDGET:
+                return FieldUtil.getAsBeanFromJson(widgetDetails, RelationshipWidget.class);
+            default:
+                return null;
+
+        }
     }
 }

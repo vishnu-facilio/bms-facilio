@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.BulkRelatedListContext;
 import com.facilio.bmsconsole.context.PageSectionWidgetContext;
 import com.facilio.bmsconsole.context.RelatedListWidgetContext;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -21,14 +22,17 @@ import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class RelatedListWidgetUtil {
 
+    public static void insertRelatedListToDB(RelatedListWidgetContext relatedList) throws Exception {
+        if(relatedList != null) {
+            insertRelatedListsToDB(new ArrayList<>(Arrays.asList(relatedList)));
+        }
+    }
     public static void insertRelatedListsToDB(List<RelatedListWidgetContext> relatedLists) throws Exception {
         if (CollectionUtils.isNotEmpty(relatedLists)) {
             List<Map<String, Object>> props = FieldUtil.getAsMapList(relatedLists, RelatedListWidgetContext.class);
@@ -38,6 +42,12 @@ public class RelatedListWidgetUtil {
                     .fields(FieldFactory.getPageRelatedListWidgetsFields())
                     .addRecords(props);
             insertBuilder.save();
+        }
+    }
+
+    public static void updateRelatedList(RelatedListWidgetContext relatedList) throws Exception {
+        if(relatedList != null) {
+            updateRelatedList(new ArrayList<>(Arrays.asList(relatedList)));
         }
     }
 
@@ -114,8 +124,8 @@ public class RelatedListWidgetUtil {
             widget.setWidgetDetail(FieldUtil.getAsJSON(bulkRelList));
         }
     }
-    public static BulkRelatedListContext getBulkRelatedListOfWidgetId(long pageWidgetId) throws Exception {
-        List<RelatedListWidgetContext> relLists = getRelatedListsOfWidgetId(pageWidgetId, true);
+    public static BulkRelatedListContext getBulkRelatedListOfWidgetId(Long widgetId, WidgetWrapperType widgetWrapperType) throws Exception {
+        List<RelatedListWidgetContext> relLists = getRelatedListsOfWidgetId(widgetId, widgetWrapperType, true);
         if(CollectionUtils.isNotEmpty(relLists)) {
             BulkRelatedListContext bulkRelList = new BulkRelatedListContext();
             bulkRelList.setRelatedList(relLists);
@@ -123,16 +133,34 @@ public class RelatedListWidgetUtil {
         }
         return null;
     }
+    public static RelatedListWidgetContext getRelatedListOfWidgetId(Long widgetId, WidgetWrapperType widgetWrapperType) throws Exception {
+        List<RelatedListWidgetContext> relList = getRelatedListsOfWidgetId(widgetId, widgetWrapperType, false);
+        return CollectionUtils.isNotEmpty(relList)?relList.get(0):null;
+    }
 
-    public static List<RelatedListWidgetContext> getRelatedListsOfWidgetId(long pageWidgetId, boolean isBulkWidget) throws Exception {
+    public static void setWidgetIdForRelList(long widgetId, RelatedListWidgetContext relList, WidgetWrapperType type) {
+        switch (type) {
+            case DEFAULT:
+                relList.setWidgetId(widgetId);
+                break;
+            case WIDGET_GROUP:
+                relList.setWidgetGroupWidgetId(widgetId);
+                break;
+        }
+    }
+
+    public static List<RelatedListWidgetContext> getRelatedListsOfWidgetId(Long widgetId, WidgetWrapperType widgetWrapperType, boolean isBulkWidget) throws Exception {
         List<FacilioField> fields = FieldFactory.getPageRelatedListWidgetsFields();
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+        FacilioModule pageRelListModule = ModuleFactory.getPageRelatedListWidgetsModule();
+        FacilioField widgetIdField =  FieldFactory.getWidgetIdField(pageRelListModule, widgetWrapperType);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getPageRelatedListWidgetsModule().getTableName())
+                .table(pageRelListModule.getTableName())
                 .select(FieldFactory.getPageRelatedListWidgetsFields())
-                .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("widgetId"), String.valueOf(pageWidgetId)))
-                .orderBy(fieldsMap.get("sequenceNumber").getCompleteColumnName()+","+fieldsMap.get("id").getColumnName());
+                .orderBy(fieldsMap.get("sequenceNumber").getCompleteColumnName()+","+fieldsMap.get("id").getColumnName())
+                .andCondition(CriteriaAPI.getEqualsCondition(widgetIdField, String.valueOf(widgetId)));
+
         if(isBulkWidget) {
             builder.andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("status"), String.valueOf(Boolean.TRUE)));
         }
@@ -172,6 +200,11 @@ public class RelatedListWidgetUtil {
         return null;
     }
 
+    public static void deleteRelatedLists(Long existingRelListId) throws Exception {
+        if(existingRelListId != null && existingRelListId > 0) {
+            deleteRelatedLists(new ArrayList<>(Arrays.asList(existingRelListId)));
+        }
+    }
     public static void deleteRelatedLists(List<Long> existingRelListIds) throws Exception {
         if(CollectionUtils.isNotEmpty(existingRelListIds)) {
             FacilioModule module = ModuleFactory.getPageRelatedListWidgetsModule();

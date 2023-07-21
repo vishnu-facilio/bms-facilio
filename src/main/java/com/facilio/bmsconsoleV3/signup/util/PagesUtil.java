@@ -8,12 +8,18 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.CustomPageAPI;
+import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.util.FacilioUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.MapUtils;
@@ -204,6 +210,7 @@ public class PagesUtil {
         FacilioContext context = createChain.getContext();
         context.put(FacilioConstants.ContextNames.APP_ID, appId);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, WidgetWrapperType.DEFAULT);
         context.put(FacilioConstants.CustomPage.IS_SYSTEM, isSystem);
         context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
         context.put(FacilioConstants.CustomPage.SECTION_ID, sectionId);
@@ -225,25 +232,66 @@ public class PagesUtil {
 
         } else {
             Map<String, List<PageTabContext>> layouts = new HashMap<>();
-            for(PagesContext.PageLayoutType type : PagesContext.PageLayoutType.values()) {
-                FacilioChain chain = ReadOnlyChainFactory.fetchPageTabsForLayoutChain();
-                FacilioContext context = chain.getContext();
-                context.put(FacilioConstants.ContextNames.APP_ID, appId);
-                context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
-                context.put(FacilioConstants.ContextNames.PAGE_ID, templatePage.getId());
-                context.put(FacilioConstants.CustomPage.CUSTOM_PAGE, templatePage);
-                context.put(FacilioConstants.CustomPage.IS_FETCH_FOR_CLONE, true);
-                context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, true);
-                context.put(FacilioConstants.CustomPage.EXCLUDE_COLUMNS, false);
-                context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, type);
-                chain.execute();
-                List<PageTabContext> tabs = (List<PageTabContext>) context.get(FacilioConstants.CustomPage.PAGE_TABS);
-                layouts.put(type.name(), tabs);
-            }
-
+            fetchPageLayouts(null, layouts, module, appId);
             addLayouts(appId, module.getName(), false, pageId, layouts);
         }
+    }
 
 
+    public static long clonePage(FacilioModule module, long appId, long pageId) throws Exception {
+        PagesContext page = CustomPageAPI.getCustomPage(pageId);
+        if (page != null && page.getModuleId() == module.getModuleId() && page.getAppId() == appId) {
+            page.setName("cloned"+page.getName());
+            if(page.getCriteriaId()!=-1 && page.getCriteria() == null) {
+                Criteria criteria = CriteriaAPI.getCriteria(page.getCriteriaId());
+                page.setCriteria(criteria);
+            }
+            page.setPageSharing(SharingAPI.getSharing(pageId, ModuleFactory.getPageSharingModule(),
+                    SingleSharingContext.class, FieldFactory.getPageSharingFields()));
+
+            fetchPageLayouts(page, null, module, appId);
+
+            FacilioChain pageChain = TransactionChainFactory.getCreateCustomPageChain();
+            FacilioContext pageChainContext = pageChain.getContext();
+            pageChainContext.put(FacilioConstants.CustomPage.CUSTOM_PAGE, page);
+            pageChainContext.put(FacilioConstants.ContextNames.APP_ID, appId);
+            pageChainContext.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+            pageChainContext.put(FacilioConstants.CustomPage.IS_SYSTEM, false);
+            pageChainContext.put(FacilioConstants.CustomPage.IS_CLONE_PAGE, true);
+            pageChainContext.put(FacilioConstants.CustomPage.IS_TEMPLATE, false);
+            pageChain.execute();
+            long clonedPageId = (long) pageChainContext.get(FacilioConstants.CustomPage.PAGE_ID);
+
+            addLayouts(appId, module.getName(), false, clonedPageId, page.getLayouts());
+
+            return clonedPageId;
+        }
+        return -1;
+    }
+
+    private static void fetchPageLayouts(PagesContext page, Map<String, List<PageTabContext>> layouts, FacilioModule module, long appId) throws Exception {
+        if(layouts == null) {
+            layouts = new HashMap<>();
+        }
+        for(PagesContext.PageLayoutType type : PagesContext.PageLayoutType.values()) {
+            layouts.put(type.name(), fetchLayoutTabsToClone(module, appId, type, page));
+        }
+        if(page != null && MapUtils.isNotEmpty(layouts)) {
+            page.setLayouts(layouts);
+        }
+    }
+    private static List<PageTabContext> fetchLayoutTabsToClone(FacilioModule module, long appId, PagesContext.PageLayoutType layoutType, PagesContext pageToClone) throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.fetchPageTabsForLayoutChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.APP_ID, appId);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+        context.put(FacilioConstants.ContextNames.PAGE_ID, pageToClone.getId());
+        context.put(FacilioConstants.CustomPage.CUSTOM_PAGE, pageToClone);
+        context.put(FacilioConstants.CustomPage.IS_FETCH_FOR_CLONE, true);
+        context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, true);
+        context.put(FacilioConstants.CustomPage.EXCLUDE_COLUMNS, false);
+        context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
+        chain.execute();
+        return (List<PageTabContext>) context.get(FacilioConstants.CustomPage.PAGE_TABS);
     }
 }

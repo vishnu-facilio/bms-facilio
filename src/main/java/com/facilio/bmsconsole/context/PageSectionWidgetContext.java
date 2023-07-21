@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,6 +27,8 @@ public class PageSectionWidgetContext {
     private String name;
     private String displayName;
     private Long widgetConfigId;
+
+    private WidgetWrapperType widgetWrapperType = WidgetWrapperType.DEFAULT;
     private String widgetConfigName;
 
     public PageSectionWidgetContext(String name, String displayName, PageWidget.WidgetType widgetType, Double sequenceNumber, long positionX, long positionY, JSONObject widgetParams, JSONObject widgetDetail) {

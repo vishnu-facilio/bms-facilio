@@ -44,7 +44,7 @@ public class APIWidgetConfig {
                 .build();
     }
     @WidgetType(PageWidget.WidgetType.BULK_RELATED_LIST)
-    public static Supplier<WidgetConfig> getRelatedListWidgetCRUD() {
+    public static Supplier<WidgetConfig> getBulkRelatedListWidgetCRUD() {
         return () ->  new WidgetConfig()
                 .create()
                 .saveCommand(TransactionChainFactory.getAddBulkRelatedListCommand())
@@ -54,9 +54,30 @@ public class APIWidgetConfig {
                 .fetchCommand(ReadOnlyChainFactory.getBulkRelatedListChain())
                 .build();
     }
-
+    @WidgetType(PageWidget.WidgetType.RELATED_LIST)
+    public static Supplier<WidgetConfig> getRelatedListWidgetCRUD() {
+        return () ->  new WidgetConfig()
+                .create()
+                .saveCommand(TransactionChainFactory.getAddOrUpdateRelatedListWidgetDetailChain())
+                .update()
+                .updateCommand(TransactionChainFactory.getAddOrUpdateRelatedListWidgetDetailChain())
+                .summary()
+                .fetchCommand(ReadOnlyChainFactory.getRelatedListWidgetDetailChain())
+                .build();
+    }
+    @WidgetType(PageWidget.WidgetType.RELATIONSHIP_WIDGET)
+    public static Supplier<WidgetConfig> getRelationshipWidgetCRUD() {
+        return () ->  new WidgetConfig()
+                .create()
+                .saveCommand(TransactionChainFactory.getAddOrUpdateRelationshipWidgetDetailChain())
+                .update()
+                .updateCommand(TransactionChainFactory.getAddOrUpdateRelationshipWidgetDetailChain())
+                .summary()
+                .fetchCommand(ReadOnlyChainFactory.getRelationshipWidgetDetailChain())
+                .build();
+    }
     @WidgetType(PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET)
-    public static Supplier<WidgetConfig> getRelationShipWidgetCRUD() {
+    public static Supplier<WidgetConfig> getBulkRelationShipWidgetCRUD() {
         return () ->  new WidgetConfig()
                 .create()
                 .saveCommand(TransactionChainFactory.getAddBulkRelationshipWidgetCommand())

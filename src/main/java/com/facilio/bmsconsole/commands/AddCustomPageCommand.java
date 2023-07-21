@@ -142,8 +142,8 @@ public class AddCustomPageCommand extends FacilioCommand {
         Map<String, Long> layoutMap = CustomPageAPI.createLayoutsForPage(customPage.getId());
 
 
-
-        if ((isSystem == null || !isSystem) && (customPage.getIsTemplate() == null || !customPage.getIsTemplate())) {
+        boolean isClonePage = (boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_CLONE_PAGE, false);
+        if (!isClonePage && (isSystem == null || !isSystem) && (customPage.getIsTemplate() == null || !customPage.getIsTemplate())) {
             PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), null);
 //            PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), PagesContext.PageLayoutType.MOBILE);
         }

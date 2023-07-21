@@ -100,36 +100,93 @@ public class PagesContext implements Serializable {
         }
         return this;
     }
-
-    public PageTabContext addWebTab(String name, String displayName, Boolean status, AccountUtil.FeatureLicense featureLicense) {
-        int featureId = featureLicense != null ? featureLicense.getFeatureId() : -1;
-        return addTab(PageLayoutType.WEB.name(), name, displayName, status, featureId);
+    public LayoutBuilder addLayout(PageLayoutType layoutType) {
+        return layoutBuilder(layoutType);
     }
-    public PageTabContext addMobileTab(String name, String displayName, Boolean status, AccountUtil.FeatureLicense featureLicense) {
-        int featureId = featureLicense != null ? featureLicense.getFeatureId() : -1;
-        return addTab(PageLayoutType.MOBILE.name(), name, displayName, status, featureId);
+    public LayoutBuilder addWebLayout() {
+        return layoutBuilder(PageLayoutType.WEB);
     }
-
-    private PageTabContext addTab(String layoutType, String name, String displayName, Boolean status, int featureLicense) {
-        if(this.getLayouts() == null ) {
+    private LayoutBuilder layoutBuilder(PageLayoutType layoutType) {
+        if (this.getLayouts() == null) {
             this.setLayouts(new HashMap<String, List<PageTabContext>>());
         }
-
-        double sequenceNumber = CollectionUtils.isNotEmpty(this.getLayouts().get(layoutType)) ? ((this.getLayouts().get(layoutType).size()+1) * 10D ) : 10; //(number of tabs incremented by one * 10) to get sequence number
-        PageTabContext tab = new PageTabContext(name, displayName, sequenceNumber, status, featureLicense);
-
-        if(this.getLayouts().get(layoutType) == null) {
-            this.getLayouts().put(layoutType, new ArrayList<>(Arrays.asList(tab)));
-        }
-        else {
-            this.getLayouts().get(layoutType).add(tab);
-        }
-        tab.setParentContext(this);
-        return tab;
+        return new LayoutBuilder(layoutType, this);
     }
+    public LayoutBuilder addMobileLayout() {
+        return layoutBuilder(PageLayoutType.MOBILE);
+    }
+
     @JsonIgnore
     private ModulePages parentContext;
     public ModulePages pageDone() {
         return this.parentContext;
+    }
+
+    public static class LayoutBuilder {
+        @JsonIgnore
+        private PagesContext page;
+        private PageLayoutType layoutType;
+
+        public LayoutBuilder(PageLayoutType layoutType, PagesContext page) {
+            this.layoutType = layoutType;
+            this.page = page;
+        }
+
+        @Deprecated
+        public PageTabContext addWebTab(String name, String displayName, Boolean status, AccountUtil.FeatureLicense featureLicense) {
+            return addWebTab(name, displayName, PageTabContext.TabType.SIMPLE, status, featureLicense);
+        }
+
+        @Deprecated
+        public PageTabContext addWebTab(String name, String displayName, PageTabContext.TabType tabType, Boolean status, AccountUtil.FeatureLicense featureLicense) {
+            int featureId = featureLicense != null ? featureLicense.getFeatureId() : -1;
+            return addTab(PageLayoutType.WEB.name(), name, displayName, tabType, status, featureId);
+        }
+
+        @Deprecated
+        public PageTabContext addMobileTab(String name, String displayName, Boolean status, AccountUtil.FeatureLicense featureLicense) {
+            return addMobileTab(name, displayName, PageTabContext.TabType.SIMPLE, status, featureLicense);
+        }
+
+        @Deprecated
+        public PageTabContext addMobileTab(String name, String displayName, PageTabContext.TabType tabType, Boolean status, AccountUtil.FeatureLicense featureLicense) {
+            int featureId = featureLicense != null ? featureLicense.getFeatureId() : -1;
+            return addTab(PageLayoutType.MOBILE.name(), name, displayName, tabType, status, featureId);
+        }
+
+        @Deprecated
+        public PageTabContext addTab(String layoutType, String name, String displayName, PageTabContext.TabType tabType, Boolean status, int featureLicense) {
+
+            double sequenceNumber = CollectionUtils.isNotEmpty(this.page.getLayouts().get(layoutType)) ? ((this.page.getLayouts().get(layoutType).size()+1) * 10D ) : 10; //(number of tabs incremented by one * 10) to get sequence number
+            PageTabContext tab = new PageTabContext(name, displayName, sequenceNumber, tabType, status, featureLicense);
+
+            if(this.page.getLayouts().get(layoutType) == null) {
+                this.page.getLayouts().put(layoutType, new ArrayList<>(Arrays.asList(tab)));
+            }
+            else {
+                this.page.getLayouts().get(layoutType).add(tab);
+            }
+            tab.setParentContext(this);
+            return tab;
+        }
+
+        public PageTabContext addTab(String name, String displayName, PageTabContext.TabType tabType, Boolean status, AccountUtil.FeatureLicense featureLicense) {
+
+            double sequenceNumber = CollectionUtils.isNotEmpty(page.getLayouts().get(layoutType.name())) ? ((this.page.getLayouts().get(layoutType.name()).size()+1) * 10D ) : 10; //(number of tabs incremented by one * 10) to get sequence number
+            PageTabContext tab = new PageTabContext(name, displayName, sequenceNumber, tabType, status, featureLicense!=null? featureLicense.getFeatureId():-1);
+
+            if(this.page.getLayouts().get(layoutType.name()) == null) {
+                this.page.getLayouts().put(layoutType.name(), new ArrayList<>(Arrays.asList(tab)));
+            }
+            else {
+                this.page.getLayouts().get(layoutType.name()).add(tab);
+            }
+            tab.setParentContext(this);
+            return tab;
+        }
+
+        public PagesContext layoutDone() {
+            return this.page;
+        }
     }
 }

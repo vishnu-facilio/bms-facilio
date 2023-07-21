@@ -3,6 +3,7 @@ package com.facilio.relation.util;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.BulkRelationshipWidget;
 import com.facilio.bmsconsole.context.RelationshipWidget;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -21,6 +22,7 @@ import com.facilio.relation.context.RelationRequestContext;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -35,15 +37,19 @@ public class RelationshipWidgetUtil {
         return null;
     }
 
-    public static List<RelationshipWidget> getRelationshipsOfWidget(long pageWidgetId) throws Exception {
+    public static RelationshipWidget getRelationshipOfWidget(Long widgetId, WidgetWrapperType widgetWrapperType) throws Exception {
+        List<RelationshipWidget> relships = getRelationshipsOfWidget(widgetId, widgetWrapperType);
+        return  CollectionUtils.isNotEmpty(relships)?relships.get(0):null;
+    }
+    public static List<RelationshipWidget> getRelationshipsOfWidget(Long widgetId, WidgetWrapperType widgetWrapperType) throws Exception {
         FacilioModule module = ModuleFactory.getPageRelationShipWidgetsModule();
         List<FacilioField> fields = FieldFactory.getPageRelationShipWidgetsFields();
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        FacilioField widgetIdField = FieldFactory.getWidgetIdField(module, widgetWrapperType);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .select(fields)
                 .table(module.getTableName())
-                .andCondition(CriteriaAPI.getEqualsCondition(fieldMap.get("widgetId"), String.valueOf(pageWidgetId)));
+                .andCondition(CriteriaAPI.getEqualsCondition(widgetIdField, String.valueOf(widgetId)));
         List<Map<String, Object>> props = builder.get();
 
         if(CollectionUtils.isNotEmpty(props)) {
@@ -52,8 +58,8 @@ public class RelationshipWidgetUtil {
         return null;
     }
 
-    public static List<Long> getRelationMappingIdInWidget(long pageWidgetId) throws Exception {
-        List<RelationshipWidget> relationships = getRelationshipsOfWidget(pageWidgetId);
+    public static List<Long> getRelationMappingIdInWidget(Long widgetId, WidgetWrapperType widgetWrapperType) throws Exception {
+        List<RelationshipWidget> relationships = getRelationshipsOfWidget(widgetId,widgetWrapperType);
 
         if(CollectionUtils.isNotEmpty(relationships)) {
             return relationships.stream()
@@ -63,6 +69,11 @@ public class RelationshipWidgetUtil {
         return null;
     }
 
+    public static void insertRelationshipWidgetToDB(RelationshipWidget relship) throws Exception {
+        if(relship != null) {
+            insertRelationshipWidgetsToDB(new ArrayList<>(Arrays.asList(relship)));
+        }
+    }
     public static void insertRelationshipWidgetsToDB(List<RelationshipWidget> relShips) throws Exception {
         if (CollectionUtils.isNotEmpty(relShips)) {
             List<Map<String, Object>> props = FieldUtil.getAsMapList(relShips, RelationshipWidget.class);
@@ -105,6 +116,17 @@ public class RelationshipWidgetUtil {
         }
     }
 
+    public static void setWidgetIdForRelList(long widgetId, RelationshipWidget relList, WidgetWrapperType type) {
+        switch (type) {
+            case DEFAULT:
+                relList.setWidgetId(widgetId);
+                break;
+            case WIDGET_GROUP:
+                relList.setWidgetGroupWidgetId(widgetId);
+                break;
+        }
+    }
+
     public static void deleteRelationshipsOfWidget(long pageWidgetId, List<Long> existingRelShipMappingIds) throws Exception {
         if(CollectionUtils.isNotEmpty(existingRelShipMappingIds)) {
             FacilioModule module = ModuleFactory.getPageRelationShipWidgetsModule();
@@ -118,8 +140,8 @@ public class RelationshipWidgetUtil {
         }
     }
 
-    public static BulkRelationshipWidget getBulkRelationShipWidgetForWidgetId(long pageWidgetId) throws Exception {
-        List<RelationshipWidget> relShips = getRelationshipsOfWidget(pageWidgetId);
+    public static BulkRelationshipWidget getBulkRelationShipWidgetForWidgetId(Long widgetId, WidgetWrapperType widgetWrapperType) throws Exception {
+        List<RelationshipWidget> relShips = getRelationshipsOfWidget(widgetId, widgetWrapperType);
         if(CollectionUtils.isNotEmpty(relShips)) {
             BulkRelationshipWidget bulkRelShip = new BulkRelationshipWidget();
             bulkRelShip.setRelationships(relShips);
@@ -128,12 +150,13 @@ public class RelationshipWidgetUtil {
         return null;
     }
 
-    public static BulkRelationshipWidget getBulkRelationShipsWithDetails(String moduleName, long pageWidgetId) throws Exception {
+    public static BulkRelationshipWidget getBulkRelationShipsWithDetails(String moduleName, Long widgetId, WidgetWrapperType widgetWrapperType) throws Exception {
 
         FacilioChain chain = ReadOnlyChainFactory.getBulkRelationShipWidgetChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGETID, widgetId);
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
         chain.execute();
 
         return (BulkRelationshipWidget) context.get(FacilioConstants.CustomPage.WIDGET_DETAIL);

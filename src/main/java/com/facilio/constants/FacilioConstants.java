@@ -4205,6 +4205,7 @@ public class FacilioConstants {
 		public static final String IS_FETCH_FOR_CLONE = "isFetchForClone";
 		public static final String IS_SYSTEM = "isSystem";
 		public static final String LAYOUT_TYPE = "layoutType";
+		public static final String CLONED_PAGE = "clonedPage";
 		public static final String IS_DEFAULT_PAGE = "isDefaultPage";
 		public static final String CUSTOM_PAGE = "customPage";
 		public static final String CUSTOM_PAGES = "customPages";
@@ -4224,7 +4225,10 @@ public class FacilioConstants {
 		public static final String SECTION_ID = "sectionId";
 		public static final String SECTION_IDS = "sectionIds";
 		public static final String PAGE_SECTION_WIDGET = "pageSectionWidget";
+		public static final String WIDGETID = "widgetId";
 		public static final String PAGE_SECTION_WIDGET_ID = "pageSectionWidgetId";
+		public static final String WIDGETGROUP_WIDGET_ID = "widgetGroupSectionWidgetId";
+		public static final String WIDGET_WRAPPER_TYPE = "widgetWrapperType";
 		public static final String PAGE_SECTION_WIDGETS = "widgets";
 		public static final String PAGE_SECTION_WIDGETS_POSITIONS = "pageSectionWidgetsPosition";
 		public static final String MESSAGE = "message";
@@ -4243,6 +4247,7 @@ public class FacilioConstants {
 		public static final String WIDGET_TYPE = "widgetType";
 		public static final String WIDGET_DETAIL = "widgetDetail";
 		public static final String WIDGET_DETAIL_TYPE = "widgetDetailType";
+        public static final String IS_CLONE_PAGE = "isClonePage";
     }
 
 

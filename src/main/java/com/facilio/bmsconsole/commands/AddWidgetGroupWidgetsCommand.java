@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.PageSectionWidgetContext;
 import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.context.WidgetConfigContext;
 import com.facilio.bmsconsole.context.WidgetGroupWidgetContext;
@@ -9,6 +8,8 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.bmsconsole.util.WidgetAPI;
 import com.facilio.bmsconsole.util.WidgetGroupUtil;
+import com.facilio.bmsconsole.widgetConfig.WidgetConfigUtil;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -33,6 +34,8 @@ public class AddWidgetGroupWidgetsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<WidgetGroupWidgetContext> widgets = (List<WidgetGroupWidgetContext>) context.get(FacilioConstants.WidgetGroup.WIDGETGROUP_WIDGETS);
         List<Long> sectionIds = (List<Long>) context.get(FacilioConstants.WidgetGroup.WIDGETGROUP_SECTION_IDS);
+        Long appId = (Long) context.get(FacilioConstants.ContextNames.APP_ID);
+        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
         FacilioModule module = ModuleFactory.getWidgetGroupWidgetsModule();
 
@@ -69,7 +72,7 @@ public class AddWidgetGroupWidgetsCommand extends FacilioCommand {
                 String name = StringUtils.isNotEmpty(widget.getName()) ? widget.getName() :
                         StringUtils.isNotEmpty(widget.getDisplayName())? widget.getDisplayName(): "widgetGroupWidget";
                 name = name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
-                name = existingWidgetName.get(widget.getSectionId())!=null?CustomPageAPI.generateUniqueName(name,existingWidgetName.get(widget.getSectionId()),isSystem):name;
+                name = CustomPageAPI.generateUniqueName(name,existingWidgetName.get(widget.getSectionId()),isSystem);
                 if((isSystem != null && isSystem) && StringUtils.isNotEmpty(widget.getName()) && !widget.getName().equalsIgnoreCase(name)) {
                     throw new IllegalArgumentException("linkName already exists or given linkName for widget is invalid");
                 }
@@ -84,6 +87,12 @@ public class AddWidgetGroupWidgetsCommand extends FacilioCommand {
                 }
             }
             WidgetGroupUtil.insertWidgetGroupWidgetsToDB(widgets);
+
+            for(WidgetGroupWidgetContext widget : widgets) {
+                if(widget.getWidgetDetail() != null ) {
+                    WidgetConfigUtil.addWidgetDetail(appId, moduleName, widget, WidgetWrapperType.WIDGET_GROUP);
+                }
+            }
         }
         return false;
     }

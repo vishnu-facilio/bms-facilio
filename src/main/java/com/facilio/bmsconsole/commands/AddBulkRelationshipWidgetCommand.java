@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.BulkRelationshipWidget;
+import com.facilio.bmsconsole.context.RelatedListWidgetContext;
 import com.facilio.bmsconsole.context.RelationshipWidget;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.relation.util.RelationshipWidgetUtil;
@@ -17,11 +19,12 @@ public class AddBulkRelationshipWidgetCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-        Long pageWidgetId = (Long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
-        if(pageWidgetId == null || pageWidgetId <= 0) {
-            throw new IllegalArgumentException("Invalid PageSectionWidget id to create relationship widget");
+        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
+        WidgetWrapperType widgetWrapperType = (WidgetWrapperType) context.get(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE);
+        if((widgetId == null || widgetId <= 0)) {
+            throw new IllegalArgumentException("widgetId should be defined to create relationship widget");
         }
-        List<Long> existingRelMappingIdInWidget = RelationshipWidgetUtil.getRelationMappingIdInWidget(pageWidgetId);
+        List<Long> existingRelMappingIdInWidget = RelationshipWidgetUtil.getRelationMappingIdInWidget(widgetId, widgetWrapperType);
         if(CollectionUtils.isNotEmpty(existingRelMappingIdInWidget)) {
             throw new IllegalArgumentException("Relationships already exists in the widget, add call is invalid");
         }
@@ -32,7 +35,7 @@ public class AddBulkRelationshipWidgetCommand extends FacilioCommand {
             double sequenceNumber = 0;
             for(RelationshipWidget relShip : bulkRelationShipWidget.getRelationships()) {
                 relShip.setSequenceNumber(sequenceNumber += 10);
-                relShip.setWidgetId(pageWidgetId);
+                RelationshipWidgetUtil.setWidgetIdForRelList(widgetId, relShip, widgetWrapperType);
                 FacilioUtil.throwIllegalArgumentException(relShip.getRelationMappingId() <= 0, "Invalid relation mapping id to add relationship");
                 relShips.add(relShip);
             }
@@ -42,8 +45,10 @@ public class AddBulkRelationshipWidgetCommand extends FacilioCommand {
             }
         }
 
-        context.put(FacilioConstants.WidgetNames.BULK_RELATION_SHIP_WIDGET, RelationshipWidgetUtil.getBulkRelationShipsWithDetails(moduleName, pageWidgetId));
+        context.put(FacilioConstants.WidgetNames.BULK_RELATION_SHIP_WIDGET, RelationshipWidgetUtil.getBulkRelationShipsWithDetails(moduleName, widgetId, widgetWrapperType));
 
         return false;
     }
+
+
 }

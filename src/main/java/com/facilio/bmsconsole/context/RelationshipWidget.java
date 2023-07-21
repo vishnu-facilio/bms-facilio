@@ -9,6 +9,7 @@ import lombok.Setter;
 public class RelationshipWidget extends PageSectionWidgetContext {
     private long id;
     private long widgetId;
+    private long widgetGroupWidgetId;
     private String displayName;
     private String relationName;
     private long relationMappingId;

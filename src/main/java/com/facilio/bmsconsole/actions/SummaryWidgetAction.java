@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -26,6 +27,7 @@ public class SummaryWidgetAction extends FacilioAction{
     private SummaryWidget summaryWidget;
     private long appId;
     private long pageWidgetId;
+    private WidgetWrapperType widgetWrapperType = WidgetWrapperType.DEFAULT;
     private String moduleName;
     private long formId;
     private long widgetId;
@@ -84,7 +86,8 @@ public class SummaryWidgetAction extends FacilioAction{
             chain = TransactionChainFactory.getAddSummaryWidgetChainInPage();
         }
         FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGETID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
         context.put(FacilioConstants.ContextNames.APP_ID, appId);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, summaryWidget);

@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BulkRelatedListContext;
 import com.facilio.bmsconsole.context.RelatedListWidgetContext;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -21,13 +22,14 @@ public class UpdateBulkRelatedListWidgetCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         
-        Long pageWidgetId = (Long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
-        if(pageWidgetId == null || pageWidgetId <= 0) {
+        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
+        WidgetWrapperType widgetWrapperType = (WidgetWrapperType) context.get(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE);
+        if((widgetId == null || widgetId <= 0)) {
             throw new IllegalArgumentException("Invalid PageSectionWidget id to create related list");
         }
         BulkRelatedListContext bulkRelatedList = (BulkRelatedListContext) context.get(FacilioConstants.CustomPage.WIDGET_DETAIL);
 
-        List<RelatedListWidgetContext> existingRelListInWidget = RelatedListWidgetUtil.getRelatedListsOfWidgetId(pageWidgetId, false);
+        List<RelatedListWidgetContext> existingRelListInWidget = RelatedListWidgetUtil.getRelatedListsOfWidgetId(widgetId, widgetWrapperType,false);
         List<Long> existingRelListIds = new ArrayList<>();
         if(existingRelListInWidget != null) {
             existingRelListIds = existingRelListInWidget.stream().map(RelatedListWidgetContext::getId).collect(Collectors.toList());
@@ -40,7 +42,7 @@ public class UpdateBulkRelatedListWidgetCommand extends FacilioCommand {
                 for (RelatedListWidgetContext relList : bulkRelatedList.getRelatedList()) {
                     relList.setStatus(true);
                     relList.setSequenceNumber(sequenceNumber += 10);
-                    relList.setWidgetId(pageWidgetId);
+                    RelatedListWidgetUtil.setWidgetIdForRelList(widgetId, relList, widgetWrapperType);
 
                     if (!(relList.getId() > 0)) {
                         if (relList.getSubModuleId() == null) {
@@ -70,8 +72,9 @@ public class UpdateBulkRelatedListWidgetCommand extends FacilioCommand {
                 RelatedListWidgetUtil.deleteRelatedLists(existingRelListIds);//deleting relList
             }
 
-            context.put(FacilioConstants.WidgetNames.BULK_RELATED_LIST_WIDGET, RelatedListWidgetUtil.getBulkRelatedListOfWidgetId(pageWidgetId));
+            context.put(FacilioConstants.WidgetNames.BULK_RELATED_LIST_WIDGET, RelatedListWidgetUtil.getBulkRelatedListOfWidgetId(widgetId, widgetWrapperType));
         }
         return false;
     }
+
 }

@@ -5,7 +5,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.ModuleSettingConfigUtil;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -25,7 +25,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -502,7 +501,7 @@ public class CustomPageAPI {
         if (CollectionUtils.isNotEmpty(props)) {
             List<PageSectionWidgetContext> widgets = FieldUtil.getAsBeanListFromMapList(props, PageSectionWidgetContext.class);
 
-            return widgets.stream()
+            return widgets.stream().peek(f->f.setWidgetWrapperType(WidgetWrapperType.DEFAULT))
                     .collect(Collectors.groupingBy(PageSectionWidgetContext::getSectionId));
         }
         return null;
@@ -800,22 +799,6 @@ public class CustomPageAPI {
             default:
                 LOGGER.error("It's not a Page Component");
                 throw new IllegalArgumentException("It's not a page component");
-        }
-    }
-
-    public static PageSectionWidgetContext parsePageWidgetDetails(PageWidget.WidgetType type, JSONObject widgetDetails) throws Exception {
-        switch (type){
-            case SUMMARY_FIELDS_WIDGET:
-                return  FieldUtil.getAsBeanFromJson(widgetDetails, SummaryWidget.class);
-            case BULK_RELATED_LIST:
-                return FieldUtil.getAsBeanFromJson(widgetDetails, BulkRelatedListContext.class);
-            case WIDGET_GROUP:
-                return FieldUtil.getAsBeanFromJson(widgetDetails, WidgetGroupContext.class);
-            case BULK_RELATION_SHIP_WIDGET:
-                return FieldUtil.getAsBeanFromJson(widgetDetails, BulkRelationshipWidget.class);
-            default:
-                return null;
-
         }
     }
 

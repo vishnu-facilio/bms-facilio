@@ -26,7 +26,7 @@ public class    AddWidgetGroupSectionsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<WidgetGroupSectionContext> sections = (List<WidgetGroupSectionContext>) context.get(FacilioConstants.WidgetGroup.WIDGETGROUP_SECTIONS);
-        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
+        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
 
         FacilioModule module = ModuleFactory.getWidgetGroupSectionsModule();
 
@@ -49,7 +49,7 @@ public class    AddWidgetGroupSectionsCommand extends FacilioCommand {
                 String name = StringUtils.isNotEmpty(section.getName()) ? section.getName() :
                         StringUtils.isNotEmpty(section.getDisplayName())? section.getDisplayName(): "widgetGroupSection";;
                 name = name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
-                name = existingSectionName.get(section.getWidgetId())!=null?CustomPageAPI.generateUniqueName(name,existingSectionName.get(section.getWidgetId()),isSystem):name;
+                name = CustomPageAPI.generateUniqueName(name,existingSectionName.get(section.getWidgetId()),isSystem);
                 if((isSystem != null && isSystem) && StringUtils.isNotEmpty(section.getName()) && !section.getName().equalsIgnoreCase(name)) {
                     throw new IllegalArgumentException("linkName already exists, given linkName for section is invalid");
                 }

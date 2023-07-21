@@ -14,7 +14,7 @@ import java.util.Objects;
 public class AddWidgetGroupConfigCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
+        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
         Objects.requireNonNull(widgetId, "widgetId can't be null");
 
         WidgetGroupContext widgetGroup  = (WidgetGroupContext) context.get(FacilioConstants.CustomPage.WIDGET_DETAIL);

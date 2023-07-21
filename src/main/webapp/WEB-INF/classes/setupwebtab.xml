@@ -200,6 +200,9 @@
         <action name="changeStatus"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="changePageStatus">
         </action>
+        <action name="clone"
+                class="com.facilio.bmsconsole.actions.CustomPageAction" method="clonePage">
+        </action>
         <action name="list"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="getAllCustomPage">
         </action>

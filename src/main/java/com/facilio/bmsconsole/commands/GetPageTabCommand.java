@@ -27,6 +27,9 @@ public class GetPageTabCommand extends FacilioCommand {
 
         PageTabContext tab = CustomPageAPI.getTab(id, layoutId, tabName);
         FacilioUtil.throwIllegalArgumentException(tab == null, "Tab doesn't exists");
+        if(tab.getTabType() == null) {
+            tab.setTabType(PageTabContext.TabType.SIMPLE);
+        }
         context.put(FacilioConstants.CustomPage.TAB, tab);
         context.put(FacilioConstants.CustomPage.PAGE_TABS, new ArrayList<>(Arrays.asList(tab)));
         context.put(FacilioConstants.CustomPage.TAB_ID, new ArrayList<>(Arrays.asList(tab.getId())));

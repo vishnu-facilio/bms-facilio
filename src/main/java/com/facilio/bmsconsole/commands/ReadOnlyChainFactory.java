@@ -1385,6 +1385,17 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getRelatedListWidgetDetailChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetRelatedListWidgetDetailCommand());
+		return chain;
+	}
+
+	public static FacilioChain getRelationshipWidgetDetailChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetRelationshipWidgetDetailCommand());
+		return chain;
+	}
 	public static FacilioChain getBulkRelatedListChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetBulkRelatedListWidgetCommand());
@@ -3435,7 +3446,7 @@ public class ReadOnlyChainFactory {
 
 	public static FacilioChain getSummaryWidgetForPageWidgetChain(){
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new GetSummaryWidgetIdOfPageWidget());
+		chain.addCommand(new GetSummaryWidgetIdOfWidget());
 		chain.addCommand(new GetSummaryWidgetCommand());
 		return chain;
 	}

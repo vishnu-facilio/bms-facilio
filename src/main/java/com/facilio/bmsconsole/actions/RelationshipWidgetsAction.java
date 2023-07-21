@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BulkRelationshipWidget;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -16,6 +17,7 @@ public class RelationshipWidgetsAction extends FacilioAction {
 
     private String moduleName;
     private long pageWidgetId;
+    private WidgetWrapperType widgetWrapperType = WidgetWrapperType.DEFAULT;
     private BulkRelationshipWidget bulkRelationShipWidget;
 
 
@@ -24,7 +26,8 @@ public class RelationshipWidgetsAction extends FacilioAction {
 
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGETID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
         chain.execute();
 
         setResult("relationships", context.get(FacilioConstants.ContextNames.RELATIONSHIP));
@@ -35,7 +38,8 @@ public class RelationshipWidgetsAction extends FacilioAction {
         FacilioChain  chain = TransactionChainFactory.getAddBulkRelationshipWidgetCommand();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGETID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, bulkRelationShipWidget);
         chain.execute();
         setResult(FacilioConstants.CustomPage.WIDGET_DETAIL, FieldUtil.getAsJSON(context.get(FacilioConstants.WidgetNames.BULK_RELATION_SHIP_WIDGET)));
@@ -46,7 +50,8 @@ public class RelationshipWidgetsAction extends FacilioAction {
         FacilioChain  chain = TransactionChainFactory.getUpdateBulkRelationshipWidgetCommand();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGETID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
         context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, bulkRelationShipWidget);
         chain.execute();
         setResult(FacilioConstants.CustomPage.WIDGET_DETAIL, FieldUtil.getAsJSON(context.get(FacilioConstants.WidgetNames.BULK_RELATION_SHIP_WIDGET)));
@@ -57,7 +62,8 @@ public class RelationshipWidgetsAction extends FacilioAction {
         FacilioChain chain = ReadOnlyChainFactory.getBulkRelationShipWidgetChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGETID, pageWidgetId);
+        context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
         chain.execute();
 
         bulkRelationShipWidget = (BulkRelationshipWidget) context.get(FacilioConstants.CustomPage.WIDGET_DETAIL);

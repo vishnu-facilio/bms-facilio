@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.RelationshipWidget;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -20,12 +21,13 @@ public class GetWidgetUnUsedRelationShipsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-        long pageWidgetId = (long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
+        long widgetId = (long) context.get(FacilioConstants.CustomPage.WIDGETID);
+        WidgetWrapperType widgetWrapperType = (WidgetWrapperType) context.get(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
 
         List<RelationRequestContext> relationRequests = RelationUtil.getAllRelations(module);
-        List<Long> existingRelMappingInWidget = RelationshipWidgetUtil.getRelationMappingIdInWidget(pageWidgetId);
+        List<Long> existingRelMappingInWidget = RelationshipWidgetUtil.getRelationMappingIdInWidget(widgetId, widgetWrapperType);
 
         if(CollectionUtils.isNotEmpty(existingRelMappingInWidget)) {
             relationRequests.removeIf(f -> existingRelMappingInWidget.contains(f.getRelMappingId()));

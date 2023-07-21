@@ -166,6 +166,18 @@ public class CustomPageAction extends FacilioAction {
         return SUCCESS;
     }
 
+    public String clonePage() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getCloneCustomPageChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, id);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.APP_ID, appId);
+        chain.execute();
+
+        customPage = (PagesContext) context.get(FacilioConstants.CustomPage.CLONED_PAGE);
+        setResult(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
+        return SUCCESS;
+    }
     public String changeDefaultPage() throws Exception{
         FacilioChain chain = TransactionChainFactory.getChangeDefaultPageChain();
         FacilioContext context = chain.getContext();

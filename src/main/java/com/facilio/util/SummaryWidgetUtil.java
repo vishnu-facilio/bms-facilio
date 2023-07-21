@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -15,6 +16,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -397,13 +399,22 @@ public class SummaryWidgetUtil {
         return null;
     }
 
-    public static long getSummaryWidgetIdForPageWidget(Long pageWidgetId) throws Exception {
+    public static long getSummaryWidgetIdForWidgetId(Long widgetId, WidgetWrapperType widgetWrapperType) throws Exception {
+        FacilioModule pageSummaryWidgetModule = ModuleFactory.getPageSummaryWidgetModule();
         List<FacilioField> fields = FieldFactory.getPageSummaryWidgetFields();
-        Map<String, FacilioField>  fieldMap = FieldFactory.getAsMap(fields);
+        FacilioField widgetIdField = FieldFactory.getWidgetIdField(pageSummaryWidgetModule, widgetWrapperType);
+
+        Criteria pageWidgetIdCriteria = new Criteria();
+        pageWidgetIdCriteria.addAndCondition(CriteriaAPI.getEqualsCondition(widgetIdField, String.valueOf(widgetId)));
+        if(widgetWrapperType == WidgetWrapperType.DEFAULT) {
+            //TODO remove this once PAGE_WIDGET_ID column is migrated
+            pageWidgetIdCriteria.addOrCondition(CriteriaAPI.getCondition("PAGE_WIDGET_ID", "pageWidgetId", String.valueOf(widgetId), NumberOperators.EQUALS));
+        }
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(fields)
                 .table(ModuleFactory.getPageSummaryWidgetModule().getTableName())
-                .andCondition(CriteriaAPI.getEqualsCondition(fieldMap.get("pageWidgetId"), String.valueOf(pageWidgetId)));
+                .andCriteria(pageWidgetIdCriteria);
+
         List<Map<String, Object>> props = selectBuilder.get();
         if(CollectionUtils.isNotEmpty(props)) {
             return (long) props.get(0).get("summaryWidgetId");
@@ -411,27 +422,45 @@ public class SummaryWidgetUtil {
         return -1L;
     }
 
-    public static void addPageSummaryWidget(Long pageWidgetId, Long summaryWidgetId) throws Exception{
+    public static void addPageSummaryWidget(Long widgetId, WidgetWrapperType widgetWrapperType, Long summaryWidgetId) throws Exception{
+        FacilioModule pageSummaryWidgetModule = ModuleFactory.getPageSummaryWidgetModule();
+        FacilioField widgetIdField = FieldFactory.getWidgetIdField(pageSummaryWidgetModule, widgetWrapperType);
         Map<String, Object> prop = new HashMap<>();
-        prop.put("pageWidgetId", pageWidgetId);
+
+        if(widgetWrapperType == WidgetWrapperType.DEFAULT) {
+            //TODO remove this once PAGE_WIDGET_ID column is migrated
+            prop.put("pageWidgetId", widgetId);
+        }
+        prop.put(widgetIdField.getName(), widgetId);;
         prop.put("summaryWidgetId", summaryWidgetId);
 
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                .table(ModuleFactory.getPageSummaryWidgetModule().getTableName())
+                .table(pageSummaryWidgetModule.getTableName())
                 .fields(FieldFactory.getPageSummaryWidgetFields())
                 .addRecord(prop);
         builder.save();
     }
 
-    public static void updatePageSummaryWidget(long pageWidgetId, long summaryWidgetId) throws Exception{
+    public static void updatePageSummaryWidget(Long widgetId, WidgetWrapperType widgetWrapperType, long summaryWidgetId) throws Exception{
+        FacilioModule pageSummaryWidgetModule = ModuleFactory.getPageSummaryWidgetModule();
+        FacilioField widgetIdField = FieldFactory.getWidgetIdField(pageSummaryWidgetModule, widgetWrapperType);
+
+        Criteria pageWidgetIdCriteria = new Criteria();
+        pageWidgetIdCriteria.addAndCondition(CriteriaAPI.getEqualsCondition(widgetIdField, String.valueOf(widgetId)));
+
         Map<String, Object> prop = new HashMap<>();
-        prop.put("pageWidgetId", pageWidgetId);
+        if(widgetWrapperType == WidgetWrapperType.DEFAULT) {
+            //TODO remove this once PAGE_WIDGET_ID column is migrated
+            pageWidgetIdCriteria.addOrCondition(CriteriaAPI.getCondition("PAGE_WIDGET_ID", "pageWidgetId", String.valueOf(widgetId), NumberOperators.EQUALS));
+            prop.put("pageWidgetId", widgetId);
+        }
+        prop.put(widgetIdField.getName(), widgetId);;
         prop.put("summaryWidgetId", summaryWidgetId);
 
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                .table(ModuleFactory.getPageSummaryWidgetModule().getTableName())
+                .table(pageSummaryWidgetModule.getTableName())
                 .fields(FieldFactory.getPageSummaryWidgetFields())
-                .andCondition(CriteriaAPI.getCondition("PAGE_WIDGET_ID", "pageWIdgetId", String.valueOf(pageWidgetId), NumberOperators.EQUALS));
+                .andCriteria(pageWidgetIdCriteria);
         builder.update(prop);
     }
 

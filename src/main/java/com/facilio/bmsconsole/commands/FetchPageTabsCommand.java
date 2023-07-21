@@ -36,6 +36,7 @@ public class FetchPageTabsCommand extends FacilioCommand {
 
             if (layoutId > 0) {
                 tabs = CustomPageAPI.fetchTabs(layoutId, isBuilderRequest);
+                tabs.stream().filter(tab->tab.getTabType() == null).forEach(tab -> tab.setTabType(PageTabContext.TabType.SIMPLE));
 
                 if (CollectionUtils.isNotEmpty(tabs)) {
 

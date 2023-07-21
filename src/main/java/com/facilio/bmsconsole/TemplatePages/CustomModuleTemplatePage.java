@@ -44,7 +44,8 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
 
         if(app.getDomainType() == AppDomain.AppDomainType.FACILIO.getIndex()) {
             return  new PagesContext(null, null,"", null, true, false, false)
-                    .addWebTab("summary", "SUMMARY", true, null)
+                    .addWebLayout()
+                    .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("summaryfields", null, null)
                     .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
@@ -56,7 +57,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addWebTab("related", "RELATED", true, null)
+                    .addTab("related", "RELATED", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
                     .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0,  null, null)
@@ -68,7 +69,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addWebTab("specification", "SPECIFICATION",true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                    .addTab("specification", "SPECIFICATION", PageTabContext.TabType.SIMPLE,true, AccountUtil.FeatureLicense.CLASSIFICATION)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("classification", null, null)
                     .addWidget("classificationwidget", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_28",  0, 0,  classificationWidgetParam, null)
@@ -76,7 +77,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addWebTab("history", "HISTORY",true, null)
+                    .addTab("history", "HISTORY", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("history", null, null)
                     .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0,  historyWidgetParam, null)
@@ -84,7 +85,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addWebTab("failurereport", "FAILURE REPORT",true, AccountUtil.FeatureLicense.FAILURE_CODES)
+                    .addTab("failurereport", "FAILURE REPORT", PageTabContext.TabType.SIMPLE,true, AccountUtil.FeatureLicense.FAILURE_CODES)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("failurereport", null, null)
                     .addWidget("failurereport", "Failure Report", PageWidget.WidgetType.FAILURE_REPORT, "flexiblewebfailurereport_29", 0, 0,  timeLogWidgetParam, null)
@@ -92,7 +93,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addWebTab("timelog", "TIME LOG",true, null)
+                    .addTab("timelog", "TIME LOG", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("timelog", null, null)
                     .addWidget("timelogandmetrics", "Time Log", PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG, "flexiblewebstatetransitiontimelog_30", 0, 0, timeLogWidgetParam, null)
@@ -100,7 +101,9 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addMobileTab("summary", "SUMMARY",true, null)
+                    .layoutDone()
+                    .addMobileLayout()
+                    .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("summaryfields", null,  null)
                     .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_8", 0, 0,  null, getSummaryWidgetDetails(module.getName(), app))
@@ -112,7 +115,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addMobileTab("related", "RELATED",true, null)
+                    .addTab("related", "RELATED", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("relatedwidgetgroup", null, null)
                     .addWidget("relatedwidgetGroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblemobilewidgetgroup_8", 0, 0,  null, getMobileRelatedWidgetGroup())
@@ -120,18 +123,20 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addMobileTab("specification", "SPECIFICATION",true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                    .addTab("specification", "SPECIFICATION", PageTabContext.TabType.SIMPLE,true, AccountUtil.FeatureLicense.CLASSIFICATION)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("classification", "Classification", null)
                     .addWidget("classificationwidget", null, PageWidget.WidgetType.CLASSIFICATION,"flexiblemobileclassification_8", 0, 0,  classificationWidgetParam, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
-                    .tabDone();
+                    .tabDone()
+                    .layoutDone();
         }
         else {
             return  new PagesContext(null, null,"", null, true, false, false)
-                    .addWebTab("summary", "SUMMARY", true, null)
+                    .addWebLayout()
+                    .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("summaryfields", null, null)
                     .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0,  null, getSummaryWidgetDetails(module.getName(), app))
@@ -143,7 +148,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addWebTab("related", "RELATED", true, null)
+                    .addTab("related", "RELATED", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
                     .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
@@ -155,7 +160,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addWebTab("specification", "SPECIFICATION",true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                    .addTab("specification", "SPECIFICATION", PageTabContext.TabType.SIMPLE,true, AccountUtil.FeatureLicense.CLASSIFICATION)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("classification", null, null)
                     .addWidget("classificationwidget", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_28",  0, 0, classificationWidgetParam, null)
@@ -163,7 +168,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addWebTab("failurereport", "FAILURE REPORT",true, AccountUtil.FeatureLicense.FAILURE_CODES)
+                    .addTab("failurereport", "FAILURE REPORT", PageTabContext.TabType.SIMPLE,true, AccountUtil.FeatureLicense.FAILURE_CODES)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("failurereport", null, null)
                     .addWidget("failurereport", "Failure Report", PageWidget.WidgetType.FAILURE_REPORT, "flexiblewebfailurereport_29", 0, 0,  timeLogWidgetParam, null)
@@ -171,7 +176,9 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addMobileTab("summary", "SUMMARY",true, null)
+                    .layoutDone()
+                    .addMobileLayout()
+                    .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("summaryfields", null,  null)
                     .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_8", 0, 0,  null, getSummaryWidgetDetails(module.getName(), app))
@@ -183,7 +190,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addMobileTab("related", "RELATED",true, null)
+                    .addTab("related", "RELATED", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("relatedwidgetgroup", null, null)
                     .addWidget("relatedwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblemobilewidgetgroup_8", 0, 0,  null, getMobileRelatedWidgetGroup())
@@ -191,14 +198,15 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addMobileTab("specification", "SPECIFICATION",true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                    .addTab("specification", "SPECIFICATION", PageTabContext.TabType.SIMPLE,true, AccountUtil.FeatureLicense.CLASSIFICATION)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("classification", "Classification", null)
                     .addWidget("classificationwidget", null, PageWidget.WidgetType.CLASSIFICATION,"flexiblemobileclassification_8", 0, 0,  classificationWidgetParam, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
-                    .tabDone();
+                    .tabDone()
+                    .layoutDone();
         }
 
     }
@@ -220,12 +228,12 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
 
-        addSummaryFieldInWidgetGroup(widgetGroup, siteIdField,1, 1, 2);
-        addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1 , 3, 2);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedByField, 2, 1, 2);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedTimeField, 2, 3, 2);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedByField,3, 1, 2);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTimeField, 3, 3, 2);
+        addSummaryFieldInWidgetGroup(widgetGroup, siteIdField,1, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1 , 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedByField, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedTimeField, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedByField,2, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTimeField, 2, 2, 1);
 
 
         widgetGroup.setName("moduleDetails");

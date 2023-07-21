@@ -34,7 +34,9 @@ public class AddPageTabCommand extends FacilioCommand {
         FacilioModule tabsModule = ModuleFactory.getPageTabsModule();
 
         if (tab != null) {
-
+            if(tab.getTabType() == null) {
+                tab.setTabType(PageTabContext.TabType.SIMPLE);
+            }
             FacilioField layoutIdField = FieldFactory.getNumberField("layoutId", "LAYOUT_ID", tabsModule);
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getEqualsCondition(layoutIdField, String.valueOf(layoutId)));

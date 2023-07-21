@@ -1,4 +1,6 @@
 package com.facilio.bmsconsole.context;
+import com.facilio.modules.FacilioStringEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,10 +29,18 @@ public class PageTabContext {
     private Long sysModifiedTime;
     private List<PageColumnContext> columns;
     private int featureLicense = -1;
-    public PageTabContext(String name, String displayName, Double sequenceNumber, Boolean status, int featureLicense) {
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private TabType tabType;
+
+    public enum TabType implements FacilioStringEnum {
+        SIMPLE,
+        CONNECTED_TAB
+    }
+    public PageTabContext(String name, String displayName, Double sequenceNumber, TabType tabType, Boolean status, int featureLicense) {
         this.name = name;
         this.displayName = displayName;
         this.sequenceNumber = sequenceNumber;
+        this.tabType = tabType != null ? tabType : TabType.SIMPLE ;
         this.status = status;
         this.featureLicense = featureLicense;
 
@@ -50,8 +60,8 @@ public class PageTabContext {
         return column;
     }
     @JsonIgnore
-    private PagesContext parentContext;
-    public PagesContext tabDone() {
+    private PagesContext.LayoutBuilder parentContext;
+    public PagesContext.LayoutBuilder tabDone() {
         return this.parentContext;
     }
 }

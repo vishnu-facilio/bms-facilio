@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BulkRelatedListContext;
 import com.facilio.bmsconsole.context.RelatedListWidgetContext;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -21,11 +22,12 @@ public class AddBulkRelatedListWidgetCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-        Long pageWidgetId = (Long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
-        if(pageWidgetId == null || pageWidgetId <= 0) {
-            throw new IllegalArgumentException("Invalid PageSectionWidget id to create related list");
+        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
+        WidgetWrapperType widgetWrapperType = (WidgetWrapperType) context.get(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE);
+        if((widgetId == null || widgetId <= 0) ) {
+            throw new IllegalArgumentException("widgetId should be defined, to create related list");
         }
-        List<RelatedListWidgetContext> existingRelListInWidget = RelatedListWidgetUtil.getRelatedListsOfWidgetId(pageWidgetId, false);
+        List<RelatedListWidgetContext> existingRelListInWidget = RelatedListWidgetUtil.getRelatedListsOfWidgetId(widgetId, widgetWrapperType, false);
         if(CollectionUtils.isNotEmpty(existingRelListInWidget)) {
             throw new IllegalArgumentException("Related list already exists in the widget, add call is invalid");
         }
@@ -35,11 +37,9 @@ public class AddBulkRelatedListWidgetCommand extends FacilioCommand {
             List<RelatedListWidgetContext> relLists = new ArrayList<>();
             double sequenceNumber = 0;
             for(RelatedListWidgetContext relList : bulkRelatedList.getRelatedList()) {
-                FacilioUtil.throwIllegalArgumentException(relList.getId()>0, "Invalid relList id");
                 relList.setStatus(true);
                 relList.setSequenceNumber(sequenceNumber += 10);
-                relList.setWidgetId(pageWidgetId);
-
+                RelatedListWidgetUtil.setWidgetIdForRelList(widgetId, relList, widgetWrapperType);
                 if (relList.getSubModuleId() == null) {
                     FacilioModule subModule = modBean.getModule(relList.getSubModuleName());
                     Objects.requireNonNull(subModule, "Invalid module name");
@@ -55,8 +55,10 @@ public class AddBulkRelatedListWidgetCommand extends FacilioCommand {
             }
         }
 
-        context.put(FacilioConstants.WidgetNames.BULK_RELATED_LIST_WIDGET, RelatedListWidgetUtil.getBulkRelatedListOfWidgetId(pageWidgetId));
+        context.put(FacilioConstants.WidgetNames.BULK_RELATED_LIST_WIDGET, RelatedListWidgetUtil.getBulkRelatedListOfWidgetId(widgetId, widgetWrapperType));
 
         return false;
     }
+
+
 }

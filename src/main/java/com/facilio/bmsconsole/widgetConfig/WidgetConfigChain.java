@@ -99,6 +99,25 @@ public class WidgetConfigChain {
         return transactionChain;
     }
 
+    public static FacilioChain addWidgetDetailChain(String widgetType) throws Exception {
+        WidgetConfig widgetConfig = getWidgetConfig(widgetType);
+
+        Command saveCommand = null;
+
+        FacilioChain transactionChain = FacilioChain.getTransactionChain();
+
+        if (widgetConfig != null) {
+            WidgetCreateHandler createHandler = widgetConfig.getWidgetCreateHandler();
+
+            if (createHandler != null) {
+                saveCommand = createHandler.getSaveCommand();
+            }
+        }
+
+        addIfNotNull(transactionChain, saveCommand);
+
+        return transactionChain;
+    }
     public static FacilioChain getUpdateChain(String widgetType) throws Exception{
         WidgetConfig widgetConfig = getWidgetConfig(widgetType);
 

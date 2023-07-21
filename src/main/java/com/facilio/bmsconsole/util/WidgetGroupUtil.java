@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.WidgetGroupSectionContext;
 import com.facilio.bmsconsole.context.WidgetGroupWidgetContext;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigUtil;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -14,6 +15,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
@@ -82,10 +84,15 @@ public class WidgetGroupUtil {
                 .fields(FieldFactory.getWidgetGroupWidgetsFields())
                 .addRecords(props);
         builder.save();
+
+        for (WidgetGroupWidgetContext widget : widgets) {
+            widget.setId(props.stream().filter(f->f.get("name").equals(widget.getName())).mapToLong(f-> (Long) f.get("id")).findFirst().getAsLong());
+        }
     }
 
     public static WidgetGroupConfigContext getWidgetGroupConfig(long widgetGroupId) throws Exception{
         FacilioModule module = ModuleFactory.getWidgetGroupConfigModule();
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getWidgetGroupConfigFields())
                 .table(module.getTableName())
@@ -100,6 +107,7 @@ public class WidgetGroupUtil {
 
     public static List<WidgetGroupSectionContext> fetchWidgetGroupsSections(long widgetId) throws Exception{
         FacilioModule module = ModuleFactory.getWidgetGroupSectionsModule();
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getWidgetGroupSectionsFields())
                 .table(module.getTableName())
@@ -124,9 +132,10 @@ public class WidgetGroupUtil {
 
         if(CollectionUtils.isNotEmpty(widgets)) {
             Map<Long, PageSectionWidgetContext> widgetIdMap = widgets.stream()
+                    .peek(f->f.setWidgetWrapperType(WidgetWrapperType.DEFAULT))
                     .collect(Collectors.toMap(PageSectionWidgetContext::getId, Function.identity()));
 
-            WidgetConfigUtil.setWidgetDetailForWidgets(appId, moduleName, widgetIdMap);
+            WidgetConfigUtil.setWidgetDetailForWidgets(appId, moduleName, widgetIdMap, WidgetWrapperType.WIDGET_GROUP);
         }
         return widgets.stream()
                 .collect(Collectors.groupingBy(WidgetGroupWidgetContext::getSectionId));

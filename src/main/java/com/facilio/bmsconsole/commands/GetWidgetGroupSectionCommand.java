@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class GetWidgetGroupSectionCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
+        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
         WidgetGroupContext widgetGroup = (WidgetGroupContext) context.get(FacilioConstants.WidgetGroup.WIDGETGROUP);
         List<Long> widgetGroupSectionIds = new ArrayList<>();
 

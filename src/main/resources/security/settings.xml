@@ -1452,6 +1452,14 @@
         </requestbody>
     </request>
 
+    <request path="/api/v1/setup/customPage/clone">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="appId" type="number"/>
+        </requestbody>
+    </request>
+
     <request path="/api/v1/setup/customPage/create">
         <requestbody type="object">
             <property name="moduleName" type="string" mandatory="true"/>

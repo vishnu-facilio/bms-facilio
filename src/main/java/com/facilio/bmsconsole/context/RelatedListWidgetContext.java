@@ -10,6 +10,7 @@ import lombok.Setter;
 public class RelatedListWidgetContext extends PageSectionWidgetContext {
     private long id;
     private Long widgetId;
+    private long widgetGroupWidgetId;
     private String subModuleDisplayName;
     private String displayName;
     private FacilioModule module;

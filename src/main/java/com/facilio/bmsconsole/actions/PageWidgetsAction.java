@@ -40,8 +40,8 @@ public class PageWidgetsAction extends FacilioAction{
     public String createWidget() throws Exception{
         FacilioContext context = WidgetConfigUtil.createWidget(appId, moduleName, sectionId, widget, widgetPositions, layoutType);
 
-        id = (long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
-        setResult(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, id);
+        id = (long) context.get(FacilioConstants.CustomPage.WIDGETID);
+        setResult(FacilioConstants.CustomPage.WIDGETID, id);
         return SUCCESS;
     }
 

@@ -3,6 +3,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PageSectionWidgetContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigUtil;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import lombok.SneakyThrows;
@@ -48,7 +49,7 @@ public class FetchPageSectionWidgetsCommand extends FacilioCommand {
                     }
                 }
 
-                WidgetConfigUtil.setWidgetDetailForWidgets(appId, moduleName, widgetIdMap);
+                WidgetConfigUtil.setWidgetDetailForWidgets(appId, moduleName, widgetIdMap, WidgetWrapperType.DEFAULT);
             }
             context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGETS,widgets);
         }

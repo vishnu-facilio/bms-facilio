@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BulkRelationshipWidget;
+import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -19,9 +20,10 @@ public class GetBulkRelationShipWidgetCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        Long pageWidgetId = (Long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
-        if(pageWidgetId == null || pageWidgetId <= 0) {
-            throw new IllegalArgumentException("Invalid PageSectionWidget id to fetch relation ships");
+        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
+        WidgetWrapperType widgetWrapperType = (WidgetWrapperType) context.get(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE);
+        if((widgetId == null || widgetId <= 0)) {
+            throw new IllegalArgumentException("widgetId should be defined to fetch relationships");
         }
 
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -29,7 +31,7 @@ public class GetBulkRelationShipWidgetCommand extends FacilioCommand {
         FacilioModule module = modBean.getModule(moduleName);
         Objects.requireNonNull(module, "Module name can't be empty to fetch relationship widget");
 
-        BulkRelationshipWidget bulkRelShip = RelationshipWidgetUtil.getBulkRelationShipWidgetForWidgetId(pageWidgetId);
+        BulkRelationshipWidget bulkRelShip = RelationshipWidgetUtil.getBulkRelationShipWidgetForWidgetId(widgetId, widgetWrapperType);
 
         if(bulkRelShip != null && CollectionUtils.isNotEmpty(bulkRelShip.getRelationships())) {
             Map<Long, RelationRequestContext>  relRequests = RelationshipWidgetUtil.getRelationsAsMapOfMappingId(module);

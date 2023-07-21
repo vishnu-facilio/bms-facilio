@@ -18,8 +18,6 @@ import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -73,11 +71,11 @@ public class AddPageSectionWidgetCommand extends FacilioCommand {
             widget.setName(name);
 
             CustomPageAPI.insertPageSectionWidgettoDB(widget);
-            context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID, widget.getId());
+            context.put(FacilioConstants.CustomPage.WIDGETID, widget.getId());
 
             if(widget.getWidgetDetail() != null) {
                 context.put(FacilioConstants.CustomPage.WIDGET_DETAIL,
-                        CustomPageAPI.parsePageWidgetDetails(widget.getWidgetType(), widget.getWidgetDetail()));
+                        WidgetAPI.parsePageWidgetDetails(widget.getWidgetType(), widget.getWidgetDetail()));
             }
 
         }
