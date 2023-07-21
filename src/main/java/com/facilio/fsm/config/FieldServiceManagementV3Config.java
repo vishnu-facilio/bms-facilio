@@ -2,7 +2,6 @@ package com.facilio.fsm.config;
 
 
 import com.facilio.activity.AddActivitiesCommand;
-import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.constants.FacilioConstants;
@@ -12,7 +11,6 @@ import com.facilio.fsm.context.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
-import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 
 import java.util.function.Supplier;
 
@@ -159,6 +157,9 @@ public class FieldServiceManagementV3Config {
         return () -> new V3Config(PeopleSkillLevelContext.class, null)
                 .create()
                 .list()
+                .beforeFetch(new FetchPeopleSkillLevelSupplementsCommand())
+                .summary()
+                .beforeFetch(new FetchPeopleSkillLevelSupplementsCommand())
                 .delete()
                 .build();
     }
@@ -194,7 +195,9 @@ public class FieldServiceManagementV3Config {
                 .create()
                 .update()
                 .list()
+                .beforeFetch(new FetchPeopleTerritorySupplementsCommand())
                 .summary()
+                .beforeFetch(new FetchPeopleTerritorySupplementsCommand())
                 .delete()
                 .build();
     }
