@@ -558,3 +558,6 @@ classes:
 
   #Adding Trip Module
   - com.facilio.fsm.signup.TripModule
+
+  #Adding Trip Location History Module
+  - com.facilio.fsm.signup.TripLocationHistoryModule
