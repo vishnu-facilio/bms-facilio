@@ -716,7 +716,7 @@
             <param name="setupTab">PEOPLE</param>
         </action>
     </package>
-    <package name="fieldsApiv3" namespace="/api/v1/setup/fields" extends="v3Api">
+    <package name="fieldsSetup" namespace="/api/v1/setup/fields" extends="v3Api">
         <action name="sortable/*" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="sortableFields">
             <param name="moduleName">{1}</param>
             <param name="translationImpl">FieldTranslationV3</param>
