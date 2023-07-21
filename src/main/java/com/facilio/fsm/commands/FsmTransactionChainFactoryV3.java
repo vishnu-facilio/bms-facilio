@@ -60,7 +60,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain afterSOCreateChain() {
         FacilioChain c = getDefaultChain();
         //for handling the activity
-        //c.addCommand(new CreatePlansCommandV3());
+        c.addCommand(new CreatePlansCommandV3());
         c.addCommand(new ConstructAddCustomActivityCommandV3());
         c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY));
         //for auto creating the Service appointment
