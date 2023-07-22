@@ -13,7 +13,9 @@ public class ConvertToMailLoggerRecord extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
-        V3OutgoingMailLogContext mailLogContext = FieldUtil.getAsBeanFromJson(mailJson, V3OutgoingMailLogContext.class);
+        JSONObject clonedMailJSON =  (JSONObject) mailJson.clone();
+        clonedMailJSON.remove(MailConstants.Email.MAIL_TYPE);
+        V3OutgoingMailLogContext mailLogContext = FieldUtil.getAsBeanFromJson(clonedMailJSON, V3OutgoingMailLogContext.class);
         String messageId = (String) context.get(MailConstants.Params.MESSAGE_ID);
         if (StringUtils.isNotEmpty(messageId)) {
             mailLogContext.setMessageId(messageId);
