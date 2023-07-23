@@ -412,9 +412,9 @@ public class ServiceOrderModule extends BaseModuleConfig {
         assignmentDetailsSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormField> lineItemFields = new ArrayList<>();
-        lineItemFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.SERVICE_TASK_ITEMS, "Tasks", FormField.Required.REQUIRED, 1, 1));
+        lineItemFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.SERVICE_TASK_ITEMS, "Tasks", FormField.Required.OPTIONAL, 1, 1));
 
-        FormSection serviceTaskSection = new FormSection("Task", 4, lineItemFields, true);
+        FormSection serviceTaskSection = new FormSection("", 4, lineItemFields, true);
         serviceTaskSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormField> scheduleAppointmentFields = new ArrayList<>();
@@ -587,7 +587,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .addWebTab("task", "TASK", true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("task", "Tasks", "List of Tasks created for this Service Order")
-                .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_22_6", 0, 0,  null, null)
+                .addWidget("tasklist", "", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_22_6", 0, 0,  null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

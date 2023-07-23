@@ -1,7 +1,6 @@
 package com.facilio.fsm.commands.serviceTasks;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsoleV3.context.V3ServiceContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.*;
@@ -13,11 +12,10 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import javax.xml.ws.Service;
 import java.util.List;
 import java.util.Map;
 
-public class CreatePlansCommandV3 extends FacilioCommand {
+public class CreatePlansAndSkillsCommandV3 extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -59,6 +57,18 @@ public class CreatePlansCommandV3 extends FacilioCommand {
                             }
                             V3Util.createRecordList(module, FieldUtil.getAsMapList(serviceOrderPlannedServices, ServiceOrderPlannedServicesContext.class),null,null);
 
+                        }
+                        if(CollectionUtils.isNotEmpty(serviceTask.getSkills())){
+                            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_SKILLS);
+                            List<ServiceTaskSkillsContext> serviceTaskSkills = serviceTask.getSkills();
+                            for(ServiceTaskSkillsContext serviceTaskSkill : serviceTaskSkills){
+                                serviceTaskSkill.setLeft(serviceTaskContext);
+
+                                ServiceSkillsContext serviceSkillContext = new ServiceSkillsContext();
+                                serviceSkillContext.setId(serviceTaskSkill.getId());
+                                serviceTaskSkill.setRight(serviceSkillContext);
+                            }
+                            V3Util.createRecordList(module, FieldUtil.getAsMapList(serviceTaskSkills, ServiceTaskSkillsContext.class),null,null);
                         }
                     }
         }
