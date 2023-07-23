@@ -99,11 +99,7 @@ public class ValidateRelationDataCommand extends FacilioCommand {
         relationDataCriteria.andCriteria(typebasedCriteria);
 
         if (RelationUtil.isToOneRelationShipType(relationMapping)) {
-            Criteria customRelationFetchCriteria = new Criteria();
-            customRelationFetchCriteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(relation.getRelationModule().getModuleId()), NumberOperators.EQUALS));
-            customRelationFetchCriteria.addAndCondition(CriteriaAPI.getCondition(relationMapping.getReversePosition().getColumnName(), relationMapping.getReversePosition().getFieldName(), StringUtils.join(ids, ","), NumberOperators.EQUALS));
-
-            checkAndDeleteCustomRelation(modBean, relationModule, relationMapping, customRelationFetchCriteria);
+            checkAndDeleteCustomRelation(modBean, relationModule, relationMapping, relationDataCriteria);
         } else if (V3Util.getCountFromModuleAndCriteria(relation.getRelationModule(), relationDataCriteria) > 0) {
             throw new IllegalArgumentException("Relation already exists");
         }
@@ -117,7 +113,7 @@ public class ValidateRelationDataCommand extends FacilioCommand {
 
     private void checkAndDeleteCustomRelation(ModuleBean moduleBean, FacilioModule relationModule, RelationMappingContext relationMapping,
                                               Criteria customRelationFetchCriteria) throws Exception {
-        RelationMappingContext.Position relationPosition = RelationMappingContext.Position.valueOf(relationMapping.getPosition());
+        RelationMappingContext.Position relationPosition = relationMapping.getReversePosition();
         FacilioChain relationDataChain = ReadOnlyChainFactoryV3.getCustomRelationDataChain();
 
         String relationModuleName = relationModule.getName();
@@ -135,14 +131,16 @@ public class ValidateRelationDataCommand extends FacilioCommand {
 
             Long recordId = (Long) moduleDataObj.get("id");
             Long customRelationId = (Long) resultData.get(0).get("id");
-            FacilioModule fromModule = relationMapping.getFromModule();
-            FacilioModule parentOfFromModule = fromModule.getParentModule();
+            FacilioModule toModule = relationMapping.getToModule();
+            FacilioModule parentOfToModule = toModule.getParentModule();
 
-            List<FacilioField> fromModuleFields = new ArrayList<>();
-            fromModuleFields.add(FieldFactory.getIdField(fromModule));
-            fromModuleFields.add(FieldFactory.getIsDeletedField(parentOfFromModule));
+            List<FacilioField> moduleFields = new ArrayList<>();
+            moduleFields.add(FieldFactory.getIdField(toModule));
+            if (toModule.isTrashEnabled()) {
+                moduleFields.add(FieldFactory.getIsDeletedField(parentOfToModule));
+            }
 
-            Map<String, Object> summaryRecord = RelationUtil.getSimpleModuleRecordSummary(fromModule, recordId, fromModuleFields);
+            Map<String, Object> summaryRecord = RelationUtil.getSimpleModuleRecordSummary(toModule, recordId, moduleFields);
 
             boolean isDeletedRecord = false;
             if (MapUtils.isNotEmpty(summaryRecord)) {

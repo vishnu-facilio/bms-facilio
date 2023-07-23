@@ -192,7 +192,7 @@ public class NewPermissionPackageBeanImpl implements PackageBean<NewPermission> 
         GenericSelectRecordBuilder tabBuilder = new GenericSelectRecordBuilder()
                 .select(tabFields)
                 .table(tabModule.getTableName())
-                .innerJoin(appModule.getTableName()).on( "WebTab.APPLICATION_ID = APPLICATION.ID");
+                .innerJoin(appModule.getTableName()).on( "WebTab.APPLICATION_ID = Application.ID");
         List<Map<String,Object>> tabProp = tabBuilder.get();
         return tabProp;
     }
