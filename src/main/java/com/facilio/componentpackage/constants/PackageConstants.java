@@ -201,6 +201,11 @@ public class PackageConstants {
         public static final String IS_SUPER_ADMIN = "Is_Super_Admin";
         public static final String IS_PRIVILEGED_ROLE = "Is_Privileged_Role";
         public static final String ROLE_APP_MAPPING = "Role_App_Mapping";
+        public static final String APPLICATION = "Application";
+        public static final String WEB_TAB_NAME = "Web_Tab_Name";
+        public static final String PERMISSIONS = "Permissions";
+        public static final String PERMISSION = "Permission";
+        public static final String PERMISSION_VALUE = "Permission_Value";
     }
 
     public static class SharingContextConstants {

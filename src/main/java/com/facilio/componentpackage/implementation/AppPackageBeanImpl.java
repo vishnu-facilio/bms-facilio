@@ -37,12 +37,7 @@ public class AppPackageBeanImpl implements PackageBean<ApplicationContext> {
     public Map<Long, ApplicationContext> fetchComponents(List<Long> ids) throws Exception {
         Map<Long, ApplicationContext> appIdVsApplicationMap = new HashMap<>();
 
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .select(FieldFactory.getApplicationFields())
-                .table(ModuleFactory.getApplicationModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(ids, ","), NumberOperators.EQUALS));
-
-        List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(), ApplicationContext.class);
+        List<ApplicationContext> applications = ApplicationApi.getApplicationForIds(ids);
 
         if (CollectionUtils.isNotEmpty(applications)) {
             applications.forEach(application -> appIdVsApplicationMap.put(application.getId(), application));

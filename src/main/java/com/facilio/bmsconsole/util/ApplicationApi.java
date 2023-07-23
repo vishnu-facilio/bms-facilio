@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.*;
@@ -15,6 +16,7 @@ import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.cache.CacheUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -25,6 +27,7 @@ import com.facilio.identity.client.IdentityClient;
 import com.facilio.modules.*;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -426,6 +429,28 @@ public class ApplicationApi {
             }
         }
         return appIdVsLinkName;
+    }
+
+    public static List<NewPermission> setAppLinkNameAndRouteForNewPermissions(List<NewPermissionContext> newPermissions) throws Exception {
+        List<Long> tabIds = newPermissions.stream().map(NewPermissionContext::getTabId).collect(Collectors.toList());
+        List<WebTabContext> webTabs = PackageBeanUtil.getWebTabs(tabIds);
+        Map<Long,WebTabContext> tabIdVsWebTab = webTabs.stream().collect(Collectors.toMap(WebTabContext::getId,Function.identity()));
+        List<Long> appIds = webTabs.stream().map(WebTabContext::getApplicationId).collect(Collectors.toList());
+        List<ApplicationContext> applications = getApplicationForIds(appIds);
+        Map<Long,ApplicationContext> appIdVsApplication = applications.stream().collect(Collectors.toMap(ApplicationContext::getId,Function.identity()));
+        List<NewPermission> newPermissionList = new ArrayList<>();
+        for (NewPermissionContext newPermission : newPermissions) {
+            long tabId = newPermission.getTabId();
+            if(tabIdVsWebTab.containsKey(tabId)){
+                newPermission.setWebTabContext(tabIdVsWebTab.get(tabId));
+                long appId = tabIdVsWebTab.get(tabId).getApplicationId();
+                if(appIdVsApplication.containsKey(appId)) {
+                    newPermission.setApplicationContext(appIdVsApplication.get(appId));
+                }
+                newPermissionList.add((NewPermission) newPermission);
+            }
+        }
+        return newPermissionList;
     }
 
     public static List<Map<String, Object>> getTabGroupsForTabId(WebTabContext webTabContext) throws Exception {
@@ -3573,5 +3598,13 @@ public class ApplicationApi {
                 .andCondition(CriteriaAPI.getCondition("APPLICATION_ID","applicationId",String.valueOf(appId),NumberOperators.EQUALS));
         relatedApplication=FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), ApplicationContext.class);
         return relatedApplication;
+    }
+    public static List<ApplicationContext> getApplicationForIds(List<Long> appIds) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getApplicationFields())
+                .table(ModuleFactory.getApplicationModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(appIds, ","), NumberOperators.EQUALS));
+        List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(), ApplicationContext.class);
+        return applications;
     }
 }

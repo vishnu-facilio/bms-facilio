@@ -46,7 +46,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
 
     @Override
     public Map<Long, WebTabContext> fetchComponents(List<Long> ids) throws Exception {
-        List<WebTabContext> webTabs = getWebTabs(ids);
+        List<WebTabContext> webTabs = PackageBeanUtil.getWebTabs(ids);
 
         Map<Long, WebTabContext> tabIdVsTab = new HashMap<>();
         if (CollectionUtils.isNotEmpty(webTabs)) {
@@ -270,38 +270,6 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
         return webTabIdVsAppId;
     }
 
-    private List<WebTabContext> getWebTabs(List<Long> ids) throws Exception {
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getWebTabModule().getTableName())
-                .select(FieldFactory.getWebTabFields())
-                .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getWebTabModule()));
-
-        List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(builder.get(), WebTabContext.class);
-
-        if (CollectionUtils.isNotEmpty(webTabs)) {
-            for (WebTabContext webTabContext : webTabs) {
-                List<TabIdAppIdMappingContext> tabIdAppIdMappingContextList = ApplicationApi.getTabIdModules(webTabContext.getId());
-
-                List<Long> moduleIds = new ArrayList<>();
-                List<String> specialTypes = new ArrayList<>();
-                if (CollectionUtils.isNotEmpty(tabIdAppIdMappingContextList)) {
-                    for (TabIdAppIdMappingContext tabIdAppIdMappingContext : tabIdAppIdMappingContextList) {
-                        if (tabIdAppIdMappingContext.getModuleId() > 0) {
-                            moduleIds.add(tabIdAppIdMappingContext.getModuleId());
-                        }
-                        if (tabIdAppIdMappingContext.getSpecialType() != null && !tabIdAppIdMappingContext.getSpecialType().equalsIgnoreCase("null")
-                                && !tabIdAppIdMappingContext.getSpecialType().equalsIgnoreCase("")) {
-                            specialTypes.add(tabIdAppIdMappingContext.getSpecialType());
-                        }
-                    }
-                }
-                webTabContext.setModuleIds(moduleIds);
-                webTabContext.setSpecialTypeModules(specialTypes);
-            }
-        }
-
-        return webTabs;
-    }
 
     private WebTabContext getWebTabContextFromXMLBuilder(XMLBuilder webTabElement, Map<String, Long> appNameVsAppId) throws Exception {
         String name, route, config, iconTypeString, appLinkName, typeString;

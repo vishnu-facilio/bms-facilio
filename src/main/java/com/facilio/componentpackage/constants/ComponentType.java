@@ -19,7 +19,7 @@ public enum ComponentType implements FacilioIntEnum {
     FIELD(FieldPackageBeanImpl.class, MODULE, false),
     APP(AppPackageBeanImpl.class, null, false),
     ORG_INFO(OrgInfoPackageBeanImpl.class, null, false),
-    ROLE(RolePackageBeanImpl.class, null, false),
+    ROLE(RolePackageBeanImpl.class, null, true),
     APP_LAYOUT(AppLayoutPackageBeanImpl.class, APP, true),
     WEBTAB_GROUP(WebTabGroupPackageBeanImpl.class, APP_LAYOUT, false),
     WEBTAB(WebTabPackageBeanImpl.class, APP, false),
@@ -27,7 +27,7 @@ public enum ComponentType implements FacilioIntEnum {
     FORM_SECTION(FormSectionPackageBeanImpl.class, FORM, false),
     FORM_FIELDS(FormFieldPackageBeanImpl.class, FORM, false),
     VIEW(ViewPackageBeanImpl.class, MODULE, false),
-    ASSET_CATEGORY(AssetCategoryPackageBeanImpl.class,MODULE,false),
+    ASSET_CATEGORY(AssetCategoryPackageBeanImpl.class,MODULE,true),
     ASSET_DEPARTMENT(AssetDepartmentPackageBeanImpl.class, MODULE, false),
     ASSET_TYPE(AssetTypePackageBeanImpl.class, MODULE, false),
     TICKET_CATEGORY(TicketCategoryPackageBeanImpl.class, MODULE, false),
@@ -54,7 +54,6 @@ public enum ComponentType implements FacilioIntEnum {
     CUSTOM_BUTTON(null, MODULE, false),
     RELATIONSHIP(RelationshipPackageBeanImpl.class, MODULE, false),
     STATE_FLOW(StateFlowPackageBeanImpl.class,MODULE,false),
-    PERMISSION(NewPermissionPackageBeanImpl.class, null, false),
     STATE_TRANSITION(StateTransitionPackageBeanImpl.class,MODULE,false)
     ;
 
@@ -98,7 +97,6 @@ public enum ComponentType implements FacilioIntEnum {
             add(APP_LAYOUT);
             add(WEBTAB_GROUP);
             add(WEBTAB);
-            add(PERMISSION);
             add(STATE_FLOW);
             add(STATE_TRANSITION);
         }};

@@ -210,6 +210,11 @@ public class FacilioChainFactory {
 		c.addCommand(new AddNewPermissionsForRoleCommand());
 		return c;
 	}
+	public static Command updateWebTabRolePermissionCommand() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new UpdateNewPermissionsForRoleCommand());
+		return c;
+	}
 	
 	public static Command getDeleteGroupCommand() {
 		FacilioChain c = FacilioChain.getTransactionChain();

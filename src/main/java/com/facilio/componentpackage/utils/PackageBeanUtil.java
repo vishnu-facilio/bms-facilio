@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class PackageBeanUtil {
-    public static final List<Integer> INCLUDE_MODULE_TYPES = new ArrayList<Integer>(){{
+    public static final List<Integer> INCLUDE_MODULE_TYPES = new ArrayList<Integer>() {{
         add(FacilioModule.ModuleType.Q_AND_A.getValue());
         add(FacilioModule.ModuleType.BASE_ENTITY.getValue());
         add(FacilioModule.ModuleType.TRANSACTION.getValue());
@@ -68,7 +68,9 @@ public class PackageBeanUtil {
         Map<String, Long> appNameVsAppId = new HashMap<>();
         if (CollectionUtils.isNotEmpty(applicationContexts)) {
             for (ApplicationContext applicationContext : applicationContexts) {
-                if (applicationContext.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {continue;}
+                if (applicationContext.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+                    continue;
+                }
                 appNameVsAppId.put(applicationContext.getLinkName(), applicationContext.getId());
             }
         }
@@ -151,7 +153,7 @@ public class PackageBeanUtil {
         if (MapUtils.isNotEmpty(formsUIdVsIdsFromPackage)) {
             Criteria formIdCriteria = new Criteria();
             formIdCriteria.addAndCondition(CriteriaAPI.getIdCondition(formsUIdVsIdsFromPackage.values(), ModuleFactory.getFormModule()));
-            List<FacilioForm> allForms = FormsAPI.getDBFormList(null, formIdCriteria, null, false, false,true, -1L, true);
+            List<FacilioForm> allForms = FormsAPI.getDBFormList(null, formIdCriteria, null, false, false, true, -1L, true);
 
             moduleIdVsFormNameVsFormId = getModuleIdVsFormNameVsFormId(allForms);
         }
@@ -181,7 +183,7 @@ public class PackageBeanUtil {
         return moduleIdVsFormNameVsFormId;
     }
 
-    public static Map<Long, Map<String, Long>> getFormIdVsSectionNameVsSectionId(Collection<Long> formIds) throws Exception{
+    public static Map<Long, Map<String, Long>> getFormIdVsSectionNameVsSectionId(Collection<Long> formIds) throws Exception {
         Map<Long, Map<String, Long>> formIdVsSectionNameVsSectionId = new HashMap<>();
         List<FormSection> sectionsForFormIds = FormsAPI.getAllSectionsForFormIds(formIds);
 
@@ -252,10 +254,10 @@ public class PackageBeanUtil {
         return MapUtils.isNotEmpty(formIdsFromName) ? formIdsFromName.get(formName) : -1;
     }
 
-    public static Map<String,Long> getFormIdsFromNames(List<String>formNames, long moduleId) throws Exception {
+    public static Map<String, Long> getFormIdsFromNames(List<String> formNames, long moduleId) throws Exception {
         FacilioModule formModule = ModuleFactory.getFormModule();
         List<FacilioField> formFields = FieldFactory.getFormFields();
-        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(formFields);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(formFields);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(formModule.getTableName())
@@ -265,7 +267,7 @@ public class PackageBeanUtil {
 
         List<Map<String, Object>> props = builder.get();
 
-        Map<String,Long> formNameVsId = new HashMap<>();
+        Map<String, Long> formNameVsId = new HashMap<>();
         if (CollectionUtils.isNotEmpty(props)) {
             for (Map<String, Object> prop : props) {
                 formNameVsId.put((String) prop.get("name"), (Long) prop.get("id"));
@@ -364,7 +366,7 @@ public class PackageBeanUtil {
 
                 if (condition.getCriteriaValueId() > 0) {
                     conditionElement.element(PackageConstants.CriteriaConstants.CRITERIA_VALUE)
-                        .addElement(constructBuilderFromCriteria(condition.getCriteriaValue(), conditionElement.element(PackageConstants.CriteriaConstants.CRITERIA), moduleName));
+                            .addElement(constructBuilderFromCriteria(condition.getCriteriaValue(), conditionElement.element(PackageConstants.CriteriaConstants.CRITERIA), moduleName));
                 }
 
                 if (condition.getOperatorId() == 36 || condition.getOperatorId() == 37) {
@@ -544,16 +546,16 @@ public class PackageBeanUtil {
         return sharingContexts;
     }
 
-    public static void constructBuilderFromConfirmationDialogList(List<ConfirmationDialogContext> confirmationDialogList,XMLBuilder confirmationBuilder) throws Exception{
-        if (CollectionUtils.isEmpty(confirmationDialogList)){
+    public static void constructBuilderFromConfirmationDialogList(List<ConfirmationDialogContext> confirmationDialogList, XMLBuilder confirmationBuilder) throws Exception {
+        if (CollectionUtils.isEmpty(confirmationDialogList)) {
             return;
         }
 
-        for (ConfirmationDialogContext confirmationDialog : confirmationDialogList){
+        for (ConfirmationDialogContext confirmationDialog : confirmationDialogList) {
             XMLBuilder builder = confirmationBuilder.element("confirmationDialog");
             builder.element("name").text(confirmationDialog.getName());
             builder.element("message").text(confirmationDialog.getMessage());
-            if (confirmationDialog.getMessagePlaceHolderScript() != null){
+            if (confirmationDialog.getMessagePlaceHolderScript() != null) {
                 XMLBuilder messagePlaceHolder = confirmationBuilder.element("messagePlaceHolderScript");
                 messagePlaceHolder.element(PackageConstants.WorkFlowRuleConstants.IS_V2_SCRIPT).text(String.valueOf(confirmationDialog.getMessagePlaceHolderScript().isV2Script()));
                 messagePlaceHolder.element("workflowV2String").cData(confirmationDialog.getMessagePlaceHolderScript().getWorkflowV2String());
@@ -562,15 +564,15 @@ public class PackageBeanUtil {
         }
     }
 
-    public static void constructBuilderFromValidationList(List<ValidationContext> validationList,XMLBuilder validationBuilder) throws Exception{
-        if (CollectionUtils.isEmpty(validationList)){
+    public static void constructBuilderFromValidationList(List<ValidationContext> validationList, XMLBuilder validationBuilder) throws Exception {
+        if (CollectionUtils.isEmpty(validationList)) {
             return;
         }
-        for (ValidationContext validation : validationList){
+        for (ValidationContext validation : validationList) {
             XMLBuilder builder = validationBuilder.element("validation");
             builder.element("errorMessage").text(validation.getErrorMessage());
             builder.element("name").text(validation.getName());
-            if (validation.getErrorMessagePlaceHolderScript() != null){
+            if (validation.getErrorMessagePlaceHolderScript() != null) {
                 XMLBuilder errorMessagePlaceHolder = validationBuilder.element("errorMessagePlaceHolderScript");
                 errorMessagePlaceHolder.element(PackageConstants.WorkFlowRuleConstants.IS_V2_SCRIPT).text(String.valueOf(validation.getErrorMessagePlaceHolderScript().isV2Script()));
                 errorMessagePlaceHolder.element("workflowV2String").cData(validation.getErrorMessagePlaceHolderScript().getWorkflowV2String());
@@ -579,11 +581,11 @@ public class PackageBeanUtil {
         }
     }
 
-    public static List<ValidationContext> constructValidationContextFromBuilder(XMLBuilder validationBuilder) throws Exception{
+    public static List<ValidationContext> constructValidationContextFromBuilder(XMLBuilder validationBuilder) throws Exception {
 
         List<ValidationContext> validationList = new ArrayList<>();
         List<XMLBuilder> validationBuilderList = validationBuilder.getElementList("validation");
-        for (XMLBuilder validation : validationBuilderList){
+        for (XMLBuilder validation : validationBuilderList) {
             ValidationContext validationContext = new ValidationContext();
             String errorMessage = validation.getElement("errorMessage").getText();
             String name = validation.getElement("name").getText();
@@ -592,7 +594,7 @@ public class PackageBeanUtil {
             }
             validationContext.setErrorMessage(errorMessage);
             String nameCriteriaName = validation.getElement("namedCriteriaName").text();
-            NamedCriteria namedCriteria =  NamedCriteriaAPI.getNamedCriteria(nameCriteriaName);
+            NamedCriteria namedCriteria = NamedCriteriaAPI.getNamedCriteria(nameCriteriaName);
             validationContext.setNamedCriteria(namedCriteria);
             validationContext.setNamedCriteriaId(namedCriteria.getId());
             XMLBuilder placeHoldeScript = validation.getElement("errorMessagePlaceHolderScript");
@@ -609,11 +611,11 @@ public class PackageBeanUtil {
         return validationList;
     }
 
-    public static List<ConfirmationDialogContext> constructConfirmationDialogFromBuilder(XMLBuilder confirmationBuilder) throws Exception{
+    public static List<ConfirmationDialogContext> constructConfirmationDialogFromBuilder(XMLBuilder confirmationBuilder) throws Exception {
 
         List<ConfirmationDialogContext> confirmationList = new ArrayList<>();
         List<XMLBuilder> confirmationBuilderList = confirmationBuilder.getElementList("validation");
-        for (XMLBuilder confirmation : confirmationBuilderList){
+        for (XMLBuilder confirmation : confirmationBuilderList) {
             ConfirmationDialogContext confirmationDialogContext = new ConfirmationDialogContext();
             String message = confirmation.getElement("message").getText();
             String name = confirmation.getElement("name").getText();
@@ -622,7 +624,7 @@ public class PackageBeanUtil {
             }
             confirmationDialogContext.setMessage(message);
             String nameCriteriaName = confirmation.getElement("namedCriteriaName").text();
-            NamedCriteria namedCriteria =  NamedCriteriaAPI.getNamedCriteria(nameCriteriaName);
+            NamedCriteria namedCriteria = NamedCriteriaAPI.getNamedCriteria(nameCriteriaName);
             confirmationDialogContext.setNamedCriteria(namedCriteria);
             confirmationDialogContext.setNamedCriteriaId(namedCriteria.getId());
             XMLBuilder placeHoldeScript = confirmation.getElement("messagePlaceHolderScript");
@@ -761,12 +763,12 @@ public class PackageBeanUtil {
                         XMLBuilder pushNotificationElement = originalTemplateElement.element(PackageConstants.VALUE_ELEMENT);
                         long appId = ((PushNotificationTemplate) templateContext).getApplication();
                         String appLinkName = appId > 0 ? ApplicationApi.getApplicationForId(appId).getLinkName() : null;
-                        JSONObject obj = ((PushNotificationTemplate)templateContext).getOriginalTemplate();
+                        JSONObject obj = ((PushNotificationTemplate) templateContext).getOriginalTemplate();
                         UserNotificationContext userNotification = UserNotificationContext.instance(obj);
                         JSONObject structureObj = UserNotificationContext.getFcmObjectMaintainence(userNotification);
                         pushNotificationElement.element(PackageConstants.AppXMLConstants.APP_LINK_NAME).text(appLinkName);
-                        pushNotificationElement.element("id").text(((PushNotificationTemplate)templateContext).getTo());
-                        pushNotificationElement.element("isSendNotification").text(String.valueOf(((PushNotificationTemplate)templateContext).getIsSendNotification()));
+                        pushNotificationElement.element("id").text(((PushNotificationTemplate) templateContext).getTo());
+                        pushNotificationElement.element("isSendNotification").text(String.valueOf(((PushNotificationTemplate) templateContext).getIsSendNotification()));
                         pushNotificationElement.element("name").text(templateContext.getName());
                         pushNotificationElement.element("data").text(structureObj.get("data").toString());
                         pushNotificationElement.element("notification").text(structureObj.get("notification").toString());
@@ -940,7 +942,7 @@ public class PackageBeanUtil {
                             case PUSH_NOTIFICATION:
                                 List<XMLBuilder> pushNotificationValues = originalTemplateElement.getElementList(PackageConstants.VALUE_ELEMENT);
 
-                            for (XMLBuilder valueElement : pushNotificationValues){
+                            for (XMLBuilder valueElement : pushNotificationValues) {
                                 String appLinkName = valueElement.getElement(PackageConstants.AppXMLConstants.APP_LINK_NAME).getText();
                                 long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
                                 String data = valueElement.getElement("data").getText();
@@ -972,7 +974,8 @@ public class PackageBeanUtil {
         }
         return actionContextList;
     }
-    public static List<?> getModuleDataListsForIds( Collection<Long> ids, FacilioModule module, Class<?> clazz) throws Exception {
+
+    public static List<?> getModuleDataListsForIds(Collection<Long> ids, FacilioModule module, Class<?> clazz) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
                 .table(module.getTableName())
@@ -982,7 +985,8 @@ public class PackageBeanUtil {
                 .andCondition(CriteriaAPI.getIdCondition(ids, module));
         return builder.get();
     }
-    public static List<?> getModuleDataIdVsModuleId( Criteria criteria,FacilioModule module ,Class<?> clazz) throws Exception {
+
+    public static List<?> getModuleDataIdVsModuleId(Criteria criteria, FacilioModule module, Class<?> clazz) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordBuilder = new SelectRecordsBuilder<>()
                 .table(module.getTableName())
@@ -990,7 +994,7 @@ public class PackageBeanUtil {
                 .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
                 .select(moduleBean.getAllFields(module.getName()));
 
-        if (criteria!=null && !criteria.isEmpty()) {
+        if (criteria != null && !criteria.isEmpty()) {
             selectRecordBuilder.andCriteria(criteria);
         }
 
