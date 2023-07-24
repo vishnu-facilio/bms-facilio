@@ -79,4 +79,30 @@ public class FsmTransactionChainFactoryV3 {
         c.addCommand(new VerifySOStatusUpdate());
         return c;
     }
+
+    public static FacilioChain getServiceAppointmentBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new rollupServiceAppointmentFieldsCommand());
+        c.addCommand(new ValidateSAMismatch());
+        return c;
+    }
+
+    public static FacilioChain getServiceAppointmentAfterUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new rollUpServiceTaskCommand());
+        return c;
+    }
+
+    public static FacilioChain getServiceAppointmentBeforeCreateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new rollupServiceAppointmentFieldsCommand());
+        c.addCommand(new ValidateSAMismatch());
+        return c;
+    }
+
+    public static FacilioChain getServiceAppointmentAfterCreateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new rollUpServiceTaskCommand());
+        return c;
+    }
 }

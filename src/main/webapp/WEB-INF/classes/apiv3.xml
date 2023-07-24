@@ -1983,4 +1983,12 @@
         <action name="inActivate" class="com.facilio.bmsconsoleV3.actions.V3ControlActionTemplateAction" method="inActivateControlActionTemplate"></action>
     </package>
 
+
+    <package name="fieldService" extends="v3Api" namespace="/api/v3/fsm">
+        <action name="updateStatus/serviceAppointment/*/*" class="com.facilio.fsm.actions.fsmAction" method="updateServiceAppointmentStatus">
+            <param name="moduleName">serviceAppointment</param>
+            <param name="id">{1}</param>
+            <param name="status">{2}</param>
+        </action>
+    </package>
 </struts>

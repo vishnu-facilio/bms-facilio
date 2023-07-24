@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -50,10 +51,12 @@ public class rollupServiceAppointmentFieldsCommand extends FacilioCommand {
                 if (serviceAppointment.getAppointmentType() == ServiceAppointmentContext.AppointmentType.SERVICE_WORK_ORDER.getIndex()) {
                     ServiceOrderContext serviceOrder = serviceAppointment.getServiceOrder();
                     if (serviceOrder != null) {
+                        serviceOrder = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SERVICE_ORDER,serviceOrder.getId(),ServiceOrderContext.class);
                         serviceAppointment.setPriority(serviceOrder.getPriority());
                         V3SiteContext site = serviceOrder.getSite();
                         if (site != null) {
                             serviceAppointment.setSite(site);
+                            site = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SITE,site.getId(), V3SiteContext.class);
                             LocationContext location = site.getLocation();
                             if (location != null) {
                                 serviceAppointment.setLocation(FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(location), LocationContextV3.class));
