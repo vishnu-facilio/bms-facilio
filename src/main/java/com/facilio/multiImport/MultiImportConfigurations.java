@@ -16,6 +16,7 @@ import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.multiImport.annotations.ImportModule;
+import com.facilio.multiImport.command.InsertReadingDataMetaForMultiImportCommand;
 import com.facilio.multiImport.config.ImportConfig;
 
 import java.util.Arrays;
@@ -46,7 +47,7 @@ public class MultiImportConfigurations {
                 })
                 .done()
                 .createHandler()
-                .afterSaveCommand(new CreateSiteAfterSaveImport())
+                .afterSaveCommand(new CreateSiteAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
                 .done()
                 .build();
     }
@@ -60,7 +61,7 @@ public class MultiImportConfigurations {
                 })
                 .done()
                 .createHandler()
-                .afterSaveCommand(new CreateBuildingAfterSaveImport())
+                .afterSaveCommand(new CreateBuildingAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
                 .done()
                 .build();
     }
@@ -74,7 +75,7 @@ public class MultiImportConfigurations {
                 })
                 .done()
                 .createHandler()
-                .afterSaveCommand(new CreateFloorAfterSaveImport())
+                .afterSaveCommand(new CreateFloorAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
                 .done()
                 .build();
     }
@@ -95,7 +96,7 @@ public class MultiImportConfigurations {
                 })
                 .done()
                 .createHandler()
-                .afterSaveCommand(new CreateSpaceAfterSaveImport())
+                .afterSaveCommand(new CreateSpaceAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
                 .done()
                 .build();
     }
@@ -108,7 +109,7 @@ public class MultiImportConfigurations {
                 .done()
                 .createHandler()
                 .beforeSaveCommand(new AssetCategoryAdditionInExtendModuleV3ImportCommand(),new SetLocalIdCommandV3())
-                .afterSaveCommand(new RemoveAssetExtendedModulesFromRecordMap())
+                .afterSaveCommand(new InsertReadingDataMetaForMultiImportCommand(),new RemoveAssetExtendedModulesFromRecordMap())
                 .done()
                 .build();
     }
@@ -125,7 +126,7 @@ public class MultiImportConfigurations {
                 })
                 .done()
                 .createHandler()
-                .afterSaveCommand(new CreateSpaceAfterSaveImport())
+                .afterSaveCommand(new CreateSpaceAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
                 .done()
                 .build();
     }

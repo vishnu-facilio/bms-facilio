@@ -1190,6 +1190,14 @@ public class MultiImportApi {
         }
         return mandatoryFields;
     }
+    public static boolean isResourceExtendedModule(FacilioModule module) {
+        if (module.getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
+            return true;
+        } else if (module.getExtendModule() != null) {
+            return isResourceExtendedModule(module.getExtendModule());
+        }
+        return false;
+    }
     public static class ImportProcessConstants {
         public static final String UNIQUE_FUNCTION = "uniqueFunction";
         public static final String ROW_FUNCTION = "rowFunction";
