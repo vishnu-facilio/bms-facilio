@@ -12,6 +12,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fsm.context.PeopleSkillLevelContext;
 import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceAppointmentSkillContext;
+import com.facilio.fsm.context.ServiceSkillsContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.time.DateTimeUtil;
@@ -40,7 +41,7 @@ public class ValidateSAMismatch extends FacilioCommand {
         List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName"));
         StringBuilder errors=new StringBuilder();
 
-        if(CollectionUtils.isNotEmpty(serviceAppointments)) {
+        if(CollectionUtils.isNotEmpty(serviceAppointments) && !skipValidation) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
                 if(serviceAppointment.getFieldAgent() != null){
                     V3PeopleContext fieldAgent = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,serviceAppointment.getFieldAgent().getId(),V3PeopleContext.class);
@@ -64,22 +65,30 @@ public class ValidateSAMismatch extends FacilioCommand {
                         }
                     }
                     if(CollectionUtils.isNotEmpty(serviceAppointment.getSkills())){
-                        List<Long> skillIds = serviceAppointment.getSkills().stream().map(obj -> obj.getLeft().getId()).collect(Collectors.toList());
-
-                        SelectRecordsBuilder<PeopleSkillLevelContext> skillBuilder = new SelectRecordsBuilder<PeopleSkillLevelContext>()
-                                .select(Constants.getModBean().getAllFields(FacilioConstants.PeopleSkillLevel.PEOPLE_SKILL_LEVEL))
-                                .beanClass(PeopleSkillLevelContext.class)
-                                .module(Constants.getModBean().getModule(FacilioConstants.PeopleSkillLevel.PEOPLE_SKILL_LEVEL))
-                                .andCondition(CriteriaAPI.getCondition("PEOPLE_ID","people",String.valueOf(fieldAgent.getId()), NumberOperators.EQUALS));
-                        List<PeopleSkillLevelContext> peopleSkills = skillBuilder.get();
-                        if(CollectionUtils.isNotEmpty(peopleSkills)){
-                            List<Long> peopleSkillIds = peopleSkills.stream().map(obj -> obj.getId()).collect(Collectors.toList());
-                            if(!CollectionUtils.isEqualCollection(skillIds,peopleSkillIds)){
-                                errors.append("Field agent's skills does not match the service Appointment's requirements. ");
+                        List<Long> saSkillIds = serviceAppointment.getSkills().stream().map(obj -> obj.getId()).collect(Collectors.toList());
+                        SelectRecordsBuilder<ServiceAppointmentSkillContext> saSkillsBuilder  = new SelectRecordsBuilder<ServiceAppointmentSkillContext>()
+                                .module(Constants.getModBean().getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_SKILL))
+                                .select(Constants.getModBean().getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_SKILL))
+                                .beanClass(ServiceAppointmentSkillContext.class)
+                                .andCondition(CriteriaAPI.getIdCondition(saSkillIds,Constants.getModBean().getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_SKILL)));
+                        List<ServiceAppointmentSkillContext> saSkills = saSkillsBuilder.get();
+                        if(CollectionUtils.isNotEmpty(saSkills)) {
+                            List<Long> skillIds = saSkills.stream().map(obj -> obj.getLeft().getId()).collect(Collectors.toList());
+                            SelectRecordsBuilder<PeopleSkillLevelContext> skillBuilder = new SelectRecordsBuilder<PeopleSkillLevelContext>()
+                                    .select(Constants.getModBean().getAllFields(FacilioConstants.PeopleSkillLevel.PEOPLE_SKILL_LEVEL))
+                                    .beanClass(PeopleSkillLevelContext.class)
+                                    .module(Constants.getModBean().getModule(FacilioConstants.PeopleSkillLevel.PEOPLE_SKILL_LEVEL))
+                                    .andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "people", String.valueOf(fieldAgent.getId()), NumberOperators.EQUALS));
+                            List<PeopleSkillLevelContext> peopleSkills = skillBuilder.get();
+                            if (CollectionUtils.isNotEmpty(peopleSkills)) {
+                                List<Long> peopleSkillIds = peopleSkills.stream().map(obj -> obj.getId()).collect(Collectors.toList());
+                                if (!CollectionUtils.isEqualCollection(skillIds, peopleSkillIds)) {
+                                    errors.append("Field agent's skills does not match the service Appointment's requirements. ");
+                                }
                             }
                         }
                     }
-                    if(StringUtils.isNotEmpty(errors) && !skipValidation){
+                    if(StringUtils.isNotEmpty(errors)){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR,errors.toString());
                     }
                 }
