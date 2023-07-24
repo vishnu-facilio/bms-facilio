@@ -15,6 +15,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -40,8 +41,8 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
             List<FacilioField> timeOffFields = moduleBean.getAllFields(timeOffModuleName);
             Map<String, FacilioField> timeOffFieldMap = FieldFactory.getAsMap(timeOffFields);
 
-            EnumField typeEnumField = (EnumField) timeOffFieldMap.get(FacilioConstants.ContextNames.TYPE);
-            Map<Integer, Object> timeOffEnum = typeEnumField.getEnumMap();
+//            EnumField typeEnumField = (EnumField) timeOffFieldMap.get(FacilioConstants.ContextNames.TYPE);
+//            Map<Integer, Object> timeOffEnum = typeEnumField.getEnumMap();
 
             List<TimeOffContext> timeOffData = new ArrayList<>();
             Map<Long,List<TimeOffContext>> timeOffMap= new HashMap<>();
@@ -82,7 +83,7 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
                 timeOffMap = timeOffData.stream().collect(Collectors.groupingBy(data -> data.getPeople().getId()));
             }
 
-            List<LookupField> saSupplements = new ArrayList<>();
+            List<SupplementRecord> saSupplements = new ArrayList<>();
             saSupplements.add((LookupField) saFieldMap.get("site"));
             saSupplements.add((LookupField) saFieldMap.get("status"));
 
@@ -107,8 +108,8 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
                 if(CollectionUtils.isNotEmpty(pplTimeOff)) {
                     for(TimeOffContext timeOffEvent : pplTimeOff) {
                         DispatcherEventContext dispatcherTOEvent = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(timeOffEvent), DispatcherEventContext.class);
-                        String enumVal = (String) timeOffEnum.get(dispatcherTOEvent.getType());
-                        dispatcherTOEvent.setTypeEnum(enumVal);
+//                        String enumVal = (String) timeOffEnum.get(dispatcherTOEvent.getType());
+//                        dispatcherTOEvent.setTypeEnum(enumVal);
                         dispatcherTOEvent.setEventType(DispatcherEventContext.EventType.TIME_OFF.getIndex());
                         dispatcherTOEvent.setTimeOff(timeOffEvent);
                         TimeOffTypeContext timeOffType = timeOffEvent.getType();

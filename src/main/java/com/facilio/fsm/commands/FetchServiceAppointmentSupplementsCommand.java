@@ -44,7 +44,7 @@ public class FetchServiceAppointmentSupplementsCommand extends FacilioCommand {
             fetchLookupsList.add(inspection);
             fetchLookupsList.add(fieldAgent);
             fetchLookupsList.add(territory);
-//            fetchLookupsList.add(status);
+            fetchLookupsList.add(status);
 
             context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
 

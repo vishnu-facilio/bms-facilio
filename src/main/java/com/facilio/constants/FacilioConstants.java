@@ -68,6 +68,8 @@ import com.facilio.control.*;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.ims.handler.AuditLogHandler;
+import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
+import com.facilio.fsm.context.TimeOffTypeContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
@@ -3345,6 +3347,15 @@ public class FacilioConstants {
 			classMap.put(Control_Action.CONTROL_ACTION_ACTIVITY_MODULE_NAME, ActivityContext.class);
 			classMap.put(Control_Action.CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME, ActivityContext.class);
 			classMap.put(Control_Action.COMMAND_ACTIVITY_MODULE_NAME,ActivityContext.class);
+			classMap.put(ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS, ServiceAppointmentTicketStatusContext.class);
+			classMap.put(TimeOff.TIME_OFF_TYPE, TimeOffTypeContext.class);
+			classMap.put(EMPLOYEE_ACTIVITY,ActivityContext.class);
+			classMap.put(VENDOR_CONTACTS_ACTIVITY,ActivityContext.class);
+			classMap.put(Territory.TERRITORY_ACTIVITY,ActivityContext.class);
+			classMap.put(ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY,ActivityContext.class);
+			classMap.put(TimeSheet.TIME_SHEET_ACTIVITY,ActivityContext.class);
+			classMap.put(Trip.TRIP_ACTIVITY,ActivityContext.class);
+
 
 
 			for (QuestionType type : QuestionType.values()) {
