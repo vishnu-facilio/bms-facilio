@@ -63,6 +63,9 @@ public class ImportUpdateCommand extends FacilioCommand {
     }
 
     private Map<Long, List<UpdateChangeSet>> updateData (String moduleName, SaveOptions defaultOptions, SaveOptions options, List<Pair<Long,ModuleBaseWithCustomFields>> records, Map<Long, ImportRowContext> logIdVsRowContext) throws Exception {
+        if(CollectionUtils.isEmpty(records)){
+            return Collections.EMPTY_MAP;
+        }
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(moduleName);
 
