@@ -45,17 +45,29 @@ public class ValidateSAMismatch extends FacilioCommand {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
                 if(serviceAppointment.getFieldAgent() != null){
                     V3PeopleContext fieldAgent = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,serviceAppointment.getFieldAgent().getId(),V3PeopleContext.class);
-                    if(Optional.ofNullable(serviceAppointment.getScheduledStartTime()).orElse(0L) > 0
-                        || Optional.ofNullable(serviceAppointment.getScheduledEndTime()).orElse(0L) > 0 ){
-                        Shift currentShift = ShiftAPI.getPeopleShiftForDay(fieldAgent.getId(), DateTimeUtil.getCurrenTime());
+                    if(Optional.ofNullable(serviceAppointment.getScheduledStartTime()).orElse(0L) > 0){
+                        Shift currentShift = ShiftAPI.getPeopleShiftForDay(fieldAgent.getId(), serviceAppointment.getScheduledStartTime());
                         if(currentShift != null){
                             long shiftStart = currentShift.getStartTime();
                             long shiftEnd = currentShift.getEndTime();
-                            if(serviceAppointment.getScheduledStartTime() < shiftStart){
+                            long dayStartTime = DateTimeUtil.getDayStartTimeOf(serviceAppointment.getScheduledStartTime());
+                            if(serviceAppointment.getScheduledStartTime() < (shiftStart + dayStartTime)){
                                 errors.append("Service Appointment is scheduled to start before the field agent's working hours. ");
+                            } else if(serviceAppointment.getScheduledStartTime() > (shiftEnd + dayStartTime)){
+                                errors.append("Service Appointment is scheduled to start after the field agent's working hours. ");
                             }
-                            if(serviceAppointment.getScheduledEndTime() > shiftEnd){
+                        }
+                    }
+                    if(Optional.ofNullable(serviceAppointment.getScheduledEndTime()).orElse(0L) > 0 ){
+                        Shift currentShift = ShiftAPI.getPeopleShiftForDay(fieldAgent.getId(), serviceAppointment.getScheduledEndTime());
+                        if(currentShift != null){
+                            long shiftStart = currentShift.getStartTime();
+                            long shiftEnd = currentShift.getEndTime();
+                            long dayStartTime = DateTimeUtil.getDayStartTimeOf(serviceAppointment.getScheduledEndTime());
+                            if(serviceAppointment.getScheduledEndTime() > (shiftEnd + dayStartTime)){
                                 errors.append("Service Appointment is scheduled to end after the field agent's working hours. ");
+                            } else if(serviceAppointment.getScheduledEndTime() < (shiftStart + dayStartTime)){
+                                errors.append("Service Appointment is scheduled to end before the field agent's working hours. ");
                             }
                         }
                     }
