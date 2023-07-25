@@ -2929,6 +2929,13 @@ public class FacilioConstants {
 			public static final String COMPLETED = "completed";
 			public static final String CANCELLED = "cancelled";
 		}
+		public static class SFG20 {
+			public static final String SETTING = "setting";
+			public static final String SYNC_HISTORY = "sfg20SyncHistory";
+			public static final String SFG_ACCESS_TOKEN = "accessToken";
+			public static final String SCHEDULES_LIST = "schedulesList";
+			public static final String SCHEDULES_DETAILS_LIST = "schedulesDetailsList";
+		}
 
 			// etisalat changes
 		public static final String BILL_ALERT = "custom_alert";

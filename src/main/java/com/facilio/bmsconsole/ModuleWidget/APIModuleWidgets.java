@@ -686,4 +686,18 @@ public class APIModuleWidgets {
 
     }
 
+
+    @WidgetsForModule(FacilioConstants.ContextNames.JOB_PLAN)
+    public static Supplier<ModuleWidgets> getJobPlanWidgets() {
+        return() ->  new ModuleWidgets()
+                .addModuleWidget("jobPlanTaskSections", "Task Sections", PageWidget.WidgetType.JOBPLAN_TASK_SECTIONS)
+                .addFlexibleWidgetConfig("flexiblewebjobplantasksectionwidget_5","Task Sections - 5", 5, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("jobplanSfgLegislations", "Legislation, Regulations and Guidance", PageWidget.WidgetType.JOBPLAN_SFG_LEGISLATIONS)
+                .addFlexibleWidgetConfig("flexibleweblegislationsWidget_5","Legislation, Regulations and Guidance - 5", 5, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("plans", "Plans", PageWidget.WidgetType.PLANS)
+                .addFlexibleWidgetConfig("flexiblewebJPplansWidget_5","Plans - 5", 5, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
 }

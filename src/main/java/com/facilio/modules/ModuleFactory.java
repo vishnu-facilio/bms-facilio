@@ -5915,4 +5915,29 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		pdfTemplatesModule.setTableName("PDF_Templates");
 		return pdfTemplatesModule;
 	}
+
+	
+	public static FacilioModule getSFG20SettingModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("sfg20Setting");
+		module.setTableName("SFG20_Settings");
+		module.setDisplayName("SFG20 Setting");
+		return module;
+	}
+
+	public static FacilioModule getSFG20JobPlanModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("sfg20JobPlan");
+		module.setTableName("SFG20_Jobplan");
+		module.setDisplayName("SFG20 Jobplan");
+		return module;
+	}
+
+	public static FacilioModule getSFG20SyncHistoryModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("sfg20SyncHistory");
+		module.setTableName("SFG20_Sync_History");
+		module.setDisplayName("SFG20 Sync History");
+		return module;
+	}
 }

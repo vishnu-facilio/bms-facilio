@@ -3828,6 +3828,38 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateWorkflowCommand());
         return c;
     }
+    public static FacilioChain getSFG20ConnectCommand() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SFG20ConnectCommand());
+        c.addCommand(new SFGJobPlanComparisonCommand());
+        c.addCommand(new SFGtoFacilioJobplanCommand());
+        return c;
+    }
+
+    public static FacilioChain getSFG20ConnectTestCommand() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddSFG20SyncHistoryCommand());
+        c.addCommand(new AddSFGBackgroundActivityCommand());
+        c.addCommand(new SFG20ConnectCommand());
+        c.addCommand(new SFGJobPlanComparisonCommand());
+        c.addCommand(new SFGtoFacilioJobplanCommand());
+        return c;
+    }
+
+    public static FacilioChain getSFG20SyncCommand() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddSFG20SyncHistoryCommand());
+        c.addCommand(new AddSFGBackgroundActivityCommand());
+        c.addCommand(new SFG20SyncJobCommand());
+        return c;
+    }
+
+    public static FacilioChain getSFG20SettingAddOrUpdateCommand() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SFG20SettingAddOrUpdateCommand());
+        return c;
+    }
+
 
     public static FacilioChain generateRawAlarms(){
         FacilioChain c = getDefaultChain();

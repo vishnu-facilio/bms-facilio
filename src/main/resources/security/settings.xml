@@ -3834,5 +3834,45 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v1/setup/sfgSetting/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="customerKey" type="string"></property>
+            <property name="customerSecret" type="string"></property>
+            <property name="description" type="string"></property>
+        </requestbody>
+    </request>
 
+    <request path="/api/v1/setup/sfgHistory/details" method="GET">
+        <urlparams >
+            <property name="syncId" type="number"></property>
+            <property name="flowType" type="number"></property>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/sfgHistory/detailsCount" method="GET">
+        <urlparams >
+            <property name="syncId" type="number"></property>
+            <property name="flowType" type="number"></property>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/sfgHistory/list" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/sfgSetting/connect" method="GET">
+    </request>
+    <request path="/api/v1/setup/sfgSetting/get" method="GET">
+    </request>
+
+    <request path="/api/v1/setup/sfgSetting/sync" method="GET">
+    </request>
+    <request path="/api/v1/setup/jobPlan/bulkPublish" method="POST">
+        <requestbody type="object">
+            <property name="jobPlanIds" type="array"></property>
+        </requestbody>
+    </request>
 </config>

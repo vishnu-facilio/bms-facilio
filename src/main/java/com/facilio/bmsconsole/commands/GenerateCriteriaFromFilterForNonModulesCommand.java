@@ -147,6 +147,8 @@ public class GenerateCriteriaFromFilterForNonModulesCommand extends FacilioComma
                 return FieldFactory.getReadingImportFields();
             case FacilioConstants.ContextNames.MULTI_MODULE_IMPORT:
                 return FieldFactory.getImportDataDetailsFields();
+            case FacilioConstants.ContextNames.SFG20.SYNC_HISTORY:
+                return FieldFactory.getSFG20SyncHistoryFields();
 
         }
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

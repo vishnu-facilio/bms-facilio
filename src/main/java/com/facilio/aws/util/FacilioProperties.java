@@ -257,6 +257,11 @@ public class FacilioProperties {
     @Getter
     private static String proxyJwtTokenSecret;
 
+    @Getter
+    private static String sgfBridgeKey;
+
+    @Getter
+    private static String sfgSecretKey;
 
     static {
         try {
@@ -504,6 +509,8 @@ public class FacilioProperties {
 
             maxFileSize = Integer.parseInt(PROPERTIES.getProperty("maxFileSizeInBytes","104857600"));
             malwareScanningEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("malwareScanner.enabled","false"));
+            sgfBridgeKey = PROPERTIES.getProperty("sgfBridgeKey","1c4c2ace-557e-41c3-aa07-5a5a9efdf7ad");
+            sfgSecretKey = PROPERTIES.getProperty("sfgSecretKey","2be890e6-7af1-403c-a281-22d31214dc4b");
             if (malwareScanningEnabled) {
                 malwareScannerEngine = PROPERTIES.getProperty("malwareScanner.engine","clam");
                 malwareScannerTimeout = Long.parseLong(PROPERTIES.getProperty("malwareScanner.timeout","20000"));

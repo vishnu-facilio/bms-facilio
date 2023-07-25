@@ -631,4 +631,29 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new CloseButtonDetailsCommand());
         return c;
     }
+    
+    public static FacilioChain GetSFG20SettingsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetSFG20SettingsCommand());
+        return c;
+    }
+
+    public static FacilioChain GetSFG20SyncHistoryListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GenerateCriteriaFromFilterForNonModulesCommand());
+        c.addCommand(new GetSFGSyncHistoryCommand());
+        return c;
+    }
+
+    public static FacilioChain GetSFG20SyncHistoryDetailsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetSFGSyncHistoryDetailsCommand());
+        return c;
+    }
+
+    public static FacilioChain GetSFG20SyncScheduleDetailsListCountChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetSFGSyncScheduleDetailsListCountCommand());
+        return c;
+    }
 }

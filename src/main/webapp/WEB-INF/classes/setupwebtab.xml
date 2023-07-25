@@ -819,6 +819,41 @@
                 class="com.facilio.events.actions.V2AlarmAction" method="updateSensorRuleCategoryStatus">
             <param name="permission">ALL</param>
             <param name="setupTab">READINGS</param>
+         </action>
+    </package>
+
+    <package name="sfgSetting" namespace="/api/v1/setup/sfgSetting" extends="v3Api">
+        <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.SFG20JobPlanAction" method="addOrUpdateSFG20Setting">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SFG_20</param>
+        </action>
+        <action name="get" class="com.facilio.bmsconsoleV3.actions.SFG20JobPlanAction" method="getSFG20Setting">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SFG_20</param>
+        </action>
+        <action name="sync" class="com.facilio.bmsconsoleV3.actions.SFG20JobPlanAction" method="syncSFG20Data">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SFG_20</param>
+        </action>
+        <action name="connect" class="com.facilio.bmsconsoleV3.actions.SFG20JobPlanAction"
+                method="connectSFG20"> <param name="permission">ALL</param>
+            <param name="setupTab">SFG_20</param></action>
+    </package>
+    <package name="jobPlan" namespace="/api/v1/setup/jobPlan" extends="v3Api">
+        <action name="bulkPublish" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="bulkPublishJobPlan"></action>
+    </package>
+    <package name="sfgHistory" namespace="/api/v1/setup/sfgHistory" extends="v3Api">
+        <action name="list" class="com.facilio.bmsconsoleV3.actions.SFG20JobPlanAction" method="getSFG20SyncHistoryList">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SFG_20</param>
+        </action>
+        <action name="details" class="com.facilio.bmsconsoleV3.actions.SFG20JobPlanAction" method="getSFG20SyncHistoryDetails">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SFG_20</param>
+        </action>
+        <action name="detailsCount" class="com.facilio.bmsconsoleV3.actions.SFG20JobPlanAction" method="getSFG20SyncHistoryDetailsListCount">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SFG_20</param>
         </action>
     </package>
 

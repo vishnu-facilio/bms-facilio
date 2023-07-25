@@ -1942,7 +1942,8 @@
         <action name="ongoingMonitoring" class="com.facilio.utility.UtilityAction" method="ongoingMonitoring"/>
         <action name="fetchBills" class="com.facilio.utility.UtilityAction" method="fetchBills"/>
         <action name="associateMeter" class="com.facilio.utility.UtilityAction" method="associateMeter"/>
-    </package>
+        </package>
+
 
     <package name="v2Analytics" namespace="/api/v3/analytics" extends="v3Api">
         <action name="list" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="list"/>

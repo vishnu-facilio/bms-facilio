@@ -261,6 +261,9 @@
 
 	<job name="DeleteWorkflowRuleLogsRecordsJob" classname="com.facilio.bmsconsole.jobs.DeleteWorkflowRuleLogsRecordsJob" transactionTimeout="600000"/>
 	<job name="calendarNightlyJob" classname="com.facilio.bmsconsole.jobs.CalendarNightlyJob" transactionTimeout="600000"/>
+	<!-- SFG20 Jobplan Sync Job-->
+
+	<job name="SFGJobplanSyncJob" classname="com.facilio.bmsconsole.jobs.SFGJobplanSyncJob" transactionTimeout="36000000"/>
 
 
 	<!--Control Action Related Job-->

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.facilio.bmsconsoleV3.context.V3TaskContext;
+import com.facilio.modules.FacilioIntEnum;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -592,5 +596,300 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	@JSON(serialize = false)
 	public void setParentWo(WorkOrderContext parentWo) {
 		this.parentWo = parentWo;
+	}
+
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	private String notes;
+
+	public String getActionContent() {
+		return actionContent;
+	}
+
+	public void setActionContent(String actionContent) {
+		this.actionContent = actionContent;
+	}
+
+	private String actionContent;
+
+
+	private V3TaskContext.TaskFrequency taskFrequency;
+
+	public Integer getTaskFrequency() {
+		if (taskFrequency == null) {
+			return null;
+		}
+		return taskFrequency.getIndex();
+	}
+
+	public void setTaskFrequency(Integer taskFrequency) {
+		if (taskFrequency != null) {
+			this.taskFrequency = V3TaskContext.TaskFrequency.valueOf(taskFrequency);
+		} else {
+			this.taskFrequency = null;
+		}
+	}
+	public void setTaskFrequencyEnum(V3TaskContext.TaskFrequency taskFrequency) {
+		this.taskFrequency = taskFrequency;
+	}
+
+	public V3TaskContext.TaskFrequency getTaskFrequencyEnum() {
+		return taskFrequency;
+	}
+
+	public String getTaskFrequencyName() {
+		if(taskFrequency !=null)
+		{
+			return taskFrequency.getValue();
+		}
+		return null;
+	}
+	@AllArgsConstructor
+	@Getter
+	public static enum TaskFrequency implements FacilioIntEnum {
+
+		DO_NOT_REPEAT ("Do Not Repeat"),
+		DAILY("Daily"),
+		WEEKLY( "Weekly"),
+		MONTHLY("Monthly"),
+		QUARTERLY("Quarterly"),
+		HALF_YEARLY("Half Yearly"),
+		ANNUALLY("Annually"),
+		CUSTOM("Custom"),
+		HOURLY("Hourly")
+		;
+
+		public int getVal() {
+			return ordinal() + 1;
+		}
+		String name;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
+		}
+		private static final V3TaskContext.TaskFrequency[] CREATION_TYPES = V3TaskContext.TaskFrequency.values();
+		public static V3TaskContext.TaskFrequency valueOf(int type) {
+			if (type > 0 && type <= CREATION_TYPES.length) {
+				return CREATION_TYPES[type - 1];
+			}
+			return null;
+		}
+	}
+
+
+	private V3TaskContext.TaskCriticality taskCriticality;
+
+
+	public Integer getTaskCriticality() {
+		if (taskCriticality == null) {
+			return null;
+		}
+		return taskCriticality.getIndex();
+	}
+
+	public void setTaskCriticality(Integer taskCriticality) {
+		if (taskCriticality !=null) {
+			this.taskCriticality = V3TaskContext.TaskCriticality.valueOf(taskCriticality);
+		} else {
+			this.taskCriticality = null;
+		}
+	}
+	public void setTaskCriticalityEnum(V3TaskContext.TaskCriticality taskCriticality) {
+		this.taskCriticality = taskCriticality;
+	}
+
+	public V3TaskContext.TaskCriticality getTaskCriticalityEnum() {
+		return taskCriticality;
+	}
+
+	public String getTaskCriticalityName() {
+		if(taskCriticality !=null) {
+			return taskCriticality.getName();
+		}
+		return null;
+	}
+
+	public String getTaskCriticalityColor() {
+		if(taskCriticality !=null) {
+			return taskCriticality.getColor();
+		}
+		return null;
+	}
+
+	public String getTaskCriticalitySeverity() {
+		if(taskCriticality !=null) {
+			return taskCriticality.getSeverity();
+		}
+		return null;
+	}
+
+	@AllArgsConstructor
+	@Getter
+	public static enum TaskCriticality implements FacilioIntEnum {
+
+		STATUTORY("Statutory","red","L1"),
+		MANDATORY("Mandatory", "pink","L2,"),
+		OPTIMAL("Optimal", "orange","L3"),
+		DISCRETIONARY("Discretionary", "green","L3")
+		;
+
+		public int getVal() {
+			return ordinal() + 1;
+		}
+		String name;
+		String color;
+		String severity;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
+		}
+
+		public String getColor()
+		{
+			return this.color;
+		}
+		public String getSeverity()
+		{
+			return this.severity;
+		}
+
+		private static final V3TaskContext.TaskCriticality[] CREATION_TYPES = V3TaskContext.TaskCriticality.values();
+		public static V3TaskContext.TaskCriticality valueOf(int type) {
+			if (type > 0 && type <= CREATION_TYPES.length) {
+				return CREATION_TYPES[type - 1];
+			}
+			return null;
+		}
+	}
+
+
+	public Long getSfgScheduleId() {
+		return sfgScheduleId;
+	}
+
+	public void setSfgScheduleId(Long sfgScheduleId) {
+		this.sfgScheduleId = sfgScheduleId;
+	}
+
+	private Long sfgScheduleId;
+
+
+	public V3TaskContext.SkillSet getSkillSetEnum() {
+		return skillSet;
+	}
+
+	public void setSkillSetEnum(V3TaskContext.SkillSet skillSet) {
+		this.skillSet = skillSet;
+	}
+
+	public String getSkillSetName() {
+		if (skillSet != null) {
+			return skillSet.getValue();
+		}
+		return null;
+	}
+
+
+	public Integer getSkillSet() {
+		if (skillSet == null) {
+			return null;
+		}
+		return skillSet.getIndex();
+	}
+
+	public void setSkillSet(Integer skillSet) {
+		if (skillSet !=null) {
+			this.skillSet = V3TaskContext.SkillSet.valueOf(skillSet);
+		} else {
+			this.skillSet = null;
+		}
+	}
+
+	private V3TaskContext.SkillSet skillSet;
+
+
+	@AllArgsConstructor
+	@Getter
+	public static enum SkillSet implements FacilioIntEnum {
+		NOT_SPECIFIED("Not-specified"),
+		APPOINTED_PERSON("Appointed Person"),
+		AUTHORIZING_ENGINEER("Authorising Engineer"),
+		AUTHORIZING_ENGINEER_FIRE("Authorising Engineer (Fire)"),
+		AUTHORIZING_ENGINEER_LIFTS("Authorising Engineer (Lifts)"),
+		AUTHORIZED_PERSON_HV("Authorised Person (HV)"),
+		AUTHORIZED_PERSON_LV("Authorised Person (LV)"),
+		AUTHORIZED_PERSON_LIFTS("Authorised Person (Lifts)"),
+		AUTHORIZED_PERSON("Authorised Person"),
+		BUILDING_TRADE("Building Trade"),
+		CONTROLS_ENGINEER("Controls Engineer"),
+		COMPETENT_PERSON_FIRE("Competent Person (Fire)"),
+		COMPETENT_PERSON_HV("Competent Person (HV)"),
+		COMPETENT_PERSON_LV("Competent Person (LV)"),
+		COMPETENT_PERSON_LIFTS("Competent Person (Lifts)"),
+		CONTRACTOR("Contractor"),
+		COMPETENT_PERSON("Competent Person"),
+		DUTY_HOLDER("Duty Holder"),
+		DESIGNATED_PERSON("Designated Person"),
+		DESIGNATED_PERSONS_LIFTS("Designated Persons (Lifts)"),
+		ELECTRICAL("Electrical"),
+		FACILITIES_COORDINATOR("Facilities Coordinator"),
+		FACILITIES_MANAGER("Facilities Manager"),
+		FACILITIES_OPERATIVE("Facilities Operative"),
+		FIRE_OFFICER("Fire Officer"),
+		FIRE_SAFETY_MANAGER("Fire Safety Manager"),
+		GAS_SAFE("Gas Safe"),
+		INFECTION_CONTROL_OFFICER("Infection Control Officer"),
+		LOCKSMITH("Locksmith"),
+		LIFT_STEWARD("Lift Steward"),
+		MECHANICAL("Mechanical"),
+		M_AND_E("M&E"),
+		MANAGEMENT("Management"),
+		MANAGER("Manager"),
+		MULTI_SKILLED("Multi-skilled"),
+		OPERATOR("Operator"),
+		PLANT_ATTENDANT("Plant Attendant"),
+		PAINTER("Painter"),
+		PRISON_OFFICER("Prison Officer"),
+		PLUMBER("Plumber"),
+		POOL_ATTENDANT("Pool Attendant"),
+		REFRIGERATION_ENGINEER("Refrigeration Engineer"),
+		SPECIALIST("Specialist"),
+		TECHNICIAN("Technician"),
+		USER("User");
+
+		public int getVal() {
+			return ordinal() + 1;
+		}
+		String name;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
+		}
+		private static final V3TaskContext.SkillSet[] CREATION_TYPES = V3TaskContext.SkillSet.values();
+		public static V3TaskContext.SkillSet valueOf(int type) {
+			if (type > 0 && type <= CREATION_TYPES.length) {
+				return CREATION_TYPES[type - 1];
+			}
+			return null;
+		}
+
+		public static Integer fromString(String name) {
+			for (V3TaskContext.SkillSet skillingKey : V3TaskContext.SkillSet.values()) {
+				if (skillingKey.getName().equalsIgnoreCase(name.trim())) {
+					return skillingKey.getVal();
+				}
+			}
+			return NOT_SPECIFIED.getVal();
+		}
 	}
 }

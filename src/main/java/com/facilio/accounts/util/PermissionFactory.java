@@ -823,7 +823,8 @@ public static enum Approval_Permission implements PermissionInterface {
 		return permissionList;
 	}
 }
-	public static enum IndoorFloorPlan_Permission implements PermissionInterface {
+	public static enum
+	IndoorFloorPlan_Permission implements PermissionInterface {
 
 		CREATE (1,"Create"),
 		EDIT(2,"Edit"),

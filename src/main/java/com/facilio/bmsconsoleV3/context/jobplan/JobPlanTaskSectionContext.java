@@ -415,4 +415,17 @@ public class JobPlanTaskSectionContext extends V3Context{
     @Getter
     @Setter
     private List<Map<String, Object>> inputOptions;
+
+    @Getter
+    @Setter
+    private Long sectionCode;
+
+    public void addTasks(JobPlanTasksContext task)
+    {
+        if(tasks == null)
+        {
+            tasks = new ArrayList<>();
+        }
+        tasks.add(task);
+    }
 }
