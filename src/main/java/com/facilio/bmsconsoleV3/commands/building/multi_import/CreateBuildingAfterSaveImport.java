@@ -40,6 +40,7 @@ public class CreateBuildingAfterSaveImport extends FacilioCommand {
         Map<String, FacilioField> baseSpaceFieldMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(FacilioConstants.ContextNames.BASE_SPACE));
         List<FacilioField> updateFields = new ArrayList<>();
         updateFields.add(baseSpaceFieldMap.get("building"));
+        updateFields.add(baseSpaceFieldMap.get("space"));
 
         V3SpaceAPI.batchUpdateBaseSpaceHelperFields(batchUpdatesBaseSpace,updateFields);
         return false;

@@ -59,6 +59,7 @@ public class CreateSiteAfterSaveImport extends FacilioCommand {
         Map<String,FacilioField> baseSpaceFieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE));
         List<FacilioField> updateFields = new ArrayList<>();
         updateFields.add(baseSpaceFieldMap.get("site"));
+        updateFields.add(baseSpaceFieldMap.get("space"));
 
         V3SpaceAPI.batchUpdateBaseSpaceHelperFields(batchUpdatesBaseSpace,updateFields);
 
