@@ -2,27 +2,22 @@ package com.facilio.componentpackage.utils;
 
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.templates.Template;
-import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -33,7 +28,6 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -125,6 +119,103 @@ public class PackageBeanUtil {
             appIdVsRouteNameVsTabId.get(applicationId).put(route, webTabId);
         }
         return appIdVsRouteNameVsTabId;
+    }
+
+    public static Map<Long, Map<String, Long>> getFormDetailsFromDB() throws Exception {
+        Map<Long, Map<String, Long>> moduleIdVsFormNameVsFormId = new HashMap<>();
+        List<FacilioForm> allDBForms = FormsAPI.getAllDBForms();
+        if (CollectionUtils.isNotEmpty(allDBForms)) {
+            moduleIdVsFormNameVsFormId = getModuleIdVsFormNameVsFormId(allDBForms);
+        }
+        return moduleIdVsFormNameVsFormId;
+    }
+
+    public static Map<Long, Map<String, Long>> getFormDetailsFromPackage() throws Exception {
+        Map<String, Long> formsUIdVsIdsFromPackage = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.FORM);
+        Map<Long, Map<String, Long>> moduleIdVsFormNameVsFormId = new HashMap<>();
+        if (MapUtils.isNotEmpty(formsUIdVsIdsFromPackage)) {
+            Criteria formIdCriteria = new Criteria();
+            formIdCriteria.addAndCondition(CriteriaAPI.getIdCondition(formsUIdVsIdsFromPackage.values(), ModuleFactory.getFormModule()));
+            List<FacilioForm> allForms = FormsAPI.getDBFormList(null, formIdCriteria, null, false, false,true, -1L, true);
+
+            moduleIdVsFormNameVsFormId = getModuleIdVsFormNameVsFormId(allForms);
+        }
+        return moduleIdVsFormNameVsFormId;
+    }
+
+    public static Map<Long, Map<String, Long>> getModuleIdVsFormNameVsFormId(List<FacilioForm> allForms) throws Exception {
+        if (CollectionUtils.isEmpty(allForms)) {
+            return null;
+        }
+
+        Map<Long, Map<String, Long>> moduleIdVsFormNameVsFormId = new HashMap<>();
+
+        for (FacilioForm form : allForms) {
+            long formId = form.getId();
+            String formName = form.getName();
+            long moduleId = form.getModuleId();
+
+            if (moduleId < 0 || StringUtils.isEmpty(formName)) {
+                continue;
+            }
+            if (!moduleIdVsFormNameVsFormId.containsKey(moduleId)) {
+                moduleIdVsFormNameVsFormId.put(moduleId, new HashMap<>());
+            }
+            moduleIdVsFormNameVsFormId.get(moduleId).put(formName, formId);
+        }
+        return moduleIdVsFormNameVsFormId;
+    }
+
+    public static Map<Long, Map<String, Long>> getFormIdVsSectionNameVsSectionId(Collection<Long> formIds) throws Exception{
+        Map<Long, Map<String, Long>> formIdVsSectionNameVsSectionId = new HashMap<>();
+        List<FormSection> sectionsForFormIds = FormsAPI.getAllSectionsForFormIds(formIds);
+
+        if (CollectionUtils.isEmpty(sectionsForFormIds)) {
+            return null;
+        }
+        for (FormSection section : sectionsForFormIds) {
+            String name = section.getName();
+            long sectionId = section.getId();
+            long formId = section.getFormId();
+
+            if (StringUtils.isEmpty(name) || formId < 0) {
+                continue;
+            }
+            if (!formIdVsSectionNameVsSectionId.containsKey(formId)) {
+                formIdVsSectionNameVsSectionId.put(formId, new HashMap<>());
+            }
+            formIdVsSectionNameVsSectionId.get(formId).put(name, sectionId);
+        }
+        return formIdVsSectionNameVsSectionId;
+    }
+
+    public static Map<Long, Map<Long, Map<String, Long>>> getFormIdVsSectionIdVsFieldNameVsFieldId(Collection<Long> formIds) throws Exception {
+        Map<Long, Map<Long, Map<String, Long>>> formIdVsSectionIdVsFieldNameVsFieldId = new HashMap<>();
+        List<FormField> formFieldsForFormIds = FormsAPI.getAllFormFieldsForFormIds(formIds);
+
+        if (CollectionUtils.isEmpty(formFieldsForFormIds)) {
+            return null;
+        }
+
+        // TODO - Change DisplayName to LinkName
+        for (FormField formField : formFieldsForFormIds) {
+            long fieldId = formField.getId();
+            long formId = formField.getFormId();
+            long sectionId = formField.getSectionId();
+            String displayName = formField.getDisplayName();
+
+            if (formId < 0 || sectionId < 0 || StringUtils.isEmpty(displayName)) {
+                continue;
+            }
+            if (!formIdVsSectionIdVsFieldNameVsFieldId.containsKey(formId)) {
+                formIdVsSectionIdVsFieldNameVsFieldId.put(formId, new HashMap<>());
+            }
+            if (!formIdVsSectionIdVsFieldNameVsFieldId.get(formId).containsKey(sectionId)) {
+                formIdVsSectionIdVsFieldNameVsFieldId.get(formId).put(sectionId, new HashMap<>());
+            }
+            formIdVsSectionIdVsFieldNameVsFieldId.get(formId).get(sectionId).put(displayName, fieldId);
+        }
+        return formIdVsSectionIdVsFieldNameVsFieldId;
     }
 
     public static FacilioForm getFormFromId(long formId) throws Exception {

@@ -49,7 +49,12 @@ public class FormRulePackageImpl implements PackageBean<FormRuleContext> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
 
     }
 

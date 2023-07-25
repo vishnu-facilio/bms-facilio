@@ -221,7 +221,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         for (Map.Entry<Long, XMLBuilder> uniqueIdentifierVsComponent : idVsXMLComponents.entrySet()) {
             Long fieldId = uniqueIdentifierVsComponent.getKey();
@@ -248,6 +248,11 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
                 updateField(facilioField);
             }
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

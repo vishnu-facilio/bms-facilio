@@ -146,7 +146,7 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
         return uniqueIdentifierVsComponentId;
     }
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule("assetcategory");
         List<Long> keyList = new ArrayList<>(idVsXMLComponents.keySet());
@@ -182,6 +182,12 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
             V3Util.updateBulkRecords(module, v3Config, oldRecords, newAssetCategoryDatas, keyList, null, null, null, null, null, null, null, null, false, false);
         }
     }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
+    }
+
     @Override
     public void deleteComponentFromXML(List<Long> ids) throws Exception {
         for (long id : ids) {

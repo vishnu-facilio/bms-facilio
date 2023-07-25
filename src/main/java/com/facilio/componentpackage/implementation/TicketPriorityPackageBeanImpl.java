@@ -126,7 +126,7 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             long ticketPriorityId = idVsData.getKey();
             XMLBuilder ticketPriorityElement = idVsData.getValue();
@@ -134,6 +134,11 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
             ticketPriorityContext.setId(ticketPriorityId);
             updateTicketPriority(ticketPriorityContext);
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

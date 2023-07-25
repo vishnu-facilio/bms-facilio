@@ -160,7 +160,7 @@ public class NamedCriteriaPackageBeanImpl implements PackageBean<NamedCriteria> 
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
 
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
@@ -174,6 +174,11 @@ public class NamedCriteriaPackageBeanImpl implements PackageBean<NamedCriteria> 
 
             NamedCriteriaAPI.addOrUpdateNamedCriteria(namedCriteria, moduleName);
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

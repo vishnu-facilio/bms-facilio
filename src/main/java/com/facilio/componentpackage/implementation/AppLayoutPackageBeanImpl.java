@@ -1,10 +1,14 @@
 package com.facilio.componentpackage.implementation;
 
 import com.facilio.bmsconsole.context.ApplicationLayoutContext;
+import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.context.WebTabGroupContext;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -17,7 +21,10 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import com.facilio.beans.WebTabBean;
+import com.facilio.fw.BeanFactory;
 
+import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +141,7 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
 
         ApplicationLayoutContext layoutContext;
@@ -147,6 +154,35 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
             layoutContext.setId(layoutId);
 
             updateApplicationLayoutCommand(layoutContext);
+        }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+        if(!PackageUtil.isInstallThread()) {
+            return;
+        }
+        List<WebTabContext> allWebTabs = ApplicationApi.getAllWebTabs();
+        List<WebTabGroupContext> webTabGroups = ApplicationApi.getWebTabgroups();
+        WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+
+        Map<String, Long> webTabUidVsCompIdMap = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.WEBTAB);
+        Map<String, Long> webTabGroupUidVsCompIdMap = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.WEBTAB_GROUP);
+
+        if (CollectionUtils.isNotEmpty(allWebTabs) && MapUtils.isNotEmpty(webTabUidVsCompIdMap)) {
+            List<Long> allWebTabIds = allWebTabs.stream().map(WebTabContext::getId).collect(Collectors.toList());
+            allWebTabIds.removeAll(webTabUidVsCompIdMap.values());
+            for (long id : allWebTabIds) {
+                tabBean.deleteTab(id);
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(webTabGroups) && MapUtils.isNotEmpty(webTabGroupUidVsCompIdMap)) {
+            List<Long> allWebTabGroupIds = webTabGroups.stream().map(WebTabGroupContext::getId).collect(Collectors.toList());
+            allWebTabGroupIds.removeAll(webTabGroupUidVsCompIdMap.values());
+            for (long id : allWebTabGroupIds) {
+                tabBean.deleteWebTabGroup(id);
+            }
         }
     }
 

@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.*;
 import com.facilio.chain.FacilioContext;
+import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Context;
@@ -1869,7 +1870,7 @@ public class FormsAPI {
 		return formNameVsId;
 	}
 
-    private static FormSection getFormSection(long formSectionId) throws Exception {
+    public static FormSection getFormSection(long formSectionId) throws Exception {
 
         Map<String, FacilioField> sectionFieldMap = FieldFactory.getAsMap(FieldFactory.getFormSectionFields());
         Criteria criteria = new Criteria();
@@ -1902,7 +1903,7 @@ public class FormsAPI {
         return null;
     }
 
-    private static List<FormSection> getFormSection(Criteria criteria) throws Exception {
+    public static List<FormSection> getFormSection(Criteria criteria) throws Exception {
 
         if (criteria == null) {
             return new ArrayList<>();
@@ -2110,4 +2111,66 @@ public class FormsAPI {
 		}
 	}
 
+
+	public static List<FacilioForm> getAllDBForms() throws Exception {
+		FacilioModule formsModule = ModuleFactory.getFormModule();
+		List<FacilioField> selectableFields = FieldFactory.getFormFields();
+		List<Long> applicationIds = ApplicationApi.getAllApplicationIds(true);
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(formsModule.getTableName())
+				.select(selectableFields);
+
+		if (CollectionUtils.isNotEmpty(applicationIds)) {
+			Criteria appIdCriteria = PackageBeanUtil.getFormAppIdCriteria(applicationIds);
+			selectRecordBuilder.andCriteria(appIdCriteria);
+		}
+
+		List<Map<String, Object>> propsList = selectRecordBuilder.get();
+		if (CollectionUtils.isNotEmpty(propsList)) {
+			return FieldUtil.getAsBeanListFromMapList(propsList, FacilioForm.class);
+		}
+		return null;
+	}
+
+	public static List<FormSection> getAllSectionsForFormIds(Collection<Long> formIds) throws Exception {
+		if (CollectionUtils.isEmpty(formIds)) {
+			return null;
+		}
+
+		List<FacilioField> fields = FieldFactory.getFormSectionFields();
+		FacilioModule sectionModule = ModuleFactory.getFormSectionModule();
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(sectionModule.getTableName())
+				.andCondition(CriteriaAPI.getCondition("FORMID", "formId", StringUtils.join(formIds, ","), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> propsList = selectRecordBuilder.get();
+		if (CollectionUtils.isNotEmpty(propsList)) {
+			return FieldUtil.getAsBeanListFromMapList(propsList, FormSection.class);
+		}
+		return null;
+	}
+
+	public static List<FormField> getAllFormFieldsForFormIds(Collection<Long> formIds) throws Exception {
+		if (CollectionUtils.isEmpty(formIds)) {
+			return null;
+		}
+
+		List<FacilioField> fields = FieldFactory.getFormFieldsFields();
+		FacilioModule formFieldsModule = ModuleFactory.getFormFieldsModule();
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(formFieldsModule.getTableName())
+				.andCondition(CriteriaAPI.getCondition("FORMID", "formId", StringUtils.join(formIds, ","), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> propsList = selectRecordBuilder.get();
+
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(propsList)) {
+			return FieldUtil.getAsBeanListFromMapList(propsList, FormField.class);
+		}
+		return null;
+	}
 }

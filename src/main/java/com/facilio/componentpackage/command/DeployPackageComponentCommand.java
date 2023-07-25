@@ -1,7 +1,5 @@
 package com.facilio.componentpackage.command;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.cache.CacheUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
 import com.facilio.componentpackage.constants.ComponentType;
@@ -40,7 +38,6 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 		List<XMLBuilder> allComponents = packageConfigXML.getElement(PackageConstants.PackageXMLConstants.COMPONENTS)
 									.getFirstLevelElementListForTagName(PackageConstants.PackageXMLConstants.COMPONENT);
 		PackageFolderContext componentsFolder = rootFolder.getFolder(PackageConstants.COMPONENTS_FOLDER_NAME);
-		Map<ComponentType, Map<Long, XMLBuilder>> componentTypeVsUpdateComponentsList = new LinkedHashMap<>();
 
 		for(XMLBuilder component : allComponents) {
 			ComponentType componentType = ComponentType.valueOf(component.getAttribute(PackageConstants.PackageXMLConstants.COMPONENT_TYPE));
@@ -145,16 +142,10 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 			PackageUtil.addComponentsUIdVsComponentId(componentType, createdComponentIds);
 			checkForDuplicateUIds(componentType, mappingToAdd);
 
-			//Components - With ReUpdate
-			if (componentType.isReUpdateRequired()) {
-				Map<Long, XMLBuilder> componentIdVsXMLBuilderToReUpdate = getComponentIdVsXMLBuilderToReUpdate(createdComponentIds, createComponentList);
-				componentTypeVsUpdateComponentsList.put(componentType, componentIdVsXMLBuilderToReUpdate);
-			}
-
 			computeAndAddPackageChangeset(mappingToAdd, createdComponentIds);
 
 			//Update
-			componentType.getPackageComponentClassInstance().updateComponentFromXML(updateComponentList, false);
+			componentType.getPackageComponentClassInstance().updateComponentFromXML(updateComponentList);
 			if(CollectionUtils.isNotEmpty(mappingToUpdate)) {
 				PackageUtil.updatePackageMappingChangesets(mappingToUpdate);
 			}
@@ -167,27 +158,7 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 			LOGGER.info("####Sandbox - Completed Deploying ComponentType - " + componentType.name());
 		}
 
-		//ReUpdate
-		if (MapUtils.isNotEmpty(componentTypeVsUpdateComponentsList)) {
-			for (ComponentType componentType : componentTypeVsUpdateComponentsList.keySet()) {
-				LOGGER.info("####Sandbox - Started ReUpdate for ComponentType - " + componentType.name());
-				Map<Long, XMLBuilder> componentIdVsXMLBuilder = componentTypeVsUpdateComponentsList.get(componentType);
-				componentType.getPackageComponentClassInstance().updateComponentFromXML(componentIdVsXMLBuilder, true);
-				LOGGER.info("####Sandbox - Completed ReUpdate for ComponentType - " + componentType.name());
-			}
-		}
-
 		return false;
-	}
-
-	private Map<Long, XMLBuilder> getComponentIdVsXMLBuilderToReUpdate(Map<String, Long> createdComponentIds, Map<String, XMLBuilder> createComponentList) {
-		if(MapUtils.isNotEmpty(createdComponentIds)) {
-			Map<Long, XMLBuilder> componentIdVsXMLBuilder = createComponentList.keySet().stream()
-					.filter(createComponentList::containsKey)
-					.collect(Collectors.toMap(createdComponentIds::get, createComponentList::get, (a, b) -> b));
-			return componentIdVsXMLBuilder;
-		}
-		return null;
 	}
 
 	private void computeAndAddPackageChangeset(Map<String, PackageChangeSetMappingContext> uniqueIdVsMapping, Map<String, Long> uniqueIdVsComponentId) throws Exception {

@@ -95,7 +95,7 @@ public class TicketCategoryPackageBeanImpl implements PackageBean<TicketCategory
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             long ticketCategoryId = idVsData.getKey();
             XMLBuilder ticketCategoryElement = idVsData.getValue();
@@ -104,6 +104,12 @@ public class TicketCategoryPackageBeanImpl implements PackageBean<TicketCategory
             updateTicketCategory(ticketCategoryContext);
         }
     }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
+    }
+
     @Override
     public void deleteComponentFromXML(List<Long> ids) throws Exception {
         for (long id : ids) {

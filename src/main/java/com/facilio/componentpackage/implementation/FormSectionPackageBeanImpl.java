@@ -22,9 +22,11 @@ import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j
 public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
@@ -110,19 +112,34 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
 
     @Override
     public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
+        Map<Long, Map<String, Long>> moduleIdVsFormNameVsFormId = PackageBeanUtil.getFormDetailsFromPackage();
+        Map<Long, Map<String, Long>> formIdVsSectionNameVsSectionId = new HashMap<>();
+        if (MapUtils.isNotEmpty(moduleIdVsFormNameVsFormId)) {
+            List<Long> formIds = moduleIdVsFormNameVsFormId.values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toList());
+            formIdVsSectionNameVsSectionId = PackageBeanUtil.getFormIdVsSectionNameVsSectionId(formIds);
+        }
+
+        if (MapUtils.isEmpty(formIdVsSectionNameVsSectionId)) {
+            LOGGER.info("###Sandbox - No ExistingIds found for Form Sections");
+            return new HashMap<>();
+        }
+
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
         FormSection formSection;
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder formElement = idVsData.getValue();
-            formSection = constructSectionFromBuilder(formElement, moduleBean);
+            formSection = constructSectionFromBuilder(formElement, moduleBean, moduleIdVsFormNameVsFormId);
 
             if (formSection == null) {
                 continue;
             }
 
-            long sectionId = PackageBeanUtil.getSectionIdFromName(formSection.getFormId(), formSection.getName());
+            long formId = formSection.getFormId();
+            String sectionName = formSection.getName();
+            long sectionId = (formIdVsSectionNameVsSectionId.containsKey(formId) && StringUtils.isNotEmpty(sectionName)) ?
+                    formIdVsSectionNameVsSectionId.get(formId).getOrDefault(sectionName, -1L) : -1;
 
             if (sectionId > 0) {
                 uniqueIdentifierVsComponentId.put(idVsData.getKey(), sectionId);
@@ -134,19 +151,36 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
 
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
+        Map<Long, Map<String, Long>> moduleIdVsFormNameVsFormId = PackageBeanUtil.getFormDetailsFromPackage();
+        Map<Long, Map<String, Long>> formIdVsSectionNameVsSectionId = new HashMap<>();
+        if (MapUtils.isNotEmpty(moduleIdVsFormNameVsFormId)) {
+            List<Long> formIds = moduleIdVsFormNameVsFormId.values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toList());
+            formIdVsSectionNameVsSectionId = PackageBeanUtil.getFormIdVsSectionNameVsSectionId(formIds);
+        }
+
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
         FormSection formSection;
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder formElement = idVsData.getValue();
-            formSection = constructSectionFromBuilder(formElement, moduleBean);
+            formSection = constructSectionFromBuilder(formElement, moduleBean, moduleIdVsFormNameVsFormId);
 
             if (formSection == null) {
                 continue;
             }
 
-            long sectionId = checkAndAddSection(formSection);
+            long formId = formSection.getFormId();
+            String sectionName = formSection.getName();
+            long sectionId = (MapUtils.isNotEmpty(formIdVsSectionNameVsSectionId) && formIdVsSectionNameVsSectionId.containsKey(formId) && StringUtils.isNotEmpty(sectionName)) ?
+                    formIdVsSectionNameVsSectionId.get(formId).getOrDefault(sectionName, -1L) : -1;
+
+            if (sectionId < 0) {
+                sectionId = addFormSection(formSection);
+            } else {
+                formSection.setId(sectionId);
+                updateFormSection(formSection);
+            }
             uniqueIdentifierVsComponentId.put(idVsData.getKey(), sectionId);
         }
 
@@ -154,7 +188,8 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+        Map<Long, Map<String, Long>> moduleIdVsFormNameVsFormId = PackageBeanUtil.getFormDetailsFromPackage();
         ModuleBean moduleBean = Constants.getModBean();
         FormSection formSection;
 
@@ -162,7 +197,7 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
             long sectionId = idVsData.getKey();
             XMLBuilder formElement = idVsData.getValue();
 
-            formSection = constructSectionFromBuilder(formElement, moduleBean);
+            formSection = constructSectionFromBuilder(formElement, moduleBean, moduleIdVsFormNameVsFormId);
             if (formSection == null) {
                 continue;
             }
@@ -170,6 +205,11 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
 
             updateFormSection(formSection);
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override
@@ -212,7 +252,7 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
         return sectionIdVsFormId;
     }
 
-    private FormSection constructSectionFromBuilder(XMLBuilder sectionElement, ModuleBean moduleBean) throws Exception {
+    private FormSection constructSectionFromBuilder(XMLBuilder sectionElement, ModuleBean moduleBean, Map<Long, Map<String, Long>> moduleIdVsFormNameVsFormId) throws Exception {
         String moduleName, sectionName, formName, sectionTypeStr, subFormDefaultValue;
         long formId, moduleId, lookupFieldId = -1, subFormId = -1;
         int sequenceNumber, noOfSubFormRecords;
@@ -230,9 +270,10 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
 
         sectionType = StringUtils.isNotEmpty(sectionTypeStr) ? FormSection.SectionType.valueOf(sectionTypeStr) : null;
         FacilioModule currModule = moduleBean.getModule(moduleName);
-        moduleId = currModule.getModuleId();
+        moduleId = currModule != null ? currModule.getModuleId() : -1;
 
-        formId = PackageBeanUtil.getFormIdFromName(formName, moduleId);
+        formId = (MapUtils.isNotEmpty(moduleIdVsFormNameVsFormId) && moduleIdVsFormNameVsFormId.containsKey(moduleId)) ?
+                            moduleIdVsFormNameVsFormId.get(moduleId).getOrDefault(formName, -1L) : -1;
 
         if (formId < 0) {
             LOGGER.info("###Sandbox - Form not found - ModuleName - " + moduleName + " FormName - " + formName);
@@ -247,10 +288,12 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
             lookupModuleName = subFormElement.getElement(PackageConstants.FormXMLComponents.LOOKUP_MODULE_NAME).getText();
 
             FacilioModule lookupModule = moduleBean.getModule(lookupModuleName);
+            long lookupModuleId = lookupModule != null ? lookupModule.getModuleId() : -1;
             FacilioField lookupField = moduleBean.getField(lookupFieldName, lookupModuleName);
 
             lookupFieldId = lookupField.getFieldId();
-            subFormId = PackageBeanUtil.getFormIdFromName(subFormName, lookupModule.getModuleId());
+            subFormId = (MapUtils.isNotEmpty(moduleIdVsFormNameVsFormId) && moduleIdVsFormNameVsFormId.containsKey(lookupModuleId)) ?
+                    moduleIdVsFormNameVsFormId.get(lookupModuleId).getOrDefault(subFormName, -1L) : -1;
         }
 
         FormSection formSection = new FormSection(sectionName, formId, sectionType, sequenceNumber, subFormDefaultValue, showLabel, noOfSubFormRecords);
@@ -258,21 +301,6 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
         formSection.setSubFormId(subFormId);
 
         return formSection;
-    }
-
-    private long checkAndAddSection(FormSection section) throws Exception {
-        long formId = section.getFormId();
-        String sectionName = section.getName();
-        long sectionId = PackageBeanUtil.getSectionIdFromName(formId, sectionName);
-
-        if (sectionId < 0) {
-            sectionId = addFormSection(section);
-        } else {
-            section.setId(sectionId);
-            updateFormSection(section);
-        }
-
-        return sectionId;
     }
 
     private long addFormSection(FormSection section) throws Exception {

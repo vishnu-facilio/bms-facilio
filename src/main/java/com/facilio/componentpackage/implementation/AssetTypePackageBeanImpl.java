@@ -124,7 +124,7 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule("assetdepartment");
         List<Long> keyList = new ArrayList<>(idVsXMLComponents.keySet());
@@ -142,6 +142,11 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
             V3Config v3Config = ChainUtil.getV3Config(module);
             V3Util.updateBulkRecords(module, v3Config, oldRecords, newAssetTypeDatas, keyList, null, null, null, null, null, null, null, null, false, false);
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

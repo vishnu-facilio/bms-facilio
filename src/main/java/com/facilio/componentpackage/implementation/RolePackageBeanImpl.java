@@ -145,7 +145,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             long roleId = idVsData.getKey();
@@ -161,6 +161,11 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
             role.setRoleId(roleId);
             updateRole(role, null, roleAppList);
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

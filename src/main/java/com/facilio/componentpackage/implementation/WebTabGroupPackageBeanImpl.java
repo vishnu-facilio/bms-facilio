@@ -148,7 +148,7 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         Map<Long, Map<Integer, Long>> appIdVsDeviceIdVsLayoutId = PackageBeanUtil.getAllLayoutConfiguration();
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
         WebTabGroupContext webTabGroupContext;
@@ -159,6 +159,11 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
             webTabGroupContext.setId(idVsData.getKey());
             addOrUpdateTabGroup(webTabGroupContext);
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

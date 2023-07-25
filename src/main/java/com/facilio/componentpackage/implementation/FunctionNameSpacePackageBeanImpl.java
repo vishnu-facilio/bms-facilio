@@ -96,7 +96,7 @@ public class FunctionNameSpacePackageBeanImpl implements PackageBean<WorkflowNam
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ScriptBean scriptBean = Constants.getScriptBean();
 
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
@@ -105,6 +105,11 @@ public class FunctionNameSpacePackageBeanImpl implements PackageBean<WorkflowNam
             WorkflowNamespaceContext workflowNamespaceContext = constructWorkflowNamespaceContextFromBuilder(element);
             scriptBean.updateNameSpace(workflowNamespaceContext);
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

@@ -230,7 +230,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
         ModuleBean moduleBean = Constants.getModBean();
         FacilioView facilioView;
@@ -248,6 +248,11 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
 
             ViewAPI.updateView(viewId, facilioView);
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

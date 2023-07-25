@@ -163,7 +163,7 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             long emailStructureId = idVsData.getKey();
@@ -178,6 +178,11 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
             }
             updateEmailStructure(moduleName, eMailStructure);
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

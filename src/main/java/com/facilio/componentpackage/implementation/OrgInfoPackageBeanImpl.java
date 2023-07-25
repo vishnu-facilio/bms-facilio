@@ -97,7 +97,7 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         IAMOrgBean orgBean = IAMUtil.getOrgBean();
         for (Map.Entry<Long, XMLBuilder> uniqueIdentifierVsComponent : idVsXMLComponents.entrySet()) {
             Long orgId = uniqueIdentifierVsComponent.getKey();
@@ -128,6 +128,11 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
                 AccountUtil.getTransactionalOrgBean(AccountUtil.getCurrentOrg().getOrgId()).addLicence(licenseMap);
             }
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

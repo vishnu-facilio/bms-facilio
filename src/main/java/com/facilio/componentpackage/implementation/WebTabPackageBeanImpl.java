@@ -195,7 +195,7 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
         Map<Long, Map<String, Long>> layoutIdVsRouteVsGroupId = PackageBeanUtil.getAllWebTabGroups();
         Map<Long, Map<Integer, Long>> appIdVsDeviceIdVsLayoutId = PackageBeanUtil.getAllLayoutConfiguration();
@@ -222,6 +222,11 @@ public class WebTabPackageBeanImpl implements PackageBean<WebTabContext> {
 
         // remove Tabs & Group Cache
         ApplicationApi.clearWebTabWebGroupCacheForGroupIds(webTabGroupUidVsCompIdMap.values());
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

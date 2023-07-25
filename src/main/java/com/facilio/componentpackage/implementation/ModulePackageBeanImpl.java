@@ -181,7 +181,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         String name, displayName, description;
         boolean stateFlowEnabled, isCustom;
 
@@ -198,6 +198,11 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
                 updateModule(name, displayName, description, stateFlowEnabled);
             }
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

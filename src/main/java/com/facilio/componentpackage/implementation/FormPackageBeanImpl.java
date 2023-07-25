@@ -3,10 +3,14 @@ package com.facilio.componentpackage.implementation;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.SharingAPI;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -29,6 +33,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.modules.FieldUtil;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
     @Override
@@ -194,6 +199,7 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
 
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
+        Map<Long, Map<String, Long>> moduleIdVsFormNameVsFormId = PackageBeanUtil.getFormDetailsFromDB();
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
@@ -203,7 +209,18 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
             XMLBuilder formElement = idVsData.getValue();
             facilioForm = constructFormFromXMLBuilder(formElement, appNameVsAppId, moduleBean);
 
-            long formId = checkAndAddForm(facilioForm);
+            String formName = facilioForm.getName();
+            long moduleId = facilioForm.getModuleId();
+            long formId = (MapUtils.isNotEmpty(moduleIdVsFormNameVsFormId) && moduleIdVsFormNameVsFormId.containsKey(moduleId)) ?
+                    moduleIdVsFormNameVsFormId.get(moduleId).getOrDefault(formName, -1L) : -1;
+
+            if (formId < 0) {
+                formId = FormsAPI.createForm(facilioForm, facilioForm.getModule());
+            } else {
+                facilioForm.setId(formId);
+                updateForm(facilioForm);
+            }
+
             facilioForm.setId(formId);
 
             if (CollectionUtils.isNotEmpty(facilioForm.getFormSharing())) {
@@ -217,7 +234,7 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         Map<String, Long> appNameVsAppId = PackageBeanUtil.getAppNameVsAppId();
         ModuleBean moduleBean = Constants.getModBean();
         FacilioForm facilioForm;
@@ -234,6 +251,34 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
                 if (CollectionUtils.isNotEmpty(facilioForm.getFormSharing())) {
                     addFormSharing(facilioForm);
                 }
+            }
+        }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+        if(!PackageUtil.isInstallThread()) {
+            return;
+        }
+        List<FormSection> sectionsForFormIds = FormsAPI.getAllSectionsForFormIds(idVsXMLComponents.keySet());
+        List<FormField> formFieldsForFormIds = FormsAPI.getAllFormFieldsForFormIds(idVsXMLComponents.keySet());
+
+        Map<String, Long> sectionsUIdVsIdsFromPackage = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.FORM_SECTION);
+        Map<String, Long> fieldsUIdVsIdsFromPackage = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.FORM_FIELDS);
+
+        if (CollectionUtils.isNotEmpty(sectionsForFormIds) && MapUtils.isNotEmpty(sectionsUIdVsIdsFromPackage)) {
+            List<Long> allSectionIds = sectionsForFormIds.stream().map(FormSection::getId).collect(Collectors.toList());
+            allSectionIds.removeAll(sectionsUIdVsIdsFromPackage.values());
+            if (CollectionUtils.isNotEmpty(allSectionIds)) {
+                FormsAPI.deleteFormSections(allSectionIds);
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(formFieldsForFormIds) && MapUtils.isNotEmpty(fieldsUIdVsIdsFromPackage)) {
+            List<Long> allFieldsIds = formFieldsForFormIds.stream().map(FormField::getId).collect(Collectors.toList());
+            allFieldsIds.removeAll(fieldsUIdVsIdsFromPackage.values());
+            if (CollectionUtils.isNotEmpty(allFieldsIds)) {
+                FormsAPI.deleteFormFields(allFieldsIds);
             }
         }
     }
@@ -317,21 +362,6 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
         }
 
         return form;
-    }
-
-    private long checkAndAddForm(FacilioForm form) throws Exception {
-        String formName = form.getName();
-        long moduleId = form.getModuleId();
-        long formId = PackageBeanUtil.getFormIdFromName(formName, moduleId);
-
-        if (formId < 0) {
-            formId = FormsAPI.createForm(form, form.getModule());
-        } else {
-            form.setId(formId);
-            updateForm(form);
-        }
-
-        return formId;
     }
 
     private void updateForm(FacilioForm form) throws Exception {

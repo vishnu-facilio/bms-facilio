@@ -96,7 +96,7 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             long ticketTypeId = idVsData.getKey();
             XMLBuilder ticketTypeElement = idVsData.getValue();
@@ -104,6 +104,11 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
             ticketTypeContext.setId(ticketTypeId);
             updateTicketType(ticketTypeContext);
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

@@ -136,7 +136,7 @@ public class FunctionPackageBeanImpl implements PackageBean<WorkflowUserFunction
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ScriptBean scriptBean = Constants.getScriptBean();
         Map<String, Long> linkNameVsNameSpaceId = getNameSpaceLinkNameVsId();
 
@@ -146,6 +146,20 @@ public class FunctionPackageBeanImpl implements PackageBean<WorkflowUserFunction
             WorkflowUserFunctionContext userFunction = constructFunctionFromBuilder(element, linkNameVsNameSpaceId);
             userFunction.setId(idVsData.getKey());
             FacilioContext context = scriptBean.updateFunction(userFunction);
+        }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+        ScriptBean scriptBean = Constants.getScriptBean();
+        Map<String, Long> linkNameVsNameSpaceId = getNameSpaceLinkNameVsId();
+
+        for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
+            XMLBuilder element = idVsData.getValue();
+
+            WorkflowUserFunctionContext userFunction = constructFunctionFromBuilder(element, linkNameVsNameSpaceId);
+            userFunction.setId(idVsData.getKey());
+            scriptBean.updateFunction(userFunction);
         }
     }
 

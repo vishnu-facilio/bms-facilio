@@ -25,6 +25,7 @@ public class PackageChainFactory {
         c.addCommand(new UnzipPackageFileCommand());
         c.addCommand(new DeployPackageCommand());
         c.addCommand(new DeployPackageComponentCommand());
+        c.addCommand(new ComponentPostTransactionCommand());
 
         return c;
     }
@@ -38,6 +39,7 @@ public class PackageChainFactory {
         c.addCommand(new CreateXMLPackageCommand());
         c.addCommand(new DeployPackageCommand());
         c.addCommand(new DeployPackageComponentCommand());
+        c.addCommand(new ComponentPostTransactionCommand());
 
         return c;
     }

@@ -24,12 +24,14 @@ import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
@@ -120,19 +122,39 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
 
     @Override
     public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
+        Map<Long, Map<String, Long>> formIdVsSectionNameVsSectionId = new HashMap<>();
+        Map<Long, Map<Long, Map<String, Long>>> formIdVsSectionIdVsFieldNameVsFieldId = new HashMap<>();
+
+        Map<Long, Map<String, Long>> moduleIdVsFormNameVsFormId = PackageBeanUtil.getFormDetailsFromPackage();
+        if (MapUtils.isNotEmpty(moduleIdVsFormNameVsFormId)) {
+            List<Long> formIds = moduleIdVsFormNameVsFormId.values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toList());
+            formIdVsSectionNameVsSectionId = PackageBeanUtil.getFormIdVsSectionNameVsSectionId(formIds);
+            formIdVsSectionIdVsFieldNameVsFieldId = PackageBeanUtil.getFormIdVsSectionIdVsFieldNameVsFieldId(formIds);
+        }
+
+        if (MapUtils.isEmpty(formIdVsSectionIdVsFieldNameVsFieldId)) {
+            LOGGER.info("###Sandbox - No ExistingIds found for Form Fields");
+            return new HashMap<>();
+        }
+
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
         FormField formField;
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder formFieldElement = idVsData.getValue();
-            formField = constructFormFieldFromBuilder(formFieldElement, moduleBean);
+            formField = constructFormFieldFromBuilder(formFieldElement, moduleBean, moduleIdVsFormNameVsFormId, formIdVsSectionNameVsSectionId);
 
             if (formField == null) {
                 continue;
             }
 
-            long formFieldId = PackageBeanUtil.getFormFieldId(formField);
+            long formId = formField.getFormId();
+            long sectionId = formField.getSectionId();
+            String formFieldDisplayName = formField.getDisplayName();
+            long formFieldId = (formIdVsSectionIdVsFieldNameVsFieldId.containsKey(formId) && formIdVsSectionIdVsFieldNameVsFieldId.get(formId).containsKey(sectionId)) ?
+                    formIdVsSectionIdVsFieldNameVsFieldId.get(formId).get(sectionId).getOrDefault(formFieldDisplayName, -1L) : -1;
+
 
             if (formFieldId > 0) {
                 uniqueIdentifierVsComponentId.put(idVsData.getKey(), formFieldId);
@@ -144,19 +166,43 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
 
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
+        Map<Long, Map<String, Long>> formIdVsSectionNameVsSectionId = new HashMap<>();
+        Map<Long, Map<Long, Map<String, Long>>> formIdVsSectionIdVsFieldNameVsFieldId = new HashMap<>();
+
+        Map<Long, Map<String, Long>> moduleIdVsFormNameVsFormId = PackageBeanUtil.getFormDetailsFromPackage();
+        if (MapUtils.isNotEmpty(moduleIdVsFormNameVsFormId)) {
+            List<Long> formIds = moduleIdVsFormNameVsFormId.values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toList());
+            formIdVsSectionNameVsSectionId = PackageBeanUtil.getFormIdVsSectionNameVsSectionId(formIds);
+            formIdVsSectionIdVsFieldNameVsFieldId = PackageBeanUtil.getFormIdVsSectionIdVsFieldNameVsFieldId(formIds);
+        }
+
+        boolean fieldIdsIsNotEmpty = MapUtils.isNotEmpty(formIdVsSectionIdVsFieldNameVsFieldId);
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
         FormField formField;
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder formFieldElement = idVsData.getValue();
-            formField = constructFormFieldFromBuilder(formFieldElement, moduleBean);
+            formField = constructFormFieldFromBuilder(formFieldElement, moduleBean, moduleIdVsFormNameVsFormId, formIdVsSectionNameVsSectionId);
 
             if (formField == null) {
                 continue;
             }
 
-            long formFieldId = checkAndAddFormField(formField);
+            long formId = formField.getFormId();
+            long sectionId = formField.getSectionId();
+            String formFieldDisplayName = formField.getDisplayName();
+            long formFieldId = (fieldIdsIsNotEmpty && formIdVsSectionIdVsFieldNameVsFieldId.containsKey(formId) && formIdVsSectionIdVsFieldNameVsFieldId.get(formId).containsKey(sectionId)) ?
+                    formIdVsSectionIdVsFieldNameVsFieldId.get(formId).get(sectionId).getOrDefault(formFieldDisplayName, -1L) : -1;
+
+            if (formFieldId < 0) {
+                formFieldId = addFormField(formField);
+            } else {
+                formField.setId(formFieldId);
+                updateFormField(formField);
+            }
+
+
             uniqueIdentifierVsComponentId.put(idVsData.getKey(), formFieldId);
         }
 
@@ -164,7 +210,14 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+        Map<Long, Map<String, Long>> moduleIdVsFormNameVsFormId = PackageBeanUtil.getFormDetailsFromPackage();
+        Map<Long, Map<String, Long>> formIdVsSectionNameVsSectionId = new HashMap<>();
+        if (MapUtils.isNotEmpty(moduleIdVsFormNameVsFormId)) {
+            List<Long> formIds = moduleIdVsFormNameVsFormId.values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toList());
+            formIdVsSectionNameVsSectionId = PackageBeanUtil.getFormIdVsSectionNameVsSectionId(formIds);
+        }
+
         ModuleBean moduleBean = Constants.getModBean();
         FormField formField;
 
@@ -172,7 +225,7 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
             long formFieldId = idVsData.getKey();
             XMLBuilder formFieldElement = idVsData.getValue();
 
-            formField = constructFormFieldFromBuilder(formFieldElement, moduleBean);
+            formField = constructFormFieldFromBuilder(formFieldElement, moduleBean, moduleIdVsFormNameVsFormId, formIdVsSectionNameVsSectionId);
             if (formField == null) {
                 continue;
             }
@@ -180,6 +233,11 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
 
             updateFormField(formField);
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override
@@ -222,7 +280,8 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
         return formFieldIdVsFormId;
     }
 
-    private FormField constructFormFieldFromBuilder(XMLBuilder formFieldElement, ModuleBean moduleBean) throws Exception {
+    private FormField constructFormFieldFromBuilder(XMLBuilder formFieldElement, ModuleBean moduleBean, Map<Long, Map<String, Long>> moduleIdVsFormNameVsFormId,
+                                                    Map<Long, Map<String, Long>> formIdVsSectionNameVsSectionId) throws Exception {
         String formFieldName, displayName, formName, sectionName, moduleName, facilioFieldName, displayTypeStr, defaultValue, config;
         boolean requiredBool, hideField, isDisabled, allowCreate;
         long formId, moduleId, sectionId, fieldId = -1;
@@ -245,9 +304,10 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
 
         displayType = StringUtils.isNotEmpty(displayTypeStr) ? FacilioField.FieldDisplayType.valueOf(displayTypeStr) : null;
         FacilioModule currModule = moduleBean.getModule(moduleName);
-        moduleId = currModule.getModuleId();
+        moduleId = currModule != null ? currModule.getModuleId() : -1;
 
-        formId = PackageBeanUtil.getFormIdFromName(formName, moduleId);
+        formId = (MapUtils.isNotEmpty(moduleIdVsFormNameVsFormId) && moduleIdVsFormNameVsFormId.containsKey(moduleId)) ?
+                moduleIdVsFormNameVsFormId.get(moduleId).getOrDefault(formName, -1L) : -1;
 
         if (formId < 0) {
             LOGGER.info("###Sandbox - Form not found - ModuleName - " + moduleName + " FormName - " + formName);
@@ -256,7 +316,8 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
 
         XMLBuilder sectionElement = formFieldElement.getElement(PackageConstants.FormXMLComponents.SECTION_NAME);
         sectionName = sectionElement != null ? sectionElement.getText() : null;
-        sectionId = StringUtils.isNotEmpty(sectionName) ? PackageBeanUtil.getSectionIdFromName(formId, sectionName) : -1;
+        sectionId = (MapUtils.isNotEmpty(formIdVsSectionNameVsSectionId) && formIdVsSectionNameVsSectionId.containsKey(formId) && StringUtils.isNotEmpty(sectionName)) ?
+                formIdVsSectionNameVsSectionId.get(formId).getOrDefault(sectionName, -1L) : -1;
 
         XMLBuilder facilioFieldElement = formFieldElement.getElement(PackageConstants.FormXMLComponents.FACILIO_FIELD_NAME);
         facilioFieldName = facilioFieldElement != null ? facilioFieldElement.getText() : null;
@@ -284,19 +345,6 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
         formField.setFormId(formId);
 
         return formField;
-    }
-
-    private long checkAndAddFormField(FormField formField) throws Exception {
-        long formFieldId = PackageBeanUtil.getFormFieldId(formField);
-
-        if (formFieldId < 0) {
-            formFieldId = addFormField(formField);
-        } else {
-            formField.setId(formFieldId);
-            updateFormField(formField);
-        }
-
-        return formFieldId;
     }
 
     private long addFormField(FormField formField) throws Exception {

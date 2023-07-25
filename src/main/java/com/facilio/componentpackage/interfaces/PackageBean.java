@@ -23,7 +23,9 @@ public interface PackageBean<T> {
 
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception;
 
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception;
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception;
+
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception;
 
     public void deleteComponentFromXML(List<Long> ids) throws Exception;
 

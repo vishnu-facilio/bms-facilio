@@ -128,7 +128,7 @@ public class RelationshipPackageBeanImpl implements PackageBean<RelationRequestC
 
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             long relationId = idVsData.getKey();
             XMLBuilder relationRequestElement = idVsData.getValue();
@@ -136,6 +136,11 @@ public class RelationshipPackageBeanImpl implements PackageBean<RelationRequestC
             relationRequestContext.setId(relationId);
             updateRelationRequest(relationRequestContext);
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

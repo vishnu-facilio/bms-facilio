@@ -20,10 +20,10 @@ public enum ComponentType implements FacilioIntEnum {
     APP(AppPackageBeanImpl.class, null, false),
     ORG_INFO(OrgInfoPackageBeanImpl.class, null, false),
     ROLE(RolePackageBeanImpl.class, null, false),
-    APP_LAYOUT(AppLayoutPackageBeanImpl.class, APP, false),
+    APP_LAYOUT(AppLayoutPackageBeanImpl.class, APP, true),
     WEBTAB_GROUP(WebTabGroupPackageBeanImpl.class, APP_LAYOUT, false),
     WEBTAB(WebTabPackageBeanImpl.class, APP, false),
-    FORM(FormPackageBeanImpl.class, MODULE, false),
+    FORM(FormPackageBeanImpl.class, MODULE, true),
     FORM_SECTION(FormSectionPackageBeanImpl.class, FORM, false),
     FORM_FIELDS(FormFieldPackageBeanImpl.class, FORM, false),
     VIEW(ViewPackageBeanImpl.class, MODULE, false),
@@ -111,7 +111,7 @@ public enum ComponentType implements FacilioIntEnum {
 
     Class<? extends PackageBean> componentClass;
     ComponentType parentComponentType;
-    boolean isReUpdateRequired;
+    boolean isPostTransactionRequired;
 
     @Override
     public String getValue() {
