@@ -767,15 +767,16 @@ public class ApplicationApi {
                 CriteriaAPI.getCondition("ID", "id", String.valueOf(appId), NumberOperators.EQUALS));
 
         List<Map<String, Object>> application = selectBuilder.get();
+        com.facilio.identity.client.dto.AppDomain appDomain = null;
         if (CollectionUtils.isNotEmpty(application)) {
             Integer appDomainType = (Integer) application.get(0).get("domainType");
             Long orgId = (Long) application.get(0).get("orgId");
-            com.facilio.identity.client.dto.AppDomain appDomains = IdentityClient.getDefaultInstance().getAppDomainBean().getDefaultAppDomain(orgId, com.facilio.identity.client.dto.AppDomain.AppDomainType.valueOf(appDomainType));
-            if (appDomains != null) {
-                return appDomains;
+            appDomain = IdentityClient.getDefaultInstance().getAppDomainBean().getDefaultAppDomain(orgId, com.facilio.identity.client.dto.AppDomain.AppDomainType.valueOf(appDomainType));
+            if (appDomain == null && com.facilio.identity.client.dto.AppDomain.AppDomainType.valueOf(appDomainType) == com.facilio.identity.client.dto.AppDomain.AppDomainType.FACILIO) {
+                return IdentityClient.getDefaultInstance().getAppDomainBean().getDefaultAppDomain();
             }
         }
-        return null;
+        return appDomain;
     }
 
     public static void addDefaultApps(long orgId) throws Exception {
