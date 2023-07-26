@@ -1807,6 +1807,14 @@
         <requestbody type="object"/>
     </request>
 
+    <request path="/api/v2/fields/advancedFilter/drilldown/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="defaultFieldIds" type="array"/>
+            <property name="OneLevelFields" type="boolean"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v2/fields/advancedFilter/:moduleName">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>

@@ -2808,6 +2808,11 @@
 	</package>
 
 	<package name="fieldsAPI" namespace="/api/v2/fields" extends="v2Api">
+		<action name="advancedFilter/drilldown/*"
+				class="com.facilio.fields.actions.FieldsAction"
+				method="drilldownFieldList">
+			<param name="moduleName">{1}</param>
+		</action>
 		<action name="advancedFilter/*"
 				class="com.facilio.fields.actions.FieldsAction"
 				method="fetchFilterFields">

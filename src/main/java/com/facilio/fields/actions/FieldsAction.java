@@ -18,6 +18,16 @@ public class FieldsAction extends FacilioAction {
     private String moduleName;
     private List<Long> defaultFieldIds;
 
+    public boolean isOneLevelFields() {
+        return isOneLevelFields;
+    }
+
+    public void setOneLevelFields(boolean oneLevelFields) {
+        isOneLevelFields = oneLevelFields;
+    }
+
+    private boolean isOneLevelFields;
+
 
     public String fetchFilterFields() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getAdvancedFilterFieldsChain();
@@ -38,6 +48,18 @@ public class FieldsAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.FIELD_ACCESS_TYPE, FacilioField.AccessType.SORT.getVal());
         chain.execute();
         setResult("fields", context.get(FacilioConstants.ContextNames.SORT_FIELDS));
+        return SUCCESS;
+    }
+
+    public String drilldownFieldList() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getAdvancedFilterLookupFieldsChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.DEFAULT_FIELD_IDS, defaultFieldIds);
+        context.put(FacilioConstants.ContextNames.FIELD_ACCESS_TYPE, FacilioField.AccessType.CRITERIA.getVal());
+        context.put(FacilioConstants.ContextNames.IS_ONE_LEVEL_FIELDS,isOneLevelFields);
+        chain.execute();
+        setResult(FacilioConstants.ContextNames.FIELDS, context.get(FacilioConstants.ContextNames.FIELDS));
         return SUCCESS;
     }
 }

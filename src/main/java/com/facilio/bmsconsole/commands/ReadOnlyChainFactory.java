@@ -1988,6 +1988,18 @@ public class ReadOnlyChainFactory {
 
 		return chain;
 	}
+
+	public static FacilioChain getAdvancedFilterLookupFieldsChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetFieldsByAccessType());
+		chain.addCommand(new FilterFieldsByPermissionCommand());
+		chain.addCommand(new HandleFilterFieldsCommand());
+		chain.addCommand(new LookupFilterFieldListCommand());
+		chain.addCommand(new FieldListCommand());
+
+		return chain;
+	}
+
 	public static FacilioChain getAssetAlarmList() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAssetAlarmDetailsCommand());
