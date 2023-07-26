@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -78,7 +79,7 @@ public class VendorModuleTemplatePage implements TemplatePageFactory {
                 .widgetDone()
                 .sectionDone()
                 .addSection("vendorrelatedlist", "Related List", "List of related records across modules")
-                .addWidget("vendorbulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, null)
+                .addWidget("vendorbulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(getModuleName()))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -87,7 +88,7 @@ public class VendorModuleTemplatePage implements TemplatePageFactory {
                 .addWebTab("vendorhistory", "HISTORY", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
-                .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getHistoryWidgetGroup(false))
+                .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_60", 0, 0, null, getHistoryWidgetGroup(false))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -153,14 +154,20 @@ public class VendorModuleTemplatePage implements TemplatePageFactory {
     }
 
     private static JSONObject getSummaryWidgetGroup(boolean isMobile) throws Exception {
+        JSONObject commentWidgetParam = new JSONObject();
+        commentWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.VENDOR_CONTACT_NOTES);
+
+        JSONObject attachmentWidgetParam = new JSONObject();
+        attachmentWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.VENDOR_CONTACT_ATTACHMENTS);
+
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, null, null)
+                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, null, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 
@@ -169,7 +176,7 @@ public class VendorModuleTemplatePage implements TemplatePageFactory {
 
     private static JSONObject getHistoryWidgetGroup(boolean isMobile) throws Exception {
         JSONObject historyWidgetParam = new JSONObject();
-        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.CUSTOM_ACTIVITY);
+        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.VENDOR_CONTACTS_ACTIVITY);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
@@ -178,7 +185,7 @@ public class VendorModuleTemplatePage implements TemplatePageFactory {
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("location", "Location", "")
-                .addWidget("locationwidget", "Location", PageWidget.WidgetType.ACTIVITY, isMobile ? "flexiblemobileattachment_8" : "flexiblewebactivity_60", 0, 0, null, null)
+                .addWidget("locationwidget", "Location", PageWidget.WidgetType.VENDOR_LOCATION, isMobile ? "flexiblemobileattachment_8" : "flexiblewebactivity_60", 0, 0, null, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

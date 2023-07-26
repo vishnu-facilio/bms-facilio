@@ -1968,6 +1968,9 @@ public class FacilioConstants {
 		public static final String VENDOR_NOTES = "vendorsNotes";
 		public static final String VENDOR_ID = "vendorsId";
 
+		public static final String VENDOR_CONTACT_NOTES="vendorcontactnotes";
+		public static final String VENDOR_CONTACT_ATTACHMENTS="vendorcontactattachments";
+
 		public static final String ITEM = "item";
 		public static final String ITEMS = "items";
 		public static final String ITEM_STATUS = "itemStatus";
@@ -2467,6 +2470,8 @@ public class FacilioConstants {
 		public static final String EMPLOYEE = "employee";
 		public static final String EMPLOYEES = "employees";
 		public static final String EMPLOYEE_ACTIVITY = "employeeActivity";
+		public static final String EMPLOYEE_NOTES="employeenotes";
+		public static final String EMPLOYEE_ATTACHMENTS="employeeattachments";
 
 		public static final String TENANT_CONTACT = "tenantcontact";
 		public static final String TENANT_ID_VS_PRIMARY_TENANT_CONTACT = "tenantIdVsPrimaryTenantContactMap";
@@ -4606,12 +4611,17 @@ public class FacilioConstants {
 		public static final String TIME_OFF = "timeOff";
 		public static final String TIME_OFF_TYPE = "timeOffType";
 		public static final String TIME_OFF_ACTIVITY = "timeOffActivity";
+		public static final String TIME_OFF_NOTES = "timeOffnotes";
+		public static final String TIME_OFF_ATTACHMENTS = "timeOffattachments";
 	}
 
 	public static class Territory{
 		public static final String TERRITORY = "territory";
 		public static final String PEOPLE_TERRITORY = "peopleTerritory";
 		public static final String TERRITORY_ACTIVITY = "territoryActivity";
+		public static final String TERRITORY_NOTES="territorynotes";
+		public static final String TERRITORY_ATTACHMENTS="territoryattachments";
+
 	}
 
 	public static class LocationHistory{
@@ -4640,10 +4650,14 @@ public class FacilioConstants {
 		public static final String TIME_SHEET = "timeSheet";
 		public static final String TIME_SHEET_TASK = "timeSheetTask";
 		public static final String TIME_SHEET_ACTIVITY = "timeSheetActivity";
+		public static final String TIME_SHEET_NOTES="timeSheetnotes";
+		public static final String TIME_SHEET_ATTACHMENTS="timeSheetattachments";
 	}
 	public static class Trip{
 		public static final String TRIP = "trip";
 		public static final String TRIP_LOCATION_HISTORY = "tripLocationHistory";
 		public static final String TRIP_ACTIVITY = "tripActivity";
+		public static final String TRIP_NOTES = "tripnotes";
+		public static final String TRIP_ATTACHMENTS = "tripattachments";
 	}
 }

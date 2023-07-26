@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -26,7 +27,7 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
     public PagesContext getTemplatePage(ApplicationContext app, FacilioModule module) throws Exception {
 
         JSONObject historyWidgetParam = new JSONObject();
-        historyWidgetParam.put("activityModuleName", FacilioConstants.Territory.TERRITORY);
+        historyWidgetParam.put("activityModuleName", FacilioConstants.Territory.TERRITORY_ACTIVITY);
 
         return new PagesContext(null, null, "", null, true, false, false)
                 .addWebTab("territorysummary", "SUMMARY", true, null)
@@ -50,7 +51,7 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
                 .widgetDone()
                 .sectionDone()
                 .addSection("territoryrelatedlist", "Related List", "List of related records across modules")
-                .addWidget("territorybulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, null)
+                .addWidget("territorybulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(getModuleName()))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -59,7 +60,7 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
                 .addWebTab("territoryhistory", "HISTORY", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
-                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -131,14 +132,20 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
     }
 
     private static JSONObject getSummaryWidgetGroup(boolean isMobile) throws Exception {
+        JSONObject commentWidgetParam = new JSONObject();
+        commentWidgetParam.put("activityModuleName", FacilioConstants.Territory.TERRITORY_NOTES);
+
+        JSONObject attachmentWidgetParam = new JSONObject();
+        attachmentWidgetParam.put("activityModuleName", FacilioConstants.Territory.TERRITORY_ATTACHMENTS);
+
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, null, null)
+                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, null, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

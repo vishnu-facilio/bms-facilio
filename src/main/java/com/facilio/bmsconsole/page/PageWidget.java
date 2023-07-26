@@ -590,7 +590,9 @@ public class PageWidget {
 		CURRENT_STATUS("currentStatus"),
 		SKILL("skill"),
 		TERRITORIES("territories"),
-		WORK_SCHEDULE("workSchedule");
+		WORK_SCHEDULE("workschedule"),
+		EMPLOYEE_LOCATION("employeeLocation"),
+		VENDOR_LOCATION("vendorLocation");
 		;
 
 		private String name;

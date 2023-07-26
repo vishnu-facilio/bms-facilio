@@ -213,6 +213,12 @@ public class APIModuleWidgets {
                 .addModuleWidget("workschedule","WORK SCHEDULE",PageWidget.WidgetType.WORK_SCHEDULE)
                     .addWidgetConfigs("flexiblewebworkschedule_60","WORK - SCHEDULE 60",60, PagesContext.PageLayoutType.WEB)
                 .done()
+                .addModuleWidget("employeeLocation","EMPLOYEE LOCATION",PageWidget.WidgetType.EMPLOYEE_LOCATION)
+                    .addWidgetConfigs("flexiblewebactivity_60","WORK - SCHEDULE 60",60, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("vendorLocation","VENDOR LOCATION",PageWidget.WidgetType.VENDOR_LOCATION)
+                    .addWidgetConfigs("flexiblewebactivity_60","WORK - SCHEDULE 60",60, PagesContext.PageLayoutType.WEB)
+                .done()
                 ;
     }
     @WidgetsForModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER)
