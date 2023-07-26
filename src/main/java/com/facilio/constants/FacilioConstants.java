@@ -2882,6 +2882,7 @@ public class FacilioConstants {
 			public static final String SERVICE_ORDER_NOTES = "serviceOrderNotes";
 			public static final String SERVICE_ORDER_ACTIVITY = "serviceOrderActivity";
 			public static final String SERVICE_TASK = "serviceTask";
+			public static final String SERVICE_INVENTORY_RESERVATION = "serviceInventoryReservation";
 			public static final String SERVICE_TASK_ATTACHMENTS = "serviceTaskAttachments";
 			public static final String SERVICE_TASK_SKILLS = "serviceTaskSkills";
 			public static final String SERVICE_ORDER_PLANNED_ITEMS = "serviceOrderPlannedItems";
