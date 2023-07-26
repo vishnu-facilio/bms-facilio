@@ -57,6 +57,7 @@ public class fsmAction extends V3Action {
 
     private String moduleName;
     private long appId = -1;
+    private String status;
 
     public String resourceList() throws Exception{
         FacilioChain chain = FSMReadOnlyChainFactory.fetchPeopleListChain();
@@ -119,6 +120,30 @@ public class fsmAction extends V3Action {
         setData(FacilioConstants.Dispatcher.DISPATCHER_LIST,context.get(FacilioConstants.Dispatcher.DISPATCHER_LIST));
         return SUCCESS;
     }
+    public String updateServiceAppointmentStatus() throws Exception{
+        switch(getStatus()){
+            case "schedule":
+                if((scheduledStartTime != null && scheduledStartTime > 0) && (scheduledEndTime != null && scheduledEndTime > 0)){
+                    ServiceAppointmentUtil.scheduleServiceAppointment(getId(),scheduledStartTime,scheduledEndTime);
+                } else {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Please specify scheduled start and end time");
+                }
+                break;
+            case "dispatch":
+                ServiceAppointmentUtil.dispatchServiceAppointment(getId(),getFieldAgentId());
+                break;
+            case "startWork":
+                ServiceAppointmentUtil.startServiceAppointment(getId());
+                break;
+            case "complete":
+                ServiceAppointmentUtil.completeServiceAppointment(getId());
+                break;
+            case "cancel":
+                ServiceAppointmentUtil.cancelServiceAppointment(getId());
+                break;
+        }
+        return SUCCESS;
+    }
     public String dispatchServiceAppointment() throws Exception {
 
         Map<String, Object> mapping = new HashMap<>();
@@ -142,12 +167,10 @@ public class fsmAction extends V3Action {
             mapping.put("scheduledEndTime",scheduledEndTime);
         }
 
-        if(!skipValidation){
-            ServiceAppointmentUtil.validateDispatch(appointmentId,mapping);
-        }
-
         if(MapUtils.isNotEmpty(mapping)) {
-            FacilioContext context = V3Util.updateBulkRecords(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, mapping, Collections.singletonList(appointmentId), false);
+            JSONObject bodyParams = new JSONObject();
+            bodyParams.put("skipValidation",skipValidation);
+            FacilioContext context = V3Util.updateBulkRecords(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, mapping, Collections.singletonList(appointmentId), bodyParams,null,false,false);
             HashMap<String,Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
             List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName"));
             if(CollectionUtils.isNotEmpty(serviceAppointments)) {
