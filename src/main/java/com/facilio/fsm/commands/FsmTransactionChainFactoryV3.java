@@ -49,6 +49,7 @@ public class FsmTransactionChainFactoryV3 {
     }
     public static FacilioChain getTaskBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetPlansCommandV3());
         c.addCommand(new ServiceTaskDurationUpdateCommandV3());
         return c;
     }
@@ -56,7 +57,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain afterSOCreateChain() {
         FacilioChain c = getDefaultChain();
         //for handling the activity
-        c.addCommand(new CreatePlansAndSkillsCommandV3());
+        c.addCommand(new UpdatePlansAndSkillsCommandV3());
         c.addCommand(new ConstructAddCustomActivityCommandV3());
         c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY));
         //for auto creating the Service appointment
@@ -67,6 +68,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain afterSOUpdateChain() {
         FacilioChain c = getDefaultChain();
         //for handling the activity
+        c.addCommand(new UpdatePlansAndSkillsCommandV3());
         c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY));
         //for auto creating the Service appointment
@@ -76,6 +78,7 @@ public class FsmTransactionChainFactoryV3 {
 
     public static FacilioChain getSOBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetTaskStatusCommandV3());
         c.addCommand(new VerifySOStatusUpdate());
         return c;
     }

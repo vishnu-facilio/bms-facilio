@@ -5,7 +5,6 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.*;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
@@ -15,7 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.List;
 import java.util.Map;
 
-public class CreatePlansAndSkillsCommandV3 extends FacilioCommand {
+public class UpdatePlansAndSkillsCommandV3 extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -31,35 +30,30 @@ public class CreatePlansAndSkillsCommandV3 extends FacilioCommand {
                         serviceOrderContext.setId(serviceTask.getServiceOrder().getId());
 
                         if(CollectionUtils.isNotEmpty(serviceTask.getServiceOrderPlannedItems())){
-                            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS);
                             List<ServiceOrderPlannedItemsContext> serviceOrderPlannedItems = serviceTask.getServiceOrderPlannedItems();
                             for(ServiceOrderPlannedItemsContext plannedItem: serviceOrderPlannedItems){
                                 plannedItem.setServiceTask(serviceTaskContext);
                                 plannedItem.setServiceOrder(serviceOrderContext);
                             }
-                            V3Util.createRecordList(module, FieldUtil.getAsMapList(serviceOrderPlannedItems, ServiceOrderPlannedItemsContext.class),null,null);
+                            serviceTask.setServiceOrderPlannedItems(serviceOrderPlannedItems);
                         }
                         if(CollectionUtils.isNotEmpty(serviceTask.getServiceOrderPlannedTools())){
-                            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS);
                             List<ServiceOrderPlannedToolsContext> serviceOrderPlannedTools = serviceTask.getServiceOrderPlannedTools();
                             for(ServiceOrderPlannedToolsContext plannedTool: serviceOrderPlannedTools){
                                 plannedTool.setServiceTask(serviceTaskContext);
                                 plannedTool.setServiceOrder(serviceOrderContext);
                             }
-                            V3Util.createRecordList(module, FieldUtil.getAsMapList(serviceOrderPlannedTools, ServiceOrderPlannedToolsContext.class),null,null);
+                            serviceTask.setServiceOrderPlannedTools(serviceOrderPlannedTools);
                         }
                         if(CollectionUtils.isNotEmpty(serviceTask.getServiceOrderPlannedServices())){
-                            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES);
                             List<ServiceOrderPlannedServicesContext> serviceOrderPlannedServices = serviceTask.getServiceOrderPlannedServices();
                             for(ServiceOrderPlannedServicesContext serviceOrderPlannedService : serviceOrderPlannedServices){
                                 serviceOrderPlannedService.setServiceTask(serviceTaskContext);
                                 serviceOrderPlannedService.setServiceOrder(serviceOrderContext);
                             }
-                            V3Util.createRecordList(module, FieldUtil.getAsMapList(serviceOrderPlannedServices, ServiceOrderPlannedServicesContext.class),null,null);
-
+                            serviceTask.setServiceOrderPlannedServices(serviceOrderPlannedServices);
                         }
                         if(CollectionUtils.isNotEmpty(serviceTask.getSkills())){
-                            FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_SKILLS);
                             List<ServiceTaskSkillsContext> serviceTaskSkills = serviceTask.getSkills();
                             for(ServiceTaskSkillsContext serviceTaskSkill : serviceTaskSkills){
                                 serviceTaskSkill.setLeft(serviceTaskContext);
@@ -68,11 +62,12 @@ public class CreatePlansAndSkillsCommandV3 extends FacilioCommand {
                                 serviceSkillContext.setId(serviceTaskSkill.getId());
                                 serviceTaskSkill.setRight(serviceSkillContext);
                             }
-                            V3Util.createRecordList(module, FieldUtil.getAsMapList(serviceTaskSkills, ServiceTaskSkillsContext.class),null,null);
+                            serviceTask.setSkills(serviceTaskSkills);
                         }
-                    }
-        }
 
+                    }
+            V3Util.processAndUpdateBulkRecords(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK), recordMap.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK),  FieldUtil.getAsMapList(serviceTasks, ServiceTaskContext.class)  ,null,null,null,null,null,null,null,null,false,false);
+        }
         return false;
     }
 }

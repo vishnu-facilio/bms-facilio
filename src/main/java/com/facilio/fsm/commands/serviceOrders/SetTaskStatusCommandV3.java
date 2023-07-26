@@ -26,7 +26,9 @@ public class SetTaskStatusCommandV3  extends FacilioCommand {
                 if(serviceOrder!=null && CollectionUtils.isNotEmpty(serviceOrder.getServiceTask())){
                     List<ServiceTaskContext> serviceTasks = serviceOrder.getServiceTask();
                     for(ServiceTaskContext serviceTask : serviceTasks){
-                        serviceTask.setStatus(ServiceTaskContext.ServiceTaskStatus.NEW.getIndex());
+                        if(serviceTask.getStatus()==null){
+                            serviceTask.setStatus(ServiceTaskContext.ServiceTaskStatus.NEW.getIndex());
+                        }
                     }
                     subForm.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, FieldUtil.getAsMapList(serviceTasks, ServiceTaskContext.class));
                     serviceOrder.setSubForm(subForm);
