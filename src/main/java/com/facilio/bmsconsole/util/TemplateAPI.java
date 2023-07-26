@@ -16,6 +16,7 @@ import javax.xml.bind.JAXBContext;
 
 import com.facilio.bmsconsole.templates.*;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.emailtemplate.util.EmailStructureUtil;
 import com.facilio.modules.*;
@@ -749,7 +750,23 @@ public class TemplateAPI {
 		FileStore fs = FacilioFactory.getFileStore();
 		fs.deleteFile(contentId);
 	}
-	
+
+	public static Template getTemplate(String templateName, Template.Type type) throws Exception{
+		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getTemplateFields())
+				.table(ModuleFactory.getTemplatesModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("NAME","name",templateName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("TEMPLATE_TYPE","type", String.valueOf(type.getIntVal()),NumberOperators.EQUALS));
+
+		List<Map<String, Object>> templates = selectBuider.get();
+
+		if(templates != null && !templates.isEmpty()) {
+			Map<String, Object> templateMap = templates.get(0);
+			return getExtendedTemplate(templateMap);
+		}
+		return null;
+	}
+
 	public static Template getTemplate(long orgId, String templateName, Template.Type type) throws Exception {
 		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getTemplateFields())

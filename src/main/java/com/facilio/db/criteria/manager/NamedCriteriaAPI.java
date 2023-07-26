@@ -9,6 +9,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -74,6 +75,19 @@ public class NamedCriteriaAPI {
         conditionBuilder.save();
 
         return namedCriteria.getId();
+    }
+
+    public static NamedCriteria getNamedCriteria(String name)throws Exception{
+        if (name == null){
+            return null;
+        }
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getNamedCriteriaModule().getTableName())
+                .select(FieldFactory.getNamedCriteriaFields())
+                .andCondition(CriteriaAPI.getCondition("NAME","name",name, StringOperators.IS));
+        NamedCriteria namedCriteria = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), NamedCriteria.class);
+        populateChildren(Collections.singletonList(namedCriteria));
+        return namedCriteria;
     }
 
     public static NamedCriteria getNamedCriteria(long id) throws Exception {

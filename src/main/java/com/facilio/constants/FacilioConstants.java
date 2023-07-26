@@ -1777,6 +1777,7 @@ public class FacilioConstants {
 		public static final String CURRENT_LOCATION = "currentLocation";
 		public static final String MAP_QR = "mapqr";
 
+		public static final String STATE_FLOW_PUBLISH = "stateflowPublish";
 		public static final String PUBLISH_DATA = "publishData";
 		public static final String PUBLISH_SUCCESS = "publishSuccess";
 		public static final String PUBLISH_FAILURE = "publishFailure";

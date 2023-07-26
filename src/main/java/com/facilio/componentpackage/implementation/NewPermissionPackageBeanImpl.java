@@ -102,6 +102,11 @@ public class NewPermissionPackageBeanImpl implements PackageBean<NewPermission> 
     }
 
     @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
+    }
+
+    @Override
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         List<Map<String, Object>> tabProp = getTabProp();
         List<Map<String, Object>> roleProp = getRoleProp();
@@ -122,11 +127,6 @@ public class NewPermissionPackageBeanImpl implements PackageBean<NewPermission> 
                 addNewPermission(newPermission);
             }
         }
-    }
-
-    @Override
-    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
-
     }
 
     @Override

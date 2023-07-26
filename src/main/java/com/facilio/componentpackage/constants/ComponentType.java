@@ -38,7 +38,7 @@ public enum ComponentType implements FacilioIntEnum {
     USER(null, APP, false),
     TEAM(null, APP, false),
     SITE(null, null, false),
-
+    TICKET_STATUS(TicketStatePackageBeanImpl.class, MODULE, false),
     FUNCTION_NAMESPACE(FunctionNameSpacePackageBeanImpl.class, null, false),
     FUNCTION(FunctionPackageBeanImpl.class, FUNCTION_NAMESPACE, true),
     EMAIL_TEMPLATE(EmailTemplatePackageBeanImpl.class, MODULE, false),
@@ -53,7 +53,9 @@ public enum ComponentType implements FacilioIntEnum {
     NAMED_CRITERIA(NamedCriteriaPackageBeanImpl.class, MODULE, false),
     CUSTOM_BUTTON(null, MODULE, false),
     RELATIONSHIP(RelationshipPackageBeanImpl.class, MODULE, false),
-    PERMISSION(NewPermissionPackageBeanImpl.class, null, false)
+    STATE_FLOW(StateFlowPackageBeanImpl.class,MODULE,false),
+    PERMISSION(NewPermissionPackageBeanImpl.class, null, false),
+    STATE_TRANSITION(StateTransitionPackageBeanImpl.class,MODULE,false)
     ;
 
     public static final List<ComponentType> ORDERED_COMPONENT_TYPE_LIST = Collections.unmodifiableList(initOrderedList());
@@ -92,11 +94,13 @@ public enum ComponentType implements FacilioIntEnum {
             add(VALIDATION_RULE);
             add(CUSTOM_BUTTON);
             add(WORKFLOW_RULE);
-
+            add(TICKET_STATUS);
             add(APP_LAYOUT);
             add(WEBTAB_GROUP);
             add(WEBTAB);
             add(PERMISSION);
+            add(STATE_FLOW);
+            add(STATE_TRANSITION);
         }};
         return componentOrder;
     }

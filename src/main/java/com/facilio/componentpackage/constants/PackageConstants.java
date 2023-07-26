@@ -82,6 +82,7 @@ public class PackageConstants {
     public static class AppXMLConstants {
         public static final String DUPLICATE_APPLICATION_ERROR = "Application with name already present";
         public static final String APPLICATION_NAME = "ApplicationName";
+        public static final String APPLICATION = "application";
         public static final String APPLICATION_ID = "ApplicationId";
         public static final String APP_CATEGORY = "AppCategory";
         public static final String DESCRIPTION = "Description";
@@ -276,6 +277,15 @@ public class PackageConstants {
         public static final String ACTION_FIELD_NAME = "Action_Field_Name";
         public static final String ACTION_FIELD_VALUE = "Action_Field_Value";
         public static final String CONTAINS_RECORD_ID_MAP = "Contains_Record_Id_Map";
+
+        public static final String EMAIL_STRUCTURE_ID = "emailStructureId";
+
+        public static final String EMAIL_STRUCTURE_NAME ="emailStructureName";
+
+        public static final String FROM_ADDR = "fromAddr";
+        public static final String WORKFLOW = "workflow";
+        public static final String EXPRESSIONS = "expressions";
+        public static final String PARAMETERS = "parameters";
         public static final String FIELD_CHANGE_FIELDS = "Field_Change_Fields";
         public static final String CHANGE_FIELD_NAME = "Change_Field_Name";
     }

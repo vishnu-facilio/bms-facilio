@@ -51,9 +51,15 @@ public class AddOrUpdateStateFlowCommand extends FacilioCommand {
 			stateFlow.setRuleType(RuleType.STATE_FLOW);
 
 			boolean add = false;
+			boolean publish = (boolean) context.getOrDefault(FacilioConstants.ContextNames.STATE_FLOW_PUBLISH,false);
+
+
 			if (stateFlow.getId() < 0) {
 				add = true;
-				if (!stateFlow.isDefaltStateFlow()) {
+				if (publish){
+					stateFlow.setDraft(stateFlow.isDraft());
+				}
+				else if (!stateFlow.isDefaltStateFlow()) {
 					stateFlow.setDraft(true);
 				}
 			}

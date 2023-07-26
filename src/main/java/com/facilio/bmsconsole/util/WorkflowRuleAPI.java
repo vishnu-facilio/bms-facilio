@@ -411,6 +411,25 @@ public class WorkflowRuleAPI {
 		return updateBuilder.update(FieldUtil.getAsProperties(extendedRule));
 	}
 
+	public static WorkflowRuleContext getWorkflowRule(String name, FacilioModule module, RuleType type) throws Exception{
+		if (name == null && module == null && type == null){
+			return null;
+		}
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("NAME","name",name,StringOperators.IS));
+		criteria.addAndCondition(CriteriaAPI.getCondition("MODULEID","moduleId", String.valueOf(module.getModuleId()),NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE","ruleType", String.valueOf(type.getIntVal()),NumberOperators.EQUALS));
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table("Workflow_Rule")
+				.select(FieldFactory.getWorkflowRuleFields())
+				.andCriteria(criteria);
+
+		WorkflowRuleContext workflowRule = FieldUtil.getAsBeanFromMap(builder.fetchFirst(),WorkflowRuleContext.class);
+		return  workflowRule;
+	}
+
 	public static WorkflowRuleContext getWorkflowRule (long ruleId) throws Exception {
 		return getWorkflowRule(ruleId, true, true);
 	}
