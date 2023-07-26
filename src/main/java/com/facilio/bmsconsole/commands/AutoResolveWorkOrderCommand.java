@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderModuleSettingContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.bmsconsoleV3.util.V3WorkOrderModuleSettingAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -16,6 +17,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
@@ -24,9 +29,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * AutoResolveWorkOrderCommand checks for the following conditions and changes the state of WorkOrder to the configured
@@ -51,6 +54,10 @@ public class AutoResolveWorkOrderCommand extends FacilioCommand {
         FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 
         TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK); // need ot check
+        if(task == null){
+            LOGGER.info("task object is null");
+            return false;
+        }
         V3WorkOrderContext workOrderContext = (V3WorkOrderContext) V3Util.getRecord(workOrderModule.getName(), task.getParentTicketId(), null);
         if (workOrderContext == null) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "No such WorkOrder available with ID " + task.getParentTicketId());
@@ -68,17 +75,55 @@ public class AutoResolveWorkOrderCommand extends FacilioCommand {
             return false;
         }
 
-        // Get the maximum Modified Time of all tasks
-        Long maxModifiedTimeOfTask = getMaximumModifiedTimeOfAllTasks(taskList);
-        V3WorkOrderContext workOrderContextToBeUpdated = new V3WorkOrderContext();
-        workOrderContextToBeUpdated.setId(workOrderContext.getId());
-        workOrderContextToBeUpdated.setOfflineModifiedTime(maxModifiedTimeOfTask);
-        workOrderContextToBeUpdated.setModuleState(workOrderContext.getModuleState());
+        long modifiedTimeOfWorkOrder;
+        LOGGER.info("task offline modified time: " + task.getOfflineModifiedTime());
+        //V3WorkOrderContext workOrderContextToBeUpdated = workOrderContext;
+        //workOrderContextToBeUpdated.setId(workOrderContext.getId());
+        if(task.getOfflineModifiedTime() != -1) {
+            // Get the maximum Modified Time of all tasks
+            Long maxModifiedTimeOfTask = getMaximumModifiedTimeOfAllTasks(taskList);
+            workOrderContext.setOfflineModifiedTime(maxModifiedTimeOfTask);
+            LOGGER.info("Setting maxModifiedTimeOfTask: " + maxModifiedTimeOfTask);
+            modifiedTimeOfWorkOrder = maxModifiedTimeOfTask;
+        }else {
+            modifiedTimeOfWorkOrder = System.currentTimeMillis();
+        }
+        //workOrderContextToBeUpdated.setModuleState(workOrderContext.getModuleState());
         // Move to the state in Auto Resolve Setting
-        StateFlowRulesAPI.updateState(workOrderContextToBeUpdated, workOrderModule, autoResolveState, false, context);
+        StateFlowRulesAPI.updateState(workOrderContext, workOrderModule, autoResolveState, false, context);
+
+        // Add workorder object into recordMap as its required to execute the workflows and send notification
+        Map<String, List<ModuleBaseWithCustomFields>> contextRecordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+        if(contextRecordMap == null || contextRecordMap.isEmpty()) {
+            Map<String, List<ModuleBaseWithCustomFields>> recordMap = new HashMap<>();
+            recordMap.put(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(workOrderContext));
+            Constants.setRecordMap(context, recordMap);
+        }else {
+            contextRecordMap.put(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(workOrderContext));
+            context.put(FacilioConstants.ContextNames.RECORD_MAP, contextRecordMap);
+        }
+
+        // Update WorkOrder modifiedTime here
+        updateWorkOrderModifiedTime(modBean, workOrderModule, workOrderContext, modifiedTimeOfWorkOrder);
 
         context.put(FacilioConstants.ContextNames.RELOAD_WORK_ORDER, true);
         return false;
+    }
+
+    /**
+     * Helper function to update the workorder modifiedTime. This is done manually here, as we do state update manuaully,
+     * where update of record's modifiedTime won't happen.
+     * @param modBean
+     * @param workOrderModule
+     * @param workOrderContext
+     * @param lastModifiedTimeOfWorkOrder
+     * @throws Exception
+     */
+    private void updateWorkOrderModifiedTime(ModuleBean modBean, FacilioModule workOrderModule, V3WorkOrderContext workOrderContext, long lastModifiedTimeOfWorkOrder) throws Exception {
+        workOrderContext.setModifiedTime(lastModifiedTimeOfWorkOrder);
+        List<FacilioField> workOrderFields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+        Map<String, FacilioField> workOrderFieldsMap = FieldFactory.getAsMap(workOrderFields);
+        V3RecordAPI.updateRecord(workOrderContext, workOrderModule, Collections.singletonList(workOrderFieldsMap.get("modifiedTime")));
     }
 
     /**

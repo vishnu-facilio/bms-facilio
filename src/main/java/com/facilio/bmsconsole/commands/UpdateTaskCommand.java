@@ -184,9 +184,9 @@ public class UpdateTaskCommand extends FacilioCommand {
 				}
 			} 
 			
-			
+
 			if (!task.isPreRequest()) {
-				updateParentTicketStatus(context, taskActivity, oldTasks.get(0));
+				updateParentTicketStatus(context, taskActivity, oldTasks.get(0), task);
 			}
 			
 			String ids = StringUtils.join(recordIds, ",");
@@ -224,7 +224,7 @@ public class UpdateTaskCommand extends FacilioCommand {
 	}
 	
 	
-	private void updateParentTicketStatus(Context context, EventType activityType, TaskContext task) throws Exception {
+	private void updateParentTicketStatus(Context context, EventType activityType, TaskContext task, TaskContext newTask) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		modBean.getModule(FacilioConstants.ContextNames.TASK);
@@ -252,6 +252,13 @@ public class UpdateTaskCommand extends FacilioCommand {
 		}
 		
 		WorkOrderContext ticket = tickets.get(0);
+		/*
+			Adding the Task offlineModifiedTime as Ticket OfflineModifiedTime so that if the status is
+		 	changed in this task update API call, it doesn't task current systemTime, which causes ordering issue.
+		 */
+		if(newTask.getOfflineModifiedTime() != -1){
+			ticket.setOfflineModifiedTime(newTask.getOfflineModifiedTime());
+		}
 		
 		if (ticket.getStateFlowId() > 0) {
 			FacilioStatus statusObj = ticket.getModuleState();

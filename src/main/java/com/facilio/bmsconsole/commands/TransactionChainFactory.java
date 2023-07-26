@@ -1536,6 +1536,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateClosedTasksCounterCommand());
 			c.addCommand(new AutoResolveWorkOrderCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new AddActivitiesCommand());
 			c.addCommand(new UpdateRdmWithLatestInputUnit());
 			c.addCommand(new SiUnitConversionToEnteredReadingUnit());
