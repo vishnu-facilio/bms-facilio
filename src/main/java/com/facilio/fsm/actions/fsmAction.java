@@ -14,6 +14,7 @@ import com.facilio.fsm.commands.FSMReadOnlyChainFactory;
 import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
 import com.facilio.fsm.context.DispatcherEventContext;
 import com.facilio.fsm.context.ServiceAppointmentContext;
+import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
@@ -183,6 +184,8 @@ public class fsmAction extends V3Action {
                     dispatcherSAEvent.setAllowReschedule(true);
                     dispatcherSAEvent.setStartTime(serviceAppointment.getScheduledStartTime());
                     dispatcherSAEvent.setEndTime(serviceAppointment.getScheduledEndTime());
+                    ServiceAppointmentTicketStatusContext saStatus = serviceAppointment.getStatus();
+                    dispatcherSAEvent.setBackgroundColor(saStatus.getColor());
                 }
             }
         }
