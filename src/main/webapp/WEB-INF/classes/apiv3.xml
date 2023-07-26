@@ -1990,5 +1990,11 @@
             <param name="id">{1}</param>
             <param name="status">{2}</param>
         </action>
+        <action name="updateStatus/serviceOrder/*/*/*" class="com.facilio.fsm.actions.ServiceOrderAction" method="updateServiceOrders">
+            <param name="moduleName">serviceOrder</param>
+            <param name="orderId">{1}</param>
+            <param name="status">{2}</param>
+            <param name="skipValidation">{3}</param>
+        </action>
     </package>
 </struts>

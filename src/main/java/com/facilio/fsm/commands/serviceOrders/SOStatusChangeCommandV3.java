@@ -3,7 +3,10 @@ package com.facilio.fsm.commands.serviceOrders;
 import com.facilio.command.FacilioCommand;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +23,12 @@ public class SOStatusChangeCommandV3 extends FacilioCommand {
         for(ServiceOrderContext order : dataList) {
             if(order.getStatus() < 0){
                 if(order.isAutoCreateSa()){
+                    if(CollectionUtils.isEmpty(order.getServiceTask())){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR,"Atleast One Task must be present when AutoCreate SA is enabled");
+                    }
+                    if(order.getPreferredStartTime() == null || order.getPreferredEndTime() == null || order.getPreferredStartTime() < 0 || order.getPreferredEndTime() < 0){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR,"Scheduled Start and End time are mandatory when AutoCreate SA is enabled");
+                    }
                     order.setStatus(ServiceOrderContext.ServiceOrderStatus.SCHEDULED);
                 }
                 else {

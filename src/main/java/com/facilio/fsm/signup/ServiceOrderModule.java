@@ -620,6 +620,13 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField assetField = moduleBean.getField("asset", moduleName);
 
         FacilioField fieldAgentField = moduleBean.getField("fieldAgent", moduleName);
+//        FacilioField agentNameField = moduleBean.getField("role", FacilioConstants.ContextNames.PEOPLE);
+
+//        SummaryWidgetGroupFields secondLevelLookupField = new SummaryWidgetGroupFields();
+//        secondLevelLookupField.setParentLookupFieldId(fieldAgentField.getFieldId());
+//        secondLevelLookupField.setFieldId(agentNameField.getFieldId());
+//        secondLevelLookupField.setDisplayName();
+
         FacilioField vendorField = moduleBean.getField("vendor", moduleName);
         FacilioField clientField = moduleBean.getField("client", moduleName);
 
@@ -640,6 +647,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
+        widgetGroup.setDisplayName("General Information");
 
         addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1 , 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, categoryField, 1 , 2, 1);
@@ -652,41 +660,75 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         addSummaryFieldInWidgetGroup(widgetGroup, descriptionField, 3 , 1, 4);
 
-        addSummaryFieldInWidgetGroup(widgetGroup, siteField, 4 , 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, locationField, 4 , 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, spaceField, 4 , 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, assetField, 4 , 4, 1);
+        SummaryWidgetGroup siteWidgetGroup = new SummaryWidgetGroup();
+        siteWidgetGroup.setDisplayName("Site Information");
 
-        addSummaryFieldInWidgetGroup(widgetGroup, fieldAgentField, 5 , 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, vendorField, 5, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, clientField, 5, 3, 1);
+        addSummaryFieldInWidgetGroup(siteWidgetGroup, siteField, 1 , 1, 1);
+        addSummaryFieldInWidgetGroup(siteWidgetGroup, locationField, 1 , 2, 1);
+        addSummaryFieldInWidgetGroup(siteWidgetGroup, spaceField, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(siteWidgetGroup, assetField, 1 , 4, 1);
 
-        addSummaryFieldInWidgetGroup(widgetGroup, prefStartTimeField, 6 , 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, prefEndTimeField, 6, 2, 1);
+        SummaryWidgetGroup userDetailsWidgetGroup = new SummaryWidgetGroup();
+        userDetailsWidgetGroup.setDisplayName("User Details");
 
-        addSummaryFieldInWidgetGroup(widgetGroup, responseDueDurationField, 7 , 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, resolutionDueDurationField, 7, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, responseDueDateField, 7 , 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, resolutionDueDateField, 7 , 4, 1);
+        addSummaryFieldInWidgetGroup(userDetailsWidgetGroup, fieldAgentField, 1 , 1, 1);
+        addSummaryFieldInWidgetGroup(userDetailsWidgetGroup, vendorField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(userDetailsWidgetGroup, clientField, 1, 3, 1);
 
-        addSummaryFieldInWidgetGroup(widgetGroup, responseDueStatusField, 8 , 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, resolutionDueStatusField, 8, 2, 1);
+        SummaryWidgetGroup scheduleAndAppointmentWidgetGroup = new SummaryWidgetGroup();
+        scheduleAndAppointmentWidgetGroup.setDisplayName("Schedule and Appointment");
+
+        addSummaryFieldInWidgetGroup(scheduleAndAppointmentWidgetGroup, prefStartTimeField, 1 , 1, 1);
+        addSummaryFieldInWidgetGroup(scheduleAndAppointmentWidgetGroup, prefEndTimeField, 1, 2, 1);
+
+        SummaryWidgetGroup slaWidgetGroup = new SummaryWidgetGroup();
+        slaWidgetGroup.setDisplayName("SLA Details");
+
+        addSummaryFieldInWidgetGroup(slaWidgetGroup, responseDueDurationField, 1 , 1, 1);
+        addSummaryFieldInWidgetGroup(slaWidgetGroup, resolutionDueDurationField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(slaWidgetGroup, responseDueDateField, 1 , 3, 1);
+        addSummaryFieldInWidgetGroup(slaWidgetGroup, resolutionDueDateField, 1 , 4, 1);
+
+        addSummaryFieldInWidgetGroup(slaWidgetGroup, responseDueStatusField, 2 , 1, 1);
+        addSummaryFieldInWidgetGroup(slaWidgetGroup, resolutionDueStatusField, 2, 2, 1);
+
+        SummaryWidgetGroup systemWidgetGroup = new SummaryWidgetGroup();
+        systemWidgetGroup.setDisplayName("System Details");
+
+        addSummaryFieldInWidgetGroup(systemWidgetGroup, sysCreatedByField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(systemWidgetGroup, sysCreatedTimeField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(systemWidgetGroup, sysModifiedByField,1, 3, 1);
+        addSummaryFieldInWidgetGroup(systemWidgetGroup, sysModifiedTimeField, 1, 4, 1);
 
 
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedByField, 9, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedTimeField, 9, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedByField,9, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTimeField, 9, 4, 1);
-
-
-        widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("Module Details");
+        widgetGroup.setName("generalInformation");
         widgetGroup.setColumns(4);
+
+        siteWidgetGroup.setName("siteInformation");
+        siteWidgetGroup.setColumns(4);
+
+        userDetailsWidgetGroup.setName("userDetails");
+        userDetailsWidgetGroup.setColumns(4);
+
+        scheduleAndAppointmentWidgetGroup.setName("scheduleAndAppointment");
+        scheduleAndAppointmentWidgetGroup.setColumns(4);
+
+        slaWidgetGroup.setName("slaDetails");
+        slaWidgetGroup.setColumns(4);
+
+        systemWidgetGroup.setName("systemDetails");
+        systemWidgetGroup.setColumns(4);
 
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(widgetGroup);
+        widgetGroupList.add(siteWidgetGroup);
+        widgetGroupList.add(userDetailsWidgetGroup);
+        widgetGroupList.add(scheduleAndAppointmentWidgetGroup);
+        widgetGroupList.add(slaWidgetGroup);
+        widgetGroupList.add(systemWidgetGroup);
 
-        pageWidget.setDisplayName("");
+        pageWidget.setName("serviceOrderDetails");
+        pageWidget.setDisplayName("Service Order Details");
         pageWidget.setModuleId(module.getModuleId());
         pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
         pageWidget.setGroups(widgetGroupList);

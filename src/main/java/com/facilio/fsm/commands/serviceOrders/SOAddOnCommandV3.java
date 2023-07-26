@@ -35,6 +35,14 @@ public class SOAddOnCommandV3 extends FacilioCommand {
             } else {
                 throw new RESTException(ErrorCode.VALIDATION_ERROR,"Site Cannot be Null for Service Order");
             }
+
+            if(order.getName() == null || order.getName().isEmpty()){
+                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order Name Cannot be empty");
+            }
+
+            if(order.getPriority() < 0){
+                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Priority is mandatory for Service Order");
+            }
         }
         recordMap.put(moduleName,serviceOrdersNew);
         context.put(Constants.RECORD_MAP,recordMap);

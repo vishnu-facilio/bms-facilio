@@ -19,25 +19,29 @@ public class VerifySOStatusUpdate extends FacilioCommand {
         HashMap<String,Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
         List<ServiceOrderContext> dataList = (List<ServiceOrderContext>) recordMap.get(moduleName);
         for(ServiceOrderContext order : dataList) {
-            if(order.getStatus() == ServiceOrderContext.ServiceOrderStatus.CLOSED.getIndex()){
-                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order cannot be edited in Cancelled State");
-            }
             ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,order.getId());
+            if(serviceOrderInfo.getStatus() == ServiceOrderContext.ServiceOrderStatus.CLOSED.getIndex()){
+                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order cannot be edited in Closed State");
+            }
+            if(order.getSite() != null && serviceOrderInfo.getSite().getId() != order.getSite().getId()){
+                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Site Cannot be modified for Service Order");
+            }
 
-//            if(serviceOrderInfo.getSite() != order.getSite()){
-//                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Site Cannot be modified for Service Order");
-//            }
-//
-//            if(serviceOrderInfo.getName() != order.getName()){
-//                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order Name Cannot be modified");
-//            }
+            if(!serviceOrderInfo.getName().equals(order.getName())){
+                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order Name Cannot be modified");
+            }
+            if(serviceOrderInfo.getTerritory() != null){
+                if(order.getTerritory()!=null && serviceOrderInfo.getTerritory().getId() != order.getTerritory().getId()){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Territory Cannot be modified for Service Order");
+                }
+            } else {
+                if(order.getTerritory()!=null){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Territory Cannot be modified for Service Order");
+                }
+            }
 
-//            if(serviceOrderInfo.getTerritory() != order.getTerritory()){
-//                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Territory Cannot be modified for Service Order");
-//            }
-
-            if(order.getStatus() == ServiceOrderContext.ServiceOrderStatus.COMPLETED.getIndex()){
-                //add SA complete logic
+            if(serviceOrderInfo.isAutoCreateSa() != order.isAutoCreateSa()){
+                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Auto-Create SA Cannot be modified for Service Order");
             }
         }
         return false;

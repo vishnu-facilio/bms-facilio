@@ -13,7 +13,7 @@ public class FsmTransactionChainFactoryV3 {
         return FacilioChain.getTransactionChain();
     }
 
-    public static FacilioChain getServiceOrderBeforeSaveCreateChain() {
+    public static FacilioChain getSOBeforeSaveCreateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetTaskStatusCommandV3());
         c.addCommand(new SOStatusChangeCommandV3());
@@ -64,10 +64,10 @@ public class FsmTransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain afterSOUpdaqteChain() {
+    public static FacilioChain afterSOUpdateChain() {
         FacilioChain c = getDefaultChain();
         //for handling the activity
-        c.addCommand(new ConstructAddCustomActivityCommandV3());
+        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.CUSTOM_ACTIVITY));
         //for auto creating the Service appointment
 //        c.addCommand(new AutoCreateSA());
