@@ -194,7 +194,7 @@ public class AssetPageFactory extends PageFactory {
 
 
 			// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
-			if ((isDemoOrg() && asset.isConnected())
+			if ((isDemoOrg() && asset.isConnected() && AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS))
 					|| (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))
 					|| (AccountUtil.getCurrentOrg().getOrgId() == 253)
 					|| (AccountUtil.getCurrentOrg().getOrgId() == 323)
