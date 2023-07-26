@@ -108,8 +108,6 @@ public class fetchDispatcherEventsCommand extends FacilioCommand {
                 if(CollectionUtils.isNotEmpty(pplTimeOff)) {
                     for(TimeOffContext timeOffEvent : pplTimeOff) {
                         DispatcherEventContext dispatcherTOEvent = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(timeOffEvent), DispatcherEventContext.class);
-//                        String enumVal = (String) timeOffEnum.get(dispatcherTOEvent.getType());
-//                        dispatcherTOEvent.setTypeEnum(enumVal);
                         dispatcherTOEvent.setEventType(DispatcherEventContext.EventType.TIME_OFF.getIndex());
                         dispatcherTOEvent.setTimeOff(timeOffEvent);
                         TimeOffTypeContext timeOffType = timeOffEvent.getType();

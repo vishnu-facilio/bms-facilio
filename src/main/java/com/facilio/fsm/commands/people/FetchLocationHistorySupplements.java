@@ -1,4 +1,4 @@
-package com.facilio.fsm.commands;
+package com.facilio.fsm.commands.people;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FetchPeopleTerritorySupplementsCommand extends FacilioCommand {
-
+public class FetchLocationHistorySupplements extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -22,17 +21,12 @@ public class FetchPeopleTerritorySupplementsCommand extends FacilioCommand {
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<SupplementRecord> fetchLookupsList = new ArrayList<>();
         SupplementRecord people = (SupplementRecord) fieldsAsMap.get("people");
-        SupplementRecord territory = (SupplementRecord) fieldsAsMap.get("territory");
 
 
         fetchLookupsList.add(people);
-        fetchLookupsList.add(territory);
 
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
         return false;
     }
-
 }
-
-

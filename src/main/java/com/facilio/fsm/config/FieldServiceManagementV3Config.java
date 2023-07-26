@@ -6,6 +6,11 @@ import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.commands.*;
+import com.facilio.fsm.commands.people.FetchLocationHistorySupplements;
+import com.facilio.fsm.commands.people.FetchPeopleSkillLevelSupplementsCommand;
+import com.facilio.fsm.commands.people.FetchPeopleTerritorySupplementsCommand;
+import com.facilio.fsm.commands.people.updatePeopleLocationHistoryCommand;
+import com.facilio.fsm.commands.serviceAppointment.FetchServiceAppointmentSupplementsCommand;
 import com.facilio.fsm.commands.serviceOrders.SetServiceTaskCommandV3;
 import com.facilio.fsm.commands.serviceTasks.LoadTaskPlansCommandV3;
 import com.facilio.fsm.context.*;

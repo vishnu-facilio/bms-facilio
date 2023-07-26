@@ -3,6 +3,7 @@ package com.facilio.fsm.commands;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.GenerateSearchConditionCommand;
 import com.facilio.chain.FacilioChain;
+import com.facilio.fsm.commands.serviceAppointment.FetchServiceAppointmentListCommand;
 
 public class FSMReadOnlyChainFactory {
     private static FacilioChain getDefaultChain() {

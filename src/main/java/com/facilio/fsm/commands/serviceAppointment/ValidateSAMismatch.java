@@ -1,4 +1,4 @@
-package com.facilio.fsm.commands;
+package com.facilio.fsm.commands.serviceAppointment;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
@@ -41,7 +41,7 @@ public class ValidateSAMismatch extends FacilioCommand {
         List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName"));
         StringBuilder errors=new StringBuilder();
 
-        if(CollectionUtils.isNotEmpty(serviceAppointments) && !skipValidation) {
+        if(CollectionUtils.isNotEmpty(serviceAppointments)) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
                 if(serviceAppointment.getFieldAgent() != null){
                     V3PeopleContext fieldAgent = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,serviceAppointment.getFieldAgent().getId(),V3PeopleContext.class);
@@ -101,7 +101,11 @@ public class ValidateSAMismatch extends FacilioCommand {
                         }
                     }
                     if(StringUtils.isNotEmpty(errors)){
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR,errors.toString());
+                        if(!skipValidation) {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, errors.toString());
+                        } else {
+                            serviceAppointment.setMismatch(true);
+                        }
                     }
                 }
             }

@@ -1,4 +1,4 @@
-package com.facilio.fsm.commands;
+package com.facilio.fsm.commands.serviceAppointment;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;

@@ -3,6 +3,10 @@ package com.facilio.fsm.commands;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fsm.commands.serviceAppointment.SetDefaultAppointmentTypeCommand;
+import com.facilio.fsm.commands.serviceAppointment.ValidateSAMismatch;
+import com.facilio.fsm.commands.serviceAppointment.rollUpServiceTaskCommand;
+import com.facilio.fsm.commands.serviceAppointment.rollupServiceAppointmentFieldsCommand;
 import com.facilio.fsm.commands.serviceOrders.*;
 import com.facilio.fsm.commands.serviceTasks.*;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
@@ -98,6 +102,7 @@ public class FsmTransactionChainFactoryV3 {
 
     public static FacilioChain getServiceAppointmentBeforeCreateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetDefaultAppointmentTypeCommand());
         c.addCommand(new rollupServiceAppointmentFieldsCommand());
         c.addCommand(new ValidateSAMismatch());
         return c;

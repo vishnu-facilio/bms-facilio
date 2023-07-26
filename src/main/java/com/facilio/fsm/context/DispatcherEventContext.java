@@ -9,14 +9,11 @@ import lombok.Setter;
 public class DispatcherEventContext {
     private Long startTime;
     private Long endTime;
-    private int type;
-    private String typeEnum;
     private TimeOffContext timeOff;
     private ServiceAppointmentContext serviceAppointmentContext;
     private boolean allowResize = false;
     private boolean allowReschedule = false;
     private String backgroundColor = "#058545";
-    private boolean isMismatch = false;
     private EventType eventType;
     public Integer getEventType() {
         if (eventType != null) {
