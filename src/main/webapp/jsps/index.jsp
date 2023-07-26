@@ -144,6 +144,13 @@
         placeHolderParams.put("identityServerURL", identityServerURL);
         placeHolderParams.put("isGoogleAnalytics", Boolean.toString(isGoogleAnalytics));
 
+        String isExport = request.getHeader("X-Is-Export");
+
+        if(isExport != null && isExport.equals("true")) {
+            placeHolderParams.put("dataDogClientId", "");
+            placeHolderParams.put("isGoogleAnalytics", "false");
+            FacilioIndexJsp.LOGGER.info("Disabling tracking scripts for puppeteer page load.");
+        }
 
         /* Fetch index.html from s3 and replace placeholders. For index.html contents refer
            index.hbs in client repo
