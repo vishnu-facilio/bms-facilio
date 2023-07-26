@@ -51,7 +51,8 @@ public class AddDefaultLicenseCommand extends FacilioCommand {
             AccountUtil.FeatureLicense.PERMISSION_SET,
             AccountUtil.FeatureLicense.IMPORT_DATA,
             AccountUtil.FeatureLicense.FIELD_LIST_PERMISSION,
-            AccountUtil.FeatureLicense.PLANNED_INVENTORY
+            AccountUtil.FeatureLicense.PLANNED_INVENTORY,
+            AccountUtil.FeatureLicense.NEW_SCHEDULED_WORKFLOW_RULE
             // Add new default licenses here
     )));
 

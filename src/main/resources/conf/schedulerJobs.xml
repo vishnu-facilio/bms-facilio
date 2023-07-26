@@ -257,4 +257,6 @@
 
 	<job name="DeleteDataLogsRecordsJob" classname="com.facilio.bmsconsole.jobs.DeleteDataLogsRecordsJob" transactionTimeout="7200000"/>
 
+	<job name="DeleteWorkflowRuleLogsRecordsJob" classname="com.facilio.bmsconsole.jobs.DeleteWorkflowRuleLogsRecordsJob" transactionTimeout="600000"/>
+
 </scheduler>

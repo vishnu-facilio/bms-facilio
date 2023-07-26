@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
@@ -13,7 +14,11 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.taskengine.ScheduleInfo;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateTimeUtil;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 public class AddWorkflowRuleLogModules extends SignUpData {
     @Override
@@ -22,6 +27,7 @@ public class AddWorkflowRuleLogModules extends SignUpData {
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
         addModuleChain.execute();
+        addDeleteRecordScheduleJobs();
     }
     public List<FacilioModule> getWorkflowLogModules() throws Exception{
         List<FacilioModule> modules=new ArrayList<>();
@@ -82,5 +88,13 @@ public class AddWorkflowRuleLogModules extends SignUpData {
         actionStatus.setEnumName("RuleActionStatus");
         fieldsList.add(actionStatus);
         module.setFields(fieldsList);
+    }
+    public void  addDeleteRecordScheduleJobs() throws Exception{
+        ScheduleInfo scheduleInfo = new ScheduleInfo();
+        int dateToBeExecuted=1; //1-31 days
+        scheduleInfo.setTimes(Collections.singletonList("00:00"));
+        scheduleInfo.setValues(Collections.singletonList(dateToBeExecuted));
+        scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.MONTHLY_DAY);
+        FacilioTimer.scheduleCalendarJob(AccountUtil.getCurrentOrg().getOrgId(), "DeleteWorkflowRuleLogsRecordsJob", DateTimeUtil.getCurrenTime(), scheduleInfo, "priority");
     }
 }

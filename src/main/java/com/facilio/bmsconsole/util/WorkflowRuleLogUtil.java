@@ -8,7 +8,6 @@ import com.facilio.bmsconsole.workflow.rule.ApprovalStateTransitionRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -84,11 +83,13 @@ public class WorkflowRuleLogUtil {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule actionLogsModule = modBean.getModule(FacilioConstants.ContextNames.WORKFLOW_RULE_ACTION_LOGS);
         List<FacilioField> actionLogsModuleFields= modBean.getAllFields(actionLogsModule.getName());
-        GenericSelectRecordBuilder builder =new GenericSelectRecordBuilder()
+        SelectRecordsBuilder builder =new SelectRecordsBuilder()
+                .module(actionLogsModule)
+                .beanClass(WorkflowRuleActionLogContext.class)
                 .select(actionLogsModuleFields)
-                .table(actionLogsModule.getTableName())
                 .andCondition(CriteriaAPI.getConditionFromList("WORKFLOW_RULE_LOG_ID","workflowRuleLogId",workflowRuleId,NumberOperators.EQUALS));
-        return FieldUtil.getAsBeanListFromMapList(builder.get(), WorkflowRuleActionLogContext.class);
+        return builder.get();
+
     }
     public  static String linkConfigForRuleType(WorkflowRuleContext workflowRuleContext)
     {
