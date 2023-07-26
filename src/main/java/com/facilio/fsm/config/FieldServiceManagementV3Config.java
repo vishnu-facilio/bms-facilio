@@ -120,6 +120,8 @@ public class FieldServiceManagementV3Config {
         return () -> new V3Config(V3LocationHistoryContext.class,null)
                 .create()
                 .afterSave(new updatePeopleLocationHistoryCommand())
+                .list()
+                .beforeFetch(new FetchLocationHistorySupplements())
                 .build();
     }
     @Module(FacilioConstants.Territory.TERRITORY)
