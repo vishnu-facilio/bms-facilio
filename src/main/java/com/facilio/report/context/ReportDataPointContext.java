@@ -37,7 +37,15 @@ public class ReportDataPointContext implements  Cloneable{
 	}
 
 	private long buildingId = -1;
+	public boolean isRightInclusive() {
+		return rightInclusive;
+	}
 
+	public void setRightInclusive(boolean rightInclusive) {
+		this.rightInclusive = rightInclusive;
+	}
+
+	public boolean rightInclusive;
 	public String getConvertTounit() {
 		return convertTounit;
 	}

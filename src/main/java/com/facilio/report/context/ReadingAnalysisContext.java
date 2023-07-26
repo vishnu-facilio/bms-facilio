@@ -262,4 +262,14 @@ public class ReadingAnalysisContext {
 	}
 
 	public String rule_aggr_type="SUM";
+
+	public boolean isRightInclusive() {
+		return rightInclusive;
+	}
+
+	public void setRightInclusive(boolean rightInclusive) {
+		this.rightInclusive = rightInclusive;
+	}
+
+	public boolean rightInclusive;
 }

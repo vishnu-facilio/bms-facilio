@@ -24,7 +24,21 @@ public class BmsAggregateOperators {
     public static AggregateOperator getAggregateOperator(String value) {
         return AGGREGATE_OPERATOR_STRING_MAP.get(value);
     }
-
+    public static AggregateOperator getRightInclusiveAggr(Integer aggr)
+    {
+        return AGGREGATE_VS_RIGHT_INCLUSIVE_MAP.get(aggr);
+    }
+    static final Map<Integer, AggregateOperator> AGGREGATE_VS_RIGHT_INCLUSIVE_MAP = Collections.unmodifiableMap(new UniqueMap<Integer, DateAggregateOperator>(){{
+        put(DateAggregateOperator.HOURSOFDAYONLY.getValue(), DateAggregateOperator.HOURLY_RIGHT_INCLUSIVE);
+        put(DateAggregateOperator.FULLDATE.getValue(), DateAggregateOperator.DAILY_RIGHT_INCLUSIVE);
+        put(DateAggregateOperator.WEEKANDYEAR.getValue(), DateAggregateOperator.WEEKLY_RIGHT_INCLUSIVE);
+        put(DateAggregateOperator.MONTHANDYEAR.getValue(), DateAggregateOperator.MONTHLY_RIGHT_INCLUSIVE);
+        put(DateAggregateOperator.QUARTERLY.getValue(), DateAggregateOperator.QUARTERLY_RIGHT_INCLUSIVE);
+        put(DateAggregateOperator.YEAR.getValue(), DateAggregateOperator.YEARLY_RIGHT_INCLUSIVE);
+        put(DateAggregateOperator.HOURSOFDAY.getValue(), DateAggregateOperator.HOURSOFDAY_RIGHT_INCLUSIVE);
+        put(DateAggregateOperator.WEEKDAY.getValue(), DateAggregateOperator.WEEKDAY_RIGHT_INCLUSIVE);
+        put(DateAggregateOperator.DAYSOFMONTH.getValue(), DateAggregateOperator.DAYSOFMONTH_RIGHT_INCLUSIVE);
+    }});
     static final Map<Integer, AggregateOperator> AGGREGATE_OPERATOR_MAP = Collections.unmodifiableMap(initTypeMap());
     static final Map<String, AggregateOperator> AGGREGATE_OPERATOR_STRING_MAP = Collections.unmodifiableMap(initTypeStringMap());
     static Map<Integer, AggregateOperator> initTypeMap() {
@@ -341,6 +355,15 @@ public class BmsAggregateOperators {
         HOURSOFDAY(19,"hoursOfDay","hoursofday.expr", "EEE, MMM dd, yyyy hh a",false, 2), //Hourly
         HOURSOFDAYONLY(20,"Hourly","hoursofdayonly.expr", "EEE, MMM dd, yyyy hh a",true, 1), //Hourly
         QUARTERLY(25,"Quarterly","quaterly.expr", "MMMM yyyy",false, 17), //Quarterly
+        HOURLY_RIGHT_INCLUSIVE(30,"Hourly Right Inclusive","hoursofdayonly.expr_right_exclusive", "EEE, MMM dd, yyyy hh a",false, 30), //Hourly
+        DAILY_RIGHT_INCLUSIVE(31,"Daily Right Inclusive","fulldate.expr_right_exclusive", "EEEE, MMMM dd, yyyy",false, 31),
+        WEEKLY_RIGHT_INCLUSIVE(32,"weekly Right Inclusive","weekandyear.expr_right_exclusive",false, 32),
+        MONTHLY_RIGHT_INCLUSIVE(33,"Monthly Right Inclusive","monthandyear.expr_right_exclusive", "MMMM yyyy",false, 33),
+        QUARTERLY_RIGHT_INCLUSIVE(34,"Quarterly Right Inclusive","quaterly.expr_right_exclusive", "MMMM yyyy",false, 34),
+        YEARLY_RIGHT_INCLUSIVE(35,"Yearly Right Inclusive","year.expr_right_exclusive", false, 35),
+        HOURSOFDAY_RIGHT_INCLUSIVE(36,"Hourofday Right Inclusive","hoursofday.expr_right_exclusive", "EEE, MMM dd, yyyy hh a",false, 36),
+        WEEKDAY_RIGHT_INCLUSIVE(37,"Weekday Right Inclusive","weekday.expr_right_exclusive", false, 37),
+        DAYSOFMONTH_RIGHT_INCLUSIVE(38,"Dayofmonth Right Inclusive","daysofmonth.expr_right_exclusive", "EEEE, MMMM dd, yyyy",false, 38)
         ;
 
         private int value;
@@ -420,23 +443,33 @@ public class BmsAggregateOperators {
         public long getAdjustedTimestamp(long time) {
             switch (this) {
                 case YEAR:
+                case YEARLY_RIGHT_INCLUSIVE:
                     return DateTimeUtil.getYearStartTimeOf(time);
                 case MONTH:
                 case MONTHANDYEAR:
+                case MONTHLY_RIGHT_INCLUSIVE:
                     return DateTimeUtil.getMonthStartTimeOf(time);
                 case WEEK:
                 case WEEKANDYEAR:
+                case WEEKLY_RIGHT_INCLUSIVE:
                     return DateTimeUtil.getWeekStartTimeOf(time);
                 case FULLDATE:
                 case WEEKDAY:
                 case DAYSOFMONTH:
+                case WEEKDAY_RIGHT_INCLUSIVE:
+                case DAYSOFMONTH_RIGHT_INCLUSIVE:
+                case DAILY_RIGHT_INCLUSIVE:
                     return DateTimeUtil.getDayStartTimeOf(time);
                 case HOURSOFDAY:
                 case DATEANDTIME:
                 case HOURSOFDAYONLY:
+                case HOURLY_RIGHT_INCLUSIVE:
+                case HOURSOFDAY_RIGHT_INCLUSIVE:
                     return DateTimeUtil.getHourStartTimeOf(time);
                 case QUARTERLY:
+                case QUARTERLY_RIGHT_INCLUSIVE:
                     return DateTimeUtil.getQuarterStartTimeOf(time);
+
             }
             return -1;
         }

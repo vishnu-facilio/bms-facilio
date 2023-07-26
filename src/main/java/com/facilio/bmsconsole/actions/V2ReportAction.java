@@ -2900,7 +2900,7 @@ public class V2ReportAction extends FacilioAction {
 
         chain.execute(context);
 
-        String log_message= reportId > 0 ? "Report {%s} has been created for {%s} Module." : "Report {%s} has been updated for {%s} Module.";
+        String log_message= reportId > 0 ? "Report {%s} has been updated for {%s} Module." : "Report {%s} has been created for {%s} Module.";
         setReportAuditLogs((String) context.get("ModuleDisplayName"), reportContext, log_message, reportId > 0 ? AuditLogHandler.ActionType.UPDATE : AuditLogHandler.ActionType.ADD);
         setResult("message", "Report saved");
         setResult("report", reportContext);

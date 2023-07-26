@@ -885,9 +885,9 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
 
             if (baseLine != null) {
-                selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField().getField(), baseLine.getBaseLineRange().toString(), DateOperators.BETWEEN));
+                selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField().getField(), calculateRightInclusiveTimeRange(dp, report, baseLine).toString(), DateOperators.BETWEEN));
             } else {
-                selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField().getField(), report.getDateRange().toString(), DateOperators.BETWEEN));
+                selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField().getField(), calculateRightInclusiveTimeRange(dp, report, null).toString(), DateOperators.BETWEEN));
             }
             if(report.getReportTTimeFilter() != null)
             {
@@ -1266,7 +1266,13 @@ public class FetchReportDataCommand extends FacilioCommand {
                 if (xAggr instanceof SpaceAggregateOperator && !xAggr.getStringValue().equalsIgnoreCase(baseModule.getName())) {
                     xAggrField = applySpaceAggregation(dp, xAggr, selectBuilder, addedModules, dp.getxAxis().getField()).clone();
                 } else {
-                    xAggrField = xAggr.getSelectField(dp.getxAxis().getField()).clone();
+                    if(dp.isRightInclusive() &&  BmsAggregateOperators.getRightInclusiveAggr(xAggr.getValue()) != null)
+                    {
+                        AggregateOperator righInclusive_aggr = BmsAggregateOperators.getRightInclusiveAggr(xAggr.getValue());
+                        xAggrField = righInclusive_aggr.getSelectField(dp.getxAxis().getField()).clone();
+                    }else {
+                        xAggrField = xAggr.getSelectField(dp.getxAxis().getField()).clone();
+                    }
                 }
                 if(xAggr == DateAggregateOperator.WEEKANDYEAR){
                     DayOfWeek dayOfWeek = DateTimeUtil.getWeekFields().getFirstDayOfWeek();
@@ -1628,7 +1634,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                 }
                 prevModule = poll;
             }
-        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId()) && module.getTypeEnum() != ModuleType.READING && module.getTypeEnum() != ModuleType.SYSTEM_SCHEDULED_FORMULA && module.getTypeEnum() != ModuleType.READING_RULE) {
+        } else if((Boolean) pivotField.get("isDataField") && !this.baseModule.getExtendedModuleIds().contains(module.getModuleId()) && module.getTypeEnum() != ModuleType.READING && module.getTypeEnum() != ModuleType.SYSTEM_SCHEDULED_FORMULA && module.getTypeEnum() != ModuleType.READING_RULE && module.getTypeEnum() != ModuleType.LIVE_FORMULA) {
             FacilioField dataField = null;
 
             List<FacilioField> facilioFields = modBean.getAllFields(module.getName());
@@ -2061,5 +2067,17 @@ public class FetchReportDataCommand extends FacilioCommand {
             chartState.put("dataPoints", new_chartState_alias_vs_dp);
         }
         return newDataPointsList;
+    }
+    private DateRange calculateRightInclusiveTimeRange(ReportDataPointContext dp , ReportContext report, ReportBaseLineContext baseline) throws Exception
+    {
+        if((dp != null && dp.isRightInclusive()) && dp.getyAxis().getAggrEnum() != null && report.getxAggrEnum() != null && BmsAggregateOperators.getRightInclusiveAggr(report.getxAggrEnum().getValue()) != null)
+        {
+            long rightInclusiveMills = 001l;
+            DateRange range = baseline != null ? baseline.getBaseLineRange() : report.getDateRange();
+            long start_time = range.getStartTime() + rightInclusiveMills;
+            long end_time = range.getEndTime() + rightInclusiveMills;
+            return new DateRange(start_time, end_time);
+        }
+        return baseline != null ? baseline.getBaseLineRange() : report.getDateRange();
     }
 }

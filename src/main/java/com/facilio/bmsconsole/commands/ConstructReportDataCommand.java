@@ -134,8 +134,12 @@ public class ConstructReportDataCommand extends FacilioCommand {
                     xVal = prop.containsKey("right") ? prop.get("right") : null;
                 }
                 if (xVal != null) {
-                    xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine, report.getxAggrEnum());
-                    Object formattedxVal = formatVal(dataPoint.getxAxis(), report.getxAggrEnum(), xVal, null, false, dpLookUpMap, dpMultiLookUpMap);
+                    AggregateOperator x_report_Aggr = report.getxAggrEnum();
+                    if(dataPoint.isRightInclusive() && x_report_Aggr != null && BmsAggregateOperators.getRightInclusiveAggr(x_report_Aggr.getValue()) != null){
+                        x_report_Aggr = BmsAggregateOperators.getRightInclusiveAggr(x_report_Aggr.getValue());
+                    }
+                    xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine, x_report_Aggr);
+                    Object formattedxVal = formatVal(dataPoint.getxAxis(), x_report_Aggr, xVal, null, false, dpLookUpMap, dpMultiLookUpMap);
                     Object yVal = prop.get(ReportUtil.getAggrFieldName(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum()));
                     Object minYVal = null, maxYVal = null;
                     if (yVal != null) {

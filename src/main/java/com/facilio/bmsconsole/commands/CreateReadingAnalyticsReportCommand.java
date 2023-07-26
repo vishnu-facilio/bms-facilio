@@ -189,7 +189,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		if(metric.getRule_aggr_type() != null) {
 			dataPoint.setRule_aggr_type(metric.getRule_aggr_type());
 		}
-		
+		dataPoint.setRightInclusive(metric.isRightInclusive());
 		return dataPoint;
 	}
 	
