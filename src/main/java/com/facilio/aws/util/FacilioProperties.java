@@ -54,6 +54,8 @@ public class FacilioProperties {
 
 
     private static final Properties PROPERTIES = new Properties();
+
+    private static boolean fsmApp = false;
     private static boolean productionEnvironment = false;
     private static boolean developmentEnvironment = true;
     private static boolean securityFilterEnabled = false;
@@ -293,7 +295,7 @@ public class FacilioProperties {
             if (StringUtils.isEmpty(mailDomain)) {
                 mailDomain = "facilio.com";
             }
-
+            fsmApp = Boolean.parseBoolean(PROPERTIES.getProperty("fsm.app", "false"));
             azureDevelopment = PROPERTIES.getProperty("azureDevelopment", "false");
             deployment = PROPERTIES.getProperty("deployment", "facilio");
             region = PROPERTIES.getProperty("region", "us-west-2");
@@ -530,6 +532,8 @@ public class FacilioProperties {
     }
 
     public static String getIdentityServerURL() { return identityServerURL; }
+
+    public static Boolean getFsmApp() { return fsmApp; }
 
     public static String getIamregion() { return iamregion; }
 

@@ -213,7 +213,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         serviceAppointmentForm.setName("default_asset_web");
         serviceAppointmentForm.setModule(serviceAppointmentModule);
         serviceAppointmentForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        serviceAppointmentForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        serviceAppointmentForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
         List<FormField> serviceAppointmentFormFields = new ArrayList<>();
         serviceAppointmentFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
         serviceAppointmentFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
@@ -412,6 +412,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         List<String> appNames = new ArrayList<>();
         appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
 
         Map<String, List<PagesContext>> appNameVsPage = new HashMap<>();
         for (String appName : appNames) {

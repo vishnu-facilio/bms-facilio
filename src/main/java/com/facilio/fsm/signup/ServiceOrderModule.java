@@ -382,7 +382,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         webWorkOrderForm.setName("default_serviceorder_web");
         webWorkOrderForm.setModule(serviceOrderModule);
         webWorkOrderForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        webWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        webWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> generalInformationFields = new ArrayList<>();
         generalInformationFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
@@ -475,6 +475,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -568,10 +569,18 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String, List<PagesContext>> pageTemp = new HashMap<>();
+        pageTemp.put(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, getSystemPage());
+        pageTemp.put(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, getSystemPage());
+        pageTemp.put(FacilioConstants.ApplicationLinkNames.FSM_APP, getSystemPage());
+
+        return  pageTemp;
+    }
+
+    private static List<PagesContext> getSystemPage() throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
-        Map<String, List<PagesContext>> pageTemp = new HashMap<>();
-        List<PagesContext> pages = Collections.singletonList(new PagesContext(null, null,"", null, true, false, false)
+        return Collections.singletonList(new PagesContext(null, null,"", null, true, false, false)
                 .addWebTab("summary", "SUMMARY", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
@@ -592,10 +601,6 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone());
-        pageTemp.put(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, pages);
-        pageTemp.put(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, pages);
-
-        return  pageTemp;
     }
 
     private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {

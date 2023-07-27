@@ -3792,6 +3792,9 @@ public class FacilioConstants {
 		public static final String ENERGY_APP = "energy";
 		public static final String REMOTE_MONITORING = "remotemonitor";
 
+
+		public static final String FSM_APP = "fsm";
+
 	}
 
 	public static class DefaultRoleNames {
@@ -3805,11 +3808,20 @@ public class FacilioConstants {
 		public static final String ADMIN = "Administrator";
 		public static final String MAINTENANCE_SUPER_ADMIN = "CAFM Super Administrator";
 		public static final String MAINTENANCE_ADMIN = "CAFM Administrator";
+
+		public static final String FSM_SUPER_ADMIN = "FSM Super Administrator";
+		public static final String FSM_ADMIN = "FSM Administrator";
 		public static final String CAFM_ADMIN = "CAFM Admin";
 		public static final String KIOSK_ADMIN = "Kiosk Admin";
 		public static final String DEV_ADMIN = "Dev Admin";
 		public static final String MAINTENANCE_MANAGER = "CAFM Manager";
 		public static final String MAINTENANCE_TECHNICIAN = "CAFM Technician";
+
+		public static final String FSM_MANAGER = "FSM Manager";
+
+		public static final String FSM_DISPATCHER = "FSM Technician";
+		public static final String FSM_TECHNICIAN = "FSM Technician";
+
 		public static final String DATA_LOADER_ADMIN = "Data Loader Admin";
 
 		public static final String EMPLOYEE_ADMIN = "Employee Admin";
