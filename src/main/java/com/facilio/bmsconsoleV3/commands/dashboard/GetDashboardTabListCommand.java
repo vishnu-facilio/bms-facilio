@@ -23,6 +23,7 @@ public class GetDashboardTabListCommand extends FacilioCommand {
             Map<String,Object> tab = new HashMap<>();
             tab.put("name",dashboardTabContext.getName());
             tab.put("tabId",dashboardTabContext.getId());
+            tab.put("sequence",dashboardTabContext.getSequence());
 
             if(dashboardTabContext.getChildTabs() != null){
                 List<Map<String,Object>> childTab = new ArrayList<>();
@@ -30,6 +31,7 @@ public class GetDashboardTabListCommand extends FacilioCommand {
                     Map<String,Object> childs = new HashMap<>();
                     childs.put("name",tabs.getName());
                     childs.put("tabId",tabs.getId());
+                    childs.put("sequence",tabs.getSequence());
                     childTab.add(childs);
                 }
                 tab.put("child_tabs",childTab);

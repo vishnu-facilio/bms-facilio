@@ -1014,7 +1014,8 @@ public class FetchReportDataCommand extends FacilioCommand {
                     rdp.getyAxis().getModule().equals(dataPoint.getyAxis().getModule()) &&                              // yaxis Module should be same
                     Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy()) &&                                        // Order BY should be same
                     rdp.isHandleEnum() == dataPoint.isHandleEnum() &&                                            // Both should be of same type
-                    isSameTable(rdp, dataPoint)                                                    //Both should have same table alias - case of pivot table
+                    isSameTable(rdp, dataPoint) &&                                                    //Both should have same table alias - case of pivot table
+                    rdp.isRightInclusive() == dataPoint.isRightInclusive()
             ) {
                 OrderByFunction rdpFunc = rdp.getOrderByFuncEnum() == null ? OrderByFunction.NONE : rdp.getOrderByFuncEnum();
                 OrderByFunction dataPointFunc = dataPoint.getOrderByFuncEnum() == null ? OrderByFunction.NONE : dataPoint.getOrderByFuncEnum();
