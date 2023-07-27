@@ -81,7 +81,20 @@ public class GetModuleListCommand extends FacilioCommand {
 			ContextNames.SPACE_BOOKING,
 			ContextNames.FAILURE_CLASS,
 			FacilioConstants.PeopleGroup.PEOPLE_GROUP,
-			ContextNames.QUOTE
+			ContextNames.QUOTE,
+			FacilioConstants.TimeOff.TIME_OFF,
+			FacilioConstants.Territory.TERRITORY,
+			FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,
+			FacilioConstants.TimeSheet.TIME_SHEET,
+			ContextNames.FieldServiceManagement.SERVICE_ORDER,
+			ContextNames.FieldServiceManagement.SERVICE_TASK,
+			ContextNames.FieldServiceManagement.WORK_TYPE,
+			ContextNames.FieldServiceManagement.SERVICE_SKILL,
+			ContextNames.EMPLOYEE,
+			ContextNames.VENDOR_CONTACT,
+			ContextNames.TENANT_CONTACT,
+			ContextNames.CLIENT_CONTACT,
+			FacilioConstants.Trip.TRIP
 	});
 
 	@Override
