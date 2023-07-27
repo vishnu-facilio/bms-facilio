@@ -587,7 +587,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .addWebTab("task", "TASK", true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("task", null, null)
-                .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_22_6", 0, 0,  null, null)
+                .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
