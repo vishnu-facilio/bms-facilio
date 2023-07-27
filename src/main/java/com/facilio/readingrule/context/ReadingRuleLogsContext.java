@@ -1,6 +1,6 @@
 package com.facilio.readingrule.context;
 
-import com.facilio.ns.context.AggregationType;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,10 +8,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ReadingRuleLogsContext extends V3Context {
+    private NewReadingRuleContext rule;
     private String ruleName;
     private Long ruleExecTime;
+    private ResourceContext resource;
     private String resourceName;
+    private Boolean isImpactLog;
     private Boolean ruleResult;
+    private Double costImpact;
+    private Double energyImpact;
     private ExecutionStatus status;
     private Long duration;
     private String varInfo;

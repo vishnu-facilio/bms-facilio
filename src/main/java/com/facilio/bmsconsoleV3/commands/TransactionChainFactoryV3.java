@@ -75,6 +75,7 @@ import com.facilio.permission.commands.AddOrUpdatePermissionSet;
 import com.facilio.permission.commands.DeletePermissionSetCommand;
 import com.facilio.permission.commands.FetchPermissionSetCommand;
 import com.facilio.permission.commands.UpdatePermissionsForPermissionSetCommand;
+import com.facilio.readingrule.command.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -269,15 +270,6 @@ import com.facilio.readingkpi.commands.list.AddNamespaceInKpiListCommand;
 import com.facilio.readingkpi.commands.list.FetchMetricAndUnitCommand;
 import com.facilio.readingkpi.commands.update.PrepareReadingKpiForUpdateCommand;
 import com.facilio.readingkpi.commands.update.UpdateNamespaceAndFieldsCommand;
-import com.facilio.readingrule.command.AddAlarmDetailsCommand;
-import com.facilio.readingrule.command.AddNewReadingRuleCommand;
-import com.facilio.readingrule.command.AddRuleReadingsModuleCommand;
-import com.facilio.readingrule.command.DeleteNamespaceReadingRuleCommand;
-import com.facilio.readingrule.command.FetchReadingRuleSummaryCommand;
-import com.facilio.readingrule.command.LoadSupplementsForNewReadingRule;
-import com.facilio.readingrule.command.PrepareReadingRuleForUpdateCommand;
-import com.facilio.readingrule.command.ReadingRuleDependenciesCommand;
-import com.facilio.readingrule.command.UpdateReadingRuleCommand;
 import com.facilio.ns.command.UpdateNamespaceCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactAfterSaveCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactBeforeSaveCommand;
@@ -3071,6 +3063,20 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateRCAMappingCommand());
         c.addCommand(new UpdateRCAGroupCommand());
         c.addCommand(new UpdateRCAScoreConditionCommand());
+        return c;
+    }
+
+    public static FacilioChain beforeFetchRuleLogsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadSupplementsForRuleLogsCommand());
+        c.addCommand(new LoadSupplementsForConnectedRuleLogs());
+        return c;
+    }
+
+    public static FacilioChain beforeFetchKpiLogsChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadSupplementsForKpiLogsCommand());
+        c.addCommand(new LoadSupplementsForConnectedRuleLogs());
         return c;
     }
 

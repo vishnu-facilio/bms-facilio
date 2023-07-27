@@ -56,11 +56,19 @@ public class AddReadingKpiLogsModules extends SignUpData {
         FacilioField kpiName = (FacilioField) FieldFactory.getDefaultField("kpiName", "KPI Name", "KPI_NAME", FieldType.STRING);
         fields.add(kpiName);
 
-        NumberField kpiExecTime = (NumberField) FieldFactory.getDefaultField("kpiExecTime", "Time of Execution", "KPI_EXEC_TIME", FieldType.NUMBER);
+        LookupField kpi = (LookupField) FieldFactory.getDefaultField("kpi", "KPI", "KPI_ID", FieldType.LOOKUP);
+        kpi.setSpecialType(FacilioConstants.ReadingKpi.READING_KPI);
+        fields.add(kpi);
+
+        FacilioField kpiExecTime = (FacilioField) FieldFactory.getDefaultField("kpiExecTime", "Time of Execution", "KPI_EXEC_TIME", FieldType.DATE_TIME);
         fields.add(kpiExecTime);
 
         FacilioField resourceName = (FacilioField) FieldFactory.getDefaultField("resourceName", "Resource Name", "RESOURCE_NAME", FieldType.STRING);
         fields.add(resourceName);
+
+        LookupField resource = (LookupField) FieldFactory.getDefaultField("resource", "Resource", "RESOURCE_ID", FieldType.LOOKUP);
+        resource.setSpecialType(FacilioConstants.ContextNames.RESOURCE);
+        fields.add(resource);
 
         FacilioField kpiResult = (FacilioField) FieldFactory.getDefaultField("kpiResult", "KPI Result", "KPI_RESULT", FieldType.DECIMAL);
         fields.add(kpiResult);

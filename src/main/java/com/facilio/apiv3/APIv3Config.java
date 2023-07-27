@@ -2743,7 +2743,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getKpiLogs() {
         return () -> new V3Config(ReadingKpiLogsContext.class, null)
                 .list()
-                .beforeFetch(new LoadSupplementsForConnectedRuleLogs())
+                .beforeFetch(TransactionChainFactoryV3.beforeFetchKpiLogsChain())
                 .build();
     }
 
@@ -2751,7 +2751,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getRuleLogs() {
         return () -> new V3Config(ReadingRuleLogsContext.class, null)
                 .list()
-                .beforeFetch(new LoadSupplementsForConnectedRuleLogs())
+                .beforeFetch(TransactionChainFactoryV3.beforeFetchRuleLogsChain())
                 .build();
     }
 

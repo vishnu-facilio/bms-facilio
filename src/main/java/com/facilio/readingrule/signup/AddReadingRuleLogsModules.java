@@ -57,14 +57,31 @@ public class AddReadingRuleLogsModules extends SignUpData {
         FacilioField ruleName = (FacilioField) FieldFactory.getDefaultField("ruleName", "Rule Name", "RULE_NAME", FieldType.STRING, true);
         fields.add(ruleName);
 
-        NumberField ruleExecTime = (NumberField) FieldFactory.getDefaultField("ruleExecTime", "Time of Execution", "RULE_EXEC_TIME", FieldType.NUMBER);
+        LookupField rule = (LookupField) FieldFactory.getDefaultField("rule", "Rule", "RULE_ID", FieldType.LOOKUP);
+        rule.setSpecialType(FacilioConstants.ReadingRules.NEW_READING_RULE);
+        fields.add(rule);
+
+        FacilioField ruleExecTime = (FacilioField) FieldFactory.getDefaultField("ruleExecTime", "Time of Execution", "RULE_EXEC_TIME", FieldType.DATE_TIME);
         fields.add(ruleExecTime);
 
-        FacilioField resource = (FacilioField) FieldFactory.getDefaultField("resourceName", "Resource Name", "RESOURCE_NAME", FieldType.STRING);
+        FacilioField resourceName = (FacilioField) FieldFactory.getDefaultField("resourceName", "Resource Name", "RESOURCE_NAME", FieldType.STRING);
+        fields.add(resourceName);
+
+        LookupField resource = (LookupField) FieldFactory.getDefaultField("resource", "Resource", "RESOURCE_ID", FieldType.LOOKUP);
+        resource.setSpecialType(FacilioConstants.ContextNames.RESOURCE);
         fields.add(resource);
 
         BooleanField ruleResult = (BooleanField) FieldFactory.getDefaultField("ruleResult", "Rule Result", "RULE_RESULT", FieldType.BOOLEAN);
         fields.add(ruleResult);
+
+        FacilioField costImpact = (FacilioField) FieldFactory.getDefaultField("costImpact", "Cost Impact", "COST_IMPACT", FieldType.DECIMAL);
+        fields.add(costImpact);
+
+        FacilioField energyImpact = (FacilioField) FieldFactory.getDefaultField("energyImpact", "Energy Impact", "ENERGY_IMPACT", FieldType.DECIMAL);
+        fields.add(energyImpact);
+
+        BooleanField isImpactLog = (BooleanField) FieldFactory.getDefaultField("isImpactLog", "Impact Log", "IMPACT_LOG", FieldType.BOOLEAN);
+        fields.add(isImpactLog);
 
         SystemEnumField status = (SystemEnumField) FieldFactory.getDefaultField("status","Status","STATUS", FieldType.SYSTEM_ENUM);
         status.setEnumName("ExecutionStatus");
