@@ -11,6 +11,7 @@ public class ServiceAppointmentTicketStatusContext extends V3Context {
     private String status;
     private String displayName;
     private String color;
+    private String textColor;
     private boolean recordLocked;
     private boolean deleteLocked;
 

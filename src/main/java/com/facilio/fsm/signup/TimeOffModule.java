@@ -51,6 +51,8 @@ public class TimeOffModule extends BaseModuleConfig {
         timeOffTypeFields.add(description);
         StringField color = new StringField(timeOffTypeModule,"color","Color", FacilioField.FieldDisplayType.TEXTBOX,"COLOR",FieldType.STRING,true,false,true,false);
         timeOffTypeFields.add(color);
+        StringField textColor = new StringField(timeOffTypeModule,"textColor","Text Color", FacilioField.FieldDisplayType.TEXTBOX,"TEXT_COLOR",FieldType.STRING,true,false,true,false);
+        timeOffTypeFields.add(textColor);
 
         timeOffTypeModule.setFields(timeOffTypeFields);
         modules.add(timeOffTypeModule);
@@ -70,36 +72,42 @@ public class TimeOffModule extends BaseModuleConfig {
         standBy.setName("standBy");
         standBy.setDisplayName("Stand By");
         standBy.setColor("#FDE49D");
+        standBy.setTextColor("#000000");
         defaultTypes.add(standBy);
 
         TimeOffTypeContext holiday = new TimeOffTypeContext();
         holiday.setName("holiday");
         holiday.setDisplayName("Holiday");
         holiday.setColor("#F4C8E7");
+        holiday.setTextColor("#000000");
         defaultTypes.add(holiday);
 
         TimeOffTypeContext sick = new TimeOffTypeContext();
         sick.setName("sick");
         sick.setDisplayName("Sick");
         sick.setColor("#E5F4FF");
+        sick.setTextColor("#000000");
         defaultTypes.add(sick);
 
         TimeOffTypeContext vacation = new TimeOffTypeContext();
         vacation.setName("vacation");
         vacation.setDisplayName("Vacation");
         vacation.setColor("#D7CCF0");
+        vacation.setTextColor("#000000");
         defaultTypes.add(vacation);
 
         TimeOffTypeContext truckBreakdown = new TimeOffTypeContext();
         truckBreakdown.setName("truckBreakdown");
         truckBreakdown.setDisplayName("Truck Breakdown");
         truckBreakdown.setColor("#F6D1C8");
+        truckBreakdown.setTextColor("#000000");
         defaultTypes.add(truckBreakdown);
 
         TimeOffTypeContext training = new TimeOffTypeContext();
         training.setName("training");
         training.setDisplayName("Training");
         training.setColor("#FCE0C3");
+        training.setTextColor("#000000");
         defaultTypes.add(training);
 
         insertRecordBuilder.addRecords(defaultTypes);

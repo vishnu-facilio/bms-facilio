@@ -10,4 +10,5 @@ public class TimeOffTypeContext extends V3Context {
     private String displayName;
     private String description;
     private String color;
+    private String textColor;
 }
