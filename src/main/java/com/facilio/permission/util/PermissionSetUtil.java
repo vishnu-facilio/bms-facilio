@@ -8,12 +8,14 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.permission.config.PermissionSetConstants;
 import com.facilio.permission.context.PermissionFieldEnum;
 import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.permission.context.PermissionSetType;
 import com.facilio.permission.factory.PermissionSetFieldFactory;
+import com.facilio.v3.util.ChainUtil;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -90,7 +92,7 @@ public class PermissionSetUtil {
             return true;
         }
 
-        if(type.getHandler().getDefaultValue(queryProp) && type.getHandler().getIsDisabled(queryProp)){
+        if((type.getHandler().getDefaultValue(queryProp) && type.getHandler().getIsDisabled(queryProp))){
             return true;
         }
         List<PermissionSetContext> permissionSets = AccountUtil.getPermissionSets();
@@ -185,12 +187,18 @@ public class PermissionSetUtil {
     @SneakyThrows
     public static Boolean getCurrentPeopleAccessibleFields(Long moduleId, Long fieldId) {
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FIELD_LIST_PERMISSION)) {
-                Map<String, Long> queryProp = new HashMap<>();
-                queryProp.put("moduleId", moduleId);
-                queryProp.put("fieldId", fieldId);
-                boolean hasPermission = PermissionSetUtil.hasPermission(PermissionSetType.Type.FIELD_LIST, queryProp, PermissionFieldEnum.FIELD_READ_PERMISSION);
-                return hasPermission;
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            if (moduleId != null && moduleId > 0) {
+                FacilioModule module = modBean.getModule(moduleId);
+                if (module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY || module.getTypeEnum() == FacilioModule.ModuleType.Q_AND_A || module.getTypeEnum() == FacilioModule.ModuleType.Q_AND_A_RESPONSE) {
+                    Map<String, Long> queryProp = new HashMap<>();
+                    queryProp.put("moduleId", moduleId);
+                    queryProp.put("fieldId", fieldId);
+                    boolean hasPermission = PermissionSetUtil.hasPermission(PermissionSetType.Type.FIELD_LIST, queryProp, PermissionFieldEnum.FIELD_READ_PERMISSION);
+                    return hasPermission;
+                }
             }
-        return true;
         }
+        return true;
+    }
 }
