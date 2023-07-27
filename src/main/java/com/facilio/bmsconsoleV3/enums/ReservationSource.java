@@ -3,7 +3,7 @@ package com.facilio.bmsconsoleV3.enums;
 import com.facilio.modules.FacilioIntEnum;
 
 public enum ReservationSource implements FacilioIntEnum {
-    WO_PLANS("Work Order Plans"), INVENTORY_REQUEST("Inventory Request");
+    WO_PLANS("Work Order Plans"), INVENTORY_REQUEST("Inventory Request"),SO_PLANS("Service Order Plans");
 
     private final String value;
     ReservationSource(String value) {

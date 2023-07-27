@@ -1,6 +1,8 @@
 package com.facilio.fsm.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -52,5 +54,14 @@ public class ServiceOrderAPI {
     {
         Long soId = so.getId();
         V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, soId, FieldUtil.getAsJSON(so), null, null, null, null, null,null, null, null);
+    }
+    public static ServiceOrderContext getServiceOrder(long soId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+        ServiceOrderContext serviceOrder = V3RecordAPI.getRecord(serviceOrderModule.getName(),soId,ServiceOrderContext.class);
+        if (serviceOrder != null ) {
+            return serviceOrder;
+        }
+        return null;
     }
 }

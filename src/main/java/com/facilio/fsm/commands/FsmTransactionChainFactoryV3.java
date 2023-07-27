@@ -3,6 +3,8 @@ package com.facilio.fsm.commands;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fsm.commands.plans.SetServiceOrderPlannedItemsCommand;
+import com.facilio.fsm.commands.plans.ValidateServiceOrderPlannedItemsCommand;
 import com.facilio.fsm.commands.serviceAppointment.*;
 import com.facilio.fsm.commands.serviceOrders.*;
 import com.facilio.fsm.commands.serviceTasks.*;
@@ -109,6 +111,13 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain getServiceAppointmentAfterCreateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new rollUpServiceTaskCommand());
+        return c;
+    }
+
+    public static FacilioChain getSoPlannedItemsBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateServiceOrderPlannedItemsCommand());
+        c.addCommand(new SetServiceOrderPlannedItemsCommand());
         return c;
     }
 }

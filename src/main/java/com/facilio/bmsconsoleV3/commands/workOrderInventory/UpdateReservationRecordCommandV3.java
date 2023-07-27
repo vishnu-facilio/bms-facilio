@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands.workOrderInventory;
 
 import com.facilio.bmsconsoleV3.context.inventory.V3WorkorderItemContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
+import com.facilio.bmsconsoleV3.enums.InventoryReservationStatus;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -29,7 +30,7 @@ public class UpdateReservationRecordCommandV3 extends FacilioCommand {
                    if(  workOrderItem.getWorkorder()!=null && reservation.getWorkOrder()!=null &&  workOrderItem.getWorkorder().getId() != reservation.getWorkOrder().getId()){
                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Plan created in one Work Order cannot be issued to another");
                    }
-                    if(reservation.getReservationStatusEnum().equals(InventoryReservationContext.InventoryReservationStatus.ISSUED)){
+                    if(reservation.getReservationStatusEnum().equals(InventoryReservationStatus.ISSUED)){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Selected reserved item is fully issued");
                     }
                     if(woQuantity > reservation.getBalanceReservedQuantity()){
@@ -42,10 +43,10 @@ public class UpdateReservationRecordCommandV3 extends FacilioCommand {
                         issuedQuantity += woQuantity;
 
                         if(balanceReservedQuantity>0){
-                            reservation.setReservationStatus(InventoryReservationContext.InventoryReservationStatus.PARTIALLY_ISSUED.getIndex());
+                            reservation.setReservationStatus(InventoryReservationStatus.PARTIALLY_ISSUED.getIndex());
                         }
                         else if(balanceReservedQuantity==0){
-                            reservation.setReservationStatus(InventoryReservationContext.InventoryReservationStatus.ISSUED.getIndex());
+                            reservation.setReservationStatus(InventoryReservationStatus.ISSUED.getIndex());
                         }
                         reservation.setIssuedQuantity(issuedQuantity);
                         reservation.setBalanceReservedQuantity(balanceReservedQuantity);

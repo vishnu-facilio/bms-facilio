@@ -73,22 +73,29 @@ public class ServiceOrderPlannedItemsContext  extends V3Context {
         this.storeRoom = storeRoom;
     }
 
-    public Boolean getReserved() {
+    public Boolean getIsReserved() {
         return isReserved;
     }
 
-    public void setReserved(Boolean reserved) {
+    public void setIsReserved(Boolean reserved) {
         isReserved = reserved;
     }
 
-    public ReservationType getReservationType() {
+    public Integer getReservationType() {
+        if (reservationType != null) {
+            return reservationType.getIndex();
+        }
+        return -1;
+    }
+
+    public void setReservationType(Integer reservationType) {
+        if (reservationType != null) {
+            this.reservationType = ReservationType.valueOf(reservationType);
+        }
+    }
+    public ReservationType getReservationTypeEnum() {
         return reservationType;
     }
-
-    public void setReservationType(ReservationType reservationType) {
-        this.reservationType = reservationType;
-    }
-
     public Long getUnitOfMeasure() {
         return unitOfMeasure;
     }

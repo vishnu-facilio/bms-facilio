@@ -15,6 +15,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fsm.context.ServiceInventoryReservationContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.*;
@@ -149,15 +150,23 @@ public class V3InventoryUtil {
         }
         return false;
     }
+    public static void rollUpReservedItemForSoPlans(V3ItemTypesContext itemType, V3StoreRoomContext storeRoom, Integer reservationTypeInt, Double quantity, ServiceInventoryReservationContext serviceInventoryReservation) throws Exception {
+        Long itemTypeId = itemType != null ? itemType.getId() : null;
+        Long storeRoomId = storeRoom != null ? storeRoom.getId() : null;
+        V3ItemContext item = V3ItemsApi.getItem(itemTypeId, storeRoomId);
+        ReservationType reservationType = ReservationType.valueOf(reservationTypeInt);
+        updateReservedItem(item,itemTypeId, reservationType, quantity);
+        addReservedItemTransaction(reservationType, item, quantity, null,serviceInventoryReservation);
+    }
     public static void rollUpReservedItem(V3ItemTypesContext itemType, V3StoreRoomContext storeRoom, Integer reservationTypeInt, Double quantity, InventoryReservationContext inventoryReservation) throws Exception {
         Long itemTypeId = itemType != null ? itemType.getId() : null;
         Long storeRoomId = storeRoom != null ? storeRoom.getId() : null;
-        ReservationType reservationType = ReservationType.valueOf(reservationTypeInt);
-        updateReservedItemAndItemTransaction(itemTypeId, storeRoomId, reservationType, quantity, inventoryReservation);
-    }
-    public static void updateReservedItemAndItemTransaction(Long itemTypeId, Long storeRoomId, ReservationType reservationType, Double reservationQuantity, InventoryReservationContext inventoryReservation) throws Exception {
         V3ItemContext item = V3ItemsApi.getItem(itemTypeId, storeRoomId);
-        long itemId = item.getId();
+        ReservationType reservationType = ReservationType.valueOf(reservationTypeInt);
+        updateReservedItem(item,itemTypeId, reservationType, quantity);
+        addReservedItemTransaction(reservationType, item, quantity, inventoryReservation,null);
+    }
+    public static void updateReservedItem(V3ItemContext item,Long itemTypeId, ReservationType reservationType, Double reservationQuantity) throws Exception {
         Double reservedQuantity = item.getReservedQuantity() == null ? 0 : item.getReservedQuantity();
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -182,12 +191,43 @@ public class V3InventoryUtil {
         }
         UpdateRecordBuilder<V3ItemContext> updateBuilder = new UpdateRecordBuilder<V3ItemContext>()
                 .module(module).fields(updatedFields)
-                .andCondition(CriteriaAPI.getIdCondition(itemId, module));
+                .andCondition(CriteriaAPI.getIdCondition(item.getId(), module));
         updateBuilder.updateViaMap(map);
 
-        // adding item transaction
-        addReservedItemTransaction(reservationType, item, reservationQuantity, inventoryReservation);
     }
+//    public static void updateReservedItemAndItemTransaction(Long itemTypeId, Long storeRoomId, ReservationType reservationType, Double reservationQuantity, InventoryReservationContext inventoryReservation) throws Exception {
+//        V3ItemContext item = V3ItemsApi.getItem(itemTypeId, storeRoomId);
+//        long itemId = item.getId();
+//        Double reservedQuantity = item.getReservedQuantity() == null ? 0 : item.getReservedQuantity();
+//
+//        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//        String itemModuleName = FacilioConstants.ContextNames.ITEM;
+//        FacilioModule module = modBean.getModule(itemModuleName);
+//        List<FacilioField> fields = modBean.getAllFields(itemModuleName);
+//        List<FacilioField> updatedFields = new ArrayList<>();
+//        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+//        updatedFields.add(fieldsMap.get("reservedQuantity"));
+//
+//        Double newReservedQuantity = reservedQuantity + reservationQuantity;
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("reservedQuantity", newReservedQuantity);
+//        if (reservationType.getValue().equals(ReservationType.HARD.getValue())) {
+//            // to update available quantity in item module
+//            Double availableQuantity = item.getQuantity() == null ? 0 : item.getQuantity();
+//            Double newAvailableQuantity = availableQuantity - reservationQuantity;
+//            updatedFields.add(fieldsMap.get("quantity"));
+//            map.put("quantity", newAvailableQuantity);
+//            // updating available quantity in item type
+//            updateAvailableQuantityInItemType(reservationQuantity, itemTypeId);
+//        }
+//        UpdateRecordBuilder<V3ItemContext> updateBuilder = new UpdateRecordBuilder<V3ItemContext>()
+//                .module(module).fields(updatedFields)
+//                .andCondition(CriteriaAPI.getIdCondition(itemId, module));
+//        updateBuilder.updateViaMap(map);
+//
+//        // adding item transaction
+//        addReservedItemTransaction(reservationType, item, reservationQuantity, inventoryReservation);
+//    }
 
     private static void updateAvailableQuantityInItemType(Double reservationQuantity, Long itemTypeId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -219,7 +259,7 @@ public class V3InventoryUtil {
         updateBuilder.updateViaMap(map);
     }
 
-    private static void addReservedItemTransaction(ReservationType reservationType, V3ItemContext item, Double reservationQuantity, InventoryReservationContext inventoryReservation) throws Exception {
+    private static void addReservedItemTransaction(ReservationType reservationType, V3ItemContext item, Double reservationQuantity, InventoryReservationContext inventoryReservation, ServiceInventoryReservationContext serviceInventoryReservation) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String itemModuleName = FacilioConstants.ContextNames.ITEM_TRANSACTIONS;
         FacilioModule module = modBean.getModule(itemModuleName);
@@ -232,8 +272,14 @@ public class V3InventoryUtil {
         itemTransaction.setQuantity(reservationQuantity);
         itemTransaction.setIsReturnable(false);
         itemTransaction.setTransactionType(TransactionType.RESERVATION);
-        itemTransaction.setInventoryReservation(inventoryReservation);
-        itemTransaction.setParentId(inventoryReservation.getId());
+        if(inventoryReservation!=null && inventoryReservation.getId()>0){
+            itemTransaction.setInventoryReservation(inventoryReservation);
+            itemTransaction.setParentId(inventoryReservation.getId());
+        }
+        if(serviceInventoryReservation!=null && serviceInventoryReservation.getId()>0){
+            itemTransaction.setServiceInventoryReservation(serviceInventoryReservation);
+            itemTransaction.setParentId(serviceInventoryReservation.getId());
+        }
 
         if(reservationType.equals(ReservationType.HARD)) {
             itemTransaction.setTransactionState(TransactionState.HARD_RESERVE);
@@ -398,5 +444,4 @@ public class V3InventoryUtil {
     public static boolean lookupValueIsNotEmpty(ModuleBaseWithCustomFields context) {
         return context != null && context.getId() > 0;
     }
-
 }

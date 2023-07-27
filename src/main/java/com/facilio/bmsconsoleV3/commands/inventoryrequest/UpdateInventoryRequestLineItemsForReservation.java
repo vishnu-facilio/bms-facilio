@@ -4,6 +4,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
+import com.facilio.bmsconsoleV3.enums.InventoryReservationStatus;
+import com.facilio.bmsconsoleV3.enums.ReservationSource;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -45,9 +47,9 @@ public class UpdateInventoryRequestLineItemsForReservation extends FacilioComman
     private InventoryReservationContext createInventoryReservationRecord(V3InventoryRequestLineItemContext inventoryRequestLineItem, V3WorkOrderContext workorder) throws Exception {
         InventoryReservationContext reservation = new InventoryReservationContext();
 
-        reservation.setReservationSource(InventoryReservationContext.ReservationSource.INVENTORY_REQUEST.getIndex());
+        reservation.setReservationSource(ReservationSource.INVENTORY_REQUEST.getIndex());
         reservation.setReservationType(inventoryRequestLineItem.getReservationType());
-        reservation.setReservationStatus(InventoryReservationContext.InventoryReservationStatus.NOT_ISSUED.getIndex());
+        reservation.setReservationStatus(InventoryReservationStatus.NOT_ISSUED.getIndex());
         reservation.setStoreRoom(inventoryRequestLineItem.getStoreRoom());
         reservation.setWorkOrder(workorder);
         reservation.setItemType(inventoryRequestLineItem.getItemType());
