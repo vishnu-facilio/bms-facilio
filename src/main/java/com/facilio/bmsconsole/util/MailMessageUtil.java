@@ -529,7 +529,7 @@ public class MailMessageUtil {
             
         return attachmentsList;
     }
-	public static void updateBaseMailConvertionData(BaseMailMessageContext mailMessageContext , Long parentRecordId , Long parentModuleId , Long conversationId, BaseMailMessageContext.BaseMailType mailType  , BaseMailMessageContext.BaseMailLogStatus status) throws Exception {
+	public static void updateBaseMailConvertionData(BaseMailMessageContext mailMessageContext , Long parentRecordId , Long parentModuleId , Long conversationId, BaseMailMessageContext.BaseMailConversionType mailConversionType  , BaseMailMessageContext.BaseMailLogStatus status) throws Exception {
 		try {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule baseMailModule = modBean.getModule(FacilioConstants.ContextNames.BASE_MAIL_MESSAGE);
@@ -542,7 +542,7 @@ public class MailMessageUtil {
 			props.put(FacilioConstants.ContextNames.PARENT_RECORD_ID, parentRecordId);
 			props.put(FacilioConstants.ContextNames.PARENT_MODULE_ID, parentModuleId);
 			props.put(FacilioConstants.ContextNames.CONVERSATION_ID, conversationId);
-			props.put(EmailClient.MAIL_TYPE, mailType.getVal());
+			props.put(FacilioConstants.ContextNames.MAIL_CONVERSION_TYPE, mailConversionType.getVal());
 			props.put(FacilioConstants.ContextNames.STATUS, status.getVal());
 			baseMailMessageUpdateBuilder.update(FieldUtil.getAsBeanFromMap(props, BaseMailMessageContext.class));
 		}

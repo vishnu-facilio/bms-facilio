@@ -1617,7 +1617,7 @@ public enum ActionType implements FacilioIntEnum {
 			
 			MailMessageUtil.addEmailToModuleDataContext(mailContext, workOrderId , ChainUtil.getModule(FacilioConstants.ContextNames.WORK_ORDER).getModuleId());
 
-			MailMessageUtil.updateBaseMailConvertionData(mailContext , workOrderId, ChainUtil.getModule(FacilioConstants.ContextNames.WORK_ORDER).getModuleId() , null , BaseMailMessageContext.BaseMailType.RECORD , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
+			MailMessageUtil.updateBaseMailConvertionData(mailContext , workOrderId, ChainUtil.getModule(FacilioConstants.ContextNames.WORK_ORDER).getModuleId() , null , BaseMailMessageContext.BaseMailConversionType.RECORD , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
 			LOGGER.info("Added Workorder from Action Type MAIL_TO_CREATEWO : "  );
 			
 			
@@ -1652,8 +1652,7 @@ public enum ActionType implements FacilioIntEnum {
 		        ModuleBaseWithCustomFields resultRecord = resultRecordMap.get(moduleName).get(0);
 
 				MailMessageUtil.addEmailToModuleDataContext(mailContext, resultRecord.getId(), module.getModuleId());
-
-				MailMessageUtil.updateBaseMailConvertionData(mailContext , resultRecord.getId(), module.getModuleId() , null , BaseMailMessageContext.BaseMailType.RECORD , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
+				MailMessageUtil.updateBaseMailConvertionData(mailContext , resultRecord.getId(), module.getModuleId() , null , BaseMailMessageContext.BaseMailConversionType.RECORD , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
 			}
 		}
 	},
@@ -1803,7 +1802,9 @@ public enum ActionType implements FacilioIntEnum {
 
 						FacilioContext contextNew = V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME), Collections.singletonList(emailConversationContext));
 						Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) contextNew.get(Constants.RECORD_MAP);
-						MailMessageUtil.updateBaseMailConvertionData(mailContext , recordId, module.getModuleId() , recordMap.get(modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME).getName()).get(0).getId() , BaseMailMessageContext.BaseMailType.CONVERSATION , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
+						if(recordMap != null && recordMap.size() > 0) {
+							MailMessageUtil.updateBaseMailConvertionData(mailContext, recordId, module.getModuleId(), recordMap.get(modBean.getModule(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME).getName()).get(0).getId(), BaseMailMessageContext.BaseMailConversionType.CONVERSATION, BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
+						}
 					}
 
 					if (recordId == null) {
@@ -1836,7 +1837,7 @@ public enum ActionType implements FacilioIntEnum {
 
 						V3Util.createRecord(modBean.getModule(MailMessageUtil.EMAIL_TO_MODULE_DATA_MODULE_NAME), Collections.singletonList(emailToModuleData));
 
-						MailMessageUtil.updateBaseMailConvertionData(mailContext , parentRecordId , module.getModuleId() , null , BaseMailMessageContext.BaseMailType.RECORD , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
+						MailMessageUtil.updateBaseMailConvertionData(mailContext , parentRecordId , module.getModuleId() , null , BaseMailMessageContext.BaseMailConversionType.RECORD , BaseMailMessageContext.BaseMailLogStatus.SUCCESS);
 
 					}
 
@@ -1845,7 +1846,7 @@ public enum ActionType implements FacilioIntEnum {
 			catch (Exception e)
 			{
 				if((Long) context.get(FacilioConstants.ContextNames.REQUEST_EMAIL_ID)!=null) {
-					MailMessageUtil.updateBaseMailConvertionData(mailContext , null, null , null , BaseMailMessageContext.BaseMailType.ERROR , BaseMailMessageContext.BaseMailLogStatus.FAILURE);
+					MailMessageUtil.updateBaseMailConvertionData(mailContext , null, null , null , BaseMailMessageContext.BaseMailConversionType.ERROR , BaseMailMessageContext.BaseMailLogStatus.FAILURE);
 					FacilioService.runAsService(FacilioConstants.Services.DEFAULT_SERVICE,() -> EmailProcessHandler.markAsFailed( (Long) context.get(FacilioConstants.ContextNames.REQUEST_EMAIL_ID)));
 				}
 				throw e;

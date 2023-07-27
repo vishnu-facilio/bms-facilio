@@ -540,6 +540,7 @@ public class FacilioConstants {
 		public static final String PARENT_RECORD = "parentRecord";
 		public static final String PARENT_RECORD_ID = "parentRecordId";
 		public static final String CONVERSATION_ID = "conversationId";
+		public static final String MAIL_CONVERSION_TYPE = "mailConversionType";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_MAP = "recordMap";
 		public static final String RECORD_LIST_MAP = "recordListMap";
