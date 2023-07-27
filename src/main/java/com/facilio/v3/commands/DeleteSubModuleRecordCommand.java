@@ -11,6 +11,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -34,11 +35,11 @@ public class DeleteSubModuleRecordCommand extends FacilioCommand {
 
         Set<String> subModNameList = deleteRecordIdMap.keySet();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
+        FacilioModule parentModule = modBean.getModule(moduleName);
         for (String subModName: subModNameList) {
             FacilioModule module = modBean.getModule(subModName);
             Map<String, LookupField> allLookupFields = getAllLookupFields(modBean, module);
-            LookupField lookupField = allLookupFields.get(moduleName);
+            LookupField lookupField = CommandUtil.findLookupFieldInChildModule(parentModule, allLookupFields);
 
             DeleteRecordBuilder<ModuleBaseWithCustomFields> builder = new DeleteRecordBuilder<>()
                             .module(module)
