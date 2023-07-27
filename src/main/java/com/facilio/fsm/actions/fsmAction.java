@@ -150,6 +150,7 @@ public class fsmAction extends V3Action {
         Map<String, Object> mapping = new HashMap<>();
         DispatcherEventContext dispatcherSAEvent = null;
         Long fieldAgentId = getFieldAgentId();
+        JSONObject bodyParams = new JSONObject();
 
         if (appointmentId == null || appointmentId < 0) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR,"appointment id is mandatory");
@@ -158,6 +159,11 @@ public class fsmAction extends V3Action {
         if(fieldAgentId != null && fieldAgentId > 0) {
             V3PeopleContext fieldAgent = V3PeopleAPI.getPeopleById(fieldAgentId);
             mapping.put("fieldAgent", fieldAgent);
+            ServiceAppointmentTicketStatusContext dispatch = ServiceAppointmentUtil.getStatus(FacilioConstants.ServiceAppointment.DISPATCHED);
+            if(dispatch != null) {
+                mapping.put("status", dispatch);
+                bodyParams.put("updateStatus",true);
+            }
         }
 
         if(scheduledStartTime != null && scheduledStartTime > 0){
@@ -169,7 +175,6 @@ public class fsmAction extends V3Action {
         }
 
         if(MapUtils.isNotEmpty(mapping)) {
-            JSONObject bodyParams = new JSONObject();
             bodyParams.put("skipValidation",skipValidation);
             FacilioContext context = V3Util.updateBulkRecords(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, mapping, Collections.singletonList(appointmentId), bodyParams,null,false,false);
             HashMap<String,Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);

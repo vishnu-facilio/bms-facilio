@@ -12,6 +12,7 @@ public class ServiceAppointmentTicketStatusContext extends V3Context {
     private String displayName;
     private String color;
     private boolean recordLocked;
+    private boolean deleteLocked;
 
 
     public StatusType getTypeCodeEnum() {

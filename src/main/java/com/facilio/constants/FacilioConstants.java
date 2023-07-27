@@ -4640,6 +4640,12 @@ public class FacilioConstants {
 		public static final String SERVICE_APPOINTMENT_STATUS = "serviceAppointmentStatus";
 		public static final String SERVICE_APPOINTMENT_NOTES = "serviceAppointmentNotes";
 		public static final String SERVICE_APPOINTMENT_ATTACHMENTS = "serviceAppointmentAttachments";
+		public static final String SCHEDULED = "scheduled";
+		public static final String DISPATCHED = "dispatched";
+		public static final String EN_ROUTE = "enRoute";
+		public static final String IN_PROGRESS = "inProgress";
+		public static final String COMPLETED = "completed";
+		public static final String CANCELLED = "cancelled";
 	}
 
 

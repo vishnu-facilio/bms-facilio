@@ -34,20 +34,6 @@ public class rollupServiceAppointmentFieldsCommand extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(serviceAppointments)) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
-                if(eventType == EventType.CREATE){
-                    if (serviceAppointment.getScheduledStartTime() != null && serviceAppointment.getScheduledEndTime() != null) {
-                        if(serviceAppointment.getFieldAgent() != null){
-                            ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("dispatched");
-                            serviceAppointment.setStatus(appointmentStatus);
-                        } else {
-                            ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("scheduled");
-                            serviceAppointment.setStatus(appointmentStatus);
-                        }
-                    } else {
-                        ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("new");
-                        serviceAppointment.setStatus(appointmentStatus);
-                    }
-                }
                 if (serviceAppointment.getAppointmentType() == ServiceAppointmentContext.AppointmentType.SERVICE_WORK_ORDER.getIndex()) {
                     ServiceOrderContext serviceOrder = serviceAppointment.getServiceOrder();
                     if (serviceOrder != null) {

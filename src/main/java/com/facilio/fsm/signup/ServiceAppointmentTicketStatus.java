@@ -44,6 +44,10 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         recordLocked.setDefault(true);
         fields.add(recordLocked);
 
+        BooleanField deleteLocked = FieldFactory.getDefaultField("deleteLocked","Delete Locked","DELETE_LOCKED",FieldType.BOOLEAN);
+        deleteLocked.setDefault(true);
+        fields.add(deleteLocked);
+
         serviceAppointmentTicketStatus.setFields(fields);
         modules.add(serviceAppointmentTicketStatus);
 
@@ -60,57 +64,64 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
                 .fields(modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS));
 
         List<ServiceAppointmentTicketStatusContext> ticketStatusContextList = new ArrayList<>();
-        ServiceAppointmentTicketStatusContext newState = new ServiceAppointmentTicketStatusContext();
-        newState.setStatus("new");
-        newState.setDisplayName("New");
-        newState.setColor("#0492AE");
-        newState.setTypeCode(1);
-        newState.setRecordLocked(false);
-        ticketStatusContextList.add(newState);
 
         ServiceAppointmentTicketStatusContext scheduledState = new ServiceAppointmentTicketStatusContext();
 
-        scheduledState.setStatus("scheduled");
+        scheduledState.setStatus(FacilioConstants.ServiceAppointment.SCHEDULED);
         scheduledState.setDisplayName("Scheduled");
         scheduledState.setColor("#51049F");
         scheduledState.setTypeCode(1);
         scheduledState.setRecordLocked(false);
+        scheduledState.setDeleteLocked(false);
         ticketStatusContextList.add(scheduledState);
 
         ServiceAppointmentTicketStatusContext dispatchedState = new ServiceAppointmentTicketStatusContext();
 
-        dispatchedState.setStatus("dispatched");
+        dispatchedState.setStatus(FacilioConstants.ServiceAppointment.DISPATCHED);
         dispatchedState.setDisplayName("Dispatched");
         dispatchedState.setColor("#C70566");
         dispatchedState.setTypeCode(1);
         dispatchedState.setRecordLocked(false);
+        scheduledState.setDeleteLocked(false);
         ticketStatusContextList.add(dispatchedState);
+
+        ServiceAppointmentTicketStatusContext enRouteState = new ServiceAppointmentTicketStatusContext();
+        enRouteState.setStatus(FacilioConstants.ServiceAppointment.EN_ROUTE);
+        enRouteState.setDisplayName("En Route");
+        enRouteState.setColor("#0492AE");
+        enRouteState.setTypeCode(2);
+        enRouteState.setRecordLocked(false);
+        scheduledState.setDeleteLocked(false);
+        ticketStatusContextList.add(enRouteState);
 
         ServiceAppointmentTicketStatusContext inProgressState = new ServiceAppointmentTicketStatusContext();
 
-        inProgressState.setStatus("inProgress");
+        inProgressState.setStatus(FacilioConstants.ServiceAppointment.IN_PROGRESS);
         inProgressState.setDisplayName("In Progress");
         inProgressState.setColor("#F7BA02");
         inProgressState.setTypeCode(2);
         inProgressState.setRecordLocked(false);
+        scheduledState.setDeleteLocked(false);
         ticketStatusContextList.add(inProgressState);
 
         ServiceAppointmentTicketStatusContext completedState = new ServiceAppointmentTicketStatusContext();
 
-        completedState.setStatus("completed");
+        completedState.setStatus(FacilioConstants.ServiceAppointment.COMPLETED);
         completedState.setDisplayName("Completed");
         completedState.setColor("#058545");
         completedState.setTypeCode(3);
-        completedState.setRecordLocked(false);
+        completedState.setRecordLocked(true);
+        scheduledState.setDeleteLocked(false);
         ticketStatusContextList.add(completedState);
 
         ServiceAppointmentTicketStatusContext cancelledState = new ServiceAppointmentTicketStatusContext();
 
-        cancelledState.setStatus("cancelled");
+        cancelledState.setStatus(FacilioConstants.ServiceAppointment.CANCELLED);
         cancelledState.setDisplayName("Cancelled");
         cancelledState.setColor("#D12806");
         cancelledState.setTypeCode(3);
-        cancelledState.setRecordLocked(false);
+        cancelledState.setRecordLocked(true);
+        scheduledState.setDeleteLocked(true);
         ticketStatusContextList.add(cancelledState);
 
 
