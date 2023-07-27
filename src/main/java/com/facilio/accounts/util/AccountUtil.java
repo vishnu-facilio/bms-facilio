@@ -825,7 +825,12 @@ public class AccountUtil {
 					return true;
 				}
 				if(AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)){
-					return true;
+					boolean skipMaintenanceAppScoping = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.SKIP_MAINTENANCE_APP_SCOPING, Boolean.FALSE));
+					if(skipMaintenanceAppScoping && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)){
+						//altayer maintenance app scoping check to remove after caching
+					} else {
+						return true;
+					}
 				}
 				if(module.getName().equals(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME)
 						|| module.getName().equals(FacilioConstants.Inspection.INSPECTION_TEMPLATE)

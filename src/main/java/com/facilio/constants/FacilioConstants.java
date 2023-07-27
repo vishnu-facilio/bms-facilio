@@ -3360,6 +3360,7 @@ public class FacilioConstants {
 		public static final String OMIT_BASESPACE_API = "omitBasespaceAPI";
 		public static final String FETCH_ROLE_SPECIFIC_WEB_TABS = "fetchRoleSpecificTabs";
 
+		public static final String SKIP_MAINTENANCE_APP_SCOPING = "skipMaintenanceAppScoping";
 		public static final String HIDE_COMMENTS_AND_INFORMATION_SECTION_IN_SR="hideCommentsAndInformationSectionInSR";
 
 		public static final String NOTES_EDIT_AVAILABLE = "notesEditAvailable";
