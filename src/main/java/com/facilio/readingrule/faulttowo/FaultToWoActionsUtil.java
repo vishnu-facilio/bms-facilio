@@ -17,7 +17,7 @@ public class FaultToWoActionsUtil {
     public static void addWODescFromRulePossibleCauses(WorkOrderContext workOrder, RuleAlarmDetails alarmDetails) throws Exception {
         List<String> possibleCauses = alarmDetails.getPossibleCauses();
         if(CollectionUtils.isNotEmpty(possibleCauses)) {
-            StringBuilder desc = null;
+            StringBuilder desc = new StringBuilder();
             if (workOrder.getDescription() != null) {
                 desc = new StringBuilder("\n" + workOrder.getDescription() + "\n");
             }
