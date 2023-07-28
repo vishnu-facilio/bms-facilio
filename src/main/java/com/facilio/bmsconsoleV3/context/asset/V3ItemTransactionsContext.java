@@ -282,16 +282,6 @@ public class V3ItemTransactionsContext extends V3Context {
     public void setInventoryReservation(InventoryReservationContext inventoryReservation) {
         this.inventoryReservation = inventoryReservation;
     }
-    private ServiceInventoryReservationContext serviceInventoryReservation;
-
-    public ServiceInventoryReservationContext getServiceInventoryReservation() {
-        return serviceInventoryReservation;
-    }
-
-    public void setServiceInventoryReservation(ServiceInventoryReservationContext serviceInventoryReservation) {
-        this.serviceInventoryReservation = serviceInventoryReservation;
-    }
-
     private ServiceOrderContext serviceOrder;
 
     public ServiceOrderContext getServiceOrder() {

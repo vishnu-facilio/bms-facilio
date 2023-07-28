@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
@@ -25,7 +26,7 @@ public class ServiceOrderContext extends V3Context {
     private ServiceOrderCategory category;
     private ServiceOrderPriority priority;
     private SpaceContext space;
-    private AssetContext asset;
+    private V3AssetContext asset;
     private ServiceOrderStatus status;
     private ServiceOrderRequestResponseStatus requestDueStatus;
     private ServiceOrderRequestResponseStatus responseDueStatus;
@@ -427,5 +428,13 @@ public class ServiceOrderContext extends V3Context {
 
     public void setServiceTask(List<ServiceTaskContext> serviceTask) {
         this.serviceTask = serviceTask;
+    }
+
+    public V3AssetContext getAsset() {
+        return asset;
+    }
+
+    public void setAsset(V3AssetContext asset) {
+        this.asset = asset;
     }
 }

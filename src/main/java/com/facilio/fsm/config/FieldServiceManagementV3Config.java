@@ -2,11 +2,18 @@ package com.facilio.fsm.config;
 
 
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.LoadWorkorderActualsExtraFieldsCommandV3;
+import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetWorkOrderPlannedItemsCommandV3;
+import com.facilio.bmsconsoleV3.context.V3WorkorderToolsContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15;
+import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.commands.*;
+import com.facilio.fsm.commands.actuals.SetServiceOrderItemsCommand;
+import com.facilio.fsm.commands.actuals.SetServiceOrderToolsCommand;
 import com.facilio.fsm.commands.people.FetchLocationHistorySupplements;
 import com.facilio.fsm.commands.people.FetchPeopleSkillLevelSupplementsCommand;
 import com.facilio.fsm.commands.people.FetchPeopleTerritorySupplementsCommand;
@@ -124,6 +131,62 @@ public class FieldServiceManagementV3Config {
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_SERVICES, "service")
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_SERVICES, "service")
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS)
+    public static Supplier<V3Config> getServiceOrderItems() {
+        return () -> new V3Config(ServiceOrderItemsContext.class, null)
+                .create()
+                .beforeSave(new SetServiceOrderItemsCommand())
+                .afterSave(FsmTransactionChainFactoryV3.getServiceOrderItemsAfterSaveChain())
+                .update()
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "item")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS,"rotatingAsset")
+                .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "item")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_ITEMS,"rotatingAsset")
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS)
+    public static Supplier<V3Config> getServiceOrderTools() {
+        return () -> new V3Config(ServiceOrderToolsContext.class, null)
+                .create()
+                .beforeSave(new SetServiceOrderToolsCommand())
+                .afterSave(FsmTransactionChainFactoryV3.getServiceOrderToolsAfterSaveChain())
+                .update()
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "tool")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "toolType")
+                .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "tool")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "toolType")
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES)
+    public static Supplier<V3Config> getServiceOrderServices() {
+        return () -> new V3Config(ServiceOrderServiceContext.class, null)
+                .create()
+                .beforeSave(new SetServiceOrderToolsCommand())
+                .afterSave(FsmTransactionChainFactoryV3.getServiceOrderToolsAfterSaveChain())
+                .update()
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "tool")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "toolType")
+                .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "tool")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "toolType")
                 .delete()
                 .build();
     }

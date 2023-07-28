@@ -13,10 +13,9 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.modules.fields.*;
 import com.facilio.util.CurrencyUtil;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -356,6 +355,41 @@ public class V3ItemsApi {
             item = selectRecordsBuilder.fetchFirst();
         }
         return item;
+    }
+    public static V3ItemContext getItemWithServingSites(Long id) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        Collection<SupplementRecord> lookUpFields = new ArrayList<>();
+        LookupFieldMeta storeRoomField = new LookupFieldMeta((LookupField) fieldMap.get("storeRoom"));
+        MultiLookupField servingSitesField = (MultiLookupField) modBean.getField("servingsites", FacilioConstants.ContextNames.STORE_ROOM);
+        storeRoomField.addChildSupplement(servingSitesField);
+        lookUpFields.add(storeRoomField);
+        lookUpFields.add((LookupField) fieldMap.get("itemType"));
+
+        List<V3ItemContext> items = V3RecordAPI.getRecordsListWithSupplements(module.getName(),Collections.singletonList(id),V3ItemContext.class,lookUpFields);
+
+        if (CollectionUtils.isNotEmpty(items)) {
+            return items.get(0);
+        }
+        return null;
+    }
+    public static V3ItemContext getItem(Long id) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        Collection<SupplementRecord> lookUpFields = new ArrayList<>();
+        lookUpFields.add((LookupField) fieldMap.get("itemType"));
+        lookUpFields.add((LookupField) fieldMap.get("storeRoom"));
+
+        List<V3ItemContext> items = V3RecordAPI.getRecordsListWithSupplements(module.getName(),Collections.singletonList(id),V3ItemContext.class,lookUpFields);
+
+        if (CollectionUtils.isNotEmpty(items)) {
+            return items.get(0);
+        }
+        return null;
     }
 
 }

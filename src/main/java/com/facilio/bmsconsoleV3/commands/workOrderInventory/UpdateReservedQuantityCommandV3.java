@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.facilio.bmsconsoleV3.util.V3InventoryUtil.updateReservedQuantity;
+
 public class UpdateReservedQuantityCommandV3 extends FacilioCommand {
     @SuppressWarnings("unchecked")
     @Override
@@ -29,28 +31,7 @@ public class UpdateReservedQuantityCommandV3 extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(workOrderItems)){
             for(V3WorkorderItemContext workOrderItem : workOrderItems){
                 if(workOrderItem.getInventoryReservation()!=null && workOrderItem.getInventoryReservation().getId()>0){
-                    Double woQuantity = workOrderItem.getQuantity();
-                    V3ItemContext item = V3ItemsApi.getItems(workOrderItem.getItem().getId());
-                    Double reservedQuantity = item.getReservedQuantity();
-                    Double newReservedQuantity = reservedQuantity - woQuantity;
-
-                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                    String itemModuleName = FacilioConstants.ContextNames.ITEM;
-                    FacilioModule module = modBean.getModule(itemModuleName);
-                    List<FacilioField> fields = modBean.getAllFields(itemModuleName);
-
-                    List<FacilioField> updatedFields = new ArrayList<>();
-                    Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-                    updatedFields.add(fieldsMap.get("reservedQuantity"));
-
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("reservedQuantity", newReservedQuantity);
-
-                    UpdateRecordBuilder<V3ItemContext> updateBuilder = new UpdateRecordBuilder<V3ItemContext>()
-                            .module(module).fields(updatedFields)
-                            .andCondition(CriteriaAPI.getIdCondition(item.getId(), module));
-                    updateBuilder.updateViaMap(map);
-
+                    updateReservedQuantity(workOrderItem.getItem().getId(),workOrderItem.getQuantity());
                 }
             }
         }

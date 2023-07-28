@@ -3,7 +3,6 @@ package com.facilio.fsm.commands.plans;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.enums.InventoryReservationStatus;
 import com.facilio.bmsconsoleV3.enums.ReservationSource;
-import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceInventoryReservationContext;
@@ -36,11 +35,8 @@ public class ReserveServiceOrderPlannedItemsCommand extends FacilioCommand {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION);
                 ServiceInventoryReservationContext reservation = getReservationRecord(serviceOrderPlannedItem);
-                FacilioContext inventoryReservationContext = V3Util.createRecord(module, FacilioUtil.getAsMap(FieldUtil.getAsJSON(reservation)),null,null);
-                Map<String, List> reservationRecordMap = (Map<String, List>) inventoryReservationContext.get(Constants.RECORD_MAP);
-
-                ServiceInventoryReservationContext inventoryReservation = (ServiceInventoryReservationContext) reservationRecordMap.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION).get(0);
-                rollUpReservedItemForSoPlans(serviceOrderPlannedItem.getItemType(), serviceOrderPlannedItem.getStoreRoom(), serviceOrderPlannedItem.getReservationType(), serviceOrderPlannedItem.getQuantity(), inventoryReservation);
+                V3Util.createRecord(module, FacilioUtil.getAsMap(FieldUtil.getAsJSON(reservation)),null,null);
+                rollUpReservedItemForSoPlans(serviceOrderPlannedItem.getItemType(), serviceOrderPlannedItem.getStoreRoom(), serviceOrderPlannedItem.getReservationType(), serviceOrderPlannedItem.getQuantity());
             }
         }
         return false;
