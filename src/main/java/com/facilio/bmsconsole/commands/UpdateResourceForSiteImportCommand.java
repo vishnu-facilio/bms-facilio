@@ -10,12 +10,18 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.chain.Context;
 
 import java.util.*;
 
 public class UpdateResourceForSiteImportCommand extends FacilioCommand {
+
+    private static final String QR_PREFIX = "facilio_";
+    private static final String QR_VAL = "qrVal";
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
@@ -29,14 +35,18 @@ public class UpdateResourceForSiteImportCommand extends FacilioCommand {
 
         for(String moduleName : groupedContext.keySet()) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            List<Long> readingsList = recordsList.get(moduleName);
+            List<Long> recordIds = recordsList.get(moduleName);
 
-            if (moduleName.equals("site")) {
-                FacilioModule module = modBean.getModule("resource");
+            if (moduleName.equals(FacilioConstants.ContextNames.SITE) || moduleName.equals(FacilioConstants.ContextNames.BUILDING) || moduleName.equals(FacilioConstants.ContextNames.FLOOR) || moduleName.equals(FacilioConstants.ContextNames.SPACE)) {
+                FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+                Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
                 List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdates = new ArrayList<>();
-                for (Long siteId : readingsList) {
+                for (Long siteId : recordIds) {
                     Map<String, Object> prop = new HashMap<>();
-                    prop.put("siteId", siteId);
+                    if (moduleName.equals(FacilioConstants.ContextNames.SITE)) {
+                        prop.put(FacilioConstants.ContextNames.SITE_ID, siteId);
+                    }
+                    prop.put(QR_VAL,QR_PREFIX+siteId);
                     GenericUpdateRecordBuilder.BatchUpdateByIdContext batchUpdateByIdContext = new GenericUpdateRecordBuilder.BatchUpdateByIdContext();
                     batchUpdateByIdContext.setWhereId(siteId);
                     batchUpdateByIdContext.setUpdateValue(prop);
@@ -45,7 +55,7 @@ public class UpdateResourceForSiteImportCommand extends FacilioCommand {
                 }
                 GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
                         .table(module.getTableName())
-                        .fields(Arrays.asList(FieldFactory.getSiteIdField(module)));
+                        .fields(Arrays.asList(FieldFactory.getSiteIdField(module),fieldMap.get(QR_VAL)));
                 updateRecordBuilder.batchUpdateById(batchUpdates);
             }
 
