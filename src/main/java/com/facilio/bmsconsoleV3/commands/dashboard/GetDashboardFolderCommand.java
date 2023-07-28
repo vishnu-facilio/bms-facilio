@@ -55,6 +55,12 @@ public class GetDashboardFolderCommand extends FacilioCommand {
             appCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), CommonOperators.IS_EMPTY));
         }
         selectBuilder.andCriteria(appCriteria);
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
+            selectBuilder.andCondition(CriteriaAPI.getCondition("IS_NEW","newFlow",String.valueOf(true),NumberOperators.EQUALS));
+        }
+        else{
+            selectBuilder.andCondition(CriteriaAPI.getCondition("IS_NEW","newFlow",String.valueOf(true),NumberOperators.NOT_EQUALS));
+        }
         List<Map<String, Object>> props = selectBuilder.get();
         if (props != null && !props.isEmpty())
         {

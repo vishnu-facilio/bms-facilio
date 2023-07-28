@@ -114,6 +114,7 @@ public class V3UpdateDashboardWithWidgets extends FacilioCommand
 
     public void createOrUpdateWidgetInSection(Context context, DashboardContext dashboard, DashboardWidgetContext widget, JSONObject widgetMapping)throws Exception
     {
+        Long parentId = null;
         List<DashboardWidgetContext> update_widget_list = new ArrayList<DashboardWidgetContext>();
         List<DashboardWidgetContext> widget_list = ((WidgetSectionContext) widget).getWidgets_in_section();
         V3DashboardAPIHandler.checkAndGenerateWidgetLinkName(widget_list, dashboard.getId(), null);
@@ -126,7 +127,16 @@ public class V3UpdateDashboardWithWidgets extends FacilioCommand
                 context.put(FacilioConstants.ContextNames.WIDGET, dashboard_widget);
                 context.put(FacilioConstants.ContextNames.WIDGET_TYPE, dashboard_widget.getWidgetType());
                 context.put(FacilioConstants.ContextNames.DASHBOARD_ID, dashboard.getId());
+                if(dashboard_widget.getChild()) {
+                    context.put(FacilioConstants.ContextNames.PARENT_ID,parentId);
+                }
+                else {
+                    context.put(FacilioConstants.ContextNames.PARENT_ID,null);
+                }
                 addWidgetChain.execute(context);
+                if(dashboard_widget.getCombo()){
+                    parentId = dashboard_widget.getId();
+                }
             }
             else
             {

@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.actions.dashboard;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -11,6 +11,12 @@ import com.facilio.bmsconsoleV3.context.dashboard.DashboardListPropsContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -27,6 +33,8 @@ import java.util.*;
 public class V3DashboardAction extends V3Action {
 
     private Long buildingId;
+    private Long dashboardId;
+    private String dashboardName;
     private JSONObject dashboard_meta;
     private String linkName;
     private Long dashboardTabId;
@@ -149,11 +157,12 @@ public class V3DashboardAction extends V3Action {
             {
                 DashboardContext dashboard = (DashboardContext) dashboard_context.get("dashboard");
                 V3DashboardAPIHandler.updateDashboardData(dashboard, data);
-                FacilioChain updateDashboardChain = TransactionChainFactoryV3.getUpdateDashboardChainV3();
+                FacilioChain updateDashboardChain = TransactionChainFactoryV3.getUpdateDashboardChainV3(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2));
                 FacilioContext context = updateDashboardChain.getContext();
                 context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
                 context.put(FacilioConstants.ContextNames.IS_FROM_REPORT, dashboard_meta.containsKey("isFromReport") ? (Boolean) dashboard_meta.get("isFromReport"): Boolean.FALSE);
                 context.put(FacilioConstants.ContextNames.BUILDING_ID, buildingId);
+                context.put("dashboardUrl",data.get("dashboardUrl"));
                 updateDashboardChain.execute();
                 setData("dashboard", DashboardUtil.getDashboardResponseJson(dashboard, false));
             }
@@ -351,5 +360,17 @@ public class V3DashboardAction extends V3Action {
             throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard list" +e);
         }
         return V3Action.SUCCESS;
+    }
+    public String rename() throws Exception
+    {
+        DashboardContext dashboard = DashboardUtil.getDashboard(dashboardId);
+        GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getDashboardModule().getTableName())
+                .fields(FieldFactory.getDashboardFields())
+                .andCondition(CriteriaAPI.getCondition("id","ID",String.valueOf(dashboardId), NumberOperators.EQUALS));
+        dashboard.setDashboardName(dashboardName);
+        Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
+        update.update(props);
+        return SUCCESS;
     }
 }

@@ -34,7 +34,13 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	public void setHideFilterInsideWidgets(boolean hideFilterInsideWidgets) {
 		this.hideFilterInsideWidgets = hideFilterInsideWidgets;
 	}
-	
+	private List<DashboardFieldMappingContext> fieldMappingMap;
+	public List<DashboardFieldMappingContext> getFieldMappingMap() {
+		return fieldMappingMap;
+	}
+	public void setFieldMappingMap(List<DashboardFieldMappingContext> fieldMappingMap) {
+		this.fieldMappingMap = fieldMappingMap;
+	}
 	
 	
 

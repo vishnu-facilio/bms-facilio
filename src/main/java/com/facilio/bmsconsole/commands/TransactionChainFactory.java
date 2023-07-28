@@ -6462,10 +6462,22 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain getAddOrUpdateDashboardFilterChain() {
+	public static FacilioChain getAddOrUpdateDashboardFilterChain(boolean newFlow) {
 		FacilioChain c=getDefaultChain();
 		c.addCommand(new AddOrUpdateDashboardFilterCommand());
 		c.addCommand(new AddOrUpdateDashboardUserFilterCommand());
+		if(newFlow){
+			c.addCommand(new AddOrUpdateDashboardFieldMappingCommand());
+		}
+		return c;
+	}
+	public static FacilioChain getNewAddOrUpdateDashboardFilterChain(boolean newFlow) {
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new AddOrUpdateDashboardFilterCommand());
+		c.addCommand(new AddOrUpdateNewDashboardUserFilterCommand());
+		if(newFlow){
+			c.addCommand(new AddOrUpdateDashboardFieldMappingCommand());
+		}
 		return c;
 	}
 	public static FacilioChain getSaveMailMessage() {

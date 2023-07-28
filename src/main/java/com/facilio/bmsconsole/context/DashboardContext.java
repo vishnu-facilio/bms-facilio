@@ -32,7 +32,16 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	public void setLocked(Boolean locked) {
 		this.locked = locked;
 	}
-
+	private Long fileId;
+	public Long getFileId() {
+		return fileId;
+	}
+	public void setFileId(Long fileId) {
+		this.fileId = fileId;
+	}
+	private String fileUrl;
+	public String getFileUrl() { return fileUrl; }
+	public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
 	private String clientMetaJsonString;
 	public String getClientMetaJsonString() {
 		return clientMetaJsonString;

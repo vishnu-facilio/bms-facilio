@@ -7372,6 +7372,10 @@
 				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
 				method="updateWidgetSettings">			
 		</action>
+		<action name="getDashboardUserFilter"
+				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
+				method="getDashboardUserFilter">
+		</action>
 
 
 	</package>

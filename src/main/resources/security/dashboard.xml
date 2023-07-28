@@ -12,7 +12,13 @@
     <request path="/api/v3/dashboard/rule/execute" method="POST">
         <requestbody type="object"></requestbody>
     </request>
+    <request path="/api/v3/dashboard/rule/newDashboardFilterRuleExecute" method="POST">
+        <requestbody type="object"></requestbody>
+    </request>
     <request path="/api/v3/dashboard/tab/update" method="POST">
+        <requestbody type="object"></requestbody>
+    </request>
+    <request path="/api/v2/dashboardFilter/getDashboardUserFilter" method="POST">
         <requestbody type="object"></requestbody>
     </request>
     <request path="/api/v2/dashboard/cards/getCardData">
@@ -414,4 +420,27 @@
             <property name="webTabId" type="number" ></property>
         </urlparams>
     </request>
+    <request path="/api/v3/dashboard/rename" method="GET">
+        <urlparams>
+            <property name="dashboardId" type="number"></property>
+            <property name="dashboardName" type="string"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v3/dashboard/bulkMove" method="GET">
+        <urlparams>
+            <property name="dashboardIds" type="array"></property>
+            <property name="targetFolderId" type="number"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v3/dashboard/bulkDelete" method="GET">
+        <urlparams>
+            <property name="dashboardIds" type="array"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v3/dashboard/bulkExport" method="GET">
+        <urlparams>
+            <property name="urls" type="array"></property>
+        </urlparams>
+    </request>
+
 </config>

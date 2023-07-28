@@ -18,6 +18,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.filestore.PublicFileUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,6 +74,9 @@ public class GetDashboardListCommand extends FacilioCommand {
             }
             for(DashboardContext dashboard : dashboard_list)
             {
+                if(dashboard.getFileId() != null) {
+                    dashboard.setFileUrl(PublicFileUtil.createFileUrlForOrg(-1,-1,dashboard.getFileId(),false,false,"dashboard"));
+                }
                 dashboard.setDashboardSharingContext(dashboard_list_prop.isWithSharing() ? DashboardUtil.getDashboardSharing(dashboard.getId()): null);
                 List<DashboardTabContext> dashboardTabContexts = DashboardUtil.getDashboardTabs(dashboard.getId());
                 dashboard.setIsTabPresent(!CollectionUtils.isEmpty(dashboardTabContexts));

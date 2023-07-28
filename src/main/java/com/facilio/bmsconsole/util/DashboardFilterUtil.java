@@ -1,33 +1,18 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.GetDbTimeLineFilterToWidgetMapping;
-import com.facilio.bmsconsole.context.DashboardCustomScriptFilter;
-import com.facilio.bmsconsole.context.DashboardFilterContext;
-import com.facilio.bmsconsole.context.DashboardUserFilterContext;
-import com.facilio.bmsconsole.context.DashboardUserFilterWidgetFieldMappingContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.KPIContext;
-import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.context.WidgetCardContext.ScriptMode;
-import com.facilio.bmsconsole.context.WidgetChartContext;
-import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.cards.util.CardLayout;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -192,25 +177,36 @@ public class DashboardFilterUtil {
 				
 				if(filter.getCriteriaId()>0)
 				{
-				filter.setCriteria(CriteriaAPI.getCriteria(filter.getCriteriaId()));
-				
-				SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordsBuilder=new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
-						.module(filter.getModule())
-						.select(Collections.singletonList(FieldFactory.getIdField(filter.getModule())))
-						.andCriteria(filter.getCriteria())
-						.beanClass(ModuleBaseWithCustomFields.class);
-						
-				List<ModuleBaseWithCustomFields>  optionRecords= selectRecordsBuilder.get();
-				
-				if(optionRecords!=null)
-				{
-				List<String> recordIds=optionRecords.stream().map(record->String.valueOf(record.getId())).collect(Collectors.toList());
-				filter.setSelectedOptionsRecordIds(recordIds);
+					filter.setCriteria(CriteriaAPI.getCriteria(filter.getCriteriaId()));
+					if(LookupSpecialTypeUtil.isSpecialType(filter.getModuleName())){
+						List list = LookupSpecialTypeUtil.getObjects(filter.getModuleName(), filter.getCriteria());
+						if(list!=null)
+						{
+							List<String> recordIds = new ArrayList<>();
+							for (Object record : list) {
+								Map<String, Object> props = FieldUtil.getAsProperties(record);
+								recordIds.add(String.valueOf(props.get("id")));
+							}
+							filter.setSelectedOptionsRecordIds(recordIds);
+						}
+					}
+					else{
+						SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordsBuilder=new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+								.module(filter.getModule())
+								.select(Collections.singletonList(FieldFactory.getIdField(filter.getModule())))
+								.andCriteria(filter.getCriteria())
+								.beanClass(ModuleBaseWithCustomFields.class);
+
+						List<ModuleBaseWithCustomFields>  optionRecords= selectRecordsBuilder.get();
+
+						if(optionRecords!=null)
+						{
+							List<String> recordIds=optionRecords.stream().map(record->String.valueOf(record.getId())).collect(Collectors.toList());
+							filter.setSelectedOptionsRecordIds(recordIds);
+						}
+					}
 				}
-				
-				
-				
-				}
+
 
 				if(filter.getWidget_id() != null)
 				{
@@ -615,5 +611,47 @@ public static Criteria getUserFilterCriteriaForModule(DashboardCustomScriptFilte
 			LOGGER.log(Level.SEVERE,"Exception finding widget mapping field",e);
 		}
 		return null;
+	}
+	public static List<Long> getFilterMappingIdForFilterId(long id) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(ModuleFactory.getDashboardFieldMappingModule().getTableName()).select(FieldFactory.getDashboardFieldMappingsFields())
+				.andCondition(CriteriaAPI.getCondition("DASHBOARD_USER_FILTER_ID","dashboardUserFilterId", String.valueOf(id),NumberOperators.EQUALS));
+		List<Map<String, Object>> props = builder.get();
+		List<Long> filterMappingIds = new ArrayList<>();
+		for(Map<String, Object> prop : props){
+			filterMappingIds.add((Long) prop.get("id"));
+		}
+		return filterMappingIds;
+	}
+	public static List<DashboardFieldMappingContext> getFilterMappingsForFilterId(long id) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(ModuleFactory.getDashboardFieldMappingModule().getTableName()).select(FieldFactory.getDashboardFieldMappingsFields())
+				.andCondition(CriteriaAPI.getCondition("DASHBOARD_USER_FILTER_ID","dashboardUserFilterId", String.valueOf(id),NumberOperators.EQUALS));
+		List<Map<String, Object>> props = builder.get();
+		List<DashboardFieldMappingContext> filterMappings = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				filterMappings.add(FieldUtil.getAsBeanFromMap(prop, DashboardFieldMappingContext.class));
+			}
+		}
+		return filterMappings;
+	}
+	public static List<DashboardUserFilterContext> getDashboardFilterFromDashboardId (long dashboardId, long dashboardTabId) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getDashboardFilterModule().getTableName())
+				.select(FieldFactory.getDashboardFilterFields())
+				.innerJoin(ModuleFactory.getDashboardFilterModule().getTableName()).on("Dashboard_User_Filter.DASHBOARD_FILTER_ID = Dashboard_Filter.id");
+		if(dashboardId >0){
+			builder.andCustomWhere(ModuleFactory.getDashboardFilterModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
+		}
+		else if(dashboardTabId >0){
+			builder.andCustomWhere(ModuleFactory.getDashboardFilterModule().getTableName()+".DASHBOARD_TAB_ID = ?", dashboardTabId);
+		}
+		List<Map<String, Object>> props = builder.get();
+		List<DashboardUserFilterContext> filter = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				filter.add(FieldUtil.getAsBeanFromMap(prop, DashboardUserFilterContext.class));
+			}
+		}
+		return filter;
 	}
 }

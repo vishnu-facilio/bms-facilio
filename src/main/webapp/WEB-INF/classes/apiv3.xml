@@ -1212,6 +1212,18 @@
         <param name="checkTabPermission">true</param>
         <param name="permission">POST:EDIT</param>
         </action>
+        <action name="rename"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="rename"/>
+        <action name="bulkDelete"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardBulkAction"
+                method="bulkDelete"/>
+        <action name="bulkExport"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardBulkAction"
+                method="bulkExport"/>
+        <action name="bulkMove"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardBulkAction"
+                method="bulkMove"/>
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="get">
@@ -1262,6 +1274,10 @@
         <action name="execute"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
                 method="execute">
+        </action>
+        <action name="newDashboardFilterRuleExecute"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
+                method="newDashboardFilterRuleExecute">
         </action>
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"

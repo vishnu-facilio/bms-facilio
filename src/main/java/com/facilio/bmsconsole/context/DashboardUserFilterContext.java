@@ -93,7 +93,8 @@ public Map<Long, FacilioField> getCascadingFilters() {
 
 		public static enum FilterDisplayType implements FacilioIntEnum{
 			SLIDER("Select Slider"),
-			DROPDOWN("Select DropDown");
+			DROPDOWN("Select DropDown"),
+			LIST("Select from List");
 
 			public static FilterDisplayType valueOf(int value) {
 				if (value > 0 && value <= values().length) {
@@ -542,4 +543,71 @@ public Map<Long, FacilioField> getCascadingFilters() {
 	public boolean getHideFilter(){
 		return this.filterPojo.isHideFilter();
 	}
+	private JSONObject metaJSON;
+	public JSONObject getMetaJSON() {
+		if(metaJSON == null) {
+			metaJSON =  new JSONObject();
+		}
+		return metaJSON;
+	}
+	public void setMetaJSON(JSONObject metaJSON) {
+		this.metaJSON = metaJSON;
+	}
+	private long sectionId;
+	public void setSectionId(long sectionId){
+		this.sectionId = sectionId;
+	}
+	public long getSectionId() {
+		return this.sectionId;
+	}
+	public void setxPosition(int xPosition) {
+		getMetaJSON().put("xPosition", xPosition);
+	}
+	public Integer getxPosition(){
+		if(getMetaJSON().get("xPosition") != null){
+			return Integer.parseInt(getMetaJSON().get("xPosition").toString());
+		}
+		return null;
+	}
+	public void setyPosition(Integer yPosition){
+		getMetaJSON().put("yPosition", yPosition);
+	}
+	public Integer getyPosition(){
+		if(getMetaJSON().get("yPosition") != null){
+			return Integer.parseInt(getMetaJSON().get("yPosition").toString());
+		}
+		return null;
+	}
+	public void setLayoutPosition(Integer layoutPosition){
+		getMetaJSON().put("layoutPosition", layoutPosition);
+	}
+	public Integer getLayoutPosition(){
+		if(getMetaJSON().get("layoutPosition") != null){
+			return Integer.parseInt(getMetaJSON().get("layoutPosition").toString());
+		}
+		return null;
+	}
+	public void setLayoutWidth(Integer layoutWidth){
+		getMetaJSON().put("layoutWidth", layoutWidth);
+	}
+	public Integer getLayoutWidth(){
+		if(getMetaJSON().get("layoutWidth") != null){
+			return Integer.parseInt(getMetaJSON().get("layoutWidth").toString());
+		}
+		return null;
+	}
+	public void setLayoutHeight(Integer layoutHeight){
+		getMetaJSON().put("layoutHeight", layoutHeight);
+	}
+	public Integer getLayoutHeight(){
+		if(getMetaJSON().get("layoutHeight") != null){
+			return Integer.parseInt(getMetaJSON().get("layoutHeight").toString());
+		}
+		return null;
+	}
+	private int xPosition=-1;
+	private int yPosition=-1;
+	private int layoutWidth=-1;
+	private int layoutHeight=-1;
+	private int layoutPosition=-1;
 }

@@ -2408,12 +2408,14 @@ public class TransactionChainFactoryV3 {
         return chain;
     }
 
-    public static FacilioChain getUpdateDashboardChainV3() {
+    public static FacilioChain getUpdateDashboardChainV3(boolean newFlow) {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DuplicateDashboardForBuildingCommand());
         c.addCommand(new V3UpdateDashboardWithWidgets());
         c.addCommand(new EnableMobileDashboardCommand());
-
+        if(newFlow) {
+            c.addCommand(new GetDashboardThumbnailCommand());
+        }
         return c;
     }
 
@@ -2880,6 +2882,11 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getDashboardRuleExecuteChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ExecutedDashboardRuleCommand());
+        return c;
+    }
+    public static FacilioChain getNewDashboardRuleExecuteChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ExecutedNewDashboardRuleCommand());
         return c;
     }
     public static FacilioChain getWorkorderActualsLabourChainV3() {

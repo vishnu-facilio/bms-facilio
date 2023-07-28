@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.dashboard;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -84,7 +85,7 @@ public class CloneDashboardCommand extends FacilioCommand {
 
                             if(dashboardTabContext.getDashboardFilter() != null)
                             {
-                                FacilioChain dbFilterUpdateChain = TransactionChainFactory.getAddOrUpdateDashboardFilterChain();
+                                FacilioChain dbFilterUpdateChain = TransactionChainFactory.getAddOrUpdateDashboardFilterChain(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2));
                                 FacilioContext filter_context = dbFilterUpdateChain.getContext();
                                 DashboardFilterContext cloned_dashboard_tab_Filter = dashboardTabContext.getDashboardFilter();
                                 cloned_dashboard_tab_Filter.setDashboardTabId(newDashboardTabContext.getId());
@@ -122,7 +123,7 @@ public class CloneDashboardCommand extends FacilioCommand {
 
                     if(dashboard.getDashboardFilter() != null)
                     {
-                        FacilioChain dbFilterUpdateChain = TransactionChainFactory.getAddOrUpdateDashboardFilterChain();
+                        FacilioChain dbFilterUpdateChain = TransactionChainFactory.getAddOrUpdateDashboardFilterChain(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2));
                         FacilioContext filter_context = dbFilterUpdateChain.getContext();
                         DashboardFilterContext cloned_dashboardFilter = dashboard.getDashboardFilter();
                         cloned_dashboardFilter.setId(-1);

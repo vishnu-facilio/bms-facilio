@@ -5429,6 +5429,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("displayOrder", "DISPLAY_ORDER", module, FieldType.NUMBER));
         fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
+        fields.add(getField("newFlow","IS_NEW",module,FieldType.BOOLEAN));
 
         return fields;
     }
@@ -5522,6 +5523,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
         fields.add(getField("locked","LOCKED",module,FieldType.BOOLEAN));
+        fields.add(getField("fileId","FILE_ID",module,FieldType.NUMBER));
         return fields;
     }
 
@@ -5742,6 +5744,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("cardStateJSON", "CARD_STATE", module, FieldType.STRING));
         fields.add(getField("conditionalFormattingJSON", "CARD_CONDITIONAL_FORMATTING", module, FieldType.STRING));
         fields.add(getField("cardDrilldownJSON", "CARD_DRILLDOWN", module, FieldType.STRING));
+        fields.add(getField("parentId","PARENT_ID",module, FieldType.NUMBER));
 
         return fields;
     }
@@ -10705,6 +10708,17 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
         fields.add(getField("dateLabel", "DATE_LABEL", module, FieldType.STRING));
         fields.add(getField("hideFilterInsideWidgets", "WIDGET_TIMELINE_FILTER_STATUS", module, FieldType.BOOLEAN));
+        return fields;
+    }
+    public static List<FacilioField>  getDashboardFieldMappingsFields()
+    {
+        FacilioModule module = ModuleFactory.getDashboardFieldMappingModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("dashboardUserFilterId", "DASHBOARD_USER_FILTER_ID", module, FieldType.NUMBER));
+        fields.add(getField("isDefault","IS_DEFAULT",module,FieldType.BOOLEAN));
         return fields;
     }
 

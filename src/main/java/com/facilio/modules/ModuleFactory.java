@@ -4921,6 +4921,15 @@ public class ModuleFactory {
 		return module;
 		
 	}
+	public static FacilioModule getDashboardFieldMappingModule()
+	{
+		FacilioModule module = new FacilioModule();
+		module.setName("dashboardFieldMapping");
+		module.setDisplayName("Dashboard Field Mapping");
+		module.setTableName("Dashboard_Field_Mapping");
+		return module;
+
+	}
 
 	public static FacilioModule getESSyncContextModule() {
 		FacilioModule module = new FacilioModule();

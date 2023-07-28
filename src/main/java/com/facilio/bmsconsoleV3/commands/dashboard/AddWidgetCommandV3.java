@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.V2ReportAction;
 import com.facilio.bmsconsole.commands.FetchReportDataCommand;
+import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -36,6 +37,7 @@ import org.json.simple.parser.JSONParser;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -274,6 +276,9 @@ public class AddWidgetCommandV3 extends FacilioCommand {
                         .fields(FieldFactory.getWidgetCardFields());
 
                 props = FieldUtil.getAsProperties(widgetCardContext);
+                if(context.get(FacilioConstants.ContextNames.PARENT_ID) != null){
+                    props.put("parentId",context.get(FacilioConstants.ContextNames.PARENT_ID));
+                }
                 insertBuilder.addRecord(props);
                 insertBuilder.save();
             }
@@ -347,6 +352,42 @@ public class AddWidgetCommandV3 extends FacilioCommand {
                 props = FieldUtil.getAsProperties(section_widget);
                 insertBuilder.addRecord(props);
                 insertBuilder.save();
+            }
+            else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(DashboardWidgetContext.WidgetType.FILTER))
+            {
+                WidgetDashboardFilterContext filter_widget = (WidgetDashboardFilterContext) widget;
+                if(filter_widget.getDashboardFilterId() > 0){
+                    filter_widget.setType(DashboardWidgetContext.WidgetType.FILTER.getValue());
+                    filter_widget.setWidget_id(widget.getId());
+                    if(filter_widget.getCriteria() != null){
+                        long criteriaId=CriteriaAPI.addCriteria(filter_widget.getCriteria());
+                        filter_widget.setCriteriaId(criteriaId);
+                    }
+                    insertBuilder = new GenericInsertRecordBuilder()
+                            .table(ModuleFactory.getDashboardUserFilterModule().getTableName())
+                            .fields(FieldFactory.getDashboardUserFilterFields());
+
+                    props = FieldUtil.getAsProperties(filter_widget);
+                    insertBuilder.addRecord(props);
+                    insertBuilder.save();
+                }
+                else{
+                    FacilioChain dbFilterUpdateChain=TransactionChainFactory.getNewAddOrUpdateDashboardFilterChain(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2));
+                    FacilioContext filterContext=dbFilterUpdateChain.getContext();
+                    DashboardFilterContext dashboardFilter = filter_widget.getDashboardFilter();
+                    filterContext.put(FacilioConstants.ContextNames.WIDGET_ID,widget.getId());
+                    filterContext.put(FacilioConstants.ContextNames.DASHBOARD_FILTER, dashboardFilter);
+                    if(dashboardFilter.getDashboardId()!=-1)
+                    {
+                        filterContext.put(FacilioConstants.ContextNames.DASHBOARD, DashboardUtil.getDashboardWithWidgets(dashboardFilter.getDashboardId()));
+                    }
+                    else if(dashboardFilter.getDashboardTabId()!=-1)
+                    {
+                        filterContext.put(FacilioConstants.ContextNames.DASHBOARD_TAB, DashboardUtil.getDashboardTabWithWidgets(dashboardFilter.getDashboardTabId()));
+                    }
+                    filterContext.put("fieldMappings",dashboardFilter.getFieldMappingMap());
+                    dbFilterUpdateChain.execute();
+                }
             }
         }
         context.put(FacilioConstants.ContextNames.WIDGET, widget);

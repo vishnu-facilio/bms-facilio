@@ -8,6 +8,11 @@ public class DashboardFolderContext {
 	
 	private long orgId = -1;
 	private int displayOrder = -1;
+	private boolean newFlow = false;
+	public void setNewFlow(boolean newFlow) {
+		this.newFlow = newFlow;
+	}
+	public boolean getNewFlow() { return newFlow;}
 	public int getDisplayOrder() {
 		return displayOrder;
 	}

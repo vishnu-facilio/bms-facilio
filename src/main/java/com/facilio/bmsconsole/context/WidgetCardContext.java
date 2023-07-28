@@ -67,6 +67,9 @@ public class WidgetCardContext extends DashboardWidgetContext {
 	public String getCustomScript() {
 		return this.customScript;
 	}
+	private Long parentId;
+	public void setParentId(Long parentId) { this.parentId = parentId; }
+	public Long getParentId() { return this.parentId; }
 	
 	private JSONObject cardParams;
 	

@@ -3048,6 +3048,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetDbUserFilterToWidgetMapping());
 		return chain;
 	}
+	public static FacilioChain getFetchDashboardUserFilterFromId()
+	{
+		FacilioChain chain=getDefaultChain();
+		chain.addCommand(new FetchDashboardFilterCommand());
+		return chain;
+	}
 	public static FacilioChain getFetchDashboardFilterChain()
 	
 	{
@@ -3163,6 +3169,11 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ExecuteCardWorkflowCommand());
 		c.addCommand(new ApplyConditionalFormattingForCard());
+		return c;
+	}
+	public static FacilioChain getComboCardWorkflowChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ExecuteComboCardWorkflowCommand());
 		return c;
 	}
 	
