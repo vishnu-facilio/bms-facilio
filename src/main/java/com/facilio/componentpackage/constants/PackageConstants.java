@@ -267,6 +267,7 @@ public class PackageConstants {
         public static final String ACTION_TYPE = "Action_Type";
         public static final String ACTION_STATUS = "Action_Status";
         public static final String DEFAULT_TEMPLATE = "Default_Template";
+        public static final String START_TIME = "Start_Time";
 
         public static final String TEMPLATE = "Template";
         public static final String TEMPLATE_NAME = "Template_Name";
@@ -297,6 +298,7 @@ public class PackageConstants {
         public static final String PARAMETERS = "parameters";
         public static final String FIELD_CHANGE_FIELDS = "Field_Change_Fields";
         public static final String CHANGE_FIELD_NAME = "Change_Field_Name";
+        public static final String LINK_NAME = "Link_Name";
     }
 
     public static class FunctionConstants {

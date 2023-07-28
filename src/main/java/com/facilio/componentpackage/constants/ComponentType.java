@@ -43,7 +43,7 @@ public enum ComponentType implements FacilioIntEnum {
     FUNCTION(FunctionPackageBeanImpl.class, FUNCTION_NAMESPACE, true),
     EMAIL_TEMPLATE(EmailTemplatePackageBeanImpl.class, MODULE, false),
     WORKFLOW_RULE(WorkflowRulePackageBeanImpl.class, MODULE, false),
-    SCHEDULE(null, null, false),
+    SCHEDULE(SchedulerPackageBeanImpl.class, null, false),
     CONNECTED_APP(null, null, false),
     CONNECTED_APP_WIDGETS(null, CONNECTED_APP, false),
     CONNECTED_APP_VARIABLES(null, CONNECTED_APP, false),
