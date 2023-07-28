@@ -55,7 +55,7 @@ public class PeopleSkillLevelModule extends BaseModuleConfig{
         level.setEnumName("Level");
         fields.add(level);
 
-        fields.add(FieldFactory.getDefaultField("rate","Rate","RATE",FieldType.DECIMAL));
+//        fields.add(FieldFactory.getDefaultField("rate","Rate","RATE",FieldType.DECIMAL));
 
         module.setFields(fields);
         return module;

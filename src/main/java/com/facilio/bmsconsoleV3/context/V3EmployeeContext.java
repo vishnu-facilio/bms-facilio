@@ -72,4 +72,14 @@ public class V3EmployeeContext extends V3PeopleContext{
 	public void setSpace(V3SpaceContext space) {
 		this.space = space;
 	}
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    private String designation;
 }

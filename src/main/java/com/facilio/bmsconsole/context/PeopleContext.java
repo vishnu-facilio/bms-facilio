@@ -280,4 +280,6 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private File avatar;
 	private String avatarFileName;
 	private  String avatarContentType;
+	private Double rate;
+
 }

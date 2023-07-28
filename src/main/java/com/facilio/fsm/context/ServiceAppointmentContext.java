@@ -1,12 +1,9 @@
 package com.facilio.fsm.context;
 
-import com.facilio.bmsconsole.context.PeopleContext;
-import com.facilio.bmsconsoleV3.context.V3PeopleContext;
-import com.facilio.bmsconsoleV3.context.V3SiteContext;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
-import com.facilio.fsm.signup.ServiceAppointmentTicketStatus;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
@@ -38,6 +35,15 @@ public class ServiceAppointmentContext extends V3Context {
     private Boolean isAllTasksClosed;
     private boolean mismatch;
     private ServiceAppointmentTicketStatusContext status;
+    private Long responseDueDuration;
+    private Long resolutionDueDuration;
+    private V3ClientContext client;
+    private V3SpaceContext space;
+    private V3AssetContext asset;
+    private V3VendorContext vendor;
+    private Long slaPolicy;
+    private Double estimatedCost;
+    private Double actualCost;
     public int getPriority() {
         if (priority != null) {
             return priority.getIndex();
@@ -155,6 +161,57 @@ public class ServiceAppointmentContext extends V3Context {
         }
 
         public static DueStatus valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
+
+    private CategoryType category;
+    public int getCategory() {
+        if (category != null) {
+            return category.getIndex();
+        }
+        return -1;
+    }
+    public void setCategory(int category) {
+        this.category = CategoryType.valueOf(category);
+    }
+    public CategoryType getCategoryEnum() {
+        return category;
+    }
+    public void setCategory(CategoryType category) {
+        this.category = category;
+    }
+
+    public static enum CategoryType implements FacilioIntEnum {
+        INSTALLATION_AND_SETUP("Installation and Setup"),
+        MAINTAIN_AND_REPAIRS ("Maintenance and Repairs"),
+        FIXTURE_CHANGES_AND_RESETS("Fixture Changes and Resets"),
+        EQUIPMENT_UPGRADES_AND_REPLACEMENTS("Equipment Upgrades and Replacements"),
+        CLEANING_AND_SANITATION("Cleaning and Sanitation"),
+        SECURITY_AND_SAFETY("Security and Safety"),
+        INVENTORY_MANAGEMENT("Inventory Management"),
+        IT_AND_TECHNICAL_SUPPORT("IT and Technical Support");
+
+        String name;
+
+        CategoryType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return this.name;
+        }
+
+        public static CategoryType valueOf(int value) {
             if (value > 0 && value <= values().length) {
                 return values()[value - 1];
             }

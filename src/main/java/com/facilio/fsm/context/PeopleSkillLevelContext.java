@@ -8,7 +8,6 @@ import lombok.Setter;
 
 @Getter @Setter
 public class PeopleSkillLevelContext extends V3Context {
-    private Double rate;
     private ServiceSkillsContext skill;
     private V3PeopleContext people;
 

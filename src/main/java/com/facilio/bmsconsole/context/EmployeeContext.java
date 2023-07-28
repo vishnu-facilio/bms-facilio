@@ -67,4 +67,14 @@ public class EmployeeContext extends PeopleContext{
 	public void setSpace(SpaceContext space) {
 		this.space = space;
 	}
+
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+
+	private String designation;
 }

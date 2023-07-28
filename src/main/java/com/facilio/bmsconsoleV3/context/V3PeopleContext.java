@@ -151,6 +151,7 @@ public class V3PeopleContext extends V3Context {
     private boolean trackGeoLocation;
     private Double batteryInfo;
     private Double signalInfo;
+    private Double rate;
     private PeopleType peopleType;
     public Integer getPeopleType() {
         if (peopleType != null) {

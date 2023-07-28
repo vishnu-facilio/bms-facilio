@@ -54,6 +54,10 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         typeField.setEnumName("AppointmentType");
         serviceAppointmentFields.add(typeField);
 
+        SystemEnumField categoryField = (SystemEnumField) FieldFactory.getDefaultField("category", "Category", "CATEGORY", FieldType.SYSTEM_ENUM);
+        categoryField.setEnumName("Category");
+        serviceAppointmentFields.add(categoryField);
+
         LookupField serviceWorkorder = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER_ID",FieldType.LOOKUP);
         serviceWorkorder.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER));
         serviceAppointmentFields.add(serviceWorkorder);
@@ -131,6 +135,12 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         FacilioField resolutionDueTime = FieldFactory.getDefaultField("resolutionDueTime","Resolution Due Time","RESOLUTION_DUE_TIME", FieldType.DATE_TIME);
         serviceAppointmentFields.add(resolutionDueTime);
 
+        FacilioField responseDueDuration = FieldFactory.getDefaultField("responseDueDuration","Response Due Duration","RESPONSE_DUE_DURATION", FieldType.NUMBER);
+        serviceAppointmentFields.add(responseDueDuration);
+
+        FacilioField resolutionDueDuration = FieldFactory.getDefaultField("resolutionDueDuration","Resolution Due Duration","RESOLUTION_DUE_DURATION", FieldType.NUMBER);
+        serviceAppointmentFields.add(resolutionDueDuration);
+
         SystemEnumField priority = FieldFactory.getDefaultField("priority","Priority","PRIORITY",FieldType.SYSTEM_ENUM);
         priority.setEnumName("ServiceOrderPriority");
         serviceAppointmentFields.add(priority);
@@ -151,10 +161,41 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         FacilioField mismatch = FieldFactory.getDefaultField("mismatch","IS MISMATCH","MISMATCH", FieldType.BOOLEAN);
         serviceAppointmentFields.add(mismatch);
 
-        LookupField status = FieldFactory.getDefaultField("status","Status","STATUS",FieldType.LOOKUP);
+        LookupField status = FieldFactory.getDefaultField("status","Appointment Status","STATUS",FieldType.LOOKUP);
+        status.setRequired(true);
         status.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         status.setLookupModule(moduleBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS));
         serviceAppointmentFields.add(status);
+
+        LookupField client = FieldFactory.getDefaultField("client","Client","CLIENT_ID",FieldType.LOOKUP);
+        client.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        client.setLookupModule(moduleBean.getModule("client"));
+        serviceAppointmentFields.add(client);
+
+        LookupField vendor = FieldFactory.getDefaultField("vendor","Vendor","VENDOR_ID",FieldType.LOOKUP);
+        vendor.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        vendor.setLookupModule(moduleBean.getModule("vendors"));
+        serviceAppointmentFields.add(vendor);
+
+        LookupField space = FieldFactory.getDefaultField("space","Space","SPACE_ID",FieldType.LOOKUP);
+        space.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        space.setLookupModule(moduleBean.getModule("space"));
+        serviceAppointmentFields.add(space);
+
+        LookupField asset = FieldFactory.getDefaultField("asset","Asset","ASSET_ID",FieldType.LOOKUP);
+        asset.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        asset.setLookupModule(moduleBean.getModule("asset"));
+        serviceAppointmentFields.add(asset);
+
+        NumberField slaPolicy = FieldFactory.getDefaultField("slaPolicy", "SLA Policy", "SLA_POLICY_ID", FieldType.NUMBER);
+        slaPolicy.setDefault(true);
+        serviceAppointmentFields.add(slaPolicy);
+
+        FacilioField estimatedCost = FieldFactory.getDefaultField("estimatedCost", "Estimated Cost", "ESTIMATED_COST", FieldType.DECIMAL);
+        serviceAppointmentFields.add(estimatedCost);
+
+        FacilioField actualCost = FieldFactory.getDefaultField("actualCost", "Actual Cost", "ACTUAL_COST", FieldType.DECIMAL);
+        serviceAppointmentFields.add(actualCost);
 
         serviceAppointmentModule.setFields(serviceAppointmentFields);
         modules.add(serviceAppointmentModule);
@@ -210,23 +251,59 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         FacilioModule serviceAppointmentModule = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         FacilioForm serviceAppointmentForm =new FacilioForm();
         serviceAppointmentForm.setDisplayName("Standard");
-        serviceAppointmentForm.setName("default_asset_web");
+        serviceAppointmentForm.setName("default_serviceappointment_web");
         serviceAppointmentForm.setModule(serviceAppointmentModule);
         serviceAppointmentForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         serviceAppointmentForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
-        List<FormField> serviceAppointmentFormFields = new ArrayList<>();
-        serviceAppointmentFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
-        serviceAppointmentFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        List<FormField> generalInformationFields = new ArrayList<>();
+        generalInformationFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
+        generalInformationFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        generalInformationFields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.REQUIRED, 3, 2));
+        generalInformationFields.add(new FormField("serviceOrder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Service Orders",FormField.Required.REQUIRED,4,3));
+
 //        serviceAppointmentFormFields.add(new FormField("appointmentType",FacilioField.FieldDisplayType.SELECTBOX,"Appointment Type", FormField.Required.REQUIRED,3,3));
-        serviceAppointmentFormFields.add(new FormField("serviceOrder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Service Orders",FormField.Required.REQUIRED,6,3));
-        serviceAppointmentFormFields.add(new FormField("serviceTasks",FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Service Tasks", FormField.Required.REQUIRED,7,1));
 //        serviceAppointmentFormFields.add(new FormField("inspection", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Inspection",FormField.Required.OPTIONAL,8,3));
 //        serviceAppointmentFormFields.add(new FormField("workorder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Workorder",FormField.Required.OPTIONAL,9,3));
-        serviceAppointmentFormFields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 10, 3));
-        serviceAppointmentFormFields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.REQUIRED, 11, 3));
-        FormSection section = new FormSection("Default", 1, serviceAppointmentFormFields, false);
-        section.setSectionType(FormSection.SectionType.FIELDS);
-        serviceAppointmentForm.setSections(Collections.singletonList(section));
+
+        FormSection generalSection = new FormSection("General Information", 1, generalInformationFields, true);
+        generalSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        List<FormField> assignmentFields = new ArrayList<>();
+        assignmentFields.add(new FormField("fieldAgent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Field Agent", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.SPACE,1,2));
+//        assignmentFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.ASSET,2, 2));
+
+        FormSection assignmentDetailsSection = new FormSection("Assignment Details",2,assignmentFields,true);
+        assignmentDetailsSection.setSectionType(FormSection.SectionType.FIELDS);
+
+
+        List<FormField> taskFields = new ArrayList<>();
+        taskFields.add(new FormField("serviceTasks",FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Service Tasks", FormField.Required.REQUIRED,7,1));
+
+
+        FormSection taskSection = new FormSection("Task",3,taskFields,true);
+        taskSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        List<FormField> appointmentFields = new ArrayList<>();
+        appointmentFields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 10, 3));
+        appointmentFields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.REQUIRED, 11, 3));
+        appointmentFields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DATETIME, "Response Due Duration", FormField.Required.REQUIRED, 11, 3));
+        appointmentFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DATETIME, "Resolution Due Duration", FormField.Required.REQUIRED, 11, 3));
+
+
+
+        FormSection appointmentSection = new FormSection("Schedule And Appointment",1,appointmentFields,true);
+        appointmentSection.setSectionType(FormSection.SectionType.FIELDS);
+
+
+
+        List<FormSection> webServiceAppointmentFormSection = new ArrayList<>();
+        webServiceAppointmentFormSection.add(generalSection);
+        webServiceAppointmentFormSection.add(assignmentDetailsSection);
+        webServiceAppointmentFormSection.add(taskSection);
+        webServiceAppointmentFormSection.add(appointmentSection);
+
+
+        serviceAppointmentForm.setSections(webServiceAppointmentFormSection);
         serviceAppointmentForm.setIsSystemForm(true);
         serviceAppointmentForm.setType(FacilioForm.Type.FORM);
         List<FacilioForm> serviceAppointmentModuleForms = new ArrayList<>();

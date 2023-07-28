@@ -34,7 +34,7 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
 
         fields.add(new StringField(serviceAppointmentTicketStatus,"displayName","Display Name",FacilioField.FieldDisplayType.TEXTBOX,"DISPLAY_NAME",FieldType.STRING,false,false,true,false));
 
-        fields.add(new StringField(serviceAppointmentTicketStatus,"color","Background Color",FacilioField.FieldDisplayType.TEXTBOX,"COLOR",FieldType.STRING,false,false,true,false));
+        fields.add(new StringField(serviceAppointmentTicketStatus,"color","Background Color",FacilioField.FieldDisplayType.TEXTBOX,"COLOR",FieldType.STRING,true,false,true,false));
 
         fields.add(new StringField(serviceAppointmentTicketStatus,"textColor","Text Color",FacilioField.FieldDisplayType.TEXTBOX,"TEXT_COLOR",FieldType.STRING,false,false,true,false));
 
@@ -127,7 +127,7 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         cancelledState.setStatus(FacilioConstants.ServiceAppointment.CANCELLED);
         cancelledState.setDisplayName("Cancelled");
         cancelledState.setColor("#D12806");
-        cancelledState.setTextColor("##ffffff");
+        cancelledState.setTextColor("#ffffff");
         cancelledState.setTypeCode(3);
         cancelledState.setRecordLocked(true);
         scheduledState.setDeleteLocked(true);
