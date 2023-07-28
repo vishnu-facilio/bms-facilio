@@ -144,6 +144,11 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
                         }
                     } else {
                         ValidationRulesAPI.validateRecord(moduleName, record, formVsRuleMap.get(formId));
+                    } catch (Exception e) {
+                        LOGGER.debug("Form Validation Executed For formId : " + formId + " and moduleName : " + moduleName + " and orgId : " + orgId);
+                        if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DISABLE_FORM_VALIDATION_RULE)) {
+                            throw e;
+                        }
                     }
                 }
             }
