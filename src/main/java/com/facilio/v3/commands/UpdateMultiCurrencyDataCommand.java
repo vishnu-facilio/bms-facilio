@@ -42,13 +42,13 @@ public class UpdateMultiCurrencyDataCommand extends FacilioCommand {
 
         Map<Long, ModuleBaseWithCustomFields> oldRecord = Constants.getOldRecordMap(context);
         List<ModuleBaseWithCustomFields> newRecords = new ArrayList<>();
-        Map<Long, Set<String>> patchFieldNames = (Map<Long, Set<String>>) context.get(FacilioConstants.ContextNames.PATCH_FIELD_NAMES);
+        Map<Long, List<String>> patchFieldNames = (Map<Long, List<String>>) context.get(FacilioConstants.ContextNames.PATCH_FIELD_NAMES);
 
         CurrencyContext baseCurrency = CurrencyUtil.getBaseCurrency();
         Map<String, CurrencyContext> currencyCodeVsCurrency = CurrencyUtil.getCurrencyMap();
 
         for (ModuleBaseWithCustomFields newProp : records) {
-            Set<String> currRecordPatchFieldNames = patchFieldNames.getOrDefault(newProp.getId(), new HashSet<>());
+            List<String> currRecordPatchFieldNames = patchFieldNames.getOrDefault(newProp.getId(), new ArrayList<>());
             ModuleBaseWithCustomFields oldProp = oldRecord.get(newProp.getId());
 
             Map<String, Object> newPropAsProperties = FieldUtil.getAsProperties(newProp);
@@ -90,7 +90,7 @@ public class UpdateMultiCurrencyDataCommand extends FacilioCommand {
     }
 
     private void computeCurrencyValueForFieldsNotInPatch(String newCurrencyCode, Map<String, Object> newProp,
-                                                         Map<String, Object> oldProp, Set<String> patchFieldNames, List<FacilioField> multiCurrencyFields,
+                                                         Map<String, Object> oldProp, List<String> patchFieldNames, List<FacilioField> multiCurrencyFields,
                                                          Map<String, CurrencyContext> currencyCodeVsCurrency) throws Exception {
         CurrencyContext newCurrency = currencyCodeVsCurrency.get(newCurrencyCode);
 

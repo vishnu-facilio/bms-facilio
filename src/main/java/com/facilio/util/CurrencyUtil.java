@@ -283,11 +283,11 @@ public class CurrencyUtil {
 	}
 
 	public static double getConvertedBaseCurrencyValue(double value, double exchangeRate) throws Exception  {
-		return value / exchangeRate;
+		return exchangeRate > 0 ? (value / exchangeRate) : value;
 	}
 
 	public static double getEquivalentCurrencyValue(double baseCurrencyValue, double exchangeRate) throws Exception {
-		return baseCurrencyValue * exchangeRate;
+		return exchangeRate > 0 ? (baseCurrencyValue * exchangeRate) : baseCurrencyValue;
 	}
 
 	public static void replaceCurrencyValueWithBaseCurrencyValue(Map<String, Object> props, List<FacilioField> multiCurrencyFields, CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyCodeVsCurrency) throws Exception{

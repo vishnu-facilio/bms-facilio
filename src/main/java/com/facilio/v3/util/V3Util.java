@@ -198,20 +198,22 @@ public class V3Util {
         FacilioContext summaryContext = V3Util.getSummary(moduleName, ids);
         List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = Constants.getRecordListFromContext(summaryContext, moduleName);
 
-        Map<Long, Collection<String>> patchFieldNames = new HashMap<>();
+        Map<Long, List<String>> patchFieldNames = new HashMap<>();
         List<Map<String, Object>> values = new ArrayList<>();
         JSONObject jsonObject;
         for (ModuleBaseWithCustomFields record: moduleBaseWithCustomFields) {
 
             jsonObject =  FieldUtil.getAsJSON(record);
 
-            Set<String> keys = rawRecord.keySet();
+            List<String> keys = new ArrayList<>(rawRecord.keySet());
             for (String key : keys) {
                 jsonObject.put(key, rawRecord.get(key));
             }
 
             values.add(jsonObject);
-            patchFieldNames.put(record.getId(), keys);
+            if(CollectionUtils.isNotEmpty(keys)) {
+                patchFieldNames.put(record.getId(), keys);
+            }
         }
 
         FacilioModule module = ChainUtil.getModule(moduleName);
@@ -228,7 +230,7 @@ public class V3Util {
                                                    List<Map<String, Object>> recordList, List<Long> ids,
                                                    Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
                                                    Long stateTransitionId, Long customButtonId, Long approvalTransitionId,
-                                                   String qrValue,String locationValue,Map<String,Double>currentLocation,boolean onlyPermittedActions,boolean skipApproval,Map<Long, Collection<String>> patchFieldNames,ConfigParams configParams
+                                                   String qrValue,String locationValue,Map<String,Double>currentLocation,boolean onlyPermittedActions,boolean skipApproval,Map<Long, List<String>> patchFieldNames,ConfigParams configParams
     ) throws Exception {
         return updateRecords(module, v3Config, true, oldRecords, recordList, patchFieldNames, ids,
                 bodyParams, queryParams, stateTransitionId, customButtonId, approvalTransitionId,qrValue,locationValue,currentLocation,onlyPermittedActions,skipApproval,configParams);
@@ -236,7 +238,7 @@ public class V3Util {
 
     private static FacilioContext updateRecords(FacilioModule module, V3Config v3Config, boolean bulkOp,
                                                 List<ModuleBaseWithCustomFields>oldRecords,
-                                                List<Map<String, Object>> recordList,  Map<Long, Collection<String>> patchFieldNames, List<Long> ids,
+                                                List<Map<String, Object>> recordList,  Map<Long, List<String>> patchFieldNames, List<Long> ids,
                                                 Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
                                                 Long stateTransitionId, Long customButtonId, Long approvalTransitionId,
                                                 String qrValue, String locationValue,Map<String, Double>currentLocation,boolean onlyPermittedActions,boolean skipApproval,
@@ -301,12 +303,14 @@ public class V3Util {
             idVsRecordMap.put(record.getId(), FieldUtil.getAsJSON(record));
         }
 
-        Map<Long, Collection<String>> patchFieldNames = new HashMap<>();
+        Map<Long, List<String>> patchFieldNames = new HashMap<>();
         Map<String, FacilioField> numberAndDecimalFieldsWithMetrics = getNumberAndDecimalFieldsWithMetrics(module.getName());
         for (Map<String, Object> rec: rawRecords) {
             Map<String, Object> jsonObject = idVsRecordMap.get((long) rec.get("id"));
-            Set<String> keys = rec.keySet();
-            patchFieldNames.put((long) rec.get("id"), keys);
+            List<String> keys = new ArrayList<>(rec.keySet());
+            if(CollectionUtils.isNotEmpty(keys)){
+                patchFieldNames.put((long) rec.get("id"), keys);
+            }
             for (String key : keys) {
                 jsonObject.put(key, rec.get(key));
                 if(numberAndDecimalFieldsWithMetrics.containsKey(key) && !keys.contains(key+"Unit")){
@@ -337,7 +341,8 @@ public class V3Util {
         Map<String, FacilioField> fileFields = getFileFields(moduleName);
         Map<String, FacilioField> numberAndDecimalFieldsWithMetrics = getNumberAndDecimalFieldsWithMetrics(moduleName);
 
-        Set<String> keys = patchObj.keySet();
+//        Set<String> keys = new LinkedHashSet<>(patchObj.keySet());
+        List<String> keys = new ArrayList<>(patchObj.keySet());
         for (String key: keys) {
             FacilioField fileField = fileFields.get(key);
             if (fileField != null && patchObj.get(key) == null) {
@@ -349,8 +354,10 @@ public class V3Util {
             summaryRecord.put(key, patchObj.get(key));
         }
 
-        Map<Long, Collection<String>> patchFieldNames = new HashMap<>();
-        patchFieldNames.put(id, keys);
+        Map<Long, List<String>> patchFieldNames = new HashMap<>();
+        if(CollectionUtils.isNotEmpty(keys)){
+            patchFieldNames.put(id, keys);
+        }
 
         if(record != null) {
             id = ((ModuleBaseWithCustomFields)record).getId();
@@ -433,7 +440,7 @@ public class V3Util {
 
     public static FacilioContext updateSingleRecord(FacilioModule module, V3Config v3Config,
                                                     ModuleBaseWithCustomFields oldRecord,
-                                                    JSONObject record, Map<Long, Collection<String>> patchFieldNames, long id,
+                                                    JSONObject record, Map<Long, List<String>> patchFieldNames, long id,
                                                     Map<String, Object> bodyParams, Map<String, List<Object>> queryParams,
                                                     Long stateTransitionId, Long customButtonId, Long approvalTransitionId, String qrValue, String locationValue, Map<String, Double>currentLocation,ConfigParams configParams
     ) throws Exception {

@@ -126,14 +126,16 @@ public class PatchSubFormLineItemsCommand extends ProcessSubFormLineItemsCommand
                     idVsRecordMap.put(record.getId(), FieldUtil.getAsJSON(record));
                 }
 
-                Map<Long, Collection<String>> patchFieldNames = new HashMap<>();
+                Map<Long, List<String>> patchFieldNames = new HashMap<>();
                 for (Map<String, Object> rec: subFormDataList) {
                     Map<String, Object> jsonObject = idVsRecordMap.get((long) rec.get("id"));
-                    Set<String> keys = rec.keySet();
+                    List<String> keys = new ArrayList<>(rec.keySet());
                     for (String key : keys) {
                         jsonObject.put(key, rec.get(key));
                     }
-                    patchFieldNames.put((long) rec.get("id"), keys);
+                    if(CollectionUtils.isNotEmpty(keys)) {
+                        patchFieldNames.put((long) rec.get("id"), keys);
+                    }
                 }
                 Collection<Map<String, Object>> values = idVsRecordMap.values();
 
