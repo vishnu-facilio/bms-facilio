@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.beans.NamespaceBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.assetcatergoryfeature.util.AssetCategoryFeatureStatusUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -29,7 +30,6 @@ import com.facilio.workflows.util.WorkflowUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -91,6 +91,7 @@ public class NamespaceAPI {
                 field.setRelatedInfo(relatedInfo);
             }
             ns.addField(field);
+            ns.setAssetCategoryContext(AssetCategoryFeatureStatusUtil.validateCategoryWithNSType(ns.getCategoryId()));
             FacilioField readingField = modBean.getField(field.getFieldId());
             field.setVarDataType(getScriptDataType(readingField));
             field.setField(readingField);

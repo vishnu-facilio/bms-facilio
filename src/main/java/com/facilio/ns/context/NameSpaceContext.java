@@ -1,6 +1,7 @@
 package com.facilio.ns.context;
 
 import com.facilio.annotations.ImmutableChildClass;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,12 +26,13 @@ public class NameSpaceContext implements Serializable {
         this.includedAssetIds = ns.includedAssetIds;
         this.type = ns.type;
         this.assetCategoryId = ns.assetCategoryId;
-        this.categoryId=ns.categoryId;
         this.workflowId = ns.workflowId;
+        this.categoryId=ns.categoryId;
         this.workflowContext = ns.workflowContext;
         this.status = ns.status;
         this.fields = ns.fields;
         this.loggerLevel=ns.loggerLevel;
+        this.assetCategoryContext= ns.assetCategoryContext;
     }
 
     /**
@@ -44,12 +46,13 @@ public class NameSpaceContext implements Serializable {
         this.includedAssetIds = ns.includedAssetIds;
         this.type = ns.type;
         this.assetCategoryId = ns.assetCategoryId;
-        this.categoryId=ns.categoryId;
         this.workflowId = ns.workflowId;
+        this.categoryId=ns.categoryId;
         this.workflowContext = ns.workflowContext;
         this.status = ns.status;
         this.fields = ns.fields;
         this.loggerLevel=ns.loggerLevel;
+        this.assetCategoryContext=ns.assetCategoryContext;
     }
 
     Long id;
@@ -77,6 +80,8 @@ public class NameSpaceContext implements Serializable {
     List<NameSpaceField> fields;
 
     int loggerLevel;
+
+    V3AssetCategoryContext assetCategoryContext;
 
     {
         fields = new ArrayList<>();

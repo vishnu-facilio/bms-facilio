@@ -5803,4 +5803,12 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setTableName("SensorAlarm_Details");
 		return module;
 	}
+
+	public static FacilioModule getAssetCategoryFeatureActivationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("assetCategoryFeatureActivation");
+		module.setDisplayName("Asset Category Level Feature Activation");
+		module.setTableName("Asset_Categories_Feature_Activation");
+		return module;
+	}
 }

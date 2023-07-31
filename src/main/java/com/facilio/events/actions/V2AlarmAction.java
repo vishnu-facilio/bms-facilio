@@ -11,7 +11,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
-import com.facilio.connected.ConnectedCategoryContext;
+import com.facilio.assetcatergoryfeature.AssetCategoryFeatureActivationContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -51,7 +51,7 @@ public class V2AlarmAction extends FacilioAction {
 
     private List<SensorRuleContext> sensorRules;
 
-    ConnectedCategoryContext connectedCategory;
+    AssetCategoryFeatureActivationContext assetCategoryFeature;
 
     int nsType;
 
@@ -81,7 +81,7 @@ public class V2AlarmAction extends FacilioAction {
         FacilioContext context=facilioChain.getContext();
         context.put(ContextNames.CATEGORY_ID,categoryId);
         facilioChain.execute();
-        setResult(ContextNames.CONNECTED_CATEGORY_DETAILS,context.get(ContextNames.CONNECTED_CATEGORY_DETAILS));
+        setResult(ContextNames.ASSET_CATEGORY_FEATURE_ACTIVATION,context.get(ContextNames.ASSET_CATEGORY_FEATURE_ACTIVATION));
         setResult(ContextNames.COUNT,context.get(ContextNames.COUNT));
         return SUCCESS;
     }
@@ -90,10 +90,10 @@ public class V2AlarmAction extends FacilioAction {
         FacilioChain facilioChain = TransactionChainFactoryV3.updateConnectedCategoryStatusChain();
         FacilioContext context=facilioChain.getContext();
         context.put(ContextNames.CATEGORY_ID,categoryId);
-        context.put(ContextNames.CONNECTED_CATEGORY_DETAILS,connectedCategory);
+        context.put(ContextNames.ASSET_CATEGORY_FEATURE_ACTIVATION,assetCategoryFeature);
         context.put(ContextNames.TYPE,nsType);
         facilioChain.execute();
-        setResult(ContextNames.CONNECTED_CATEGORY_DETAILS,context.get(ContextNames.CONNECTED_CATEGORY_DETAILS));
+        setResult(ContextNames.ASSET_CATEGORY_FEATURE_ACTIVATION,context.get(ContextNames.ASSET_CATEGORY_FEATURE_ACTIVATION));
         return SUCCESS;
     }
 

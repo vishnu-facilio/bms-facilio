@@ -190,6 +190,7 @@ import com.facilio.classification.chain.ClassificationChain;
 import com.facilio.classification.command.BeforeSaveClassificationCommand;
 import com.facilio.classification.context.ClassificationContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.assetcatergoryfeature.commands.AddAssetCategoryFeatureStatusCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.control.*;
 import com.facilio.control.util.ControlScheduleUtil;
@@ -2355,6 +2356,7 @@ public class APIv3Config {
         return () -> new V3Config(V3AssetCategoryContext.class, null)
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getCreateAssetCategoryChain())
+                .afterSave(new AddAssetCategoryFeatureStatusCommand())
                 .list()
                 .summary()
                 .afterFetch(new SetAssetCategoryModuleCommandV3())

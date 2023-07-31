@@ -12056,6 +12056,17 @@ public class FieldFactory extends BaseFieldFactory {
         return fieldList;
     }
 
+    public static List<FacilioField> getAssetCategoryFeatureActivationFields(){
+        FacilioModule module = ModuleFactory.getAssetCategoryFeatureActivationModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getNumberField("categoryId","CATEGORY_ID",module));
+        fieldList.add(getBooleanField("sensorRulesStatus","SENSOR_RULE_STATUS",module));
+        fieldList.add(getBooleanField("readingRulesStatus","READING_RULE_STATUS",module));
+        fieldList.add(getBooleanField("setPointStatus","SET_POINT_STATUS",module));
+
+        return fieldList;
+    }
+
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:

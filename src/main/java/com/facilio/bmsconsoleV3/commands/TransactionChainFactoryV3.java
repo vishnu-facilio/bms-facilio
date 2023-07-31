@@ -61,8 +61,8 @@ import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.LoadMultiResourceExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.context.spacebooking.*;
 import com.facilio.bmsconsoleV3.plannedmaintenance.ValidatePmResourcePlannerResource;
-import com.facilio.connected.commands.FetchCategoryLevelStatusCommand;
-import com.facilio.connected.commands.UpdateCategoryLevelStatusCommand;
+import com.facilio.assetcatergoryfeature.commands.FetchAssetCategoryLevelStatusCommand;
+import com.facilio.assetcatergoryfeature.commands.UpdateAssetCategoryLevelStatusCommand;
 import com.facilio.plannedmaintenance.FetchPlannerDetails;
 import com.facilio.plannedmaintenance.PreCreateWorkOrderRecord;
 import com.facilio.permission.commands.AddOrUpdatePermissionSet;
@@ -3465,7 +3465,7 @@ public class TransactionChainFactoryV3 {
     }
     public  static FacilioChain fetchConnectedCategoryStatusChain(){
         FacilioChain chain=getDefaultChain();
-        chain.addCommand(new FetchCategoryLevelStatusCommand());
+        chain.addCommand(new FetchAssetCategoryLevelStatusCommand());
         return chain;
     }
 
@@ -3477,7 +3477,7 @@ public class TransactionChainFactoryV3 {
 
     public  static FacilioChain updateConnectedCategoryStatusChain(){
         FacilioChain chain=getDefaultChain();
-        chain.addCommand(new UpdateCategoryLevelStatusCommand());
+        chain.addCommand(new UpdateAssetCategoryLevelStatusCommand());
         return chain;
     }
 }

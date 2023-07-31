@@ -1,11 +1,16 @@
 package com.facilio.bmsconsoleV3.context.asset;
 
+import com.facilio.assetcatergoryfeature.AssetCategoryFeatureActivationContext;
 import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
+@Setter
 public class V3AssetCategoryContext extends V3Context {
 
     private static final long serialVersionUID = 1L;
@@ -17,6 +22,7 @@ public class V3AssetCategoryContext extends V3Context {
     private String moduleName;
     private String displayName;
     private Boolean isDefault;
+    AssetCategoryFeatureActivationContext assetCategoryFeatureContext;
 
 
     public String getName() {

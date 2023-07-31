@@ -71,6 +71,11 @@ public class NamespaceBeanCacheImpl extends NamespaceBeanImpl implements Namespa
         removeNsCacheWithRule(ruleId, nsList);
     }
 
+    @Override
+    public void updateNsCacheWithCategory(Long categoryId, List<NSType> nsList) throws Exception {
+        removeNsCacheWithCategory(categoryId, nsList);
+    }
+
     public void deleteNameSpacesFromRuleId(Long ruleId, List<NSType> nsTypeList) throws Exception {
         super.deleteNameSpacesFromRuleId(ruleId, nsTypeList);
         removeNsCacheWithRule(ruleId, nsTypeList);
@@ -91,8 +96,7 @@ public class NamespaceBeanCacheImpl extends NamespaceBeanImpl implements Namespa
 
     private void removeNsCacheWithCategory(Long categoryId, List<NSType> nsTypeList) throws Exception {
         FacilioCache<String, NameSpaceCacheContext> nameSpaceCache = LRUCache.getNameSpaceCache();
-        List<Long> nsIds = NamespaceAPI.
-                getNsIdForCategoryId(categoryId, nsTypeList);
+        List<Long> nsIds = NamespaceAPI.getNsIdForCategoryId(categoryId, nsTypeList);
         for (Long nsId : nsIds) {
             nameSpaceCache.remove(CacheUtil.NAMESPACE_KEY(AccountUtil.getCurrentOrg().getId(), nsId));
         }
@@ -101,10 +105,5 @@ public class NamespaceBeanCacheImpl extends NamespaceBeanImpl implements Namespa
         for (Long fieldId : fieldIds) {
             nameSpaceIdCache.remove(CacheUtil.NAMESPACE_IDS_KEY(AccountUtil.getCurrentOrg().getId(), fieldId));
         }
-    }
-
-    @Override
-    public void updateNsCacheWithCategory(Long categoryId, List<NSType> nsList) throws Exception {
-        removeNsCacheWithCategory(categoryId, nsList);
     }
 }

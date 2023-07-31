@@ -102,6 +102,7 @@ public class NamespaceBeanImpl implements NamespaceBean {
         updateNamespaceInclusions(ns);
     }
 
+
     public void addNamespaceFields(Long nsId, List<NameSpaceField> fields) throws Exception {
         deleteFieldsIfAlreadyExists(nsId);
 
@@ -196,15 +197,4 @@ public class NamespaceBeanImpl implements NamespaceBean {
         NamespaceAPI.addInclusions(ns);
     }
 
-    @Override
-    public void updateNsStatusWithCategory(Long categoryId, boolean status, List<NSType> nsType) throws Exception {
-        NameSpaceContext namespaceContext = new NameSpaceContext();
-        namespaceContext.setStatus(status);
-        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
-                .fields(NamespaceModuleAndFieldFactory.getNamespaceFields())
-                .andCondition(CriteriaAPI.getCondition("CATEGORY_ID", "categoryId", String.valueOf(categoryId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getConditionFromList("TYPE", "type", NamespaceAPI.getNsIndexFromList(nsType), NumberOperators.EQUALS));
-        updateBuilder.update(FieldUtil.getAsProperties(namespaceContext));
-    }
 }

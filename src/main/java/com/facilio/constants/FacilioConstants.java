@@ -805,6 +805,8 @@ public class FacilioConstants {
 		public static final String SENSOR_EVENT = "sensorevent";
 		public static final String SENSOR_ROLLUP_ALARM = "sensorrollupalarm";
 		public static final String SENSOR_ROLLUP_ALARM_OCCURRENCE = "sensorrollupalarmoccurrence";
+
+		public static final String ASSET_CATEGORY_FEATURE_ACTIVATION="assetCategoryFeature";
 		public static final String SENSOR_ROLLUP_EVENT = "sensorrollupevent";
 		public static final String MULTIVARIATE_ANOMALY_ALARM = "multivariateanomalyalarm";
 		public static final String MULTIVARIATE_ANOMALY_ALARM_OCCURRENCE = "multivariateanomalyalarmoccurrence";
