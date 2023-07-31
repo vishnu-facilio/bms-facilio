@@ -37,7 +37,9 @@ public class rollupServiceAppointmentFieldsCommand extends FacilioCommand {
                 if (serviceAppointment.getAppointmentType() == ServiceAppointmentContext.AppointmentType.SERVICE_WORK_ORDER.getIndex()) {
                     ServiceOrderContext serviceOrder = serviceAppointment.getServiceOrder();
                     if (serviceOrder != null) {
-                        serviceOrder = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SERVICE_ORDER,serviceOrder.getId(),ServiceOrderContext.class);
+                        if(serviceOrder.getId() > 0 ){
+                            serviceOrder = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SERVICE_ORDER,serviceOrder.getId(),ServiceOrderContext.class);
+                        }
                         serviceAppointment.setPriority(serviceOrder.getPriority());
                         V3SiteContext site = serviceOrder.getSite();
                         if (site != null) {
