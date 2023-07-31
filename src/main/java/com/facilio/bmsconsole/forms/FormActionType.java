@@ -113,7 +113,7 @@ public enum FormActionType {
 					if(MapUtils.isNotEmpty(subFormData)) {
 						FacilioForm subForm = formRuleActionContext.getRuleContext().getSubFormContext();
 						if (formDetails != null) {
-							CommonCommandUtil.appendModuleNameInKey(formDetails.getModule().getName()+"."+subForm.getName(), formDetails.getModule().getName()+"."+subForm.getName(), subFormData, placeHolders);
+							CommonCommandUtil.appendModuleNameInKey(subForm.getModule().getName(), formDetails.getModule().getName()+"."+subForm.getName(), subFormData, placeHolders);
 						}
 					}
 				}
@@ -274,8 +274,12 @@ public enum FormActionType {
 					Map<String,Object> fieldMap = (Map<String,Object>) returnList.get(i);
 					
 					JSONObject fieldJSON = mapToJson(fieldMap);
-					
-					jsonArray.add(fieldJSON);
+
+					if(formRuleActionContext.getRuleContext().getSubFormId()>0){
+						FormRuleAPI.AddResultJSONToRespectiveResultSet(facilioContext,fieldJSON);
+					}else{
+						jsonArray.add(fieldJSON);
+					}
 				}
 				
 				resultJson.addAll(jsonArray);

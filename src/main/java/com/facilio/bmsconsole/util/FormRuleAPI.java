@@ -1,15 +1,14 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -34,10 +33,6 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -296,6 +291,7 @@ public class FormRuleAPI {
 				.andCondition(CriteriaAPI.getIdCondition(formRuleContext.getId(), ModuleFactory.getFormRuleModule()));
 
 		Map<String, Object> props = FieldUtil.getAsProperties(formRuleContext);
+
 		updateBuilder.update(props);
 		
 	}
@@ -510,6 +506,38 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 			return formRuleContexts;
 		}
 		return null;
+	}
+
+	public static long getFormRuleCriteriaId(long formRuleId,boolean fetchSubFormCriteriaId) throws Exception{
+
+		FacilioModule formRuleModule = ModuleFactory.getFormRuleModule();
+		FacilioField criteriaIdField = null;
+		Long oldCriteriaId = -1l;
+
+		if(fetchSubFormCriteriaId){
+			criteriaIdField = FieldFactory.getField("subFormCriteriaId", "SUB_FORM_CRITERIA_ID", formRuleModule, FieldType.LOOKUP);
+		}else {
+			criteriaIdField = FieldFactory.getField("criteriaId", "CRITERIA_ID", formRuleModule, FieldType.LOOKUP);
+		}
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(criteriaIdField))
+				.table(formRuleModule.getTableName())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(formRuleModule),Collections.singletonList(formRuleId), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+
+		if(CollectionUtils.isEmpty(props)){
+			return -1;
+		}
+
+		Map<String,Object> prop = props.get(0);
+		if(fetchSubFormCriteriaId){
+			oldCriteriaId = (Long) prop.get("subFormCriteriaId");
+		}else {
+			oldCriteriaId = (Long) prop.get("criteriaId");
+		}
+		return oldCriteriaId;
 	}
 	
 	public static List<FormRuleActionContext> getFormRuleActionContext(long formRuleId) throws Exception {

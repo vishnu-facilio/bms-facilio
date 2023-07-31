@@ -12,6 +12,9 @@ import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.db.criteria.CriteriaAPI;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UpdateFormRuleCommand extends FacilioCommand {
 
 	@Override
@@ -20,6 +23,7 @@ public class UpdateFormRuleCommand extends FacilioCommand {
 		FormRuleContext formRule = (FormRuleContext)context.get(FormRuleAPI.FORM_RULE_CONTEXT);
 
 		FacilioForm form = null;
+		List<Long> oldCriteriaIds = new ArrayList<>();
 		if(formRule.getFormId()>0){
 			form = FormsAPI.getFormFromDB(formRule.getFormId());
 		}
@@ -28,23 +32,44 @@ public class UpdateFormRuleCommand extends FacilioCommand {
 			CriteriaAPI.updateConditionField(form.getModule().getName(), formRuleCriteria);
 		}
 
-		long oldCriteriaId = formRule.getCriteriaId();
+		long oldCriteriaId = FormRuleAPI.getFormRuleCriteriaId(formRule.getId(),false);
+		if(oldCriteriaId>0){
+			oldCriteriaIds.add(oldCriteriaId);
+		}
+
 		long id = CriteriaAPI.addCriteria(formRule.getCriteria(), AccountUtil.getCurrentOrg().getId());
-		formRule.setCriteriaId(id);
+		if(id==-1){
+			formRule.setCriteriaId(-99);
+		}else{
+			formRule.setCriteriaId(id);
+		}
+
 		
-		if(formRule.getSubFormCriteria() == null) {
+		if(formRule.getSubFormCriteria() == null ) {
 			if(formRule.getSubFormCriteriaId() > 0) {
-				formRule.setSubFormCriteriaId(-1l);
+				formRule.setSubFormCriteriaId(-99);
 			}
 		}
 		else {
-			long subFormCriteriaId = CriteriaAPI.addCriteria(formRule.getSubFormCriteria(), AccountUtil.getCurrentOrg().getId());
-			formRule.setSubFormCriteriaId(subFormCriteriaId);
+			Criteria subFormCriteria = formRule.getSubFormCriteria();
+			FacilioForm subForm = FormsAPI.getFormFromDB(formRule.getSubFormId());
+			CriteriaAPI.updateConditionField(subForm.getModule().getName(), subFormCriteria);
+			long oldSubFormCriteriaId = FormRuleAPI.getFormRuleCriteriaId(formRule.getId(),true);
+			if(oldSubFormCriteriaId>0){
+				oldCriteriaIds.add(oldSubFormCriteriaId);
+			}
+			long subFormCriteriaId = CriteriaAPI.addCriteria(subFormCriteria, AccountUtil.getCurrentOrg().getId());
+			if(subFormCriteriaId<0){
+				formRule.setSubFormCriteriaId(-99);
+			}else{
+				formRule.setSubFormCriteriaId(subFormCriteriaId);
+			}
 		}
 		
 		FormRuleAPI.updateFormRuleContext(formRule);
 		
-		CriteriaAPI.deleteCriteria(oldCriteriaId);
+		CriteriaAPI.batchDeleteCriteria(oldCriteriaIds);
+
 		
 		if(formRule.getTriggerTypeEnum() == TriggerType.FIELD_UPDATE) {
 			
