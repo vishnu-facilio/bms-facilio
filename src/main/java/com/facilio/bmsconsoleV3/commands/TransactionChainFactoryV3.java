@@ -802,6 +802,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddOrUpdatePortalUserCommandV3());
         c.addCommand(new AddOrUpdateScopingAndPermissionCommandV3());
         c.addCommand(new AssignDefaultShift());
+        c.addCommand(new ConstructAddCustomActivityCommandV3());
         return c;
     }
 
@@ -824,6 +825,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddOrUpdatePortalUserCommandV3());
         c.addCommand(new AssignDefaultShift());
         c.addCommand(new AddOrUpdateScopingAndPermissionCommandV3());
+        c.addCommand(new ConstructAddCustomActivityCommandV3());
         return c;
     }
 
@@ -1080,6 +1082,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommandV3());
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
+        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         return c;
     }
 

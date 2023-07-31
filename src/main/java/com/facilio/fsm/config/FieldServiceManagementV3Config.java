@@ -26,6 +26,8 @@ import com.facilio.fsm.context.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
+import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
+import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 
 import java.util.function.Supplier;
 
@@ -194,8 +196,10 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTimeOff(){
         return () -> new V3Config(TimeOffContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeOff.TIME_OFF_ACTIVITY))
                 .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeOff.TIME_OFF_ACTIVITY))
                 .list()
                 .summary()
@@ -216,8 +220,10 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTerritory(){
         return () -> new V3Config(TerritoryContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.Territory.TERRITORY_ACTIVITY))
                 .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.Territory.TERRITORY_ACTIVITY))
                 .list()
                 .summary()
@@ -259,8 +265,10 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTimeSheet(){
         return () -> new V3Config(TimeSheetContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeSheet.TIME_SHEET))
                 .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeSheet.TIME_SHEET))
                 .list()
                 .summary()
@@ -272,8 +280,10 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTrip(){
         return () -> new V3Config(TripContext.class,null)
                 .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.Trip.TRIP_ACTIVITY))
                 .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.Trip.TRIP_ACTIVITY))
                 .list()
                 .summary()
