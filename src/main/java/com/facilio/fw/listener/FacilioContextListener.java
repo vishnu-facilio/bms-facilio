@@ -24,6 +24,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.facilio.bmsconsole.ModuleWidget.ModuleWidgetsUtil;
+import com.facilio.bmsconsole.monitoring.MonitoringMXBeanImp;
+import com.facilio.bmsconsole.monitoring.MonitoringMXBean;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
 import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.FacilioProperties;
@@ -87,24 +89,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.sql.DataSource;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
-import java.lang.management.ManagementFactory;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.*;
-
 public class FacilioContextListener implements ServletContextListener {
 
 	private Timer timer = new Timer();
@@ -156,6 +140,7 @@ public class FacilioContextListener implements ServletContextListener {
 			ValueGeneratorUtil.initialize();
 			Operator.getOperator(1);
 			registerMBeans();
+			registerMonitoringMBeans();
 			TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);
 			QAndARuleType type = QAndARuleType.WORKFLOW;
 			ActivityType.getActivityType(1);
@@ -273,6 +258,17 @@ public class FacilioContextListener implements ServletContextListener {
 			mbs.registerMBean(mbean, name);
 		} catch (Exception e) {
 			LOGGER.info("Exception while registering Facilio MBeans");
+		}
+	}
+
+	private void registerMonitoringMBeans() {
+		try {
+			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+			ObjectName name = new ObjectName("com.facilio.monitoring:type=Query");
+			MonitoringMXBean mbean = new MonitoringMXBeanImp();
+			mbs.registerMBean(mbean, name);
+		} catch (Exception e) {
+			LOGGER.info("Exception while registering Facilio monitoring MBeans");
 		}
 	}
 
