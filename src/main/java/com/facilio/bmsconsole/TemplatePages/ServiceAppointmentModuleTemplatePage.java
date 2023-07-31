@@ -210,10 +210,10 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
 
     private static JSONObject getSummaryWidgetGroup(boolean isMobile) throws Exception {
         JSONObject commentWidgetParam = new JSONObject();
-        commentWidgetParam.put("activityModuleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_NOTES);
+        commentWidgetParam.put("notesModuleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_NOTES);
 
         JSONObject attachmentWidgetParam = new JSONObject();
-        attachmentWidgetParam.put("activityModuleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ATTACHMENTS);
+        attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ATTACHMENTS);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)

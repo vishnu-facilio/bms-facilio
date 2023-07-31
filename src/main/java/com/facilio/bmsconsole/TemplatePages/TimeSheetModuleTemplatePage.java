@@ -142,10 +142,10 @@ public class TimeSheetModuleTemplatePage implements TemplatePageFactory {
 
     private static JSONObject getSummaryWidgetGroup(boolean isMobile) throws Exception {
         JSONObject commentWidgetParam = new JSONObject();
-        commentWidgetParam.put("activityModuleName", FacilioConstants.TimeSheet.TIME_SHEET_NOTES);
+        commentWidgetParam.put("notesModuleName", FacilioConstants.TimeSheet.TIME_SHEET_NOTES);
 
         JSONObject attachmentWidgetParam = new JSONObject();
-        attachmentWidgetParam.put("activityModuleName", FacilioConstants.TimeSheet.TIME_SHEET_ATTACHMENTS);
+        attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.TimeSheet.TIME_SHEET_ATTACHMENTS);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)

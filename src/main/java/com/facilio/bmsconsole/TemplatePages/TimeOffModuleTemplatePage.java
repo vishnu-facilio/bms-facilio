@@ -134,10 +134,10 @@ public class TimeOffModuleTemplatePage implements TemplatePageFactory {
 
     private static JSONObject getSummaryWidgetGroup(boolean isMobile) throws Exception {
         JSONObject commentWidgetParam = new JSONObject();
-        commentWidgetParam.put("activityModuleName", FacilioConstants.TimeOff.TIME_OFF_NOTES);
+        commentWidgetParam.put("notesModuleName", FacilioConstants.TimeOff.TIME_OFF_NOTES);
 
         JSONObject attachmentWidgetParam = new JSONObject();
-        attachmentWidgetParam.put("activityModuleName", FacilioConstants.TimeOff.TIME_OFF_ATTACHMENTS);
+        attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.TimeOff.TIME_OFF_ATTACHMENTS);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)

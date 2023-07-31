@@ -308,10 +308,10 @@ public class EmployeeModule extends BaseModuleConfig{
 
     private static JSONObject getSummaryWidgetGroup(boolean isMobile) throws Exception {
         JSONObject commentWidgetParam = new JSONObject();
-        commentWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.EMPLOYEE_NOTES);
+        commentWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.EMPLOYEE_NOTES);
 
         JSONObject attachmentWidgetParam = new JSONObject();
-        attachmentWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.EMPLOYEE_ATTACHMENTS);
+        attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.EMPLOYEE_ATTACHMENTS);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)

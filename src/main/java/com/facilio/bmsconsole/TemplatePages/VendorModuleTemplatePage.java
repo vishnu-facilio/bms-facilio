@@ -155,10 +155,10 @@ public class VendorModuleTemplatePage implements TemplatePageFactory {
 
     private static JSONObject getSummaryWidgetGroup(boolean isMobile) throws Exception {
         JSONObject commentWidgetParam = new JSONObject();
-        commentWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.VENDOR_CONTACT_NOTES);
+        commentWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.VENDOR_CONTACT_NOTES);
 
         JSONObject attachmentWidgetParam = new JSONObject();
-        attachmentWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.VENDOR_CONTACT_ATTACHMENTS);
+        attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.VENDOR_CONTACT_ATTACHMENTS);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)

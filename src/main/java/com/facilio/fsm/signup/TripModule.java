@@ -287,10 +287,10 @@ public class TripModule extends BaseModuleConfig {
 
     private static JSONObject getSummaryWidgetGroup(boolean isMobile) throws Exception {
         JSONObject commentWidgetParam = new JSONObject();
-        commentWidgetParam.put("activityModuleName", FacilioConstants.Trip.TRIP_NOTES);
+        commentWidgetParam.put("notesModuleName", FacilioConstants.Trip.TRIP_NOTES);
 
         JSONObject attachmentsWidgetParam = new JSONObject();
-        attachmentsWidgetParam.put("activityModuleName", FacilioConstants.Trip.TRIP_ATTACHMENTS);
+        attachmentsWidgetParam.put("attachmentsModuleName", FacilioConstants.Trip.TRIP_ATTACHMENTS);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
