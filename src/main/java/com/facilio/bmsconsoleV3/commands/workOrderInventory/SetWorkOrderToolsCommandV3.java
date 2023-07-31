@@ -3,11 +3,10 @@ package com.facilio.bmsconsoleV3.commands.workOrderInventory;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderServiceContext;
 import com.facilio.bmsconsoleV3.context.V3WorkorderToolsContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.*;
@@ -18,12 +17,12 @@ import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -51,6 +50,9 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
         Collection<SupplementRecord> lookUpfields = new ArrayList<>();
         lookUpfields.add((LookupField) toolFieldsMap.get("tool"));
         lookUpfields.add((LookupField) toolFieldsMap.get("toolType"));
+
+        CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+        Map<String, CurrencyContext> currencyMap = Constants.getCurrencyMap(context);
 
         List<V3WorkorderToolsContext> workorderToolslist = new ArrayList<>();
         List<V3WorkorderToolsContext> toolsToBeAdded = new ArrayList<>();
@@ -99,12 +101,12 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                             }
                             if (toolTypes.isRotating()) {
                                 wTool = setWorkorderToolObj(null, 1, tool, parentId,
-                                        workorder, workorderTool, approvalState, wTool.getAsset(), workorderTool.getRequestedLineItem(), parentTransactionId, context);
+                                        workorder, workorderTool, approvalState, wTool.getAsset(), workorderTool.getRequestedLineItem(), parentTransactionId, context, baseCurrency, currencyMap);
 
 
                             } else {
                                 wTool = setWorkorderToolObj(null, workorderTool.getQuantity(), tool, parentId,
-                                        workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context);
+                                        workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context, baseCurrency, currencyMap);
                             }
 
                             // update
@@ -135,7 +137,7 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                                     V3WorkorderToolsContext woTool = new V3WorkorderToolsContext();
                                     asset.setIsUsed(true);
                                     woTool = setWorkorderToolObj(null, 1, tool, parentId, workorder,
-                                            workorderTool, approvalState, asset, workorderTool.getRequestedLineItem(), parentTransactionId, context);
+                                            workorderTool, approvalState, asset, workorderTool.getRequestedLineItem(), parentTransactionId, context, baseCurrency, currencyMap);
                                     updatePurchasedTool(asset);
                                     workorderToolslist.add(woTool);
                                     toolsToBeAdded.add(woTool);
@@ -144,7 +146,7 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                         } else {
                             V3WorkorderToolsContext woTool = new V3WorkorderToolsContext();
                             woTool = setWorkorderToolObj(null, workorderTool.getQuantity(), tool, parentId,
-                                    workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context);
+                                    workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context, baseCurrency, currencyMap);
                             workorderToolslist.add(woTool);
                             toolsToBeAdded.add(woTool);
                         }
@@ -181,13 +183,15 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
     }
 
     private V3WorkorderToolsContext setWorkorderToolObj(V3PurchasedToolContext purchasedtool, double quantity,
-                                                      V3ToolContext tool, long parentId, V3WorkOrderContext workorder, V3WorkorderToolsContext workorderTools,
-                                                      ApprovalState approvalState, V3AssetContext asset, V3InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context) throws Exception{
+                                                        V3ToolContext tool, long parentId, V3WorkOrderContext workorder, V3WorkorderToolsContext workorderTools,
+                                                        ApprovalState approvalState, V3AssetContext asset, V3InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context,
+                                                        CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap) throws Exception{
         V3WorkorderToolsContext woTool = new V3WorkorderToolsContext();
         Long issueTime = workorderTools.getIssueTime();
         Long returnTime = workorderTools.getReturnTime();
         woTool.setIssueTime(issueTime);
         woTool.setReturnTime(returnTime);
+        CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(woTool, baseCurrency, currencyMap, tool.getCurrencyCode(), tool.getExchangeRate());
         woTool.setTransactionState(TransactionState.USE);
         if(lineItem != null) {
             woTool.setRequestedLineItem(lineItem);

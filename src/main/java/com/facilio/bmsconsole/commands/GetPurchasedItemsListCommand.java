@@ -3,7 +3,9 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
+import com.facilio.util.CurrencyUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -30,6 +32,10 @@ public class GetPurchasedItemsListCommand extends FacilioCommand {
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 			boolean showIsUsed = (boolean) context.get(FacilioConstants.ContextNames.PURCHASED_ITEM_IS_USED);
 			long itemId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
+
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(module)) {
+				fields.addAll(FieldFactory.getCurrencyPropsFields(module));
+			}
 
 			SelectRecordsBuilder<PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<PurchasedItemContext>()
 					.select(fields).table(module.getTableName()).moduleName(module.getName())

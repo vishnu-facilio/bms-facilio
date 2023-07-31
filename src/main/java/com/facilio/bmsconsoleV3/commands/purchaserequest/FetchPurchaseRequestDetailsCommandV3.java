@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.purchaserequest;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
@@ -10,10 +11,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,6 +42,11 @@ public class FetchPurchaseRequestDetailsCommandV3 extends FacilioCommand {
         			List<FacilioField> fields = modBean.getAllFields(lineItemModuleName);
         			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
+					FacilioModule lineItemModule = modBean.getModule(lineItemModuleName);
+					if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(lineItemModule)) {
+						fields.addAll(FieldFactory.getCurrencyPropsFields(lineItemModule));
+					}
+
 					SelectRecordsBuilder<V3PurchaseRequestLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseRequestLineItemContext>()
 							.moduleName(lineItemModuleName)
 							.select(fields)
@@ -49,6 +57,10 @@ public class FetchPurchaseRequestDetailsCommandV3 extends FacilioCommand {
         		
         			List<V3PurchaseRequestLineItemContext> list = builder.get();
         			purchaseRequestContext.setLineItems(list);
+					Map<String, Object> currencyInfo = CurrencyUtil.getCurrencyInfo();
+					for(V3PurchaseRequestLineItemContext lineItem : list){
+						CurrencyUtil.checkAndFillBaseCurrencyToRecord(lineItem, currencyInfo);
+					}
         			purchaseRequestContext.setTermsAssociated(PurchaseOrderAPI.fetchAssociatedPrTerms(purchaseRequestContext.getId()));
 					QuotationAPI.setTaxSplitUp(purchaseRequestContext, purchaseRequestContext.getLineItems());
         		} 	

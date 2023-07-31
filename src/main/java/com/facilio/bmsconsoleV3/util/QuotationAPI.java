@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
@@ -13,8 +14,6 @@ import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.BaseLineItemContext;
 import com.facilio.bmsconsoleV3.context.BaseLineItemsParentModuleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
-import com.facilio.bmsconsoleV3.context.V3TermsAndConditionContext;
-import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -31,6 +30,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.LookupFieldMeta;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
@@ -177,6 +177,12 @@ public class QuotationAPI {
         String lineItemModuleName = FacilioConstants.ContextNames.QUOTE_LINE_ITEMS;
         List<FacilioField> fields = modBean.getAllFields(lineItemModuleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+
+        FacilioModule lineItemModule = modBean.getModule(lineItemModuleName);
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(lineItemModule)) {
+            fields.addAll(FieldFactory.getCurrencyPropsFields(lineItemModule));
+        }
+
         List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
                 (LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("tax"), (LookupField) fieldsAsMap.get("service"), (LookupField) fieldsAsMap.get("labour"));
         SelectRecordsBuilder<QuotationLineItemsContext> builder = new SelectRecordsBuilder<QuotationLineItemsContext>()
@@ -188,6 +194,10 @@ public class QuotationAPI {
         List<QuotationLineItemsContext> list = builder.get();
         if (CollectionUtils.isNotEmpty(list)) {
             quotation.setLineItems(list);
+            Map<String, Object> currencyInfo = CurrencyUtil.getCurrencyInfo();
+            for(QuotationLineItemsContext lineItem : list){
+                CurrencyUtil.checkAndFillBaseCurrencyToRecord(lineItem, currencyInfo);
+            }
         }
     }
 

@@ -2,12 +2,9 @@ package com.facilio.bmsconsoleV3.commands.workOrderInventory;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.RecordAPI;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3ServiceContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderServiceContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
@@ -19,7 +16,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
-import com.facilio.util.FacilioUtil;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -48,6 +45,9 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
         List<V3WorkOrderServiceContext> workorderServicelist = new ArrayList<>();
         List<V3WorkOrderServiceContext> woServiceToBeAdded = new ArrayList<>();
 
+        CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+        Map<String, CurrencyContext> currencyMap = Constants.getCurrencyMap(context);
+
         if (CollectionUtils.isNotEmpty(workOrderServices)) {
             List<Long> parentIds = workOrderServices.stream().map(V3WorkOrderServiceContext::getParentId).collect(Collectors.toList());
                 for (V3WorkOrderServiceContext woService : workOrderServices) {
@@ -67,11 +67,11 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
                     woService.setParent(workorder);
                     if (woService.getId() > 0) {
                         List<V3WorkOrderServiceContext> woServiceContext = V3RecordAPI.getRecordsListWithSupplements(workorderServiceModule.getName(), Collections.singletonList(woService.getId()), V3WorkOrderServiceContext.class, lookUpfields);
-                        woService = setWorkorderServiceObj(woServiceContext.get(0).getService(), workorder.getId(), workorder, woService);
+                        woService = setWorkorderServiceObj(woServiceContext.get(0).getService(), workorder.getId(), workorder, woService, baseCurrency, currencyMap);
                         workorderServicelist.add(woService);
                         woServiceToBeAdded.add(woService);
                     } else {
-                        woService = setWorkorderServiceObj(woService.getService(), workorder.getId(), workorder, woService);
+                        woService = setWorkorderServiceObj(woService.getService(), workorder.getId(), workorder, woService, baseCurrency, currencyMap);
                         woServiceToBeAdded.add(woService);
                         workorderServicelist.add(woService);
                     }
@@ -100,7 +100,8 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
         return false;
     }
 
-    private V3WorkOrderServiceContext setWorkorderServiceObj(V3ServiceContext service, long parentId, V3WorkOrderContext workorder, V3WorkOrderServiceContext workorderService) throws Exception {
+    private V3WorkOrderServiceContext setWorkorderServiceObj(V3ServiceContext service, long parentId, V3WorkOrderContext workorder, V3WorkOrderServiceContext workorderService,
+                                                             CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap) throws Exception {
         V3WorkOrderServiceContext woService = new V3WorkOrderServiceContext();
         Long startTime = workorderService.getStartTime();
         Long endTime = workorderService.getEndTime();
@@ -108,6 +109,7 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
         woService.setEndTime(endTime);
         woService.setId(workorderService.getId());
         woService.setParent(workorderService.getParent());
+        CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(woService, baseCurrency, currencyMap, service.getCurrencyCode(), service.getExchangeRate());
         Double duration = workorderService.getDuration();
         if (startTime != null && startTime >0 && endTime != null && endTime >0) {
             duration = V3InventoryUtil.getWorkorderActualsDuration(startTime, endTime, workorder);
@@ -121,6 +123,7 @@ public class SetWorkOrderServicesCommandV3  extends FacilioCommand {
         }
         woService.setDuration(duration);
         V3ServiceContext serviceUtil = (V3ServiceContext) V3Util.getRecord(FacilioConstants.ContextNames.SERVICE,service.getId(),null);
+        CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(woService, baseCurrency, currencyMap, serviceUtil.getCurrencyCode(), serviceUtil.getExchangeRate());
         Double unitPrice = serviceUtil.getBuyingPrice();
         woService.setUnitPrice(unitPrice);
         woService.setParentId(parentId);

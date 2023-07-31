@@ -8,6 +8,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.MultiCurrencyOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -85,6 +86,10 @@ public class RevertMultiCurrencyFieldMigrationCommand extends FacilioCommand {
         multiCurrOpIdVsNumOperatorId.put(MultiCurrencyOperator.GREATER_THAN_EQUALS.getOperatorId(), NumberOperators.GREATER_THAN_EQUAL.getOperatorId());
         multiCurrOpIdVsNumOperatorId.put(MultiCurrencyOperator.BETWEEN.getOperatorId(), NumberOperators.BETWEEN.getOperatorId());
         multiCurrOpIdVsNumOperatorId.put(MultiCurrencyOperator.NOT_BETWEEN.getOperatorId(), NumberOperators.NOT_BETWEEN.getOperatorId());
+
+        multiCurrOpIdVsNumOperatorId.put(CommonOperators.IS_EMPTY.getOperatorId(), CommonOperators.IS_EMPTY.getOperatorId());
+        multiCurrOpIdVsNumOperatorId.put(CommonOperators.IS_NOT_EMPTY.getOperatorId(), CommonOperators.IS_NOT_EMPTY.getOperatorId());
+
 
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()

@@ -1,11 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.item;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.ItemTransactionsContext;
-import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
@@ -24,6 +20,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -43,6 +40,9 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
         Map<String, Object> bodyParams = Constants.getBodyParams(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3ItemTransactionsContext> itemTransactions = recordMap.get(moduleName);
+
+        Map<String, CurrencyContext> currencyMap = Constants.getCurrencyMap(context);
+        CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
 
         if(CollectionUtils.isNotEmpty(itemTransactions) && MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("adjustQuantity") && (boolean) bodyParams.get("adjustQuantity")) {
 
@@ -80,7 +80,7 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
                                 if (requiredQuantity + pItem.getCurrentQuantity() >= 0) {
                                     V3ItemTransactionsContext woItem = new V3ItemTransactionsContext();
                                     woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item,
-                                            itemTransaction, itemType);
+                                            itemTransaction, itemType, baseCurrency, currencyMap);
                                     itemTransactionsToBeAdded.add(woItem);
                                 } else {
                                     for (V3PurchasedItemContext purchaseitem : purchasedItems) {
@@ -92,7 +92,7 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
                                             quantityUsedForTheCost = -(purchaseitem.getCurrentQuantity());
                                         }
                                         woItem = setWorkorderItemObj(purchaseitem, -(quantityUsedForTheCost), item,
-                                                itemTransaction, itemType);
+                                                itemTransaction, itemType, baseCurrency, currencyMap);
                                         requiredQuantity -= quantityUsedForTheCost;
                                         itemTransactionsToBeAdded.add(woItem);
                                         if (requiredQuantity == 0) {
@@ -116,7 +116,7 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
                         addPurchasedItem(purchasedItemModule, purchasedItemFields, pi);
                         V3ItemTransactionsContext woItem = new V3ItemTransactionsContext();
                         woItem = setWorkorderItemObj(itemTransaction.getPurchasedItem(), itemTransaction.getQuantity(), item,
-                                itemTransaction, itemType);
+                                itemTransaction, itemType, baseCurrency, currencyMap);
                         itemTransactionsToBeAdded.add(woItem);
                     }
 
@@ -139,11 +139,15 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
     }
 
     private V3ItemTransactionsContext setWorkorderItemObj(V3PurchasedItemContext purchasedItem, double quantity,
-                                                        V3ItemContext item, V3ItemTransactionsContext itemTransactions, V3ItemTypesContext itemTypes){
+                                                          V3ItemContext item, V3ItemTransactionsContext itemTransactions, V3ItemTypesContext itemTypes, CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap){
         V3ItemTransactionsContext woItem = new V3ItemTransactionsContext();
         woItem.setTransactionState(itemTransactions.getTransactionStateEnum());
         woItem.setIsReturnable(false);
         if (purchasedItem != null) {
+            CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(purchasedItem, baseCurrency, currencyMap,
+                    purchasedItem.getCurrencyCode(), purchasedItem.getExchangeRate());
+            woItem.setCurrencyCode(purchasedItem.getCurrencyCode());
+            woItem.setExchangeRate(purchasedItem.getExchangeRate());
             woItem.setPurchasedItem(purchasedItem);
         }
         woItem.setQuantity(quantity);

@@ -17,6 +17,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
@@ -50,14 +51,17 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
         FacilioField timeFieldCloned = fieldMap.get("transactionDate").clone();
         FacilioField groupingTimeField = BmsAggregateOperators.DateAggregateOperator.MONTH.getSelectField(timeFieldCloned);
 
+        FacilioField transactionAmountField = fieldMap.get("transactionAmount");
+        boolean isTransactionAmountMultiCurrencyField = transactionAmountField.getDataTypeEnum().equals(FieldType.MULTI_CURRENCY_FIELD);
+        String transactionAmountColName = isTransactionAmountMultiCurrencyField ? "TRANSACTION_AMOUNT_BCVALUE" : "TRANSACTION_AMOUNT";
+
         List<FacilioField> selectFields = new ArrayList<>();
 
         selectFields.add(fieldMap.get("account"));
         selectFields.add(fieldMap.get("transactionResource"));
-
-        selectFields.add(FieldFactory.getField("creditAmount", "sum(case WHEN TRANSACTION_TYPE = 1 THEN TRANSACTION_AMOUNT END )",
+        selectFields.add(FieldFactory.getField("creditAmount", "sum(case WHEN TRANSACTION_TYPE = 1 THEN " + transactionAmountColName + " END )",
                 FieldType.DECIMAL));
-        selectFields.add(FieldFactory.getField("debitAmount", "sum(case WHEN TRANSACTION_TYPE = 2 THEN TRANSACTION_AMOUNT END )",
+        selectFields.add(FieldFactory.getField("debitAmount", "sum(case WHEN TRANSACTION_TYPE = 2 THEN " + transactionAmountColName + " END )",
                 FieldType.DECIMAL));
 
         SelectRecordsBuilder<V3TransactionContext> selectbuilder = new SelectRecordsBuilder<V3TransactionContext>()
@@ -199,13 +203,15 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
     private void rollUpData(Double amount, Map<String, Object> accountMap, Map<String, Object> resourceMap, String rollUpModName, String rollUpFieldName, long startDate) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(rollUpModName);
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+        List<FacilioField> moduleFields = modBean.getAllFields(module.getName());
+        moduleFields.addAll(FieldFactory.getCurrencyPropsFields(module));
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(moduleFields);
 
         LOGGER.error("Budget rollup Data Date -- "+ startDate +"rollup Amount -- "+ amount+ "rollup ModuleName -- "+rollUpModName);
         SelectRecordsBuilder<V3Context> selectRecordbuilder = new SelectRecordsBuilder<V3Context>()
                 .module(module)
                 .beanClass(V3Context.class)
-                .select(modBean.getAllFields(module.getName()))
+                .select(moduleFields)
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("account"), String.valueOf(accountMap.get("id")), PickListOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("startDate"), String.valueOf(startDate), DateOperators.IS));
 
@@ -221,7 +227,10 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(mapList)) {
             for (Map<String, Object> map : mapList) {
                 ids.add((Long) map.get("id"));
-                map.put(rollUpFieldName, amount);
+                Double exchangeRate = (Double) map.get("exchangeRate");
+                exchangeRate = exchangeRate != null && exchangeRate > 0 ? exchangeRate : 1;
+                double equivalentCurrencyValue = CurrencyUtil.getEquivalentCurrencyValue(amount, exchangeRate);
+                map.put(rollUpFieldName, equivalentCurrencyValue);
             }
         }
         if (CollectionUtils.isNotEmpty(ids) && CollectionUtils.isNotEmpty(mapList)) {

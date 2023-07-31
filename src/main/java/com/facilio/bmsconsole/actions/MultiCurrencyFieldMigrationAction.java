@@ -25,6 +25,10 @@ public class MultiCurrencyFieldMigrationAction extends FacilioAction{
         String fieldName = request.getParameter("fieldName");
         String baseCurrencyValueColumnName = request.getParameter("baseCurrencyValueColumnName");
         boolean revert = Boolean.parseBoolean(request.getParameter("revert"));
+        int transactionTimeOut = StringUtils.isNotEmpty(request.getParameter("transactionTimeOut")) ? Integer.parseInt(request.getParameter("transactionTimeOut")) : -1;
+        if(transactionTimeOut < 0){
+            transactionTimeOut = 1800000; // by default 30 min
+        }
 
         if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)){
             setResult("result", "Multi Currency License Not Enabled");
@@ -33,7 +37,7 @@ public class MultiCurrencyFieldMigrationAction extends FacilioAction{
 
         if(orgId > 0 && StringUtils.isNotEmpty(moduleName) && StringUtils.isNotEmpty(fieldName) && StringUtils.isNotEmpty(baseCurrencyValueColumnName)){
             AccountUtil.setCurrentAccount(orgId);
-            FacilioChain updateFieldChain = TransactionChainFactory.getMultiCurrencyFieldUpdateChain();
+            FacilioChain updateFieldChain = TransactionChainFactory.getMultiCurrencyFieldUpdateChain(transactionTimeOut);
             FacilioContext context = updateFieldChain.getContext();
             context.put(FacilioConstants.ContextNames.ORGID, orgId);
             context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);

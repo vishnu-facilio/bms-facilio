@@ -3,6 +3,7 @@ package com.facilio.v3.context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.NamespaceBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bundle.bean.BundleBean;
 import com.facilio.chain.FacilioContext;
@@ -13,6 +14,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.SaveOptions;
 import com.facilio.workflowv2.bean.ScriptBean;
@@ -549,11 +551,26 @@ public class Constants {
     public static String getActivityContext(Context context) {
         return (String) context.get(FacilioConstants.ContextNames.CURRENT_ACTIVITY);
     }
+
     public static Boolean getMarkAsDeleteByPeople(Context context) {
         Boolean markAsDeleteByPeople = (Boolean) context.get(MARK_AS_DELETE_BY_PEOPLE);
-        if(markAsDeleteByPeople == null) {
+        if (markAsDeleteByPeople == null) {
             return false;
         }
         return markAsDeleteByPeople;
+    }
+
+    public static CurrencyContext getBaseCurrency(Context context) throws Exception {
+        if(!context.containsKey(FacilioConstants.ContextNames.BASE_CURRENCY)) {
+            context.put(FacilioConstants.ContextNames.BASE_CURRENCY, CurrencyUtil.getBaseCurrency());
+        }
+        return (CurrencyContext) context.get(FacilioConstants.ContextNames.BASE_CURRENCY);
+    }
+
+    public static Map<String, CurrencyContext> getCurrencyMap(Context context) throws Exception {
+        if(!context.containsKey(FacilioConstants.ContextNames.CURRENCY_MAP)){
+            context.put(FacilioConstants.ContextNames.CURRENCY_MAP, CurrencyUtil.getCurrencyMap());
+        }
+        return (Map<String, CurrencyContext>) context.get(FacilioConstants.ContextNames.CURRENCY_MAP);
     }
 }

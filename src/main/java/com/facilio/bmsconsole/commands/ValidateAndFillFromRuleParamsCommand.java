@@ -8,6 +8,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.CurrencyUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.commons.chain.Context;
@@ -186,8 +187,8 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 				FacilioModule formModule = form.getModule();
 				String moduleName = formModule.getName();
 				List<FacilioField> multiCurrencyFields = CurrencyUtil.getMultiCurrencyFields(moduleName);
-				CurrencyContext baseCurrency = CurrencyUtil.getBaseCurrency();
-				Map<String, CurrencyContext> currencyCodeVsCurrency = CurrencyUtil.getCurrencyMap();
+				CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+				Map<String, CurrencyContext> currencyCodeVsCurrency = Constants.getCurrencyMap(context);
 				CurrencyUtil.replaceCurrencyValueWithBaseCurrencyValue(formData, multiCurrencyFields, baseCurrency, currencyCodeVsCurrency);
 			}
 			if (lookupFormData != null && !lookupFormData.isEmpty()) {

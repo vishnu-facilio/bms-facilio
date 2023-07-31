@@ -930,8 +930,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getItem() {
         return () -> new V3Config(V3ItemContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new SetItemFieldsBeforeSaveCommand())
                 .afterSave(TransactionChainFactoryV3.getAddItemChain())
                 .update()
+                .beforeSave(new SetItemFieldsBeforeSaveCommand())
                 .afterSave(TransactionChainFactoryV3.getAddItemChain())
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getBeforeFetchItemListChain())

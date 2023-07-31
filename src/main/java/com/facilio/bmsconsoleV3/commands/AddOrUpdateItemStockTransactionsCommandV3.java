@@ -2,7 +2,6 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
@@ -19,9 +18,9 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.util.FacilioUtil;
-import com.facilio.v3.V3Builder.V3Config;
-import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -40,8 +39,12 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                 .get(FacilioConstants.ContextNames.PURCHASED_ITEM);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+        Map<String, CurrencyContext> currencyMap = Constants.getCurrencyMap(context);
+
         if (purchasedItems != null && !purchasedItems.isEmpty()) {
             Boolean isBulkItemAdd = (Boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ITEM_ADD);
 
@@ -59,7 +62,7 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                 transaction.setParentId(ic.getId());
                 transaction.setIsReturnable(false);
                 transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
-
+                CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(transaction, baseCurrency, currencyMap, ic.getCurrencyCode(), ic.getExchangeRate());
                 // if bulk insertion add stock transaction entry
                 if (isBulkItemAdd != null && isBulkItemAdd) {
                     inventoryTransaction.add(transaction);
@@ -75,6 +78,7 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                     if (transactions != null && !transactions.isEmpty()) {
                         V3ItemTransactionsContext itemTransaction = transactions.get(0);
                         itemTransaction.setQuantity(ic.getQuantity());
+                        CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(itemTransaction, baseCurrency, currencyMap, ic.getCurrencyCode(), ic.getExchangeRate());
 
                         JSONObject itemTransactionJson = FieldUtil.getAsJSON(itemTransaction);
                         Long itemTransactionId = itemTransaction.getId();
@@ -111,6 +115,7 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                 transaction.setQuantity(1);
                 transaction.setAsset(asset);
                 transaction.setParentId(asset.getId());
+                CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(transaction, baseCurrency, currencyMap, items.getCurrencyCode(), items.getExchangeRate());
                 updateItemQty(items);
 
                 V3Util.createRecord(module,FacilioUtil.getAsMap(FieldUtil.getAsJSON(transaction)),null,null);

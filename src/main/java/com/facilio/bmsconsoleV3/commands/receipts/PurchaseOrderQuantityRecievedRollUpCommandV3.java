@@ -3,8 +3,6 @@ package com.facilio.bmsconsoleV3.commands.receipts;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
-import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceivableContext;
@@ -18,9 +16,11 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -45,9 +45,11 @@ public class PurchaseOrderQuantityRecievedRollUpCommandV3 extends FacilioCommand
 
             FacilioModule pomodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
             List<FacilioField> pofields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_ORDER);
+            CurrencyUtil.addMultiCurrencyFieldsToFields(pofields, pomodule);
 
             Map<Long, Double> poIdVsQty = new HashMap<>();
             List<Long> poIds = new ArrayList<>();
+
             List<V3PurchaseOrderContext> receivedPOs = new ArrayList<>();
             SelectRecordsBuilder<V3ReceivableContext> builder = new SelectRecordsBuilder<V3ReceivableContext>()
                     .module(module).select(fields).beanClass(V3ReceivableContext.class)
@@ -59,6 +61,10 @@ public class PurchaseOrderQuantityRecievedRollUpCommandV3 extends FacilioCommand
                 poIdVsQty.put(receivables.getPoId().getId(), quantity);
                 poIds.add(receivables.getPoId().getId());
             }
+
+            FacilioContext summaryContext = V3Util.getSummary(pomodule.getName(), poIds);
+            List<ModuleBaseWithCustomFields> purchaseOrderRecords = Constants.getRecordListFromContext(summaryContext, pomodule.getName());
+
             for (Map.Entry<Long, Double> entry : poIdVsQty.entrySet()) {
                 SelectRecordsBuilder<V3PurchaseOrderContext> poBuilder = new SelectRecordsBuilder<V3PurchaseOrderContext>()
                         .module(pomodule).select(pofields).beanClass(V3PurchaseOrderContext.class)
@@ -76,7 +82,7 @@ public class PurchaseOrderQuantityRecievedRollUpCommandV3 extends FacilioCommand
                         receivable.setStatus(com.facilio.bmsconsoleV3.context.purchaseorder.V3ReceivableContext.Status.RECEIVED);
                         po.setReceivableStatus(V3PurchaseOrderContext.ReceivableStatus.RECEIVED.getIndex());
                     }
-                    po = updatePurchaseOrder(po, pomodule);
+                    po = updatePurchaseOrder(po, pomodule, purchaseOrderRecords);
                     receivable.setPoId(po);
                     if(entry.getValue() >= po.getTotalQuantity()) {
                         receivedPOs.add(po);
@@ -118,7 +124,7 @@ public class PurchaseOrderQuantityRecievedRollUpCommandV3 extends FacilioCommand
         return 0d;
     }
 
-    private V3PurchaseOrderContext updatePurchaseOrder(V3PurchaseOrderContext po, FacilioModule pomodule) throws Exception{
+    private V3PurchaseOrderContext updatePurchaseOrder(V3PurchaseOrderContext po, FacilioModule pomodule, List<ModuleBaseWithCustomFields> purchaseOrderRecords) throws Exception{
 
         Map<String, Object> map = FieldUtil.getAsProperties(po);
         JSONObject json = new JSONObject();
@@ -131,6 +137,10 @@ public class PurchaseOrderQuantityRecievedRollUpCommandV3 extends FacilioCommand
 
         Constants.setModuleName(patchContext, FacilioConstants.ContextNames.PURCHASE_ORDER);
         Constants.setRawInput(patchContext, json);
+
+
+        Constants.addToOldRecordMap(patchContext, pomodule.getName(), purchaseOrderRecords);
+
         patchContext.put(Constants.RECORD_ID, po.getId());
         patchContext.put(Constants.BEAN_CLASS, beanClass);
         patchContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);

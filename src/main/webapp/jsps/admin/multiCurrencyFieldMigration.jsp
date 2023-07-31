@@ -3,6 +3,7 @@
 <head>
     <title>Multi Currency Field Migration</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <h1>Multi Currency Field Migration</h1>
@@ -32,8 +33,19 @@
             </label>
         </td>
     </tr>
+    <tr hidden="hidden">
+        <td><h4>Transaction Time Out</h4></td>
+        <td>
+            <label>
+                <input type="number" id="transactionTimeOut"/>
+            </label>
+        </td>
+    </tr>
 </table>
 <button type="submit" class='submitBtn' id="submitBtn" onclick="sendAjax()">Submit</button>
+<br>
+<div id="spinner"></div>
+<br>
 <div id="result"></div>
 <script>
     function sendAjax(){
@@ -43,7 +55,8 @@
         dataObject.fieldName = $('#fieldName').val();
         dataObject.baseCurrencyValueColumnName = $('#baseCurrencyValueColumnName').val();
         dataObject.revert = !!document.getElementById("revert").checked;
-
+        dataObject.transactionTimeOut = $('#transactionTimeOut').val();
+        $('#spinner').html('<i class="fa fa-spinner fa-spin" style="height: 20px; width: 20px"></i>');
         $.ajax({
             url: "/admin/migrateMultiCurrencyField",
             type: "POST",
@@ -51,10 +64,12 @@
             data: dataObject,
             success: function(data) {
                 $("#result").html(data.result);
+                $('#spinner').html("");
             },
             error: function(xhr, status, error) {
-                console.log("Error: " + xhr.responseText);
-                $("#result").html(xhr.responseText);
+                console.log("Error: " + xhr.responseText + " status :" + status + " error : " + error);
+                $("#result").html(xhr.responseText, status, error);
+                $('#spinner').html("");
             }
         })
     }

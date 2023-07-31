@@ -573,6 +573,7 @@ public class ChainUtil {
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
 
         addIfNotNull(transactionChain, afterSaveCommand);
+        transactionChain.addCommand(new UpdateSubModuleMultiCurrencyDataCommand());
         transactionChain.addCommand(new SendNotificationForOfflineRecordUpdate(OfflineUpdateType.RECORD));
 
 

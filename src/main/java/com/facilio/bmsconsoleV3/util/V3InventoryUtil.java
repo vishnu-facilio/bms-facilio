@@ -18,6 +18,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.*;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -58,6 +59,11 @@ public class V3InventoryUtil {
                                                                     List<FacilioField> fields) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(module)) {
+            fields.addAll(FieldFactory.getCurrencyPropsFields(module));
+        }
+
         SelectRecordsBuilder<V3PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<V3PurchasedItemContext>()
                 .select(fields).table(module.getTableName()).moduleName(module.getName())
                 .beanClass(V3PurchasedItemContext.class)

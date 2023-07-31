@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.purchaseorder;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -16,6 +17,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,10 +49,20 @@ public class POAfterCreateOrEditV3Command extends FacilioCommand {
                             deleteBuilder.delete();
                             V3PurchaseOrderContext poContext = new V3PurchaseOrderContext();
                             poContext.setId(purchaseOrderContext.getId());
+
+                            CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+                            Map<String, CurrencyContext> currencyCodeVsCurrency = Constants.getCurrencyMap(context);
+                            String parentRecordCurrencyCode = purchaseOrderContext.getCurrencyCode();
+                            Double parentRecordExchangeRate = purchaseOrderContext.getExchangeRate();
+
                             for (V3PurchaseOrderLineItemContext lineItemContext : purchaseOrderContext.getLineItems()) {
                                 lineItemContext.setPurchaseOrder(poContext);
+                                CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(lineItemContext, baseCurrency, currencyCodeVsCurrency, parentRecordCurrencyCode, parentRecordExchangeRate);
                             }
-                            RecordAPI.addRecord(false, purchaseOrderContext.getLineItems(), lineItemsModule, modBean.getAllFields(lineItemsModule.getName()));
+                            List<FacilioField> lineItemFields = modBean.getAllFields(lineItemsModule.getName());
+                            lineItemFields.addAll(FieldFactory.getCurrencyPropsFields(lineItemsModule));
+
+                            RecordAPI.addRecord(false, purchaseOrderContext.getLineItems(), lineItemsModule, lineItemFields);
                         }
 
                         if (receivablesNotCreated(purchaseOrderContext.getId())) {

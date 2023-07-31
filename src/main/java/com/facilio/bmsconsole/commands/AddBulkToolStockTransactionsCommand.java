@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
@@ -15,6 +16,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.util.CurrencyUtil;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 
@@ -42,7 +45,11 @@ public class AddBulkToolStockTransactionsCommand extends FacilioCommand {
 			ptlookUpfields.add((LookupField) ptoolsFieldMap.get("toolType"));
 
 			FacilioModule Toolmodule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+
 			List<FacilioField> Toolfields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+			CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+			Map<String, CurrencyContext> currencyMap = Constants.getCurrencyMap(context);
+
 			Map<String, FacilioField> toolsFieldMap = FieldFactory.getAsMap(Toolfields);
 			List<LookupField> lookUpfields = new ArrayList<>();
 			lookUpfields.add((LookupField) toolsFieldMap.get("toolType"));
@@ -69,11 +76,13 @@ public class AddBulkToolStockTransactionsCommand extends FacilioCommand {
 								transaction.setPurchasedTool(purchaseTool);
 								transaction.setStoreRoom(tool.getStoreRoom());
 								transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
+								CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(transaction, baseCurrency, currencyMap, purchaseTool.getCurrencyCode(), purchaseTool.getExchangeRate());
 								toolTransaction.add(transaction);
 							}
 						}
 					} else {
 						if (tool.getQuantity() > 0) {
+							CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(transaction, baseCurrency, currencyMap, tool.getCurrencyCode(), tool.getExchangeRate());
 							transaction.setQuantity(tool.getQuantity());
 							transaction.setTransactionState(TransactionState.ADDITION.getValue());
 							transaction.setTool(tool);

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsoleV3.context.V3TransactionContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -13,7 +14,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -90,7 +93,7 @@ public class TransactionRuleContext extends WorkflowRuleContext{
 
         return super.evaluateMisc(moduleName, record, placeHolders, context);
     }
-    
+
 
     @Override
     public void executeTrueActions(Object currentRecord, Context context, Map<String, Object> placeHolders) throws Exception {
@@ -101,9 +104,11 @@ public class TransactionRuleContext extends WorkflowRuleContext{
         String creationModuleName = FacilioConstants.TransactionRule.CreationModuleName;
         Long sourceModId =  getModuleId();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
 
         ModuleBaseWithCustomFields record= (ModuleBaseWithCustomFields) currentRecord;
         Map<String,Object> data=new HashMap<>();
+       CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(data, baseCurrency, CurrencyUtil.getCurrencyMap(), record.getCurrencyCode(), record.getExchangeRate());
         data.put("transactionDate",FieldUtil.getValue(record,modBean.getField(this.transactionDateFieldId)));
         data.put("transactionAmount",FieldUtil.getValue(record,modBean.getField(this.transactionAmountFieldId)));
         data.put("transactionType",transactionType);

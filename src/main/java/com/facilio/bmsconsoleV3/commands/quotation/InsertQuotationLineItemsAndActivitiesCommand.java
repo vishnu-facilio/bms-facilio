@@ -1,8 +1,10 @@
 package com.facilio.bmsconsoleV3.commands.quotation;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.ActivityContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.QuotationActivityType;
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -19,8 +21,10 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -51,10 +55,24 @@ public class InsertQuotationLineItemsAndActivitiesCommand extends FacilioCommand
                     deleteBuilder.delete();
                     QuotationContext quotationContext = new QuotationContext();
                     quotationContext.setId(quotation.getId());
+                    List<FacilioField> lineItemFields = modBean.getAllFields(lineItemModule.getName());
+
+                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
+                        CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+                        Map<String, CurrencyContext> currencyCodeVsCurrency = Constants.getCurrencyMap(context);
+                        String parentRecordCurrencyCode = quotation.getCurrencyCode();
+                        Double parentRecordExchangeRate = quotation.getExchangeRate();
+                        lineItemFields.addAll(FieldFactory.getCurrencyPropsFields(lineItemModule));
+                        for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
+                            CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(lineItem, baseCurrency, currencyCodeVsCurrency, parentRecordCurrencyCode, parentRecordExchangeRate);
+                        }
+                    }
+
                     for (QuotationLineItemsContext lineItem : quotation.getLineItems()) {
                         lineItem.setQuote(quotationContext);
                     }
-                    V3RecordAPI.addRecord(false, quotation.getLineItems(), lineItemModule, modBean.getAllFields(lineItemModule.getName()));
+
+                    V3RecordAPI.addRecord(false, quotation.getLineItems(), lineItemModule, lineItemFields);
                 }
 
                 Map<String, Object> bodyParams = Constants.getBodyParams(context);

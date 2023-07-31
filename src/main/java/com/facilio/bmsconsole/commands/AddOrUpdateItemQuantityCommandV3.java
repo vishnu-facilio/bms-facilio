@@ -6,14 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.*;
+import com.facilio.util.CurrencyUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -25,13 +28,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateChangeSet;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
 
 ;
 
@@ -44,6 +42,15 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 		FacilioModule purchaseItemsModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
 		List<FacilioField> purchasedItemsFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
 		Map<String, FacilioField> purchasedItemsFieldMap = FieldFactory.getAsMap(purchasedItemsFields);
+		purchasedItemsFields.addAll(FieldFactory.getCurrencyPropsFields(purchaseItemsModule));
+
+		CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+		Map<String, CurrencyContext> currencyMap = Constants.getCurrencyMap(context);
+
+		FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+		List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		List<FacilioField> itemMultiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsFromFields(itemFields);
+		CurrencyUtil.addMultiCurrencyFieldsToFields(itemFields, itemModule);
 		// long inventoryId = (long)
 		// context.get(FacilioConstants.ContextNames.INVENTORY_ID);
 		List<Long> itemIds = (List<Long>) context.get(FacilioConstants.ContextNames.ITEM_IDS);
@@ -51,8 +58,6 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 			long itemTypesId = -1;
 			List<Long> itemTypesIds = new ArrayList<>();
 			if (itemIds != null && !itemIds.isEmpty()) {
-				FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
-				List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
                 List<V3ItemContext> itemRecords = new ArrayList<V3ItemContext>();
                 Map<Long, List<UpdateChangeSet>> changes = new HashMap<Long, List<UpdateChangeSet>>();
 				for (long itemId : itemIds) {
@@ -84,7 +89,15 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 							}
 							if(pitem.getUnitcost()!=null){
 								lastPurchasedPrice = pitem.getUnitcost();
+								itemContext.setLastPurchasedPrice(lastPurchasedPrice);
 							}
+							Map<String, Object> itemAsProps = FieldUtil.getAsProperties(itemContext);
+							itemAsProps.put("currencyCode", pitem.getCurrencyCode());
+							List<String> patchFieldNames = new ArrayList<String>(){{
+								add("lastPurchasedPrice");
+							}};
+							CurrencyUtil.checkAndUpdateCurrencyProps(itemAsProps, itemContext, baseCurrency, currencyMap, patchFieldNames, itemMultiCurrencyFields);
+							itemContext = FieldUtil.getAsBeanFromMap(itemAsProps, V3ItemContext.class);
 						}
 
 
@@ -94,7 +107,6 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 						item.setCurrentQuantity(quantity);
 						item.setQuantity(quantity);
 						item.setLastPurchasedDate(lastPurchasedDate);
-						item.setLastPurchasedPrice(lastPurchasedPrice);
 						if( item.getMinimumQuantity()!=null && item.getQuantity() <= item.getMinimumQuantity()) {
 							item.setIsUnderstocked(true);
 						}
@@ -103,8 +115,9 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 						}
 
 						itemTypesIds.add(itemTypesId);
+						itemFields.addAll(FieldFactory.getCurrencyPropsFields(itemModule));
 						UpdateRecordBuilder<V3ItemContext> updateBuilder = new UpdateRecordBuilder<V3ItemContext>()
-								.module(itemModule).fields(modBean.getAllFields(itemModule.getName()))
+								.module(itemModule).fields(itemFields)
 								.andCondition(CriteriaAPI.getIdCondition(item.getId(), itemModule));
 
 						updateBuilder.withChangeSet(V3ItemContext.class);

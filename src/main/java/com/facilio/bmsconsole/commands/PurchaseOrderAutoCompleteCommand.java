@@ -15,6 +15,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.CurrencyUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -37,6 +39,9 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 		List<V3ItemTypesVendorsContext> itemTypesVendors = new ArrayList<>();
 		List<V3ToolTypeVendorContext> toolTypesVendors = new ArrayList<>();
 
+		CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+		Map<String, CurrencyContext> currencyMap = Constants.getCurrencyMap(context);
+
 		long storeRoomId = -1;
 		long vendorId =-1;
 		if (purchaseOrders != null && !purchaseOrders.isEmpty()) {
@@ -58,7 +63,7 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 									containsIndividualTrackingItem = true;
 									break;
 								} else {
-									itemsTobeAdded.add(createItem(po, lineItem));
+									itemsTobeAdded.add(createItem(po, lineItem, baseCurrency, currencyMap));
 								}
 							} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
 								toolTypesVendors.add(new V3ToolTypeVendorContext(lineItem.getToolType(), po.getVendor(), lineItem.getCost(), po.getOrderedTime()));
@@ -67,7 +72,7 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 									containsIndividualTrackingTool = true;
 									break;
 								} else {
-									toolsToBeAdded.add(createTool(po, lineItem));
+									toolsToBeAdded.add(createTool(po, lineItem, baseCurrency, currencyMap));
 								}
 							}
 						}
@@ -93,6 +98,7 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
+		CurrencyUtil.addMultiCurrencyFieldsToFields(fields, module);
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 
 		SelectRecordsBuilder<V3PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseOrderLineItemContext>()
@@ -138,24 +144,33 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 		return null;
 	}
 
-	private V3ItemContext createItem(V3PurchaseOrderContext po, V3PurchaseOrderLineItemContext lineItem) {
+	private V3ItemContext createItem(V3PurchaseOrderContext po, V3PurchaseOrderLineItemContext lineItem, CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap) throws Exception {
 		V3ItemContext item = new V3ItemContext();
 		item.setStoreRoom(po.getStoreRoom());
 		item.setItemType(lineItem.getItemType());
+
+		ModuleBean modBean = Constants.getModBean();
+		List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
+		List<FacilioField> purchasedItemMultiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsFromFields(purchasedItemFields);
+
 		V3PurchasedItemContext purchasedItem = new V3PurchasedItemContext();
 		purchasedItem.setQuantity(lineItem.getQuantity());
 		purchasedItem.setUnitcost(lineItem.getUnitPrice());
+		purchasedItem.setCurrencyCode(lineItem.getCurrencyCode());
+		purchasedItem = (V3PurchasedItemContext) CurrencyUtil.addMultiCurrencyData(FacilioConstants.ContextNames.PURCHASED_ITEM,
+				purchasedItemMultiCurrencyFields, Collections.singletonList(purchasedItem), V3PurchasedItemContext.class, baseCurrency, currencyMap).get(0);
 		item.setPurchasedItems(Collections.singletonList(purchasedItem));
 
 		return item;
 	}
 
-	private V3ToolContext createTool(V3PurchaseOrderContext po, V3PurchaseOrderLineItemContext lineItem) {
+	private V3ToolContext createTool(V3PurchaseOrderContext po, V3PurchaseOrderLineItemContext lineItem, CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap) {
 		V3ToolContext  tool = new V3ToolContext ();
 		tool.setStoreRoom(po.getStoreRoom());
 		tool.setToolType(lineItem.getToolType());
 		tool.setQuantity(lineItem.getQuantity());
 		tool.setRate(lineItem.getCost());
+		CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(tool, baseCurrency, currencyMap, lineItem.getCurrencyCode(), lineItem.getExchangeRate());
 
 		return tool;
 	}

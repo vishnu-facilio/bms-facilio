@@ -3,9 +3,11 @@ package com.facilio.bmsconsole.context;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
-public class CurrencyContext {
+public class CurrencyContext implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private long id = -1;

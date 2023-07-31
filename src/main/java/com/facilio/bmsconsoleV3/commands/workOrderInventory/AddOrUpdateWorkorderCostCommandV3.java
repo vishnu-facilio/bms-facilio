@@ -14,11 +14,12 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.CurrencyUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AddOrUpdateWorkorderCostCommandV3  extends FacilioCommand {
     @Override
@@ -26,6 +27,11 @@ public class AddOrUpdateWorkorderCostCommandV3  extends FacilioCommand {
         // TODO Auto-generated method stub
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<Long> parentIds = (List<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
+        Map<Long, V3WorkOrderContext> workOrderRecordMap = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.WORK_ORDER, parentIds, V3WorkOrderContext.class);
+
+        Map<String, CurrencyContext> currencyMap = Constants.getCurrencyMap(context);
+        CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+
         if (parentIds != null && !parentIds.isEmpty()) {
             for (long parentId : parentIds) {
                 int costType = (int) context.get(FacilioConstants.ContextNames.WORKORDER_COST_TYPE);
@@ -60,8 +66,11 @@ public class AddOrUpdateWorkorderCostCommandV3  extends FacilioCommand {
                 }
 
                 FacilioModule workorderCostsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_COST);
-                List<FacilioField> workorderCostsFields = modBean
-                        .getAllFields(FacilioConstants.ContextNames.WORKORDER_COST);
+
+                List<FacilioField> workorderCostsFields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_COST);
+                CurrencyUtil.addMultiCurrencyFieldsToFields(workorderCostsFields, workorderCostsModule);
+                List<FacilioField> workOrderCostMultiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsFromFields(workorderCostsFields);
+
                 Map<String, FacilioField> workorderCostsFieldMap = FieldFactory.getAsMap(workorderCostsFields);
 
                 SelectRecordsBuilder<V3WorkorderCostContext> workorderCostSetlectBuilder = new SelectRecordsBuilder<V3WorkorderCostContext>()
@@ -74,14 +83,21 @@ public class AddOrUpdateWorkorderCostCommandV3  extends FacilioCommand {
 
                 List<V3WorkorderCostContext> workorderCosts = workorderCostSetlectBuilder.get();
                 V3WorkorderCostContext workorderCost = new V3WorkorderCostContext();
+
+                V3WorkOrderContext workOrderContext = workOrderRecordMap.get(parentId);
                 if (workorderCosts != null && !workorderCosts.isEmpty()) {
                     workorderCost = workorderCosts.get(0);
-                    workorderCost.setCost(cost);
-                    workorderCost.setQuantity(qty);
-                    workorderCost.setModifiedTime(System.currentTimeMillis());
-                    V3RecordAPI.updateRecord(workorderCost, workorderCostsModule, modBean.getAllFields(workorderCostsModule.getName()));
+
+                    Map<String, Object> recordAsMap = FieldUtil.getAsProperties(workorderCost);
+                    recordAsMap.put("cost", cost);
+                    recordAsMap.put("quantity", qty);
+                    recordAsMap.put("modifiedTime", System.currentTimeMillis());
+                    recordAsMap.put("currencyCode", workOrderContext.getCurrencyCode());
+                    CurrencyUtil.checkAndUpdateCurrencyProps(recordAsMap, workorderCost, baseCurrency, currencyMap, null, workOrderCostMultiCurrencyFields);
+                    workorderCost = FieldUtil.getAsBeanFromMap(recordAsMap, V3WorkorderCostContext.class);
+
+                    V3RecordAPI.updateRecord(workorderCost, workorderCostsModule, workorderCostsFields);
                 } else {
-                    List<V3WorkorderCostContext> workOrderCostsList = new ArrayList<>();
                     workorderCost.setCost(cost);
                     V3WorkOrderContext wo = new V3WorkOrderContext();
                     wo.setId(parentId);
@@ -89,9 +105,13 @@ public class AddOrUpdateWorkorderCostCommandV3  extends FacilioCommand {
                     workorderCost.setCostType(costType);
                     workorderCost.setQuantity(qty);
                     workorderCost.setTtime(System.currentTimeMillis());
+                    workorderCost.setCurrencyCode(workOrderContext.getCurrencyCode());
                     workorderCost.setModifiedTime(System.currentTimeMillis());
-                    workOrderCostsList.add(workorderCost);
-                    V3RecordAPI.addRecord(false,workOrderCostsList,workorderCostsModule,modBean.getAllFields(workorderCostsModule.getName()));
+
+                    List<ModuleBaseWithCustomFields> multiCurrencyData = CurrencyUtil.addMultiCurrencyData(workorderCostsModule.getName(), workOrderCostMultiCurrencyFields, Collections.singletonList(workorderCost), V3WorkorderCostContext.class, baseCurrency, currencyMap);
+                    workorderCost = (V3WorkorderCostContext) multiCurrencyData.get(0);
+
+                    V3RecordAPI.addRecord(false,Collections.singletonList(workorderCost), workorderCostsModule, workorderCostsFields);
                 }
                 context.put(FacilioConstants.ContextNames.TOTAL_COST, workorderCost.getCost());
                 context.put(FacilioConstants.ContextNames.TOTAL_QUANTITY, qty);

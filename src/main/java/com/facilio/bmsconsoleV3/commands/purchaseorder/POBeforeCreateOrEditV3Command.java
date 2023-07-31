@@ -16,6 +16,8 @@ import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,8 @@ public class POBeforeCreateOrEditV3Command extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3PurchaseOrderContext> purchaseOrderContexts = recordMap.get(moduleName);
+        Map<Long, List<String>> patchFieldNamesMap = (Map<Long, List<String>>) context.getOrDefault(FacilioConstants.ContextNames.PATCH_FIELD_NAMES, new HashMap<>());
+
         if (CollectionUtils.isNotEmpty(purchaseOrderContexts)) {
             for (V3PurchaseOrderContext purchaseOrderContext : purchaseOrderContexts) {
                 if (purchaseOrderContext != null) {
@@ -39,6 +43,13 @@ public class POBeforeCreateOrEditV3Command extends FacilioCommand {
 
                     checkForStoreRoom(purchaseOrderContext, purchaseOrderContext.getLineItems());
                     QuotationAPI.lineItemsCostCalculations(purchaseOrderContext, purchaseOrderContext.getLineItems());
+                    // fields which are updated internally to be added in this List so recalculation of currency fields can be avoided
+                    List<String> fieldNames = patchFieldNamesMap.getOrDefault(patchFieldNamesMap.get(purchaseOrderContext.getId()), new ArrayList<>());
+                    fieldNames.add("totalTaxAmount");
+                    fieldNames.add("subTotal");
+                    fieldNames.add("discountAmount");
+                    fieldNames.add("totalCost");
+                    patchFieldNamesMap.put(purchaseOrderContext.getId(), fieldNames);
 
                     // setting current user to requestedBy
                     if (purchaseOrderContext.getRequestedBy() == null) {

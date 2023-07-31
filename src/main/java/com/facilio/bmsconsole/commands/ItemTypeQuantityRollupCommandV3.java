@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.*;
+import com.facilio.util.CurrencyUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -18,12 +23,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 
@@ -37,18 +38,27 @@ public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 			FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 			List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
 			Map<String, FacilioField> itemFieldMap = FieldFactory.getAsMap(itemFields);
+			itemFields.addAll(FieldFactory.getCurrencyPropsFields(itemModule));
 
 			FacilioModule transModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
 			List<FacilioField> transFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
 			Map<String, FacilioField> transFieldMap = FieldFactory.getAsMap(transFields);
 
+			CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+			Map<String, CurrencyContext> currencyMap = Constants.getCurrencyMap(context);
+
+			List<FacilioField> itemTypesFields = modBean.getAllFields(itemTypesModule.getName());
+			CurrencyUtil.addMultiCurrencyFieldsToFields(itemTypesFields, itemTypesModule);
+			List<FacilioField> itemTypesMultiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsFromFields(itemTypesFields);
+
 			long lastPurchasedDate = -1, lastIssuedDate = -1;
 			double lastPurchasedPrice = -1;
 			if (itemTypesIds != null && !itemTypesIds.isEmpty()) {
+				Map<Long, V3ItemTypesContext> oldItemTypesRecords = V3RecordAPI.getRecordsMap(itemTypesModule.getName(), itemTypesIds, V3ItemTypesContext.class);
 				for (Long id : itemTypesIds) {
 					double quantity = getQuantity(id, itemModule, itemFieldMap,false);
 					double currentQuantity = getQuantity(id, itemModule, itemFieldMap,true);
-
+					V3ItemTypesContext oldItemTypeRecord = oldItemTypesRecords.get(id);
 					SelectRecordsBuilder<V3ItemContext> builder = new SelectRecordsBuilder<V3ItemContext>()
 							.select(itemFields).moduleName(itemModule.getName())
 							.andCondition(CriteriaAPI.getCondition(itemFieldMap.get("itemType"), String.valueOf(id),
@@ -56,6 +66,7 @@ public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 							.beanClass(V3ItemContext.class).orderBy("LAST_PURCHASED_DATE DESC");
 
 					List<V3ItemContext> items = builder.get();
+					V3ItemTypesContext itemType = new V3ItemTypesContext();
 					long storeRoomId = -1;
 					V3ItemContext item;
 					if (items != null && !items.isEmpty()) {
@@ -66,10 +77,17 @@ public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 						}
 						if( item.getLastPurchasedPrice()!=null){
 							lastPurchasedPrice = item.getLastPurchasedPrice();
+							itemType.setLastPurchasedPrice(lastPurchasedPrice);
 						}
-
+						Map<String, Object> itemTypeAsMap = FieldUtil.getAsProperties(itemType);
+						itemTypeAsMap.put("currencyCode", item.getCurrencyCode());
+						List<String> currRecordPatchFieldNames = new ArrayList<String>() {{
+							add("lastPurchasedPrice");
+						}};
+						CurrencyUtil.checkAndUpdateCurrencyProps(itemTypeAsMap, oldItemTypeRecord, baseCurrency, currencyMap, currRecordPatchFieldNames, itemTypesMultiCurrencyFields);
+						itemType = FieldUtil.getAsBeanFromMap(itemTypeAsMap, V3ItemTypesContext.class);
 					}
-					
+
 					Criteria criteria = new Criteria();
 					criteria.addAndCondition(CriteriaAPI.getCondition(transFieldMap.get("transactionState"),
 							String.valueOf(4), NumberOperators.EQUALS));
@@ -81,7 +99,7 @@ public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 					Criteria finalCriteria = new Criteria();
 					finalCriteria.andCriteria(criteria);
 					finalCriteria.orCriteria(criteriaIssue);
-					
+
 
 					SelectRecordsBuilder<V3ItemTransactionsContext> issuetransactionsbuilder = new SelectRecordsBuilder<V3ItemTransactionsContext>()
 							.select(transFields).moduleName(transModule.getName())
@@ -89,7 +107,7 @@ public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 									NumberOperators.EQUALS))
 							.beanClass(V3ItemTransactionsContext.class).orderBy("CREATED_TIME DESC");
 					builder.andCriteria(finalCriteria);
-					
+
 
 					List<V3ItemTransactionsContext> transactions = issuetransactionsbuilder.get();
 					if (transactions != null && !transactions.isEmpty()) {
@@ -97,16 +115,14 @@ public class ItemTypeQuantityRollupCommandV3 extends FacilioCommand {
 						lastIssuedDate = transaction.getSysCreatedTime();
 					}
 
-					V3ItemTypesContext itemType = new V3ItemTypesContext();
 					itemType.setId(id);
 					itemType.setQuantity(quantity);
 					itemType.setCurrentQuantity(currentQuantity);
 					itemType.setLastPurchasedDate(lastPurchasedDate);
-					itemType.setLastPurchasedPrice(lastPurchasedPrice);
 					itemType.setLastIssuedDate(lastIssuedDate);
 
 					UpdateRecordBuilder<V3ItemTypesContext> updateBuilder = new UpdateRecordBuilder<V3ItemTypesContext>()
-							.module(itemTypesModule).fields(modBean.getAllFields(itemTypesModule.getName()))
+							.module(itemTypesModule).fields(itemTypesFields)
 							.andCondition(CriteriaAPI.getIdCondition(itemType.getId(), itemTypesModule));
 
 					updateBuilder.update(itemType);

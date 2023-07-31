@@ -14,6 +14,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,9 +27,19 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<QuotationContext> list = recordMap.get(moduleName);
+        Map<Long, List<String>> patchFieldNamesMap = (Map<Long, List<String>>) context.getOrDefault(FacilioConstants.ContextNames.PATCH_FIELD_NAMES, new HashMap<>());
+
         if (CollectionUtils.isNotEmpty(list)) {
             for (QuotationContext quotation : list) {
                 QuotationAPI.lineItemsCostCalculations(quotation, quotation.getLineItems());
+                // fields which are updated internally to be added in this List so recalculation of currency fields can be avoided
+                List<String> fieldNames = patchFieldNamesMap.getOrDefault(patchFieldNamesMap.get(quotation.getId()), new ArrayList<>());
+                fieldNames.add("totalTaxAmount");
+                fieldNames.add("subTotal");
+                fieldNames.add("discountAmount");
+                fieldNames.add("totalCost");
+                patchFieldNamesMap.put(quotation.getId(), fieldNames);
+
                 Double quotationTotalCost = quotation.getTotalCost();
                 if (quotation.getShippingCharges() != null) {
                     quotationTotalCost += quotation.getShippingCharges();

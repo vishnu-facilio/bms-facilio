@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands.purchaserequest;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -12,6 +14,9 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,10 +44,23 @@ public class PurchaseRequestTotalCostRollUpCommandV3 extends FacilioCommand {
                         deleteBuilder.delete();
                         V3PurchaseRequestContext prContext = new V3PurchaseRequestContext();
                         prContext.setId(purchaseRequestContext.getId());
+                        List<FacilioField> lineItemFields = modBean.getAllFields(lineModule.getName());
+
+                        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
+                            CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+                            Map<String, CurrencyContext> currencyCodeVsCurrency = Constants.getCurrencyMap(context);
+                            String parentRecordCurrencyCode = purchaseRequestContext.getCurrencyCode();
+                            Double parentRecordExchangeRate = purchaseRequestContext.getExchangeRate();
+                            lineItemFields.addAll(FieldFactory.getCurrencyPropsFields(lineModule));
+                            for (V3PurchaseRequestLineItemContext lineItemContext : purchaseRequestContext.getLineItems()) {
+                                CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(lineItemContext, baseCurrency, currencyCodeVsCurrency, parentRecordCurrencyCode, parentRecordExchangeRate);
+                            }
+                        }
+
                         for (V3PurchaseRequestLineItemContext lineItemContext : purchaseRequestContext.getLineItems()) {
                             lineItemContext.setPurchaseRequest(prContext);
                         }
-                        RecordAPI.addRecord(false, purchaseRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+                        RecordAPI.addRecord(false, purchaseRequestContext.getLineItems(), lineModule, lineItemFields);
                     }
 
                 }

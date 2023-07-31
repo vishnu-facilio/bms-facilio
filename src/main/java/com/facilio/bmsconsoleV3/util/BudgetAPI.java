@@ -13,8 +13,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.util.CurrencyUtil;
 import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -22,15 +22,17 @@ public class BudgetAPI {
 
     public static String CURRENCY_PATTERN ="0.00";
 
-    public static List<BudgetAmountContext> setBudgetAmount(Long id, boolean fetchSplitUp) throws Exception {
+    public static List<BudgetAmountContext> setBudgetAmount(Long id, boolean fetchSplitUp, Map<String, Object> currencyInfo) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Budget.BUDGET_AMOUNT);
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+        List<FacilioField> budgetAmountFields = modBean.getAllFields(module.getName());
+        budgetAmountFields.addAll(FieldFactory.getCurrencyPropsFields(module));
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(budgetAmountFields);
 
         SelectRecordsBuilder<BudgetAmountContext> builder = new SelectRecordsBuilder<BudgetAmountContext>()
                 .module(module)
                 .beanClass(BudgetAmountContext.class)
-                .select(modBean.getAllFields(module.getName()))
+                .select(budgetAmountFields)
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("budget"), String.valueOf(id), NumberOperators.EQUALS))
                 .orderBy("ID asc")
                 ;
@@ -44,7 +46,7 @@ public class BudgetAPI {
         if(CollectionUtils.isNotEmpty(budgetAmounts)){
             if(fetchSplitUp) {
                 for (BudgetAmountContext budgetAmount : budgetAmounts) {
-                    List<BudgetMonthlyAmountContext> splitList =  getMonthlySplitUp(budgetAmount.getId());
+                    List<BudgetMonthlyAmountContext> splitList =  getMonthlySplitUp(budgetAmount.getId(), currencyInfo);
                     if(CollectionUtils.isNotEmpty(splitList)) {
                         List<Map<String, Object>> mapList = FieldUtil.getAsMapList(splitList, BudgetMonthlyAmountContext.class);
                         for(Map<String, Object> map : mapList){
@@ -54,6 +56,7 @@ public class BudgetAPI {
                             map.values().removeAll(Collections.singleton(null));
                         }
                         budgetAmount.setMonthlyAmountSplitUp(mapList);
+                        CurrencyUtil.checkAndFillBaseCurrencyToRecord(budgetAmount, currencyInfo);
                     }
                 }
             }
@@ -64,21 +67,27 @@ public class BudgetAPI {
     }
 
 
-    private static List<BudgetMonthlyAmountContext> getMonthlySplitUp(Long parentId) throws Exception {
+    private static List<BudgetMonthlyAmountContext> getMonthlySplitUp(Long parentId, Map<String, Object> currencyInfo) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Budget.BUDGET_MONTHLY_AMOUNT);
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+        List<FacilioField> budgetMonthlyAmountFields = modBean.getAllFields(module.getName());
+        budgetMonthlyAmountFields.addAll(FieldFactory.getCurrencyPropsFields(module));
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(budgetMonthlyAmountFields);
 
         SelectRecordsBuilder<BudgetMonthlyAmountContext> builder = new SelectRecordsBuilder<BudgetMonthlyAmountContext>()
                 .module(module)
                 .beanClass(BudgetMonthlyAmountContext.class)
-                .select(modBean.getAllFields(module.getName()))
+                .select(budgetMonthlyAmountFields)
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("budgetAmount"), String.valueOf(parentId), NumberOperators.EQUALS))
                 ;
 
         List<BudgetMonthlyAmountContext> monthlyList = builder.get();
         if(CollectionUtils.isNotEmpty(monthlyList))
         {
+            for (BudgetMonthlyAmountContext budgetMonthlyAmountContext : monthlyList) {
+                CurrencyUtil.checkAndFillBaseCurrencyToRecord(budgetMonthlyAmountContext, currencyInfo);
+            }
+
             return monthlyList;
         }
         return null;

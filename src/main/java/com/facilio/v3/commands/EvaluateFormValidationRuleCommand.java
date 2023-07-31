@@ -80,12 +80,15 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
         Map<Long, List<ValidationContext>> buttonsFormValidationRule = getValidationContextMap(buttonFormIds);
         Map<Long, List<ValidationContext>> formVsRuleMap = getValidationContextMap(formIds);
 
+        Map<String, CurrencyContext> currencyMap = Constants.getCurrencyMap(context);
+        CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+
         if (MapUtils.isNotEmpty(buttonsFormValidationRule) && MapUtils.isNotEmpty(recordMap)) {
-            validateRecord(recordMap, buttonFormIds, buttonsFormValidationRule, moduleName, beanClass);
+            validateRecord(recordMap, buttonFormIds, buttonsFormValidationRule, moduleName, beanClass, currencyMap, baseCurrency);
         }
 
         if (MapUtils.isNotEmpty(formVsRuleMap) && MapUtils.isNotEmpty(recordMap)) {
-            validateRecordFormId(recordMap, formVsRuleMap, moduleName, buttonIds, beanClass);
+            validateRecordFormId(recordMap, formVsRuleMap, moduleName, buttonIds, beanClass, currencyMap, baseCurrency);
         }
 
         return false;
@@ -123,15 +126,12 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
 
     }
 
-    private void validateRecord(Map<String, List<ModuleBaseWithCustomFields>> recordMap, List<Long> formIds, Map<Long, List<ValidationContext>> formVsRuleMap, String moduleName, Class beanClass) throws Exception {
+    private void validateRecord(Map<String, List<ModuleBaseWithCustomFields>> recordMap, List<Long> formIds, Map<Long, List<ValidationContext>> formVsRuleMap,
+                                String moduleName, Class beanClass, Map<String, CurrencyContext> currencyMap, CurrencyContext baseCurrency) throws Exception {
 
         List<FacilioField> multiCurrencyFields = new ArrayList<>();
-        CurrencyContext baseCurrency = new CurrencyContext();
-        Map<String, CurrencyContext> currencyCodeVsCurrency = new HashMap<>();
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
             multiCurrencyFields = CurrencyUtil.getMultiCurrencyFields(moduleName);
-            baseCurrency = CurrencyUtil.getBaseCurrency();
-            currencyCodeVsCurrency = CurrencyUtil.getCurrencyMap();
         }
 
         for (ModuleBaseWithCustomFields record : recordMap.get(moduleName)) {
@@ -139,7 +139,7 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
                 if (formId > 0 && formVsRuleMap.containsKey(formId)) {
                     if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CollectionUtils.isNotEmpty(multiCurrencyFields)) {
                         Map<String, Object> props = FieldUtil.getAsProperties(record);
-                        CurrencyUtil.replaceCurrencyValueWithBaseCurrencyValue(props, multiCurrencyFields, baseCurrency, currencyCodeVsCurrency);
+                        CurrencyUtil.replaceCurrencyValueWithBaseCurrencyValue(props, multiCurrencyFields, baseCurrency, currencyMap);
                         record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(props, beanClass);
                     }
                     ValidationRulesAPI.validateRecord(moduleName, record, formVsRuleMap.get(formId));
@@ -149,18 +149,15 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
 
     }
 
-    private void validateRecordFormId(Map<String, List<ModuleBaseWithCustomFields>> recordMap, Map<Long, List<ValidationContext>> formVsRuleMap, String moduleName, List<Long> buttonIds, Class beanClass) throws Exception {
+    private void validateRecordFormId(Map<String, List<ModuleBaseWithCustomFields>> recordMap, Map<Long, List<ValidationContext>> formVsRuleMap,
+                                      String moduleName, List<Long> buttonIds, Class beanClass, Map<String, CurrencyContext> currencyMap, CurrencyContext baseCurrency) throws Exception {
 
         // TODO remove after tracking and use validateRecord....
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
 
         List<FacilioField> multiCurrencyFields = new ArrayList<>();
-        CurrencyContext baseCurrency = new CurrencyContext();
-        Map<String, CurrencyContext> currencyCodeVsCurrency = new HashMap<>();
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
             multiCurrencyFields = CurrencyUtil.getMultiCurrencyFields(moduleName);
-            baseCurrency = CurrencyUtil.getBaseCurrency();
-            currencyCodeVsCurrency = CurrencyUtil.getCurrencyMap();
         }
 
         for (ModuleBaseWithCustomFields record : recordMap.get(moduleName)) {
@@ -168,7 +165,7 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
             if (formId > 0 && formVsRuleMap.containsKey(formId)) {
                 if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CollectionUtils.isNotEmpty(multiCurrencyFields)) {
                     Map<String, Object> props = FieldUtil.getAsProperties(record);
-                    CurrencyUtil.replaceCurrencyValueWithBaseCurrencyValue(props, multiCurrencyFields, baseCurrency, currencyCodeVsCurrency);
+                    CurrencyUtil.replaceCurrencyValueWithBaseCurrencyValue(props, multiCurrencyFields, baseCurrency, currencyMap);
                     record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(props, beanClass);
                 }
                 if (CollectionUtils.isNotEmpty(buttonIds)) {

@@ -11,9 +11,7 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,30 +39,14 @@ public class AddMultiCurrencyDataCommand extends FacilioCommand {
             beanClass = FacilioConstants.ContextNames.getClassFromModule(Constants.getModBean().getModule(moduleName));
         }
 
-        CurrencyContext baseCurrency = CurrencyUtil.getBaseCurrency();
-        List<ModuleBaseWithCustomFields> newRecords = new ArrayList<>();
-        Map<String, CurrencyContext> currencyCodeVsCurrency = CurrencyUtil.getCurrencyMap();
+        CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+        Map<String, CurrencyContext> currencyCodeVsCurrency = Constants.getCurrencyMap(context);
 
-        for (ModuleBaseWithCustomFields record : records) {
-            String currencyCode = record.getCurrencyCode();
-            CurrencyContext currency = StringUtils.isNotEmpty(currencyCode) ? MapUtils.isNotEmpty(currencyCodeVsCurrency) ? currencyCodeVsCurrency.get(currencyCode) : null : null;
-
-            if (currency == null || baseCurrency == null || StringUtils.isEmpty(currencyCode) || currencyCodeVsCurrency.size() == 1) {
-                record.setCurrencyCode(null);
-                record.setExchangeRate(1);
-            } else {
-                double exchangeRate = currency.getExchangeRate();
-                record.setExchangeRate(exchangeRate);
-            }
-
-            Map<String, Object> props = FieldUtil.getAsProperties(record);
-            CurrencyUtil.setBaseCurrencyValueForRecord(props, multiCurrencyFields);
-
-            newRecords.add((ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(props, beanClass));
-        }
+        List<ModuleBaseWithCustomFields> newRecords = CurrencyUtil.addMultiCurrencyData(moduleName, multiCurrencyFields, records, beanClass, baseCurrency, currencyCodeVsCurrency);
 
         recordMap.put(moduleName, newRecords);
         context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
         return false;
     }
+
 }

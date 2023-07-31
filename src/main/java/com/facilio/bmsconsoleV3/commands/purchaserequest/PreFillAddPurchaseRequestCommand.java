@@ -5,12 +5,12 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PreFillAddPurchaseRequestCommand extends FacilioCommand {
 
@@ -20,12 +20,21 @@ public class PreFillAddPurchaseRequestCommand extends FacilioCommand {
 		String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3PurchaseRequestContext> purchaseRequestContexts = recordMap.get(moduleName);
-        if(purchaseRequestContexts != null && CollectionUtils.isNotEmpty(purchaseRequestContexts)) {
+		Map<Long, List<String>> patchFieldNamesMap = (Map<Long, List<String>>) context.getOrDefault(FacilioConstants.ContextNames.PATCH_FIELD_NAMES, new HashMap<>());
+
+		if(CollectionUtils.isNotEmpty(purchaseRequestContexts)) {
             for(V3PurchaseRequestContext purchaseRequestContext : purchaseRequestContexts) 
             {
 				QuotationAPI.lineItemsCostCalculations(purchaseRequestContext, purchaseRequestContext.getLineItems());
+				// fields which are updated internally to be added in this List so recalculation of currency fields can be avoided
+				List<String> fieldNames = patchFieldNamesMap.getOrDefault(patchFieldNamesMap.get(purchaseRequestContext.getId()), new ArrayList<>());
+				fieldNames.add("totalTaxAmount");
+				fieldNames.add("subTotal");
+				fieldNames.add("discountAmount");
+				fieldNames.add("totalCost");
+				patchFieldNamesMap.put(purchaseRequestContext.getId(), fieldNames);
 
-    			// setting current user to requestedBy
+				// setting current user to requestedBy
     			if(purchaseRequestContext.getRequestedBy() == null) {
     		 	  purchaseRequestContext.setRequestedBy(AccountUtil.getCurrentUser());
     			}

@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands.workOrderInventory;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -21,6 +22,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.*;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -46,6 +48,9 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
         List<V3WorkorderItemContext> workorderItemslist = new ArrayList<>();
         List<V3WorkorderItemContext> itemToBeAdded = new ArrayList<>();
 
+        CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+        Map<String, CurrencyContext> currencyMap = Constants.getCurrencyMap(context);
+
         long itemTypesId = -1;
         ApprovalState approvalState = null;
         List<Long> parentIds = new ArrayList<>();
@@ -61,7 +66,6 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                 if(parentId<0){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Work order cannot be null");
                 }
-
                 parentIds.add(parentId);
                 long parentTransactionId = workorderItem.getParentTransactionId();
 
@@ -113,10 +117,10 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                     if(workorderItem.getAsset()==null){
                                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Rotating Asset cannot be empty");
                                     }
-                                    wItem = setWorkorderItemObj(purchasedItem, 1, item, parentId, approvalState, wo, workorderItem.getAsset(), workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem);
+                                    wItem = setWorkorderItemObj(purchasedItem, 1, item, parentId, approvalState, wo, workorderItem.getAsset(), workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap);
                                 } else {
                                     wItem = setWorkorderItemObj(purchasedItem, workorderItem.getQuantity(), item,
-                                            parentId, approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem);
+                                            parentId, approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap);
                                 }
                                 // updatePurchasedItem(purchaseditem);
                                 wItem.setId(workorderItem.getId());
@@ -168,7 +172,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                         assetRecord.setSpace(assetSpace);
                                     }
                                     assetRecord.setCanUpdateRotatingAsset(true);
-                                    woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, assetRecord, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem);
+                                    woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, assetRecord, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap);
                                     updateAsset(assetRecord);
                                     workorderItemslist.add(woItem);
                                     itemToBeAdded.add(woItem);
@@ -181,7 +185,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                 if (workorderItem.getQuantity() <= pItem.getCurrentQuantity()) {
                                     V3WorkorderItemContext woItem = new V3WorkorderItemContext();
                                     woItem = setWorkorderItemObj(pItem, workorderItem.getQuantity(), item, parentId,
-                                            approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem);
+                                            approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap);
                                     workorderItemslist.add(woItem);
                                     itemToBeAdded.add(woItem);
                                 } else {
@@ -195,7 +199,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                             quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
                                         }
                                         woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
-                                                parentId, approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem);
+                                                parentId, approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap);
                                         requiredQuantity -= quantityUsedForTheCost;
                                         workorderItemslist.add(woItem);
                                         itemToBeAdded.add(woItem);
@@ -209,7 +213,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                     }
                 }
             }
-
+//            todo - revamp the logic
             if(CollectionUtils.isNotEmpty(itemToBeAdded)){
                 Map<String,Object> data = workOrderItems.get(0).getData();
                 itemToBeAdded.get(0).setData(data);
@@ -238,7 +242,8 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
         return false;
     }
     private V3WorkorderItemContext setWorkorderItemObj(V3PurchasedItemContext purchasedItem, double quantity,
-                                                     V3ItemContext item, long parentId, ApprovalState approvalState, V3WorkOrderContext wo, V3AssetContext asset, V3InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context, V3WorkorderItemContext workOrderItem) throws Exception{
+                                                       V3ItemContext item, long parentId, ApprovalState approvalState, V3WorkOrderContext wo, V3AssetContext asset, V3InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context, V3WorkorderItemContext workOrderItem,
+                                                       CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap) throws Exception{
         V3WorkorderItemContext woItem = new V3WorkorderItemContext();
         woItem.setTransactionType(TransactionType.WORKORDER);
         woItem.setIsReturnable(false);
@@ -249,6 +254,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
         }
         if (purchasedItem != null) {
             woItem.setPurchasedItem(purchasedItem);
+            CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(woItem, baseCurrency, currencyMap, purchasedItem.getCurrencyCode(), purchasedItem.getExchangeRate());
             if (purchasedItem.getUnitcost() >= 0) {
                 costOccured = purchasedItem.getUnitcost() * quantity;
                 unitPrice = purchasedItem.getUnitcost();

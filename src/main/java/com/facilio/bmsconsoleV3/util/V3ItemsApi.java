@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
@@ -15,6 +16,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.util.CurrencyUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -127,13 +129,19 @@ public class V3ItemsApi {
         throw new IllegalArgumentException("Item shoud be issued before being used");
     }
 
-    public static void updateLastPurchasedDetailsForItemType(long id) throws Exception {
+    public static void updateLastPurchasedDetailsForItemType(long id, CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule itemTypesModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
 
         FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
         List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+        CurrencyUtil.addMultiCurrencyFieldsToFields(itemFields, itemModule);
         Map<String, FacilioField> itemFieldMap = FieldFactory.getAsMap(itemFields);
+
+        List<FacilioField> itemTypesFields = modBean.getAllFields(itemTypesModule.getName());
+        CurrencyUtil.addMultiCurrencyFieldsToFields(itemTypesFields, itemTypesModule);
+        List<FacilioField> itemTypesMultiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsFromFields(itemTypesFields);
+
 
         long lastPurchasedDate = -1;
         double lastPurchasedPrice = -1;
@@ -144,27 +152,35 @@ public class V3ItemsApi {
                         NumberOperators.EQUALS))
                 .beanClass(V3ItemContext.class).orderBy("LAST_PURCHASED_DATE DESC");
 
-        List<V3ItemContext> items = builder.get();
+        V3ItemContext item = builder.fetchFirst();
         long storeRoomId = -1;
-        V3ItemContext item;
-        if (items != null && !items.isEmpty()) {
-            item = items.get(0);
+
+        V3ItemTypesContext oldItemTypeRecord = V3RecordAPI.getRecord(itemTypesModule.getName(), id);
+        V3ItemTypesContext itemType = new V3ItemTypesContext();
+
+        if (item != null) {
             storeRoomId = item.getStoreRoom().getId();
             if(item.getLastPurchasedDate()!=null){
                 lastPurchasedDate = item.getLastPurchasedDate();
             }
             if( item.getLastPurchasedPrice()!=null){
                 lastPurchasedPrice = item.getLastPurchasedPrice();
+                itemType.setLastPurchasedPrice(lastPurchasedPrice);
             }
+            Map<String, Object> itemTypeAsMap = FieldUtil.getAsProperties(itemType);
+            itemTypeAsMap.put("currencyCode", item.getCurrencyCode());
+            List<String> currRecordPatchFieldNames = new ArrayList<String>() {{
+                add("lastPurchasedPrice");
+            }};
+            CurrencyUtil.checkAndUpdateCurrencyProps(itemTypeAsMap, oldItemTypeRecord, baseCurrency, currencyMap, currRecordPatchFieldNames, itemTypesMultiCurrencyFields);
+            itemType = FieldUtil.getAsBeanFromMap(itemTypeAsMap, V3ItemTypesContext.class);
         }
 
-        V3ItemTypesContext itemType = new V3ItemTypesContext();
         itemType.setId(id);
         itemType.setLastPurchasedDate(lastPurchasedDate);
-        itemType.setLastPurchasedPrice(lastPurchasedPrice);
 
         UpdateRecordBuilder<V3ItemTypesContext> updateBuilder = new UpdateRecordBuilder<V3ItemTypesContext>()
-                .module(itemTypesModule).fields(modBean.getAllFields(itemTypesModule.getName()))
+                .module(itemTypesModule).fields(itemTypesFields)
                 .andCondition(CriteriaAPI.getIdCondition(itemType.getId(), itemTypesModule));
 
         updateBuilder.update(itemType);

@@ -7212,8 +7212,8 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain getMultiCurrencyFieldUpdateChain() {
-		FacilioChain chain = getDefaultChain();
+	public static FacilioChain getMultiCurrencyFieldUpdateChain(int transactionTimeOut) {
+		FacilioChain chain = FacilioChain.getTransactionChain(transactionTimeOut);
 		chain.addCommand(new MigrateNumberFieldToMultiCurrencyFieldCommand());
 		chain.addCommand(new RevertMultiCurrencyFieldMigrationCommand());
 		return chain;

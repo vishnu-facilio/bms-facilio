@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.V3TermsAndConditionContext;
@@ -22,6 +23,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.LookupFieldMeta;
+import com.facilio.util.CurrencyUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -81,6 +83,11 @@ public class PurchaseOrderAPI {
 		List<FacilioField> fields = modBean.getAllFields(lineItemModuleName);
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
+		FacilioModule lineItemModule = modBean.getModule(lineItemModuleName);
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(lineItemModule)) {
+			fields.addAll(FieldFactory.getCurrencyPropsFields(lineItemModule));
+		}
+
 		SelectRecordsBuilder<V3PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<V3PurchaseOrderLineItemContext>()
 				.moduleName(lineItemModuleName)
 				.select(fields)
@@ -89,8 +96,11 @@ public class PurchaseOrderAPI {
 				.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
 						(LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service"), (LookupField) fieldsAsMap.get("tax")));
 		List<V3PurchaseOrderLineItemContext> list = builder.get();
+		Map<String, Object> baseCurrencyInfo = CurrencyUtil.getCurrencyInfo();
+
 		for(V3PurchaseOrderLineItemContext item : list) {
 			item.setNoOfSerialNumbers(getSerialNumberCount(item.getId()));
+			CurrencyUtil.checkAndFillBaseCurrencyToRecord(item, baseCurrencyInfo);
 		}
 		po.setLineItems(list);
 	}

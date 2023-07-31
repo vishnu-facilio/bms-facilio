@@ -148,20 +148,30 @@ public class FacilioConstants {
 			moduleNames.add(ContextNames.PURCHASE_REQUEST_LINE_ITEMS);
 			moduleNames.add(ContextNames.WORK_ORDER);
 			moduleNames.add(ContextNames.TICKET);
-			moduleNames.add(ContextNames.RESOURCE);
+//			moduleNames.add(ContextNames.RESOURCE);
 			moduleNames.add(ContextNames.WORKORDER_COST);
-//			moduleNames.add(ContextNames.WORKORDER_ITEMS);
-//			moduleNames.add(ContextNames.WORKORDER_TOOLS);
+			moduleNames.add(ContextNames.WORKORDER_ITEMS);
+			moduleNames.add(ContextNames.WORKORDER_TOOLS);
 			moduleNames.add(ContextNames.WO_SERVICE);
 			moduleNames.add(ContextNames.WO_PLANNED_ITEMS);
 			moduleNames.add(ContextNames.WO_PLANNED_TOOLS);
 			moduleNames.add(ContextNames.WO_PLANNED_SERVICES);
 			moduleNames.add(ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
 			moduleNames.add(ContextNames.WO_LABOUR);
-			moduleNames.add(ContextNames.BUDGET);
-			moduleNames.add(ContextNames.BUDGET_AMOUNT);
-			moduleNames.add(ContextNames.BUDGET_MONTHLY_AMOUNT);
+			moduleNames.add(ContextNames.Budget.BUDGET);
+			moduleNames.add(ContextNames.Budget.BUDGET_AMOUNT);
+			moduleNames.add(ContextNames.Budget.BUDGET_MONTHLY_AMOUNT);
 			moduleNames.add(ContextNames.TRANSACTION);
+			moduleNames.add(ContextNames.ITEM);
+			moduleNames.add(ContextNames.ITEM_TYPES);
+			moduleNames.add(ContextNames.TOOL);
+			moduleNames.add(ContextNames.TOOL_TYPES);
+			moduleNames.add(ContextNames.SERVICE);
+			moduleNames.add(ContextNames.SERVICE_VENDOR);
+			moduleNames.add(ContextNames.PURCHASED_ITEM);
+			moduleNames.add(ContextNames.PURCHASED_TOOL);
+			moduleNames.add(ContextNames.ITEM_TRANSACTIONS);
+			moduleNames.add(ContextNames.TOOL_TRANSACTIONS);
 			return moduleNames;
 		}
 	}
@@ -374,6 +384,8 @@ public class FacilioConstants {
 		public static final String CURRENCY_CODE = "currencyCode";
 		public static final String NEW_CURRENCY_CODE = "newCurrencyCode";
 		public static final String OLD_CURRENCY_CODE = "oldCurrencyCode";
+		public static final String BASE_CURRENCY = "baseCurrency";
+		public static final String CURRENCY_MAP = "currencyMap";
 
 		public static class HomePage {
 			public static final String HOME_PAGE = "homepage";

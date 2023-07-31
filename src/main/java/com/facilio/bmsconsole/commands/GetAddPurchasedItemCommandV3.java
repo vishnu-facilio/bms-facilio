@@ -1,10 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.*;
+import com.facilio.util.CurrencyUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -12,11 +18,9 @@ import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 ;
 
@@ -30,7 +34,11 @@ public class GetAddPurchasedItemCommandV3 extends FacilioCommand {
 		if (purchasedItem != null && !purchasedItem.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule purchasedItemModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
+
 			List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
+			CurrencyUtil.addMultiCurrencyFieldsToFields(purchasedItemFields, purchasedItemModule);
+			List<FacilioField> multiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsFromFields(purchasedItemFields);
+
 			long itemTypesId = -1;
 			List<Long> itemTypesIds = new ArrayList<>();
 			List<Long> itemIds = new ArrayList<>();
@@ -40,9 +48,19 @@ public class GetAddPurchasedItemCommandV3 extends FacilioCommand {
 			FacilioModule itemTypesModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
 			List<FacilioField> itemTypesFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TYPES);
 
+			CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
+			Map<String, CurrencyContext> currencyCodeVsCurrency = Constants.getCurrencyMap(context);
+
 			List<V3PurchasedItemContext> pcToBeAdded = new ArrayList<>();
 			List<V3PurchasedItemContext> purchaseItemsList = new ArrayList<>();
+			Map<Long, ModuleBaseWithCustomFields> recordsMap = new HashMap<>();
+			List<String> currRecordPatchFieldNames = new ArrayList<>();
+
 			if (purchasedItem != null && !purchasedItem.isEmpty()) {
+				List<Long> purchasedItemIds = purchasedItem.stream().map(ModuleBaseWithCustomFields::getId).filter(id -> id > 0).collect(Collectors.toList());
+				if (CollectionUtils.isNotEmpty(purchasedItemIds)) {
+					recordsMap = V3RecordAPI.getRecordsMap(purchasedItemModule.getName(), purchasedItemIds);
+				}
 				for (V3PurchasedItemContext pi : purchasedItem) {
 					SelectRecordsBuilder<V3ItemTypesContext> itemTypesselectBuilder = new SelectRecordsBuilder<V3ItemTypesContext>()
 							.select(itemTypesFields).table(itemTypesModule.getTableName())
@@ -74,13 +92,20 @@ public class GetAddPurchasedItemCommandV3 extends FacilioCommand {
 
 					if (pi.getId() <= 0) {
 						// Insert
+						pi = (V3PurchasedItemContext) CurrencyUtil.addMultiCurrencyData(purchasedItemModule.getName(), multiCurrencyFields, Collections.singletonList(pi), V3PurchasedItemContext.class, baseCurrency, currencyCodeVsCurrency).get(0);
 						purchaseItemsList.add(pi);
 						pcToBeAdded.add(pi);
 					} else {
+						if (MapUtils.isNotEmpty(recordsMap)) {
+							currRecordPatchFieldNames.add("unitcost"); // add field names to currRecordPatchFieldNames to avoid currency recalculation
+							ModuleBaseWithCustomFields oldRecord = recordsMap.get(pi.getId());
+							Map<String, Object> newRecordAsMap = FieldUtil.getAsProperties(pi);
+							CurrencyUtil.checkAndUpdateCurrencyProps(newRecordAsMap, oldRecord, baseCurrency, currencyCodeVsCurrency, currRecordPatchFieldNames, multiCurrencyFields);
+							pi = FieldUtil.getAsBeanFromMap(newRecordAsMap, V3PurchasedItemContext.class);
+						}
 						purchaseItemsList.add(pi);
 						updateInventorycost(purchasedItemModule, purchasedItemFields, pi);
 					}
-
 				}
 
 				if (pcToBeAdded != null && !pcToBeAdded.isEmpty()) {

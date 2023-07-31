@@ -115,6 +115,7 @@ public class MigrateNumberFieldToMultiCurrencyFieldCommand extends FacilioComman
         selectRecordBuilder = new GenericSelectRecordBuilder()
                 .select(selectFields)
                 .table(module.getTableName())
+                .andCondition(CriteriaAPI.getCondition(field, CommonOperators.IS_NOT_EMPTY))
                 .offset(offset)
                 .limit(limit);
 
@@ -150,6 +151,9 @@ public class MigrateNumberFieldToMultiCurrencyFieldCommand extends FacilioComman
         numOperatorIdVsMultiCurrOpId.put(NumberOperators.GREATER_THAN_EQUAL.getOperatorId(), MultiCurrencyOperator.GREATER_THAN_EQUALS.getOperatorId());
         numOperatorIdVsMultiCurrOpId.put(NumberOperators.BETWEEN.getOperatorId(), MultiCurrencyOperator.BETWEEN.getOperatorId());
         numOperatorIdVsMultiCurrOpId.put(NumberOperators.NOT_BETWEEN.getOperatorId(), MultiCurrencyOperator.NOT_BETWEEN.getOperatorId());
+
+        numOperatorIdVsMultiCurrOpId.put(CommonOperators.IS_EMPTY.getOperatorId(), CommonOperators.IS_EMPTY.getOperatorId());
+        numOperatorIdVsMultiCurrOpId.put(CommonOperators.IS_NOT_EMPTY.getOperatorId(), CommonOperators.IS_NOT_EMPTY.getOperatorId());
 
 
         selectRecordBuilder = new GenericSelectRecordBuilder()

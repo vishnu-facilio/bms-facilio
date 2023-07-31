@@ -14,6 +14,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.CurrencyUtil;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -35,7 +36,10 @@ public class BulkToolAdditionCommandV3 extends FacilioCommand {
             long storeRoomId = (long) context.get(FacilioConstants.ContextNames.STORE_ROOM);
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule toolModule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+
             List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+            CurrencyUtil.addMultiCurrencyFieldsToFields(toolFields, toolModule);
+
             Map<String, FacilioField> toolFieldMap = FieldFactory.getAsMap(toolFields);
             List<Long> toolTypesId = new ArrayList<>();
             Map<Long, Long> toolTypeVsTool = new HashMap<>();
