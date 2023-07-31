@@ -1,7 +1,9 @@
 package com.facilio.fsm.commands.serviceOrders;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -21,7 +23,7 @@ public class SOStatusChangeCommandV3 extends FacilioCommand {
         List<ServiceOrderContext> dataList = (List<ServiceOrderContext>) recordMap.get(moduleName);
         List<ServiceOrderContext> serviceOrdersNew = new ArrayList<>();
         for(ServiceOrderContext order : dataList) {
-            if(order.getStatus() < 0){
+            if(order.getStatus() ==null || order.getStatus().getTypeCode() < 0){
                 if(order.isAutoCreateSa()){
                     if(CollectionUtils.isEmpty(order.getServiceTask())){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR,"Atleast One Task must be present when AutoCreate SA is enabled");
@@ -29,10 +31,10 @@ public class SOStatusChangeCommandV3 extends FacilioCommand {
                     if(order.getPreferredStartTime() == null || order.getPreferredEndTime() == null || order.getPreferredStartTime() < 0 || order.getPreferredEndTime() < 0){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR,"Scheduled Start and End time are mandatory when AutoCreate SA is enabled");
                     }
-                    order.setStatus(ServiceOrderContext.ServiceOrderStatus.SCHEDULED);
+                    order.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.SCHEDULED));
                 }
                 else {
-                    order.setStatus(ServiceOrderContext.ServiceOrderStatus.NEW.getIndex());
+                    order.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.NEW));
                 }
             }
             serviceOrdersNew.add(order);

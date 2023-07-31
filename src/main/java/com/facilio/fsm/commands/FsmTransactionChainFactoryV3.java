@@ -148,4 +148,10 @@ public class FsmTransactionChainFactoryV3 {
         c.addCommand(new AddActivitiesCommand());
         return c;
     }
+
+    public static FacilioChain getStatusBasedActions() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new StatusBasedActions());
+        return c;
+    }
 }

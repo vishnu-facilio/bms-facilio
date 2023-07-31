@@ -69,6 +69,7 @@ import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.ims.handler.AuditLogHandler;
 import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
+import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
 import com.facilio.fsm.context.TimeOffTypeContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -2878,6 +2879,7 @@ public class FacilioConstants {
 			public static final String WORK_TYPE_LINE_ITEMS = "workTypeLineItems";
 			public static final String WORK_TYPE_SKILLS = "workTypeSkills";
 			public static final String SERVICE_ORDER = "serviceOrder";
+			public static final String SERVICE_ORDER_TICKET_STATUS = "serviceOrderTicketStatus";
 			public static final String SERVICE_ORDER_ATTACHMENTS = "serviceOrderAttachments";
 			public static final String SERVICE_ORDER_NOTES = "serviceOrderNotes";
 			public static final String SERVICE_ORDER_ACTIVITY = "serviceOrderActivity";
@@ -3354,6 +3356,7 @@ public class FacilioConstants {
 			classMap.put(Control_Action.CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME, ActivityContext.class);
 			classMap.put(Control_Action.COMMAND_ACTIVITY_MODULE_NAME,ActivityContext.class);
 			classMap.put(ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS, ServiceAppointmentTicketStatusContext.class);
+			classMap.put(ServiceOrder.SERVICE_ORDER_TICKET_STATUS, ServiceOrderTicketStatusContext.class);
 			classMap.put(TimeOff.TIME_OFF_TYPE, TimeOffTypeContext.class);
 			classMap.put(EMPLOYEE_ACTIVITY,ActivityContext.class);
 			classMap.put(VENDOR_CONTACTS_ACTIVITY,ActivityContext.class);
@@ -4659,6 +4662,20 @@ public class FacilioConstants {
 		public static final String COMPLETED = "completed";
 		public static final String CANCELLED = "cancelled";
 	}
+
+	public static class ServiceOrder{
+		public static final String SERVICE_ORDER = "serviceOrder";
+		public static final String SERVICE_ORDER_TICKET_STATUS = "serviceOrderTicketStatus";
+		public static final String SERVICE_ORDER_STATUS_ACTIONS = "serviceOrderStatusActions";
+		public static final String NEW = "new";
+		public static final String SCHEDULED = "scheduled";
+		public static final String IN_PROGRESS = "inProgress";
+		public static final String COMPLETED = "completed";
+		public static final String CANCELLED = "cancelled";
+		public static final String CLOSED = "closed";
+	}
+
+
 
 
 	public static class PeopleSkillLevel{

@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.faults.newreadingalarm.LoadSupplementsForFaultsCommand;
 import com.facilio.fsm.commands.*;
 import com.facilio.fsm.commands.actuals.SetServiceOrderItemsCommand;
 import com.facilio.fsm.commands.actuals.SetServiceOrderToolsCommand;
@@ -20,6 +21,7 @@ import com.facilio.fsm.commands.people.FetchPeopleTerritorySupplementsCommand;
 import com.facilio.fsm.commands.people.updatePeopleLocationHistoryCommand;
 import com.facilio.fsm.commands.plans.*;
 import com.facilio.fsm.commands.serviceAppointment.FetchServiceAppointmentSupplementsCommand;
+import com.facilio.fsm.commands.serviceOrders.LoadSupplementsForSOCommand;
 import com.facilio.fsm.commands.serviceOrders.SetServiceTaskCommandV3;
 import com.facilio.fsm.commands.serviceTasks.LoadTaskPlansCommandV3;
 import com.facilio.fsm.context.*;
@@ -84,6 +86,7 @@ public class FieldServiceManagementV3Config {
                 .afterSave(FsmTransactionChainFactoryV3.afterSOUpdateChain())
                 .list()
                 .summary()
+                .beforeFetch(new LoadSupplementsForSOCommand())
                 .afterFetch(new SetServiceTaskCommandV3())
                 .delete()
                 .build();

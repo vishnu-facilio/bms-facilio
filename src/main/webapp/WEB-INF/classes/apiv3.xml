@@ -1996,5 +1996,9 @@
             <param name="status">{2}</param>
             <param name="skipValidation">{3}</param>
         </action>
+        <action name="fetchStatusActions/serviceOrder/*" class="com.facilio.fsm.actions.ServiceOrderAction" method="fetchStatusActions">
+            <param name="moduleName">serviceOrder</param>
+            <param name="status">{1}</param>
+        </action>
     </package>
 </struts>

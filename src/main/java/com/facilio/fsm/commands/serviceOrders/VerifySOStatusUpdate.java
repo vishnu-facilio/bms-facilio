@@ -4,6 +4,7 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -20,7 +21,7 @@ public class VerifySOStatusUpdate extends FacilioCommand {
         List<ServiceOrderContext> dataList = (List<ServiceOrderContext>) recordMap.get(moduleName);
         for(ServiceOrderContext order : dataList) {
             ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,order.getId());
-            if(serviceOrderInfo.getStatus() == ServiceOrderContext.ServiceOrderStatus.CLOSED.getIndex()){
+            if(serviceOrderInfo.getStatus() != null && serviceOrderInfo.getStatus().getId() == ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.CLOSED).getId()){
                 throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order cannot be edited in Closed State");
             }
             if(order.getSite() != null && serviceOrderInfo.getSite().getId() != order.getSite().getId()){

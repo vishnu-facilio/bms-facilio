@@ -73,6 +73,7 @@ public class AutoCreateSA extends FacilioCommand {
             }
         }
             recordList.addAll(serviceAppointmentList);
+        //getting null pointer error here after status change
             V3Util.createRecord(serviceAppointmentModule,recordList);
         }
 

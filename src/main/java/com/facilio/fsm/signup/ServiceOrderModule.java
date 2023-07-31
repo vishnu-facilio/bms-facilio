@@ -9,12 +9,12 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
-import com.facilio.bmsconsoleV3.signup.util.PagesUtil;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -25,9 +25,7 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
-import com.facilio.qa.context.PageContext;
 import com.facilio.v3.context.Constants;
-import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -112,10 +110,11 @@ public class ServiceOrderModule extends BaseModuleConfig {
         fieldIdField.setMainField(true);
         fields.add(fieldIdField);
 
-        LookupField parentIdField = SignupUtil.getLookupField(serviceOrderAttachmentsModule, serviceOrderModule, "parentId",
-                "Parent", "PARENT_ID", "serviceOrder", FacilioField.FieldDisplayType.LOOKUP_POPUP,
-                false, false, true, orgId);
-        fields.add(parentIdField);
+        LookupField parentId = (LookupField) FieldFactory.getField("parent", "PARENT Id", "PARENT_ID", serviceOrderModule, FieldType.LOOKUP);
+        parentId.setDefault(true);
+        parentId.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        parentId.setLookupModule(serviceOrderModule);
+        fields.add(parentId);
 
         FacilioField createdTimeField = SignupUtil.getNumberField(serviceOrderAttachmentsModule,
                 "createdTime", "Created Time","CREATED_TIME",
@@ -181,9 +180,15 @@ public class ServiceOrderModule extends BaseModuleConfig {
         asset.setLookupModule(bean.getModule(FacilioConstants.ContextNames.ASSET));
         fields.add(asset);
 
-        SystemEnumField status = FieldFactory.getDefaultField("status","Status","STATUS_ID",FieldType.SYSTEM_ENUM);
-        status.setEnumName("ServiceOrderStatus");
+//        SystemEnumField status = FieldFactory.getDefaultField("status","Status","STATUS_ID",FieldType.SYSTEM_ENUM);
+//        status.setEnumName("ServiceOrderStatus");
+//        fields.add(status);
+
+        LookupField status = FieldFactory.getDefaultField("status","Status","STATUS_ID",FieldType.LOOKUP);
+        status.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        status.setLookupModule(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS));
         fields.add(status);
+
 
         LookupField vendor = FieldFactory.getDefaultField("vendor","Vendor","VENDOR_ID",FieldType.LOOKUP);
         vendor.setLookupModule(bean.getModule(FacilioConstants.ContextNames.VENDORS));
@@ -600,7 +605,50 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
-                .tabDone());
+                .tabDone()
+                .addWebTab("appointment", "SERVICE_APPOINTMENT", true, null)
+                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("task", null, null)
+                .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addWebTab("plans", "PLANS", true, null)
+                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("task", null, null)
+                .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addWebTab("actuals", "ACTUALS", true, null)
+                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("task", null, null)
+                .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addWebTab("related", "RELATED", true, null)
+                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("relatedlist", null, null)
+                .addWidget("bulkRelatedList", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(FacilioConstants.ContextNames.QUOTE))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addWebTab("history", "HISTORY", true, null)
+                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
+//                .addSection("activity", null, null)
+//                .addWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0,  null, null)
+                        .addSection("history", null, null)
+                        .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_60", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+        );
     }
 
     private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
@@ -762,14 +810,20 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
     private static JSONObject getWidgetGroup(boolean isMobile) throws Exception {
+        JSONObject commentWidgetParam = new JSONObject();
+        commentWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+
+        JSONObject attachmentWidgetParam = new JSONObject();
+        attachmentWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 4, null, null)
+                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 4, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 4, null, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 4, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

@@ -27,7 +27,7 @@ public class ServiceOrderContext extends V3Context {
     private ServiceOrderPriority priority;
     private SpaceContext space;
     private V3AssetContext asset;
-    private ServiceOrderStatus status;
+    private ServiceOrderTicketStatusContext status;
     private ServiceOrderRequestResponseStatus requestDueStatus;
     private ServiceOrderRequestResponseStatus responseDueStatus;
     private VendorContext vendor;
@@ -307,21 +307,21 @@ public class ServiceOrderContext extends V3Context {
         }
     }
 
-    public int getStatus() {
-        if (status != null) {
-            return status.getIndex();
-        }
-        return -1;
-    }
-    public void setStatus(int sourceType) {
-        this.status = ServiceOrderStatus.valueOf(sourceType);
-    }
-    public ServiceOrderStatus getServiceOrderStatusEnum() {
-        return status;
-    }
-    public void setStatus(ServiceOrderStatus status) {
-        this.status = status;
-    }
+//    public int getStatus() {
+//        if (status != null) {
+//            return status.getIndex();
+//        }
+//        return -1;
+//    }
+//    public void setStatus(int sourceType) {
+//        this.status = ServiceOrderStatus.valueOf(sourceType);
+//    }
+//    public ServiceOrderStatus getServiceOrderStatusEnum() {
+//        return status;
+//    }
+//    public void setStatus(ServiceOrderStatus status) {
+//        this.status = status;
+//    }
 
     public static enum ServiceOrderStatus implements FacilioIntEnum {
         NEW("New"),

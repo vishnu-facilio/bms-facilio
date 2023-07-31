@@ -1,18 +1,19 @@
 package com.facilio.fsm.util;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fsm.context.ServiceAppointmentContext;
+import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceTaskContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.util.V3Util;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -63,5 +64,49 @@ public class ServiceOrderAPI {
             return serviceOrder;
         }
         return null;
+    }
+
+    public static ServiceOrderTicketStatusContext getStatus(String status) throws Exception
+    {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        SelectRecordsBuilder<ServiceOrderTicketStatusContext> builder = new SelectRecordsBuilder<ServiceOrderTicketStatusContext>()
+                .moduleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS)
+                .beanClass(ServiceOrderTicketStatusContext.class)
+                .select(modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS))
+                .andCustomWhere("STATUS = ?", status)
+                .orderBy("ID");
+
+        List<ServiceOrderTicketStatusContext> statuses = builder.get();
+        if (CollectionUtils.isNotEmpty(statuses)) {
+            return statuses.get(0);
+        }
+        return null;
+    }
+
+    public static List<ServiceOrderTicketStatusContext> getStatusOfStatusType(ServiceOrderTicketStatusContext.StatusType statusType) throws Exception
+    {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        SelectRecordsBuilder<ServiceOrderTicketStatusContext> builder = new SelectRecordsBuilder<ServiceOrderTicketStatusContext>()
+                .moduleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS)
+                .beanClass(ServiceOrderTicketStatusContext.class)
+                .select(modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS))
+                .andCustomWhere("STATUS_TYPE = ?", statusType.getIndex())
+                .orderBy("ID");
+        List<ServiceOrderTicketStatusContext> statuses = builder.get();
+        return statuses;
+    }
+
+    public static List<ServiceOrderTicketStatusContext> getServiceOrderStatuses() throws Exception
+    {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        SelectRecordsBuilder<ServiceOrderTicketStatusContext> builder = new SelectRecordsBuilder<ServiceOrderTicketStatusContext>()
+                .moduleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS)
+                .beanClass(ServiceOrderTicketStatusContext.class)
+                .select(modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS))
+                .orderBy("ID");
+        List<ServiceOrderTicketStatusContext> statuses = builder.get();
+        return statuses;
     }
 }

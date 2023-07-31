@@ -35,7 +35,7 @@ public class UpdateServiceOrderTime extends FacilioCommand {
                     Long completeCount = 0L;
                     for (ServiceTaskContext st : serviceTaskList) {
                         //if status of all other tasks are new and the status of current task is in progress we increase the initCount
-                        if(st.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex() && (st.getStatus() == ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex()) ){
+                        if(st.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex() || (task.getId() == st.getId() && st.getStatus() == ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex()) ){
                             initCount= (long) serviceTaskList.size();
                         }
                         //if status of all tasks are in completed status then we increase the completeCount
@@ -49,11 +49,11 @@ public class UpdateServiceOrderTime extends FacilioCommand {
                     completeOrder = completeCount == serviceTaskList.size() ? true : false;
 
                     //for initiated state we update the actual start time
-                    if(initOrder && serviceOrderInfo.getActualStartTime() != null){
+                    if(initOrder && serviceOrderInfo.getActualStartTime() == null){
                         serviceOrderInfo.setActualStartTime(System.currentTimeMillis());
                     } else {
                         if(serviceOrderInfo.getActualEndTime() != null){
-                            serviceOrderInfo.setActualStartTime(null);
+                            serviceOrderInfo.setActualEndTime(null);
                         }
                         if(serviceOrderInfo.getActualDuration() != null){
                             serviceOrderInfo.setActualDuration(null);
@@ -61,7 +61,7 @@ public class UpdateServiceOrderTime extends FacilioCommand {
                     }
                     //for initiated state we update the actual end time and the duration
                     if (completeOrder){
-                        serviceOrderInfo.setStatus(ServiceOrderContext.ServiceOrderStatus.COMPLETED);
+                        serviceOrderInfo.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.COMPLETED));
                         serviceOrderInfo.setActualEndTime(System.currentTimeMillis());
                         serviceOrderInfo.setActualDuration(System.currentTimeMillis() - serviceOrderInfo.getActualStartTime());
                     }
