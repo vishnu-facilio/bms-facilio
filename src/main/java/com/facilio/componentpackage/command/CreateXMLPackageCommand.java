@@ -2,6 +2,7 @@ package com.facilio.componentpackage.command;
 
 import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.command.FacilioCommand;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
@@ -24,7 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Log4j
-public class CreateXMLPackageCommand extends FacilioCommand {
+public class CreateXMLPackageCommand extends FacilioCommand implements PostTransactionCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -83,6 +84,17 @@ public class CreateXMLPackageCommand extends FacilioCommand {
 		context.put(PackageConstants.FILE_ID, fileId);
 
 		return false;
+	}
+
+	@Override
+	public boolean postExecute() throws Exception {
+		PackageUtil.clearPickListConf();
+		return false;
+	}
+
+	@Override
+	public void onError() throws Exception {
+		PackageUtil.clearPickListConf();
 	}
 
 }

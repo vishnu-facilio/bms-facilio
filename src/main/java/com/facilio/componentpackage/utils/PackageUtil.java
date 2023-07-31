@@ -28,6 +28,10 @@ import java.util.*;
 public class PackageUtil {
 
     private static ThreadLocal<Boolean> isInstallThread = new ThreadLocal<>();
+    private static ThreadLocal<Map<String, Map<String, String>>> PICKLIST_CONF_FOR_XML = ThreadLocal.withInitial(HashMap::new);     // PickList ModuleName Vs Id vs RecordName
+    private static ThreadLocal<Map<String, Map<String, String>>> PICKLIST_CONF_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new); // PickList ModuleName Vs RecordName vs Id
+    private static ThreadLocal<Map<String, Map<String, String>>> TICKET_STATUS_CONF_FOR_XML = ThreadLocal.withInitial(HashMap::new);     // ParentModuleName Vs Id vs Status
+    private static ThreadLocal<Map<String, Map<String, String>>> TICKET_STATUS_CONF_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new); // ParentModuleName Vs Status vs Id
     private static ThreadLocal<Map<ComponentType, Map<String, Long>>> COMPONENTS_UID_VS_COMPONENT_ID = ThreadLocal.withInitial(HashMap::new);
 
     public static void setInstallThread() throws Exception {
@@ -65,8 +69,47 @@ public class PackageUtil {
         return parentId != null ? parentId : -1;
     }
 
-    public static void clearComponentsUniqueIdVsComponentId() throws Exception {
-        COMPONENTS_UID_VS_COMPONENT_ID.remove();
+    public static Map<String, String> getRecordIdVsNameForPicklistModule(String moduleName) {
+        return PICKLIST_CONF_FOR_XML.get().computeIfAbsent(moduleName, k -> new HashMap<>());
+    }
+
+    public static void addRecordIdVsNameForPickListModule(String moduleName, Map<String, String> records) {
+        Map<String, String> recordIdVsNameForPicklistModule = getRecordIdVsNameForPicklistModule(moduleName);
+        recordIdVsNameForPicklistModule.putAll(records);
+    }
+
+    public static Map<String, String> getNameVsRecordIdForPicklistModule(String moduleName) {
+        return PICKLIST_CONF_FOR_CONTEXT.get().computeIfAbsent(moduleName, k -> new HashMap<>());
+    }
+
+    public static void addNameVsRecordIdForPickListModule(String moduleName, Map<String, String> records) {
+        Map<String, String> nameVsRecordIdForPicklistModule = getNameVsRecordIdForPicklistModule(moduleName);
+        nameVsRecordIdForPicklistModule.putAll(records);
+    }
+
+    public static Map<String, String> getTicketStatusIdVsNameForModule(String moduleName) {
+        return TICKET_STATUS_CONF_FOR_XML.get().computeIfAbsent(moduleName, k -> new HashMap<>());
+    }
+
+    public static void addTicketStatusIdVsNameForModule(String moduleName, Map<String, String> records) {
+        Map<String, String> ticketStatusIdVsNameForModule = getTicketStatusIdVsNameForModule(moduleName);
+        ticketStatusIdVsNameForModule.putAll(records);
+    }
+    
+    public static Map<String, String> getTicketStatusNameVsIdForModule(String moduleName) {
+        return TICKET_STATUS_CONF_FOR_CONTEXT.get().computeIfAbsent(moduleName, k -> new HashMap<>());
+    }
+
+    public static void addTicketStatusNameVsIdForModule(String moduleName, Map<String, String> records) {
+        Map<String, String> ticketStatusNameVsIdForModule = getTicketStatusNameVsIdForModule(moduleName);
+        ticketStatusNameVsIdForModule.putAll(records);
+    }
+
+    public static void clearPickListConf() throws Exception {
+        PICKLIST_CONF_FOR_XML.remove();
+        PICKLIST_CONF_FOR_CONTEXT.remove();
+        TICKET_STATUS_CONF_FOR_XML.remove();
+        TICKET_STATUS_CONF_FOR_CONTEXT.remove();
     }
 
     public static PackageContext getPackage(Organization organization) throws Exception {
@@ -143,7 +186,7 @@ public class PackageUtil {
                 .select(fields)
                 .table(changeSetModule.getTableName())
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("packageId"), String.valueOf(packageId), NumberOperators.EQUALS))
-                .orderBy("COMPONENT_STATUS, " + ComponentType.ORDER_BY_COMPONENT_TYPE_STR);
+                .orderBy(ComponentType.ORDER_BY_COMPONENT_TYPE_STR + ", COMPONENT_STATUS");
 
         List<Map<String, Object>> prop = selectRecordBuilder.get();
         Map<ComponentType, List<PackageChangeSetMappingContext>> typeVsComponents = new LinkedHashMap<>();

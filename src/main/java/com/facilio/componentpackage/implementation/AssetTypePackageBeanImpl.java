@@ -38,6 +38,7 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
         Map<Long, V3AssetTypeContext> assetTypeIdVsAssetTypeMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(assetTypes)) {
             assetTypes.forEach(assetTypeContext -> assetTypeIdVsAssetTypeMap.put(assetTypeContext.getId(), assetTypeContext));
+            PackageBeanUtil.addPickListConfForXML(FacilioConstants.ContextNames.ASSET_TYPE, "name", assetTypes, V3AssetTypeContext.class, false);
         }
         return assetTypeIdVsAssetTypeMap;
     }
@@ -157,6 +158,12 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
             V3Util.deleteRecords("assettype", data,null,null,false);
         }
     }
+
+    @Override
+    public void addPickListConf() throws Exception {
+        PackageBeanUtil.addPickListConfForContext(FacilioConstants.ContextNames.ASSET_TYPE, "name", V3AssetTypeContext.class);
+    }
+
     public Map<Long, Long> getAssetTypeIdVsModuleId() throws Exception {
         Map<Long, Long> assetTypeIdVsModuleId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();

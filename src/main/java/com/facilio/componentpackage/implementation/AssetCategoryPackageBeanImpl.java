@@ -1,7 +1,6 @@
 package com.facilio.componentpackage.implementation;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
@@ -15,7 +14,6 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.relation.context.RelationContext;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
@@ -26,8 +24,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Log4j
 public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategoryContext> {
@@ -47,10 +43,9 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
         Map<Long, V3AssetCategoryContext> assetCategoryIdVsAssetCategoryMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(assetCategories)) {
             assetCategories.forEach(assetCategoryContext -> assetCategoryIdVsAssetCategoryMap.put(assetCategoryContext.getId(), assetCategoryContext));
+            PackageBeanUtil.addPickListConfForXML(FacilioConstants.ContextNames.ASSET_CATEGORY, "name", assetCategories, V3AssetCategoryContext.class, false);
         }
         return assetCategoryIdVsAssetCategoryMap;
-
-        
     }
     @Override
     public void convertToXMLComponent(V3AssetCategoryContext component, XMLBuilder element) throws Exception {
@@ -210,6 +205,12 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
             V3Util.deleteRecords("assetcategory", data,null,null,false);
         }
     }
+
+    @Override
+    public void addPickListConf() throws Exception {
+        PackageBeanUtil.addPickListConfForContext(FacilioConstants.ContextNames.ASSET_CATEGORY, "name", V3AssetCategoryContext.class);
+    }
+
     public static V3AssetCategoryContext constructAssetCategoryFromBuilder(XMLBuilder assetCategoryElement) throws Exception {
         String name = assetCategoryElement.getElement(PackageConstants.AssetCategoryConstants.ASSET_CATEGORY_NAME).getText();
         String displayName = assetCategoryElement.getElement(PackageConstants.AssetCategoryConstants.DISPLAY_NAME).getText();

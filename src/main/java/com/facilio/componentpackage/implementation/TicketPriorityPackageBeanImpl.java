@@ -2,7 +2,6 @@ package com.facilio.componentpackage.implementation;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -38,6 +37,7 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
         Map<Long, TicketPriorityContext> ticketPriorityIdVsTicketPriorityMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(ticketPriorities)) {
             ticketPriorities.forEach(ticketPriorityContext -> ticketPriorityIdVsTicketPriorityMap.put(ticketPriorityContext.getId(), ticketPriorityContext));
+            PackageBeanUtil.addPickListConfForXML(FacilioConstants.ContextNames.TICKET_PRIORITY, "priority", ticketPriorities, TicketPriorityContext.class, false);
         }
         return ticketPriorityIdVsTicketPriorityMap;
     }
@@ -151,6 +151,12 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
             deleteTicketPriorityChain.execute();
         }
     }
+
+    @Override
+    public void addPickListConf() throws Exception {
+        PackageBeanUtil.addPickListConfForContext(FacilioConstants.ContextNames.TICKET_PRIORITY, "priority", TicketPriorityContext.class);
+    }
+
     public Map<Long, Long> getTicketPriorityIdVsModuleId(boolean fetchSystem) throws Exception {
         Map<Long, Long> ticketPriorityIdVsModuleId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();

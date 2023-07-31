@@ -38,6 +38,7 @@ public class AssetDepartmentPackageBeanImpl implements PackageBean<V3AssetDepart
         Map<Long, V3AssetDepartmentContext> assetDepartmentIdVsAssetDepartmentMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(assetDepartments)) {
             assetDepartments.forEach(assetDepartmentContext -> assetDepartmentIdVsAssetDepartmentMap.put(assetDepartmentContext.getId(), assetDepartmentContext));
+            PackageBeanUtil.addPickListConfForXML(FacilioConstants.ContextNames.ASSET_DEPARTMENT, "name", assetDepartments, V3AssetDepartmentContext.class, false);
         }
         return assetDepartmentIdVsAssetDepartmentMap;
     }
@@ -157,6 +158,12 @@ public class AssetDepartmentPackageBeanImpl implements PackageBean<V3AssetDepart
             V3Util.deleteRecords("assetdepartment", data,null,null,false);
         }
     }
+
+    @Override
+    public void addPickListConf() throws Exception {
+        PackageBeanUtil.addPickListConfForContext(FacilioConstants.ContextNames.ASSET_DEPARTMENT, "name", V3AssetDepartmentContext.class);
+    }
+
     public static V3AssetDepartmentContext constructAssetDepartmentFromBuilder(XMLBuilder assetDepartmentElement) throws Exception {
         String name = assetDepartmentElement.getElement(PackageConstants.AssetDepartmentConstants.ASSET_DEPARTMENT_NAME).getText();
         V3AssetDepartmentContext assetDepartmentContext = new V3AssetDepartmentContext();

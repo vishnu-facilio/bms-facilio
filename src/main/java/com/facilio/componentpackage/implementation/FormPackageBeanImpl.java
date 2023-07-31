@@ -32,6 +32,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.modules.FieldUtil;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,7 +66,7 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
 
             dbFormList.forEach(form -> formIdVsForm.put(form.getId(), form));
             if (MapUtils.isNotEmpty(sharingMap)) {
-                formIdVsForm.keySet().stream().filter(sharingMap::containsKey).forEach(formId -> formIdVsForm.get(formId).setFormSharing(sharingMap.get(formId)));
+                sharingMap.keySet().forEach(formId -> formIdVsForm.get(formId).setFormSharing(sharingMap.get(formId)));
             }
 
             fromIndex = toIndex;
@@ -257,30 +258,114 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
 
     @Override
     public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
-        if(!PackageUtil.isInstallThread()) {
-            return;
-        }
         List<FormSection> sectionsForFormIds = FormsAPI.getAllSectionsForFormIds(idVsXMLComponents.keySet());
         List<FormField> formFieldsForFormIds = FormsAPI.getAllFormFieldsForFormIds(idVsXMLComponents.keySet());
 
         Map<String, Long> sectionsUIdVsIdsFromPackage = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.FORM_SECTION);
         Map<String, Long> fieldsUIdVsIdsFromPackage = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.FORM_FIELDS);
 
-        if (CollectionUtils.isNotEmpty(sectionsForFormIds) && MapUtils.isNotEmpty(sectionsUIdVsIdsFromPackage)) {
-            List<Long> allSectionIds = sectionsForFormIds.stream().map(FormSection::getId).collect(Collectors.toList());
-            allSectionIds.removeAll(sectionsUIdVsIdsFromPackage.values());
-            if (CollectionUtils.isNotEmpty(allSectionIds)) {
-                FormsAPI.deleteFormSections(allSectionIds);
+        if(PackageUtil.isInstallThread()) {
+            if (CollectionUtils.isNotEmpty(sectionsForFormIds) && MapUtils.isNotEmpty(sectionsUIdVsIdsFromPackage)) {
+                List<Long> allSectionIds = sectionsForFormIds.stream().map(FormSection::getId).collect(Collectors.toList());
+                allSectionIds.removeAll(sectionsUIdVsIdsFromPackage.values());
+                if (CollectionUtils.isNotEmpty(allSectionIds)) {
+                    FormsAPI.deleteFormSections(allSectionIds);
+                }
             }
+
+            if (CollectionUtils.isNotEmpty(formFieldsForFormIds) && MapUtils.isNotEmpty(fieldsUIdVsIdsFromPackage)) {
+                List<Long> allFieldsIds = formFieldsForFormIds.stream().map(FormField::getId).collect(Collectors.toList());
+                allFieldsIds.removeAll(fieldsUIdVsIdsFromPackage.values());
+                if (CollectionUtils.isNotEmpty(allFieldsIds)) {
+                    FormsAPI.deleteFormFields(allFieldsIds);
+                }
+            }
+        } else {
+            // BulkUpdate Form Sections
+            if (CollectionUtils.isNotEmpty(sectionsForFormIds) && MapUtils.isNotEmpty(sectionsUIdVsIdsFromPackage)) {
+                List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
+
+                Map<Long, List<FormSection>> formIdVsSections = new HashMap<>();
+                for (FormSection section : sectionsForFormIds) {
+                    formIdVsSections.computeIfAbsent(section.getFormId(), k -> new ArrayList<>());
+                    formIdVsSections.get(section.getFormId()).add(section);
+                }
+
+                for (long formId : formIdVsSections.keySet()) {
+                    Map<Long, List<FormSection>> sequenceNumberVsFormSections = new HashMap<>();
+                    for (FormSection section : formIdVsSections.get(formId)) {
+                        sequenceNumberVsFormSections.computeIfAbsent(section.getSequenceNumber(), k -> new ArrayList<>());
+                        sequenceNumberVsFormSections.get(section.getSequenceNumber()).add(section);
+                    }
+
+                    Map<Long, Double> currFormPropsToUpdate = new HashMap<>();
+                    for (Long sequenceNumber : sequenceNumberVsFormSections.keySet()) {
+                        for (FormSection formSection : sequenceNumberVsFormSections.get(sequenceNumber)) {
+                            long id = formSection.getId();
+                            double seqNumber = formSection.getSequenceNumber();
+                            seqNumber = sectionsUIdVsIdsFromPackage.containsValue(id) ? seqNumber + 0.000001 : seqNumber;
+
+                            currFormPropsToUpdate.put(id, seqNumber);
+                        }
+                    }
+
+                    bulkUpdateProps(currFormPropsToUpdate, batchUpdateList, ModuleFactory.getFormSectionModule());
+                }
+            }
+
+            // BulkUpdate Form Fields
+            if (CollectionUtils.isNotEmpty(formFieldsForFormIds) && MapUtils.isNotEmpty(fieldsUIdVsIdsFromPackage)) {
+                List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
+
+                Map<Long, List<FormField>> formIdVsFormFIelds = new HashMap<>();
+                for (FormField field : formFieldsForFormIds) {
+                    formIdVsFormFIelds.computeIfAbsent(field.getFormId(), k -> new ArrayList<>());
+                    formIdVsFormFIelds.get(field.getFormId()).add(field);
+                }
+
+                for (long formId : formIdVsFormFIelds.keySet()) {
+                    Map<Integer, List<FormField>> sequenceNumberVsFormFields = new HashMap<>();
+                    for (FormField field : formIdVsFormFIelds.get(formId)) {
+                        sequenceNumberVsFormFields.computeIfAbsent(field.getSequenceNumber(), k -> new ArrayList<>());
+                        sequenceNumberVsFormFields.get(field.getSequenceNumber()).add(field);
+                    }
+
+                    Map<Long, Double> currFormPropsToUpdate = new HashMap<>();
+                    for (Integer sequenceNumber : sequenceNumberVsFormFields.keySet()) {
+                        for (FormField field : sequenceNumberVsFormFields.get(sequenceNumber)) {
+                            long id = field.getId();
+                            double seqNumber = field.getSequenceNumber();
+                            seqNumber = fieldsUIdVsIdsFromPackage.containsValue(id) ? seqNumber + 0.000001 : seqNumber;
+
+                            currFormPropsToUpdate.put(id, seqNumber);
+                        }
+                    }
+
+                    bulkUpdateProps(currFormPropsToUpdate, batchUpdateList, ModuleFactory.getFormFieldsModule());
+                }
+            }
+        }
+    }
+
+    public static void bulkUpdateProps(Map<Long, Double> currFormPropsToUpdate, List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList, FacilioModule module) throws SQLException {
+        Map<Long, Double> sortedMap = currFormPropsToUpdate.entrySet()
+                .stream().sorted(Map.Entry.comparingByValue())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        long number = 1;
+        for (Long id : sortedMap.keySet()) {
+            GenericUpdateRecordBuilder.BatchUpdateContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateContext();
+            updateVal.addUpdateValue("sequenceNumber", number);
+            updateVal.addWhereValue("id", id);
+            batchUpdateList.add(updateVal);
+            number += 1;
         }
 
-        if (CollectionUtils.isNotEmpty(formFieldsForFormIds) && MapUtils.isNotEmpty(fieldsUIdVsIdsFromPackage)) {
-            List<Long> allFieldsIds = formFieldsForFormIds.stream().map(FormField::getId).collect(Collectors.toList());
-            allFieldsIds.removeAll(fieldsUIdVsIdsFromPackage.values());
-            if (CollectionUtils.isNotEmpty(allFieldsIds)) {
-                FormsAPI.deleteFormFields(allFieldsIds);
-            }
-        }
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                .table(module.getTableName())
+                .fields(Collections.singletonList(FieldFactory.getNumberField("sequenceNumber", "SEQUENCE_NUMBER", module)));
+
+        updateRecordBuilder.batchUpdate(Collections.singletonList(FieldFactory.getIdField(module)), batchUpdateList);
     }
 
     @Override

@@ -41,6 +41,7 @@ public class SpaceCategoryPackageBeanImpl implements PackageBean<V3SpaceCategory
         Map<Long, V3SpaceCategoryContext> spaceCategoryIdVsSpaceCategoryMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(spaceCategories)) {
             spaceCategories.forEach(spaceCategoryContext -> spaceCategoryIdVsSpaceCategoryMap.put(spaceCategoryContext.getId(), spaceCategoryContext));
+            PackageBeanUtil.addPickListConfForXML(FacilioConstants.ContextNames.SPACE_CATEGORY, "name", spaceCategories, V3SpaceCategoryContext.class, false);
         }
         return spaceCategoryIdVsSpaceCategoryMap;
     }
@@ -164,6 +165,11 @@ public class SpaceCategoryPackageBeanImpl implements PackageBean<V3SpaceCategory
     @Override
     public void deleteComponentFromXML(List<Long> ids) throws Exception {
 
+    }
+
+    @Override
+    public void addPickListConf() throws Exception {
+        PackageBeanUtil.addPickListConfForContext(FacilioConstants.ContextNames.SPACE_CATEGORY, "name", V3SpaceCategoryContext.class);
     }
 
     private V3SpaceCategoryContext constructSpaceCategoryFromBuilder(XMLBuilder spaceCategoryElement) throws Exception {

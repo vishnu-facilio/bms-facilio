@@ -3,7 +3,6 @@ package com.facilio.componentpackage.implementation;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
@@ -35,6 +34,7 @@ public class TicketCategoryPackageBeanImpl implements PackageBean<TicketCategory
         Map<Long, TicketCategoryContext> ticketCategoryIdVsTicketCategoryMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(ticketCategories)) {
             ticketCategories.forEach(ticketCategoryContext -> ticketCategoryIdVsTicketCategoryMap.put(ticketCategoryContext.getId(), ticketCategoryContext));
+            PackageBeanUtil.addPickListConfForXML(FacilioConstants.ContextNames.TICKET_CATEGORY, "name", ticketCategories, TicketCategoryContext.class, false);
         }
         return ticketCategoryIdVsTicketCategoryMap;
     }
@@ -120,6 +120,12 @@ public class TicketCategoryPackageBeanImpl implements PackageBean<TicketCategory
             deleteTicketCategoryChain.execute();
         }
     }
+
+    @Override
+    public void addPickListConf() throws Exception {
+        PackageBeanUtil.addPickListConfForContext(FacilioConstants.ContextNames.TICKET_CATEGORY, "name", TicketCategoryContext.class);
+    }
+
     public Map<Long, Long> getTicketCategoryIdVsModuleId() throws Exception {
         Map<Long, Long> ticketCategoryIdVsModuleId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();

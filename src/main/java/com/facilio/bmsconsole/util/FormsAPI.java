@@ -2147,7 +2147,8 @@ public class FormsAPI {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(sectionModule.getTableName())
-				.andCondition(CriteriaAPI.getCondition("FORMID", "formId", StringUtils.join(formIds, ","), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("FORMID", "formId", StringUtils.join(formIds, ","), NumberOperators.EQUALS))
+				.orderBy("FORMID, SEQUENCE_NUMBER ASC");
 
 		List<Map<String, Object>> propsList = selectRecordBuilder.get();
 		if (CollectionUtils.isNotEmpty(propsList)) {
@@ -2167,7 +2168,8 @@ public class FormsAPI {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(formFieldsModule.getTableName())
-				.andCondition(CriteriaAPI.getCondition("FORMID", "formId", StringUtils.join(formIds, ","), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("FORMID", "formId", StringUtils.join(formIds, ","), NumberOperators.EQUALS))
+				.orderBy("FORMID, SEQUENCE_NUMBER ASC");
 
 		List<Map<String, Object>> propsList = selectRecordBuilder.get();
 

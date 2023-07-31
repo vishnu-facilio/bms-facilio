@@ -66,6 +66,7 @@ public enum ComponentType implements FacilioIntEnum {
             add(USER);
             add(TEAM);
             add(MODULE);
+            add(TICKET_STATUS);
             add(ASSET_CATEGORY);
             add(ASSET_DEPARTMENT);
             add(ASSET_TYPE);
@@ -93,7 +94,6 @@ public enum ComponentType implements FacilioIntEnum {
             add(VALIDATION_RULE);
             add(CUSTOM_BUTTON);
             add(WORKFLOW_RULE);
-            add(TICKET_STATUS);
             add(APP_LAYOUT);
             add(WEBTAB_GROUP);
             add(WEBTAB);

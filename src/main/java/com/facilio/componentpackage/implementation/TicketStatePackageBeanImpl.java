@@ -2,10 +2,12 @@ package com.facilio.componentpackage.implementation;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.interfaces.PackageBean;
+import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -20,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public class TicketStatePackageBeanImpl implements PackageBean<FacilioStatus> {
     @Override
@@ -35,6 +36,7 @@ public class TicketStatePackageBeanImpl implements PackageBean<FacilioStatus> {
         FacilioModule ticketModule = moduleBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
         List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
             add(FieldFactory.getIdField(ticketModule));
+            add(FieldFactory.getStringField("status", "STATUS", ticketModule));
             add(FieldFactory.getNumberField("parentModuleId","PARENT_MODULEID",ticketModule));
         }};
 
@@ -53,6 +55,7 @@ public class TicketStatePackageBeanImpl implements PackageBean<FacilioStatus> {
                 statusId = prop.containsKey("id") ? (Long) prop.get("id") : -1;
                 stateIdVsParentModuleId.put(statusId, parentModuleId);
             }
+            addPickListConf(statusProps);
         }
 
         return stateIdVsParentModuleId;
@@ -176,6 +179,11 @@ public class TicketStatePackageBeanImpl implements PackageBean<FacilioStatus> {
 
     }
 
+    @Override
+    public void addPickListConf() throws Exception {
+        PackageBeanUtil.addTicketStatusConfForContext(FacilioConstants.ContextNames.TICKET_STATUS, "status", FacilioStatus.class);
+    }
+
     private FacilioStatus constructComponentFromXML(XMLBuilder builder, ModuleBean moduleBean) throws Exception{
         String displayName = builder.getElement("displayName").getText();
         Boolean recordLocked = Boolean.parseBoolean(builder.getElement("recordLocked").getText());
@@ -200,5 +208,29 @@ public class TicketStatePackageBeanImpl implements PackageBean<FacilioStatus> {
         status.setTimerEnabled(timerEnabled);
 
         return status;
+    }
+
+    private static void addPickListConf(List<Map<String, Object>> statusProps) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        List<FacilioStatus> facilioStatusList = FieldUtil.getAsBeanListFromMapList(statusProps, FacilioStatus.class);
+
+        if (CollectionUtils.isNotEmpty(facilioStatusList)) {
+            Map<String, List<FacilioStatus>> moduleNameVsFacilioStatusList = new HashMap<>();
+            for (FacilioStatus facilioStatus : facilioStatusList) {
+                long parentModuleId = facilioStatus.getParentModuleId();
+                FacilioModule module = parentModuleId > 0 ? moduleBean.getModule(parentModuleId) : null;
+
+                if (module != null) {
+                    if (!moduleNameVsFacilioStatusList.containsKey(module.getName())) {
+                        moduleNameVsFacilioStatusList.put(module.getName(), new ArrayList<>());
+                    }
+                    moduleNameVsFacilioStatusList.get(module.getName()).add(facilioStatus);
+                }
+            }
+
+            for (String moduleName : moduleNameVsFacilioStatusList.keySet()) {
+                PackageBeanUtil.addPickListConfForXML(moduleName, "status", moduleNameVsFacilioStatusList.get(moduleName), FacilioStatus.class, true);
+            }
+        }
     }
 }

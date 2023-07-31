@@ -8,11 +8,11 @@ import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.componentpackage.constants.ComponentType;
-import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.componentpackage.constants.PackageConstants;
@@ -24,13 +24,12 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.manager.NamedCriteria;
 import com.facilio.db.criteria.manager.NamedCriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.v3.context.Constants;
@@ -44,7 +43,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import javax.swing.text.html.parser.Parser;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,6 +53,16 @@ public class PackageBeanUtil {
         add(FacilioModule.ModuleType.BASE_ENTITY.getValue());
         add(FacilioModule.ModuleType.TRANSACTION.getValue());
         add(FacilioModule.ModuleType.Q_AND_A_RESPONSE.getValue());
+    }};
+
+    public static final List<String> SUPPORTED_PICKLIST_MODULES = new ArrayList<String>(){{
+        add(FacilioConstants.ContextNames.ASSET_TYPE);
+        add(FacilioConstants.ContextNames.TICKET_TYPE);
+        add(FacilioConstants.ContextNames.SPACE_CATEGORY);
+        add(FacilioConstants.ContextNames.ASSET_CATEGORY);
+        add(FacilioConstants.ContextNames.TICKET_PRIORITY);
+        add(FacilioConstants.ContextNames.TICKET_CATEGORY);
+        add(FacilioConstants.ContextNames.ASSET_DEPARTMENT);
     }};
 
 //    public static final Map<String, FacilioField> getFieldsForFieldName(String moduleName, List<String> fieldNames) throws Exception {
@@ -74,6 +82,83 @@ public class PackageBeanUtil {
         }
 
         return appNameVsAppId;
+    }
+
+    public static void addPickListConfForXML(String moduleName, String nameFieldName, List<? extends ModuleBaseWithCustomFields> records, Class<?> clazz, boolean isTicketStatus) throws Exception {
+        Map<String, String> recordMapToAdd = new HashMap<>();
+        List<Map<String, Object>> recordsMap = FieldUtil.getAsMapList(records, clazz);
+
+        if (CollectionUtils.isNotEmpty(recordsMap)) {
+            for (Map<String, Object> record : recordsMap) {
+                Object recordName = record.getOrDefault(nameFieldName, null);
+                if (recordName instanceof String) {
+                    String recordId = String.valueOf(record.get("id"));
+                    recordMapToAdd.put(recordId, String.valueOf(recordName));
+                }
+            }
+            if (isTicketStatus) {
+                PackageUtil.addTicketStatusIdVsNameForModule(moduleName, recordMapToAdd);
+            } else {
+                PackageUtil.addRecordIdVsNameForPickListModule(moduleName, recordMapToAdd);
+            }
+        }
+    }
+
+    public static void addPickListConfForContext(String moduleName, String nameFieldName, Class<?> clazz) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule(moduleName);
+        List<?> records = PackageBeanUtil.getModuleDataIdVsModuleId(null, module, clazz);
+
+        List<Map<String, Object>> recordsMap = FieldUtil.getAsMapList(records, clazz);
+        addPickListRecordsToThreadLocal(moduleName, nameFieldName, recordsMap, false);
+    }
+
+    public static void addTicketStatusConfForContext(String moduleName, String nameFieldName, Class<?> clazz) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule(moduleName);
+        List<FacilioStatus> records = (List<FacilioStatus>) PackageBeanUtil.getModuleDataIdVsModuleId(null, module, clazz);
+
+        List<Map<String, Object>> recordsMap = FieldUtil.getAsMapList(records, clazz);
+        Map<String, List<Map<String, Object>>> moduleNameVsRecordsMap = new HashMap<>();
+
+        if (CollectionUtils.isNotEmpty(recordsMap)) {
+            for (Map<String, Object> record : recordsMap) {
+                Object parentModuleId = record.getOrDefault("parentModuleId", null);
+                if (parentModuleId instanceof Long) {
+                    FacilioModule facilioModule = moduleBean.getModule((Long) parentModuleId);
+                    if (facilioModule == null) {
+                        continue;
+                    }
+                    if (!moduleNameVsRecordsMap.containsKey(facilioModule.getName())) {
+                        moduleNameVsRecordsMap.put(facilioModule.getName(), new ArrayList<>());
+                    }
+                    moduleNameVsRecordsMap.get(facilioModule.getName()).add(record);
+                }
+            }
+
+            for (String modName : moduleNameVsRecordsMap.keySet()) {
+                addPickListRecordsToThreadLocal(modName, nameFieldName, moduleNameVsRecordsMap.get(modName), true);
+            }
+        }
+    }
+
+    public static void addPickListRecordsToThreadLocal(String moduleName, String nameFieldName, List<Map<String, Object>> recordsMap, boolean isTicketStatus) {
+        Map<String, String> recordMapToAdd = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(recordsMap)) {
+            for (Map<String, Object> record : recordsMap) {
+                Object recordName = record.getOrDefault(nameFieldName, null);
+                if (recordName instanceof String) {
+                    String recordId = String.valueOf(record.get("id"));
+                    recordMapToAdd.put(String.valueOf(recordName), recordId);
+                }
+            }
+
+            if (isTicketStatus) {
+                PackageUtil.addTicketStatusNameVsIdForModule(moduleName, recordMapToAdd);
+            } else {
+                PackageUtil.addNameVsRecordIdForPickListModule(moduleName, recordMapToAdd);
+            }
+        }
     }
 
     public static Map<Long, Map<Integer, Long>> getAllLayoutConfiguration() throws Exception {
@@ -368,12 +453,24 @@ public class PackageBeanUtil {
                 }
 
                 if (condition.getOperatorId() == 36 || condition.getOperatorId() == 37) {
+                    // TODO - Handle User Picklist
                     String fieldName = condition.getFieldName();
                     moduleName = fieldName.contains(".") ? fieldName.split("\\.")[0] : moduleName;
 
                     FacilioModule facilioModule = moduleBean.getModule(moduleName);
-                    if (!(facilioModule.getTypeEnum() == FacilioModule.ModuleType.PICK_LIST)) {
-                        LOGGER.info("####Sandbox Tracking - Condition contains Module Record - " + moduleName + " FieldName - " + fieldName);
+                    FacilioField field = moduleBean.getField(fieldName, moduleName);
+
+                    if (field instanceof LookupField) {
+                        FacilioModule lookupModule = ((LookupField) field).getLookupModule();
+                        if (lookupModule.getName().equals(FacilioConstants.ContextNames.TICKET_STATUS)) {
+                            conditionElement.addElement(pickListXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT), facilioModule.getName(), condition.getValue(), true));
+                        } else if (SUPPORTED_PICKLIST_MODULES.contains(lookupModule.getName())){
+                            conditionElement.addElement(pickListXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT), lookupModule.getName(), condition.getValue(), false));
+                        } else if (FacilioConstants.ContextNames.USERS.equals(lookupModule.getName())){
+                            LOGGER.info("####Sandbox Tracking - Condition contains User Record - " + moduleName + " FieldName - " + fieldName + " ConditionId - " + condition.getConditionId());
+                        } else {
+                            LOGGER.info("####Sandbox Tracking - Condition contains Module Record - " + moduleName + " FieldName - " + fieldName + " ConditionId - " + condition.getConditionId());
+                        }
                     }
                 }
             }
@@ -402,6 +499,16 @@ public class PackageBeanUtil {
                 String jsonValue = conditionElement.getElement(PackageConstants.CriteriaConstants.JSON_VALUE).getText();
                 int operatorId = Integer.parseInt(conditionElement.getElement(PackageConstants.CriteriaConstants.OPERATOR).getText());
                 boolean isExpressionValue = Boolean.parseBoolean(conditionElement.getElement(PackageConstants.CriteriaConstants.IS_EXPRESSION_VALUE).getText());
+                XMLBuilder pickListElement = conditionElement.getElement(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT);
+
+                // PickList values
+                if (pickListElement != null && (operatorId == 36 || operatorId == 37)) {
+                    String moduleName = pickListElement.getElement(PackageConstants.MODULENAME).getText();
+
+                    if (StringUtils.isNotEmpty(moduleName) && (SUPPORTED_PICKLIST_MODULES.contains(moduleName) || moduleName.equals(FacilioConstants.ContextNames.TICKET_STATUS))) {
+                        value = pickListValueBuilder(pickListElement);
+                    }
+                }
 
                 Condition condition = new Condition();
                 condition.setValue(value);
@@ -422,6 +529,51 @@ public class PackageBeanUtil {
             newCriteria.setConditions(newCriteriaConditions);
         }
         return newCriteria;
+    }
+
+    public static XMLBuilder pickListXMLBuilder(XMLBuilder xmlBuilder, String moduleName, String value, boolean isTicketStatus) throws Exception {
+        if (StringUtils.isEmpty(moduleName)) {
+            return xmlBuilder;
+        }
+
+        Map<String, String> recordIdVsNameForModule = null;
+        if (isTicketStatus) {
+            recordIdVsNameForModule = PackageUtil.getTicketStatusIdVsNameForModule(moduleName);
+            xmlBuilder.element(PackageConstants.CriteriaConstants.PARENT_MODULE_NAME).text(moduleName);
+            xmlBuilder.element(PackageConstants.MODULENAME).text(FacilioConstants.ContextNames.TICKET_STATUS);
+        } else {
+            xmlBuilder.element(PackageConstants.MODULENAME).text(moduleName);
+            recordIdVsNameForModule = PackageUtil.getRecordIdVsNameForPicklistModule(moduleName);
+        }
+
+        if (MapUtils.isNotEmpty(recordIdVsNameForModule) && recordIdVsNameForModule.containsKey(value)) {
+            xmlBuilder.element(PackageConstants.CriteriaConstants.PICKLIST_VALUE).text(recordIdVsNameForModule.get(value));
+        }
+
+        return xmlBuilder;
+    }
+
+    public static String pickListValueBuilder(XMLBuilder xmlBuilder) {
+        String moduleName = xmlBuilder.getElement(PackageConstants.MODULENAME).getText();
+        String value = xmlBuilder.getElement(PackageConstants.CriteriaConstants.PICKLIST_VALUE).getText();
+
+        if (StringUtils.isEmpty(moduleName) || StringUtils.isEmpty(value)) {
+            return null;
+        }
+
+        Map<String, String> recordNameVsIdForModule = null;
+        if (SUPPORTED_PICKLIST_MODULES.contains(moduleName)) {
+            recordNameVsIdForModule = PackageUtil.getNameVsRecordIdForPicklistModule(moduleName);
+        } else if (moduleName.equals(FacilioConstants.ContextNames.TICKET_STATUS)) {
+            String parentModuleName = xmlBuilder.getElement(PackageConstants.CriteriaConstants.PARENT_MODULE_NAME).getText();
+            recordNameVsIdForModule = PackageUtil.getTicketStatusNameVsIdForModule(parentModuleName);
+        }
+
+        if (MapUtils.isNotEmpty(recordNameVsIdForModule) && recordNameVsIdForModule.containsKey(value)) {
+            return recordNameVsIdForModule.get(value);
+        }
+
+        return null;
     }
 
     public static XMLBuilder constructBuilderFromWorkFlowContext(WorkflowContext workflowContext, XMLBuilder workFlowBuilder) throws Exception {

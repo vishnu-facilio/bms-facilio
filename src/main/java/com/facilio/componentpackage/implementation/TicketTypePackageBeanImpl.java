@@ -34,6 +34,7 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
         Map<Long, TicketTypeContext> ticketTypeIdVsTicketTypeMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(ticketTypes)) {
             ticketTypes.forEach(ticketTypeContext -> ticketTypeIdVsTicketTypeMap.put(ticketTypeContext.getId(), ticketTypeContext));
+            PackageBeanUtil.addPickListConfForXML(FacilioConstants.ContextNames.TICKET_TYPE, "name", ticketTypes, TicketTypeContext.class, false);
         }
         return ticketTypeIdVsTicketTypeMap;
     }
@@ -120,6 +121,12 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
             deleteTicketTypeChain.execute();
         }
     }
+
+    @Override
+    public void addPickListConf() throws Exception {
+        PackageBeanUtil.addPickListConfForContext(FacilioConstants.ContextNames.TICKET_TYPE, "name", TicketTypeContext.class);
+    }
+
     public Map<Long, Long> getTicketTypeIdVsModuleId() throws Exception {
         Map<Long, Long> ticketTypeIdVsModuleId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();

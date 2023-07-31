@@ -29,4 +29,8 @@ public interface PackageBean<T> {
 
     public void deleteComponentFromXML(List<Long> ids) throws Exception;
 
+    default void addPickListConf() throws Exception {
+
+    }
+
 }

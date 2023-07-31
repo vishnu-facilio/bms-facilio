@@ -150,6 +150,8 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 				PackageUtil.updatePackageMappingChangesets(mappingToUpdate);
 			}
 
+			componentType.getPackageComponentClassInstance().addPickListConf();
+
 			//Delete
 			if(CollectionUtils.isNotEmpty(deleteIdList)) {
 				componentType.getPackageComponentClassInstance().deleteComponentFromXML(deleteIdList);
@@ -202,6 +204,7 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 	public boolean postExecute() throws Exception {
 		LRUCache.purgeAllCache();
 		PackageUtil.clearInstallThread();
+		PackageUtil.clearPickListConf();
 		return false;
 	}
 
@@ -209,6 +212,7 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 	public void onError() throws Exception {
 		LRUCache.purgeAllCache();
 		PackageUtil.clearInstallThread();
+		PackageUtil.clearPickListConf();
 	}
 
 }

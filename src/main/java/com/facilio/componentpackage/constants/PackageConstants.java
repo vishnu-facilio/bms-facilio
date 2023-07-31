@@ -195,6 +195,10 @@ public class PackageConstants {
         public static final String PARENT_CRITERIA = "Parent_Criteria";
         public static final String CONDITIONS_LIST = "Conditions_List";
         public static final String IS_EXPRESSION_VALUE = "Is_Expression_Value";
+        public static final String PICKLIST_VALUE = "PickList_Value";
+        public static final String PICKLIST_ELEMENT = "PickList_Element";
+        public static final String PARENT_MODULE_NAME = "Parent_Module_Name";
+
     }
 
     public static class RoleConstants {
