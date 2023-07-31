@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
@@ -130,6 +131,8 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
                             List<ServiceOrderItemsContext> serviceOrderItemsList = new ArrayList<>();
                             double requiredQuantity = serviceOrderItem.getQuantity();
                             for (V3PurchasedItemContext purchasedItem : purchasedItems) {
+                                ServiceOrderItemsContext serviceOrderItemContext = FieldUtil.cloneBean(serviceOrderItem,ServiceOrderItemsContext.class);
+                                V3ItemTransactionsContext itemTransactionsContext = FieldUtil.cloneBean(itemTransaction,V3ItemTransactionsContext.class);
                                 Double quantityUsedForTheCost;
                                 if (requiredQuantity <= purchasedItem.getCurrentQuantity()) {
                                     quantityUsedForTheCost = requiredQuantity;
@@ -137,13 +140,11 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
                                     quantityUsedForTheCost = purchasedItem.getCurrentQuantity();
                                 }
 
-                                itemTransaction = setItemTransaction(itemTransaction,purchasedItem,quantityUsedForTheCost);
-                                serviceOrderItem.setQuantity(quantityUsedForTheCost);
+                                itemTransactionsList.add(setItemTransaction(itemTransactionsContext,purchasedItem,quantityUsedForTheCost));
+                                serviceOrderItemContext.setQuantity(quantityUsedForTheCost);
                                 if (purchasedItem.getUnitcost() >= 0) {
-                                    serviceOrderItem = setServiceOrderItem(serviceOrderItem,purchasedItem.getUnitcost(), quantityUsedForTheCost);
+                                    serviceOrderItemsList.add(setServiceOrderItem(serviceOrderItemContext,purchasedItem.getUnitcost(), quantityUsedForTheCost));
                                 }
-                                itemTransactionsList.add(itemTransaction);
-                                serviceOrderItemsList.add(serviceOrderItem);
                                 requiredQuantity -= quantityUsedForTheCost;
                                 if (requiredQuantity <= 0) {
                                     break;
@@ -175,7 +176,7 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
         if(itemRecord.getStoreRoom()!=null && itemRecord.getStoreRoom().getServingsites()!=null){
             servingSiteIds = itemRecord.getStoreRoom().getServingsites().stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
         }
-        return serviceOrderRecord.getSiteId()>0 && servingSiteIds.contains(serviceOrderRecord.getSiteId());
+        return serviceOrderRecord.getSite()!=null && serviceOrderRecord.getSite().getId()>0 && servingSiteIds.contains(serviceOrderRecord.getSite().getId());
     }
     private Boolean isServiceOrderAssetInStoreroom(ServiceOrderContext serviceOrder) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -249,10 +250,12 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
         if(purchasedItem!=null){
             itemTransaction.setPurchasedItem(purchasedItem);
         }
+        itemTransaction.setQuantity(quantity);
         itemTransaction.setRemainingQuantity(quantity);
         return itemTransaction;
     }
     private ServiceOrderItemsContext setServiceOrderItem(ServiceOrderItemsContext serviceOrderItem,Double unitPrice,Double quantity){
+        serviceOrderItem.setQuantity(quantity);
         serviceOrderItem.setTotalCost(unitPrice * quantity);
         serviceOrderItem.setUnitPrice(unitPrice);
         return serviceOrderItem;

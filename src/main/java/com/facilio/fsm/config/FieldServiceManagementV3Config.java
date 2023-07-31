@@ -14,6 +14,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.faults.newreadingalarm.LoadSupplementsForFaultsCommand;
 import com.facilio.fsm.commands.*;
 import com.facilio.fsm.commands.actuals.SetServiceOrderItemsCommand;
+import com.facilio.fsm.commands.actuals.SetServiceOrderServiceCommand;
 import com.facilio.fsm.commands.actuals.SetServiceOrderToolsCommand;
 import com.facilio.fsm.commands.people.FetchLocationHistorySupplements;
 import com.facilio.fsm.commands.people.FetchPeopleSkillLevelSupplementsCommand;
@@ -181,17 +182,12 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getServiceOrderServices() {
         return () -> new V3Config(ServiceOrderServiceContext.class, null)
                 .create()
-                .beforeSave(new SetServiceOrderToolsCommand())
-                .afterSave(FsmTransactionChainFactoryV3.getServiceOrderToolsAfterSaveChain())
+                .beforeSave(new SetServiceOrderServiceCommand())
                 .update()
                 .list()
-                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "tool")
-                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "storeRoom")
-                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "toolType")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "service")
                 .summary()
-                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "tool")
-                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "storeRoom")
-                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "toolType")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "service")
                 .delete()
                 .build();
     }

@@ -45,6 +45,9 @@ public class SetServiceOrderToolsCommand extends FacilioCommand {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
                 }
                 V3ToolContext tool = V3RecordAPI.getRecord(FacilioConstants.ContextNames.TOOL,serviceOrderTool.getTool().getId(),V3ToolContext.class);
+                if(tool==null){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tool cannot be empty");
+                }
                 if (tool.getCurrentQuantity() < serviceOrderTool.getQuantity()) {
                     throw new IllegalArgumentException("Insufficient quantity in inventory!");
                 }
@@ -79,7 +82,7 @@ public class SetServiceOrderToolsCommand extends FacilioCommand {
             List<Long> toolTypeIds = serviceOrderToolsContexts.stream().map(serviceOrderTool -> serviceOrderTool.getToolType().getId()).collect(Collectors.toList());
             context.put(FacilioConstants.ContextNames.TOOL_IDS, toolIds);
             context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS,toolTypeIds);
-            context.put(FacilioConstants.ContextNames.RECORD_LIST, serviceOrderToolsContexts);
+            context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransactions);
         }
         return false;
     }
@@ -91,6 +94,7 @@ public class SetServiceOrderToolsCommand extends FacilioCommand {
     }
     private V3ToolTransactionContext setToolTransaction(V3ToolContext tool,ServiceOrderToolsContext serviceOrderTool){
        V3ToolTransactionContext toolTransaction = new V3ToolTransactionContext();
+        toolTransaction.setQuantity(serviceOrderTool.getQuantity());
         toolTransaction.setTransactionType(TransactionType.WORKORDER);
         toolTransaction.setTransactionState(TransactionState.USE);
         toolTransaction.setIsReturnable(false);
