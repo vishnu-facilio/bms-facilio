@@ -360,8 +360,5 @@ enums:
   - name: BaseMailLogState
     enumClassName: com.facilio.bmsconsoleV3.context.BaseMailMessageContext$BaseMailLogStatus
 
-  - name: BaseMailTypeState
-    enumClassName: com.facilio.bmsconsoleV3.context.BaseMailMessageContext$BaseMailType
-
   - name: BaseMailConversionTypeState
     enumClassName: com.facilio.bmsconsoleV3.context.BaseMailMessageContext$BaseMailConversionType

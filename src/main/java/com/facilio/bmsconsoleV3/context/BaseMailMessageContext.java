@@ -49,7 +49,6 @@ public class BaseMailMessageContext extends V3Context {
     private String recipient;
     private BaseMailLogStatus status;
     private BaseMailConversionType mailConversionType;
-    private BaseMailType mailType;
     private Long parentRecordId;
     private Long parentModuleId;
 
@@ -73,44 +72,18 @@ public class BaseMailMessageContext extends V3Context {
     public Integer getMailConversionType(){
         return mailConversionType == null ? null : mailConversionType.getIndex();
     }
-    public Integer getMailType(){
-        return mailType == null ? null : mailType.getIndex();
-    }
     public void setStatus(Integer status){
         this.status = status == null ? null : BaseMailLogStatus.valueOf(status);
     }
     public void setMailConversionType(Integer mailConversionType){
         this.mailConversionType =  mailConversionType == null ? null : BaseMailConversionType.valueOf(mailConversionType);
     }
-    public void setMailType(Integer mailType){
-        this.mailType =  mailType == null ? null : BaseMailType.valueOf(mailType);
-    }
     public String getParentModuleName() throws Exception {
         return this.getParentModuleId() == null ? null : Constants.getModBean().getModule(this.getParentModuleId()).getDisplayName();
     }
 
-    @AllArgsConstructor
-    @Getter
-    public enum BaseMailType implements FacilioIntEnum {
-        CONVERSATION("Conversation"),
-        RECORD( "Record"),
-        ERROR("Error")
-        ;
-        String name;
-        public String getValue() {
-            return this.name;
-        }
-        public  int getVal() {
-            return ordinal() + 1;
-        }
-        private static final BaseMailType[] CREATION_TYPES = BaseMailType.values();
-        public static BaseMailType valueOf(int type) {
-            if (type > 0 && type <= CREATION_TYPES.length) {
-                return CREATION_TYPES[type - 1];
-            }
-            return null;
-        }
-    }
+
+
     @AllArgsConstructor
     @Getter
     public enum BaseMailConversionType implements FacilioIntEnum {

@@ -16,9 +16,7 @@ public class UpdateGlobalMapperIdCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
-        JSONObject clonedMailJSON =  (JSONObject) mailJson.clone();
-        clonedMailJSON.remove(MailConstants.Email.MAIL_TYPE);
-        V3OutgoingMailLogContext mailLogContext = FieldUtil.getAsBeanFromJson(clonedMailJSON, V3OutgoingMailLogContext.class);
+        V3OutgoingMailLogContext mailLogContext = FieldUtil.getAsBeanFromJson(mailJson, V3OutgoingMailLogContext.class);
         context.put(MailConstants.ContextNames.OUTGOING_MAIL_LOGGER, mailLogContext);
 
         Map<String, Object> row = new HashMap<>();

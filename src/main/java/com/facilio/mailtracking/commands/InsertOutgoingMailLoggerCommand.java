@@ -17,9 +17,7 @@ public class InsertOutgoingMailLoggerCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         JSONObject mailJson = (JSONObject) context.get(MailConstants.Params.MAIL_JSON);
         this.preprocessMailJson(mailJson);
-        JSONObject clonedMailJSON =  (JSONObject) mailJson.clone();
-        clonedMailJSON.remove(Email.MAIL_TYPE);
-        V3OutgoingMailLogContext mailLogContext = FieldUtil.getAsBeanFromJson(clonedMailJSON, V3OutgoingMailLogContext.class);
+        V3OutgoingMailLogContext mailLogContext = FieldUtil.getAsBeanFromJson(mailJson, V3OutgoingMailLogContext.class);
         long loggerId = NewTransactionService.newTransactionWithReturn(() ->
                 OutgoingMailAPI.insertV3(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER, mailLogContext));
         context.put(MailConstants.Params.LOGGER_ID, loggerId);
