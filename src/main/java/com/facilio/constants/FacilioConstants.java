@@ -369,6 +369,9 @@ public class FacilioConstants {
 		public static final String CURRENT_MODULE_STATE = "currentModuleState";
 		public static final String NAME = "name";
 		public static final String PATCH_FIELD_NAMES = "patchFieldNames";
+		public static final String CURRENCY_CODE = "currencyCode";
+		public static final String NEW_CURRENCY_CODE = "newCurrencyCode";
+		public static final String OLD_CURRENCY_CODE = "oldCurrencyCode";
 
 		public static class HomePage {
 			public static final String HOME_PAGE = "homepage";

@@ -240,7 +240,7 @@ public class CurrencyUtil {
 		return currencyCodeVsCurrency;
 	}
 
-	public static List<FacilioField> getMultiCurrencyFieldsForModule(String moduleName) throws Exception {
+	public static List<FacilioField> getMultiCurrencyFields(String moduleName) throws Exception {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("DATA_TYPE", "dataType", String.valueOf(FieldType.MULTI_CURRENCY_FIELD.getTypeAsInt()), NumberOperators.EQUALS));
 
@@ -260,11 +260,18 @@ public class CurrencyUtil {
 		}
 	}
 
-	public static List<FacilioField> getBaseCurrencyFieldsForModule(FacilioModule module, List<FacilioField> multiCurrencyFields) {
+	public static List<FacilioField> getBaseCurrencyFieldsForModule(FacilioModule module) throws Exception {
+		List<FacilioField> multiCurrencyFields = getMultiCurrencyFields(module.getName());
+		if(CollectionUtils.isEmpty(multiCurrencyFields)){
+			return null;
+		}
 		List<FacilioField> baseCurrencyValueFields = new ArrayList<>();
 		for (FacilioField multiCurrencyField : multiCurrencyFields) {
 			String baseCurrencyFieldName = MessageFormat.format(BASE_CURRENCY_FIELD_NAME, multiCurrencyField.getName());
-			FacilioField field = FieldFactory.getField(baseCurrencyFieldName, ((MultiCurrencyField)multiCurrencyField).getBaseCurrencyValueColumnName(), module, FieldType.DECIMAL);
+			FacilioField field = multiCurrencyField.clone();
+			field.setName(baseCurrencyFieldName);
+			field.setColumnName(((MultiCurrencyField)multiCurrencyField).getBaseCurrencyValueColumnName());
+			field.setDataType(FieldType.DECIMAL);
 			baseCurrencyValueFields.add(field);
 		}
 		return baseCurrencyValueFields;

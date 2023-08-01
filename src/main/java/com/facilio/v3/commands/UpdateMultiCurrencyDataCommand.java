@@ -1,7 +1,10 @@
 package com.facilio.v3.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.activity.MultiCurrencyActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.CurrencyContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
@@ -13,6 +16,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -28,7 +32,7 @@ public class UpdateMultiCurrencyDataCommand extends FacilioCommand {
             return false;
         }
 
-        List<FacilioField> multiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsForModule(moduleName);
+        List<FacilioField> multiCurrencyFields = CurrencyUtil.getMultiCurrencyFields(moduleName);
         if(CollectionUtils.isEmpty(multiCurrencyFields)){
             return false;
         }
@@ -40,48 +44,53 @@ public class UpdateMultiCurrencyDataCommand extends FacilioCommand {
             beanClass = FacilioConstants.ContextNames.getClassFromModule(Constants.getModBean().getModule(moduleName));
         }
 
-        Map<Long, ModuleBaseWithCustomFields> oldRecord = Constants.getOldRecordMap(context);
+        Map<Long, ModuleBaseWithCustomFields> oldRecordsMap = Constants.getOldRecordMap(context);
         List<ModuleBaseWithCustomFields> newRecords = new ArrayList<>();
         Map<Long, List<String>> patchFieldNames = (Map<Long, List<String>>) context.get(FacilioConstants.ContextNames.PATCH_FIELD_NAMES);
 
         CurrencyContext baseCurrency = CurrencyUtil.getBaseCurrency();
         Map<String, CurrencyContext> currencyCodeVsCurrency = CurrencyUtil.getCurrencyMap();
 
-        for (ModuleBaseWithCustomFields newProp : records) {
-            List<String> currRecordPatchFieldNames = patchFieldNames.getOrDefault(newProp.getId(), new ArrayList<>());
-            ModuleBaseWithCustomFields oldProp = oldRecord.get(newProp.getId());
+        for (ModuleBaseWithCustomFields newRecord : records) {
+            List<String> currRecordPatchFieldNames = patchFieldNames.getOrDefault(newRecord.getId(), new ArrayList<>());
+            ModuleBaseWithCustomFields oldRecord = oldRecordsMap.get(newRecord.getId());
 
-            Map<String, Object> newPropAsProperties = FieldUtil.getAsProperties(newProp);
-            Map<String, Object> oldPropAsProperties = FieldUtil.getAsProperties(oldProp);
+            Map<String, Object> newRecordAsMap = FieldUtil.getAsProperties(newRecord);
+            Map<String, Object> oldRecordAsMap = FieldUtil.getAsProperties(oldRecord);
 
             String baseCurrencyCurrencyCode = baseCurrency != null ? baseCurrency.getCurrencyCode() : null;
-            String oldCurrencyCode = StringUtils.defaultIfEmpty(oldProp.getCurrencyCode(), baseCurrencyCurrencyCode);
-            String newCurrencyCode = StringUtils.defaultIfEmpty(newProp.getCurrencyCode(), oldCurrencyCode);
+            String oldCurrencyCode = StringUtils.defaultIfEmpty(oldRecord.getCurrencyCode(), baseCurrencyCurrencyCode);
+            String newCurrencyCode = StringUtils.defaultIfEmpty(newRecord.getCurrencyCode(), oldCurrencyCode);
 
             CurrencyContext currency = (newCurrencyCode != null && MapUtils.isNotEmpty(currencyCodeVsCurrency))
                     ? (currencyCodeVsCurrency.containsKey(newCurrencyCode) ? currencyCodeVsCurrency.get(newCurrencyCode) : currencyCodeVsCurrency.get(oldCurrencyCode)) : null;
             newCurrencyCode = (currencyCodeVsCurrency.containsKey(newCurrencyCode)) ? newCurrencyCode : oldCurrencyCode;
 
             if(baseCurrency == null || (StringUtils.equals(oldCurrencyCode, baseCurrencyCurrencyCode) && StringUtils.equals(newCurrencyCode, baseCurrencyCurrencyCode))){
-                newProp.setCurrencyCode(null);
-                newProp.setExchangeRate(1);
+                newRecordAsMap.put("currencyCode", null);
+                newRecordAsMap.put("exchangeRate", 1);
             }
             else if (currency != null && currencyCodeVsCurrency.size() > 1) {
                 if (!newCurrencyCode.equals(oldCurrencyCode)) {
                     double exchangeRate = currency.getExchangeRate();
-                    newProp.setExchangeRate(exchangeRate);
-                    computeCurrencyValueForFieldsNotInPatch(newCurrencyCode, newPropAsProperties, oldPropAsProperties, currRecordPatchFieldNames, multiCurrencyFields, currencyCodeVsCurrency);
+                    newRecordAsMap.put("exchangeRate", exchangeRate);
+                    computeCurrencyValueForFieldsNotInPatch(newCurrencyCode, newRecordAsMap, oldRecordAsMap, currRecordPatchFieldNames, multiCurrencyFields, currencyCodeVsCurrency);
+                    // activity
+                    JSONObject info = new JSONObject();
+                    info.put(FacilioConstants.ContextNames.OLD_CURRENCY_CODE, oldCurrencyCode);
+                    info.put(FacilioConstants.ContextNames.NEW_CURRENCY_CODE, newCurrencyCode);
+                    CommonCommandUtil.addActivityToContext(newRecord.getId(), -1L, MultiCurrencyActivityType.CHANGED_TO, info, (FacilioContext) context);
                 } else {
-                    newProp.setCurrencyCode(oldProp.getCurrencyCode());
-                    newProp.setExchangeRate(oldProp.getExchangeRate());
+                    newRecordAsMap.put("currencyCode", oldRecord.getCurrencyCode());
+                    newRecordAsMap.put("exchangeRate", oldRecord.getExchangeRate());
                 }
             } else {
-                newProp.setCurrencyCode(null);
-                newProp.setExchangeRate(1);
+                newRecordAsMap.put("currencyCode", null);
+                newRecordAsMap.put("exchangeRate", 1);
             }
 
-            CurrencyUtil.setBaseCurrencyValueForRecord(newPropAsProperties, multiCurrencyFields);
-            newRecords.add((ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(newPropAsProperties, beanClass));
+            CurrencyUtil.setBaseCurrencyValueForRecord(newRecordAsMap, multiCurrencyFields);
+            newRecords.add((ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(newRecordAsMap, beanClass));
         }
 
         recordMap.put(moduleName, newRecords);

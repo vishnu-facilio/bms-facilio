@@ -354,7 +354,7 @@ public class FilterUtil {
               obj = obj.replace(",", StringOperators.DELIMITED_COMMA);
               values.append(obj.trim());
           }
-          else if (field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL){
+          else if (field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL || field.getDataTypeEnum() == FieldType.MULTI_CURRENCY_FIELD){
               values.append(encodeFilterDataForNumberField(obj.trim(),field));
           }else {
               String splDisplayName = PickListOperators.getDisplayNameForCurrentValue(obj);

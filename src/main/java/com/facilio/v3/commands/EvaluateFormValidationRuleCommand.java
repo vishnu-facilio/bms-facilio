@@ -129,7 +129,7 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
         CurrencyContext baseCurrency = new CurrencyContext();
         Map<String, CurrencyContext> currencyCodeVsCurrency = new HashMap<>();
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
-            multiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsForModule(moduleName);
+            multiCurrencyFields = CurrencyUtil.getMultiCurrencyFields(moduleName);
             baseCurrency = CurrencyUtil.getBaseCurrency();
             currencyCodeVsCurrency = CurrencyUtil.getCurrencyMap();
         }
@@ -158,7 +158,7 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
         CurrencyContext baseCurrency = new CurrencyContext();
         Map<String, CurrencyContext> currencyCodeVsCurrency = new HashMap<>();
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
-            multiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsForModule(moduleName);
+            multiCurrencyFields = CurrencyUtil.getMultiCurrencyFields(moduleName);
             baseCurrency = CurrencyUtil.getBaseCurrency();
             currencyCodeVsCurrency = CurrencyUtil.getCurrencyMap();
         }

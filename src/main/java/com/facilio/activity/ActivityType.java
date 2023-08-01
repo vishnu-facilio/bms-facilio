@@ -54,7 +54,10 @@ public interface ActivityType {
 		for (ActivityType type: RequestForQuotationActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Last number = 121
+		for(ActivityType type: MultiCurrencyActivityType.values()) {
+			activityMap.put(type.getValue(), type);
+		}
+		// Last number = 122
 
 		return activityMap;
 	}

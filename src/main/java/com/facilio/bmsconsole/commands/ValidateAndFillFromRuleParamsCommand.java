@@ -185,7 +185,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
 				FacilioModule formModule = form.getModule();
 				String moduleName = formModule.getName();
-				List<FacilioField> multiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsForModule(moduleName);
+				List<FacilioField> multiCurrencyFields = CurrencyUtil.getMultiCurrencyFields(moduleName);
 				CurrencyContext baseCurrency = CurrencyUtil.getBaseCurrency();
 				Map<String, CurrencyContext> currencyCodeVsCurrency = CurrencyUtil.getCurrencyMap();
 				CurrencyUtil.replaceCurrencyValueWithBaseCurrencyValue(formData, multiCurrencyFields, baseCurrency, currencyCodeVsCurrency);

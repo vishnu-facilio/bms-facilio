@@ -1,7 +1,6 @@
 package com.facilio.v3.commands;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -15,7 +14,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +29,7 @@ public class AddMultiCurrencyDataCommand extends FacilioCommand {
             return false;
         }
 
-        List<FacilioField> multiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsForModule(moduleName);
+        List<FacilioField> multiCurrencyFields = CurrencyUtil.getMultiCurrencyFields(moduleName);
         if(CollectionUtils.isEmpty(multiCurrencyFields)){
             return false;
         }

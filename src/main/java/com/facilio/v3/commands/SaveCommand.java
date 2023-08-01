@@ -60,8 +60,7 @@ public class SaveCommand extends FacilioCommand {
 
             if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(module)) {
                 fields.addAll(FieldFactory.getCurrencyPropsFields(module));
-                List<FacilioField> multiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsForModule(moduleName);
-                List<FacilioField> baseCurrencyValueFields = CurrencyUtil.getBaseCurrencyFieldsForModule(module, multiCurrencyFields);
+                List<FacilioField> baseCurrencyValueFields = CurrencyUtil.getBaseCurrencyFieldsForModule(module);
                 if(CollectionUtils.isNotEmpty(baseCurrencyValueFields)){
                     fields.addAll(baseCurrencyValueFields);
                 }

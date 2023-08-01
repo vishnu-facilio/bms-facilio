@@ -3,6 +3,7 @@ package com.facilio.report.context;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.fields.MultiCurrencyField;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -504,6 +505,7 @@ public class ReportFactoryFields {
 						||field.getDataTypeEnum() == FieldType.NUMBER
 						||field.getDataTypeEnum() == FieldType.DECIMAL
 						||field.getDataTypeEnum() == FieldType.CURRENCY_FIELD
+						|| field.getDataTypeEnum() == FieldType.MULTI_CURRENCY_FIELD
 						|| field.getDataTypeEnum() == FieldType.ENUM 
 						|| field.getDataTypeEnum() == FieldType.LOOKUP
 						|| field.getDataTypeEnum() == FieldType.SYSTEM_ENUM 
@@ -802,7 +804,7 @@ public class ReportFactoryFields {
 		FacilioModule module = modBean.getModule(moduleName);
 		List<FacilioField> allFields = modBean.getAllFields(moduleName);
 		Set<FacilioField> metrics = modBean.getAllFields(moduleName)
-				.stream().filter(field -> field instanceof NumberField).collect(Collectors.toSet());
+				.stream().filter(field -> field instanceof NumberField || field instanceof MultiCurrencyField).collect(Collectors.toSet());
 		FacilioField idField = FieldFactory.getIdField(module);
 		if(idField != null) {
 			idField.setDisplayName("Number of "+module.getDisplayName());

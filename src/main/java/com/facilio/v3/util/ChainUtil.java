@@ -447,7 +447,7 @@ public class ChainUtil {
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain","beforeSaveCommand", moduleName));
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "AddMultiSelectFieldsCommand", moduleName));
-        transactionChain.addCommand(new UpdateCommand(module));
+        transactionChain.addCommand(new  UpdateCommand(module));
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain","UpdateCommand", moduleName));
         transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "ChangeApprovalStatusForModuleDataCommand", moduleName));

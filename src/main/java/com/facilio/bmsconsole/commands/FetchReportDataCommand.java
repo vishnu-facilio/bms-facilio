@@ -283,6 +283,10 @@ public class FetchReportDataCommand extends FacilioCommand {
             for (Map<String, Object> pivotField : pivotFieldsList) {
                 FacilioField facilioField = (FacilioField) pivotField.get("field");
                 cloneFields.add(facilioField);
+                if(facilioField.getDataTypeEnum().equals(FieldType.MULTI_CURRENCY_FIELD)){
+                    MultiCurrencyField field = (MultiCurrencyField) modBean.getField(facilioField.getFieldId());
+                    facilioField.setColumnName(field.getBaseCurrencyValueColumnName());
+                }
                 fields.add(facilioField);
             }
         } else {
@@ -310,6 +314,11 @@ public class FetchReportDataCommand extends FacilioCommand {
                                 cloneFields.add(multi_select_fld);
                             }
                         }
+                    }
+                    else if(cloneField.getDataTypeEnum().equals(FieldType.MULTI_CURRENCY_FIELD)){
+                        MultiCurrencyField multiCurrencyField = (MultiCurrencyField) modBean.getField(cloneField.getFieldId());
+                        cloneField.setColumnName(multiCurrencyField.getBaseCurrencyValueColumnName());
+                        cloneFields.add(cloneField);
                     }
                     else {
                         cloneFields.add(cloneField);
@@ -791,9 +800,6 @@ public class FetchReportDataCommand extends FacilioCommand {
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                     groupByField.setField(groupByField.getModule(), modBean.getField(groupByField.getFieldId()));
                 }
-                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && groupByField.getField() instanceof MultiCurrencyField) {
-                    groupByField.getField().setColumnName(((MultiCurrencyField) groupByField.getField()).getBaseCurrencyValueColumnName());
-                }
                 FacilioField gField;
                 if (reportType == ReportType.PIVOT_REPORT) {
                     if (groupByField.getLookupFieldId() > 0) {
@@ -808,6 +814,9 @@ public class FetchReportDataCommand extends FacilioCommand {
                     }
                 } else {
                     gField = groupByField.getField().clone();
+                }
+                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && groupByField.getField() instanceof MultiCurrencyField) {
+                    gField.setColumnName(((MultiCurrencyField) groupByField.getField()).getBaseCurrencyValueColumnName());
                 }
                 if (groupByField.getAggrEnum() != null) {
                     if (groupByField.getAggrEnum() instanceof SpaceAggregateOperator && !groupByField.getAggrEnum().getStringValue().equalsIgnoreCase(baseModule.getName())) {
@@ -1289,7 +1298,11 @@ public class FetchReportDataCommand extends FacilioCommand {
                     }
                 }
             } else {
-                xAggrField = dp.getxAxis().getField();
+                xAggrField = dp.getxAxis().getField().clone();
+            }
+            if (dp.getxAxis().getField() != null && dp.getxAxis().getField().getDataTypeEnum().equals(FieldType.MULTI_CURRENCY_FIELD)) {
+                MultiCurrencyField field = (MultiCurrencyField) modBean.getField(dp.getxAxis().getField().getFieldId());
+                xAggrField.setColumnName(field.getBaseCurrencyValueColumnName());
             }
             if (xAggrField.getModule() != null && (xAggrField.getModule().isCustom() && !baseModule.equals(xAggrField.getModule()))) {
                 xAggrField.setTableAlias(getAndSetModuleAlias(xAggrField.getModule().getName()));
@@ -1329,7 +1342,10 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
         } else {
             if (xAggr == null || xAggr == CommonAggregateOperator.ACTUAL || dp.isHandleEnum()) { //Return x field as aggr field as there's no X aggregation
-                xAggrField = dp.getxAxis().getField();
+                xAggrField = dp.getxAxis().getField().clone();
+                if(dp.getxAxis().getField() != null && dp.getxAxis().getField() instanceof MultiCurrencyField){
+                    xAggrField.setColumnName(((MultiCurrencyField) dp.getxAxis().getField()).getBaseCurrencyValueColumnName());
+                }
                 fields.add(xAggrField);
             } else {
                 throw new IllegalArgumentException("You can't apply X Aggr when Y Aggr is empty");
@@ -1406,6 +1422,10 @@ public class FetchReportDataCommand extends FacilioCommand {
             return false;
         } else {
             FacilioField facilioField = dataPoint.getyAxis().getField().clone();
+            if(dataPoint.getyAxis().getField() != null && dataPoint.getyAxis().getField().getDataTypeEnum().equals(FieldType.MULTI_CURRENCY_FIELD)){
+                MultiCurrencyField field = (MultiCurrencyField) modBean.getField(dataPoint.getyAxis().getField().getFieldId());
+                facilioField.setColumnName(field.getBaseCurrencyValueColumnName());
+            }
             if(reportType == ReportType.PIVOT_REPORT && dataPoint.getyAxis().getModule().getTypeEnum() != ModuleType.READING
             && dataPoint.getyAxis().getModule().getTypeEnum() != ModuleType.READING_RULE) {
                 facilioField.setTableAlias(getAndSetModuleAlias(facilioField.getModule().getName()));
