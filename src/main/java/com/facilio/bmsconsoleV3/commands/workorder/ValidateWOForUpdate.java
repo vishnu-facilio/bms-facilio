@@ -15,6 +15,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -173,6 +174,7 @@ public class ValidateWOForUpdate extends FacilioCommand {
         if (wo.getStatus().getType() != FacilioStatus.StatusType.CLOSED) {
             return false;
         }
+        FacilioField deviationTaskUniqueIdField = FieldFactory.getField("deviationTaskUniqueId", "DEVIATION_TASK_UNIQUE_ID",FieldType.STRING);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         SelectRecordsBuilder<V3WorkOrderContext> builder = new SelectRecordsBuilder<V3WorkOrderContext>()
                 .beanClass(V3WorkOrderContext.class)
@@ -181,7 +183,9 @@ public class ValidateWOForUpdate extends FacilioCommand {
                 .innerJoin("TicketStatus")
                 .on("TicketStatus.ID = Tickets.STATUS_ID")
                 .andCondition(CriteriaAPI.getCondition("PARENT_WOID", "parentWO", String.valueOf(oldWo), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "statusType", String.valueOf(2), NumberOperators.NOT_EQUALS));
+                .andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "statusType", String.valueOf(2), NumberOperators.NOT_EQUALS))
+                // Added the below condition to allow re-open the workorder, when task-deviation-workorder is added as a child and it's in open state.
+                .andCondition(CriteriaAPI.getCondition(deviationTaskUniqueIdField, CommonOperators.IS_EMPTY));
         List<V3WorkOrderContext> workOrderContexts = builder.get();
         return CollectionUtils.isNotEmpty(workOrderContexts);
     }

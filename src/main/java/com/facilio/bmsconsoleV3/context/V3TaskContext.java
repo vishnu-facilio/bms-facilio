@@ -19,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -557,6 +559,55 @@ public class V3TaskContext extends V3Context {
 
     @JsonIgnore
     private V3WorkOrderContext parentWo;
+
+    // declarations for additionalInfoJsonStr
+
+    // should remove all these
+    private String additionalInfoJsonStr;
+    public String getAdditionalInfoJsonStr() {
+        if(getAdditionInfo() != null) {
+            return getAdditionInfo().toJSONString();
+        }
+        return null;
+    }
+    public void setAdditionalInfoJsonStr(String jsonStr) throws org.json.simple.parser.ParseException {
+        if(jsonStr != null) {
+            JSONParser parser = new JSONParser();
+            setAdditionInfo((JSONObject) parser.parse(jsonStr));
+        }
+    }
+
+    // declarations for additionInfo
+    private JSONObject additionInfo;
+    public JSONObject getAdditionInfo() {
+        if(additionInfo == null){
+            return  new JSONObject();
+        }
+        return additionInfo;
+    }
+    public void setAdditionInfo(JSONObject additionInfo) {
+        this.additionInfo = additionInfo;
+    }
+
+    public void addAdditionInfo(String key, Object value) {
+        if(this.additionInfo == null) {
+            this.additionInfo =  new JSONObject();
+        }
+        this.additionInfo.put(key,value);
+    }
+
+    // declarations for createWoOnFailure
+    private Boolean createWoOnFailure;
+    public Boolean getCreateWoOnFailure() {
+        if(createWoOnFailure == null && getAdditionInfo().containsKey("createWoOnFailure")){
+            return (Boolean) getAdditionInfo().get("createWoOnFailure");
+        }
+        return createWoOnFailure;
+    }
+    public void setCreateWoOnFailure(Boolean createWoOnFailure) {
+        addAdditionInfo("createWoOnFailure", createWoOnFailure);
+        this.createWoOnFailure = createWoOnFailure;
+    }
 
     @JSON(serialize = false)
     public V3WorkOrderContext getParentWo() {

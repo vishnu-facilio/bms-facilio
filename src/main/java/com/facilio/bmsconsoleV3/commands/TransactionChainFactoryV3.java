@@ -622,6 +622,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateTasksCommandV3());
         c.addCommand(new FillTasksAndPrerequisitesCommand());
+        //c.addCommand(new V3AddActionForTaskCommand());
         c.addCommand(new AddTaskSectionsV3());
         c.addCommand(new AddTasksCommandV3());
         c.addCommand(new AddTaskOptions());
@@ -671,6 +672,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateTasksCommandV3());
         c.addCommand(new FillTasksAndPrerequisitesCommand());
+        //c.addCommand(new V3AddActionForTaskCommand());
         c.addCommand(new AddTaskSectionsV3());
         c.addCommand(new AddTasksCommandV3());
         c.addCommand(new AddTaskOptions());
@@ -736,10 +738,9 @@ public class TransactionChainFactoryV3 {
                 WorkflowRuleContext.RuleType.REQUEST_REJECT_RULE));
         c.addCommand(new ForkChainToInstantJobCommand()
                 .addCommand(
-                        new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE,
-                                WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE))
-                .addCommand(new ClearAlarmOnWOClosureCommand())
-                .addCommand(new ExecuteTaskFailureActionCommand()));
+                        new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE))
+                .addCommand(new ClearAlarmOnWOClosureCommand()));
+        c.addCommand(new V3ExecuteTaskFailureActionCommand());
         c.addCommand(new ConstructTicketNotesCommand());
         c.addCommand(TransactionChainFactory.getAddNotesChain());
         c.addCommand(new AddOrUpdateMultiResourceForWorkorderCommandV3());

@@ -1,17 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsoleV3.commands.workorder.V3ExecuteTaskFailureActionCommand;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderModuleSettingContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.bmsconsoleV3.util.V3WorkOrderModuleSettingAPI;
-import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -27,7 +24,6 @@ import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -92,6 +88,13 @@ public class AutoResolveWorkOrderCommand extends FacilioCommand {
         // Move to the state in Auto Resolve Setting
         StateFlowRulesAPI.updateState(workOrderContext, workOrderModule, autoResolveState, false, context);
 
+        /**
+         * Supported Task Deviation here
+         */
+        if(autoResolveState.getType() == FacilioStatus.StatusType.CLOSED){
+            invokeTaskDeviationAction(workOrderContext);
+        }
+
         // Add workorder object into recordMap as its required to execute the workflows and send notification
         Map<String, List<ModuleBaseWithCustomFields>> contextRecordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
         if(contextRecordMap == null || contextRecordMap.isEmpty()) {
@@ -108,6 +111,11 @@ public class AutoResolveWorkOrderCommand extends FacilioCommand {
 
         context.put(FacilioConstants.ContextNames.RELOAD_WORK_ORDER, true);
         return false;
+    }
+
+    private void invokeTaskDeviationAction(V3WorkOrderContext workOrderContext) {
+        LOGGER.info("invokeTaskDeviationAction for WorkOrder ID - " + workOrderContext.getId());
+        V3ExecuteTaskFailureActionCommand.publishTaskDeviationHandler(workOrderContext);
     }
 
     /**

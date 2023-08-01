@@ -319,7 +319,7 @@ public class TransactionChainFactory {
 			c.addCommand(new BulkTaskUniqueIdCommand());
 			c.addCommand(new BulkTaskReadingFieldCommand());
 			c.addCommand(new BulkAddTaskSectionsCommand());
-			c.addCommand(new BulkAddActionForTaskCommand());
+			//c.addCommand(new BulkAddActionForTaskCommand());
 			c.addCommand(new BulkAddTasksCommand());
 			c.addCommand(new BulkAddTaskOptionsCommand());
 			c.addCommand(new UpdateReadingDataMetaCommand());
@@ -471,7 +471,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ValidateNewTasksCommand());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new AddTaskSectionsCommand());
-			c.addCommand(new AddActionForTaskCommand());
+			//c.addCommand(new AddActionForTaskCommand());
 			c.addCommand(new AddTasksCommand());
 			c.addCommand(new AddTaskOptionsCommand());
 			c.addCommand(new UpdateReadingDataMetaCommand());
@@ -490,7 +490,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ValidateTasksCommand());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new AddTaskSectionsCommand());
-			c.addCommand(new AddActionForTaskCommand());
+			//c.addCommand(new AddActionForTaskCommand());
 			c.addCommand(new AddTasksCommand());
 			c.addCommand(new AddTaskOptionsCommand());
 			c.addCommand(new UpdateReadingDataMetaCommand());
@@ -537,7 +537,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteAllTriggersCommand(TriggerType.MODULE_TRIGGER));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION));
 		c.addCommand(new ClearAlarmOnWOCloseCommand());
-		c.addCommand(new ExecuteTaskFailureActionCommand());
+		c.addCommand(new ExecuteTaskFailureActionCommand()); // v2-chain task-validation workOrder creation
 		c.addCommand(new ConstructTicketNotesCommand());
 		c.addCommand(getAddNotesChain());
 		c.addCommand(new AddAttachmentCommand());

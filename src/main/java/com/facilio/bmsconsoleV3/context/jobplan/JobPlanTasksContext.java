@@ -63,41 +63,6 @@ public class JobPlanTasksContext extends V3TaskContext {
         this.jobPlan = jobPlan;
     }
 
-    // declarations for additionalInfoJsonStr
-    
-    // should remove all these
-    private String additionalInfoJsonStr;
-    public String getAdditionalInfoJsonStr() {
-        if(additionInfo != null) {
-            return additionInfo.toJSONString();
-        }
-        return null;
-    }
-    public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
-        if(jsonStr != null) {
-            JSONParser parser = new JSONParser();
-            additionInfo = (JSONObject) parser.parse(jsonStr);
-        }
-    }
-
-    // declarations for additionInfo
-    private JSONObject additionInfo;
-    public JSONObject getAdditionInfo() {
-        if(additionInfo == null){
-            return  new JSONObject();
-        }
-        return additionInfo;
-    }
-    public void setAdditionInfo(JSONObject additionInfo) {
-        this.additionInfo = additionInfo;
-    }
-
-    public void addAdditionInfo(String key, Object value) {
-        if(this.additionInfo == null) {
-            this.additionInfo =  new JSONObject();
-        }
-        this.additionInfo.put(key,value);
-    }
     /**
      * Re-declaring/Redefining the variables from {@link V3TaskContext }, for handling the properties in additionInfo.
      */
@@ -128,19 +93,6 @@ public class JobPlanTasksContext extends V3TaskContext {
             addAdditionInfo("enableInput", enableInput);
         }
         this.enableInput = enableInput;
-    }
-
-    // declarations for createWoOnFailure
-    private Boolean createWoOnFailure;
-    public Boolean getCreateWoOnFailure() {
-        if(createWoOnFailure == null && getAdditionInfo().containsKey("createWoOnFailure")){
-            return (Boolean) getAdditionInfo().get("createWoOnFailure");
-        }
-        return createWoOnFailure;
-    }
-    public void setCreateWoOnFailure(Boolean createWoOnFailure) {
-        addAdditionInfo("createWoOnFailure", createWoOnFailure);
-        this.createWoOnFailure = createWoOnFailure;
     }
 
     // declarations for attachmentOption

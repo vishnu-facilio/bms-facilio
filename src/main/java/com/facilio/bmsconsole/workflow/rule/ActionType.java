@@ -25,6 +25,7 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.util.V3AttachmentAPI;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.chain.FacilioChain;
@@ -1344,15 +1345,27 @@ public enum ActionType implements FacilioIntEnum {
 		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 									 Object currentRecord) throws Exception {
 			try {
-				TaskContext task = (TaskContext) currentRecord;
-				long pmId = task.getParentWo().getPm().getId();
-				String taskUniqueId = pmId + "_" + task.getParentWo().getResource().getId() +"_" + task.getUniqueId();
+				V3TaskContext task = (V3TaskContext) currentRecord;
+				V3WorkOrderContext workOrderContext = task.getParentWo();
+				if(workOrderContext == null){
+					workOrderContext = V3RecordAPI.getRecord("workorder", task.getParentTicketId());
+				}
+
+				Long pmId = -1L;
+				if(workOrderContext.getPm() != null){
+					pmId = workOrderContext.getPm().getId();
+				}else if(workOrderContext.getPmV2() != null){
+					pmId = workOrderContext.getPmV2();
+				}
+				String taskUniqueId = pmId + "_" + workOrderContext.getResource().getId() +"_" + task.getUniqueId();
 				WorkOrderContext deviationWo = WorkOrderAPI.getOpenWorkOrderForDeviationTemplate(taskUniqueId);
+				LOGGER.info("Deviated Task: #" + task.getId());
 				if (deviationWo != null) {
+					LOGGER.info("Updating workorder(#"+ deviationWo.getId() + ")due to task deviation.");
 					NoteContext note = new NoteContext();
 					note.setBody("Task " + task.getSubject() + " has been closed with the value " + task.getInputValue());
 					note.setParentId(deviationWo.getId());
-					note.setCreatedTime(task.getParentWo().getActualWorkEnd());
+					note.setCreatedTime(workOrderContext.getActualWorkEnd());
 
 					FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
 					FacilioContext noteContext = addNote.getContext();
@@ -1362,6 +1375,7 @@ public enum ActionType implements FacilioIntEnum {
 					addNote.execute();
 				}
 				else {
+					LOGGER.info("Creating workorder due to task deviation. ");
 					WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
 					wo.setDeviationTaskUniqueId(taskUniqueId);
 					List<AttachmentContext> attachments = AttachmentsAPI.getAttachments("taskattachments", task.getId());
@@ -2179,7 +2193,7 @@ public enum ActionType implements FacilioIntEnum {
 	private static void addWorkOrder (WorkOrderContext wo, SourceType sourceType, List<AttachmentContext> attachments) throws Exception {
 		// TODO Auto-generated method stub
 
-		LOGGER.debug("Action::Add Workorder::"+wo);
+		LOGGER.info("Action::Add Workorder::" + wo);
 		
 		wo.setSourceType(sourceType);
 		FacilioContext woContext = new FacilioContext();

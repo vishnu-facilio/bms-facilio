@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -631,7 +632,50 @@ public class TicketAPI {
 		}
 		return tasks;
 	}
-	
+
+	public static List<V3TaskContext> getRelatedTasksV3(List<Long> ticketIds, boolean fetchChildren, boolean fetchResources) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields("task");
+		FacilioField parentId = FieldFactory.getAsMap(fields).get("parentTicketId");
+
+		SelectRecordsBuilder<V3TaskContext> builder = new SelectRecordsBuilder<V3TaskContext>()
+				.table("Tasks")
+				.moduleName(FacilioConstants.ContextNames.TASK)
+				.beanClass(V3TaskContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(parentId, ticketIds, NumberOperators.EQUALS))
+				.orderBy("ID");
+
+		List<V3TaskContext> tasks = builder.get();
+		if (CollectionUtils.isEmpty(tasks)) {
+			return tasks;
+		}
+
+		if (fetchChildren) {
+			for(V3TaskContext task: tasks) {
+				if (task.getLastReading() == null && task.getInputTypeEnum().equals(InputType.READING) && task.getResource() != null) {
+					FacilioField readingField = modBean.getField(task.getReadingFieldId());
+					ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), readingField);
+					task.setLastReading(meta.getValue());
+				}
+			}
+		}
+
+		if (fetchResources) {
+			List<Long> resourceIds = tasks.stream().filter(task -> task.getResource() != null && task.getResource().getId() > 0)
+					.map(task -> task.getResource().getId()).collect(Collectors.toList());
+			if (!resourceIds.isEmpty()) {
+				Map<Long, ResourceContext> resources = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+				for(V3TaskContext task: tasks) {
+					if (task.getResource() != null && task.getResource().getId() > 0 && resources.containsKey(task.getResource().getId())) {
+						task.setResource(resources.get(task.getResource().getId()));
+					}
+				}
+			}
+		}
+		return tasks;
+	}
 	public static int deleteTasks(List<Long> taskIds) throws Exception 
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

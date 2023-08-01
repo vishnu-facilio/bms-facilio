@@ -24,6 +24,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.json.simple.JSONObject;
 
 
 public class AddTasksCommand extends FacilioCommand implements PostTransactionCommand {
@@ -81,6 +82,10 @@ public class AddTasksCommand extends FacilioCommand implements PostTransactionCo
 						task.setSiteId(workOrder.getSiteId());
 					}
 				}
+				// Handling additionalInfo for tasks from PMv1
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.putAll(task.getData());
+				task.setAdditionalInfo(jsonObject);
 				task.setInputValue(isPrerequest ? null : task.getDefaultValue());
 				if(StringUtils.isNotEmpty(task.getInputValue()) && StringUtils.isNotEmpty(task.getFailureValue())) {
 					if (task.getInputTypeEnum() == InputType.NUMBER) {

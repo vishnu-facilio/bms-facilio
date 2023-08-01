@@ -31,6 +31,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.json.simple.JSONObject;
 
 public class BulkAddTasksCommand extends FacilioCommand implements PostTransactionCommand {
 
@@ -103,6 +104,10 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
                    task.setPreRequest(Boolean.FALSE);
 
                    task.setParentTicketId(wo.getId());
+                   // Handling additionalInfo for tasks from PMv1
+                   JSONObject jsonObject = new JSONObject();
+                   jsonObject.putAll(task.getData());
+                   task.setAdditionalInfo(jsonObject);
 
                    task.setInputValue(task.getDefaultValue());
                    if(StringUtils.isNotEmpty(task.getInputValue()) && StringUtils.isNotEmpty(task.getFailureValue())) {

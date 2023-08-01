@@ -17,6 +17,7 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -92,7 +93,10 @@ public class AddWorkOrderCommandV3 extends FacilioCommand {
     private void validateStatusOfParentAndChild(V3WorkOrderContext workOrder) throws Exception {
         V3WorkOrderContext parentWO = V3WorkOderAPI.getWorkOrder(workOrder.getParentWO().getId());
         FacilioStatus status = V3TicketAPI.getStatus(parentWO.getStatus().getId());
-        if (status.getType() == FacilioStatus.StatusType.CLOSED) {
+        /* Skip this check for the Task-Deviation-WorkOrders' whose `deviationTaskUniqueId` will be filled in. This
+           is done, as we create the Task-Deviation-WorkOrder, after closing the parent WorkOrder.
+         */
+        if (status.getType() == FacilioStatus.StatusType.CLOSED && StringUtils.isEmpty(workOrder.getDeviationTaskUniqueId())) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot add open WO as a child to closed parent");
         }
     }

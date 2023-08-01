@@ -25,6 +25,7 @@ groups:
       - { topic: __pushnotification__, handler: com.facilio.wmsv2.handler.PushNotificationHandler, priority: -6, recordTimeout: 60, isLiveMessage: false }
       - { topic: __mailresponse__/#, handler: com.facilio.wmsv2.handler.MailResponseParsingHandler, recordTimeout: 5, isLiveMessage: false }
       - { topic: __update_on_offline_record__, handler: com.facilio.wmsv2.handler.UpdateOnOfflineRecordHandler, priority: -6, recordTimeout: 60, isLiveMessage: false}
+      - { topic: task_deviation_createWorkOrder/#, handler: com.facilio.wmsv2.handler.workorder.TaskDeviationWorkOrderHandler, recordTimeout: 120, isLiveMessage: false }
 
   - group: default-single
     sendToAll: false

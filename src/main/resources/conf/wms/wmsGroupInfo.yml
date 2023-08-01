@@ -30,6 +30,7 @@ groups:
       - { topic: __agent__/point/alarm/org/#, handler: com.facilio.wmsv2.handler.agent.ClearPointAlarmHandler, isLiveMessage: false }
       - { topic: __dashboard_update__, handler: com.facilio.wmsv2.handler.DashboardUpdateHandler, isLiveMessage: false }
       - { topic: __one_time_job_for_scheduled_rule__/#/#, handler: com.facilio.wmsv2.handler.AddOneTimeJobForScheduledRuleHandler,priority: -6,recordTimeout: 60, isLiveMessage: false }
+      - { topic: task_deviation_createWorkOrder/#, handler: com.facilio.wmsv2.handler.workorder.TaskDeviationWorkOrderHandler, recordTimeout: 120, isLiveMessage: false }
 
   - group: receive-mail
     sendToAll: false

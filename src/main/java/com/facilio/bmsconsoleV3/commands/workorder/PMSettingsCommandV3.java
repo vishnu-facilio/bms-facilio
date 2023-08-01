@@ -35,7 +35,7 @@ public class PMSettingsCommandV3 extends FacilioCommand {
                 return false;
             }
 
-            if (wo.getPm().isPreventOnNoTask()) {
+            if (wo.getPm().isPreventOnNoTask() && wo.getDeviationTaskUniqueId() == null) {
                 Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
                 if (taskMap == null || taskMap.isEmpty()) {
                     LOGGER.log(Level.SEVERE, "Skipping because of no task " + "PM ID " + wo.getPm().getId());
