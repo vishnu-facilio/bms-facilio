@@ -913,14 +913,14 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>bms-s3-release-repo</id>
+            <id>maven-group</id>
             <name>Release Repository for bms</name>
-            <url>s3://repo.facilio/bms/release</url>
+            <url>https://repo.facilio.in/repository/maven-release/</url>
         </repository>
         <snapshotRepository>
-            <id>bms-s3-snapshot-repo</id>
+            <id>maven-group</id>
             <name>Snapshot Repository for bms</name>
-            <url>s3://repo.facilio/bms/snapshot</url>
+            <url>https://repo.facilio.in/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
     <properties>

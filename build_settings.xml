@@ -3,13 +3,13 @@
     <servers>
         <server>
             <id>maven-group</id>
-            <username>$USERNAME</username>
-            <password>$PWD</password>
+            <username>${repo.name}</username>
+            <password>${repo.pwd}</password>
         </server>
     </servers>
     <profiles>
         <profile>
-            <id>facilio-server</id>
+            <id>maven-group</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
