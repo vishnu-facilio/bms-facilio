@@ -143,6 +143,7 @@ public class InventoryRequestLineItemsModule extends BaseModuleConfig{
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
