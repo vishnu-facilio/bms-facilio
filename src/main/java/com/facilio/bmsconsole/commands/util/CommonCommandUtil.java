@@ -482,7 +482,8 @@ public class CommonCommandUtil {
 
     //will be changed soon
     public static List<Long> getMySiteIds() throws Exception {
-        if (AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+        boolean skipMaintenanceAppScoping = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.SKIP_MAINTENANCE_APP_SCOPING, Boolean.FALSE));
+        if ((AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) && !skipMaintenanceAppScoping) {
             List<BaseSpaceContext> sites = getMyAccessibleSites();
             List<Long> siteIds = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(sites)) {

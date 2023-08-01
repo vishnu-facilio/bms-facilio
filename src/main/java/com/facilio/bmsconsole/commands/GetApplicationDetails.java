@@ -181,7 +181,8 @@ public class GetApplicationDetails extends FacilioCommand {
 						}
 					}
 					application.setWebTabGroups(webTabGroups);
-					if(Boolean.FALSE.equals(fetchAllLayouts) && application.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && !SignupUtil.maintenanceAppSignup()){
+					boolean hasMobileSupportedOldApp = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.HAS_MOBILE_SUPPORTED_OLD_APP, Boolean.FALSE));
+					if(Boolean.FALSE.equals(fetchAllLayouts) && application.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && !SignupUtil.maintenanceAppSignup() && !(ApplicationApi.isRequestFromMobile() && hasMobileSupportedOldApp)){
 						if(layout!=null){
 							layout.setWebTabGroupList(null);
 						}

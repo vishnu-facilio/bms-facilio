@@ -8,6 +8,7 @@ import com.facilio.accounts.dto.*;
 import com.facilio.beans.UserScopeBean;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.DefaultTabsAndTabGroups;
 
@@ -2370,7 +2371,8 @@ public class ApplicationApi {
 
         selectBuilder.orderBy("ID asc");
 
-        if(isRequestFromMobile()) {
+        boolean hasMobileSupportedOldApp = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.HAS_MOBILE_SUPPORTED_OLD_APP, Boolean.FALSE));
+        if(isRequestFromMobile() && !hasMobileSupportedOldApp) {
             selectBuilder.andCondition(CriteriaAPI.getCondition("LINK_NAME","linkName",FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,StringOperators.ISN_T));
         }
 
@@ -2386,7 +2388,7 @@ public class ApplicationApi {
 
     }
 
-    private static boolean isRequestFromMobile() {
+    public static boolean isRequestFromMobile() {
         return AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile() != null && AccountUtil.getCurrentAccount().isFromMobile();
     }
 
