@@ -753,9 +753,9 @@ public class DashboardUtil {
 				if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
 					fields.addAll(FieldFactory.getDashboardUserFilterFields());
 					selectBuilder.leftJoin(ModuleFactory.getDashboardUserFilterModule().getTableName())
-							.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getDashboardUserFilterModule().getTableName()+".WIDGET_ID")
-							.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".ID = ?", widgetId);
+							.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getDashboardUserFilterModule().getTableName()+".WIDGET_ID");
 				}
+		selectBuilder.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".ID = ?", widgetId);
 		List<Map<String, Object>> props = selectBuilder.get();
 		DashboardWidgetContext dashboardWidgetContext = null;
 		if (props != null && !props.isEmpty()) {
