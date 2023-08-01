@@ -15,7 +15,7 @@ import com.facilio.util.FacilioUtil;
 
 public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
-	private Map<Long,FacilioField> widgetFieldMap=new HashMap<Long, FacilioField>();
+	private Map<Object,FacilioField> widgetFieldMap=new HashMap<>();
 	Map<Long,FacilioField>  cascadingFilters;
 public Map<Long, FacilioField> getCascadingFilters() {
 		return cascadingFilters;
@@ -478,10 +478,10 @@ public Map<Long, FacilioField> getCascadingFilters() {
 	{
 		this.optionType=optionType;
 	}
-	public Map<Long,FacilioField> getWidgetFieldMap() {
+	public Map<Object,FacilioField> getWidgetFieldMap() {
 		return this.widgetFieldMap;
 	}
-	public void setWidgetFieldMap(Map<Long,FacilioField> widgetFieldMap) {
+	public void setWidgetFieldMap(Map<Object,FacilioField> widgetFieldMap) {
 		this.widgetFieldMap = widgetFieldMap;
 	}
 	

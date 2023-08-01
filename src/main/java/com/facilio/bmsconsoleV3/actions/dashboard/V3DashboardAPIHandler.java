@@ -903,10 +903,10 @@ public class V3DashboardAPIHandler {
     }
     public static void setUserFilterValues(DashboardUserFilterContext user_filter, List<String> selected_values, DashboardExecuteMetaContext dashboard_executed_data, Integer operatorId)throws Exception
     {
-        Map<Long, FacilioField> widget_field_map = user_filter.getWidgetFieldMap();
-        for (Map.Entry<Long, FacilioField> widget_and_field : widget_field_map.entrySet())
+        Map<Object, FacilioField> widget_field_map = user_filter.getWidgetFieldMap();
+        for (Map.Entry<Object, FacilioField> widget_and_field : widget_field_map.entrySet())
         {
-            Long widget_id = widget_and_field.getKey();
+            Long widget_id = (Long) widget_and_field.getKey();
             if(selected_values != null && selected_values.size() > 0 && (!"".equals(selected_values.get(0)) && !"all".equals(selected_values.get(0))))
             {
                 FacilioField applied_widget_field = widget_and_field.getValue();
