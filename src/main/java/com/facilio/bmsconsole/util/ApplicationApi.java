@@ -3319,7 +3319,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Dispatcher Config","dispatcherconfig",WebTabContext.Type.DISPATCHER_CONFIG,null,appId,null));
             webTabs.add(new WebTabContext("Time Off Settings","timeoffsettings",WebTabContext.Type.TIME_OFF_SETTINGS,null,appId,null));
 
-            groupNameVsWebTabsMap.put("dispatcher",webTabs);
+            groupNameVsWebTabsMap.put("fieldservice",webTabs);
 
 
 //            webTabGroups.add(new WebTabGroupContext("Developer Space", "developerspace", layout.getId(), 3, groupOrder++));

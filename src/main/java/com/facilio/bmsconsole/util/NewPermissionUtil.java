@@ -232,7 +232,11 @@ public class NewPermissionUtil {
         settingsTabType.put("COMMISSIONING", 17179869184L);
 		settingsTabType.put("FEEDBACK_AND_COMPLAINTS", 34359738368L);
 		settingsTabType.put("SMART_CONTROLS", 68719476736L);
-        settingsTabType.put("DISPATCHER_CONFIG", 137438953472L);
+        settingsTabType.put("DISPATCH_CONFIG", 137438953472L);
+        settingsTabType.put("WORK_TYPE",274877906944L);
+        settingsTabType.put("SKILLS",549755813888L);
+        settingsTabType.put("TIME_OFF_SETTINGS",1099511627776L);
+
 
         return settingsTabType;
     }
