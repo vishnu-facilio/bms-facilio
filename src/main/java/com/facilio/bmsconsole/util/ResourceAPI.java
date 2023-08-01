@@ -98,7 +98,7 @@ public class ResourceAPI {
 
 		criteria.addAndCondition(CriteriaAPI.getCondition(qrValField, qrValue, StringOperators.IS));
 
-		FacilioContext context = V3Util.fetchList(module.getName(),true,null,filters,false,null,null,null,null,1,1,false,null,criteria);
+		FacilioContext context = V3Util.fetchList(module.getName(),true,null,filters,false,null,null,null,null,1,1,false,null,criteria,null);
 
 		List<ModuleBaseWithCustomFields> props = Constants.getRecordList(context);
 

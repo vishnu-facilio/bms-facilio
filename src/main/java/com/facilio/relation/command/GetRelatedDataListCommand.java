@@ -10,6 +10,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.v3.V3Action;
+import com.facilio.v3.context.ConfigParams;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
@@ -36,6 +37,8 @@ public class GetRelatedDataListCommand extends FacilioCommand {
         String search = (String) context.get(FacilioConstants.ContextNames.SEARCH);
         boolean withoutCustomButtons = (boolean) context.get(Constants.WITHOUT_CUSTOMBUTTONS);
         boolean excludeParentFilter = (boolean) context.get(Constants.EXCLUDE_PARENT_CRITERIA);
+        boolean fetchClassificationData=(boolean) context.getOrDefault(Constants.FETCH_CLASSIFICATION,false);
+        String selectableFieldNames=(String)context.get(FacilioConstants.ContextNames.SELECTABLE_FIELD_NAMES);
         boolean fetchOnlyViewColumnFields=(boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_ONLY_VIEW_GROUP_COLUMN,false);
         String clientCriteria = (String) context.get(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA);
         Criteria filterServerCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA);
@@ -60,7 +63,7 @@ public class GetRelatedDataListCommand extends FacilioCommand {
 
             if (CollectionUtils.isNotEmpty(resultData)) {
                 Map<String, Object> moduleDataObj = (Map<String, Object>) resultData.get(0).get(relationPosition.getFieldName());
-                FacilioContext summaryContext = V3Util.getSummary(moduleName, Collections.singletonList((long) moduleDataObj.get("id")), queryParams, fetchOnlyViewColumnFields,null);
+                FacilioContext summaryContext = V3Util.getSummary(moduleName, Collections.singletonList((long) moduleDataObj.get("id")), queryParams,fetchClassificationData,null);
 
                 Map<String, List> recordMap = (Map<String, List>) summaryContext.get(Constants.RECORD_MAP);
                 List list = recordMap.get(moduleName);
@@ -75,8 +78,10 @@ public class GetRelatedDataListCommand extends FacilioCommand {
             meta.put("pagination", paginationObject);
             context.put(FacilioConstants.ContextNames.META, meta);
         } else {
+            ConfigParams configParams = new ConfigParams();
+            configParams.setSelectableFieldNames(selectableFieldNames);
             listContext = V3Util.fetchList(moduleName, true, viewName, filters, excludeParentFilter, clientCriteria,
-                    orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields,quickFilter);
+                    orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields,quickFilter,configParams);
 
             recordJSON = Constants.getJsonRecordMap(listContext);
 

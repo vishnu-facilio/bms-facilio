@@ -12,6 +12,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.context.ConfigParams;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
@@ -45,7 +46,7 @@ public  class WorkorderBulkUpdateAction extends V3Action {
         int limit = Integer.parseInt(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.WORK_ORDER_BULKUPDATE, 500));
         Long recordCount=fetchRecordCount();
         if(recordCount<=limit) {
-            FacilioContext listContext = V3Util.fetchList(getModuleName(), true, getViewName(), getFilters(), excludeParentFilter, getClientCriteria(), getOrderBy(), getOrderType(), getSearch(), getPage(), limit, false, queryParameters, serverCriteria, false, true, null);
+            FacilioContext listContext = V3Util.fetchList(getModuleName(), true, getViewName(), getFilters(), excludeParentFilter, getClientCriteria(), getOrderBy(), getOrderType(), getSearch(), getPage(), limit, false, queryParameters, serverCriteria, false, true, null,null);
             Map<String, List> recordMap = (Map<String, List>)
                     listContext.get(Constants.RECORD_MAP);
             List<ModuleBaseWithCustomFields> wos = recordMap.get(moduleName);
@@ -95,7 +96,7 @@ public  class WorkorderBulkUpdateAction extends V3Action {
 
         Long recordCount=fetchRecordCount();
         if(recordCount<=limit) {
-            FacilioContext listContext = V3Util.fetchList(getModuleName(), isV3, getViewName(), getFilters(), excludeParentFilter, getClientCriteria(), getOrderBy(), getOrderType(), getSearch(), getPage(), limit, withCount, queryParameters, serverCriteria, false, true, null);
+            FacilioContext listContext = V3Util.fetchList(getModuleName(), isV3, getViewName(), getFilters(), excludeParentFilter, getClientCriteria(), getOrderBy(), getOrderType(), getSearch(), getPage(), limit, withCount, queryParameters, serverCriteria, false, true, null,null);
             Map<String, List> recordMap = (Map<String, List>)
                     listContext.get(Constants.RECORD_MAP);
             List<ModuleBaseWithCustomFields> wos = recordMap.get(moduleName);
@@ -164,7 +165,7 @@ public  class WorkorderBulkUpdateAction extends V3Action {
 
         Long recordCount=fetchRecordCount();
         if(recordCount<=limit) {
-            FacilioContext listContext = V3Util.fetchList(getModuleName(), isV3, getViewName(), getFilters(), excludeParentFilter, getClientCriteria(), getOrderBy(), getOrderType(), getSearch(), getPage(), limit, withCount, queryParameters, serverCriteria, false, true, null);
+            FacilioContext listContext = V3Util.fetchList(getModuleName(), isV3, getViewName(), getFilters(), excludeParentFilter, getClientCriteria(), getOrderBy(), getOrderType(), getSearch(), getPage(), limit, withCount, queryParameters, serverCriteria, false, true, null,null);
             Map<String, List> recordMap = (Map<String, List>)
                     listContext.get(Constants.RECORD_MAP);
             List<ModuleBaseWithCustomFields> wos = recordMap.get(moduleName);

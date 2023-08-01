@@ -548,14 +548,14 @@ public class V3Util {
     }
 
     public static FacilioContext fetchList(String moduleName, Boolean isV3, String viewName, String filters, boolean excludeParentFilter, String clientCriteria,
-                                           Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria) throws Exception{
+                                           Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria,ConfigParams configParams) throws Exception{
 
         return fetchList(moduleName,isV3,viewName,filters,excludeParentFilter,clientCriteria,
-                orderBy,orderByType,search,page,perPage,withCount,queryParameters,serverCriteria,false,false,null);
+                orderBy,orderByType,search,page,perPage,withCount,queryParameters,serverCriteria,false,false,null,configParams);
     }
 
     public static FacilioContext fetchList(String moduleName, Boolean isV3, String viewName, String filters, boolean excludeParentFilter, String clientCriteria,
-                          Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria, boolean withoutCustomButtons,boolean fetchOnlyViewGroupColumn,String quickFilter) throws Exception {
+                          Object orderBy, Object orderByType, String search, int page, int perPage, boolean withCount, Map<String, List<Object>> queryParameters, Criteria serverCriteria, boolean withoutCustomButtons,boolean fetchOnlyViewGroupColumn,String quickFilter,ConfigParams configParams) throws Exception {
         FacilioChain listChain = ChainUtil.getListChain(moduleName);
         FacilioContext context = listChain.getContext();
 
@@ -609,6 +609,7 @@ public class V3Util {
             context.put(Constants.WITH_COUNT, withCount);
             context.put(Constants.QUERY_PARAMS, queryParameters);
             context.put(Constants.WITHOUT_CUSTOMBUTTONS,withoutCustomButtons);
+            ConfigParams.addConfigParams(context,configParams);
         } else {
             context.put(Constants.QUERY_PARAMS, queryParameters);
 

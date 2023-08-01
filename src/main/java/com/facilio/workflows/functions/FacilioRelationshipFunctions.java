@@ -52,7 +52,7 @@ public class FacilioRelationshipFunctions {
 		serverCriteria.addAndCondition(CriteriaAPI.getCondition(relationLinkName, String.valueOf(parentId), RelationshipOperator.CONTAINS_RELATION));
 
 		FacilioContext listContext = V3Util.fetchList(moduleName, true, null, null, false, null, null,
-				null, null, page, perPage, false, null, serverCriteria);
+				null, null, page, perPage, false, null, serverCriteria,null);
 		return Constants.getJsonRecordMap(listContext).get(moduleName);
 	}
 

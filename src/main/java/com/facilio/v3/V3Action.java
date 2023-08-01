@@ -285,6 +285,9 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 	}
 
 	@Getter @Setter
+	private String selectableFieldNames;
+
+	@Getter @Setter
 	private List<File> files;
 
 	@Getter @Setter

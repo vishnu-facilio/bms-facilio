@@ -13,6 +13,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.RESTAPIHandler;
 import com.facilio.v3.action.RestAPIHandlerV3;
+import com.facilio.v3.context.ConfigParams;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
@@ -58,8 +59,10 @@ public class ApprovalV3Action extends RESTAPIHandler {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioField field = modBean.getField("approvalStatus", getModuleName());
         criteria.addAndCondition(CriteriaAPI.getCondition(field, String.valueOf(status.getId()), PickListOperators.IS));
+        ConfigParams configParams = new ConfigParams();
+        configParams.setSelectableFieldNames(getSelectableFieldNames());
         FacilioContext listContext = V3Util.fetchList(this.getModuleName(), (currentApi == api.v3), this.getViewName(), this.getFilters(), this.getExcludeParentFilter(), this.getClientCriteria(),
-                    this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), getQueryParameters(), criteria);
+                    this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), getQueryParameters(), criteria,configParams);
 
         JSONObject recordJSON = Constants.getJsonRecordMap(listContext);
         this.setData(recordJSON);

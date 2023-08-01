@@ -67,7 +67,7 @@ public class V3AssetAPI {
         String listFilter = filterObj.toString();
         Map<String, List<Object>> queryParams = new HashMap<>();
         queryParams.put("filters", Collections.singletonList(listFilter));
-        FacilioContext listContext = V3Util.fetchList(FacilioConstants.ContextNames.WORK_ORDER, true, "open", listFilter, false, null, null, null, null, 1, 5000, false, queryParams, null);
+        FacilioContext listContext = V3Util.fetchList(FacilioConstants.ContextNames.WORK_ORDER, true, "open", listFilter, false, null, null, null, null, 1, 5000, false, queryParams, null,null);
         if(listContext!=null && ((Map<String,List>) listContext.get(FacilioConstants.ContextNames.RECORD_MAP)).get("workorder").size()>0){
             return true;
         }

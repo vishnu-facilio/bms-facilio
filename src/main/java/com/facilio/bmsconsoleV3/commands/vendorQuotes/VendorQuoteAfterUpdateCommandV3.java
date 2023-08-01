@@ -53,7 +53,7 @@ public class VendorQuoteAfterUpdateCommandV3 extends FacilioCommand {
             serverCriteria.addAndCondition(CriteriaAPI.getCondition("RFQ_ID","requestForQuotation",String.valueOf(rfqId), NumberOperators.EQUALS));
             FacilioContext listContext = V3Util.fetchList(FacilioConstants.ContextNames.VENDOR_QUOTES, true,
                     null,null,false, null, null,null,null,
-                    1, 5000, false, queryParams, serverCriteria);
+                    1, 5000, false, queryParams, serverCriteria,null);
             Map<String, Map> recordMap = (Map<String, Map>) listContext.get(FacilioConstants.ContextNames.RECORD_MAP);
             List<V3VendorQuotesContext> vendorQuotes = (List<V3VendorQuotesContext>) recordMap.get(FacilioConstants.ContextNames.VENDOR_QUOTES);
             if(CollectionUtils.isNotEmpty(vendorQuotes)){

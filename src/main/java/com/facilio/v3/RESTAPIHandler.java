@@ -17,6 +17,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.SecurityUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.commands.AttachmentCommand;
+import com.facilio.v3.context.ConfigParams;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.exception.ErrorCode;
@@ -140,8 +141,10 @@ public class RESTAPIHandler extends V3Action implements ServletRequestAware {
         if(!SecurityUtil.isClean(this.getOrderBy(),this.getOrderType())){
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid order clause parameter passed");
         }
+        ConfigParams configParams = new ConfigParams();
+        configParams.setSelectableFieldNames(getSelectableFieldNames());
         FacilioContext listContext = V3Util.fetchList(moduleName, (currentApi == api.v3), this.getViewName(), this.getFilters(), this.getExcludeParentFilter(), this.getClientCriteria(),
-                this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), getQueryParameters(), null,this.getWithoutCustomButtons(),this.getFetchOnlyViewGroupColumn(),this.getQuickFilter());
+                this.getOrderBy(), this.getOrderType(), this.getSearch(), this.getPage(), this.getPerPage(), this.getWithCount(), getQueryParameters(), null,this.getWithoutCustomButtons(),this.getFetchOnlyViewGroupColumn(),this.getQuickFilter(),configParams);
 
         JSONObject recordJSON = Constants.getJsonRecordMap(listContext);
         this.setData(recordJSON);

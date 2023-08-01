@@ -40,7 +40,7 @@ public class GetPageEmployeesCommand extends FacilioCommand {
 
         FacilioContext listContext = V3Util.fetchList(moduleName, isV3, viewName, filters,
                 excludeParent, clientCriteria, orderBy, orderByType,
-                search, page, perPage, withCount, queryParameters, serverCriteria);
+                search, page, perPage, withCount, queryParameters, serverCriteria,null);
 
         Map<String, Object> recordMap = (Map<String, Object>) listContext.get("recordMap");
         context.put(FacilioConstants.Shift.EMPLOYEES, recordMap.get(moduleName));
