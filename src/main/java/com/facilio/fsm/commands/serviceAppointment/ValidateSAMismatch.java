@@ -106,6 +106,8 @@ public class ValidateSAMismatch extends FacilioCommand {
                         } else {
                             serviceAppointment.setMismatch(true);
                         }
+                    } else {
+                        serviceAppointment.setMismatch(false);
                     }
                 }
             }

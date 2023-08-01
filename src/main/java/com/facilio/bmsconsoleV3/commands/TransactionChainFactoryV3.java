@@ -3346,6 +3346,7 @@ public class TransactionChainFactoryV3 {
     public static Command getAttendanceTxnAfterTransactionChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateAttendance());
+        c.addCommand(new UpdatePeopleAvailabilityStatusCommand());
         return c;
     }
 
