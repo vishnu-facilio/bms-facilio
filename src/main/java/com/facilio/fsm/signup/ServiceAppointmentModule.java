@@ -269,7 +269,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         generalSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormField> assignmentFields = new ArrayList<>();
-        assignmentFields.add(new FormField("fieldAgent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Field Agent", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.SPACE,1,2));
+        assignmentFields.add(new FormField("fieldAgent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Field Agent", FormField.Required.OPTIONAL,1,2));
 //        assignmentFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.ASSET,2, 2));
 
         FormSection assignmentDetailsSection = new FormSection("Assignment Details",2,assignmentFields,true);
@@ -286,8 +286,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         List<FormField> appointmentFields = new ArrayList<>();
         appointmentFields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 10, 3));
         appointmentFields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.REQUIRED, 11, 3));
-        appointmentFields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DATETIME, "Response Due Duration", FormField.Required.REQUIRED, 11, 3));
-        appointmentFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DATETIME, "Resolution Due Duration", FormField.Required.REQUIRED, 11, 3));
+        appointmentFields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DURATION, "Response Due Duration", FormField.Required.REQUIRED, 12, 4));
+        appointmentFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.REQUIRED, 13, 4));
 
 
 

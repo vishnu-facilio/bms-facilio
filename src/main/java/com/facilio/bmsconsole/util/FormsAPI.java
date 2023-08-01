@@ -1244,7 +1244,9 @@ public class FormsAPI {
 //				fields.add(new FormField("workorder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Workorder",FormField.Required.OPTIONAL,9,3));
 				fields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 10, 3));
 				fields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.REQUIRED, 11, 3));
-				fields.add(new FormField("estimatedDuration", FacilioField.FieldDisplayType.DURATION,"Estimated Duration", FormField.Required.OPTIONAL,12,3));
+//				fields.add(new FormField("estimatedDuration", FacilioField.FieldDisplayType.DURATION,"Estimated Duration", FormField.Required.OPTIONAL,12,3));
+				fields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DURATION, "Response Due Duration", FormField.Required.REQUIRED, 12, 4));
+				fields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.REQUIRED, 13, 4));
 				break;
 			case ContextNames.SITE:
 				fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

@@ -3312,9 +3312,12 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Dispatcher","dispatcher",layout.getId(),203,groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Field Service Settings","fieldservice",layout.getId(),203,groupOrder++));
             webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Work Types","worktype",WebTabContext.Type.WORK_TYPE,null,appId,null));
+            webTabs.add(new WebTabContext("Skills","skills",WebTabContext.Type.SKILLS,null,appId,null));
             webTabs.add(new WebTabContext("Dispatcher Config","dispatcherconfig",WebTabContext.Type.DISPATCHER_CONFIG,null,appId,null));
+            webTabs.add(new WebTabContext("Time Off Settings","timeoffsettings",WebTabContext.Type.TIME_OFF_SETTINGS,null,appId,null));
 
             groupNameVsWebTabsMap.put("dispatcher",webTabs);
 
@@ -3438,11 +3441,6 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Dispatcher","dispatcher",layout.getId(),203,groupOrder++));
-            webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Dispatcher Config","dispatcherconfig",WebTabContext.Type.DISPATCHER_CONFIG,null,appId,null));
-
-            groupNameVsWebTabsMap.put("dispatcher",webTabs);
 
 
             for (WebTabGroupContext webTabGroupContext : webTabGroups) {
@@ -3576,11 +3574,6 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Dispatcher","dispatcher",layout.getId(),203,groupOrder++));
-            webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("Dispatcher Config","dispatcherconfig",WebTabContext.Type.DISPATCHER_CONFIG,null,appId,null));
-
-            groupNameVsWebTabsMap.put("dispatcher",webTabs);
 
 
             for (WebTabGroupContext webTabGroupContext : webTabGroups) {

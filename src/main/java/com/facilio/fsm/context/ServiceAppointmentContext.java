@@ -168,7 +168,7 @@ public class ServiceAppointmentContext extends V3Context {
         }
     }
 
-    private CategoryType category;
+    private Category category;
     public int getCategory() {
         if (category != null) {
             return category.getIndex();
@@ -176,16 +176,16 @@ public class ServiceAppointmentContext extends V3Context {
         return -1;
     }
     public void setCategory(int category) {
-        this.category = CategoryType.valueOf(category);
+        this.category = Category.valueOf(category);
     }
-    public CategoryType getCategoryEnum() {
+    public Category getCategoryEnum() {
         return category;
     }
-    public void setCategory(CategoryType category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
-    public static enum CategoryType implements FacilioIntEnum {
+    public static enum Category implements FacilioIntEnum {
         INSTALLATION_AND_SETUP("Installation and Setup"),
         MAINTAIN_AND_REPAIRS ("Maintenance and Repairs"),
         FIXTURE_CHANGES_AND_RESETS("Fixture Changes and Resets"),
@@ -197,7 +197,7 @@ public class ServiceAppointmentContext extends V3Context {
 
         String name;
 
-        CategoryType(String name) {
+        Category(String name) {
             this.name = name;
         }
 
@@ -211,7 +211,7 @@ public class ServiceAppointmentContext extends V3Context {
             return this.name;
         }
 
-        public static CategoryType valueOf(int value) {
+        public static Category valueOf(int value) {
             if (value > 0 && value <= values().length) {
                 return values()[value - 1];
             }

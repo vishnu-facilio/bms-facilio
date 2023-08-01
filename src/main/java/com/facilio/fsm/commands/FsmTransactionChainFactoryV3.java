@@ -59,6 +59,8 @@ public class FsmTransactionChainFactoryV3 {
         c.addCommand(new UpdateServiceOrderStatus());
         //Change the status of Service Order to in progress or scheduled based on tasks
         c.addCommand(new SOStatusChangeViaSTCommandV3());
+        c.addCommand(new UpdateServiceAppointmentOnTaskUpdate());
+
         return c;
     }
     public static FacilioChain getTaskBeforeUpdateChain() {
