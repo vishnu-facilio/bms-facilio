@@ -592,6 +592,14 @@ public class APIModuleWidgets {
         return () -> new ModuleWidgets()
                 .addModuleWidget("tasklist","Tasks",PageWidget.WidgetType.SERVICE_TASK_WIDGET)
                 .addWidgetConfigs("webtasklist_50_12","Web Task List - 50 - 12",50,12, PagesContext.PageLayoutType.WEB)
-                .done();
+                .done()
+                .addModuleWidget("plans","Plans",PageWidget.WidgetType.SERVICE_ORDER_PLANS)
+                .addWidgetConfigs("plans_50_12","Plans - 50 - 12",50,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("actuals","Actuals",PageWidget.WidgetType.SERVICE_ORDER_ACTUALS)
+                .addWidgetConfigs("actuals_50_12","Actuals - 50 - 12",50,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
+
     }
 }
