@@ -113,7 +113,7 @@ public class ToolQuantityRollUpCommandV3  extends FacilioCommand {
             }
             Map<String, Map<Long,List<UpdateChangeSet>>> finalChangeMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
             finalChangeMap.put(module.getName(), changes);
-            //context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(module.getName(), toolRecords));
+            context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(module.getName(), toolRecords));
             context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, finalChangeMap);
             context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 

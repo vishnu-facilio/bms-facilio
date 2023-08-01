@@ -46,7 +46,6 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 		if (itemIds != null && !itemIds.isEmpty()) {
 			long itemTypesId = -1;
 			List<Long> itemTypesIds = new ArrayList<>();
-
 			if (itemIds != null && !itemIds.isEmpty()) {
 				FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 				List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
@@ -138,7 +137,7 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 				Map<String, Map<Long,List<UpdateChangeSet>>> finalChangeMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
 				finalChangeMap.put(itemModule.getName(), changes);
 				
-				//context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(itemModule.getName(), itemRecords));
+				context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(itemModule.getName(), itemRecords));
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 				context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, itemTypesIds);
 				context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, finalChangeMap);
