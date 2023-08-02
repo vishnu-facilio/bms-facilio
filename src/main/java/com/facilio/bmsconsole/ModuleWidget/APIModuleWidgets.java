@@ -199,25 +199,25 @@ public class APIModuleWidgets {
     public static Supplier<ModuleWidgets> getEmployeeWidgets() {
         return () -> new ModuleWidgets()
                 .addModuleWidget("lastknowlocation","LAST KNOWN LOCATION",PageWidget.WidgetType.LAST_KNOW_LOCATION)
-                    .addWidgetConfigs("weblastknowlocation_22_6","Last Known Location Widget - 22 - 6",22,6, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfig("weblastknowlocation_22_6","Last Known Location Widget - 22 - 6", WidgetConfigContext.ConfigType.FIXED,22,6, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("currentstatus","EMPLOYEE CURRENT STATUS",PageWidget.WidgetType.CURRENT_STATUS)
-                    .addWidgetConfigs("webcurrentstatus_22_6","Employee Current Status - 22 - 6",22,6, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfig("webcurrentstatus_22_6","Employee Current Status - 22 - 6", WidgetConfigContext.ConfigType.FIXED,22,6, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("skill","SKILL",PageWidget.WidgetType.SKILL)
-                    .addWidgetConfigs("flexiblewebskill_60","Skill - 60",60, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfig("flexiblewebskill_60","Skill - 60", WidgetConfigContext.ConfigType.FLEXIBLE,60,-1, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("territories","TERRITORIES",PageWidget.WidgetType.TERRITORIES)
-                    .addWidgetConfigs("flexiblewebterritories_60","Territories - 60",60, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfig("flexiblewebterritories_60","Territories - 60", WidgetConfigContext.ConfigType.FLEXIBLE,60,-1, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("workschedule","WORK SCHEDULE",PageWidget.WidgetType.WORK_SCHEDULE)
-                    .addWidgetConfigs("flexiblewebworkschedule_60","Work Schedule 60",60, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfig("flexiblewebworkschedule_60","Work Schedule 60", WidgetConfigContext.ConfigType.FLEXIBLE,60,-1, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("employeeLocation","EMPLOYEE LOCATION",PageWidget.WidgetType.EMPLOYEE_LOCATION)
-                    .addWidgetConfigs("flexiblewebactivity_60","Employee Location 60",60, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfig("flexiblewebactivity_60","Employee Location 60", WidgetConfigContext.ConfigType.FLEXIBLE, 60,-1, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("vendorLocation","VENDOR LOCATION",PageWidget.WidgetType.VENDOR_LOCATION)
-                    .addWidgetConfigs("flexiblewebactivity_60","Vendor Location 60",60, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfig("flexiblewebactivity_60","Vendor Location 60", WidgetConfigContext.ConfigType.FLEXIBLE,60, -1,PagesContext.PageLayoutType.WEB)
                 .done()
                 ;
     }
@@ -591,13 +591,13 @@ public class APIModuleWidgets {
     public static Supplier<ModuleWidgets> getServiceOrderWidgets() {
         return () -> new ModuleWidgets()
                 .addModuleWidget("tasklist","Tasks",PageWidget.WidgetType.SERVICE_TASK_WIDGET)
-                .addWidgetConfigs("webtasklist_50_12","Web Task List - 50 - 12",50,12, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("webtasklist_50_12","Web Task List - 50 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("plans","Plans",PageWidget.WidgetType.SERVICE_ORDER_PLANS)
-                .addWidgetConfigs("plans_50_12","Plans - 50 - 12",50,12, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("plans_50_12","Plans - 50 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("actuals","Actuals",PageWidget.WidgetType.SERVICE_ORDER_ACTUALS)
-                .addWidgetConfigs("actuals_50_12","Actuals - 50 - 12",50,12, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("actuals_50_12","Actuals - 50 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)
                 .done()
                 ;
 
@@ -607,10 +607,10 @@ public class APIModuleWidgets {
     public static Supplier<ModuleWidgets> getTerritoryWidgets() {
         return () -> new ModuleWidgets()
                 .addModuleWidget("sites","Sites",PageWidget.WidgetType.TERRITORY_SITES)
-                .addWidgetConfigs("flexiblewebterritorysites_60","Sites - 60",60, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("flexiblewebterritorysites_60","Sites - 60", WidgetConfigContext.ConfigType.FLEXIBLE,60,-1, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("fieldAgents","Field Agents",PageWidget.WidgetType.FIELD_AGENTS)
-                .addWidgetConfigs("flexibleterritoryfieldagents_60","Field Agents - 60",60, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("flexibleterritoryfieldagents_60","Field Agents - 60", WidgetConfigContext.ConfigType.FLEXIBLE,60,-1, PagesContext.PageLayoutType.WEB)
                 .done()
                 ;
 
