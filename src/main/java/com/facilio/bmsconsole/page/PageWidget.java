@@ -594,7 +594,9 @@ public class PageWidget {
 		TERRITORIES("territories"),
 		WORK_SCHEDULE("workschedule"),
 		EMPLOYEE_LOCATION("employeeLocation"),
-		VENDOR_LOCATION("vendorLocation");
+		VENDOR_LOCATION("vendorLocation"),
+		TERRITORY_SITES("territorySites"),
+		FIELD_AGENTS("fieldAgents");
 		;
 
 		private String name;

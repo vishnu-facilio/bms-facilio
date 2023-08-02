@@ -36,7 +36,7 @@ public class EmployeeModuleTemplatePage implements TemplatePageFactory {
                 .widgetDone()
                 .sectionDone()
                 .addSection("employeelocationstatus", null, null)
-                .addWidget("employeelastknowlocationwidget", "Last Know Location", PageWidget.WidgetType.LAST_KNOW_LOCATION, "weblastknowlocation_22_6", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.EMPLOYEE))
+                .addWidget("employeelastknowlocationwidget", "Last Known Location", PageWidget.WidgetType.LAST_KNOW_LOCATION, "weblastknowlocation_22_6", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.EMPLOYEE))
                 .widgetDone()
                 .addWidget("employeecurrentstatuswidget", "Employee Current Status", PageWidget.WidgetType.CURRENT_STATUS, "webcurrentstatus_22_6", 6, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.EMPLOYEE))
                 .widgetDone()

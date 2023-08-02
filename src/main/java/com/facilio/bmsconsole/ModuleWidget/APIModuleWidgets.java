@@ -198,26 +198,26 @@ public class APIModuleWidgets {
     @WidgetsForModule("employee")
     public static Supplier<ModuleWidgets> getEmployeeWidgets() {
         return () -> new ModuleWidgets()
-                .addModuleWidget("lastknowlocation","LAST KNOW LOCATION",PageWidget.WidgetType.LAST_KNOW_LOCATION)
-                    .addWidgetConfigs("weblastknowlocation_22_6","Last Know Location Widget - 22 - 6",22,6, PagesContext.PageLayoutType.WEB)
+                .addModuleWidget("lastknowlocation","LAST KNOWN LOCATION",PageWidget.WidgetType.LAST_KNOW_LOCATION)
+                    .addWidgetConfigs("weblastknowlocation_22_6","Last Known Location Widget - 22 - 6",22,6, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("currentstatus","EMPLOYEE CURRENT STATUS",PageWidget.WidgetType.CURRENT_STATUS)
-                    .addWidgetConfigs("webcurrentstatus_22_6","Last Know Location Widget - 22 - 6",22,6, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfigs("webcurrentstatus_22_6","Employee Current Status - 22 - 6",22,6, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("skill","SKILL",PageWidget.WidgetType.SKILL)
-                    .addWidgetConfigs("flexiblewebskill_60","SKILL - 60",60, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfigs("flexiblewebskill_60","Skill - 60",60, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("territories","TERRITORIES",PageWidget.WidgetType.TERRITORIES)
-                    .addWidgetConfigs("flexiblewebterritories_60","TERRITORIES - 60",60, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfigs("flexiblewebterritories_60","Territories - 60",60, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("workschedule","WORK SCHEDULE",PageWidget.WidgetType.WORK_SCHEDULE)
-                    .addWidgetConfigs("flexiblewebworkschedule_60","WORK - SCHEDULE 60",60, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfigs("flexiblewebworkschedule_60","Work Schedule 60",60, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("employeeLocation","EMPLOYEE LOCATION",PageWidget.WidgetType.EMPLOYEE_LOCATION)
-                    .addWidgetConfigs("flexiblewebactivity_60","WORK - SCHEDULE 60",60, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfigs("flexiblewebactivity_60","Employee Location 60",60, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("vendorLocation","VENDOR LOCATION",PageWidget.WidgetType.VENDOR_LOCATION)
-                    .addWidgetConfigs("flexiblewebactivity_60","WORK - SCHEDULE 60",60, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfigs("flexiblewebactivity_60","Vendor Location 60",60, PagesContext.PageLayoutType.WEB)
                 .done()
                 ;
     }
@@ -602,4 +602,18 @@ public class APIModuleWidgets {
                 ;
 
     }
+
+    @WidgetsForModule("territory")
+    public static Supplier<ModuleWidgets> getTerritoryWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("sites","Sites",PageWidget.WidgetType.TERRITORY_SITES)
+                .addWidgetConfigs("flexiblewebterritorysites_60","Sites - 60",60, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("fieldAgents","Field Agents",PageWidget.WidgetType.FIELD_AGENTS)
+                .addWidgetConfigs("flexibleterritoryfieldagents_60","Field Agents - 60",60, PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
+
+    }
+
 }

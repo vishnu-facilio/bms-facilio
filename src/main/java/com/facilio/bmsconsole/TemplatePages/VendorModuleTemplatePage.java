@@ -33,7 +33,7 @@ public class VendorModuleTemplatePage implements TemplatePageFactory {
                 .widgetDone()
                 .sectionDone()
                 .addSection("vendorlocationstatus", null, null)
-                .addWidget("vendorlastknowlocationwidget", "Last Know Location", PageWidget.WidgetType.LAST_KNOW_LOCATION, "weblastknowlocation_22_6", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
+                .addWidget("vendorlastknowlocationwidget", "Last Known Location", PageWidget.WidgetType.LAST_KNOW_LOCATION, "weblastknowlocation_22_6", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
                 .widgetDone()
                 .addWidget("vendorcurrentstatuswidget", "Vendor Current Status", PageWidget.WidgetType.CURRENT_STATUS, "webcurrentstatus_22_6", 6, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
                 .widgetDone()
