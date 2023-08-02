@@ -288,6 +288,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					this.bean.setSysModifiedBy(currentUser);
 				}
 			}
+			if(!allowSysModifiedFieldsProps && currentUser.getPeopleId() > 0) {
+				prop.put("sysModifiedByPeople", currentUser.getPeopleId());
+			}
 		}
 	}
 

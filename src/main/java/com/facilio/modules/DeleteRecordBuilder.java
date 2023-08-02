@@ -278,6 +278,9 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 
 	public int markAsDelete() throws Exception {
+		return markAsDelete(false);
+	}
+	public int markAsDelete(boolean markAsDeleteByPeople) throws Exception {
 		checkForNullAndSanitize();
 		if (!module.isTrashEnabled()) {
 			throw new IllegalArgumentException("Trash is not enabled for this module and so cannot be marked as delete");
@@ -287,15 +290,23 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		FacilioField isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
 		FacilioField deletedTimeField = FieldFactory.getSysDeletedTimeField(module.getParentModule());
 		FacilioField deletedByField = FieldFactory.getSysDeletedByField(module.getParentModule());
+		FacilioField sysDeletedByPeopleField = FieldFactory.getSysDeletedByPeopleField(module.getParentModule());
 		fields.add(isDeletedField);
 		fields.add(deletedTimeField);
-		fields.add(deletedByField);
+		if(markAsDeleteByPeople) {
+			fields.add(sysDeletedByPeopleField);
+		} else {
+			fields.add(deletedByField);
+		}
 
 		Map<String, Object> prop = new HashMap<>();
 		prop.put(isDeletedField.getName(), true);
 		prop.put(deletedTimeField.getName(), System.currentTimeMillis());
 		if (AccountUtil.getCurrentUser() != null) {
 			prop.put(deletedByField.getName(), Collections.singletonMap("id", AccountUtil.getCurrentUser().getId()));
+			if(AccountUtil.getCurrentUser().getPeopleId() > 0) {
+				prop.put(sysDeletedByPeopleField.getName(),Collections.singletonMap("id", AccountUtil.getCurrentUser().getPeopleId()));
+			}
 		}
 		List<Long> ids = getIds();
 		if(CollectionUtils.isNotEmpty(ids)) {

@@ -50,6 +50,8 @@ public class Constants {
     public static final String MODULE_VS_DELETEDIDS = "moduleVsDeletedIds";
 
     public static final String FILTER_BY = "filter_by";
+    public static final String MARK_AS_DELETE_BY_PEOPLE = "markAsDeleteByPeople";
+
     public static String getFilterBy(Context context) {
         return (String) context.get(FILTER_BY);
     }
@@ -544,5 +546,12 @@ public class Constants {
     }
     public static String getActivityContext(Context context) {
         return (String) context.get(FacilioConstants.ContextNames.CURRENT_ACTIVITY);
+    }
+    public static Boolean getMarkAsDeleteByPeople(Context context) {
+        Boolean markAsDeleteByPeople = (Boolean) context.get(MARK_AS_DELETE_BY_PEOPLE);
+        if(markAsDeleteByPeople == null) {
+            return false;
+        }
+        return markAsDeleteByPeople;
     }
 }

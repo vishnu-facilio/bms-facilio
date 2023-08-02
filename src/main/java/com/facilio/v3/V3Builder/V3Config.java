@@ -575,6 +575,7 @@ public class V3Config implements V3Builder {
         private Command beforeDeleteCommand;
         private Command afterDeleteCommand;
         private Command afterTransactionCommand;
+        private boolean markAsDeleteByPeople;
 
         private V3Builder parent;
 
@@ -672,6 +673,15 @@ public class V3Config implements V3Builder {
 
         public void setAfterTransactionCommand(Command afterTransactionCommand) {
             this.afterTransactionCommand = afterTransactionCommand;
+        }
+        @Override
+        public DeleteBuilder markAsDeleteByPeople() {
+            markAsDeleteByPeople = true;
+            return this;
+        }
+
+        public boolean isMarkAsDeleteByPeople() {
+            return markAsDeleteByPeople;
         }
     }
 

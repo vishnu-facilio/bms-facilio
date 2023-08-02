@@ -1932,6 +1932,13 @@ public class FieldFactory extends BaseFieldFactory {
         return deletedBy;
     }
 
+    public static FacilioField getSysDeletedByPeopleField(FacilioModule module) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        LookupField deletedBy = (LookupField) getField("sysDeletedByPeople", "SYS_DELETED_BY_PEOPLE", module, FieldType.LOOKUP);
+        deletedBy.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
+        return deletedBy;
+    }
+
     public static FacilioField getIsDeletedField() {
         return getIsDeletedField(null);
     }

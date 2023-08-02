@@ -119,7 +119,8 @@ public class DeleteCommand extends FacilioCommand {
 
         if (module.isTrashEnabled()) {
             builder.andCondition(CriteriaAPI.getIdCondition(rowIds, module));
-            return builder.markAsDelete();
+            boolean markAsDeleteByPeople = Constants.getMarkAsDeleteByPeople(context);
+            return builder.markAsDelete(markAsDeleteByPeople);
         }
         else {
             int deletedCount = builder.batchDeleteById(rowIds);

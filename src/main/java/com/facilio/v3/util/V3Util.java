@@ -472,6 +472,10 @@ public class V3Util {
 
         FacilioContext context = deleteChain.getContext();
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
+        V3Config.DeleteHandler deleteHandler = v3Config.getDeleteHandler();
+        if(deleteHandler != null && deleteHandler.isMarkAsDeleteByPeople()) {
+            context.put(Constants.MARK_AS_DELETE_BY_PEOPLE, true);
+        }
         Constants.setV3config(context, v3Config);
 
         Constants.setModuleName(context, moduleName);

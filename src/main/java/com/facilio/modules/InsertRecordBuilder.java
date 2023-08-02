@@ -463,6 +463,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				bean.setSysCreatedBy(currentUser);
 				bean.setSysModifiedBy(currentUser);
 			}
+			if(!allowSysCreatedFieldsProps && AccountUtil.getCurrentUser().getPeopleId() > 0) {
+				prop.put("sysCreatedByPeople", AccountUtil.getCurrentUser().getPeopleId());
+				prop.put("sysModifiedByPeople", AccountUtil.getCurrentUser().getPeopleId());
+			}
 		}
 	}
 

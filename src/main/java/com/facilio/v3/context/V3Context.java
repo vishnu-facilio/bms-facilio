@@ -1,5 +1,6 @@
 package com.facilio.v3.context;
 
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
 import com.facilio.classification.context.ClassificationContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -245,4 +246,10 @@ public class V3Context extends ModuleBaseWithCustomFields {
     @Getter
     @Setter
     private Boolean makeRecordOffline;
+    @Getter @Setter
+    private V3PeopleContext sysCreatedByPeople;
+    @Getter @Setter
+    private V3PeopleContext sysModifiedByPeople;
+    @Getter @Setter
+    private V3PeopleContext sysDeletedByPeople;
 }

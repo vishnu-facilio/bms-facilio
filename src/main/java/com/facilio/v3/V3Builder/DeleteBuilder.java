@@ -23,5 +23,6 @@ public interface DeleteBuilder {
     PickListBuilder pickList();
 
     V3Config build();
+    DeleteBuilder markAsDeleteByPeople();
 
 }
