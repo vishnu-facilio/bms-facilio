@@ -11,6 +11,7 @@ public class ServiceTaskContext extends V3Context {
 
     private String name;
     private String description;
+    private String taskCode;
     private WorkTypeContext workType;
     private List<ServiceTaskSkillsContext> skills;
     private Integer sequence;
@@ -206,5 +207,13 @@ public class ServiceTaskContext extends V3Context {
 
     public void setServiceOrderPlannedServices(List<ServiceOrderPlannedServicesContext> serviceOrderPlannedServices) {
         this.serviceOrderPlannedServices = serviceOrderPlannedServices;
+    }
+
+    public String getTaskCode() {
+        return taskCode;
+    }
+
+    public void setTaskCode(String taskCode) {
+        this.taskCode = taskCode;
     }
 }

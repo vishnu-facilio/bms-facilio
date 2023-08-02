@@ -46,7 +46,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         FacilioField name = FieldFactory.getDefaultField("name","Name","NAME", FieldType.STRING,true);
         name.setRequired(true);
         fields.add(name);
-
+        fields.add(FieldFactory.getDefaultField("taskCode","Task Code","TASK_CODE",FieldType.STRING));
         fields.add(FieldFactory.getDefaultField("description","Description","DESCRIPTION",FieldType.STRING, FacilioField.FieldDisplayType.TEXTAREA));
         fields.add(FieldFactory.getDefaultField("remarks","Remarks","REMARKS",FieldType.STRING, FacilioField.FieldDisplayType.TEXTAREA));
 

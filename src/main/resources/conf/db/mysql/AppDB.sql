@@ -61330,6 +61330,7 @@ CREATE TABLE IF NOT EXISTS Service_Task
     MODULEID           BIGINT NOT NULL,
     NAME               VARCHAR (50),
     DESCRIPTION        VARCHAR(255),
+    TASK_CODE          VARCHAR(50),
     WORK_TYPE          BIGINT,
     SKILLS             BIGINT,
     SERVICE_ORDER      BIGINT,
