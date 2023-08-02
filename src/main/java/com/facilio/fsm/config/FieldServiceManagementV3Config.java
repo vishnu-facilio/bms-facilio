@@ -2,6 +2,7 @@ package com.facilio.fsm.config;
 
 
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.LoadWorkorderActualsExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
@@ -82,9 +83,11 @@ public class FieldServiceManagementV3Config {
                 .create()
                 .beforeSave(FsmTransactionChainFactoryV3.getSOBeforeSaveCreateChain())
                 .afterSave(FsmTransactionChainFactoryV3.afterSOCreateChain())
+                .afterTransaction(new AddActivitiesCommandV3())
                 .update()
                 .beforeSave(FsmTransactionChainFactoryV3.getSOBeforeUpdateChain())
                 .afterSave(FsmTransactionChainFactoryV3.afterSOUpdateChain())
+                .afterTransaction(new AddActivitiesCommandV3())
                 .list()
                 .summary()
                 .beforeFetch(new LoadSupplementsForSOCommand())

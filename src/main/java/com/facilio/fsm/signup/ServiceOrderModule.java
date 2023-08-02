@@ -39,9 +39,55 @@ public class ServiceOrderModule extends BaseModuleConfig {
     public void addData() throws Exception {
         FacilioModule serviceOrderModule = constructServiceOrderModule();
 
+        addActivityModuleForServiceOrder();
+
         addServiceOrderAttachmentsModule(Constants.getModBean(),AccountUtil.getCurrentOrg().getId(), serviceOrderModule);
 
         constructServiceOrderNotesModule(Constants.getModBean(), AccountUtil.getCurrentOrg().getId(), serviceOrderModule);
+    }
+
+    public void addActivityModuleForServiceOrder() throws Exception {
+        // TODO Auto-generated method stub
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule employee = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
+
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.SERVICE_ORDER_ACTIVITY,
+                "Service Order Activity",
+                "Service_Order_Activity",
+                FacilioModule.ModuleType.ACTIVITY
+        );
+
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        NumberField parentId = FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.NUMBER);
+        fields.add(parentId);
+
+        FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
+
+        fields.add(timefield);
+
+        NumberField type = FieldFactory.getDefaultField("type", "Type", "ACTIVITY_TYPE", FieldType.NUMBER);
+        fields.add(type);
+
+        LookupField doneBy = FieldFactory.getDefaultField("doneBy", "Done By", "DONE_BY_ID", FieldType.LOOKUP);
+        doneBy.setSpecialType("users");
+        fields.add(doneBy);
+
+        FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING);
+
+        fields.add(info);
+
+        module.setFields(fields);
+
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain1.execute();
+
+        modBean.addSubModule(employee.getModuleId(), module.getModuleId());
     }
 
     private FacilioModule constructServiceOrderNotesModule(ModuleBean modBean,long orgId, FacilioModule serviceOrderModule) throws Exception {
@@ -585,6 +631,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
     private static List<PagesContext> getSystemPage() throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
+        JSONObject historyWidgetParam = new JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ACTIVITY);
         return Collections.singletonList(new PagesContext(null, null,"", null, true, false, false)
                 .addWebTab("summary", "SUMMARY", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
@@ -606,7 +654,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addWebTab("appointment", "SERVICE_APPOINTMENT", true, null)
+                .addWebTab("appointment", "SERVICE APPOINTMENT", true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("task", null, null)
                 .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
@@ -640,10 +688,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .tabDone()
                 .addWebTab("history", "HISTORY", true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
-//                .addSection("activity", null, null)
-//                .addWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0,  null, null)
-                        .addSection("history", null, null)
-                        .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_60", 0, 0, null, null)
+                .addSection("activity", null, null)
+                .addWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0,  historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

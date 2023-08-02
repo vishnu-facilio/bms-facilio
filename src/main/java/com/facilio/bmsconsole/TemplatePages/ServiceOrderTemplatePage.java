@@ -27,6 +27,8 @@ public class ServiceOrderTemplatePage implements TemplatePageFactory {
     public PagesContext getTemplatePage(ApplicationContext app, FacilioModule module) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
+        JSONObject historyWidgetParam = new JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ACTIVITY);
         if(app.getDomainType() == AppDomain.AppDomainType.FACILIO.getIndex()) {
             return  new PagesContext(null, null,"", null, true, false, false)
                     .addWebTab("summary", "SUMMARY", true, null)
@@ -49,7 +51,7 @@ public class ServiceOrderTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addWebTab("appointment", "SERVICE_APPOINTMENT", true, null)
+                    .addWebTab("appointment", "SERVICE APPOINTMENT", true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("task", null, null)
                     .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
@@ -84,7 +86,7 @@ public class ServiceOrderTemplatePage implements TemplatePageFactory {
                     .addWebTab("history", "HISTORY", true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("activity", null, null)
-                    .addWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0,  null, null)
+                    .addWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0,  historyWidgetParam, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -111,7 +113,7 @@ public class ServiceOrderTemplatePage implements TemplatePageFactory {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addWebTab("appointment", "SERVICE_APPOINTMENT", true, null)
+                    .addWebTab("appointment", "SERVICE APPOINTMENT", true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("task", null, null)
                     .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
@@ -146,7 +148,7 @@ public class ServiceOrderTemplatePage implements TemplatePageFactory {
                     .addWebTab("history", "HISTORY", true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("activity", null, null)
-                    .addWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0,  null, null)
+                    .addWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0,  historyWidgetParam, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()

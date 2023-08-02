@@ -536,7 +536,6 @@ classes:
   - com.facilio.fsm.signup.TerritoryModule
   - com.facilio.fsm.signup.ServiceOrderTicketStatus
   - com.facilio.fsm.signup.ServiceOrderModule
-  - com.facilio.fsm.signup.ServiceOrderActivityModule
   - com.facilio.fsm.signup.TimeOffModule
   - com.facilio.fsm.signup.ServiceTaskModule
   - com.facilio.fsm.signup.ServiceTaskAttachmentsModule

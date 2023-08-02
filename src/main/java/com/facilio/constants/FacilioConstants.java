@@ -3358,6 +3358,7 @@ public class FacilioConstants {
 			classMap.put(ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS, ServiceAppointmentTicketStatusContext.class);
 			classMap.put(ServiceOrder.SERVICE_ORDER_TICKET_STATUS, ServiceOrderTicketStatusContext.class);
 			classMap.put(TimeOff.TIME_OFF_TYPE, TimeOffTypeContext.class);
+			classMap.put(SERVICE_ORDER_ACTIVITY,ActivityContext.class);
 			classMap.put(EMPLOYEE_ACTIVITY,ActivityContext.class);
 			classMap.put(VENDOR_CONTACTS_ACTIVITY,ActivityContext.class);
 			classMap.put(Territory.TERRITORY_ACTIVITY,ActivityContext.class);
