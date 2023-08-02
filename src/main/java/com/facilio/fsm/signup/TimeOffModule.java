@@ -120,16 +120,16 @@ public class TimeOffModule extends BaseModuleConfig {
         FacilioModule timeOffModule = new FacilioModule(FacilioConstants.TimeOff.TIME_OFF,"Time Off","Time_Off", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> timeOffFields = new ArrayList<>();
-        DateField startTime = new DateField(timeOffModule,"startTime","From", FacilioField.FieldDisplayType.DATETIME,"START_TIME",FieldType.DATE_TIME,true,false,true,false);
+        DateField startTime = new DateField(timeOffModule,"startTime","Start Time", FacilioField.FieldDisplayType.DATETIME,"START_TIME",FieldType.DATE_TIME,true,false,true,false);
         timeOffFields.add(startTime);
 
-        DateField endTime = new DateField(timeOffModule,"endTime","To", FacilioField.FieldDisplayType.DATETIME,"END_TIME",FieldType.DATE_TIME,true,false,true,false);
+        DateField endTime = new DateField(timeOffModule,"endTime","End Time", FacilioField.FieldDisplayType.DATETIME,"END_TIME",FieldType.DATE_TIME,true,false,true,false);
         timeOffFields.add(endTime);
 
-        LookupField peopleField = new LookupField(timeOffModule,"people","People", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"PEOPLE_ID",FieldType.LOOKUP,true,false,true,true,"Related People", Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE));
+        LookupField peopleField = new LookupField(timeOffModule,"people","Field Agent Name", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"PEOPLE_ID",FieldType.LOOKUP,true,false,true,true,"Related Field Agents", Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE));
         timeOffFields.add(peopleField);
 
-        LookupField typeField = new LookupField(timeOffModule,"type","Type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"TYPE",FieldType.LOOKUP,true,false,true,true,"Type",moduleBean.getModule(FacilioConstants.TimeOff.TIME_OFF_TYPE));
+        LookupField typeField = new LookupField(timeOffModule,"type","Type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"TYPE",FieldType.LOOKUP,true,false,true,false,"Type",moduleBean.getModule(FacilioConstants.TimeOff.TIME_OFF_TYPE));
         timeOffFields.add(typeField);
 
         LookupField moduleStateField = FieldFactory.getDefaultField("moduleState", "Status", "MODULE_STATE", FieldType.LOOKUP);

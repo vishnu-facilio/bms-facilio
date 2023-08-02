@@ -26,6 +26,7 @@ import com.facilio.fsm.commands.serviceAppointment.FetchServiceAppointmentSupple
 import com.facilio.fsm.commands.serviceOrders.LoadSupplementsForSOCommand;
 import com.facilio.fsm.commands.serviceOrders.SetServiceTaskCommandV3;
 import com.facilio.fsm.commands.serviceTasks.LoadTaskPlansCommandV3;
+import com.facilio.fsm.commands.timeOff.FetchTimeOffSupplementsCommand;
 import com.facilio.fsm.context.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -204,7 +205,9 @@ public class FieldServiceManagementV3Config {
                 .afterSave(new ConstructUpdateCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeOff.TIME_OFF_ACTIVITY))
                 .list()
+                .beforeFetch(new FetchTimeOffSupplementsCommand())
                 .summary()
+                .beforeFetch(new FetchTimeOffSupplementsCommand())
                 .pickList()
                 .delete()
                 .build();
