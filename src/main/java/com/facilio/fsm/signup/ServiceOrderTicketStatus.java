@@ -96,7 +96,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         ServiceOrderTicketStatusContext inProgressState = new ServiceOrderTicketStatusContext();
         inProgressState.setStatus(FacilioConstants.ServiceOrder.IN_PROGRESS);
         inProgressState.setDisplayName("In Progress");
-        inProgressState.setColor("#information");
+        inProgressState.setColor("information");
         inProgressState.setTextColor("#ffffff");
         inProgressState.setTypeCode(1);
         inProgressState.setRecordLocked(false);
@@ -106,7 +106,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         ServiceOrderTicketStatusContext completedState = new ServiceOrderTicketStatusContext();
         completedState.setStatus(FacilioConstants.ServiceOrder.COMPLETED);
         completedState.setDisplayName("Completed");
-        completedState.setColor("#success");
+        completedState.setColor("success");
         completedState.setTextColor("#ffffff");
         completedState.setTypeCode(2);
         completedState.setRecordLocked(false);
@@ -116,7 +116,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         ServiceOrderTicketStatusContext closedState = new ServiceOrderTicketStatusContext();
         closedState.setStatus(FacilioConstants.ServiceOrder.CLOSED);
         closedState.setDisplayName("Closed");
-        closedState.setColor("#success");
+        closedState.setColor("success");
         closedState.setTextColor("#000000");
         closedState.setTypeCode(3);
         closedState.setRecordLocked(true);
@@ -126,7 +126,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         ServiceOrderTicketStatusContext cancelledState = new ServiceOrderTicketStatusContext();
         cancelledState.setStatus(FacilioConstants.ServiceAppointment.CANCELLED);
         cancelledState.setDisplayName("Cancelled");
-        cancelledState.setColor("#danger");
+        cancelledState.setColor("danger");
         cancelledState.setTextColor("#ffffff");
         cancelledState.setTypeCode(3);
         cancelledState.setRecordLocked(true);
