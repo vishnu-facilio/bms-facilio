@@ -2,10 +2,14 @@ package com.facilio.bmsconsoleV3.commands.tool;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -111,15 +115,23 @@ public class ToolQuantityRollUpCommandV3  extends FacilioCommand {
 
                 context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypeId);
             }
-            Map<String, Map<Long,List<UpdateChangeSet>>> finalChangeMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
-            finalChangeMap.put(module.getName(), changes);
-            context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(module.getName(), toolRecords));
-            context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, finalChangeMap);
-            context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-
+            notifyToolOutOfStock(toolRecords,changes);
 
         }
         context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
+    }
+
+    private static void notifyToolOutOfStock(List<V3ToolContext> toolRecords, Map<Long, List<UpdateChangeSet>> changes) throws Exception {
+        Map<String, Map<Long,List<UpdateChangeSet>>> finalChangeMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
+        finalChangeMap.put(FacilioConstants.ContextNames.TOOL, changes);
+        FacilioChain c = FacilioChain.getTransactionChain();
+        c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE,
+                WorkflowRuleContext.RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
+        FacilioContext context = c.getContext();
+        context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, finalChangeMap);
+        context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.TOOL, toolRecords));
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+        c.execute();
     }
 
     public static double getTotalQuantityConsumed(long toolId) throws Exception {

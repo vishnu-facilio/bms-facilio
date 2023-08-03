@@ -6,9 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -134,18 +138,29 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 
 					}
 				}
-				Map<String, Map<Long,List<UpdateChangeSet>>> finalChangeMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
-				finalChangeMap.put(itemModule.getName(), changes);
-				
-				context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(itemModule.getName(), itemRecords));
+
+				notifyItemOutOfStock(itemRecords,changes);
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 				context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, itemTypesIds);
-				context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, finalChangeMap);
-				
+
 			}
 	
 		}
 		return false;
+	}
+
+	private void notifyItemOutOfStock(List<V3ItemContext> itemRecords, Map<Long, List<UpdateChangeSet>> changes) throws Exception {
+		Map<String, Map<Long,List<UpdateChangeSet>>> finalChangeMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
+		finalChangeMap.put(FacilioConstants.ContextNames.ITEM, changes);
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE,
+				WorkflowRuleContext.RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
+		FacilioContext context = c.getContext();
+		context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, finalChangeMap);
+		context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.ITEM, itemRecords));
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+
+		c.execute();
 	}
 
 	public static double getTotalQuantityConsumed(long inventoryCostId, String fieldName) throws Exception {

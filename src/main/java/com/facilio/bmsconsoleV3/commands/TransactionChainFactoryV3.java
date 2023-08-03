@@ -1535,11 +1535,10 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getUpdateItemQuantityRollupChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateItemQuantityCommandV3());
-        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE,
-                RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
         c.addCommand(getUpdateItemTypeQuantityRollupChain());
         return c;
     }
+
 
     public static FacilioChain getUpdateItemTypeQuantityRollupChain() {
         FacilioChain c = getDefaultChain();
@@ -1558,8 +1557,6 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getUpdatetoolQuantityRollupChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ToolQuantityRollUpCommandV3());
-        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
-        c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
         c.addCommand(getUpdateToolTypeQuantityRollupChain());
         return c;
     }
@@ -2131,9 +2128,6 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getUpdatetoolQuantityRollupChainV3() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ToolQuantityRollUpCommandV3());
-        c.addCommand(new ExecutePostTransactionWorkFlowsCommandV3()
-                .addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE, RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE))
-        );
         c.addCommand(getUpdateToolTypeQuantityRollupChainV3());
         return c;
     }

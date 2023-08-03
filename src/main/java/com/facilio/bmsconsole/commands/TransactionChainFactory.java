@@ -2366,9 +2366,6 @@ public class TransactionChainFactory {
 		public static FacilioChain getUpdateItemQuantityRollupChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddOrUpdateItemQuantityCommandV3());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
-
 			c.addCommand(getUpdateItemTypeQuantityRollupChain());
 			return c;
 		}
@@ -2497,8 +2494,6 @@ public class TransactionChainFactory {
 		public static FacilioChain getUpdatetoolQuantityRollupChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ToolQuantityRollUpCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
 			c.addCommand(getUpdateToolTypeQuantityRollupChain());
 			return c;
 		}
