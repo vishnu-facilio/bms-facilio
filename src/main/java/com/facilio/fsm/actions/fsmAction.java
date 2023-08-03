@@ -127,11 +127,11 @@ public class fsmAction extends V3Action {
         return SUCCESS;
     }
     public String updateServiceAppointmentStatus() throws Exception{
-        getModuleName();
-
         switch(getIdentifier()){
             case FacilioConstants.ServiceAppointment.DISPATCH:
-                ServiceAppointmentUtil.dispatchServiceAppointment(getRecordId(),getFieldAgentId());
+                if(getRecordId() > 0 && (getFieldAgentId() != null && getFieldAgentId() >0)) {
+                    ServiceAppointmentUtil.dispatchServiceAppointment(getRecordId(), getFieldAgentId());
+                }
                 break;
             case FacilioConstants.ServiceAppointment.START_TRIP:
                 ServiceAppointmentUtil.startTripForAppointment(getRecordId(),getTrip());

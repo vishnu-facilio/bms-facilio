@@ -244,9 +244,9 @@
         </action>
         <action name="serviceAppointment/*/systemButton/*" class="com.facilio.fsm.actions.fsmAction" method="updateServiceAppointmentStatus">
             <param name="moduleName">serviceAppointment</param>
-            <param name="recordId">{2}</param>
+            <param name="recordId">{1}</param>
             <param name="buttonAction">systemButton</param>
-            <param name="identifier">{3}</param>
+            <param name="identifier">{2}</param>
             <param name="buttonPermission">true</param>
         </action>
         <action name="*/*/systemButton/*">

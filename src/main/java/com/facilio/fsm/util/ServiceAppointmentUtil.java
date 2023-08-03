@@ -142,7 +142,7 @@ public class ServiceAppointmentUtil {
         }
     }
 
-    public static void dispatchServiceAppointment(Long appointmentId,Long peopleId) throws Exception {
+    public static void dispatchServiceAppointment(long appointmentId,long peopleId) throws Exception {
         String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
@@ -153,7 +153,7 @@ public class ServiceAppointmentUtil {
         updateFields.add(saFieldMap.get("fieldAgent"));
         updateFields.add(saFieldMap.get("status"));
 
-        V3PeopleContext fieldAgent = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,peopleId);
+        V3PeopleContext fieldAgent = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,peopleId,V3PeopleContext.class);
 
         ServiceAppointmentContext appointment = new ServiceAppointmentContext();
         appointment.setId(appointmentId);
@@ -174,7 +174,7 @@ public class ServiceAppointmentUtil {
             taskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
             ServiceTaskContext task  = new ServiceTaskContext();
             task.setStatus(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
-            V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(task),taskIds, true,false);
+            V3Util.updateBulkRecords(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, FieldUtil.getAsProperties(task),taskIds, true,false);
         }
     }
 
