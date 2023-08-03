@@ -65,6 +65,7 @@ public class FsmTransactionChainFactoryV3 {
     }
     public static FacilioChain getTaskBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ServiceTaskStatusCheck());
         c.addCommand(new SetPlansCommandV3());
         c.addCommand(new ServiceTaskDurationUpdateCommandV3());
         return c;
@@ -94,8 +95,8 @@ public class FsmTransactionChainFactoryV3 {
 
     public static FacilioChain getSOBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new SetTaskStatusCommandV3());
         c.addCommand(new VerifySOStatusUpdate());
+        c.addCommand(new SetTaskStatusCommandV3());
         return c;
     }
 

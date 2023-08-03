@@ -14,58 +14,62 @@ public class StatusBasedActions extends FacilioCommand {
 
         Map<String,String> editButton = new HashMap<>();
         editButton.put("label","Edit");
-        editButton.put("type","default");
+        editButton.put("code","edit");
+        editButton.put("type","icon");
         editButton.put("status","1");
 
         Map<String,String> deleteButton = new HashMap<>();
         deleteButton.put("label","Delete");
-        deleteButton.put("type","default");
+        deleteButton.put("code","delete");
+        deleteButton.put("type","icon");
         deleteButton.put("status","1");
 
         Map<String,String> cancelButton = new HashMap<>();
         cancelButton.put("label","Cancel");
         cancelButton.put("type","system");
-        cancelButton.put("code",FacilioConstants.ServiceOrder.CANCELLED);
+        cancelButton.put("code","cancel");
         cancelButton.put("status","1");
-        cancelButton.put("api","/updateStatus/serviceOrder/{orderId}/{status}/{skipValidation}");
+//        cancelButton.put("api","/updateStatus/serviceOrder/{orderId}/{status}/{skipValidation}");
 
         Map<String,String> cloneButton = new HashMap<>();
         cloneButton.put("label","Clone");
         cloneButton.put("type","system");
         cloneButton.put("status","1");
-        cloneButton.put("code",FacilioConstants.ServiceOrder.CLOSED);
-        cloneButton.put("api","/ddd/ddd");
+//        cloneButton.put("code",FacilioConstants.ServiceOrder.CLOSED);
+//        cloneButton.put("api","/ddd/ddd");
 
         Map<String,String> associateSPButton = new HashMap<>();
         associateSPButton.put("label","Associate Service Plan");
         associateSPButton.put("type","system");
         associateSPButton.put("status","1");
-        cloneButton.put("code",FacilioConstants.ServiceOrder.CANCELLED);
-        associateSPButton.put("api","/ddd/ddd");
+//        associateSPButton.put("code",FacilioConstants.ServiceOrder.CANCELLED);
+//        associateSPButton.put("api","/ddd/ddd");
 
         Map<String,String> downloadButton = new HashMap<>();
         downloadButton.put("label","Download");
         downloadButton.put("type","default");
+        downloadButton.put("code","download");
         downloadButton.put("status","1");
 
         Map<String,String> printButton = new HashMap<>();
         printButton.put("label","Print");
         printButton.put("type","default");
+        printButton.put("code","print");
         printButton.put("status","1");
 
         Map<String,String> completeButton = new HashMap<>();
         completeButton.put("label","Complete Work");
-        completeButton.put("code",FacilioConstants.ServiceOrder.COMPLETED);
+        completeButton.put("code","complete");
         completeButton.put("type","system");
         completeButton.put("status","1");
-        completeButton.put("api","updateStatus/serviceOrder/{orderId}/{status}/{skipValidation}");
+//        completeButton.put("api","updateStatus/serviceOrder/{orderId}/{status}/{skipValidation}");
 
         Map<String,String> closeButton = new HashMap<>();
         closeButton.put("label","Close Order");
         closeButton.put("type","system");
-        closeButton.put("code",FacilioConstants.ServiceOrder.CLOSED);
+        closeButton.put("code","close");
         closeButton.put("status","1");
-        closeButton.put("api","updateStatus/serviceOrder/{orderId}/{status}/{skipValidation}");
+//        closeButton.put("api","updateStatus/serviceOrder/{orderId}/{status}/{skipValidation}");
 
         ServiceOrderStatusActions newStatus = new ServiceOrderStatusActions();
         newStatus.setPrimaryButton(editButton);

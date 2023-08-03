@@ -22,13 +22,18 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
+import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
 
 import java.util.*;
+
+import static com.facilio.bmsconsole.util.SystemButtonApi.addSystemButton;
 
 public class ServiceOrderModule extends BaseModuleConfig {
     public ServiceOrderModule(){
@@ -44,6 +49,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         addServiceOrderAttachmentsModule(Constants.getModBean(),AccountUtil.getCurrentOrg().getId(), serviceOrderModule);
 
         constructServiceOrderNotesModule(Constants.getModBean(), AccountUtil.getCurrentOrg().getId(), serviceOrderModule);
+
+        addSystemButtons();
     }
 
     public void addActivityModuleForServiceOrder() throws Exception {
@@ -628,6 +635,177 @@ public class ServiceOrderModule extends BaseModuleConfig {
         return  pageTemp;
     }
 
+    private static Boolean addSystemButtons() throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        ServiceOrderTicketStatusContext newState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.NEW);
+        ServiceOrderTicketStatusContext scheduledState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.SCHEDULED);
+        ServiceOrderTicketStatusContext inprogressState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.IN_PROGRESS);
+        ServiceOrderTicketStatusContext completedState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.COMPLETED);
+        ServiceOrderTicketStatusContext cancelledState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.CANCELLED);
+        ServiceOrderTicketStatusContext closedState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.CLOSED);
+
+        Criteria inprogressCriteria = new Criteria();
+        inprogressCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(inprogressState.getId()), PickListOperators.IS));
+
+        SystemButtonRuleContext completeWork = new SystemButtonRuleContext();
+        completeWork.setName("Complete Work");
+        completeWork.setButtonType(1);
+        completeWork.setPositionType(1);
+        completeWork.setIdentifier("completeWork");
+        completeWork.setPermissionRequired(true);
+        completeWork.setPermission("UPDATE");
+        completeWork.setCriteria(inprogressCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,completeWork);
+
+        SystemButtonRuleContext cancelWork = new SystemButtonRuleContext();
+        cancelWork.setName("Cancel");
+        cancelWork.setButtonType(4);
+        cancelWork.setPositionType(1);
+        cancelWork.setIdentifier("cancelSO");
+        cancelWork.setPermissionRequired(true);
+        cancelWork.setPermission("UPDATE");
+        cancelWork.setCriteria(inprogressCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cancelWork);
+
+        SystemButtonRuleContext cloneWork = new SystemButtonRuleContext();
+        cloneWork.setName("Clone");
+        cloneWork.setButtonType(4);
+        cloneWork.setPositionType(1);
+        cloneWork.setIdentifier("cloneSO");
+        cloneWork.setPermissionRequired(true);
+        cloneWork.setPermission("UPDATE");
+        cloneWork.setCriteria(inprogressCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneWork);
+
+        SystemButtonRuleContext associateSP = new SystemButtonRuleContext();
+        associateSP.setName("Associate Service Plan");
+        associateSP.setButtonType(4);
+        associateSP.setPositionType(1);
+        associateSP.setIdentifier("associateSOSP");
+        associateSP.setPermissionRequired(true);
+        associateSP.setPermission("UPDATE");
+        associateSP.setCriteria(inprogressCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,associateSP);
+
+        Criteria newCriteria = new Criteria();
+        newCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(newState.getId()), PickListOperators.IS));
+
+        SystemButtonRuleContext cancelNewWork = new SystemButtonRuleContext();
+        cancelNewWork.setName("Cancel");
+        cancelNewWork.setButtonType(4);
+        cancelNewWork.setPositionType(1);
+        cancelNewWork.setIdentifier("cancelSO");
+        cancelNewWork.setPermissionRequired(true);
+        cancelNewWork.setPermission("UPDATE");
+        cancelNewWork.setCriteria(newCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cancelNewWork);
+
+        SystemButtonRuleContext cloneNewWork = new SystemButtonRuleContext();
+        cloneNewWork.setName("Clone");
+        cloneNewWork.setButtonType(4);
+        cloneNewWork.setPositionType(1);
+        cloneNewWork.setIdentifier("cloneSO");
+        cloneNewWork.setPermissionRequired(true);
+        cloneNewWork.setPermission("UPDATE");
+        cloneNewWork.setCriteria(newCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneNewWork);
+
+        SystemButtonRuleContext associateSPNew = new SystemButtonRuleContext();
+        associateSPNew.setName("Associate Service Plan");
+        associateSPNew.setButtonType(4);
+        associateSPNew.setPositionType(1);
+        associateSPNew.setIdentifier("associateSOSP");
+        associateSPNew.setPermissionRequired(true);
+        associateSPNew.setPermission("UPDATE");
+        associateSPNew.setCriteria(newCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,associateSPNew);
+
+        Criteria scheduledCriteria = new Criteria();
+        scheduledCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(scheduledState.getId()), PickListOperators.IS));
+
+        SystemButtonRuleContext cancelScheduledWork = new SystemButtonRuleContext();
+        cancelScheduledWork.setName("Cancel");
+        cancelScheduledWork.setButtonType(4);
+        cancelScheduledWork.setPositionType(1);
+        cancelScheduledWork.setIdentifier("cancelSO");
+        cancelScheduledWork.setPermissionRequired(true);
+        cancelScheduledWork.setPermission("UPDATE");
+        cancelScheduledWork.setCriteria(scheduledCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cancelScheduledWork);
+
+        SystemButtonRuleContext cloneScheduledWork = new SystemButtonRuleContext();
+        cloneScheduledWork.setName("Clone");
+        cloneScheduledWork.setButtonType(4);
+        cloneScheduledWork.setPositionType(1);
+        cloneScheduledWork.setIdentifier("cloneSO");
+        cloneScheduledWork.setPermissionRequired(true);
+        cloneScheduledWork.setPermission("UPDATE");
+        cloneScheduledWork.setCriteria(scheduledCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneScheduledWork);
+
+        SystemButtonRuleContext associateSPScheduled = new SystemButtonRuleContext();
+        associateSPScheduled.setName("Associate Service Plan");
+        associateSPScheduled.setButtonType(4);
+        associateSPScheduled.setPositionType(1);
+        associateSPScheduled.setIdentifier("associateSOSP");
+        associateSPScheduled.setPermissionRequired(true);
+        associateSPScheduled.setPermission("UPDATE");
+        associateSPScheduled.setCriteria(scheduledCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,associateSPScheduled);
+
+        Criteria completedCriteria = new Criteria();
+        completedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(completedState.getId()), PickListOperators.IS));
+
+        SystemButtonRuleContext closeCompleteWork = new SystemButtonRuleContext();
+        closeCompleteWork.setName("Close");
+        closeCompleteWork.setButtonType(1);
+        closeCompleteWork.setPositionType(1);
+        closeCompleteWork.setIdentifier("closeSO");
+        closeCompleteWork.setPermissionRequired(true);
+        closeCompleteWork.setPermission("UPDATE");
+        closeCompleteWork.setCriteria(completedCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,closeCompleteWork);
+
+        SystemButtonRuleContext cloneCompleteWork = new SystemButtonRuleContext();
+        cloneCompleteWork.setName("Clone");
+        cloneCompleteWork.setButtonType(4);
+        cloneCompleteWork.setPositionType(1);
+        cloneCompleteWork.setIdentifier("cloneSO");
+        cloneCompleteWork.setPermissionRequired(true);
+        cloneCompleteWork.setPermission("UPDATE");
+        cloneCompleteWork.setCriteria(completedCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneCompleteWork);
+
+        Criteria cancelledCriteria = new Criteria();
+        cancelledCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(cancelledState.getId()), PickListOperators.IS));
+
+        SystemButtonRuleContext cloneCancelledWork = new SystemButtonRuleContext();
+        cloneCancelledWork.setName("Clone");
+        cloneCancelledWork.setButtonType(4);
+        cloneCancelledWork.setPositionType(1);
+        cloneCancelledWork.setIdentifier("cloneSO");
+        cloneCancelledWork.setPermissionRequired(true);
+        cloneCancelledWork.setPermission("UPDATE");
+        cloneCancelledWork.setCriteria(cancelledCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneCancelledWork);
+
+        Criteria closedCriteria = new Criteria();
+        closedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(closedState.getId()), PickListOperators.IS));
+
+        SystemButtonRuleContext cloneClosedWork = new SystemButtonRuleContext();
+        cloneClosedWork.setName("Clone");
+        cloneClosedWork.setButtonType(4);
+        cloneClosedWork.setPositionType(1);
+        cloneClosedWork.setIdentifier("cloneSO");
+        cloneClosedWork.setPermissionRequired(true);
+        cloneClosedWork.setPermission("UPDATE");
+        cloneClosedWork.setCriteria(closedCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneClosedWork);
+
+        return false;
+    }
     private static List<PagesContext> getSystemPage() throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);

@@ -17,6 +17,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static com.facilio.fsm.util.ServiceOrderAPI.updateServiceOrder;
 
@@ -26,7 +27,20 @@ public class ServiceOrderAction extends V3Action {
     private String moduleName;
     private Long orderId;
     private String status;
-    private boolean skipValidation;
+    private String identifier;
+    private String buttonAction;
+    private boolean validate;
+    private static Map<String,String> statusMap = new HashMap<String, String>() {{
+        put("cancelSO", FacilioConstants.ServiceOrder.CANCELLED);
+        put("cloneSO", "Clone");
+        put("associateSOSP", "Associate");
+        put("completeWork", FacilioConstants.ServiceOrder.COMPLETED);
+        put("closeSO", FacilioConstants.ServiceOrder.CLOSED);
+    }};
+
+    public String systemActions() throws Exception{
+        return updateServiceOrders();
+    }
 
     public String fetchStatusActions() throws Exception{
         FacilioChain chain = FsmTransactionChainFactoryV3.getStatusBasedActions();
@@ -40,37 +54,48 @@ public class ServiceOrderAction extends V3Action {
         if(orderId == null){
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order id can not be empty");
         }
+        if(statusMap.get(identifier).equals("Clone") || statusMap.get(identifier).equals("Associate") ){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, statusMap.get(identifier) +" feature is not enabled");
+        }
         try {
             HashMap<String, String> successMsg = new HashMap<>();
             ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,orderId);
+            ServiceOrderTicketStatusContext inProgressState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.IN_PROGRESS);
             ServiceOrderTicketStatusContext cancelledState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.CANCELLED);
             ServiceOrderTicketStatusContext completedState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.COMPLETED);
             ServiceOrderTicketStatusContext closedState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.CLOSED);
-            ServiceOrderTicketStatusContext newStatus =  ServiceOrderAPI.getStatus(status);
+            String statusData = statusMap.get(identifier);
+            ServiceOrderTicketStatusContext newStatus =  ServiceOrderAPI.getStatus(statusData);
             if(newStatus != null && newStatus.getId() == cancelledState.getId()){
-                if(serviceOrderInfo.getStatus() ==  cancelledState){
+                if(serviceOrderInfo.getStatus().getId() ==  cancelledState.getId()){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order already in Cancelled state");
                 }
-                if(serviceOrderInfo.getStatus() == completedState){
+                if(serviceOrderInfo.getStatus().getId() == completedState.getId()){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order cannot be Cancelled as it is already Completed");
                 }
-                if(serviceOrderInfo.getStatus() == ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.CLOSED)){
+                if(serviceOrderInfo.getStatus().getId() == closedState.getId()){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order cannot be Cancelled as it is already Closed");
                 }
-
-                if(!skipValidation){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Cancelling Service Order will affect all its Appointments and Tasks, Do you still want to proceed?");
+                if(validate){
+                    successMsg.put("title","Cancel Service Order");
+                    successMsg.put("message","Cancelling Service Order will affect all its Appointments and Tasks, Do you still want to proceed?");
+                    setData(FacilioConstants.ServiceOrder.SERVICE_ORDER_STATUS_ACTIONS,successMsg);
+                    return V3Action.SUCCESS;
                 }
-
                 serviceOrderInfo.setStatus(newStatus);
                 updateServiceOrder(serviceOrderInfo);
-                successMsg.put("msg","Service Order Cancelled Successfully");
+                successMsg.put("message","Service Order Cancelled Successfully");
             }
 
             if(newStatus != null && newStatus.getId() == completedState.getId()){
-
-                if(!skipValidation){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Completing Service Order will affect all its Appointments and Tasks, Do you still want to proceed?");
+                if(serviceOrderInfo.getStatus().getId() != inProgressState.getId()){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order can only be completed in 'In Progress' state");
+                }
+                if(validate){
+                    successMsg.put("title","Complete Service Order");
+                    successMsg.put("message","Completing Service Order will affect all its Appointments and Tasks, Do you still want to proceed?");
+                    setData(FacilioConstants.ServiceOrder.SERVICE_ORDER_STATUS_ACTIONS,successMsg);
+                    return V3Action.SUCCESS;
                 }
 
                 serviceOrderInfo.setStatus(newStatus);
@@ -79,7 +104,7 @@ public class ServiceOrderAction extends V3Action {
                 serviceOrderInfo.setActualEndTime(endDuration);
                 serviceOrderInfo.setActualDuration(endDuration - startDuration);
                 updateServiceOrder(serviceOrderInfo);
-                successMsg.put("msg","Service Order Completed Successfully");
+                successMsg.put("message","Service Order Completed Successfully");
             }
 
             if(newStatus !=null && newStatus.getId() == closedState.getId()){
@@ -88,10 +113,8 @@ public class ServiceOrderAction extends V3Action {
                 }
                 serviceOrderInfo.setStatus(closedState);
                 updateServiceOrder(serviceOrderInfo);
-                successMsg.put("msg","Service Order Closed Successfully");
+                successMsg.put("message","Service Order Closed Successfully");
             }
-
-
             setData(FacilioConstants.ServiceOrder.SERVICE_ORDER_STATUS_ACTIONS,successMsg);
 
         }catch(Exception e){

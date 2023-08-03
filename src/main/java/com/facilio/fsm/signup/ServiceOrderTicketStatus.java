@@ -109,7 +109,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         completedState.setColor("success");
         completedState.setTextColor("#ffffff");
         completedState.setTypeCode(2);
-        completedState.setRecordLocked(false);
+        completedState.setRecordLocked(true);
         completedState.setDeleteLocked(true);
         ticketStatusContextList.add(completedState);
 
