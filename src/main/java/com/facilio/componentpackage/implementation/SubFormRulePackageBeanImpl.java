@@ -17,25 +17,21 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
-import com.facilio.bmsconsole.forms.FormRuleContext.FormRuleType;
-import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
-import com.facilio.bmsconsole.forms.FormRuleContext.ExecuteType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-
 import java.util.*;
 
-public class FormRulePackageBeanImpl implements PackageBean<FormRuleContext> {
+public class SubFormRulePackageBeanImpl implements PackageBean<FormRuleContext> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
-        return FormRulePackageUtil.getFormRuleIdVsFormId(true, false);
+        return FormRulePackageUtil.getFormRuleIdVsFormId(true, true);
     }
 
     @Override
     public Map<Long, Long> fetchCustomComponentIdsToPackage() throws Exception {
-        return FormRulePackageUtil.getFormRuleIdVsFormId(false, false);
+        return FormRulePackageUtil.getFormRuleIdVsFormId(false, true);
     }
 
     @Override
@@ -44,23 +40,22 @@ public class FormRulePackageBeanImpl implements PackageBean<FormRuleContext> {
     }
 
     @Override
-    public void convertToXMLComponent(FormRuleContext formRule, XMLBuilder formRuleElement) throws Exception {
+    public void convertToXMLComponent(FormRuleContext subFormRule, XMLBuilder subFormRuleElement) throws Exception {
 
-        if (formRule == null && formRule.getFormId() < 0 && CollectionUtils.isEmpty(formRule.getActions())) {
+        if (subFormRule == null && subFormRule.getFormId() < 0 && subFormRule.getSubFormId() < 0 && CollectionUtils.isEmpty(subFormRule.getActions())) {
             return;
         }
 
-        if (formRule.getTriggerTypeEnum() == TriggerType.FIELD_UPDATE && CollectionUtils.isEmpty(formRule.getTriggerFields())) {
+        if (subFormRule.getTriggerTypeEnum() == FormRuleContext.TriggerType.FIELD_UPDATE && CollectionUtils.isEmpty(subFormRule.getTriggerFields())) {
             return;
         }
 
-        FormRulePackageUtil.convertFormRuleToXMLComponent(formRule,formRuleElement);
+        FormRulePackageUtil.convertFormRuleToXMLComponent(subFormRule,subFormRuleElement);
 
     }
 
     @Override
     public Map<String, String> validateComponentToCreate(List<XMLBuilder> components) throws Exception {
-
         return null;
     }
 
@@ -71,7 +66,6 @@ public class FormRulePackageBeanImpl implements PackageBean<FormRuleContext> {
 
     @Override
     public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
-
         return FormRulePackageUtil.getExistingIdsByXMLData(uniqueIdVsXMLData);
     }
 
@@ -97,6 +91,7 @@ public class FormRulePackageBeanImpl implements PackageBean<FormRuleContext> {
             uniqueIdentifierVsComponentId.put(idVsData.getKey(), newFormRule.getId());
 
         }
+
         return uniqueIdentifierVsComponentId;
     }
 
@@ -119,7 +114,6 @@ public class FormRulePackageBeanImpl implements PackageBean<FormRuleContext> {
             context.put(FormRuleAPI.FORM_RULE_CONTEXT, formRule);
 
             c.execute();
-
         }
     }
 
@@ -137,13 +131,16 @@ public class FormRulePackageBeanImpl implements PackageBean<FormRuleContext> {
 
     }
 
+
+
     private FormRuleContext constructRuleFromXMLBuilder(XMLBuilder ruleElement, ModuleBean moduleBean) throws Exception {
 
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         String formName = ruleElement.getElement(PackageConstants.FormRuleConstants.FORM_NAME).text();
+        String subFormName = ruleElement.getElement(PackageConstants.FormRuleConstants.SUB_FORM_NAME).text();
+        String subFormModuleName = ruleElement.getElement(PackageConstants.FormRuleConstants.SUB_FORM_MODULE_NAME).text();
         String moduleName = ruleElement.getElement(PackageConstants.MODULENAME).getText();
         String ruleName = ruleElement.getElement(PackageConstants.NAME).text();
-
         String description = ruleElement.getElement(PackageConstants.DESCRIPTION).text();
         String typeEnum = ruleElement.getElement(PackageConstants.FormRuleConstants.TYPE).text();
         String executeTypeEnum = ruleElement.getElement(PackageConstants.FormRuleConstants.EXECUTE_TYPE).text();
@@ -151,10 +148,12 @@ public class FormRulePackageBeanImpl implements PackageBean<FormRuleContext> {
         boolean ruleStatus = Boolean.parseBoolean(ruleElement.getElement(PackageConstants.FormRuleConstants.STATUS).getText());
 
         FacilioModule module = StringUtils.isNotEmpty(moduleName) ? moduleBean.getModule(moduleName) : null;
+        FacilioModule subFormModule = StringUtils.isNotEmpty(subFormModuleName) ? moduleBean.getModule(subFormModuleName) : null;
         FacilioForm form = StringUtils.isNotEmpty(formName) ? FormsAPI.getFormFromDB(formName, module) : null;
-        FormRuleType type = StringUtils.isNotEmpty(typeEnum) ? FormRuleContext.FormRuleType.valueOf(typeEnum) : null;
-        ExecuteType executeType = StringUtils.isNotEmpty(executeTypeEnum) ? FormRuleContext.ExecuteType.valueOf(executeTypeEnum) : null;
-        TriggerType triggerType = StringUtils.isNotEmpty(triggerTypeEnum) ? FormRuleContext.TriggerType.valueOf(triggerTypeEnum) : null;
+        FacilioForm subForm = StringUtils.isNotEmpty(subFormName) ? FormsAPI.getFormFromDB(subFormName, subFormModule) : null;
+        FormRuleContext.FormRuleType type = StringUtils.isNotEmpty(typeEnum) ? FormRuleContext.FormRuleType.valueOf(typeEnum) : null;
+        FormRuleContext.ExecuteType executeType = StringUtils.isNotEmpty(executeTypeEnum) ? FormRuleContext.ExecuteType.valueOf(executeTypeEnum) : null;
+        FormRuleContext.TriggerType triggerType = StringUtils.isNotEmpty(triggerTypeEnum) ? FormRuleContext.TriggerType.valueOf(triggerTypeEnum) : null;
 
 
         // Form Rule
@@ -164,7 +163,9 @@ public class FormRulePackageBeanImpl implements PackageBean<FormRuleContext> {
         if (form != null) {
             formRuleContext.setFormId(form.getId());
         }
-
+        if(subForm!=null){
+            formRuleContext.setSubFormId(subForm.getId());
+        }
         formRuleContext.setName(ruleName);
         formRuleContext.setDescription(description);
         formRuleContext.setType(type != null ? type.getIntVal() : -1);
@@ -173,11 +174,16 @@ public class FormRulePackageBeanImpl implements PackageBean<FormRuleContext> {
         formRuleContext.setRuleType(1);
 
         XMLBuilder criteriaElement = ruleElement.getElement(PackageConstants.FormRuleConstants.FORM_RULE_CRITERIA);
-
+        XMLBuilder subFormCriteriaElement = ruleElement.getElement(PackageConstants.FormRuleConstants.FORM_RULE_CRITERIA);
         // Criteria
         if (criteriaElement != null) {
             Criteria criteria = PackageBeanUtil.constructCriteriaFromBuilder(criteriaElement);
             formRuleContext.setCriteria(criteria);
+        }
+        //Sub Form Criteria
+        if(subFormCriteriaElement!=null){
+            Criteria subFormCriteria = PackageBeanUtil.constructCriteriaFromBuilder(subFormCriteriaElement);
+            formRuleContext.setSubFormCriteria(subFormCriteria);
         }
 
         // trigger fields

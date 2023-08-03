@@ -402,6 +402,15 @@ public class PackageConstants {
         public static final String FORM_NAME = "Form_Name";
     }
 
+    public static class ValidationRuleConstants {
+        public static final String NAME = "Name";
+        public static final String PARENT_FORM_NAME = "Parent_Form_Name";
+        public static final String PARENT_FORM_MODULE_NAME = "Parent_Form_Module_Name";
+        public static final String ERROR_MESSAGE = "Error_Message";
+        public static final String NAMED_CRITERIA_NAME = "Named_Criteria_Name";
+        public static final String PLACE_HOLDER_SCRIPT = "Place_Holder_Script";
+
+    }
     public static final class NamedCriteriaConstants {
         public static final String NAMED_CRITERIA_NAME = "Named_Criteria_Name";
         public static final String NAMED_CONDITION_NAME = "Named_Condition_Name";
@@ -441,6 +450,7 @@ public class PackageConstants {
         public static final String TRIGGER_TYPE = "Trigger_Type";
         public static final String FORM_NAME = "Form_Name";
         public static final String SUB_FORM_NAME = "Sub_Form_Name";
+        public static final String SUB_FORM_MODULE_NAME = "Sub_Form_Module_Name";
         public static final String FORM_ON_LOAD_RULE_TYPE = "Form_On_Load_Rule_Type";
         public static final String EXECUTE_TYPE = "Execute_Type";
         public static final String TRIGGER_FIELDS_LIST = "Trigger_Fields_List";

@@ -6,19 +6,18 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.manager.NamedCriteria;
 import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -155,4 +154,45 @@ public class ValidationRulesAPI {
 		}
 
 	}
+
+	public static NamedCriteria getNamedCriteria(Criteria criteria) throws Exception {
+
+		if (criteria == null) {
+			return null;
+		}
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getNamedCriteriaModule().getTableName())
+				.select(FieldFactory.getNamedCriteriaFields())
+				.andCriteria(criteria);
+		NamedCriteria namedCriteria = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), NamedCriteria.class);
+
+		return namedCriteria;
+
+	}
+
+	public static long getFormValidationId(ValidationContext validationRule) throws Exception {
+
+		FacilioModule validationModule = ModuleFactory.getFormValidationRuleModule();
+
+		GenericSelectRecordBuilder ruleSelectBuilder = new GenericSelectRecordBuilder()
+				.table(validationModule.getTableName())
+				.select(FieldFactory.getValidationRuleFields(validationModule));
+
+		if (validationRule.getParentId() > 0) {
+			ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(validationRule.getParentId()), NumberOperators.EQUALS));
+		}
+		if (org.apache.commons.lang3.StringUtils.isNotEmpty(validationRule.getName())) {
+			ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name", validationRule.getName(), StringOperators.IS));
+		}
+		if (org.apache.commons.lang3.StringUtils.isNotEmpty(validationRule.getErrorMessage())) {
+			ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("ERROR_MESSAGE", "errorMessage", validationRule.getErrorMessage(), StringOperators.IS));
+		}
+
+		Map<String, Object> prop = ruleSelectBuilder.fetchFirst();
+		return MapUtils.isNotEmpty(prop) ? (Long) prop.get("id") : -1;
+
+	}
+
+
 }

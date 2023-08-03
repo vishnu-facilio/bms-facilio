@@ -105,6 +105,9 @@ public class FormRuleContext {
 		}
 		return -1;
 	}
+	public FormRuleType getTypeEnum() {
+		return type;
+	}
 
 	public void setType(int type) {
 		this.type = FormRuleType.getAllRuleType().get(type);

@@ -49,7 +49,8 @@ public enum ComponentType implements FacilioIntEnum {
     CONNECTED_APP_VARIABLES(null, CONNECTED_APP, false),
     CONNECTED_APP_CONNECTORS(null, CONNECTED_APP, false),
     FORM_RULE(FormRulePackageBeanImpl.class, FORM, false),
-    VALIDATION_RULE(null, MODULE, false),
+    SUB_FORM_RULE(SubFormRulePackageBeanImpl.class, FORM, false),
+    VALIDATION_RULE(ValidationRulePackageBeanImpl.class, FORM, false),
     NAMED_CRITERIA(NamedCriteriaPackageBeanImpl.class, MODULE, false),
     CUSTOM_BUTTON(null, MODULE, false),
     RELATIONSHIP(RelationshipPackageBeanImpl.class, MODULE, false),
@@ -91,6 +92,7 @@ public enum ComponentType implements FacilioIntEnum {
             add(EMAIL_TEMPLATE);
             add(SCHEDULE);
             add(FORM_RULE);
+            add(SUB_FORM_RULE);
             add(VALIDATION_RULE);
             add(CUSTOM_BUTTON);
             add(WORKFLOW_RULE);

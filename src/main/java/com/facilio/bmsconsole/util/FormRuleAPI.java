@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.*;
@@ -11,6 +13,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -87,7 +90,7 @@ public class FormRuleAPI {
 				.fields(FieldFactory.getFormRuleFields());
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(formRuleContext);
-		props.put("status", true);
+		props.putIfAbsent("status", true);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		
@@ -541,7 +544,7 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		}
 		return oldCriteriaId;
 	}
-	
+
 	public static List<FormRuleActionContext> getFormRuleActionContext(long formRuleId) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleActionFields());
@@ -713,5 +716,254 @@ public static List<FormRuleTriggerFieldContext> getFormRuleTriggerFields(FormRul
 		
 	}
 
+	public static List<FormRuleContext> getFormRules(Criteria formRuleCriteria) throws Exception {
+
+		FacilioModule formRuleModule = ModuleFactory.getFormRuleModule();
+		List<FacilioField> formRuleFields = FieldFactory.getFormRuleFields();
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(formRuleModule.getTableName())
+				.select(formRuleFields);
+
+		if (formRuleCriteria != null && !formRuleCriteria.isEmpty()) {
+			selectRecordBuilder.andCriteria(formRuleCriteria);
+		}
+		List<Map<String, Object>> propsList = selectRecordBuilder.get();
+
+		List<FormRuleContext> formRules = FieldUtil.getAsBeanListFromMapList(propsList, FormRuleContext.class);
+
+		return formRules;
+	}
+
+	public static void setFormRuleTriggerFields(List<FormRuleContext> formRuleContexts) throws Exception {
+
+		if (CollectionUtils.isEmpty(formRuleContexts)) {
+			return;
+		}
+
+		List<FacilioField> formRuleTriggerFields = FieldFactory.getFormRuleTriggerFieldFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(formRuleTriggerFields);
+
+		Map<Long, FormRuleContext> ruleIdVsRule = formRuleContexts.stream().collect(Collectors.toMap(FormRuleContext::getId, Function.identity()));
+		Set<Long> formRuleIds = ruleIdVsRule.keySet();
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(formRuleTriggerFields)
+				.table(ModuleFactory.getFormRuleTriggerFieldModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), formRuleIds, NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (CollectionUtils.isEmpty(props)) {
+			return;
+		}
+
+		List<FormRuleTriggerFieldContext> formRuleTriggerFieldContext = FieldUtil.getAsBeanListFromMapList(props, FormRuleTriggerFieldContext.class);
+
+		Map<Long, List<FormRuleTriggerFieldContext>> ruleIdVsTriggerFields = new HashMap<>();
+
+		for (FormRuleTriggerFieldContext formRuleTriggerField : formRuleTriggerFieldContext) {
+			long ruleId = formRuleTriggerField.getRuleId();
+			if (CollectionUtils.isNotEmpty(ruleIdVsTriggerFields.get(ruleId))) {
+				List<FormRuleTriggerFieldContext> triggerFieldContexts = ruleIdVsTriggerFields.get(ruleId);
+				triggerFieldContexts.add(formRuleTriggerField);
+				ruleIdVsTriggerFields.put(ruleId, triggerFieldContexts);
+			} else {
+				List<FormRuleTriggerFieldContext> triggerFieldContexts = new ArrayList<>();
+				triggerFieldContexts.add(formRuleTriggerField);
+				ruleIdVsTriggerFields.put(ruleId, triggerFieldContexts);
+			}
+		}
+
+		for (FormRuleContext formRuleContext : formRuleContexts) {
+			formRuleContext.setTriggerFields(ruleIdVsTriggerFields.get(formRuleContext.getId()));
+		}
+
+	}
+
+	public static void setFormRuleActionAndTriggerFieldContext(List<FormRuleContext> formRuleContexts) throws Exception {
+
+		if (CollectionUtils.isEmpty(formRuleContexts)) {
+			return;
+		}
+
+		FormRuleAPI.setFormRuleTriggerFields(formRuleContexts);
+
+		List<FacilioField> formRuleActionFields = FieldFactory.getFormRuleActionFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(formRuleActionFields);
+
+		Map<Long, FormRuleContext> ruleIdVsRule = formRuleContexts.stream().collect(Collectors.toMap(FormRuleContext::getId, Function.identity()));
+		Set<Long> formRuleIds = ruleIdVsRule.keySet();
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(formRuleActionFields)
+				.table(ModuleFactory.getFormRuleActionModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formRuleId"), formRuleIds, NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (CollectionUtils.isEmpty(props)) {
+			return;
+		}
+
+		List<FormRuleActionContext> formRuleActionContexts = FieldUtil.getAsBeanListFromMapList(props, FormRuleActionContext.class);
+
+		List<Long> workflowIds = new ArrayList<>();
+		List<Long> actionIds = new ArrayList<>();
+
+		for (FormRuleActionContext formRuleAction : formRuleActionContexts) {
+			if (formRuleAction.getActionTypeEnum() == FormActionType.EXECUTE_SCRIPT) {
+				workflowIds.add(formRuleAction.getWorkflowId());
+			} else {
+				actionIds.add(formRuleAction.getId());
+			}
+		}
+		if (CollectionUtils.isNotEmpty(workflowIds)) {
+			Map<Long, WorkflowContext> workflows = WorkflowUtil.getWorkflowsAsMap(workflowIds);
+			for (FormRuleActionContext formRuleAction : formRuleActionContexts) {
+				if (formRuleAction.getWorkflowId() != -1) {
+					formRuleAction.setWorkflow(workflows.get(formRuleAction.getWorkflowId()));
+				}
+			}
+		}
+		if (CollectionUtils.isNotEmpty(actionIds)) {
+			Map<Long, List<FormRuleActionFieldsContext>> actionIdsVsActionFields = getFormRuleActionFieldContext(actionIds);
+			for (FormRuleActionContext formRuleAction : formRuleActionContexts) {
+				formRuleAction.setFormRuleActionFieldsContext(actionIdsVsActionFields.get(formRuleAction.getId()));
+			}
+		}
+
+		Map<Long, List<FormRuleActionContext>> ruleIdVsAction = new HashMap<>();
+		for (FormRuleActionContext formRuleActionContext : formRuleActionContexts) {
+			long ruleId = formRuleActionContext.getFormRuleId();
+			if (CollectionUtils.isNotEmpty(ruleIdVsAction.get(ruleId))) {
+				List<FormRuleActionContext> actionContexts = ruleIdVsAction.get(ruleId);
+				actionContexts.add(formRuleActionContext);
+				ruleIdVsAction.put(ruleId, actionContexts);
+			} else {
+				List<FormRuleActionContext> actionContexts = new ArrayList<>();
+				actionContexts.add(formRuleActionContext);
+				ruleIdVsAction.put(ruleId, actionContexts);
+			}
+		}
+
+		for (FormRuleContext formRuleContext : formRuleContexts) {
+			formRuleContext.setActions(ruleIdVsAction.get(formRuleContext.getId()));
+		}
+
+	}
+
+
+	private static Map<Long, List<FormRuleActionFieldsContext>> getFormRuleActionFieldContext(List<Long> actionIds) throws Exception {
+
+		Map<Long, List<FormRuleActionFieldsContext>> actionIdsVsActionFields = new HashMap<>();
+		List<FacilioField> formRuleActionFields = FieldFactory.getFormRuleActionFieldsFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(formRuleActionFields);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(formRuleActionFields)
+				.table(ModuleFactory.getFormRuleActionFieldModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formRuleActionId"), actionIds, NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		if (CollectionUtils.isEmpty(props)) {
+			return actionIdsVsActionFields;
+		}
+
+		List<FormRuleActionFieldsContext> formRuleActionFieldsContexts = FieldUtil.getAsBeanListFromMapList(props, FormRuleActionFieldsContext.class);
+
+		for (FormRuleActionFieldsContext formRuleActionFieldsContext : formRuleActionFieldsContexts) {
+			long actionId = formRuleActionFieldsContext.getFormRuleActionId();
+			if (CollectionUtils.isNotEmpty(actionIdsVsActionFields.get(actionId))) {
+				List<FormRuleActionFieldsContext> actionFieldsContexts = actionIdsVsActionFields.get(actionId);
+				actionFieldsContexts.add(formRuleActionFieldsContext);
+				actionIdsVsActionFields.put(actionId, actionFieldsContexts);
+			} else {
+				List<FormRuleActionFieldsContext> actionFieldsContexts = new ArrayList<>();
+				actionFieldsContexts.add(formRuleActionFieldsContext);
+				actionIdsVsActionFields.put(actionId, actionFieldsContexts);
+			}
+		}
+
+		return actionIdsVsActionFields;
+	}
+
+	public static void deleteFormRule(List<Long> componentIds) throws Exception {
+
+		FacilioModule formRuleModule = ModuleFactory.getFormRuleModule();
+
+		Criteria ruleIdsCriteria = new Criteria();
+		ruleIdsCriteria.addAndCondition(CriteriaAPI.getIdCondition(componentIds, formRuleModule));
+
+		List<FormRuleContext> formRuleContexts = FormRuleAPI.getFormRules(ruleIdsCriteria);
+
+		for (FormRuleContext formRuleContext : formRuleContexts) {
+
+			List<FormRuleActionContext> oldactions = FormRuleAPI.getFormRuleActionContext(formRuleContext.getId());
+
+			for (FormRuleActionContext action : oldactions) {
+				if (action.getActionTypeEnum() == FormActionType.EXECUTE_SCRIPT) {
+					long oldWorkflowId = action.getWorkflowId();
+					WorkflowUtil.deleteWorkflow(oldWorkflowId);
+				} else {
+					for (FormRuleActionFieldsContext actionField : action.getFormRuleActionFieldsContext()) {
+
+						if (actionField.getCriteriaId() > 0) {
+							CriteriaAPI.deleteCriteria(actionField.getCriteriaId());
+						}
+					}
+				}
+
+				FormRuleAPI.deleteFormRuleActionContext(action);
+			}
+
+			FormRuleAPI.deleteFormRuleContext(formRuleContext);
+		}
+	}
+
+
+	public static void setFormRuleCriteria(List<FormRuleContext> formRuleContexts) throws Exception {
+
+		List<Long> criteriaIds = new ArrayList<>();
+		List<Long> subFormCriteriaIds = new ArrayList<>();
+		for (FormRuleContext formRuleContext : formRuleContexts) {
+			long criteriaId = formRuleContext.getCriteriaId();
+			long subFormCriteriaId = formRuleContext.getSubFormCriteriaId();
+			if (criteriaId > 0) {
+				criteriaIds.add(criteriaId);
+			}
+			if (subFormCriteriaId > 0) {
+				subFormCriteriaIds.add(subFormCriteriaId);
+			}
+		}
+
+		Map<Long, Criteria> criteriaIdVsCriteria = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(criteriaIds)) {
+			criteriaIdVsCriteria = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+		}
+
+		Map<Long, Criteria> criteriaIdVsSubFormCriteria = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(subFormCriteriaIds)) {
+			criteriaIdVsSubFormCriteria = CriteriaAPI.getCriteriaAsMap(subFormCriteriaIds);
+			;
+		}
+
+		for (FormRuleContext formRuleContext : formRuleContexts) {
+			if (MapUtils.isNotEmpty(criteriaIdVsCriteria)) {
+				long criteriaId = formRuleContext.getCriteriaId();
+				if (criteriaId > 0) {
+					formRuleContext.setCriteria(criteriaIdVsCriteria.get(criteriaId));
+				}
+			}
+			if (MapUtils.isNotEmpty(criteriaIdVsSubFormCriteria)) {
+				long subFormCriteriaId = formRuleContext.getSubFormCriteriaId();
+				if (subFormCriteriaId > 0) {
+					formRuleContext.setSubFormCriteria(criteriaIdVsSubFormCriteria.get(subFormCriteriaId));
+				}
+			}
+		}
+
+	}
 
 }
