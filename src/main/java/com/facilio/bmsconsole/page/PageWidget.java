@@ -596,7 +596,14 @@ public class PageWidget {
 		EMPLOYEE_LOCATION("employeeLocation"),
 		VENDOR_LOCATION("vendorLocation"),
 		TERRITORY_SITES("territorySites"),
-		FIELD_AGENTS("fieldAgents");
+		FIELD_AGENTS("fieldAgents"),
+		SERVICE_APPOINTMENT_SERVICE_TASKS("serviceAppointmentServiceTasks"),
+		SERVICE_APPOINTMENT_PLANS("serviceAppointmentPlans"),
+		SERVICE_APPOINTMENT_ACTUALS("serviceAppointmentActuals"),
+
+		SERVICE_APPOINTMENT_TIMESHEET("serviceAppointmentTimesheet"),
+		SERVICE_APPOINTMENT_TRIP("serviceAppointmentTrip")
+
 		;
 
 		private String name;

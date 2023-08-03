@@ -616,4 +616,26 @@ public class APIModuleWidgets {
 
     }
 
+    @WidgetsForModule("serviceAppointment")
+    public static Supplier<ModuleWidgets> getServiceAppointmentWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("serviceandappointmentservicetasks","Service Tasks",PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS)
+                .addWidgetConfig("serviceandappointmentservicetasks_50_12","Service Tasks - 60 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("serviceandappointmentplans","Plans",PageWidget.WidgetType.SERVICE_APPOINTMENT_PLANS)
+                .addWidgetConfig("serviceandappointmentplans_50_12","Plans - 50 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("serviceandappointmentactuals","Actuals",PageWidget.WidgetType.SERVICE_APPOINTMENT_ACTUALS)
+                .addWidgetConfig("serviceandappointmentactuals_50_12","Actuals - 50 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("serviceandappointmenttimesheet","Time Sheet",PageWidget.WidgetType.SERVICE_APPOINTMENT_TIMESHEET)
+                .addWidgetConfig("serviceandappointmenttimesheet_50_12","Time Sheet - 50 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("serviceandappointmenttrip","Trip",PageWidget.WidgetType.SERVICE_APPOINTMENT_TRIP)
+                .addWidgetConfig("serviceandappointmenttrip_50_12","Trip - 50 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
+
+    }
+
 }
