@@ -1,10 +1,19 @@
 package com.facilio.fsm.signup;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.SystemButtonApi;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -14,10 +23,7 @@ import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.v3.context.Constants;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class ServiceTaskModule extends BaseModuleConfig {
 
@@ -35,6 +41,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         addModuleChain.execute();
 
         addTaskSkillsField();
+        addSystemButtons();
     }
 
     private FacilioModule constructServiceTaskModule() throws Exception {
@@ -91,4 +98,74 @@ public class ServiceTaskModule extends BaseModuleConfig {
         skillsMultiLookup.setLookupModule(skillsMod);
         bean.addField(skillsMultiLookup);
     }
+
+    private static void addSystemButtons() throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> stFields = modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+        Map<String,FacilioField> stFieldMap = FieldFactory.getAsMap(stFields);
+
+        SystemButtonRuleContext startWork = new SystemButtonRuleContext();
+        startWork.setName("Start Work");
+        startWork.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        startWork.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
+        startWork.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        startWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        startWork.setPermissionRequired(true);
+        Criteria startWorkCriteria = new Criteria();
+        startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get(FacilioConstants.ContextNames.MODULE_STATE),String.valueOf(ServiceTaskContext.ServiceTaskStatus.DISPATCHED), EnumOperators.IS));
+        startWork.setCriteria(startWorkCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,startWork);
+
+        SystemButtonRuleContext pause = new SystemButtonRuleContext();
+        pause.setName("Pause Work");
+        pause.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        pause.setIdentifier(FacilioConstants.ServiceAppointment.PAUSE);
+        pause.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        pause.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        pause.setPermissionRequired(true);
+        Criteria pauseCriteria = new Criteria();
+        pauseCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS), EnumOperators.IS));
+        pause.setCriteria(pauseCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,pause);
+
+        SystemButtonRuleContext resume = new SystemButtonRuleContext();
+        resume.setName("Resume Work");
+        resume.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        resume.setIdentifier(FacilioConstants.ServiceAppointment.RESUME);
+        resume.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        resume.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        resume.setPermissionRequired(true);
+        Criteria resumeCriteria = new Criteria();
+        resumeCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(ServiceTaskContext.ServiceTaskStatus.ON_HOLD), EnumOperators.IS));
+        resume.setCriteria(resumeCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,resume);
+
+
+        SystemButtonRuleContext complete = new SystemButtonRuleContext();
+        complete.setName("Complete");
+        complete.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        complete.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
+        complete.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        complete.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        complete.setPermissionRequired(true);
+        Criteria completeCriteria = new Criteria();
+        completeCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS), EnumOperators.IS));
+        complete.setCriteria(completeCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,complete);
+
+        SystemButtonRuleContext reOpen = new SystemButtonRuleContext();
+        reOpen.setName("Reopen");
+        reOpen.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        reOpen.setIdentifier(FacilioConstants.ServiceAppointment.REOPEN);
+        reOpen.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        reOpen.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        reOpen.setPermissionRequired(true);
+        Criteria reopenCriteria = new Criteria();
+        reopenCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(ServiceTaskContext.ServiceTaskStatus.COMPLETED), EnumOperators.IS));
+        reOpen.setCriteria(reopenCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,reOpen);
+
+    }
+
 }

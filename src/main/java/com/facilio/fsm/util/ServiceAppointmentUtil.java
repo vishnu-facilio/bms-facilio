@@ -1,12 +1,10 @@
 package com.facilio.fsm.util;
 
-import com.amazonaws.services.dynamodbv2.xspec.N;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.attendance.Attendance;
-import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
 import com.facilio.bmsconsoleV3.util.AttendanceAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
@@ -18,20 +16,15 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fsm.context.*;
-import com.facilio.fsm.signup.ServiceAppointmentTicketStatus;
-import com.facilio.fsm.signup.TripModule;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
-import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.math.raw.Mod;
 
 import java.util.ArrayList;
 import java.util.Collections;

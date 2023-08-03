@@ -4666,6 +4666,9 @@ public class FacilioConstants {
 		public static final String DISPATCH = "dispatch";
 		public static final String COMPLETE = "complete";
 		public static final String CANCEL = "cancel";
+		public static final String PAUSE = "pause";
+		public static final String RESUME = "resume";
+		public static final String REOPEN = "reopen";
 		public static final String SCHEDULED_START_TIME = "scheduledStartTime";
 		public static final String SCHEDULED_END_TIME = "scheduledEndTime";
 		public static final String START_TRIP = "startTrip";
