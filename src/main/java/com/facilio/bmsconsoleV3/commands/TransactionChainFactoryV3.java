@@ -328,7 +328,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getWorkPermitBeforeSaveOnUpdateChain() {
         FacilioChain c = getDefaultChain();
 
-        c.addCommand(new ValidationForDateCommandV3());
+        c.addCommand(new ValidationForWorkPermitDateCommandV3());
 
         return c;
     }
