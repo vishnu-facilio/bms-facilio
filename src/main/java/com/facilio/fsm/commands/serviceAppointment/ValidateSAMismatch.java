@@ -32,7 +32,7 @@ public class ValidateSAMismatch extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String, Object> bodyParams = Constants.getBodyParams(context);
-        boolean skipValidation = false;
+        boolean skipValidation = true;
         if (MapUtils.isNotEmpty(bodyParams) && bodyParams.get("skipValidation") != null ) {
             skipValidation = (boolean) bodyParams.get("skipValidation");
         }

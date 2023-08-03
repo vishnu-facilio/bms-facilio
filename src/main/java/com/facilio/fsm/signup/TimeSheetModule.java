@@ -34,27 +34,24 @@ public class TimeSheetModule extends BaseModuleConfig {
 
         List<FacilioField> timeSheetFields = new ArrayList<>();
 
-        DateField startTime = new DateField(timeSheetModule,"actualStartTime","Actual Start Time", FacilioField.FieldDisplayType.DATETIME,"ACTUAL_START_TIME", FieldType.DATE_TIME,true,false,true,false);
+        DateField startTime = new DateField(timeSheetModule,"startTime","Start Time", FacilioField.FieldDisplayType.DATETIME,"START_TIME", FieldType.DATE_TIME,true,false,true,false);
         timeSheetFields.add(startTime);
 
-        DateField endTime = new DateField(timeSheetModule,"actualEndTime","Actual End Time", FacilioField.FieldDisplayType.DATETIME,"ACTUAL_END_TIME",FieldType.DATE_TIME,true,false,true,false);
+        DateField endTime = new DateField(timeSheetModule,"endTime","End Time", FacilioField.FieldDisplayType.DATETIME,"END_TIME",FieldType.DATE_TIME,true,false,true,false);
         timeSheetFields.add(endTime);
+
+        FacilioField actualDuration = FieldFactory.getDefaultField("duration","Duration","DURATION", FieldType.NUMBER);
+        actualDuration.setDisplayType(FacilioField.FieldDisplayType.DURATION);
+        timeSheetFields.add(actualDuration);
 
         LookupField fieldAgent = new LookupField(timeSheetModule,"fieldAgent","Field Agent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"PEOPLE_ID",FieldType.LOOKUP,true,false,true,true,"Field Agent", Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE));
         timeSheetFields.add(fieldAgent);
 
-        FacilioField actualDuration = FieldFactory.getDefaultField("actualDuration","Actual Duration","ACTUAL_DURATION", FieldType.NUMBER);
-        actualDuration.setDisplayType(FacilioField.FieldDisplayType.DURATION);
-        timeSheetFields.add(actualDuration);
-
-        LookupField actualStartLocation = new LookupField(timeSheetModule,"actualStartLocation","Actual Start Location", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"ACTUAL_START_LOCATION",FieldType.LOOKUP,true,false,true,false,"Start Location", Constants.getModBean().getModule(FacilioConstants.ContextNames.LOCATION));
-        timeSheetFields.add(actualStartLocation);
-
-        LookupField actualEndLocation = new LookupField(timeSheetModule,"actualEndLocation","Actual End Location", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"ACTUAL_END_LOCATION",FieldType.LOOKUP,true,false,true,false,"End Location", Constants.getModBean().getModule(FacilioConstants.ContextNames.LOCATION));
-        timeSheetFields.add(actualEndLocation);
-
         LookupField serviceAppointment = new LookupField(timeSheetModule,"serviceAppointment","Service Appointment", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_APPOINTMENT_ID",FieldType.LOOKUP,true,false,true,false,"Service Appointment", Constants.getModBean().getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
         timeSheetFields.add(serviceAppointment);
+
+        LookupField serviceOrder = new LookupField(timeSheetModule,"serviceOrder","Service Order", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_ORDER_ID",FieldType.LOOKUP,true,false,true,false,"Service Order", Constants.getModBean().getModule(FacilioConstants.ContextNames.SERVICE_ORDER));
+        timeSheetFields.add(serviceOrder);
 
         LookupField moduleStateField = FieldFactory.getDefaultField("moduleState", "Status", "MODULE_STATE", FieldType.LOOKUP);
         moduleStateField.setDefault(true);
@@ -111,7 +108,7 @@ public class TimeSheetModule extends BaseModuleConfig {
     private void addTimeSheetTasksField() throws Exception{
         ModuleBean modBean = Constants.getModBean();
         List<FacilioField>fields = new ArrayList<>();
-        MultiLookupField multiLookupTasksField = FieldFactory.getDefaultField("serviceTasks", "Service Tasks", null, FieldType.MULTI_LOOKUP);
+        MultiLookupField multiLookupTasksField = FieldFactory.getDefaultField("serviceTasks", "Tasks", null, FieldType.MULTI_LOOKUP);
         multiLookupTasksField.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
         multiLookupTasksField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
         multiLookupTasksField.setLookupModule( modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK));

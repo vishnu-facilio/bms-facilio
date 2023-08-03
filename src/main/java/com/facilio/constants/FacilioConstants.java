@@ -4662,6 +4662,16 @@ public class FacilioConstants {
 		public static final String IN_PROGRESS = "inProgress";
 		public static final String COMPLETED = "completed";
 		public static final String CANCELLED = "cancelled";
+		public static final String SCHEDULE = "schedule";
+		public static final String DISPATCH = "dispatch";
+		public static final String COMPLETE = "complete";
+		public static final String CANCEL = "cancel";
+		public static final String SCHEDULED_START_TIME = "scheduledStartTime";
+		public static final String SCHEDULED_END_TIME = "scheduledEndTime";
+		public static final String START_TRIP = "startTrip";
+		public static final String START_WORK = "startWork";
+		public static final String END_TRIP = "endTrip";
+		public static final String ACTUAL_START_TIME = "actualStartTime";
 	}
 
 	public static class ServiceOrder{

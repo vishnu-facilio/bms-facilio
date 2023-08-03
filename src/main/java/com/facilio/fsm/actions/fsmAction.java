@@ -15,6 +15,7 @@ import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
 import com.facilio.fsm.context.DispatcherEventContext;
 import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
+import com.facilio.fsm.context.TripContext;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
@@ -35,6 +36,8 @@ import java.util.stream.Collectors;
 
 @Getter @Setter
 public class fsmAction extends V3Action {
+    private long recordId;
+    private String identifier;
     private String resourceIds;
     private Long appointmentId;
     private Long fieldAgentId;
@@ -45,6 +48,8 @@ public class fsmAction extends V3Action {
     private boolean skipValidation;
     private Long scheduledStartTime;
     private Long scheduledEndTime;
+
+    private TripContext trip;
 
     public String getViewName() {
         return viewName;
@@ -122,25 +127,26 @@ public class fsmAction extends V3Action {
         return SUCCESS;
     }
     public String updateServiceAppointmentStatus() throws Exception{
-        switch(getStatus()){
-            case "schedule":
-                if((scheduledStartTime != null && scheduledStartTime > 0) && (scheduledEndTime != null && scheduledEndTime > 0)){
-                    ServiceAppointmentUtil.scheduleServiceAppointment(getId(),scheduledStartTime,scheduledEndTime);
-                } else {
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Please specify scheduled start and end time");
-                }
+        getModuleName();
+
+        switch(getIdentifier()){
+            case FacilioConstants.ServiceAppointment.DISPATCH:
+                ServiceAppointmentUtil.dispatchServiceAppointment(getRecordId(),getFieldAgentId());
                 break;
-            case "dispatch":
-                ServiceAppointmentUtil.dispatchServiceAppointment(getId(),getFieldAgentId());
+            case FacilioConstants.ServiceAppointment.START_TRIP:
+                ServiceAppointmentUtil.startTripForAppointment(getRecordId(),getTrip());
                 break;
-            case "startWork":
-                ServiceAppointmentUtil.startServiceAppointment(getId());
+            case FacilioConstants.ServiceAppointment.END_TRIP:
+                ServiceAppointmentUtil.endTripForAppointment(getRecordId(),getTrip());
                 break;
-            case "complete":
-                ServiceAppointmentUtil.completeServiceAppointment(getId());
+            case FacilioConstants.ServiceAppointment.START_WORK:
+                ServiceAppointmentUtil.startServiceAppointment(getRecordId());
                 break;
-            case "cancel":
-                ServiceAppointmentUtil.cancelServiceAppointment(getId());
+            case FacilioConstants.ServiceAppointment.COMPLETE:
+                ServiceAppointmentUtil.completeServiceAppointment(getRecordId());
+                break;
+            case FacilioConstants.ServiceAppointment.CANCEL:
+                ServiceAppointmentUtil.cancelServiceAppointment(getRecordId());
                 break;
         }
         return SUCCESS;

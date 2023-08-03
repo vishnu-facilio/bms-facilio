@@ -1,5 +1,6 @@
 package com.facilio.fsm.signup;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -7,10 +8,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -18,10 +16,17 @@ import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
+import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
+import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -39,6 +44,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             addServiceSkillField();
             addActivityModuleForServiceAppointment();
             SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
+            addSystemButtons();
     }
     private void addServiceAppointmentModule() throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
@@ -87,10 +93,10 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         FacilioField isAllTasksClosed = FieldFactory.getDefaultField("isAllTasksClosed","All Tasks Closed","IS_ALL_TASKS_CLOSED", FieldType.BOOLEAN);
         serviceAppointmentFields.add(isAllTasksClosed);
 
-        FacilioField scheduledStartTime = FieldFactory.getDefaultField("scheduledStartTime","Scheduled Start Time","SCHEDULED_START_TIME", FieldType.DATE_TIME);
+        FacilioField scheduledStartTime = FieldFactory.getDefaultField(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME,"Scheduled Start Time","SCHEDULED_START_TIME", FieldType.DATE_TIME);
         serviceAppointmentFields.add(scheduledStartTime);
 
-        FacilioField scheduledEndTime = FieldFactory.getDefaultField("scheduledEndTime","Scheduled End Time","SCHEDULED_END_TIME", FieldType.DATE_TIME);
+        FacilioField scheduledEndTime = FieldFactory.getDefaultField(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME,"Scheduled End Time","SCHEDULED_END_TIME", FieldType.DATE_TIME);
         serviceAppointmentFields.add(scheduledEndTime);
 
         FacilioField estimatedDuration = FieldFactory.getDefaultField("estimatedDuration","Estimated Duration","ESTIMATED_DURATION", FieldType.NUMBER);
@@ -747,5 +753,119 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .widgetGroupSectionDone();
 
         return FieldUtil.getAsJSON(widgetGroup);
+    }
+
+    private static void addSystemButtons() throws Exception {
+
+        Map<String, ServiceAppointmentTicketStatusContext> statusMap = ServiceAppointmentUtil.getStatusMap(null);
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> saFields = modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        Map<String,FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+
+        ServiceAppointmentTicketStatusContext scheduledStatus = statusMap.get(FacilioConstants.ServiceAppointment.SCHEDULED);
+        if(scheduledStatus != null) {
+            SystemButtonRuleContext dispatch = new SystemButtonRuleContext();
+            dispatch.setName(FacilioConstants.ServiceAppointment.DISPATCH);
+            dispatch.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+            dispatch.setIdentifier(FacilioConstants.ServiceAppointment.DISPATCH);
+            dispatch.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+            dispatch.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+            dispatch.setPermissionRequired(true);
+            Criteria dispatchCriteria = new Criteria();
+            dispatchCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(scheduledStatus.getId()), NumberOperators.EQUALS));
+            dispatchCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
+            dispatchCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
+            dispatch.setCriteria(dispatchCriteria);
+            SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,dispatch);
+        }
+
+        ServiceAppointmentTicketStatusContext dispatchedStatus = statusMap.get(FacilioConstants.ServiceAppointment.DISPATCHED);
+        if(dispatchedStatus != null){
+            SystemButtonRuleContext startTrip = new SystemButtonRuleContext();
+            startTrip.setName(FacilioConstants.ServiceAppointment.START_TRIP);
+            startTrip.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+            startTrip.setIdentifier(FacilioConstants.ServiceAppointment.START_TRIP);
+            startTrip.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+            startTrip.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+            startTrip.setPermissionRequired(true);
+            Criteria startTripCriteria = new Criteria();
+            startTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(dispatchedStatus.getId()), NumberOperators.EQUALS));
+            startTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), CommonOperators.IS_NOT_EMPTY));
+            startTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
+            startTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
+            startTrip.setCriteria(startTripCriteria);
+            SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,startTrip);
+
+            SystemButtonRuleContext startWork = new SystemButtonRuleContext();
+            startWork.setName(FacilioConstants.ServiceAppointment.START_WORK);
+            startWork.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+            startWork.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
+            startWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+            startWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+            startWork.setPermissionRequired(true);
+            Criteria startWorkCriteria = new Criteria();
+            startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(dispatchedStatus.getId()), NumberOperators.EQUALS));
+            startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), CommonOperators.IS_NOT_EMPTY));
+            startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
+            startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
+            startWork.setCriteria(startWorkCriteria);
+            SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,startWork);
+        }
+
+        ServiceAppointmentTicketStatusContext enRouteStatus = statusMap.get(FacilioConstants.ServiceAppointment.EN_ROUTE);
+        if(enRouteStatus != null){
+            SystemButtonRuleContext endTrip = new SystemButtonRuleContext();
+            endTrip.setName(FacilioConstants.ServiceAppointment.END_TRIP);
+            endTrip.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+            endTrip.setIdentifier(FacilioConstants.ServiceAppointment.END_TRIP);
+            endTrip.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+            endTrip.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+            endTrip.setPermissionRequired(true);
+            Criteria endTripCriteria = new Criteria();
+            endTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(enRouteStatus.getId()), NumberOperators.EQUALS));
+            endTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), CommonOperators.IS_NOT_EMPTY));
+            endTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
+            endTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
+            endTrip.setCriteria(endTripCriteria);
+            SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,endTrip);
+        }
+
+        ServiceAppointmentTicketStatusContext inProgressStatus = statusMap.get(FacilioConstants.ServiceAppointment.IN_PROGRESS);
+        if(inProgressStatus != null){
+            SystemButtonRuleContext complete = new SystemButtonRuleContext();
+            complete.setName(FacilioConstants.ServiceAppointment.COMPLETE);
+            complete.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+            complete.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
+            complete.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+            complete.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+            complete.setPermissionRequired(true);
+            Criteria completeCriteria = new Criteria();
+            completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(inProgressStatus.getId()), NumberOperators.EQUALS));
+            completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), CommonOperators.IS_NOT_EMPTY));
+            completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
+            completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
+            completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.ACTUAL_START_TIME), CommonOperators.IS_NOT_EMPTY));
+            complete.setCriteria(completeCriteria);
+            SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,complete);
+        }
+
+        ServiceAppointmentTicketStatusContext completedStatus = statusMap.get(FacilioConstants.ServiceAppointment.COMPLETED);
+        ServiceAppointmentTicketStatusContext cancelledStatus = statusMap.get(FacilioConstants.ServiceAppointment.CANCELLED);
+        if(completedStatus != null && cancelledStatus != null){
+            SystemButtonRuleContext cancel = new SystemButtonRuleContext();
+            cancel.setName(FacilioConstants.ServiceAppointment.CANCEL);
+            cancel.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+            cancel.setIdentifier(FacilioConstants.ServiceAppointment.CANCEL);
+            cancel.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+            cancel.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+            cancel.setPermissionRequired(true);
+            Criteria cancelCriteria = new Criteria();
+            cancelCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(completedStatus.getId()), NumberOperators.NOT_EQUALS));
+            cancelCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(cancelledStatus.getId()), NumberOperators.NOT_EQUALS));
+            cancel.setCriteria(cancelCriteria);
+            SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,cancel);
+        }
+
     }
 }

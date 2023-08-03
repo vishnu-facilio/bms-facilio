@@ -1,15 +1,25 @@
 package com.facilio.fsm.util;
 
+import com.amazonaws.services.dynamodbv2.xspec.N;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.attendance.Attendance;
+import com.facilio.bmsconsoleV3.context.inspection.InspectionTemplateContext;
+import com.facilio.bmsconsoleV3.util.AttendanceAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fsm.context.ServiceAppointmentContext;
-import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
-import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fsm.context.*;
+import com.facilio.fsm.signup.ServiceAppointmentTicketStatus;
+import com.facilio.fsm.signup.TripModule;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -18,26 +28,53 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.math.raw.Mod;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ServiceAppointmentUtil {
-    public static void validateDispatch(Long appointmentId, Map<String, Object> mapping) throws Exception{
 
-    }
-    public static ServiceAppointmentTicketStatusContext getStatus(String status) throws Exception
+    public static List<ServiceAppointmentTicketStatusContext> getStatusList(List<String> statusList) throws Exception
     {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
         SelectRecordsBuilder<ServiceAppointmentTicketStatusContext> builder = new SelectRecordsBuilder<ServiceAppointmentTicketStatusContext>()
                 .moduleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS)
                 .beanClass(ServiceAppointmentTicketStatusContext.class)
                 .select(modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS))
-                .andCustomWhere("STATUS = ?", status)
+                .orderBy("ID");
+
+        if(CollectionUtils.isNotEmpty(statusList)){
+            builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.STATUS), StringUtils.join(statusList,","), StringOperators.IS));
+        }
+
+        List<ServiceAppointmentTicketStatusContext> statuses = builder.get();
+        if (CollectionUtils.isNotEmpty(statuses)) {
+            return statuses;
+        }
+        return null;
+    }
+    public static ServiceAppointmentTicketStatusContext getStatus(String status) throws Exception
+    {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<ServiceAppointmentTicketStatusContext> builder = new SelectRecordsBuilder<ServiceAppointmentTicketStatusContext>()
+                .moduleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS)
+                .beanClass(ServiceAppointmentTicketStatusContext.class)
+                .select(modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.STATUS),status, StringOperators.IS))
                 .orderBy("ID");
 
         List<ServiceAppointmentTicketStatusContext> statuses = builder.get();
@@ -59,6 +96,14 @@ public class ServiceAppointmentUtil {
                 .orderBy("ID");
         List<ServiceAppointmentTicketStatusContext> statuses = builder.get();
         return statuses;
+    }
+
+    public static Map<String,ServiceAppointmentTicketStatusContext> getStatusMap(List<String> statusList) throws Exception {
+        List<ServiceAppointmentTicketStatusContext> statuses = getStatusList(statusList);
+        if(CollectionUtils.isNotEmpty(statuses)) {
+            return statuses.stream().collect(Collectors.toMap(ServiceAppointmentTicketStatusContext::getStatus, Function.identity()));
+        }
+        return null;
     }
 
     public static void scheduleServiceAppointment(Long appointmentId, Long startTime, Long endTime) throws Exception {
@@ -242,4 +287,195 @@ public class ServiceAppointmentUtil {
         }
     }
 
+    public static void startTripForAppointment(Long appointmentId, TripContext tripData) throws Exception {
+        String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
+        List<FacilioField> saFields = moduleBean.getAllFields(serviceAppointmentModuleName);
+        Map<String, FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+
+        FacilioModule people = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        List<FacilioField> peopleFields = moduleBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+        Map<String, FacilioField> peopleFieldMap = FieldFactory.getAsMap(peopleFields);
+
+        FacilioModule tripModule = moduleBean.getModule(FacilioConstants.Trip.TRIP);
+
+        FacilioContext context = V3Util.getSummary(serviceAppointmentModuleName, Collections.singletonList(appointmentId));
+
+        if(Constants.getRecordList(context) != null) {
+            ServiceAppointmentContext existingAppointment = (ServiceAppointmentContext) Constants.getRecordList(context).get(0);
+            if (existingAppointment != null) {
+                if(existingAppointment.getFieldAgent() != null) {
+                    long agentId = existingAppointment.getFieldAgent().getId();
+
+                    //updating agent status to en-route on trip start
+                    V3PeopleContext agent = new V3PeopleContext();
+                    agent.setId(agentId);
+                    agent.setStatus(V3PeopleContext.Status.EN_ROUTE.getIndex());
+                    V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
+
+                    if (!checkForOngoingTrip(agentId)){
+
+                        TripContext newTrip = new TripContext();
+                        newTrip.setServiceAppointment(existingAppointment);
+                        newTrip.setStartTime(DateTimeUtil.getCurrenTime());
+                        newTrip.setPeople(existingAppointment.getFieldAgent());
+                        newTrip.setServiceOrder(existingAppointment.getServiceOrder());
+                        if(tripData != null && tripData.getStartLocation() != null){
+                            LocationContext location = tripData.getStartLocation();
+                            if (location != null && location.getLat() != -1 && location.getLng() != -1) {
+                                location.setName(existingAppointment.getName()+"Trip_Location_"+DateTimeUtil.getCurrenTime());
+                                Context locationContext = new FacilioContext();
+                                Constants.setRecord(locationContext, location);
+                                if (location.getId() > 0) {
+                                    locationContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
+                                    FacilioChain updateLocation = FacilioChainFactory.updateLocationChain();
+                                    updateLocation.execute(locationContext);
+                                } else {
+                                    FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+                                    addLocation.execute(locationContext);
+
+                                    long recordId = Constants.getRecordId(locationContext);
+                                    location.setId(recordId);
+                                    newTrip.setStartLocation(location);
+                                }
+                            } else {
+                                newTrip.setStartLocation(null);
+                            }
+                        }
+                        //Creating new trip record
+                        V3Util.createRecord(tripModule,FieldUtil.getAsProperties(newTrip));
+                    }
+                }
+                if(existingAppointment.getStatus() != null){
+                    ServiceAppointmentTicketStatusContext appointmentStatus = existingAppointment.getStatus();
+                    //updating service appointment status to en-route only if it is in scheduled or dispatched state
+                    if(appointmentStatus.getTypeCodeEnum() == ServiceAppointmentTicketStatusContext.StatusType.OPEN){
+                        ServiceAppointmentContext appointment = new ServiceAppointmentContext();
+                        appointment.setId(appointmentId);
+                        ServiceAppointmentTicketStatusContext enRouteStatus = ServiceAppointmentUtil.getStatus(FacilioConstants.ServiceAppointment.EN_ROUTE);
+                        appointment.setStatus(enRouteStatus);
+                        V3RecordAPI.updateRecord(appointment, serviceAppointment, Collections.singletonList(saFieldMap.get(FacilioConstants.ContextNames.STATUS)));
+                    }
+                }
+            }
+        }
+    }
+
+    public static void endTripForAppointment(Long appointmentId, TripContext tripData) throws Exception {
+        String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
+        List<FacilioField> saFields = moduleBean.getAllFields(serviceAppointmentModuleName);
+        Map<String, FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+
+        FacilioModule people = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        List<FacilioField> peopleFields = moduleBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+        Map<String, FacilioField> peopleFieldMap = FieldFactory.getAsMap(peopleFields);
+
+        FacilioModule tripModule = moduleBean.getModule(FacilioConstants.Trip.TRIP);
+
+        FacilioContext context = V3Util.getSummary(serviceAppointmentModuleName, Collections.singletonList(appointmentId));
+        if(Constants.getRecordList(context) != null) {
+            ServiceAppointmentContext existingAppointment = (ServiceAppointmentContext) Constants.getRecordList(context).get(0);
+            if (existingAppointment != null) {
+                if(existingAppointment.getFieldAgent() != null) {
+                    long agentId = existingAppointment.getFieldAgent().getId();
+                    // updating agent status to
+                    V3PeopleContext agent = new V3PeopleContext();
+                    agent.setId(agentId);
+                    Attendance attendance = AttendanceAPI.getAttendanceForToday(agentId);
+                    agent.setStatus(V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
+                    if(attendance != null && attendance.getCheckInTime() != null && attendance.getCheckOutTime() == null){
+                        agent.setStatus(V3PeopleContext.Status.AVAILABLE.getIndex());
+                    }
+                    V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
+
+
+                    List<TripContext> OngoingTrips = getOngoingTrips(agentId,existingAppointment.getId());
+                    if(CollectionUtils.isNotEmpty(OngoingTrips)){
+                        for(TripContext OngoingTrip : OngoingTrips){
+                            OngoingTrip.setEndTime(DateTimeUtil.getCurrenTime());
+                            if(tripData != null && tripData.getEndLocation() != null){
+                                LocationContext location = tripData.getEndLocation();
+                                if (location != null && location.getLat() != -1 && location.getLng() != -1) {
+                                    location.setName(existingAppointment.getName()+"Trip_Location_"+DateTimeUtil.getCurrenTime());
+                                    Context locationContext = new FacilioContext();
+                                    Constants.setRecord(locationContext, location);
+                                    if (location.getId() > 0) {
+                                        locationContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
+                                        FacilioChain updateLocation = FacilioChainFactory.updateLocationChain();
+                                        updateLocation.execute(locationContext);
+                                    } else {
+                                        FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+                                        addLocation.execute(locationContext);
+
+                                        long recordId = Constants.getRecordId(locationContext);
+                                        location.setId(recordId);
+                                        OngoingTrip.setEndLocation(location);
+                                    }
+                                } else {
+                                    OngoingTrip.setEndLocation(null);
+                                }
+                            }
+                            V3RecordAPI.updateRecord(OngoingTrip,tripModule,Constants.getModBean().getAllFields(FacilioConstants.Trip.TRIP));
+                        }
+                    }
+                }
+                if(existingAppointment.getActualStartTime() == null){
+                    ServiceAppointmentContext appointment = new ServiceAppointmentContext();
+                    appointment.setId(appointmentId);
+                    ServiceAppointmentTicketStatusContext dispatchStatus = ServiceAppointmentUtil.getStatus(FacilioConstants.ServiceAppointment.DISPATCHED);
+                    appointment.setStatus(dispatchStatus);
+                    V3RecordAPI.updateRecord(appointment, serviceAppointment, Collections.singletonList(saFieldMap.get(FacilioConstants.ContextNames.STATUS)));
+                }
+            }
+        }
+    }
+
+    public static boolean checkForOngoingTrip(long peopleId) throws Exception {
+        List<TripContext> ongoingTrips = getOngoingTrips(peopleId,null);
+        if(CollectionUtils.isNotEmpty(ongoingTrips)){
+            return true;
+        }
+        return false;
+    }
+
+    public static List<TripContext> getOngoingTrips(long peopleId, Long appointmentId) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule TripModule = moduleBean.getModule(FacilioConstants.Trip.TRIP);
+        List<FacilioField> TripFields = moduleBean.getAllFields(FacilioConstants.Trip.TRIP);
+        Map<String,FacilioField> TripFieldMap = FieldFactory.getAsMap(TripFields);
+        SelectRecordsBuilder<TripContext> tripBuilder = new SelectRecordsBuilder<TripContext>()
+                .module(TripModule)
+                .beanClass(TripContext.class)
+                .select(TripFields)
+                .andCondition(CriteriaAPI.getCondition(TripFieldMap.get(FacilioConstants.ContextNames.PEOPLE),String.valueOf(peopleId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(TripFieldMap.get(FacilioConstants.ContextNames.ENDTIME), CommonOperators.IS_EMPTY));
+        if(appointmentId != null && appointmentId > 0){
+            tripBuilder.andCondition(CriteriaAPI.getCondition(TripFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),String.valueOf(appointmentId), NumberOperators.EQUALS));
+        }
+        List<TripContext> ongoingTrips = tripBuilder.get();
+        if(CollectionUtils.isNotEmpty(ongoingTrips)){
+            return ongoingTrips;
+        }
+        return null;
+    }
+
+    public static List<TimeSheetContext> getOngoingTimeSheets(long peopleId, Long appointmentId) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule timeSheetModule = moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
+        List<FacilioField> timeSheetFields = moduleBean.getAllFields(FacilioConstants.TimeSheet.TIME_SHEET);
+        Map<String,FacilioField> timeSheetFieldMap = FieldFactory.getAsMap(timeSheetFields);
+        SelectRecordsBuilder<TimeSheetContext> timeSheetBuilder = new SelectRecordsBuilder<TimeSheetContext>()
+                .module(timeSheetModule)
+                .beanClass(TimeSheetContext.class)
+                .select(timeSheetFields)
+                .andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get("fieldAgent"),String.valueOf(peopleId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ContextNames.ENDTIME),CommonOperators.IS_EMPTY));
+        if(appointmentId != null && appointmentId > 0){
+            timeSheetBuilder.andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),String.valueOf(appointmentId), NumberOperators.EQUALS));
+        }
+        return null;
+    }
 }
