@@ -934,6 +934,9 @@ public class LoginAction extends FacilioAction {
 
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
+		if(AccountUtil.getCurrentUser() != null) {
+			account.put("people", PeopleAPI.getPeopleForId(AccountUtil.getCurrentUser().getPeopleId()));
+		}
 
 		boolean isDev = false;
 
