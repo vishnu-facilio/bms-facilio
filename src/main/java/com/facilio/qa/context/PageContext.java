@@ -4,6 +4,7 @@ import com.facilio.v3.context.V3Context;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -32,6 +33,9 @@ public class PageContext extends V3Context {
 
     // For client purposes
     private List<QuestionContext> questions;
+    public List<QuestionContext> getQuestions() {
+        return questions != null ? questions : new ArrayList<>();
+    }
     private Double fullScore, totalScore;
     private Float scorePercent;
 }

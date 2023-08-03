@@ -13,6 +13,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.facilio.bmsconsole.commands.AddWidgetConfigurationCommand;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -31,8 +33,11 @@ import com.facilio.qa.displaylogic.util.DisplayLogicUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
+import org.apache.log4j.Logger;
 
 public class PrepareDisplayLogicforAddOrUpdate extends FacilioCommand {
+
+	private static final Logger LOGGER = Logger.getLogger(PrepareDisplayLogicforAddOrUpdate.class.getName());
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -55,13 +60,18 @@ public class PrepareDisplayLogicforAddOrUpdate extends FacilioCommand {
 		displaylogic.setPage(page);
 		
 		List<PageContext> pages = template.getPages();
+		LOGGER.info("Pages Size -- "+pages.size());
 		List<QuestionContext> questions = new ArrayList<QuestionContext>();
 		
 		for(PageContext page1 : pages) {
-			for(QuestionContext question : page1.getQuestions()) {
-				question.setPage(page);
+			List<QuestionContext> pageQuestions = page1.getQuestions();
+			LOGGER.info("Questions List -- " + pageQuestions);
+			if (pageQuestions != null && pageQuestions.size()>0) {
+				for (QuestionContext question : pageQuestions) {
+					question.setPage(page);
+				}
+				questions.addAll(pageQuestions);
 			}
-			questions.addAll(page1.getQuestions());
 		}
 		
 		Map<Long, QuestionContext> questionMap = questions.stream().collect(Collectors.toMap(QuestionContext::getId, Function.identity()));

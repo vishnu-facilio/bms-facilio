@@ -38,7 +38,7 @@ public class InspectionGenerationHandler extends BaseHandler {
                 }
             }
         } catch(Exception e){
-            LOGGER.error("Error in Inspection Generation : "+ e);
+            LOGGER.error("Error in Inspection Generation : "+ e,e);
         }
     }
 
