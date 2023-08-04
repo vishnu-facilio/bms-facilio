@@ -113,7 +113,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         startWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         startWork.setPermissionRequired(true);
         Criteria startWorkCriteria = new Criteria();
-        startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get(FacilioConstants.ContextNames.MODULE_STATE),String.valueOf(ServiceTaskContext.ServiceTaskStatus.DISPATCHED), EnumOperators.IS));
+        startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get("status"),String.valueOf(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex()), EnumOperators.IS));
         startWork.setCriteria(startWorkCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,startWork);
 
@@ -125,7 +125,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         pause.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         pause.setPermissionRequired(true);
         Criteria pauseCriteria = new Criteria();
-        pauseCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS), EnumOperators.IS));
+        pauseCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get("status"),String.valueOf(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex()), EnumOperators.IS));
         pause.setCriteria(pauseCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,pause);
 
@@ -137,7 +137,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         resume.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         resume.setPermissionRequired(true);
         Criteria resumeCriteria = new Criteria();
-        resumeCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(ServiceTaskContext.ServiceTaskStatus.ON_HOLD), EnumOperators.IS));
+        resumeCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get("status"),String.valueOf(ServiceTaskContext.ServiceTaskStatus.ON_HOLD.getIndex()), EnumOperators.IS));
         resume.setCriteria(resumeCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,resume);
 
@@ -150,7 +150,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         complete.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         complete.setPermissionRequired(true);
         Criteria completeCriteria = new Criteria();
-        completeCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS), EnumOperators.IS));
+        completeCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get("status"),String.valueOf(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex()), EnumOperators.IS));
         complete.setCriteria(completeCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,complete);
 
@@ -162,7 +162,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         reOpen.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         reOpen.setPermissionRequired(true);
         Criteria reopenCriteria = new Criteria();
-        reopenCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get(FacilioConstants.ContextNames.STATUS),String.valueOf(ServiceTaskContext.ServiceTaskStatus.COMPLETED), EnumOperators.IS));
+        reopenCriteria.addAndCondition(CriteriaAPI.getCondition(stFieldMap.get("status"),String.valueOf(ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex()), EnumOperators.IS));
         reOpen.setCriteria(reopenCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,reOpen);
 

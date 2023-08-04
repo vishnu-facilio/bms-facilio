@@ -1,5 +1,6 @@
 package com.facilio.fsm.signup;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -651,41 +652,41 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         SystemButtonRuleContext completeWork = new SystemButtonRuleContext();
         completeWork.setName("Complete Work");
-        completeWork.setButtonType(1);
-        completeWork.setPositionType(1);
+        completeWork.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        completeWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         completeWork.setIdentifier("completeWork");
         completeWork.setPermissionRequired(true);
-        completeWork.setPermission("UPDATE");
+        completeWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         completeWork.setCriteria(inprogressCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,completeWork);
 
         SystemButtonRuleContext cancelWork = new SystemButtonRuleContext();
         cancelWork.setName("Cancel");
-        cancelWork.setButtonType(4);
-        cancelWork.setPositionType(1);
+        cancelWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        cancelWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cancelWork.setIdentifier("cancelSO");
         cancelWork.setPermissionRequired(true);
-        cancelWork.setPermission("UPDATE");
+        cancelWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         cancelWork.setCriteria(inprogressCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cancelWork);
 
         SystemButtonRuleContext cloneWork = new SystemButtonRuleContext();
         cloneWork.setName("Clone");
-        cloneWork.setButtonType(4);
-        cloneWork.setPositionType(1);
+        cloneWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        cloneWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cloneWork.setIdentifier("cloneSO");
         cloneWork.setPermissionRequired(true);
-        cloneWork.setPermission("UPDATE");
+        cloneWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         cloneWork.setCriteria(inprogressCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneWork);
 
         SystemButtonRuleContext associateSP = new SystemButtonRuleContext();
         associateSP.setName("Associate Service Plan");
-        associateSP.setButtonType(4);
-        associateSP.setPositionType(1);
+        associateSP.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        associateSP.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         associateSP.setIdentifier("associateSOSP");
         associateSP.setPermissionRequired(true);
-        associateSP.setPermission("UPDATE");
+        associateSP.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         associateSP.setCriteria(inprogressCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,associateSP);
 
@@ -694,31 +695,31 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         SystemButtonRuleContext cancelNewWork = new SystemButtonRuleContext();
         cancelNewWork.setName("Cancel");
-        cancelNewWork.setButtonType(4);
-        cancelNewWork.setPositionType(1);
+        cancelNewWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        cancelNewWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cancelNewWork.setIdentifier("cancelSO");
         cancelNewWork.setPermissionRequired(true);
-        cancelNewWork.setPermission("UPDATE");
+        cancelNewWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         cancelNewWork.setCriteria(newCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cancelNewWork);
 
         SystemButtonRuleContext cloneNewWork = new SystemButtonRuleContext();
         cloneNewWork.setName("Clone");
-        cloneNewWork.setButtonType(4);
-        cloneNewWork.setPositionType(1);
+        cloneNewWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        cloneNewWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cloneNewWork.setIdentifier("cloneSO");
         cloneNewWork.setPermissionRequired(true);
-        cloneNewWork.setPermission("UPDATE");
+        cloneNewWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         cloneNewWork.setCriteria(newCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneNewWork);
 
         SystemButtonRuleContext associateSPNew = new SystemButtonRuleContext();
         associateSPNew.setName("Associate Service Plan");
-        associateSPNew.setButtonType(4);
-        associateSPNew.setPositionType(1);
+        associateSPNew.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        associateSPNew.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         associateSPNew.setIdentifier("associateSOSP");
         associateSPNew.setPermissionRequired(true);
-        associateSPNew.setPermission("UPDATE");
+        associateSPNew.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         associateSPNew.setCriteria(newCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,associateSPNew);
 
@@ -727,31 +728,31 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         SystemButtonRuleContext cancelScheduledWork = new SystemButtonRuleContext();
         cancelScheduledWork.setName("Cancel");
-        cancelScheduledWork.setButtonType(4);
-        cancelScheduledWork.setPositionType(1);
+        cancelScheduledWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        cancelScheduledWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cancelScheduledWork.setIdentifier("cancelSO");
         cancelScheduledWork.setPermissionRequired(true);
-        cancelScheduledWork.setPermission("UPDATE");
+        cancelScheduledWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         cancelScheduledWork.setCriteria(scheduledCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cancelScheduledWork);
 
         SystemButtonRuleContext cloneScheduledWork = new SystemButtonRuleContext();
         cloneScheduledWork.setName("Clone");
-        cloneScheduledWork.setButtonType(4);
-        cloneScheduledWork.setPositionType(1);
+        cloneScheduledWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        cloneScheduledWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cloneScheduledWork.setIdentifier("cloneSO");
         cloneScheduledWork.setPermissionRequired(true);
-        cloneScheduledWork.setPermission("UPDATE");
+        cloneScheduledWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         cloneScheduledWork.setCriteria(scheduledCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneScheduledWork);
 
         SystemButtonRuleContext associateSPScheduled = new SystemButtonRuleContext();
         associateSPScheduled.setName("Associate Service Plan");
-        associateSPScheduled.setButtonType(4);
-        associateSPScheduled.setPositionType(1);
+        associateSPScheduled.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        associateSPScheduled.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         associateSPScheduled.setIdentifier("associateSOSP");
         associateSPScheduled.setPermissionRequired(true);
-        associateSPScheduled.setPermission("UPDATE");
+        associateSPScheduled.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         associateSPScheduled.setCriteria(scheduledCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,associateSPScheduled);
 
@@ -760,21 +761,21 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         SystemButtonRuleContext closeCompleteWork = new SystemButtonRuleContext();
         closeCompleteWork.setName("Close");
-        closeCompleteWork.setButtonType(1);
-        closeCompleteWork.setPositionType(1);
+        closeCompleteWork.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        closeCompleteWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         closeCompleteWork.setIdentifier("closeSO");
         closeCompleteWork.setPermissionRequired(true);
-        closeCompleteWork.setPermission("UPDATE");
+        closeCompleteWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         closeCompleteWork.setCriteria(completedCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,closeCompleteWork);
 
         SystemButtonRuleContext cloneCompleteWork = new SystemButtonRuleContext();
         cloneCompleteWork.setName("Clone");
-        cloneCompleteWork.setButtonType(4);
-        cloneCompleteWork.setPositionType(1);
+        cloneCompleteWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        cloneCompleteWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cloneCompleteWork.setIdentifier("cloneSO");
         cloneCompleteWork.setPermissionRequired(true);
-        cloneCompleteWork.setPermission("UPDATE");
+        cloneCompleteWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         cloneCompleteWork.setCriteria(completedCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneCompleteWork);
 
@@ -783,11 +784,11 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         SystemButtonRuleContext cloneCancelledWork = new SystemButtonRuleContext();
         cloneCancelledWork.setName("Clone");
-        cloneCancelledWork.setButtonType(4);
-        cloneCancelledWork.setPositionType(1);
+        cloneCancelledWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        cloneCancelledWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cloneCancelledWork.setIdentifier("cloneSO");
         cloneCancelledWork.setPermissionRequired(true);
-        cloneCancelledWork.setPermission("UPDATE");
+        cloneCancelledWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         cloneCancelledWork.setCriteria(cancelledCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneCancelledWork);
 
@@ -796,11 +797,11 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         SystemButtonRuleContext cloneClosedWork = new SystemButtonRuleContext();
         cloneClosedWork.setName("Clone");
-        cloneClosedWork.setButtonType(4);
-        cloneClosedWork.setPositionType(1);
+        cloneClosedWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        cloneClosedWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cloneClosedWork.setIdentifier("cloneSO");
         cloneClosedWork.setPermissionRequired(true);
-        cloneClosedWork.setPermission("UPDATE");
+        cloneClosedWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         cloneClosedWork.setCriteria(closedCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneClosedWork);
 
