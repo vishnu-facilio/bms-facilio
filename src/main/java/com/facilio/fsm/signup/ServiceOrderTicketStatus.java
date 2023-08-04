@@ -98,7 +98,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         inProgressState.setDisplayName("In Progress");
         inProgressState.setColor("information");
         inProgressState.setTextColor("#ffffff");
-        inProgressState.setTypeCode(1);
+        inProgressState.setTypeCode(2);
         inProgressState.setRecordLocked(false);
         inProgressState.setDeleteLocked(false);
         ticketStatusContextList.add(inProgressState);
@@ -108,7 +108,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         completedState.setDisplayName("Completed");
         completedState.setColor("success");
         completedState.setTextColor("#ffffff");
-        completedState.setTypeCode(2);
+        completedState.setTypeCode(3);
         completedState.setRecordLocked(true);
         completedState.setDeleteLocked(true);
         ticketStatusContextList.add(completedState);

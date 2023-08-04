@@ -126,6 +126,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain getServiceAppointmentAfterCreateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new rollUpServiceTaskCommand());
+        c.addCommand(new ScheduleServiceOrderCommand());
         c.addCommand(new ConstructAddCustomActivityCommandV3());
         return c;
     }

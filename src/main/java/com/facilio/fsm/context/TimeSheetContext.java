@@ -10,12 +10,11 @@ import java.util.List;
 
 @Getter@Setter
 public class TimeSheetContext extends V3Context {
-    private Long actualStartTime;
-    private Long actualEndTime;
-    private Long actualDuration;
-    private LocationContextV3 actualStartLocation;
-    private LocationContextV3 actualEndLocation;
+    private Long startTime;
+    private Long endTime;
+    private Long duration;
     private V3PeopleContext fieldAgent;
     private ServiceAppointmentContext serviceAppointment;
     private List<TimeSheetTaskContext> serviceTasks;
+    private ServiceOrderContext serviceOrder;
 }

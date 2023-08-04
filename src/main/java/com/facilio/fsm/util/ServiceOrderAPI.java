@@ -4,6 +4,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
@@ -12,12 +14,17 @@ import com.facilio.fsm.context.ServiceTaskContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ServiceOrderAPI {
 
@@ -109,4 +116,63 @@ public class ServiceOrderAPI {
         List<ServiceOrderTicketStatusContext> statuses = builder.get();
         return statuses;
     }
+
+    public static void dispatchServiceOrder(long orderId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
+        List<FacilioField> serviceOrderFields = modBean.getAllFields(FacilioConstants.ContextNames.SERVICE_ORDER);
+        Map<String,FacilioField> soFieldMap = FieldFactory.getAsMap(serviceOrderFields);
+
+        List<ServiceOrderTicketStatusContext> statuses = ServiceOrderAPI.getStatusOfStatusType(ServiceOrderTicketStatusContext.StatusType.OPEN);
+        ServiceOrderTicketStatusContext dispatchedStatus = ServiceOrderAPI.getStatus(FacilioConstants.ServiceAppointment.DISPATCHED);
+
+        if(dispatchedStatus != null && CollectionUtils.isNotEmpty(statuses)) {
+            List<Long> statusIds = statuses.stream().map(ServiceOrderTicketStatusContext::getId).collect(Collectors.toList());
+
+            UpdateRecordBuilder<ServiceOrderContext> updateBuilder = new UpdateRecordBuilder<ServiceOrderContext>()
+                    .module(serviceOrderModule)
+                    .fields(Collections.singletonList(soFieldMap.get(FacilioConstants.ContextNames.STATUS)))
+                    .andCondition(CriteriaAPI.getCondition(soFieldMap.get(FacilioConstants.ContextNames.STATUS), StringUtils.join(statusIds), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getIdCondition(orderId, serviceOrderModule));
+
+            Map<String, Object> updateProps = new HashMap<>();
+            updateProps.put("status", dispatchedStatus);
+            updateBuilder.updateViaMap(updateProps);
+        } else {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing service order states");
+        }
+    }
+
+    public static void startServiceOrder(long orderId,long startTime) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
+        List<FacilioField> serviceOrderFields = modBean.getAllFields(FacilioConstants.ContextNames.SERVICE_ORDER);
+        Map<String,FacilioField> soFieldMap = FieldFactory.getAsMap(serviceOrderFields);
+
+        List<ServiceOrderTicketStatusContext> statuses = ServiceOrderAPI.getStatusOfStatusType(ServiceOrderTicketStatusContext.StatusType.OPEN);
+        ServiceOrderTicketStatusContext inProgressStatus = ServiceOrderAPI.getStatus(FacilioConstants.ServiceAppointment.IN_PROGRESS);
+
+        List<FacilioField> updateFields = new ArrayList<>();
+        updateFields.add(soFieldMap.get(FacilioConstants.ContextNames.STATUS));
+        updateFields.add(soFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
+
+        if(inProgressStatus != null && CollectionUtils.isNotEmpty(statuses)) {
+            List<Long> statusIds = statuses.stream().map(ServiceOrderTicketStatusContext::getId).collect(Collectors.toList());
+
+            UpdateRecordBuilder<ServiceOrderContext> updateBuilder = new UpdateRecordBuilder<ServiceOrderContext>()
+                    .module(serviceOrderModule)
+                    .fields(updateFields)
+                    .andCondition(CriteriaAPI.getCondition(soFieldMap.get(FacilioConstants.ContextNames.STATUS), StringUtils.join(statusIds), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition(soFieldMap.get(FacilioConstants.ServiceAppointment.ACTUAL_START_TIME), CommonOperators.IS_EMPTY))
+                    .andCondition(CriteriaAPI.getIdCondition(orderId, serviceOrderModule));
+
+            Map<String, Object> updateProps = new HashMap<>();
+            updateProps.put(FacilioConstants.ContextNames.STATUS, inProgressStatus);
+            updateProps.put(FacilioConstants.ServiceAppointment.ACTUAL_START_TIME, startTime);
+            updateBuilder.updateViaMap(updateProps);
+        } else {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing service order states");
+        }
+    }
+
 }

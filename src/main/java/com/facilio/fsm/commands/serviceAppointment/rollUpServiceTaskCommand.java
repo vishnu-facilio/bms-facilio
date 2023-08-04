@@ -6,6 +6,7 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceAppointmentContext;
+import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
 import com.facilio.fsm.context.ServiceTaskContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -31,6 +32,7 @@ public class rollUpServiceTaskCommand extends FacilioCommand {
         FacilioField serviceAppointmentId = modBean.getField("serviceAppointment", "serviceTask");
         if(CollectionUtils.isNotEmpty(serviceAppointments) && CollectionUtils.isNotEmpty(serviceTaskIds)) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
+                ServiceAppointmentTicketStatusContext appointmentStatus = serviceAppointment.getStatus();
                 if (eventType == EventType.EDIT) {
 
                     List<Long> oldTaskIds = (List<Long>) context.get(FacilioConstants.ContextNames.FieldServiceManagement.OLD_SERVICE_TASK_IDS);
@@ -43,12 +45,18 @@ public class rollUpServiceTaskCommand extends FacilioCommand {
                         ServiceTaskContext serviceTask = new ServiceTaskContext();
                         serviceTask.setId(id);
                         serviceTask.setServiceAppointment(null);
+                        serviceTask.setStatus(ServiceTaskContext.ServiceTaskStatus.NEW.getIndex());
                         V3RecordAPI.updateRecord(serviceTask, serviceTaskModule, Collections.singletonList(serviceAppointmentId));
                     }
                     for (Long taskId : newIds) {
                         ServiceTaskContext serviceTask = new ServiceTaskContext();
                         serviceTask.setId(taskId);
                         serviceTask.setServiceAppointment(serviceAppointment);
+                        if(appointmentStatus != null && appointmentStatus.getStatus() != FacilioConstants.ServiceAppointment.SCHEDULED){
+                            serviceTask.setStatus(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
+                        } else {
+                            serviceTask.setStatus(ServiceTaskContext.ServiceTaskStatus.SCHEDULED.getIndex());
+                        }
                         V3RecordAPI.updateRecord(serviceTask, serviceTaskModule, Collections.singletonList(serviceAppointmentId));
                     }
 
@@ -59,6 +67,11 @@ public class rollUpServiceTaskCommand extends FacilioCommand {
                     ServiceTaskContext serviceTask = new ServiceTaskContext();
                     serviceTask.setId(serviceTaskId);
                     serviceTask.setServiceAppointment(serviceAppointment);
+                    if(appointmentStatus != null && appointmentStatus.getStatus() == FacilioConstants.ServiceAppointment.DISPATCHED){
+                        serviceTask.setStatus(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
+                    } else {
+                        serviceTask.setStatus(ServiceTaskContext.ServiceTaskStatus.SCHEDULED.getIndex());
+                    }
                     V3RecordAPI.updateRecord(serviceTask, serviceTaskModule, Collections.singletonList(serviceAppointmentId));
                 }
                 }
