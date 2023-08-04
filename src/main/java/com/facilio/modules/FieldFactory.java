@@ -9293,6 +9293,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("identifier", "IDENTIFIER", module, FieldType.STRING));
         fields.add(getField("positionType", "POSITION_TYPE", module, FieldType.NUMBER));
         fields.add(getField("buttonType", "BUTTON_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("permissionRequired","PERMISSION_REQUIRED",module,FieldType.BOOLEAN));
+        fields.add(getField("permission","PERMISSION",module,FieldType.STRING));
 
         return fields;
     }

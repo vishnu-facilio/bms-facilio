@@ -3589,6 +3589,7 @@ public class ModuleFactory {
 		module.setName("system_Button");
 		module.setDisplayName("System Button");
 		module.setTableName("SystemButton");
+		module.setExtendModule(getWorkflowRuleModule());
 		return module;
 	}
 	public static FacilioModule getStateRuleTransitionModule() {

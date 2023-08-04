@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FacilioIntEnum;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
@@ -14,6 +16,13 @@ public class SystemButtonRuleContext extends ApproverWorkflowRuleContext {
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
+
+    @Getter
+    @Setter
+    private boolean permissionRequired;
+    @Getter
+    @Setter
+    private String permission;
 
     private CustomButtonRuleContext.PositionType positionType;
 

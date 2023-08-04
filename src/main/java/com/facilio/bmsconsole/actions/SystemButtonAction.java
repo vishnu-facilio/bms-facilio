@@ -58,6 +58,7 @@ public class SystemButtonAction extends FacilioAction{
         FacilioChain chain = ReadOnlyChainFactory.getAllSystemButtonChain();
         FacilioContext context = chain.getContext();
 
+        context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
         context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
         chain.execute();
 

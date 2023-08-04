@@ -147,9 +147,16 @@ public class WebTabUtil {
         return false;
     }
 
+    public static boolean currentUserHasPermission(long tabId,String action){
+        return currentUserHasPermission(tabId,action,AccountUtil.getCurrentUser().getRole());
+    }
+
     public static boolean currentUserHasPermission(long tabId, String action, Role role) {
 
         try {
+            if (role.isPrevileged()){
+                return true;
+            }
             if (V3PermissionUtil.isFeatureEnabled()) {
                 NewPermission permission = ApplicationApi.getRolesPermissionForTab(tabId, role.getRoleId());
                 boolean hasPerm = PermissionUtil.hasPermission(permission, action, tabId);

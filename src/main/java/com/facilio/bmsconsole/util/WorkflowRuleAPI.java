@@ -186,6 +186,11 @@ public class WorkflowRuleAPI {
 				ruleProps = FieldUtil.getAsProperties(rule);
 				addExtendedProps(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(), ruleProps);
 				break;
+			case SYSTEM_BUTTON:
+				ApprovalRulesAPI.addApproverRuleChildren((ApproverWorkflowRuleContext) rule);
+				ruleProps = FieldUtil.getAsProperties(rule);
+				addExtendedProps(ModuleFactory.getSystemButtonRuleModule(),FieldFactory.getSystemButtonRuleFields(),ruleProps);
+				break;
 			case ALARM_WORKFLOW_RULE:
 				addExtendedProps(ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields(), ruleProps);
 				break;

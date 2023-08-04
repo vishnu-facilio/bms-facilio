@@ -23,6 +23,8 @@ public class GetSystemButtonListCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        String searchString = (String) context.get(FacilioConstants.ContextNames.SEARCH);
+
         if(StringUtils.isEmpty(moduleName)){
             throw new Exception("ModuleName cannot be empty");
         }
@@ -34,7 +36,7 @@ public class GetSystemButtonListCommand extends FacilioCommand {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("MODULEID","moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
         List<WorkflowRuleContext> systemButtonList = WorkflowRuleAPI.getExtendedWorkflowRules(ModuleFactory.getSystemButtonRuleModule(), FieldFactory.getSystemButtonRuleFields(),
-                criteria,null,null, SystemButtonRuleContext.class);
+                criteria,searchString,null, SystemButtonRuleContext.class);
         context.put(FacilioConstants.ContextNames.SYSTEM_BUTTONS,systemButtonList);
         return false;
     }

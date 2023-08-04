@@ -2161,6 +2161,14 @@
         </urlparams>
     </request>
 
+    <request path="/api/v3/module/:moduleName/:recordId/systemButton/:identifier" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="identifier" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v3/readingrule/actions/fetchRuleWo">
         <requestbody type="object">
             <property name="ruleId" type="number" mandatory="true"/>
