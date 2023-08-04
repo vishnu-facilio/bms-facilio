@@ -28,7 +28,36 @@ public class MonitoringMXBeanImp implements MonitoringMXBean {
                 queryMap.put(keyName, preOpenWoCount);
             }
         } catch (Exception e) {
-            LOGGER.error("Error occurred during getQeury Implementation" + e);
+            LOGGER.error("Error occurred during getPMWorkOrderMonitor Implementation" + e);
+        }
+        return queryMap;
+    }
+
+    // logic: same as logic used for monitoring PM workorder.
+    public Map<String, Long> getInspectionMonitor() {
+        Map<String, Long> queryMap = new HashMap<>();
+        try {
+            for (long orgId : orgIds) {
+                long preOpenInspectionCount = MonitoringAPI.getPreOpenInspectionCount(DateTimeUtil.getCurrenTime(), orgId);
+                String keyName = MonitoringAPI.getKeyName(orgId);
+                queryMap.put(keyName, preOpenInspectionCount);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error occurred during getInspectionMonitor implementation " + e);
+        }
+        return queryMap;
+    }
+
+    public Map<String, Long> getWorkFlowMonitor() {
+        Map<String, Long> queryMap = new HashMap<>();
+        try {
+            for (long orgId : orgIds) {
+                long failedWorkflowCount = MonitoringAPI.getFailedWorkflowCount(DateTimeUtil.getCurrenTime(), orgId);
+                String keyName = MonitoringAPI.getKeyName(orgId);
+                queryMap.put(keyName, failedWorkflowCount);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error occurred during getInspectionMonitor implementation " + e);
         }
         return queryMap;
     }

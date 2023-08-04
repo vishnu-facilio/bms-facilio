@@ -88,6 +88,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import com.facilio.bmsconsole.monitoring.MonitoringMXBeanImp;
+import com.facilio.bmsconsole.monitoring.MonitoringMXBean;
+
 
 public class FacilioContextListener implements ServletContextListener {
 
@@ -260,7 +263,6 @@ public class FacilioContextListener implements ServletContextListener {
 			LOGGER.info("Exception while registering Facilio MBeans");
 		}
 	}
-
 	private void registerMonitoringMBeans() {
 		try {
 			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -271,6 +273,7 @@ public class FacilioContextListener implements ServletContextListener {
 			LOGGER.info("Exception while registering Facilio monitoring MBeans");
 		}
 	}
+
 
 	private void initializeDB() {
 		if (FacilioProperties.isDevelopment()) {
