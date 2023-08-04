@@ -13,6 +13,7 @@ import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
@@ -46,7 +47,7 @@ public class ScheduleServiceOrderCommand extends FacilioCommand {
                                 .andCondition(CriteriaAPI.getCondition(soFieldMap.get(FacilioConstants.ContextNames.STATUS), String.valueOf(newStatus.getId()), NumberOperators.EQUALS))
                                 .andCondition(CriteriaAPI.getIdCondition(serviceOrder.getId(), serviceOrderModule));
                         Map<String, Object> updateProps = new HashMap<>();
-                        updateProps.put("status", scheduledStatus);
+                        updateProps.put("status", FieldUtil.getAsProperties(scheduledStatus));
                         updateBuilder.updateViaMap(updateProps);
                     } else {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing service order states");

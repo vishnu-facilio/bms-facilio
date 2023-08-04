@@ -599,7 +599,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         FacilioModule module = moduleBean.getModule(moduleName);
 
         FacilioField nameField = moduleBean.getField("name", moduleName);
-        FacilioField moduleStateField = moduleBean.getField("moduleState", moduleName);
+        FacilioField moduleStateField = moduleBean.getField("status", moduleName);
         FacilioField priorityField = moduleBean.getField("priority", moduleName);
         FacilioField appointmentTypeField = moduleBean.getField("appointmentType", moduleName);
         FacilioField descriptionField = moduleBean.getField("description", moduleName);
