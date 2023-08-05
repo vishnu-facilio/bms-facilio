@@ -7,6 +7,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
+import com.facilio.fsm.exception.FSMErrorCode;
+import com.facilio.fsm.exception.FSMException;
 import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.V3Action;
@@ -68,13 +70,13 @@ public class ServiceOrderAction extends V3Action {
             ServiceOrderTicketStatusContext newStatus =  ServiceOrderAPI.getStatus(statusData);
             if(newStatus != null && newStatus.getId() == cancelledState.getId()){
                 if(serviceOrderInfo.getStatus().getId() ==  cancelledState.getId()){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order already in Cancelled state");
+                    throw new FSMException(FSMErrorCode.SO_CANCEL_FAILED);
                 }
                 if(serviceOrderInfo.getStatus().getId() == completedState.getId()){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order cannot be Cancelled as it is already Completed");
+                    throw new FSMException(FSMErrorCode.SO_CANCEL_FAILED);
                 }
                 if(serviceOrderInfo.getStatus().getId() == closedState.getId()){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order cannot be Cancelled as it is already Closed");
+                    throw new FSMException(FSMErrorCode.SO_CANCEL_FAILED);
                 }
                 if(validate){
                     successMsg.put("title","Cancel Service Order");
@@ -89,7 +91,7 @@ public class ServiceOrderAction extends V3Action {
 
             if(newStatus != null && newStatus.getId() == completedState.getId()){
                 if(serviceOrderInfo.getStatus().getId() != inProgressState.getId()){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order can only be completed in 'In Progress' state");
+                    throw new FSMException(FSMErrorCode.SO_COMPLETE_WARNING);
                 }
                 if(validate){
                     successMsg.put("title","Complete Service Order");
@@ -109,7 +111,7 @@ public class ServiceOrderAction extends V3Action {
 
             if(newStatus !=null && newStatus.getId() == closedState.getId()){
                 if(serviceOrderInfo.getStatus() != null && serviceOrderInfo.getStatus().getId() != completedState.getId()){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Only Completed Service Orders can be closed");
+                    throw new FSMException(FSMErrorCode.SO_CLOSE_WARNING);
                 }
                 serviceOrderInfo.setStatus(closedState);
                 updateServiceOrder(serviceOrderInfo);

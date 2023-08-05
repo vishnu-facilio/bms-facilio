@@ -2,16 +2,19 @@ package com.facilio.fsm.exception;
 
 import com.facilio.fw.FacilioException;
 
-import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
-public class fsmException extends FacilioException {
-    private ExceptionType exceptionType;
+public class FSMException extends FacilioException {
+    private FSMErrorCode fsmErrorCode;
     private String message;
 
     private String[] messageParams;
 
-    public ExceptionType getExceptionType() {
-        return exceptionType;
+    private List<FSMException> additionalExceptions;
+
+    public FSMErrorCode getFsmErrorCode() {
+        return fsmErrorCode;
     }
 
     public void setMessageParams(String[] messageParams) {
@@ -21,38 +24,30 @@ public class fsmException extends FacilioException {
         return messageParams;
     }
 
-    public fsmException() {
+    public FSMException(FSMErrorCode fsmErrorCode) {
+        super(fsmErrorCode.getMessage());
+        this.fsmErrorCode = fsmErrorCode;
+        this.message = fsmErrorCode.getMessage();
     }
 
-    public fsmException(ExceptionType exceptionType) {
-        super(exceptionType.getMessage());
-        this.exceptionType = exceptionType;
-        this.message = exceptionType.getMessage();
-    }
-
-    public fsmException(ExceptionType exceptionType, String... messageParams) {
-        super(exceptionType.getMessage());
-        this.exceptionType = exceptionType;
+    public FSMException(FSMErrorCode fsmErrorCode, String... messageParams) {
+        super(fsmErrorCode.getMessage());
+        this.fsmErrorCode = fsmErrorCode;
+        this.message = fsmErrorCode.getMessage();
         this.messageParams = messageParams;
     }
 
-    public enum ExceptionType {
-        ORG_MANDATORY_FIELDS_MISSING(HttpServletResponse.SC_BAD_REQUEST, "Mandatory fields for the organization are missing (Name, Domain)");
-
-        private final int httpStatus;
-        private final String message;
-
-        ExceptionType(int httpStatus, String message) {
-            this.httpStatus = httpStatus;
-            this.message = message;
+    public FSMException addAdditionalException(FSMException fsmException) {
+        if (fsmException != null) {
+            if (additionalExceptions == null) {
+                this.additionalExceptions = new ArrayList<>();
+            }
+            additionalExceptions.add(fsmException);
         }
+        return this;
+    }
 
-        public int getHttpStatus() {
-            return httpStatus;
-        }
-
-        public String getMessage() {
-            return message;
-        }
+    public List<FSMException> getAdditionalExceptions() {
+        return additionalExceptions;
     }
 }
