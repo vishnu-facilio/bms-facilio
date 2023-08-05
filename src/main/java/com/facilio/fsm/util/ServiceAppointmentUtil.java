@@ -1,5 +1,6 @@
 package com.facilio.fsm.util;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
@@ -103,6 +104,7 @@ public class ServiceAppointmentUtil {
             String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
             ModuleBean moduleBean = Constants.getModBean();
             FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
+            FacilioModule serviceTask = moduleBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
             List<FacilioField> saFields = moduleBean.getAllFields(serviceAppointmentModuleName);
 
             Map<String, FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
@@ -136,9 +138,22 @@ public class ServiceAppointmentUtil {
                     List<Long> taskIds = new ArrayList<>();
                     if (CollectionUtils.isNotEmpty(maps)) {
                         taskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
-                        ServiceTaskContext task = new ServiceTaskContext();
-                        task.setStatus(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
-                        V3Util.updateBulkRecords(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, FieldUtil.getAsProperties(task), taskIds, true, false);
+                        List<ModuleBaseWithCustomFields> oldRecords = new ArrayList<>();
+                        List<Map<String,Object>> updateRecordList = new ArrayList<>();
+                        for(Long taskId : taskIds){
+                            FacilioContext taskContext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, Collections.singletonList(taskId));
+                            ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(taskContext).get(0);
+                            oldRecords.add(existingTask);
+                            Map<String,Object> updateProps = FieldUtil.getAsProperties(existingTask);
+                            updateProps.put("status",ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
+                            updateRecordList.add(updateProps);
+                            V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
+
+                        }
+//                        ServiceTaskContext task = new ServiceTaskContext();
+//                        task.setId(taskIds.get(0));
+//                        task.setStatus(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
+//                        V3Util.updateBulkRecords(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, FieldUtil.getAsProperties(task), taskIds, true, false);
                     }
 //                    if (existingAppointment.getServiceOrder() != null) {
 //                        ServiceOrderAPI.dispatchServiceOrder(existingAppointment.getServiceOrder().getId());
@@ -225,18 +240,31 @@ public class ServiceAppointmentUtil {
                                 .andCondition(CriteriaAPI.getCondition("SERVICE_APPOINTMENT_ID", "left", String.valueOf(appointmentId), NumberOperators.EQUALS));
                         List<Map<String, Object>> maps = selectBuilder.get();
                         List<Long> taskIds = new ArrayList<>();
+                        List<ModuleBaseWithCustomFields> oldRecords = new ArrayList<>();
+                        List<Map<String,Object>> updateRecordList = new ArrayList<>();
                         if (CollectionUtils.isNotEmpty(maps)) {
                             taskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
-                            ServiceTaskContext task = new ServiceTaskContext();
-                            task.setStatus(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex());
-                            task.setActualStartTime(currentTime);
-                            V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(task), taskIds, true, false);
+                            for(Long taskId : taskIds){
+                                FacilioContext taskContext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, Collections.singletonList(taskId));
+                                ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(taskContext).get(0);
+                                oldRecords.add(existingTask);
+                                Map<String,Object> updateProps = FieldUtil.getAsProperties(existingTask);
+                                updateProps.put("status",ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex());
+                                updateProps.put("actualStartTime",currentTime);
+                                updateRecordList.add(updateProps);
+                                V3Util.processAndUpdateBulkRecords(Constants.getModBean().getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK), oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
+                            }
+//                            ServiceTaskContext task = new ServiceTaskContext();
+//                            task.setId(taskIds.get(0));
+//                            task.setStatus(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex());
+//                            task.setActualStartTime(currentTime);
+//                            V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(task), taskIds, true, false);
                         }
-                        if (existingAppointment.getServiceOrder() != null) {
-                            ServiceOrderAPI.startServiceOrder(existingAppointment.getServiceOrder().getId(),currentTime);
-                        } else {
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "No ServiceOrder is mapped to Service Appointment");
-                        }
+//                        if (existingAppointment.getServiceOrder() != null) {
+//                            ServiceOrderAPI.startServiceOrder(existingAppointment.getServiceOrder().getId(),currentTime);
+//                        } else {
+//                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "No ServiceOrder is mapped to Service Appointment");
+//                        }
                     }
                 }
             }
@@ -262,6 +290,10 @@ public class ServiceAppointmentUtil {
         List<FacilioField> serviceTaskFields = Constants.getModBean().getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
         Map<String,FacilioField> stFieldMap = FieldFactory.getAsMap(serviceTaskFields);
 
+        FacilioModule people = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        List<FacilioField> peopleFields = moduleBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+        Map<String, FacilioField> peopleFieldMap = FieldFactory.getAsMap(peopleFields);
+
         FacilioContext context = V3Util.getSummary(serviceAppointmentModuleName, Collections.singletonList(appointmentId));
 
         if (Constants.getRecordList(context) != null) {
@@ -270,15 +302,15 @@ public class ServiceAppointmentUtil {
                 if(existingAppointment.getFieldAgent() != null) {
                     long agentId = existingAppointment.getFieldAgent().getId();
 
-                    List<Integer> closedTaskStates = new ArrayList<>();
-                    closedTaskStates.add(ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
-                    closedTaskStates.add(ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
-
-                    List<Integer> openTaskStates = new ArrayList<>();
-                    openTaskStates.add(ServiceTaskContext.ServiceTaskStatus.NEW.getIndex());
-                    openTaskStates.add(ServiceTaskContext.ServiceTaskStatus.SCHEDULED.getIndex());
-                    openTaskStates.add(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
-                    openTaskStates.add(ServiceTaskContext.ServiceTaskStatus.ON_HOLD.getIndex());
+//                    List<Integer> closedTaskStates = new ArrayList<>();
+//                    closedTaskStates.add(ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
+//                    closedTaskStates.add(ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
+//
+//                    List<Integer> openTaskStates = new ArrayList<>();
+//                    openTaskStates.add(ServiceTaskContext.ServiceTaskStatus.NEW.getIndex());
+//                    openTaskStates.add(ServiceTaskContext.ServiceTaskStatus.SCHEDULED.getIndex());
+//                    openTaskStates.add(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
+//                    openTaskStates.add(ServiceTaskContext.ServiceTaskStatus.ON_HOLD.getIndex());
 
                     SelectRecordsBuilder<ServiceTaskContext> existingTasksBuilder = new SelectRecordsBuilder<ServiceTaskContext>()
                             .module(serviceTask)
@@ -288,10 +320,10 @@ public class ServiceAppointmentUtil {
                     List<ServiceTaskContext> existingServiceTasks = existingTasksBuilder.get();
 
                     if (CollectionUtils.isNotEmpty(existingServiceTasks)) {
-                        Map<Integer, List<ServiceTaskContext>> taskMap = existingServiceTasks.stream().collect(Collectors.groupingBy(task -> task.getStatus()));
-                        if (openTaskStates.stream().anyMatch(taskMap::containsKey)) {
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "move tasks to in-progress state to complete appointment");
-                        } else {
+//                        Map<Integer, List<ServiceTaskContext>> taskMap = existingServiceTasks.stream().collect(Collectors.groupingBy(task -> task.getStatus()));
+//                        if (openTaskStates.stream().anyMatch(taskMap::containsKey)) {
+//                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "move tasks to in-progress state to complete appointment");
+//                        } else {
                             List<TimeSheetContext> ongoingTimeSheets = getOngoingTimeSheets(agentId,appointmentId);
                             if(CollectionUtils.isNotEmpty(ongoingTimeSheets)){
                                 for(TimeSheetContext ts : ongoingTimeSheets){
@@ -304,11 +336,42 @@ public class ServiceAppointmentUtil {
                             existingAppointment.setActualEndTime(currentTime);
                             ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("completed");
                             if (appointmentStatus == null) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Missing in-progress state");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Missing completed state");
                             }
                             existingAppointment.setStatus(appointmentStatus);
                             V3RecordAPI.updateRecord(existingAppointment, serviceAppointment, updateFields);
-                        }
+
+//                            List<ServiceTaskContext> inProgressTasks = taskMap.get(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex());
+//                            if(CollectionUtils.isNotEmpty(inProgressTasks)){
+//                                List<Long> taskIds = inProgressTasks.stream().map(ServiceTaskContext::getId).collect(Collectors.toList());
+                            if(CollectionUtils.isNotEmpty(existingServiceTasks)){
+                              List<Long> taskIds = existingServiceTasks.stream().map(ServiceTaskContext::getId).collect(Collectors.toList());
+                                List<ModuleBaseWithCustomFields> oldRecords = new ArrayList<>();
+                                List<Map<String,Object>> updateRecordList = new ArrayList<>();
+                                for(Long taskId : taskIds){
+                                    FacilioContext taskContext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, Collections.singletonList(taskId));
+                                    ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(taskContext).get(0);
+                                    oldRecords.add(existingTask);
+                                    Map<String,Object> updateProps = FieldUtil.getAsProperties(existingTask);
+                                    updateProps.put("status",ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
+                                    updateProps.put("actualEndTime",currentTime);
+                                    updateRecordList.add(updateProps);
+                                    V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
+                                }
+//                                ServiceTaskContext task = new ServiceTaskContext();
+//                                task.setId(taskIds.get(0));
+//                                task.setStatus(ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
+//                                task.setActualStartTime(currentTime);
+//                                V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(task), taskIds, true, false);
+                            }
+
+                            V3PeopleContext agent = existingAppointment.getFieldAgent();
+                            if(agent.isCheckedIn()) {
+                                agent.setStatus(V3PeopleContext.Status.AVAILABLE.getIndex());
+                                V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
+                            }
+
+//                        }
                     } else {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service tasks cannot be empty");
                     }
@@ -329,31 +392,108 @@ public class ServiceAppointmentUtil {
 
         Long currentTime = DateTimeUtil.getCurrenTime();
 
-        ServiceAppointmentContext appointment = new ServiceAppointmentContext();
-        appointment.setId(appointmentId);
-        appointment.setActualEndTime(currentTime);
-        ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("cancelled");
-        if(appointmentStatus == null){
-            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing in-progress state");
-        }
-        appointment.setStatus(appointmentStatus);
-        V3RecordAPI.updateRecord(appointment,serviceAppointment,updateFields);
+        FacilioModule serviceTask = moduleBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+        List<FacilioField> serviceTaskFields = Constants.getModBean().getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+        Map<String,FacilioField> stFieldMap = FieldFactory.getAsMap(serviceTaskFields);
 
-        FacilioField taskField = Constants.getModBean().getField("right", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
+        FacilioModule people = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        List<FacilioField> peopleFields = moduleBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+        Map<String, FacilioField> peopleFieldMap = FieldFactory.getAsMap(peopleFields);
 
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .select(Collections.singleton(taskField))
-                .table("SERVICE_APPOINTMENT_TASK_REL")
-                .andCondition(CriteriaAPI.getCondition("SERVICE_APPOINTMENT_ID", "left", String.valueOf(appointmentId), NumberOperators.EQUALS));
-        List<Map<String, Object>> maps = selectBuilder.get();
-        List<Long> taskIds = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(maps)) {
-            taskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
-            ServiceTaskContext task  = new ServiceTaskContext();
-            task.setStatus(ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
-            task.setActualEndTime(currentTime);
-            V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(task),taskIds, true,false);
+        FacilioContext context = V3Util.getSummary(serviceAppointmentModuleName, Collections.singletonList(appointmentId));
+
+        if (Constants.getRecordList(context) != null) {
+            ServiceAppointmentContext existingAppointment = (ServiceAppointmentContext) Constants.getRecordList(context).get(0);
+            if (existingAppointment != null) {
+
+                    SelectRecordsBuilder<ServiceTaskContext> existingTasksBuilder = new SelectRecordsBuilder<ServiceTaskContext>()
+                            .module(serviceTask)
+                            .beanClass(ServiceTaskContext.class)
+                            .select(Collections.singletonList(stFieldMap.get(FacilioConstants.ContextNames.STATUS)))
+                            .andCondition(CriteriaAPI.getCondition(stFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT), String.valueOf(appointmentId), NumberOperators.EQUALS));
+                    List<ServiceTaskContext> existingServiceTasks = existingTasksBuilder.get();
+
+                    if (CollectionUtils.isNotEmpty(existingServiceTasks)) {
+                        if(existingAppointment.getFieldAgent() != null) {
+                            long agentId = existingAppointment.getFieldAgent().getId();
+                            List<TimeSheetContext> ongoingTimeSheets = getOngoingTimeSheets(agentId, appointmentId);
+                            if (CollectionUtils.isNotEmpty(ongoingTimeSheets)) {
+                                for (TimeSheetContext ts : ongoingTimeSheets) {
+                                    closeOngoingTimeSheets(ts, currentTime);
+                                }
+                            }
+
+                            long workDuration = getAppointmentDuration(agentId, appointmentId);
+                            existingAppointment.setActualDuration(workDuration);
+                        }
+                        existingAppointment.setActualEndTime(currentTime);
+                        ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus(FacilioConstants.ServiceAppointment.CANCELLED);
+                        if (appointmentStatus == null) {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Missing cancelled state");
+                        }
+                        existingAppointment.setStatus(appointmentStatus);
+                        V3RecordAPI.updateRecord(existingAppointment, serviceAppointment, updateFields);
+
+                        if(CollectionUtils.isNotEmpty(existingServiceTasks)){
+                            List<Long> taskIds = existingServiceTasks.stream().map(ServiceTaskContext::getId).collect(Collectors.toList());
+                            List<ModuleBaseWithCustomFields> oldRecords = new ArrayList<>();
+                            List<Map<String,Object>> updateRecordList = new ArrayList<>();
+                            for(Long taskId : taskIds){
+                                FacilioContext taskContext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, Collections.singletonList(taskId));
+                                ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(taskContext).get(0);
+                                oldRecords.add(existingTask);
+                                Map<String,Object> updateProps = FieldUtil.getAsProperties(existingTask);
+                                updateProps.put("status",ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
+                                updateProps.put("actualEndTime",currentTime);
+                                updateRecordList.add(updateProps);
+                                V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
+
+                            }
+//                            ServiceTaskContext task = new ServiceTaskContext();
+//                            task.setId(taskIds.get(0));
+//                            task.setStatus(ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
+//                            task.setActualStartTime(currentTime);
+//                            V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(task), taskIds, true, false);
+                        }
+
+                        V3PeopleContext agent = existingAppointment.getFieldAgent();
+                        if( agent != null && agent.isCheckedIn()) {
+                            agent.setStatus(V3PeopleContext.Status.AVAILABLE.getIndex());
+                            V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
+                        }
+
+//                        }
+                    } else {
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service tasks cannot be empty");
+                    }
+            }
         }
+
+//        ServiceAppointmentContext appointment = new ServiceAppointmentContext();
+//        appointment.setId(appointmentId);
+//        appointment.setActualEndTime(currentTime);
+//        ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("cancelled");
+//        if(appointmentStatus == null){
+//            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing in-progress state");
+//        }
+//        appointment.setStatus(appointmentStatus);
+//        V3RecordAPI.updateRecord(appointment,serviceAppointment,updateFields);
+//
+//        FacilioField taskField = Constants.getModBean().getField("right", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
+//
+//        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//                .select(Collections.singleton(taskField))
+//                .table("SERVICE_APPOINTMENT_TASK_REL")
+//                .andCondition(CriteriaAPI.getCondition("SERVICE_APPOINTMENT_ID", "left", String.valueOf(appointmentId), NumberOperators.EQUALS));
+//        List<Map<String, Object>> maps = selectBuilder.get();
+//        List<Long> taskIds = new ArrayList<>();
+//        if (CollectionUtils.isNotEmpty(maps)) {
+//            taskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
+//            ServiceTaskContext task  = new ServiceTaskContext();
+//            task.setStatus(ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
+//            task.setActualEndTime(currentTime);
+//            V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(task),taskIds, true,false);
+//        }
     }
 
     public static void startTripForAppointment(Long appointmentId, TripContext tripData) throws Exception {
@@ -419,7 +559,7 @@ public class ServiceAppointmentUtil {
                 //updating service appointment status to en-route only if it is in scheduled or dispatched state
                 ServiceAppointmentTicketStatusContext enRouteStatus = ServiceAppointmentUtil.getStatus(FacilioConstants.ServiceAppointment.EN_ROUTE);
                 if(enRouteStatus == null){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing in-progress state");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing enRoute state");
                 }
                 existingAppointment.setStatus(enRouteStatus);
                 V3RecordAPI.updateRecord(existingAppointment, serviceAppointment, Collections.singletonList(saFieldMap.get(FacilioConstants.ContextNames.STATUS)));

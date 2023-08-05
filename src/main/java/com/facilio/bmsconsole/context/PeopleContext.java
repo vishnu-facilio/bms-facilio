@@ -281,5 +281,8 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private String avatarFileName;
 	private  String avatarContentType;
 	private Double rate;
+	private Long lastCheckedInTime;
+	private Long lastCheckedOutTime;
+	private boolean checkedIn;
 
 }

@@ -267,4 +267,7 @@ public class V3PeopleContext extends V3Context {
     private File avatar;
     private String avatarFileName;
     private  String avatarContentType;
+    private Long lastCheckedInTime;
+    private Long lastCheckedOutTime;
+    private boolean checkedIn;
 }

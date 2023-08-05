@@ -84,7 +84,7 @@ public abstract class BaseClassificationDataCommand extends FacilioCommand {
     protected void addDeletableRecordsIds(List<V3Context> records, Map<Long, V3Context> oldRecordMap, Set<Long> deleteRecordIds) throws RESTException {
         records.forEach(record -> {
             V3Context oldRecord = oldRecordMap.get(record.getId());
-            if (oldRecord.getClassification() != null && record.getClassification() == null) { //if record have classification null but old record have classification means we need to delete in classificationModule data
+            if (oldRecordMap != null && oldRecord.getClassification() != null && record.getClassification() == null) { //if record have classification null but old record have classification means we need to delete in classificationModule data
                 deleteRecordIds.add(record.getId());
             }
         });

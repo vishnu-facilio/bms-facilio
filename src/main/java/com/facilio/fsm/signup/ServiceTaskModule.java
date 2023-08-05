@@ -107,7 +107,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
 
         SystemButtonRuleContext startWork = new SystemButtonRuleContext();
         startWork.setName("Start Work");
-        startWork.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        startWork.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         startWork.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
         startWork.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
         startWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
@@ -131,7 +131,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
 
         SystemButtonRuleContext resume = new SystemButtonRuleContext();
         resume.setName("Resume Work");
-        resume.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        resume.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         resume.setIdentifier(FacilioConstants.ServiceAppointment.RESUME);
         resume.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
         resume.setPermission(AccountConstants.ModulePermission.UPDATE.name());
@@ -144,7 +144,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
 
         SystemButtonRuleContext complete = new SystemButtonRuleContext();
         complete.setName("Complete");
-        complete.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        complete.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         complete.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
         complete.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
         complete.setPermission(AccountConstants.ModulePermission.UPDATE.name());
@@ -156,7 +156,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
 
         SystemButtonRuleContext reOpen = new SystemButtonRuleContext();
         reOpen.setName("Reopen");
-        reOpen.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        reOpen.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         reOpen.setIdentifier(FacilioConstants.ServiceAppointment.REOPEN);
         reOpen.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
         reOpen.setPermission(AccountConstants.ModulePermission.UPDATE.name());
