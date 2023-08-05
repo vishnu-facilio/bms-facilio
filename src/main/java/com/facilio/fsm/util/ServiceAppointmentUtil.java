@@ -140,11 +140,11 @@ public class ServiceAppointmentUtil {
                         task.setStatus(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
                         V3Util.updateBulkRecords(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, FieldUtil.getAsProperties(task), taskIds, true, false);
                     }
-                    if (existingAppointment.getServiceOrder() != null) {
-                        ServiceOrderAPI.dispatchServiceOrder(existingAppointment.getServiceOrder().getId());
-                    } else {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "No ServiceOrder is mapped to Service Appointment");
-                    }
+//                    if (existingAppointment.getServiceOrder() != null) {
+//                        ServiceOrderAPI.dispatchServiceOrder(existingAppointment.getServiceOrder().getId());
+//                    } else {
+//                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "No ServiceOrder is mapped to Service Appointment");
+//                    }
                 }
             }
         } else {

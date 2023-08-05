@@ -509,10 +509,10 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         return new ModulePages()
                 .addPage("serviceAppointment", "Service Appointment","", null, isTemplate, isDefault, false)
-                .addWebTab("serviceandappointmentsummary", "SUMMARY", true, null)
+                .addWebTab("serviceappointmentsummary", "SUMMARY", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("serviceandappointmentsummaryfields", null, null)
-                .addWidget("serviceandappointmentsummaryfieldswidget", "Service Appointment Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT))
+                .addSection("serviceappointmentsummaryfields", null, null)
+                .addWidget("serviceappointmentsummaryfieldswidget", "Service Appointment Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -522,66 +522,66 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceandappointmentservicetasks", "SERVICE TASKS", true, null)
+                .addWebTab("serviceappointmentservicetasks", "SERVICE TASKS", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("serviceandappointmentservicetasks", null, null)
-                .addWidget("serviceandappointmentservicetaskswidget", "Service Tasks", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "serviceandappointmentservicetasks_50_12", 0, 0, null, null)
+                .addSection("serviceappointmentservicetasks", null, null)
+                .addWidget("serviceappointmentservicetaskswidget", "Service Tasks", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "serviceappointmentservicetasks_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceandappointmentplans", "PLANS", true, null)
+                .addWebTab("serviceappointmentplans", "PLANS", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("serviceandappointmentplans", null, null)
-                .addWidget("serviceandappointmentplanswidget", "Plans", PageWidget.WidgetType.SERVICE_APPOINTMENT_PLANS, "serviceandappointmentplans_50_12", 0, 0, null, null)
+                .addSection("serviceappointmentplans", null, null)
+                .addWidget("serviceappointmentplanswidget", "Plans", PageWidget.WidgetType.SERVICE_APPOINTMENT_PLANS, "serviceappointmentplans_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceandappointmentactuals", "ACTUALS", true, null)
+                .addWebTab("serviceappointmentactuals", "ACTUALS", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("serviceandappointmentactuals", null, null)
-                .addWidget("serviceandappointmentactualswidget", "Actuals", PageWidget.WidgetType.SERVICE_APPOINTMENT_ACTUALS, "serviceandappointmentactuals_50_12", 0, 0, null, null)
+                .addSection("serviceappointmentactuals", null, null)
+                .addWidget("serviceappointmentactualswidget", "Actuals", PageWidget.WidgetType.SERVICE_APPOINTMENT_ACTUALS, "serviceappointmentactuals_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceandappointmenttimesheet", "TIME SHEET", true, null)
+                .addWebTab("serviceappointmenttimesheet", "TIME SHEET", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("serviceandappointmenttimesheet", null, null)
-                .addWidget("serviceandappointmenttimesheetwidget", "Time Sheet", PageWidget.WidgetType.SERVICE_APPOINTMENT_TIMESHEET, "serviceandappointmenttimesheet_50_12", 0, 0, null, null)
+                .addSection("serviceappointmenttimesheet", null, null)
+                .addWidget("serviceappointmenttimesheetwidget", "Time Sheet", PageWidget.WidgetType.SERVICE_APPOINTMENT_TIMESHEET, "serviceappointmenttimesheet_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceandappointmenttrip", "TRIP", true, null)
+                .addWebTab("serviceappointmenttrip", "TRIP", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("serviceandappointmenttrip", null, null)
-                .addWidget("serviceandappointmenttripwidget", "Trip", PageWidget.WidgetType.SERVICE_APPOINTMENT_TRIP, "serviceandappointmenttrip_50_12", 0, 0, null, null)
+                .addSection("serviceappointmenttrip", null, null)
+                .addWidget("serviceappointmenttripwidget", "Trip", PageWidget.WidgetType.SERVICE_APPOINTMENT_TRIP, "serviceappointmenttrip_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
 
-                .addWebTab("serviceandappointmentrelated", "RELATED", true, null)
+                .addWebTab("serviceappointmentrelated", "RELATED", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("serviceandappointmentrelationships", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("serviceandappointmentbulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
+                .addSection("serviceappointmentrelationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("serviceappointmentbulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
-                .addSection("serviceandappointmentrelatedlist", "Related List", "List of related records across modules")
-                .addWidget("serviceandappointmentbulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT))
+                .addSection("serviceappointmentrelatedlist", "Related List", "List of related records across modules")
+                .addWidget("serviceappointmentbulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceandappointmenthistory", "HISTORY", true, null)
+                .addWebTab("serviceappointmenthistory", "HISTORY", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0, historyWidgetParam, null)
@@ -766,7 +766,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         if(scheduledStatus != null) {
             SystemButtonRuleContext dispatch = new SystemButtonRuleContext();
             dispatch.setName("Dispatch");
-            dispatch.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+            dispatch.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
             dispatch.setIdentifier(FacilioConstants.ServiceAppointment.DISPATCH);
             dispatch.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
             dispatch.setPermission(AccountConstants.ModulePermission.UPDATE.name());
@@ -798,7 +798,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
             SystemButtonRuleContext startWork = new SystemButtonRuleContext();
             startWork.setName("Start Work");
-            startWork.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+            startWork.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
             startWork.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
             startWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
             startWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
@@ -834,7 +834,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         if(inProgressStatus != null){
             SystemButtonRuleContext complete = new SystemButtonRuleContext();
             complete.setName("Complete");
-            complete.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+            complete.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
             complete.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
             complete.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
             complete.setPermission(AccountConstants.ModulePermission.UPDATE.name());

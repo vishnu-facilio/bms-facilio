@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ServiceTaskDurationUpdateCommandV3 extends FacilioCommand {
     @Override
@@ -21,7 +22,7 @@ public class ServiceTaskDurationUpdateCommandV3 extends FacilioCommand {
             for(ServiceTaskContext serviceTask : serviceTasks){
                 if(serviceTask!=null){
                     ServiceTaskContext oldServiceTask = oldServiceTaskRecordMap.get(serviceTask.getId());
-                    if(serviceTask.getStatus()!= oldServiceTask.getStatus()){
+                    if(oldServiceTask != null && !Objects.equals(serviceTask.getStatus(), oldServiceTask.getStatus())){
                         if(serviceTask.getStatusEnum()!=null && serviceTask.getStatusEnum().equals(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS)){
                             serviceTask.setActualStartTime(System.currentTimeMillis());
                         }
