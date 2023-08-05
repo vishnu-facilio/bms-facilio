@@ -6,6 +6,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fsm.context.*;
 import com.facilio.modules.*;
@@ -46,12 +47,17 @@ public class ServiceTaskUtil {
                 timeSheetContext.setFieldAgent(serviceAppointmentContext.getFieldAgent());
 
                 FacilioModule timeSheet = moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
+
+                V3Util.createRecord(timeSheet,FieldUtil.getAsProperties(timeSheetContext));
+                updateTaskAndSA(taskId,currentTime,serviceAppointmentContext);
+
 //
-                InsertRecordBuilder<TimeSheetContext> insertRecordBuilder = new InsertRecordBuilder<TimeSheetContext>()
-                        .module(timeSheet)
-                        .table(timeSheet.getTableName())
-                        .fields(moduleBean.getAllFields(FacilioConstants.TimeSheet.TIME_SHEET));
-                insertRecordBuilder.insert(timeSheetContext);
+//                InsertRecordBuilder<TimeSheetContext> insertRecordBuilder = new InsertRecordBuilder<TimeSheetContext>()
+//                        .module(timeSheet)
+//                        .table(timeSheet.getTableName())
+//                        .fields(moduleBean.getAllFields(FacilioConstants.TimeSheet.TIME_SHEET));
+//                insertRecordBuilder.insert(timeSheetContext);
+
 
             } else {
                 if (!isTimeSheetExistsForTask(existingTimeSheets,taskId)) {
@@ -59,55 +65,108 @@ public class ServiceTaskUtil {
                 }
                 else {
                     //updating service task status
+                    updateTaskAndSA(taskId,currentTime,serviceAppointmentContext);
 
-
-                    String serviceTaskModuleName = FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK;
-                    FacilioModule serviceTask = moduleBean.getModule(serviceTaskModuleName);
-                    List<FacilioField> fields = moduleBean.getAllFields(serviceTaskModuleName);
-
-                    Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-                    List<FacilioField> updateFields = new ArrayList<>();
-                    updateFields.add(fieldMap.get("status"));
-                    updateFields.add(fieldMap.get("actualStartTime"));
-
-                    ServiceTaskContext task = new ServiceTaskContext();
-                    task.setId(taskId);
-                    task.setActualStartTime(currentTime);
-                    task.setStatus(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex());
-
-                    List<Long> taskIds = new ArrayList<>();
-                    taskIds.add(taskId);
-                    V3Util.updateBulkRecords(serviceTaskModuleName, FieldUtil.getAsProperties(task), taskIds,true,false);
+//
+//                    String serviceTaskModuleName = FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK;
+//                    FacilioModule serviceTask = moduleBean.getModule(serviceTaskModuleName);
+//                    List<FacilioField> fields = moduleBean.getAllFields(serviceTaskModuleName);
+//
+//                    Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+//                    List<FacilioField> updateFields = new ArrayList<>();
+//                    updateFields.add(fieldMap.get("status"));
+//                    updateFields.add(fieldMap.get("actualStartTime"));
+//
+//                    ServiceTaskContext task = new ServiceTaskContext();
+//                    task.setId(taskId);
+//                    task.setActualStartTime(currentTime);
+//                    task.setStatus(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex());
+//
+//                    List<Long> taskIds = new ArrayList<>();
+//                    taskIds.add(taskId);
+//                    V3Util.updateBulkRecords(serviceTaskModuleName, FieldUtil.getAsProperties(task), taskIds,true,false);
 //                    V3RecordAPI.updateRecord(task, serviceTask, updateFields);
 
-                    ServiceAppointmentTicketStatusContext status = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS, serviceAppointmentContext.getStatus().getId());
-                    if (status.getTypeCode() == 1) {
-
-                            //updating service appointment status
-                            String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
-                            FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
-                            List<FacilioField> saFields = moduleBean.getAllFields(serviceAppointmentModuleName);
-
-                            Map<String, FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
-                            List<FacilioField> updateSAFields = new ArrayList<>();
-                            updateSAFields.add(saFieldMap.get("status"));
-                            updateSAFields.add(saFieldMap.get("actualStartTime"));
-
-
-                            ServiceAppointmentContext appointment = new ServiceAppointmentContext();
-                            appointment.setId(serviceAppointmentContext.getId());
-                            appointment.setActualStartTime(currentTime);
-                            ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("inProgress");
-                            appointment.setStatus(appointmentStatus);
-                            List<Long> appointmentIds = new ArrayList<>();
-                            appointmentIds.add(appointment.getId());
-                        V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(appointment), appointmentIds,true,false);
-
-//                        V3RecordAPI.updateRecord(appointment, serviceAppointment, updateSAFields);
-                        }
+//                    ServiceAppointmentTicketStatusContext status = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS, serviceAppointmentContext.getStatus().getId());
+//                    if (status.getTypeCode() == 1) {
+//
+//                            //updating service appointment status
+//                            String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
+//                            FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
+//                            List<FacilioField> saFields = moduleBean.getAllFields(serviceAppointmentModuleName);
+//
+//                            Map<String, FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+//                            List<FacilioField> updateSAFields = new ArrayList<>();
+//                            updateSAFields.add(saFieldMap.get("status"));
+//                            updateSAFields.add(saFieldMap.get("actualStartTime"));
+//
+//
+//                            ServiceAppointmentContext appointment = new ServiceAppointmentContext();
+//                            appointment.setId(serviceAppointmentContext.getId());
+//                            appointment.setActualStartTime(currentTime);
+//                            ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("inProgress");
+//                            appointment.setStatus(appointmentStatus);
+//                            List<Long> appointmentIds = new ArrayList<>();
+//                            appointmentIds.add(appointment.getId());
+//                        V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(appointment), appointmentIds,true,false);
+//
+////                        V3RecordAPI.updateRecord(appointment, serviceAppointment, updateSAFields);
+//                        }
 
                 }
             }
+        }
+
+    }
+    public static void updateTaskAndSA(Long taskId,Long currentTime,ServiceAppointmentContext serviceAppointmentContext)throws Exception{
+        ModuleBean moduleBean = Constants.getModBean();
+
+        //updating task
+        String serviceTaskModuleName = FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK;
+        FacilioModule serviceTask = moduleBean.getModule(serviceTaskModuleName);
+        List<FacilioField> fields = moduleBean.getAllFields(serviceTaskModuleName);
+
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        List<FacilioField> updateFields = new ArrayList<>();
+        updateFields.add(fieldMap.get("status"));
+        updateFields.add(fieldMap.get("actualStartTime"));
+
+        ServiceTaskContext task = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId);
+
+//        ServiceTaskContext task = new ServiceTaskContext();
+//        task.setId(taskId);
+        task.setActualStartTime(currentTime);
+        task.setStatus(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex());
+
+//        List<Long> taskIds = new ArrayList<>();
+//        taskIds.add(taskId);
+        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId, FieldUtil.getAsJSON(task), null, null, null, null, null,null, null, null);
+
+        //updating sa
+        ServiceAppointmentTicketStatusContext status = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS, serviceAppointmentContext.getStatus().getId());
+        if (status.getTypeCode() == 1) {
+
+            //updating service appointment status
+            String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
+            FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
+            List<FacilioField> saFields = moduleBean.getAllFields(serviceAppointmentModuleName);
+
+            Map<String, FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+            List<FacilioField> updateSAFields = new ArrayList<>();
+            updateSAFields.add(saFieldMap.get("status"));
+            updateSAFields.add(saFieldMap.get("actualStartTime"));
+
+            ServiceAppointmentContext appointment  = V3RecordAPI.getRecord(serviceAppointmentModuleName,serviceAppointmentContext.getId());
+
+            appointment.setActualStartTime(currentTime);
+            ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("inProgress");
+            appointment.setStatus(appointmentStatus);
+            List<Long> appointmentIds = new ArrayList<>();
+            appointmentIds.add(appointment.getId());
+            V3Util.processAndUpdateSingleRecord(serviceAppointmentModuleName,appointment.getId(), FieldUtil.getAsJSON(appointment), null, null, null, null, null,null, null, null);
+
+
+//                        V3RecordAPI.updateRecord(appointment, serviceAppointment, updateSAFields);
         }
 
     }
@@ -117,11 +176,11 @@ public class ServiceTaskUtil {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule timeSheet = moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
         FacilioField appointmentField = Constants.getModBean().getField("serviceAppointment", FacilioConstants.TimeSheet.TIME_SHEET);
-        FacilioField actualEndTime = Constants.getModBean().getField("actualEndTime", FacilioConstants.TimeSheet.TIME_SHEET);
+        FacilioField actualEndTime = Constants.getModBean().getField("endTime", FacilioConstants.TimeSheet.TIME_SHEET);
         FacilioField taskField = Constants.getModBean().getField("right",FacilioConstants.TimeSheet.TIME_SHEET_TASK);
         Criteria timeSheetCriteria = new Criteria();
         timeSheetCriteria.addAndCondition(CriteriaAPI.getCondition("SERVICE_APPOINTMENT_ID", "serviceAppointment", String.valueOf(appointmentId), NumberOperators.EQUALS));
-        timeSheetCriteria.addAndCondition(CriteriaAPI.getCondition("ACTUAL_END_TIME", "actualEndTime", String.valueOf(actualEndTime), NumberOperators.EQUALS));
+        timeSheetCriteria.addAndCondition(CriteriaAPI.getCondition( "endTime", null, CommonOperators.IS_EMPTY));
 
 
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -164,12 +223,13 @@ public class ServiceTaskUtil {
         Long currentTime = DateTimeUtil.getCurrenTime();
 
         //updating service task status
-        ServiceTaskContext task = new ServiceTaskContext();
-        task.setId(taskId);
+        ServiceTaskContext task = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId);
+
         task.setStatus(status);
-        List<Long> taskIds = new ArrayList<>();
-        taskIds.add(taskId);
-        V3Util.updateBulkRecords(serviceTaskModuleName, FieldUtil.getAsProperties(task), taskIds,true,false);
+        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId, FieldUtil.getAsJSON(task), null, null, null, null, null,null, null, null);
+
+
+//        V3Util.updateBulkRecords(serviceTaskModuleName, FieldUtil.getAsProperties(task), taskIds,true,false);
 //        V3RecordAPI.updateRecord(task, serviceTask, updateFields);
 
         //fetch all tasks mapped with ServiceAppointment
@@ -269,14 +329,18 @@ public class ServiceTaskUtil {
         Long currentTime = DateTimeUtil.getCurrenTime();
 
         //updating service task status
-        ServiceTaskContext task = new ServiceTaskContext();
-        task.setId(taskId);
-        task.setStatus(ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
-        List<Long> taskIds = new ArrayList<>();
-        taskIds.add(taskId);
-        V3Util.updateBulkRecords(serviceTaskModuleName, FieldUtil.getAsProperties(task), taskIds,true,false);
+        ServiceTaskContext task = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId);
 
-//        V3RecordAPI.updateRecord(task, serviceTask, updateFields);
+
+        task.setStatus(ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
+
+        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId, FieldUtil.getAsJSON(task), null, null, null, null, null,null, null, null);
+
+//        V3Util.updateBulkRecords(serviceTaskModuleName, FieldUtil.getAsProperties(task), taskIds,true,false);
+
+
+//        V3RecordAPI.
+//        cord(task, serviceTask, updateFields);
 
         //fetch all tasks mapped with ServiceAppointment
         ServiceAppointmentContext serviceAppointmentContext = getServiceAppointmentFromTask(taskId);
