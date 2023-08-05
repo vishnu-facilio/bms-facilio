@@ -1189,15 +1189,15 @@ public class WorkflowRuleAPI {
 			}
 			else {
 				workflowRule.executeFalseActions(record, context, rulePlaceHolders);
-				try {
-					if (workflowRule.getRuleTypeEnum().isLoggable() && record instanceof ModuleBaseWithCustomFields) {
-						ModuleBaseWithCustomFields recordData = (ModuleBaseWithCustomFields) record;
-						String linkConfig=WorkflowRuleLogUtil.linkConfigForRuleType(workflowRule);
-						WorkflowRuleLogUtil.sendWorkflowRuleLogs(new WorkflowRuleLogContext(recordData.getId(), workflowRule, workflowFlag, fieldChangeFlag, siteId, miscFlag, criteriaFlag, null,linkConfig));
-					}
-				} catch (Exception e) {
-					LOGGER.error("Exception occurred in workflowRuleLog", e);
-				}
+//				try {
+//					if (workflowRule.getRuleTypeEnum().isLoggable() && record instanceof ModuleBaseWithCustomFields) {
+//						ModuleBaseWithCustomFields recordData = (ModuleBaseWithCustomFields) record;
+//						String linkConfig=WorkflowRuleLogUtil.linkConfigForRuleType(workflowRule);
+//						WorkflowRuleLogUtil.sendWorkflowRuleLogs(new WorkflowRuleLogContext(recordData.getId(), workflowRule, workflowFlag, fieldChangeFlag, siteId, miscFlag, criteriaFlag, null,linkConfig));
+//					}
+//				} catch (Exception e) {
+//					LOGGER.error("Exception occurred in workflowRuleLog", e);
+//				}
 			}
 		}
 		LOGGER.debug("Time taken to execute readingRule actions: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for record : "+record+" is "+(System.currentTimeMillis() - actionExecutionStartTime));
