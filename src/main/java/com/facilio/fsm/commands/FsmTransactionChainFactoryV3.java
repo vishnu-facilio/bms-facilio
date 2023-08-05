@@ -87,6 +87,7 @@ public class FsmTransactionChainFactoryV3 {
         //for handling the activity
         c.addCommand(new UpdatePlansAndSkillsCommandV3());
         c.addCommand(new ConstructUpdateCustomActivityCommandV3());
+        c.addCommand(new UpdateSAandTasks());
 //        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ACTIVITY));
         //for auto creating the Service appointment
 //        c.addCommand(new AutoCreateSA());
