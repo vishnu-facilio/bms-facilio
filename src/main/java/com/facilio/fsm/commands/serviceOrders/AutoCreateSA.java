@@ -29,6 +29,8 @@ public class AutoCreateSA extends FacilioCommand {
         List<ServiceOrderContext> serviceOrders = (List<ServiceOrderContext>) recordMap.get(context.get("moduleName"));
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule serviceAppointmentModule = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        List<ServiceTaskContext> serviceTaskList = (List<ServiceTaskContext>) recordMap.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+
         List<ModuleBaseWithCustomFields> recordList = new ArrayList<>();
         List<ServiceAppointmentContext> serviceAppointmentList = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(serviceOrders)){
@@ -53,7 +55,7 @@ public class AutoCreateSA extends FacilioCommand {
                     }
                     sa.setTerritory(siteObj.getTerritory());
                 }
-                List<ServiceTaskContext> serviceTaskList= order.getServiceTask();
+//                List<ServiceTaskContext> serviceTaskList= order.getServiceTask();
                 //fetch the list of all tasks against the service order
 
 
