@@ -27,7 +27,7 @@ public class ServiceTaskStatusCheck extends FacilioCommand {
                     if (oldTask.getStatusEnum().equals(ServiceTaskContext.ServiceTaskStatus.CANCELLED)) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Unable to update Service Task in Cancelled State");
                     }
-                    if (oldTask.getStatusEnum().equals(ServiceTaskContext.ServiceTaskStatus.COMPLETED) && !serviceTask.getStatusEnum().equals(ServiceTaskContext.ServiceTaskStatus.REOPENED)) {
+                    if (oldTask.getStatusEnum().equals(ServiceTaskContext.ServiceTaskStatus.COMPLETED) && !serviceTask.getStatusEnum().equals(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS)) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Unable to update Service Task in Completed State");
                     }
                 }

@@ -12,6 +12,7 @@ import org.apache.commons.chain.Context;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.facilio.fsm.util.ServiceOrderAPI.getServiceTasksByServiceOrder;
 import static com.facilio.fsm.util.ServiceOrderAPI.updateServiceOrder;
@@ -26,12 +27,15 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
         ServiceOrderTicketStatusContext scheduledStatus = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.SCHEDULED);
         ServiceOrderTicketStatusContext inProgressStatus = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.IN_PROGRESS);
         List<ServiceTaskContext> dataList = (List<ServiceTaskContext>) recordMap.get(moduleName);
+        Map<String, Map<Long, ServiceTaskContext>> oldrecordMap = (Map<String, Map<Long, ServiceTaskContext>>) context.get(FacilioConstants.ContextNames.OLD_RECORD_MAP);
+        Map<Long, ServiceTaskContext> oldMap = oldrecordMap != null ? oldrecordMap.get(moduleName) : new HashMap<>();
         for(ServiceTaskContext task : dataList) {
             if(task.getServiceOrder() != null){
                 Long orderId = task.getServiceOrder().getId();
                 if(orderId != null){
+                    ServiceTaskContext oldTask = oldMap.get(task.getId());
                     ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,orderId);
-                    if(task.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex() || task.getStatus() == ServiceTaskContext.ServiceTaskStatus.REOPENED.getIndex()){
+                    if(task.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex() || ( oldTask != null && oldTask.getStatusEnum().equals(ServiceTaskContext.ServiceTaskStatus.COMPLETED) && task.getStatus() == ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex())){
                         if(serviceOrderInfo.getStatus() != null && (serviceOrderInfo.getStatus().getId() != newStatus.getId() && serviceOrderInfo.getStatus().getId() != scheduledStatus.getId())){
 //                        if(serviceOrderInfo.getStatus() != null && (serviceOrderInfo.getStatus().getId() != inProgressStatus.getId())){
                             serviceOrderInfo.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.IN_PROGRESS));
