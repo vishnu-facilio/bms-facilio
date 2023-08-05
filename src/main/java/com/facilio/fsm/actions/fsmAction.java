@@ -12,11 +12,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fsm.commands.FSMReadOnlyChainFactory;
 import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
-import com.facilio.fsm.context.DispatcherEventContext;
-import com.facilio.fsm.context.ServiceAppointmentContext;
-import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
-import com.facilio.fsm.context.TripContext;
+import com.facilio.fsm.context.*;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
+import com.facilio.fsm.util.ServiceTaskUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
@@ -205,4 +203,28 @@ public class fsmAction extends V3Action {
         return SUCCESS;
 
     }
+
+    public String updateServiceTaskStatus() throws Exception{
+        switch(getIdentifier()){
+
+            case FacilioConstants.ServiceAppointment.START_WORK:
+                ServiceTaskUtil.moveToInProgress(getRecordId());
+                break;
+            case FacilioConstants.ServiceAppointment.PAUSE:
+                ServiceTaskUtil.moveToCloseState(getRecordId(), ServiceTaskContext.ServiceTaskStatus.ON_HOLD.getIndex());
+                break;
+            case FacilioConstants.ServiceAppointment.RESUME:
+                ServiceTaskUtil.moveToInProgress(getRecordId());
+                break;
+            case FacilioConstants.ServiceAppointment.COMPLETE:
+                ServiceTaskUtil.moveToCloseState(getRecordId(), ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
+                break;
+            case FacilioConstants.ServiceAppointment.CANCEL:
+                ServiceTaskUtil.moveToCloseState(getRecordId(), ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
+                break;
+        }
+
+        return SUCCESS;
+    }
+
 }

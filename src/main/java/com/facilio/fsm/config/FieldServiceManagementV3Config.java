@@ -308,5 +308,15 @@ public class FieldServiceManagementV3Config {
                 .delete()
                 .build();
     }
+    @Module(FacilioConstants.Trip.TRIP_LOCATION_HISTORY)
+    public static Supplier<V3Config> getTripLocationHistory(){
+        return () -> new V3Config(TripContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
 
 }

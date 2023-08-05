@@ -95,7 +95,7 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         enRouteState.setDisplayName("En Route");
         enRouteState.setColor("#0492AE");
         enRouteState.setTextColor("#ffffff");
-        enRouteState.setTypeCode(2);
+        enRouteState.setTypeCode(1);
         enRouteState.setRecordLocked(false);
         scheduledState.setDeleteLocked(true);
         ticketStatusContextList.add(enRouteState);
