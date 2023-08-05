@@ -1,7 +1,7 @@
 package com.facilio.i18n.util;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.fsm.exception.FSMException;
+import com.facilio.fsm.exception.FSMException1;
 import com.facilio.util.FacilioUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +43,7 @@ public class ErrorsUtil {
         return val;
     }
 
-    public static JSONObject getFSMExceptionAsJson(FSMException fsmException) {
+    public static JSONObject getFSMExceptionAsJson(FSMException1 fsmException) {
         String localizedMessage = getString(fsmException.getFsmErrorCode().name(), fsmException.getMessageParams());
         if (StringUtils.isEmpty(localizedMessage)) {
             localizedMessage = MessageFormat.format(fsmException.getMessage(), fsmException.getMessageParams());
@@ -56,7 +56,7 @@ public class ErrorsUtil {
 
         if (fsmException.getAdditionalExceptions() != null) {
             JSONArray additionalErrors = new JSONArray();
-            for (FSMException additionalExp : fsmException.getAdditionalExceptions()) {
+            for (FSMException1 additionalExp : fsmException.getAdditionalExceptions()) {
                 String localizedAdditionalMessage = getString(additionalExp.getFsmErrorCode().name(), additionalExp.getMessageParams());
                 if (StringUtils.isEmpty(localizedAdditionalMessage)) {
                     localizedAdditionalMessage = MessageFormat.format(additionalExp.getMessage(), additionalExp.getMessageParams());

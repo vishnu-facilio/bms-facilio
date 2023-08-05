@@ -3,7 +3,7 @@ package com.facilio.v3;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.interceptors.AuthInterceptor;
 import com.facilio.bmsconsole.util.AuditLogUtil;
-import com.facilio.fsm.exception.FSMException;
+import com.facilio.fsm.exception.FSMException1;
 import com.facilio.i18n.util.ErrorsUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -382,12 +382,12 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 			values = new ErrorResponseUtil((RESTException) exception);
 			this.setData(values.getData());
 		}
-		else if (exception instanceof FSMException) {
-			FSMException fsmException = (FSMException) exception;
+		else if (exception instanceof FSMException1) {
+			FSMException1 fsmException = (FSMException1) exception;
 			this.setData(ErrorsUtil.getFSMExceptionAsJson(fsmException));
 		}
-		else if (exception != null && exception.getCause() != null && exception.getCause() instanceof FSMException) {
-			FSMException fsmException = (FSMException) exception.getCause();
+		else if (exception != null && exception.getCause() != null && exception.getCause() instanceof FSMException1) {
+			FSMException1 fsmException = (FSMException1) exception.getCause();
 			this.setData(ErrorsUtil.getFSMExceptionAsJson(fsmException));
 		}
 		else if (exception instanceof IllegalArgumentException) {
