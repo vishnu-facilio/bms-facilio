@@ -5,13 +5,13 @@ import com.facilio.fw.FacilioException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FSMException1 extends FacilioException {
+public class FSMException extends FacilioException {
     private FSMErrorCode fsmErrorCode;
     private String message;
 
     private String[] messageParams;
 
-    private List<FSMException1> additionalExceptions;
+    private List<FSMException> additionalExceptions;
 
     public FSMErrorCode getFsmErrorCode() {
         return fsmErrorCode;
@@ -24,20 +24,20 @@ public class FSMException1 extends FacilioException {
         return messageParams;
     }
 
-    public FSMException1(FSMErrorCode fsmErrorCode) {
+    public FSMException(FSMErrorCode fsmErrorCode) {
         super(fsmErrorCode.getMessage());
         this.fsmErrorCode = fsmErrorCode;
         this.message = fsmErrorCode.getMessage();
     }
 
-    public FSMException1(FSMErrorCode fsmErrorCode, String... messageParams) {
+    public FSMException(FSMErrorCode fsmErrorCode, String... messageParams) {
         super(fsmErrorCode.getMessage());
         this.fsmErrorCode = fsmErrorCode;
         this.message = fsmErrorCode.getMessage();
         this.messageParams = messageParams;
     }
 
-    public FSMException1 addAdditionalException(FSMException1 fsmException) {
+    public FSMException addAdditionalException(FSMException fsmException) {
         if (fsmException != null) {
             if (additionalExceptions == null) {
                 this.additionalExceptions = new ArrayList<>();
@@ -47,7 +47,7 @@ public class FSMException1 extends FacilioException {
         return this;
     }
 
-    public List<FSMException1> getAdditionalExceptions() {
+    public List<FSMException> getAdditionalExceptions() {
         return additionalExceptions;
     }
 }
