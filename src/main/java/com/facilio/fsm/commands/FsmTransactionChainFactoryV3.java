@@ -32,7 +32,6 @@ public class FsmTransactionChainFactoryV3 {
         c.addCommand(new SetTaskStatusCommandV3());
         c.addCommand(new SOStatusChangeCommandV3());
         c.addCommand(new SOAddOnCommandV3());
-        c.addCommand(new AutoCreateSA());
         return c;
     }
 
@@ -76,6 +75,8 @@ public class FsmTransactionChainFactoryV3 {
         //for handling the activity
         c.addCommand(new UpdatePlansAndSkillsCommandV3());
         c.addCommand(new ConstructAddCustomActivityCommandV3());
+        c.addCommand(new AutoCreateSA());
+
 //        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ACTIVITY));
         //for auto creating the Service appointment
 //        c.addCommand(new AutoCreateSA());
