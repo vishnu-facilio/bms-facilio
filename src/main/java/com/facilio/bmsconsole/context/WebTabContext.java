@@ -305,7 +305,8 @@ public class WebTabContext implements Serializable {
         KPI_EXEC_LOGS("KPI Execution Logs", false, TabType.SETUP, new SetupTypeHandler()), // 96
         RULE_LOGS("Rule Logs", false, TabType.SETUP, new SetupTypeHandler()), // 97
         INBOUND_MAIL_CONVERSION("Inbound Mail Conversion",false,TabType.SETUP,new SetupTypeHandler()),//98
-        WORKFLOW_RULE_LOGS("Workflow Rule Logs",false,TabType.SETUP,new SetupTypeHandler()); //99
+        WORKFLOW_RULE_LOGS("Workflow Rule Logs",false,TabType.SETUP,new SetupTypeHandler()), //99
+        VENDOR_KIOSK("Vendor kiosk",false,TabType.SETUP,new SetupTypeHandler()); //100
         public void setName(String name) {
             this.name = name;
         }

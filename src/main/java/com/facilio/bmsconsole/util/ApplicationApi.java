@@ -2982,6 +2982,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Service Catalogs", "catalogs", WebTabContext.Type.SERVICE_CATALOGS, null, appId, null));
             webTabs.add(new WebTabContext("Tax", "tax", WebTabContext.Type.TAX, null, appId, null,AccountUtil.FeatureLicense.QUOTATION.getFeatureId()));
             webTabs.add(new WebTabContext("Operating Hours", "operatinghours", WebTabContext.Type.OPERATING_HOURS, null, appId, null));
+            webTabs.add(new WebTabContext("Vednor Kiosk", "vendorkiosksettings", WebTabContext.Type.VENDOR_KIOSK, null, appId, null,AccountUtil.FeatureLicense.VENDOR_KIOSK.getFeatureId()));
 
             groupNameVsWebTabsMap.put("general", webTabs);
 
