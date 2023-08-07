@@ -12,8 +12,10 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fsm.context.*;
@@ -147,19 +149,9 @@ public class ServiceAppointmentUtil {
                             Map<String,Object> updateProps = FieldUtil.getAsProperties(existingTask);
                             updateProps.put("status",ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
                             updateRecordList.add(updateProps);
-                            V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
-
                         }
-//                        ServiceTaskContext task = new ServiceTaskContext();
-//                        task.setId(taskIds.get(0));
-//                        task.setStatus(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
-//                        V3Util.updateBulkRecords(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, FieldUtil.getAsProperties(task), taskIds, true, false);
+                        V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
                     }
-//                    if (existingAppointment.getServiceOrder() != null) {
-//                        ServiceOrderAPI.dispatchServiceOrder(existingAppointment.getServiceOrder().getId());
-//                    } else {
-//                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "No ServiceOrder is mapped to Service Appointment");
-//                    }
                 }
             }
         } else {
@@ -252,19 +244,9 @@ public class ServiceAppointmentUtil {
                                 updateProps.put("status",ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex());
                                 updateProps.put("actualStartTime",currentTime);
                                 updateRecordList.add(updateProps);
-                                V3Util.processAndUpdateBulkRecords(Constants.getModBean().getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK), oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
                             }
-//                            ServiceTaskContext task = new ServiceTaskContext();
-//                            task.setId(taskIds.get(0));
-//                            task.setStatus(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex());
-//                            task.setActualStartTime(currentTime);
-//                            V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(task), taskIds, true, false);
+                            V3Util.processAndUpdateBulkRecords(Constants.getModBean().getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK), oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
                         }
-//                        if (existingAppointment.getServiceOrder() != null) {
-//                            ServiceOrderAPI.startServiceOrder(existingAppointment.getServiceOrder().getId(),currentTime);
-//                        } else {
-//                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "No ServiceOrder is mapped to Service Appointment");
-//                        }
                     }
                 }
             }
@@ -302,16 +284,6 @@ public class ServiceAppointmentUtil {
                 if(existingAppointment.getFieldAgent() != null) {
                     long agentId = existingAppointment.getFieldAgent().getId();
 
-//                    List<Integer> closedTaskStates = new ArrayList<>();
-//                    closedTaskStates.add(ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
-//                    closedTaskStates.add(ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
-//
-//                    List<Integer> openTaskStates = new ArrayList<>();
-//                    openTaskStates.add(ServiceTaskContext.ServiceTaskStatus.NEW.getIndex());
-//                    openTaskStates.add(ServiceTaskContext.ServiceTaskStatus.SCHEDULED.getIndex());
-//                    openTaskStates.add(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
-//                    openTaskStates.add(ServiceTaskContext.ServiceTaskStatus.ON_HOLD.getIndex());
-
                     SelectRecordsBuilder<ServiceTaskContext> existingTasksBuilder = new SelectRecordsBuilder<ServiceTaskContext>()
                             .module(serviceTask)
                             .beanClass(ServiceTaskContext.class)
@@ -320,10 +292,6 @@ public class ServiceAppointmentUtil {
                     List<ServiceTaskContext> existingServiceTasks = existingTasksBuilder.get();
 
                     if (CollectionUtils.isNotEmpty(existingServiceTasks)) {
-//                        Map<Integer, List<ServiceTaskContext>> taskMap = existingServiceTasks.stream().collect(Collectors.groupingBy(task -> task.getStatus()));
-//                        if (openTaskStates.stream().anyMatch(taskMap::containsKey)) {
-//                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "move tasks to in-progress state to complete appointment");
-//                        } else {
                             List<TimeSheetContext> ongoingTimeSheets = getOngoingTimeSheets(agentId,appointmentId);
                             if(CollectionUtils.isNotEmpty(ongoingTimeSheets)){
                                 for(TimeSheetContext ts : ongoingTimeSheets){
@@ -340,10 +308,6 @@ public class ServiceAppointmentUtil {
                             }
                             existingAppointment.setStatus(appointmentStatus);
                             V3RecordAPI.updateRecord(existingAppointment, serviceAppointment, updateFields);
-
-//                            List<ServiceTaskContext> inProgressTasks = taskMap.get(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex());
-//                            if(CollectionUtils.isNotEmpty(inProgressTasks)){
-//                                List<Long> taskIds = inProgressTasks.stream().map(ServiceTaskContext::getId).collect(Collectors.toList());
                             if(CollectionUtils.isNotEmpty(existingServiceTasks)){
                               List<Long> taskIds = existingServiceTasks.stream().map(ServiceTaskContext::getId).collect(Collectors.toList());
                                 List<ModuleBaseWithCustomFields> oldRecords = new ArrayList<>();
@@ -356,13 +320,9 @@ public class ServiceAppointmentUtil {
                                     updateProps.put("status",ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
                                     updateProps.put("actualEndTime",currentTime);
                                     updateRecordList.add(updateProps);
-                                    V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
                                 }
-//                                ServiceTaskContext task = new ServiceTaskContext();
-//                                task.setId(taskIds.get(0));
-//                                task.setStatus(ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
-//                                task.setActualStartTime(currentTime);
-//                                V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(task), taskIds, true, false);
+                                V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
+
                             }
 
                             V3PeopleContext agent = existingAppointment.getFieldAgent();
@@ -446,14 +406,8 @@ public class ServiceAppointmentUtil {
                                 updateProps.put("status",ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
                                 updateProps.put("actualEndTime",currentTime);
                                 updateRecordList.add(updateProps);
-                                V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
-
                             }
-//                            ServiceTaskContext task = new ServiceTaskContext();
-//                            task.setId(taskIds.get(0));
-//                            task.setStatus(ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
-//                            task.setActualStartTime(currentTime);
-//                            V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(task), taskIds, true, false);
+                            V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
                         }
 
                         V3PeopleContext agent = existingAppointment.getFieldAgent();
@@ -468,32 +422,6 @@ public class ServiceAppointmentUtil {
                     }
             }
         }
-
-//        ServiceAppointmentContext appointment = new ServiceAppointmentContext();
-//        appointment.setId(appointmentId);
-//        appointment.setActualEndTime(currentTime);
-//        ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("cancelled");
-//        if(appointmentStatus == null){
-//            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing in-progress state");
-//        }
-//        appointment.setStatus(appointmentStatus);
-//        V3RecordAPI.updateRecord(appointment,serviceAppointment,updateFields);
-//
-//        FacilioField taskField = Constants.getModBean().getField("right", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
-//
-//        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-//                .select(Collections.singleton(taskField))
-//                .table("SERVICE_APPOINTMENT_TASK_REL")
-//                .andCondition(CriteriaAPI.getCondition("SERVICE_APPOINTMENT_ID", "left", String.valueOf(appointmentId), NumberOperators.EQUALS));
-//        List<Map<String, Object>> maps = selectBuilder.get();
-//        List<Long> taskIds = new ArrayList<>();
-//        if (CollectionUtils.isNotEmpty(maps)) {
-//            taskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
-//            ServiceTaskContext task  = new ServiceTaskContext();
-//            task.setStatus(ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
-//            task.setActualEndTime(currentTime);
-//            V3Util.updateBulkRecords(serviceAppointmentModuleName, FieldUtil.getAsProperties(task),taskIds, true,false);
-//        }
     }
 
     public static void startTripForAppointment(Long appointmentId, TripContext tripData) throws Exception {
@@ -699,7 +627,41 @@ public class ServiceAppointmentUtil {
         if(appointmentId != null && appointmentId > 0){
             timeSheetBuilder.andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),String.valueOf(appointmentId), NumberOperators.EQUALS));
         }
-        return timeSheetBuilder.get();
+        List<TimeSheetContext> ongoingTimeSheets = timeSheetBuilder.get();
+        if(CollectionUtils.isNotEmpty(ongoingTimeSheets)){
+            return ongoingTimeSheets;
+        }
+        return null;
+    }
+
+    public static List<TimeSheetContext> getTimeSheetsForTimeRange(long peopleId, long startTime, Long endTime) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule timeSheetModule = moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
+        List<FacilioField> timeSheetFields = moduleBean.getAllFields(FacilioConstants.TimeSheet.TIME_SHEET);
+        Map<String,FacilioField> timeSheetFieldMap = FieldFactory.getAsMap(timeSheetFields);
+        Criteria timeCriteria = new Criteria();
+        if(endTime != null && endTime > 0) {
+            timeCriteria.addAndCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ContextNames.START_TIME), startTime + "," + endTime, DateOperators.BETWEEN));
+            timeCriteria.addOrCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ContextNames.ENDTIME), startTime + "," + endTime, DateOperators.BETWEEN));
+        } else {
+            timeCriteria.addAndCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ContextNames.START_TIME), String.valueOf(startTime), DateOperators.IS_BEFORE));
+            Criteria startTimeCriteria = new Criteria();
+            startTimeCriteria.addAndCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ContextNames.ENDTIME), String.valueOf(startTime), DateOperators.IS_AFTER));
+            startTimeCriteria.addOrCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ContextNames.ENDTIME), CommonOperators.IS_EMPTY));
+            timeCriteria.andCriteria(startTimeCriteria);
+        }
+        SelectRecordsBuilder<TimeSheetContext> timeSheetBuilder = new SelectRecordsBuilder<TimeSheetContext>()
+                .module(timeSheetModule)
+                .beanClass(TimeSheetContext.class)
+                .select(timeSheetFields)
+                .andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get("fieldAgent"),String.valueOf(peopleId),NumberOperators.EQUALS))
+                .andCriteria(timeCriteria)
+                ;
+        List<TimeSheetContext> timeSheets = timeSheetBuilder.get();
+        if(CollectionUtils.isNotEmpty(timeSheets)){
+            return timeSheets;
+        }
+        return null;
     }
 
     public static void closeOngoingTimeSheets(TimeSheetContext ts, long endTime) throws Exception {
@@ -719,7 +681,7 @@ public class ServiceAppointmentUtil {
 
         Map<String,Object> updateProps = new HashMap<>();
         updateProps.put(FacilioConstants.ContextNames.ENDTIME,endTime);
-        updateProps.put(FacilioConstants.ContextNames.DURATION,(ts.getStartTime() - endTime));
+        updateProps.put(FacilioConstants.ContextNames.DURATION,(endTime - ts.getStartTime()));
 
         timeSheetBuilder.updateViaMap(updateProps);
     }
@@ -735,5 +697,35 @@ public class ServiceAppointmentUtil {
             }
         }
         return duration;
+    }
+
+    public static List<TripContext> getTripsForTimeRange(long peopleId, long startTime, Long endTime) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule tripModule = moduleBean.getModule(FacilioConstants.Trip.TRIP);
+        List<FacilioField> tripFields = moduleBean.getAllFields(FacilioConstants.Trip.TRIP);
+        Map<String,FacilioField> tripFieldMap = FieldFactory.getAsMap(tripFields);
+        Criteria timeCriteria = new Criteria();
+        if(endTime != null && endTime > 0) {
+            timeCriteria.addAndCondition(CriteriaAPI.getCondition(tripFieldMap.get(FacilioConstants.ContextNames.START_TIME), startTime + "," + endTime, DateOperators.BETWEEN));
+            timeCriteria.addOrCondition(CriteriaAPI.getCondition(tripFieldMap.get(FacilioConstants.ContextNames.ENDTIME), startTime + "," + endTime, DateOperators.BETWEEN));
+        } else {
+            timeCriteria.addAndCondition(CriteriaAPI.getCondition(tripFieldMap.get(FacilioConstants.ContextNames.START_TIME), String.valueOf(startTime), DateOperators.IS_BEFORE));
+            Criteria startTimeCriteria = new Criteria();
+            startTimeCriteria.addAndCondition(CriteriaAPI.getCondition(tripFieldMap.get(FacilioConstants.ContextNames.ENDTIME), String.valueOf(startTime), DateOperators.IS_AFTER));
+            startTimeCriteria.addOrCondition(CriteriaAPI.getCondition(tripFieldMap.get(FacilioConstants.ContextNames.ENDTIME), CommonOperators.IS_EMPTY));
+            timeCriteria.andCriteria(startTimeCriteria);
+        }
+        SelectRecordsBuilder<TripContext> tripBuilder = new SelectRecordsBuilder<TripContext>()
+                .module(tripModule)
+                .beanClass(TripContext.class)
+                .select(tripFields)
+                .andCondition(CriteriaAPI.getCondition(tripFieldMap.get("fieldAgent"),String.valueOf(peopleId),NumberOperators.EQUALS))
+                .andCriteria(timeCriteria)
+                ;
+        List<TripContext> tripContexts = tripBuilder.get();
+        if(CollectionUtils.isNotEmpty(tripContexts)){
+            return tripContexts;
+        }
+        return null;
     }
 }

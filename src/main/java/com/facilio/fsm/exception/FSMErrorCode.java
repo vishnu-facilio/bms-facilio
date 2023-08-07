@@ -1,7 +1,5 @@
 package com.facilio.fsm.exception;
 
-import javax.servlet.http.HttpServletResponse;
-
 public enum FSMErrorCode {
     // Service Order error codes
     UNKOWN_ERROR(Severity.ERROR, "We're sorry, but an unknown error has occurred. Please try again later or contact support for further assistance."),
@@ -10,7 +8,15 @@ public enum FSMErrorCode {
     SO_CLOSE_WARNING(Severity.WARNING, "The service order can only be closed when it is in the 'Completed' state."),
 
     // Service Appointment error codes
-    SA_TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "You cannot start this service appointment while a timesheet is already running.");
+    SA_TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "You cannot start this service appointment while a timesheet is already running."),
+    SA_TRIP_ALREADY_RUNNING(Severity.ERROR, "You cannot start a trip while another is already running."),
+
+
+    // Time Sheet error codes
+    TIME_SHEET_NOT_ENOUGH_DETAILS(Severity.ERROR, "Not enough details to create a timesheet"),
+
+    // Trip error codes
+    TRIP_NOT_ENOUGH_DETAILS(Severity.ERROR, "Not enough details to create a trip");
 
     private final Severity severity;
     private final String message;

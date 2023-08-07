@@ -271,6 +271,7 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTimeSheet(){
         return () -> new V3Config(TimeSheetContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
+                .beforeSave(FsmTransactionChainFactoryV3.getTimeSheetBeforeCreateChain())
                 .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeSheet.TIME_SHEET))
                 .update()
@@ -288,6 +289,7 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTrip(){
         return () -> new V3Config(TripContext.class,null)
                 .create()
+                .beforeSave(FsmTransactionChainFactoryV3.getTripBeforeCreateChain())
                 .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.Trip.TRIP_ACTIVITY))
                 .update()

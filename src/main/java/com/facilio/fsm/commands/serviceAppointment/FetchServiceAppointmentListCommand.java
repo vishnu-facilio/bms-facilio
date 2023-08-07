@@ -32,7 +32,7 @@ public class FetchServiceAppointmentListCommand extends FacilioCommand {
         String orderType = (String) context.getOrDefault(FacilioConstants.ContextNames.ORDER_TYPE,"desc");
         ModuleBean moduleBean = Constants.getModBean();
         List<FacilioField> selectFields = new ArrayList<>();
-        List<String> defaultFieldNames = new ArrayList<>(Arrays.asList("name","location","site","priority","responseDueStatus","resolutionDueStatus"));
+        List<String> defaultFieldNames = new ArrayList<>(Arrays.asList("name","location","site","priority","responseDueStatus","resolutionDueStatus","scheduledStartTime","scheduledEndTime"));
         for (String fieldName : defaultFieldNames){
             FacilioField selectField = moduleBean.getField(fieldName,FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
             selectFields.add(selectField);
