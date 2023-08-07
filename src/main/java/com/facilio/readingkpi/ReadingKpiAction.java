@@ -50,8 +50,10 @@ public class ReadingKpiAction extends V3Action {
             switch (Objects.requireNonNull(KPIType.valueOf(kpi.getKpiType()))) {
                 case SCHEDULED:
                     beginSchKpiHistorical(kpi);
+                    break;
                 case LIVE:
                     beginLiveKpiHistorical(kpi);
+                    break;
             }
             setData(SUCCESS, "Historical KPI Calculation has started");
 
@@ -103,9 +105,6 @@ public class ReadingKpiAction extends V3Action {
         if (kpi == null) {
             throw new IllegalArgumentException("Invalid kpi ID for historical kpi calculation");
         }
-//        if (LogsInProgress()) {
-//            throw new IllegalArgumentException("Historical cannot be started, other historical in progress");
-//        }
         return kpi;
     }
 
