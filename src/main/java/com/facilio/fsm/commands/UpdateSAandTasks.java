@@ -101,6 +101,16 @@ public class UpdateSAandTasks extends FacilioCommand {
         updateProps.put("actualEndTime", currentTime);
 
         updateBuilder.updateViaMap(updateProps);
+
+        for(Long saId : appointmentIds){
+            List<TimeSheetContext> ongoingTimeSheets = ServiceAppointmentUtil.getOngoingTimeSheets(null,saId);
+            if(CollectionUtils.isNotEmpty(ongoingTimeSheets)){
+                for(TimeSheetContext ts : ongoingTimeSheets){
+                    ServiceAppointmentUtil.closeOngoingTimeSheets(ts,currentTime);
+                }
+            }
+        }
+
     }
 
     public static void updateServiceTasks(List<Long> taskIds, int status, Long currentTime) throws Exception {
@@ -167,5 +177,7 @@ public class UpdateSAandTasks extends FacilioCommand {
         }
         return null;
     }
+
+
 
 }

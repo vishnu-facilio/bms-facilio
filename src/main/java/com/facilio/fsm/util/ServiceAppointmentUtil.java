@@ -683,7 +683,7 @@ public class ServiceAppointmentUtil {
         return null;
     }
 
-    public static List<TimeSheetContext> getOngoingTimeSheets(long peopleId, Long appointmentId) throws Exception {
+    public static List<TimeSheetContext> getOngoingTimeSheets(Long peopleId, Long appointmentId) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule timeSheetModule = moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
         List<FacilioField> timeSheetFields = moduleBean.getAllFields(FacilioConstants.TimeSheet.TIME_SHEET);
@@ -692,8 +692,10 @@ public class ServiceAppointmentUtil {
                 .module(timeSheetModule)
                 .beanClass(TimeSheetContext.class)
                 .select(timeSheetFields)
-                .andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get("fieldAgent"),String.valueOf(peopleId),NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ContextNames.ENDTIME),CommonOperators.IS_EMPTY));
+        if(peopleId != null && peopleId >0){
+            timeSheetBuilder.andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get("fieldAgent"),String.valueOf(peopleId),NumberOperators.EQUALS));
+        }
         if(appointmentId != null && appointmentId > 0){
             timeSheetBuilder.andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),String.valueOf(appointmentId), NumberOperators.EQUALS));
         }
