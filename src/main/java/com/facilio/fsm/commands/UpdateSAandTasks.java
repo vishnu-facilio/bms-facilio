@@ -1,6 +1,7 @@
 package com.facilio.fsm.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -9,6 +10,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fsm.context.*;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
+import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -26,26 +28,25 @@ public class UpdateSAandTasks extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<ServiceOrderContext> serviceOrders = recordMap.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
-        List<ServiceTaskContext> serviceTasks = recordMap.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
         if (CollectionUtils.isNotEmpty(serviceOrders)) {
             for (ServiceOrderContext serviceOrder : serviceOrders) {
-                if (CollectionUtils.isNotEmpty(serviceTasks)) {
-                    List<Long> taskIds = new ArrayList<>();
-                    for (ServiceTaskContext serviceTask : serviceTasks) {
-                        taskIds.add(serviceTask.getId());
-                    }
+                List<Long> serviceTaskIds = fetchServiceTasks(serviceOrder.getId());
+                if (CollectionUtils.isNotEmpty(serviceTaskIds)) {
+
                     Long currentTime = DateTimeUtil.getCurrenTime();
-                    String serviceOrderStatus = serviceOrder.getStatus().getStatus();
-                    Set<Long> appointmentIds = fetchAppointmentIds(taskIds);
+
+                    String serviceOrderStatus = ServiceOrderAPI.getServiceOrderStatus(serviceOrder.getStatus().getId());
+
+                    Set<Long> appointmentIds = fetchAppointmentIds(serviceTaskIds);
 
                     switch(serviceOrderStatus){
 
                         case FacilioConstants.ServiceOrder.COMPLETED:
-                            updateServiceTasks(taskIds, ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex(), currentTime);
+                            updateServiceTasks(serviceTaskIds, ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex(), currentTime);
                             updateServiceAppointments(appointmentIds, currentTime, FacilioConstants.ServiceAppointment.COMPLETED);
                             break;
                         case FacilioConstants.ServiceOrder.CANCELLED:
-                            updateServiceTasks(taskIds, ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex(), currentTime);
+                            updateServiceTasks(serviceTaskIds, ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex(), currentTime);
                             updateServiceAppointments(appointmentIds, currentTime, FacilioConstants.ServiceAppointment.CANCELLED);
                             break;
                     }
@@ -86,7 +87,7 @@ public class UpdateSAandTasks extends FacilioCommand {
 
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getIdCondition(appointmentIds, serviceAppointment));
-        criteria.addAndCondition(CriteriaAPI.getCondition("STATUS","status",StringUtils.join(endStatus),NumberOperators.NOT_EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("STATUS","status",StringUtils.join(endStatus,","),NumberOperators.NOT_EQUALS));
 
 
 
@@ -119,7 +120,7 @@ public class UpdateSAandTasks extends FacilioCommand {
 
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getIdCondition(taskIds, taskModule));
-        criteria.addAndCondition(CriteriaAPI.getCondition("STATUS","status",StringUtils.join(endStatus),NumberOperators.NOT_EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("STATUS","status",StringUtils.join(endStatus,","),NumberOperators.NOT_EQUALS));
 
 
         UpdateRecordBuilder<ServiceTaskContext> updateBuilder = new UpdateRecordBuilder<ServiceTaskContext>()
@@ -135,13 +136,30 @@ public class UpdateSAandTasks extends FacilioCommand {
 
     }
 
+    public static List<Long> fetchServiceTasks(Long serviceOrderId)throws Exception{
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule taskModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(Collections.singletonList(FieldFactory.getIdField(taskModule)))
+                .table("Service_Task")
+                .andCondition(CriteriaAPI.getCondition("SERVICE_ORDER", "serviceOrder", String.valueOf(serviceOrderId), NumberOperators.EQUALS));
+        List<Map<String, Object>> maps = selectBuilder.get();
+        if (CollectionUtils.isNotEmpty(maps)) {
+            List<Long> taskIds = maps.stream().map(row -> (long) row.get("id")).collect(Collectors.toList());
+            return taskIds;
+        }
+        return null;
+    }
+
     public static Set<Long> fetchAppointmentIds(List<Long> taskIds) throws Exception {
         FacilioField appointmentField = Constants.getModBean().getField("left", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
 
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(Collections.singleton(appointmentField))
                 .table("SERVICE_APPOINTMENT_TASK_REL")
-                .andCondition(CriteriaAPI.getCondition("SERVICE_TASK_ID", "right", StringUtils.join(taskIds), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("SERVICE_TASK_ID", "right", StringUtils.join(taskIds,","), NumberOperators.EQUALS));
         List<Map<String, Object>> maps = selectBuilder.get();
         if (CollectionUtils.isNotEmpty(maps)) {
             Set<Long> appointmentIds = new HashSet<>(maps.stream().map(row -> (long) row.get("left")).collect(Collectors.toList()));

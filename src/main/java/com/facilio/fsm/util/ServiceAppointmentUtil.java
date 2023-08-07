@@ -697,7 +697,7 @@ public class ServiceAppointmentUtil {
         if(appointmentId != null && appointmentId > 0){
             timeSheetBuilder.andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),String.valueOf(appointmentId), NumberOperators.EQUALS));
         }
-        return null;
+        return timeSheetBuilder.get();
     }
 
     public static void closeOngoingTimeSheets(TimeSheetContext ts, long endTime) throws Exception {

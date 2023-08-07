@@ -48,7 +48,7 @@ public class UpdateServiceAppointmentOnTaskUpdate extends FacilioCommand {
                         List<Long> taskIds = new ArrayList<>();
                         if (CollectionUtils.isNotEmpty(maps)) {
                             taskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
-                        }
+
                         FacilioField field = modBean.getField("right", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_SKILLS);
                         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                                 .select(Collections.singleton(field))
@@ -75,6 +75,7 @@ public class UpdateServiceAppointmentOnTaskUpdate extends FacilioCommand {
                                 V3RecordAPI.updateRecord(serviceAppointment, serviceAppointmentModule, Collections.singletonList(skillfield), false, true);
 
                             }
+                        }
                         }
                         }
                     }

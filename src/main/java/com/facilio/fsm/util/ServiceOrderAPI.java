@@ -15,6 +15,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
@@ -173,6 +174,31 @@ public class ServiceOrderAPI {
         } else {
             throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing service order states");
         }
+    }
+
+    public static String getServiceOrderStatus(Long statusId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule serviceOrderTicketStatus = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS);
+
+        FacilioField statusField = Constants.getModBean().getField("status",FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS);
+
+        SelectRecordsBuilder<ServiceOrderTicketStatusContext> builder = new SelectRecordsBuilder<ServiceOrderTicketStatusContext>()
+                .moduleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS)
+                .beanClass(ServiceOrderTicketStatusContext.class)
+                .select(Collections.singletonList(statusField))
+                .andCondition(CriteriaAPI.getIdCondition(statusId,serviceOrderTicketStatus));
+
+
+        List<ServiceOrderTicketStatusContext> statuses = builder.get();
+        if(CollectionUtils.isNotEmpty(statuses)){
+            for(ServiceOrderTicketStatusContext orderStatus:statuses)
+            {
+                String status = orderStatus.getStatus();
+                return status;
+            }
+        }
+
+        return null;
     }
 
 }
