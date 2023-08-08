@@ -509,7 +509,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         return new ModulePages()
                 .addPage("serviceAppointment", "Service Appointment","", null, isTemplate, isDefault, false)
-                .addWebTab("serviceappointmentsummary", "SUMMARY", true, null)
+                .addWebTab("serviceappointmentsummary", "Summary", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmentsummaryfields", null, null)
                 .addWidget("serviceappointmentsummaryfieldswidget", "Service Appointment Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT))
@@ -522,7 +522,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceappointmentservicetasks", "SERVICE TASKS", true, null)
+                .addWebTab("serviceappointmentservicetasks", "Service Tasks", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmentservicetasks", null, null)
                 .addWidget("serviceappointmentservicetaskswidget", "Service Tasks", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "serviceappointmentservicetasks_50_12", 0, 0, null, null)
@@ -531,7 +531,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceappointmentplans", "PLANS", true, null)
+                .addWebTab("serviceappointmentplans", "Plans", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmentplans", null, null)
                 .addWidget("serviceappointmentplanswidget", "Plans", PageWidget.WidgetType.SERVICE_APPOINTMENT_PLANS, "serviceappointmentplans_50_12", 0, 0, null, null)
@@ -540,7 +540,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceappointmentactuals", "ACTUALS", true, null)
+                .addWebTab("serviceappointmentactuals", "Actuals", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmentactuals", null, null)
                 .addWidget("serviceappointmentactualswidget", "Actuals", PageWidget.WidgetType.SERVICE_APPOINTMENT_ACTUALS, "serviceappointmentactuals_50_12", 0, 0, null, null)
@@ -549,7 +549,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceappointmenttimesheet", "TIME SHEET", true, null)
+                .addWebTab("serviceappointmenttimesheet", "Time Sheet", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmenttimesheet", null, null)
                 .addWidget("serviceappointmenttimesheetwidget", "Time Sheet", PageWidget.WidgetType.SERVICE_APPOINTMENT_TIMESHEET, "serviceappointmenttimesheet_50_12", 0, 0, null, null)
@@ -558,7 +558,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceappointmenttrip", "TRIP", true, null)
+                .addWebTab("serviceappointmenttrip", "Trip", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmenttrip", null, null)
                 .addWidget("serviceappointmenttripwidget", "Trip", PageWidget.WidgetType.SERVICE_APPOINTMENT_TRIP, "serviceappointmenttrip_50_12", 0, 0, null, null)
@@ -568,7 +568,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .tabDone()
 
 
-                .addWebTab("serviceappointmentrelated", "RELATED", true, null)
+                .addWebTab("serviceappointmentrelated", "Related", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmentrelationships", "Relationships", "List of relationships and types between records across modules")
                 .addWidget("serviceappointmentbulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
@@ -581,7 +581,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceappointmenthistory", "HISTORY", true, null)
+                .addWebTab("serviceappointmenthistory", "History", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0, historyWidgetParam, null)
@@ -598,67 +598,73 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
-        FacilioField nameField = moduleBean.getField("name", moduleName);
-        FacilioField moduleStateField = moduleBean.getField("status", moduleName);
-        FacilioField priorityField = moduleBean.getField("priority", moduleName);
-        FacilioField appointmentTypeField = moduleBean.getField("appointmentType", moduleName);
+        FacilioField nameField = moduleBean.getField("serviceOrder", moduleName);
         FacilioField descriptionField = moduleBean.getField("description", moduleName);
+        FacilioField category = moduleBean.getField("category", moduleName);
+        FacilioField priority = moduleBean.getField("priority", moduleName);
+        FacilioField scheduledStartTimeField = moduleBean.getField("scheduledStartTime", moduleName);
+        FacilioField scheduledEndTime = moduleBean.getField("scheduledEndTime", moduleName);
+        FacilioField estimatedDuration = moduleBean.getField("estimatedDuration", moduleName);
+        FacilioField actualStartTimeField = moduleBean.getField("actualStartTime", moduleName);
+        FacilioField actualEndTimeField = moduleBean.getField("actualEndTime", moduleName);
+        FacilioField actualDuration = moduleBean.getField("actualDuration", moduleName);
 
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup generalInformationwidgetGroup = new SummaryWidgetGroup();
         SummaryWidgetGroup siteInformationwidgetGroup = new SummaryWidgetGroup();
         SummaryWidgetGroup userDetailswidgetGroup = new SummaryWidgetGroup();
-        SummaryWidgetGroup scheduleAndAppoinmentwidgetGroup = new SummaryWidgetGroup();
         SummaryWidgetGroup slaDetailswidgetGroup = new SummaryWidgetGroup();
         SummaryWidgetGroup systemDetailswidgetGroup = new SummaryWidgetGroup();
 
-        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, nameField, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, moduleStateField, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, priorityField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, appointmentTypeField, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, nameField, 1, 1, 4);
         addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, descriptionField, 2, 1, 4);
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, category, 3, 1, 1);
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, priority, 3, 2, 1);
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, scheduledStartTimeField, 3, 3, 1);
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, scheduledEndTime, 3, 4, 1);
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, estimatedDuration, 4, 1, 1);
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, actualStartTimeField, 4, 2, 1);
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, actualEndTimeField, 4, 3, 1);
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, actualDuration, 4, 4, 1);
 
         //Site Details
 
         FacilioField siteField = moduleBean.getField("site", moduleName);
         FacilioField locationField = moduleBean.getField("location", moduleName);
-        FacilioField territoryField = moduleBean.getField("territory", moduleName);
+        FacilioField space = moduleBean.getField("space", moduleName);
+        FacilioField asset = moduleBean.getField("asset", moduleName);
+
 
         addSummaryFieldInWidgetGroup(siteInformationwidgetGroup, siteField, 1, 1, 1);
         addSummaryFieldInWidgetGroup(siteInformationwidgetGroup, locationField, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(siteInformationwidgetGroup, territoryField, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(siteInformationwidgetGroup, space, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(siteInformationwidgetGroup, asset, 1, 4, 1);
+
 
         // User Details
 
         FacilioField fieldAgentField = moduleBean.getField("fieldAgent", moduleName);
+        FacilioField vendor = moduleBean.getField("vendor", moduleName);
+        FacilioField client = moduleBean.getField("client", moduleName);
 
         addSummaryFieldInWidgetGroup(userDetailswidgetGroup, fieldAgentField, 1, 1, 1);
-
-        // Schedule and Appointment
-
-        FacilioField scheduledStartTimeField = moduleBean.getField("scheduledStartTime", moduleName);
-        FacilioField scheduledEndTime = moduleBean.getField("scheduledEndTime", moduleName);
-
-
-        addSummaryFieldInWidgetGroup(scheduleAndAppoinmentwidgetGroup, scheduledStartTimeField, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(scheduleAndAppoinmentwidgetGroup, scheduledEndTime, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(userDetailswidgetGroup, vendor, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(userDetailswidgetGroup, client, 1, 3, 1);
 
         // SLA Details
 
-        FacilioField actualStartTimeField = moduleBean.getField("actualStartTime", moduleName);
-        FacilioField actualEndTimeField = moduleBean.getField("actualEndTime", moduleName);
+        FacilioField responseDueDuration = moduleBean.getField("responseDueDuration", moduleName);
+        FacilioField resolutionDueDuration = moduleBean.getField("resolutionDueDuration", moduleName);
         FacilioField responseDueTimeField = moduleBean.getField("responseDueTime", moduleName);
         FacilioField resolutionDueTimeField = moduleBean.getField("resolutionDueTime", moduleName);
-        FacilioField responseDueStatusField = moduleBean.getField("responseDueStatus", moduleName);
-        FacilioField resolutionDueStatusField = moduleBean.getField("resolutionDueStatus", moduleName);
 
-        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, actualStartTimeField, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, actualEndTimeField, 1, 2, 1);
+
+        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, responseDueDuration, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, resolutionDueDuration, 1, 2, 1);
         addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, responseDueTimeField, 1, 3, 1);
         addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, resolutionDueTimeField, 1, 4, 1);
-        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, responseDueStatusField, 2, 1, 1);
-        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, resolutionDueStatusField, 2, 2, 1);
+
 
         // System Details
 
@@ -678,16 +684,12 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         generalInformationwidgetGroup.setColumns(4);
 
         siteInformationwidgetGroup.setName("siteDetails");
-        siteInformationwidgetGroup.setDisplayName("Site Details");
+        siteInformationwidgetGroup.setDisplayName("Site Information");
         siteInformationwidgetGroup.setColumns(4);
 
         userDetailswidgetGroup.setName("userDetails");
         userDetailswidgetGroup.setDisplayName("User Details");
         userDetailswidgetGroup.setColumns(4);
-
-        scheduleAndAppoinmentwidgetGroup.setName("scheduleAndAppointment");
-        scheduleAndAppoinmentwidgetGroup.setDisplayName("Schedule And Appointment");
-        scheduleAndAppoinmentwidgetGroup.setColumns(4);
 
         slaDetailswidgetGroup.setName("slaDetails");
         slaDetailswidgetGroup.setDisplayName("SLA Details");
@@ -701,7 +703,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         widgetGroupList.add(generalInformationwidgetGroup);
         widgetGroupList.add(siteInformationwidgetGroup);
         widgetGroupList.add(userDetailswidgetGroup);
-        widgetGroupList.add(scheduleAndAppoinmentwidgetGroup);
         widgetGroupList.add(slaDetailswidgetGroup);
         widgetGroupList.add(systemDetailswidgetGroup);
 
@@ -746,7 +747,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
-                .addSection("documents", "Documents", "")
+                .addSection("documents", "Attachments", "")
                 .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();

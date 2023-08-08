@@ -602,7 +602,10 @@ public class PageWidget {
 		SERVICE_APPOINTMENT_ACTUALS("serviceAppointmentActuals"),
 
 		SERVICE_APPOINTMENT_TIMESHEET("serviceAppointmentTimesheet"),
-		SERVICE_APPOINTMENT_TRIP("serviceAppointmentTrip")
+		SERVICE_APPOINTMENT_TRIP("serviceAppointmentTrip"),
+		GEOGRAPHY("geography"),
+		TIMESHEET_TASKS("timeSheetTasks"),
+		TRIP_JOURNEY("tripJourney")
 
 		;
 

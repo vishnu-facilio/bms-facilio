@@ -30,14 +30,14 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
         historyWidgetParam.put("activityModuleName", FacilioConstants.Territory.TERRITORY_ACTIVITY);
 
         return new PagesContext(null, null, "", null, true, false, false)
-                .addWebTab("territorysummary", "SUMMARY", true, null)
+                .addWebTab("territorysummary", "Summary", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("territorysummaryfields", null, null)
-                .addWidget("territorysummaryfieldswidget", "Territory Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Territory.TERRITORY))
+                .addWidget("territorysummaryfieldswidget", "Territory", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Territory.TERRITORY))
                 .widgetDone()
                 .sectionDone()
-                .addSection("widgetGroup", null, null)
-                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getSummaryWidgetGroup(false))
+                .addSection("territorygeograpy", null, null)
+                .addWidget("territorygeograpywidget", "Geography", PageWidget.WidgetType.GEOGRAPHY, "fixedterritorygeography_22_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -61,7 +61,7 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("territoryhistory", "HISTORY", true, null)
+                .addWebTab("territoryhistory", "History", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0, historyWidgetParam, null)
@@ -81,32 +81,36 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
 
         FacilioField nameField = moduleBean.getField("name", moduleName);
         FacilioField descriptionField = moduleBean.getField("description", moduleName);
-        FacilioField colorField = moduleBean.getField("color", moduleName);
-        FacilioField geographyField = moduleBean.getField("geography", moduleName);
         FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", moduleName);
         FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", moduleName);
         FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", moduleName);
         FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", moduleName);
 
         SummaryWidget pageWidget = new SummaryWidget();
-        SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
+        SummaryWidgetGroup GeneralInfoWidgetGroup = new SummaryWidgetGroup();
 
-        addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, descriptionField, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, colorField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, geographyField, 1, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedByField, 2, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedTimeField, 2, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedByField, 2, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTimeField, 2, 4, 1);
+        addSummaryFieldInWidgetGroup(GeneralInfoWidgetGroup, nameField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(GeneralInfoWidgetGroup, descriptionField, 1, 2, 3);
+
+        SummaryWidgetGroup sysDetailsWidgetGroup=new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(sysDetailsWidgetGroup, sysCreatedByField, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(sysDetailsWidgetGroup, sysCreatedTimeField, 2, 2, 1);
+        addSummaryFieldInWidgetGroup(sysDetailsWidgetGroup, sysModifiedByField, 2, 3, 1);
+        addSummaryFieldInWidgetGroup(sysDetailsWidgetGroup, sysModifiedTimeField, 2, 4, 1);
 
 
-        widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("");
-        widgetGroup.setColumns(4);
+        GeneralInfoWidgetGroup.setName("generalInformation");
+        GeneralInfoWidgetGroup.setDisplayName("General Information");
+        GeneralInfoWidgetGroup.setColumns(4);
+
+        sysDetailsWidgetGroup.setName("systemDetails");
+        sysDetailsWidgetGroup.setDisplayName("System Details");
+        sysDetailsWidgetGroup.setColumns(4);
 
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
-        widgetGroupList.add(widgetGroup);
+        widgetGroupList.add(GeneralInfoWidgetGroup);
+        widgetGroupList.add(sysDetailsWidgetGroup);
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());

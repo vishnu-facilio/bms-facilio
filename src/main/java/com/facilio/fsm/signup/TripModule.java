@@ -178,34 +178,20 @@ public class TripModule extends BaseModuleConfig {
 
         return new ModulePages()
                 .addPage("trip", "Trip", "", null, isTemplate, isDefault, false)
-                .addWebTab("tripsummary", "SUMMARY", true, null)
+                .addWebTab("tripsummary", "Summary", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("tripsummaryfields", null, null)
                 .addWidget("tripsummaryfieldswidget", "Trip Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Trip.TRIP))
                 .widgetDone()
                 .sectionDone()
-                .addSection("widgetGroup", null, null)
-                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getSummaryWidgetGroup(false))
+                .addSection("tripjourney",null,null)
+                .addWidget("tripjourneywidget","Journey",PageWidget.WidgetType.TRIP_JOURNEY,"tripJourney_22_6",0,0,null,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-
-                .addWebTab("triprelated", "RELATED", true, null)
-                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("triprelationships", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("tripbulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
-                .widgetDone()
-                .sectionDone()
-                .addSection("triprelatedlist", "Related List", "List of related records across modules")
-                .addWidget("tripbulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(FacilioConstants.Trip.TRIP))
-                .widgetDone()
-                .sectionDone()
-                .columnDone()
-                .tabDone()
-
-                .addWebTab("triphistory", "HISTORY", true, null)
+                .addWebTab("triphistory", "History", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0, historyWidgetParam, null)
@@ -223,13 +209,13 @@ public class TripModule extends BaseModuleConfig {
         FacilioModule module = moduleBean.getModule(moduleName);
 
         FacilioField people = moduleBean.getField("people", moduleName);
-        FacilioField moduleState = moduleBean.getField("moduleState", moduleName);
         FacilioField serviceAppointment=moduleBean.getField("serviceAppointment",moduleName);
-        FacilioField approvalStatus = moduleBean.getField("approvalStatus", moduleName);
-        FacilioField startLocation=moduleBean.getField("startLocation",moduleName);
-        FacilioField endLocation=moduleBean.getField("endLocation",moduleName);
         FacilioField startTime = moduleBean.getField("startTime", moduleName);
         FacilioField endTime = moduleBean.getField("endTime", moduleName);
+        FacilioField tripDuration=moduleBean.getField("tripDuration",moduleName);
+        FacilioField tripDistance=moduleBean.getField("tripDistance",moduleName);
+
+
         FacilioField sysCreatedBy = moduleBean.getField("sysCreatedBy", moduleName);
         FacilioField sysCreatedTime = moduleBean.getField("sysCreatedTime", moduleName);
         FacilioField sysModifiedBy = moduleBean.getField("sysModifiedBy", moduleName);
@@ -239,24 +225,30 @@ public class TripModule extends BaseModuleConfig {
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
 
         addSummaryFieldInWidgetGroup(widgetGroup, people, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, moduleState, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, serviceAppointment, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, approvalStatus, 1, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, startLocation, 2, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, endLocation, 2, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, startTime, 2, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, endTime, 2, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedBy, 3, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedTime, 3, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedBy, 3, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTime, 3, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, serviceAppointment, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, startTime, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, endTime, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, tripDuration, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, tripDistance, 2, 2, 1);
+
+        SummaryWidgetGroup systemDetailsWidgetGroup=new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(systemDetailsWidgetGroup, sysCreatedBy, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(systemDetailsWidgetGroup, sysCreatedTime, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(systemDetailsWidgetGroup, sysModifiedBy, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(systemDetailsWidgetGroup, sysModifiedTime, 1, 4, 1);
 
         widgetGroup.setName("moduleDetails");
         widgetGroup.setDisplayName("General Information");
         widgetGroup.setColumns(4);
 
+        systemDetailsWidgetGroup.setName("systemDetails");
+        systemDetailsWidgetGroup.setDisplayName("System Details");
+        systemDetailsWidgetGroup.setColumns(4);
+
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(widgetGroup);
+        widgetGroupList.add(systemDetailsWidgetGroup);
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());

@@ -151,6 +151,10 @@ public class TimeOffModule extends BaseModuleConfig {
         approvalFlowIdField.setDefault(true);
         timeOffFields.add(approvalFlowIdField);
 
+        StringField comments=FieldFactory.getDefaultField("comments","Comments","COMMENTS",FieldType.STRING);
+        comments.setDefault(true);
+        timeOffFields.add(comments);
+
         timeOffModule.setFields(timeOffFields);
         modules.add(timeOffModule);
 
@@ -178,7 +182,7 @@ public class TimeOffModule extends BaseModuleConfig {
         timeOffFormFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME, "To", FormField.Required.REQUIRED, 2, 3));
         timeOffFormFields.add(new FormField("people",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"People",FormField.Required.REQUIRED,3,3));
         timeOffFormFields.add(new FormField("type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Type", FormField.Required.REQUIRED,4,3));
-
+        timeOffFormFields.add(new FormField("comments",FacilioField.FieldDisplayType.TEXTAREA,"Comments",FormField.Required.OPTIONAL,5,1));
 
         FormSection section = new FormSection("Default", 1, timeOffFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
@@ -260,34 +264,17 @@ public class TimeOffModule extends BaseModuleConfig {
 
         return new ModulePages()
                 .addPage("timeOff", "Time Off", "", null, isTemplate, isDefault, false)
-                .addWebTab("timeoffsummary", "SUMMARY", true, null)
+                .addWebTab("timeoffsummary", "Summary", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("timeoffsummaryfields", null, null)
                 .addWidget("timeoffsummaryfieldswidget", "Time Off Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.TimeOff.TIME_OFF))
                 .widgetDone()
                 .sectionDone()
-                .addSection("widgetGroup", null, null)
-                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getSummaryWidgetGroup(false))
-                .widgetDone()
-                .sectionDone()
                 .columnDone()
                 .tabDone()
 
 
-                .addWebTab("timeoffrelated", "RELATED", true, null)
-                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("timeoffrelationships", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("timeoffbulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
-                .widgetDone()
-                .sectionDone()
-                .addSection("timeoffrelatedlist", "Related List", "List of related records across modules")
-                .addWidget("timeoffbulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(FacilioConstants.TimeOff.TIME_OFF))
-                .widgetDone()
-                .sectionDone()
-                .columnDone()
-                .tabDone()
-
-                .addWebTab("timeoffhistory", "HISTORY", true, null)
+                .addWebTab("timeoffhistory", "History", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0, historyWidgetParam, null)
@@ -304,12 +291,12 @@ public class TimeOffModule extends BaseModuleConfig {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
-        FacilioField type = moduleBean.getField("type", moduleName);
-        FacilioField moduleState = moduleBean.getField("moduleState", moduleName);
-        FacilioField approvalStatus = moduleBean.getField("approvalStatus", moduleName);
         FacilioField people = moduleBean.getField("people", moduleName);
+        FacilioField type = moduleBean.getField("type", moduleName);
         FacilioField startTime = moduleBean.getField("startTime", moduleName);
         FacilioField endTime = moduleBean.getField("endTime", moduleName);
+        FacilioField comments=moduleBean.getField("comments",moduleName);
+
         FacilioField sysCreatedBy = moduleBean.getField("sysCreatedBy", moduleName);
         FacilioField sysCreatedTime = moduleBean.getField("sysCreatedTime", moduleName);
         FacilioField sysModifiedBy = moduleBean.getField("sysModifiedBy", moduleName);
@@ -318,23 +305,30 @@ public class TimeOffModule extends BaseModuleConfig {
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
 
-        addSummaryFieldInWidgetGroup(widgetGroup, type, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, moduleState, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, approvalStatus, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, people, 1, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, startTime, 2, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, endTime, 2, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedBy, 2, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedTime, 2, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedBy, 3, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTime, 3, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, people, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, type, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, startTime, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, endTime, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, comments, 2, 1, 4);
+
+        SummaryWidgetGroup sysDetailsWidgetGroup=new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(sysDetailsWidgetGroup, sysCreatedBy, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(sysDetailsWidgetGroup, sysCreatedTime, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(sysDetailsWidgetGroup, sysModifiedBy, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(sysDetailsWidgetGroup, sysModifiedTime, 1, 4, 1);
 
         widgetGroup.setName("moduleDetails");
         widgetGroup.setDisplayName("General Information");
         widgetGroup.setColumns(4);
 
+        sysDetailsWidgetGroup.setName("systemDetails");
+        sysDetailsWidgetGroup.setDisplayName("System Details");
+        sysDetailsWidgetGroup.setColumns(4);
+
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(widgetGroup);
+        widgetGroupList.add(sysDetailsWidgetGroup);
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());

@@ -612,6 +612,9 @@ public class APIModuleWidgets {
                 .addModuleWidget("fieldAgents","Field Agents",PageWidget.WidgetType.FIELD_AGENTS)
                 .addWidgetConfig("flexibleterritoryfieldagents_60","Field Agents - 60", WidgetConfigContext.ConfigType.FLEXIBLE,60,-1, PagesContext.PageLayoutType.WEB)
                 .done()
+                .addModuleWidget("geography","Geography",PageWidget.WidgetType.GEOGRAPHY)
+                .addWidgetConfig("fixedterritorygeography_22_6","Geography - 22 - 6", WidgetConfigContext.ConfigType.FIXED,22,6, PagesContext.PageLayoutType.WEB)
+                .done()
                 ;
 
     }
@@ -636,6 +639,22 @@ public class APIModuleWidgets {
                 .done()
                 ;
 
+    }
+    @WidgetsForModule("timeSheet")
+    public static Supplier<ModuleWidgets> getTimeSheetWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("timesheettasks","Tasks",PageWidget.WidgetType.TIMESHEET_TASKS)
+                .addWidgetConfig("timesheettasks_23_12","Tasks - 23 - 12",WidgetConfigContext.ConfigType.FIXED,23,12,PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
+    }
+    @WidgetsForModule("trip")
+    public static Supplier<ModuleWidgets> getTripWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("tripjourney","Journey",PageWidget.WidgetType.TRIP_JOURNEY)
+                .addWidgetConfig("tripJourney_22_6","Journey - 22 - 6",WidgetConfigContext.ConfigType.FIXED,22,6,PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
     }
 
 }
