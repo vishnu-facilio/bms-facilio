@@ -293,6 +293,7 @@ public class UserNotificationContext extends V3Context {
         JSONObject notification = new JSONObject();
         notification.put("body",userNotification.getSubject());
         notification.put("title",userNotification.getTitle());
+        notification.put("sound","default");
 
         JSONObject notificationObj = new JSONObject();
         notificationObj.put("notification",notification);
