@@ -1,6 +1,7 @@
 package com.facilio.blockfactory.blocks;
 
 
+import com.facilio.flowengine.context.Rule;
 import com.facilio.flowengine.exception.FlowException;
 import com.facilio.flowengine.executor.FlowEngineUtil;
 import org.apache.commons.collections4.MapUtils;
@@ -28,10 +29,10 @@ public abstract class DecisionBlock extends BaseBlock {
         this.executablePosition = executablePosition;
     }
 
-    public Boolean evaluate(Map<String, Object> memory, String expressionStr) throws Exception {
-        Object ob = FlowEngineUtil.evaluateExpression(memory,expressionStr);
+    public Boolean evaluate(Map<String, Object> memory, Rule rule) throws Exception {
+        Object ob = FlowEngineUtil.evaluateFlowRule(rule,memory);
         if(!(ob instanceof Boolean)){
-            throw new FlowException("Evaluated expression value is not a boolean for {"+expressionStr+"} in DecisionBlock");
+            throw new FlowException("Evaluated rule value is not a boolean for {"+rule+"} in DecisionBlock");
         }
         return (Boolean) ob;
     }

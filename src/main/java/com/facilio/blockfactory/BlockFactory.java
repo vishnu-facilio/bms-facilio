@@ -49,7 +49,7 @@ public class BlockFactory {
             if (parentId!=-1l) {
                 BaseBlock baseBlock = blockIdVsBlock.get(id);
                 BaseBlock parentBlock = blockIdVsBlock.get(parentId);
-                parentBlock.addBlockAtPosition(block.getPosition(), baseBlock);
+                parentBlock.addBlockAtPosition(block.getHandlePosition(), baseBlock);
             }
         }
 

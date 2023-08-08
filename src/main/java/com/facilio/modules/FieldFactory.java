@@ -3505,11 +3505,13 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getFlowTransitionModule();
 
         fields.add(getIdField(module));
+        fields.add(getStringField("name","NAME",module));
         fields.add(getStringField("blockType","BLOCK_TYPE",module));
         fields.add(getNumberField("flowId","FLOW_ID",module));
         fields.add(getBooleanField("isStartBlock","START_BLOCK",module));
         fields.add(getNumberField("connectedFrom","CONNECTED_FROM",module));
         fields.add(getStringField("position","POSITION",module));
+        fields.add(getStringField("handlePosition","HANDLE_POSITION",module));
         fields.add(getStringField("configData","CONFIG_DATA",module));
         return fields;
     }
@@ -3520,7 +3522,15 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getIdField(module));
         fields.add(getNumberField("flowId","FLOW_ID",module));
-        fields.add(getStringField("parameters","PARAMETER",module));
+        fields.add(getStringField("parameter","PARAMETER",module));
+        return fields;
+    }
+    public static List<FacilioField> getScriptBlockConfigDataFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getScriptBlockConfigDataModule();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("functionId","FUNCTION_ID",module));
         return fields;
     }
 

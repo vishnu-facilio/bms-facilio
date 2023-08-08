@@ -11,11 +11,10 @@ import java.util.*;
 public enum BlockType implements FacilioStringEnum {
     set_variable(Group.LOGIC, "Set Variable", SetVariableBlock.class),
     if_else(Group.LOGIC, "Decision", If_Else_Block.class),
-    summary_record(Group.CRUD, "Summary Record", SummaryRecordBlock.class),
+    summary_record(Group.CRUD, "Get Record", SummaryRecordBlock.class),
     delete_record(Group.CRUD, "Delete Record", DeleteRecordBlock.class),
     change_status(Group.ACTION,"Change Status",ChangeStatusBlock.class),
-
-    log(Group.ACTION, "Log", LogBlock.class);
+    script(Group.ACTION,"Script", ScriptBlock.class);
 
     private Class clazz;
     @Getter
@@ -75,7 +74,11 @@ public enum BlockType implements FacilioStringEnum {
     }
     private static Map<String, Object> initGroupBlockMap() {
 
-        Map<String, Object> typeMap = new HashMap<>();
+        Map<String, Object> typeMap = new LinkedHashMap<>();
+        for(Group group:Group.values()){
+            typeMap.put(group.name,null);
+        }
+
         for (BlockType block : values()) {
 
             List<Map<String, Object>> blocks = new ArrayList<>();

@@ -2059,10 +2059,14 @@ public class FacilioConstants {
 		public static final String FLOW = "flow";
 		public static final String FLOWS = "flows";
 		public static final String FLOW_TRANSITION = "flowTransition";
+		public static final String OLD_FLOW_TRANSITION ="oldFlowTransition";
 		public static final String FLOW_TRANSITIONS = "flowTransitions";
 		public static final String FLOW_ID = "flowId";
 
 		public static final String AVAILABLE_BLOCKS = "availableBlocks";
+		public static final String TO_BLOCK="toBlock";
+		public static final String FROM_BLOCK= "fromBlock";
+		public static final String HANDLE_POSITION="handlePosition";
 		public static final String MEMORY = "memory";
 		public static final String APPROVAL_TRANSITION_ID = "approvalTransitionId";
 		public static final String SKIP_APPROVAL_CHECK = "approvalMandatorySuccess";

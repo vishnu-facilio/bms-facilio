@@ -1,6 +1,9 @@
 package com.facilio.flows.context;
 
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.modules.FacilioModule;
+import com.facilio.v3.context.Constants;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -65,6 +68,26 @@ public class FlowContext implements Serializable {
             }
             return null;
         }
+    }
+    @JsonIgnore
+    public String getModuleName() throws Exception {
+        if(moduleId!=-1l){
+            FacilioModule module = Constants.getModBean().getModule(moduleId);
+           if(module!=null){
+               return module.getName();
+           }
+        }
+        return null;
+    }
+    @JsonIgnore
+    public String getModuleDisplayName() throws Exception {
+        if(moduleId!=-1l){
+            FacilioModule module = Constants.getModBean().getModule(moduleId);
+            if(module!=null){
+                return module.getDisplayName();
+            }
+        }
+        return null;
     }
 
 }

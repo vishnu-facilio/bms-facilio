@@ -79,7 +79,8 @@ public class WorkflowLogContext extends V3Context {
         Q_AND_A_RULE(6,"Q and A Rule"),
         CUSTOM_BUTTON_RULE(7, RuleType.CUSTOM_BUTTON,"Custom Button Rule"),
         APPROVAL_STATE_FLOW(8,RuleType.APPROVAL_STATE_FLOW,"Stateflow Rule"),
-        APPROVAL_STATE_TRANSITION(9,RuleType.APPROVAL_STATE_TRANSITION,"State Transition Rule")
+        APPROVAL_STATE_TRANSITION(9,RuleType.APPROVAL_STATE_TRANSITION,"State Transition Rule"),
+        FLOW(10,RuleType.FLOW,"Flow")
         ;
 
         WorkflowLogType(int i,String name) {

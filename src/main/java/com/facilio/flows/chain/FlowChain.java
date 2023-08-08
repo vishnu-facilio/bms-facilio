@@ -29,9 +29,9 @@ public class FlowChain {
         return chain;
     }
 
-    public static FacilioChain getAddOrUpdateFlowTransitionChain(){
+    public static FacilioChain getInitAddOrUpdateFlowTransitionConfigChain(){
         FacilioChain chain = FacilioChain.getTransactionChain();
-        chain.addCommand(new AddOrUpdateFlowTransitionCommand());
+        chain.addCommand(new InitAddOrUpdateFlowTransitionConfigCommand());
         return chain;
     }
 
@@ -67,6 +67,16 @@ public class FlowChain {
     public static FacilioChain getExecuteFlowChain(){
         FacilioChain chain = FacilioChain.getTransactionChain();
         chain.addCommand(new ExecuteFlowCommand());
+        return chain;
+    }
+    public static FacilioChain getUpdateConnectionChain(){
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        chain.addCommand(new UpdateConnection());
+        return chain;
+    }
+    public static FacilioChain getFlowOperatorChain(){
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        chain.addCommand(new GetFlowOperatorsCommand());
         return chain;
     }
 }

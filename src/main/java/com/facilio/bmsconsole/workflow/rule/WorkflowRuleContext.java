@@ -663,6 +663,7 @@ public class WorkflowRuleContext implements Serializable {
 		SATISFACTION_SURVEY_RULE, //46
 		SURVEY_ACTION_RULE,//47
 		READINGRULE_WO_ACTION_RULE,//48
+		FLOW //49
 		;
 		//Always add at the end
 		

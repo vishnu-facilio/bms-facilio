@@ -519,7 +519,38 @@
                 class="com.facilio.bmsconsole.actions.ModuleSetupAction" method="addGlimpse">
         </action>
     </package>
+    <package name="flowSetupAPI" namespace="/api/v1/setup/flows" extends="v2Api">
+        <action name="addOrUpdate" class="com.facilio.flows.action.FlowAction" method="addOrUpdateFlow"/>
+        <action name="list" class="com.facilio.flows.action.FlowAction" method="getFlowList"/>
+        <action name="get" class="com.facilio.flows.action.FlowAction" method="viewFlow"/>
+        <action name="delete" class="com.facilio.flows.action.FlowAction" method="deleteFlow"/>
+        <action name="executeFlow" class="com.facilio.flows.action.FlowAction" method="executeFlow"/>
+        <action name="operators" class="com.facilio.flows.action.FlowAction" method="getFlowOperators"/>
+    </package>
 
+    <package name="flowTransitionSetupAPI" namespace="/api/v1/setup/flowTransition" extends="v2Api">
+        <action name="addOrUpdate"
+                class="com.facilio.flows.action.FlowAction"
+                method="addOrUpdateFlowTransition"/>
+        <action name="list"
+                class="com.facilio.flows.action.FlowAction"
+                method="getFlowTransitionList"/>
+        <action name="view"
+                class="com.facilio.flows.action.FlowAction"
+                method="viewFlowTransition"/>
+        <action name="delete"
+                class="com.facilio.flows.action.FlowAction"
+                method="deleteFlowTransition"/>
+        <action name="deleteConnection"
+                class="com.facilio.flows.action.FlowAction"
+                method="deleteTransactionConnection"/>
+        <action name="availableBlocks"
+                class="com.facilio.flows.action.FlowAction"
+                method="availableBlocksList"/>
+        <action name="updateConnection"
+                class="com.facilio.flows.action.FlowAction"
+                method="updateConnection"/>
+    </package>
     <package name="permissionSet" namespace="/api/v1/setup/permissionSet" extends="v2Api">
         <action name="addOrUpdate" class="com.facilio.permission.action.PermissionSetAction" method="addOrUpdate">
             <param name="permission">ALL</param>

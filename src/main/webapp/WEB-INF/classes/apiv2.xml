@@ -278,6 +278,7 @@
 		<action name="get" class="com.facilio.flows.action.FlowAction" method="viewFlow"/>
 		<action name="delete" class="com.facilio.flows.action.FlowAction" method="deleteFlow"/>
 		<action name="executeFlow" class="com.facilio.flows.action.FlowAction" method="executeFlow"/>
+		<action name="operators" class="com.facilio.flows.action.FlowAction" method="getFlowOperators"/>
 	</package>
 
 	<package name="flowTransition" namespace="/api/v2/flowTransition" extends="v2Api">
@@ -299,6 +300,9 @@
 		<action name="availableBlocks"
 				class="com.facilio.flows.action.FlowAction"
 				method="availableBlocksList"/>
+		<action name="updateConnection"
+				class="com.facilio.flows.action.FlowAction"
+				method="updateConnection"/>
 	</package>
 
 

@@ -736,7 +736,14 @@ public class ModuleFactory {
 		flowParameterModule.setTableName("Parameter");
 		return flowParameterModule;
 	}
-
+	public static FacilioModule getScriptBlockConfigDataModule(){
+		FacilioModule flowTransitionModule = new FacilioModule();
+		flowTransitionModule.setName("scriptBlockConfigData");
+		flowTransitionModule.setDisplayName("Script Block Config Data");
+		flowTransitionModule.setTableName("ScriptBlockConfigData");
+		flowTransitionModule.setExtendModule(getFlowTransitionModule());
+		return flowTransitionModule;
+	}
 	public static FacilioModule getReadingRuleMetricModule() {
 		FacilioModule readingRuleModule = new FacilioModule();
 		readingRuleModule.setName("readingruleMetrics");

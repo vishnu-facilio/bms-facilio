@@ -1,12 +1,17 @@
 package com.facilio.blockfactory.blocks;
 
 import com.facilio.flowengine.context.Constants;
+import com.facilio.flowengine.context.Rule;
 import com.facilio.flowengine.exception.FlowException;
+import com.facilio.modules.FieldUtil;
+import org.json.simple.JSONObject;
 
+import java.io.IOException;
 import java.util.Map;
 
 public class If_Else_Block extends DecisionBlock {
-    private String condition;
+    private Rule rule;
+    private JSONObject jsonObject;
 
     public If_Else_Block(Map<String, Object> config) {
         super(config);
@@ -16,7 +21,7 @@ public class If_Else_Block extends DecisionBlock {
     public void execute(Map<String, Object> context) throws FlowException {
         try {
             init();
-            boolean flag = evaluate(context, condition);
+            boolean flag = evaluate(context, rule);
             if (flag) {
                 setExecutablePosition("2");
             } else {
@@ -31,17 +36,24 @@ public class If_Else_Block extends DecisionBlock {
         }
     }
 
-    private void init() {
-        this.condition = (String) config.get(Constants.CONDITION);
+    private void init() throws IOException {
+        this.jsonObject = (JSONObject) config.get(Constants.RULE);
+        this.rule = FieldUtil.getAsBeanFromJson(jsonObject, Rule.class);
     }
 
     public void validateBlockConfiguration() throws FlowException {
-        Object condition = config.get(Constants.CONDITION);
-        if (condition == null) {
-            throw new FlowException("condition can not be empty for If_Else_Block");
+        Object jsonObject = config.get(Constants.RULE);
+        if (jsonObject == null) {
+            throw new FlowException("rule can not be empty for If_Else_Block");
         }
-        if (!(condition instanceof String)) {
-            throw new FlowException("condition:'" + condition + "' is not a valid expression string for If_Else_Block");
+        if (!(jsonObject instanceof JSONObject)) {
+            throw new FlowException("rule:'" + jsonObject + "' is not a valid JSONObject If_Else_Block");
         }
+        try{
+            FieldUtil.getAsBeanFromJson((JSONObject) jsonObject, Rule.class);
+        }catch (Exception e){
+            throw new FlowException("Rule jsonObject can not be converted to Rule instance:"+e.getMessage());
+        }
+
     }
 }
