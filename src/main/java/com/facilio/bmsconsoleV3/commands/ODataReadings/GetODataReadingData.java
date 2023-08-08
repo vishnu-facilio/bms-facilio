@@ -28,9 +28,9 @@ public class GetODataReadingData extends FacilioCommand {
     private static final Logger LOGGER = LogManager.getLogger(GetODataReadingData.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        ODataReadingsContext context1 = (ODataReadingsContext) context.get(FacilioConstants.ContextNames.ODATA_READING_VIEW);
+        ODataReadingsContext readingsContext = (ODataReadingsContext) context.get(FacilioConstants.ContextNames.ODATA_READING_VIEW);
         Map<String, List<Long>> moduleAndFields = (Map<String, List<Long>>) context.get(FacilioConstants.ContextNames.MODULE_AND_FIELDS);
-        getFilters(context,context1);
+        getFilters(context,readingsContext);
         if(moduleAndFields.size() == 1){            //if only one module is available for the chosen readings
             LOGGER.info("getdata 1");
             for(Map.Entry<String,List<Long>> entry:moduleAndFields.entrySet()){

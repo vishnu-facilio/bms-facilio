@@ -13,12 +13,11 @@ import java.util.Map;
 
 public class ReadingsEdmProvider extends CsdlAbstractEdmProvider {
 
-    public static String NAMESPACE = "MODULE RECORDS";
-    public static String CONTAINER_NAME = "Readings";
-    public static FullQualifiedName CONTAINER = new FullQualifiedName(NAMESPACE, CONTAINER_NAME);
-    public static List<String> EntityTypesofViewsList;
-
-    static {
+    public String NAMESPACE = "READING RECORDS";
+    public String CONTAINER_NAME = "Readings";
+    public FullQualifiedName CONTAINER = new FullQualifiedName(NAMESPACE, CONTAINER_NAME);
+    public List<String> EntityTypesofViewsList;
+    public ReadingsEdmProvider(){
         try {
             EntityTypesofViewsList = ODataReadingsUtil.getReadingViewsList();
         } catch (Exception e) {
@@ -26,9 +25,6 @@ public class ReadingsEdmProvider extends CsdlAbstractEdmProvider {
         }
     }
 
-
-    public static List<FullQualifiedName> ET_ViewsList_FQNn = ODATAUtil.getFQNLIST(EntityTypesofViewsList);
-    public static List<String> EntitySetsofViewsList = EntityTypesofViewsList;
     public CsdlEntityType getEntityType(FullQualifiedName entityTypeName) throws ODataException {
 
         String viewName = ODATAUtil.splitFQN(entityTypeName);
@@ -37,7 +33,7 @@ public class ReadingsEdmProvider extends CsdlAbstractEdmProvider {
         try {
             int readingType= ODataReadingsUtil.getReadingType(viewName);
             Map<String, FacilioField> fieldMap = ODataReadingsUtil.getFields(viewName);
-            csdlPropertyList = ODATAUtil.getEntityTypeProperties(fieldMap, csdlPropertyList, true,readingType);
+            csdlPropertyList = ODATAUtil.getEntityTypeProperties(fieldMap, csdlPropertyList, true,readingType, CONTAINER_NAME);
             // configure EntityType
             entityType = new CsdlEntityType();
             entityType.setName(viewName);
@@ -52,7 +48,7 @@ public class ReadingsEdmProvider extends CsdlAbstractEdmProvider {
         if(entityContainer.equals(CONTAINER)){
             CsdlEntitySet entitySet = new CsdlEntitySet();
             entitySet.setName(entitySetName);
-            entitySet.setType(ODATAUtil.getFQN(entitySetName));
+            entitySet.setType(ODATAUtil.getFQN(entitySetName, NAMESPACE));
             return entitySet;
         }
         return null;
@@ -71,6 +67,7 @@ public class ReadingsEdmProvider extends CsdlAbstractEdmProvider {
     @Override
     public List<CsdlSchema> getSchemas() throws ODataException {
         CsdlSchema schema = new CsdlSchema();
+        List<FullQualifiedName> ET_ViewsList_FQNn = ODATAUtil.getFQNLIST(EntityTypesofViewsList, NAMESPACE);
         schema.setNamespace(NAMESPACE);
         List<CsdlEntityType> entityTypes = new ArrayList<>();
         for(FullQualifiedName entityType : ET_ViewsList_FQNn) {
@@ -86,6 +83,7 @@ public class ReadingsEdmProvider extends CsdlAbstractEdmProvider {
     @Override
     public CsdlEntityContainer getEntityContainer() throws ODataException {
         List<CsdlEntitySet> entitySets = new ArrayList<CsdlEntitySet>();
+        List<String> EntitySetsofViewsList = EntityTypesofViewsList;
         for (String view : EntitySetsofViewsList){
             entitySets.add(getEntitySet(CONTAINER, view));
         }

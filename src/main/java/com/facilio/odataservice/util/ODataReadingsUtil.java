@@ -28,47 +28,18 @@ import org.apache.commons.chain.Context;
 import org.json.simple.parser.JSONParser;
 
 import java.util.*;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class ODataReadingsUtil {
-    static List<FacilioModule> readings;
-    static long parentCategoryId;
-    static List<FacilioField> fields;
-    private static final Logger LOGGER = LogManager.getLogger(ODataReadingsUtil.class.getName());
 
-    public static List<FacilioField> getFields() {
-        return fields;
-    }
-
-    public static void setFields(List<FacilioField> fields) {
-        ODataReadingsUtil.fields = fields;
-    }
-
-    public static long getParentCategoryId() {
-        return parentCategoryId;
-    }
-
-    public static void setParentCategoryId(long parentCategoryId) {
-        ODataReadingsUtil.parentCategoryId = parentCategoryId;
-    }
-    public static List<FacilioModule> getReadings() {
-        return readings;
-    }
-
-    public static void setReadings(List<FacilioModule> readings) {
-        ODataReadingsUtil.readings = readings;
-    }
-
-    // get Reading view List
+   // get Reading view List
     public static List<String> getReadingViewsList() throws Exception{
         return ODataReadingViewsUtil.getReadingViewsList();
     }
 
     //get values for specific readingView
     public static List<Map<String, Object>> getReadingViewData(String readingView) throws Exception{
-        ODataReadingsDataAction.setReadingViewName(readingView);
-        return  ODataReadingsDataAction.getData(readingView);
+        ODataReadingsDataAction readingsDataAction = new ODataReadingsDataAction(readingView);
+        return readingsDataAction.getReadingData(readingView);
     }
 
     //get fields for reading views

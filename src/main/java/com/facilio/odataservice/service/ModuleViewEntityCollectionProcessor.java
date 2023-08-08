@@ -1,7 +1,8 @@
 package com.facilio.odataservice.service;
 
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.odataservice.data.ODataFilterContext;
 import com.facilio.odataservice.data.Storage;
-import com.facilio.odataservice.util.ODATAUtil;
 import com.facilio.odataservice.util.ODataModuleViewsUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -21,6 +22,7 @@ import org.apache.olingo.server.api.serializer.SerializerResult;
 import org.apache.olingo.server.api.uri.UriInfo;
 import org.apache.olingo.server.api.uri.UriResource;
 import org.apache.olingo.server.api.uri.UriResourceEntitySet;
+import org.apache.olingo.server.api.uri.queryoption.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -28,6 +30,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.facilio.odataservice.util.ODATAUtil.getFilterContext;
 
 public class ModuleViewEntityCollectionProcessor implements CountEntityCollectionProcessor {
 
@@ -48,17 +52,15 @@ public class ModuleViewEntityCollectionProcessor implements CountEntityCollectio
 
         UriResourceEntitySet uriResourceEntitySet = (UriResourceEntitySet) resourcePaths.get(0);
         EdmEntitySet edmEntitySet = uriResourceEntitySet.getEntitySet();
-        ODATAUtil.setModuleName(moduleName);
-        ODataModuleViewsUtil.setModuleName(moduleName);
         EntityCollection entityCollection;
-
+        FacilioView view = new FacilioView();
         try {
-            ODataModuleViewsUtil.viewAction(moduleName,edmEntitySet.getName());
+            view = ODataModuleViewsUtil.getViewDetail(moduleName,edmEntitySet.getName());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         try {
-            entityCollection = storage.getViewRecords(moduleName);
+            entityCollection = storage.getViewRecords(moduleName, -1,"",-1,"",false, view, new ArrayList<>());
         } catch (Exception e) {
             LOGGER.error("Exception in ModuleEntityCollection Processor in accessing data => " + e);
             throw new RuntimeException(e);
@@ -77,30 +79,60 @@ public class ModuleViewEntityCollectionProcessor implements CountEntityCollectio
     public void readEntityCollection(ODataRequest request, ODataResponse response, UriInfo uriInfo, ContentType responseFormat) throws ODataApplicationException, ODataLibraryException {
         // retrieve the requested EntitySet from the uriInfo (representation of the parsed URI)
         List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
-
         UriResourceEntitySet uriResourceEntitySet = (UriResourceEntitySet) resourcePaths.get(0);
         EdmEntitySet edmEntitySet = uriResourceEntitySet.getEntitySet();
-        ODATAUtil.setModuleName(moduleName);
-        ODataModuleViewsUtil.setModuleName(moduleName);
+        FilterOption filterOption = uriInfo.getFilterOption();
+        SelectOption selectOption = uriInfo.getSelectOption();
+        TopOption topOption = uriInfo.getTopOption();
+        SkipOption skipOption = uriInfo.getSkipOption();
+        OrderByOption orderByOption = uriInfo.getOrderByOption();
+        int limit = -1,skip=-1;
+        String field = "",orderByField = "";
+        boolean isDescending = false;
+        if(topOption != null){
+            limit = topOption.getValue();
+        }
+        if(skipOption != null){
+            skip = skipOption.getValue();
+        }
+        if(selectOption != null){
+            if(!selectOption.getSelectItems().isEmpty()) {
+                field = selectOption.getSelectItems().get(0).getResourcePath().getUriResourceParts().get(0).toString();
+            }
+        }
+        if(orderByOption != null){
+            if(!orderByOption.getOrders().isEmpty()) {
+                orderByField = orderByOption.getOrders().get(0).getExpression().toString().replace("[", "").replace("]", "");
+                isDescending = orderByOption.getOrders().get(0).isDescending();
+            }
+        }
+        List<ODataFilterContext> filterContext = new ArrayList<>();
+        if(filterOption != null){
+            if(filterOption.getExpression()!=null) {
+                filterContext = getFilterContext(filterOption,moduleName);
+            }
+        }
         EntityCollection entityCollection ;
         String viewName;
         try {
-            viewName = ODataModuleViewsUtil.getViewName(edmEntitySet.getName());
+            viewName = ODataModuleViewsUtil.getViewName(edmEntitySet.getName(), moduleName);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        FacilioView view;
         try {
-            ODataModuleViewsUtil.viewAction(moduleName,viewName);
+            view = ODataModuleViewsUtil.getViewDetail(moduleName,viewName);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         try {
-            entityCollection = storage.getViewRecords(moduleName);
+            entityCollection = storage.getViewRecords(moduleName,limit,field,skip,orderByField,isDescending,view,filterContext);
+            LOGGER.info("Processing entity collection "+System.currentTimeMillis());
         } catch (Exception e) {
-            LOGGER.error("Exception in ModuleEntityCollection Processor in accessing data => " + e);
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error while fetching view records "+e);
         }
+
         // serialize
         EdmEntityType edmEntityType = edmEntitySet.getEntityType();
         ContextURL contextUrl;
@@ -113,13 +145,15 @@ public class ModuleViewEntityCollectionProcessor implements CountEntityCollectio
             LOGGER.error("URI syntax exception in creating service root"+e);
         }
         contextUrl = ContextURL.with() .serviceRoot(serviceRoot).entitySet(edmEntitySet).build();
-        opts = EntityCollectionSerializerOptions.with().contextURL(contextUrl).id(id).build();
+        opts = EntityCollectionSerializerOptions.with().contextURL(contextUrl).select(selectOption).id(id).build();
         ODataSerializer serializer = oData.createSerializer(responseFormat);
         SerializerResult serializerResult = serializer.entityCollection(serviceMetadata, edmEntityType, entityCollection, opts);
         //configure the response object: set the body, headers and status code
         response.setContent(serializerResult.getContent());
         response.setStatusCode(HttpStatusCode.OK.getStatusCode());
         response.setHeader(HttpHeader.CONTENT_TYPE, responseFormat.toContentTypeString());
+        LOGGER.info("Processed entity collection successfully "+System.currentTimeMillis());
+
     }
 
     @Override

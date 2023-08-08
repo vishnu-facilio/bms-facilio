@@ -25,7 +25,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.List;
 
 public class ReadingsEntityCollectionProcessor implements CountEntityCollectionProcessor {

@@ -1,6 +1,5 @@
 package com.facilio.odataservice.util;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.ODataReadingsContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
@@ -8,11 +7,11 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -21,25 +20,15 @@ import java.util.List;
 import java.util.Map;
 
 public class ODataReadingViewsUtil {
-    static ModuleBean modbean;
-
-    static String tableName = ModuleFactory.getODataReadingModule().getTableName();
 
     private static final Logger LOGGER = LogManager.getLogger(ODataReadingViewsUtil.class.getName());
-    public static ModuleBean getModbean() throws Exception{
-        modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        return modbean;
-    }
-
-    public static List<FacilioField> fields = FieldFactory.getODataReadingFields();
-
-
-    public static Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);;
     
     public static ODataReadingsContext getReadingView(String name) throws Exception {
+        List<FacilioField> fields = FieldFactory.getODataReadingFields();
+        Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         ODataReadingsContext readingsContext;
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                                                                .table(tableName)
+                                                                .table(ModuleFactory.getODataReadingModule().getTableName())
                                                                 .select(fields)
                                                                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("name"),name, StringOperators.IS));
         if(selectRecordBuilder.get().size()==0){
@@ -52,9 +41,11 @@ public class ODataReadingViewsUtil {
         }
     }
     public static List<String> getReadingViewsList() throws Exception {
-        LOGGER.info(tableName + "fields: "+fields);
+        List<FacilioField> fields = FieldFactory.getODataReadingFields();
+        Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);;
+        LOGGER.info(ModuleFactory.getODataReadingModule().getTableName() + "fields: "+fields);
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(tableName)
+                .table(ModuleFactory.getODataReadingModule().getTableName())
                 .select(fields)
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("isEnabled"), String.valueOf(true),BooleanOperators.IS));
         if(selectRecordBuilder.get().size()==0){
@@ -118,7 +109,7 @@ public class ODataReadingViewsUtil {
                     } else if (oDataReadingsContext.getReadingType() == 2) {
                         moduleName = "space";
                     }
-                    FacilioField field = getModbean().getField(condition.getFieldName(), moduleName);
+                    FacilioField field = Constants.getModBean().getField(condition.getFieldName(), moduleName);
                     condition.setField(field);
                 }
             }

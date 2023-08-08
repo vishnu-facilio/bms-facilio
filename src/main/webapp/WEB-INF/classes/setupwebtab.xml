@@ -379,29 +379,16 @@
     </package>
     <!--     OData packages-->
     <package name="odatasettings" namespace="/api/v1/setup/odatasettings" extends="v2Api">
-        <action name="getodatamodules" class="com.facilio.odataservice.action.ODataModuleAction" method="fetchODataModules">
-            <result name="success" type="json">
-            </result>
-        </action>
+        <action name="getodatamodules" class="com.facilio.odataservice.action.ODataModuleAction" method="fetchODataModules"/>
         <action name="updateodatamodules" class="com.facilio.odataservice.action.ODataModuleAction" method="updateODataModules">
-            <result name="success" type="json">
-            </result>
         </action>
         <action name="deleteselectedmodules" class="com.facilio.odataservice.action.ODataModuleAction" method="deleteODataModules">
-            <result name="success" type="json">
-            </result>
         </action>
         <action name="addodatamodules" class="com.facilio.odataservice.action.ODataModuleAction" method="addODataModules">
-            <result name="success" type="json">
-            </result>
         </action>
         <action name="fetchodatareadings" class="com.facilio.odataservice.action.ODataReadingViewsAction" method="fetchODataReadings">
-            <result name="success" type="json">
-            </result>
         </action>
         <action name="changestatus" class="com.facilio.odataservice.action.ODataReadingViewsAction" method="changeStatus">
-            <result name="success" type="json">
-            </result>
         </action>
         <action name="addodatareadings" class="com.facilio.odataservice.action.ODataReadingViewsAction" method="addODataReadings">
             <result name="success" type="json">

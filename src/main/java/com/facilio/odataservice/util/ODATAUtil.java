@@ -1,28 +1,32 @@
 package com.facilio.odataservice.util;
 
-import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.SupplementRecord;
-import com.facilio.odataservice.service.ModuleViewsEdmProvider;
+import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.odataservice.data.ODataFilterContext;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.olingo.commons.api.data.*;
 import org.apache.olingo.commons.api.edm.*;
 import org.apache.olingo.commons.api.edm.provider.*;
+import org.apache.olingo.server.api.uri.queryoption.FilterOption;
+import org.apache.olingo.server.api.uri.queryoption.expression.BinaryOperatorKind;
+import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
+import org.apache.olingo.server.core.uri.queryoption.expression.BinaryImpl;
+import org.apache.olingo.server.core.uri.queryoption.expression.LiteralImpl;
+import org.apache.olingo.server.core.uri.queryoption.expression.MemberImpl;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ODATAUtil {
-   public static long orgId = AccountUtil.getCurrentOrg().getOrgId();
-    private static String moduleName;
-    public static String getModuleName() {
-        return moduleName;
-    }
-    public static void setModuleName(String moduleName) {
-        ODATAUtil.moduleName = moduleName;
-    }
-    private static FacilioModule module;
-    private static List<FacilioField> fields;
-    private static Map<String, FacilioField> fieldsAsMap;
+    private static final Logger LOGGER = LogManager.getLogger(ODATAUtil.class.getName());
+
     public static Map<String, String> getODATAType() {
         Map<String, String> dataTypeMap = new HashMap<>();
         dataTypeMap.put("bigint", "Int64");
@@ -35,13 +39,13 @@ public class ODATAUtil {
         dataTypeMap.put("float", "Float");
         dataTypeMap.put("Boolean", "Boolean");
         dataTypeMap.put("Decimal", "Double");
-        dataTypeMap.put("System Enum", "Int32");
+        dataTypeMap.put("System Enum", "String");
         dataTypeMap.put("File", "Int64");
         dataTypeMap.put("Identifier", "Int32");
         dataTypeMap.put("Misc", "String");
         dataTypeMap.put("DateTime", "DateTimeOffset");
         dataTypeMap.put("Date", "Date");
-        dataTypeMap.put("Enum", "Int32");
+        dataTypeMap.put("Enum", "String");
         dataTypeMap.put("Counter", "Int32");
         dataTypeMap.put("Multi Lookup", "String");
         dataTypeMap.put("Multi Enum", "String");
@@ -55,43 +59,44 @@ public class ODATAUtil {
         dataTypeMap.put("Lookup", "String");
         return dataTypeMap;
     }
-    public static List<SupplementRecord> getSupplementRecords() throws Exception {
-        fields = Constants.getModBean().getAllFields(moduleName);
-        List<SupplementRecord> lookup = new ArrayList<>();
-        for (FacilioField field : fields) {
-            if (field.getDataTypeEnum() == FieldType.LOOKUP || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
-                lookup.add((SupplementRecord) field);
-            }
-        }
-        return lookup;
-    }
-    public static Map getModuleFields(String moduleName) throws Exception {
-        fields = Constants.getModBean().getAllFields(moduleName);
-        module = Constants.getModBean().getModule(moduleName);
-        fieldsAsMap = FieldFactory.getAsMap(fields);
+    public static Map<String,FacilioField> getModuleFields(String moduleName) throws Exception {
+        List<FacilioField> fields = Constants.getModBean().getAllFields(moduleName);
+        FacilioModule module = Constants.getModBean().getModule(moduleName);
+        Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         fieldsAsMap.put("id", FieldFactory.getIdField(module));
         return fieldsAsMap;
     }
 
 
-    public static List<CsdlProperty> getEntityTypeProperties(Map<String, FacilioField> fieldMap, List<CsdlProperty> propertyList, boolean isReadings,int readingType) throws Exception {
+    public static List<CsdlProperty> getEntityTypeProperties(Map<String, FacilioField> fieldMap, List<CsdlProperty> propertyList, boolean isReadings, int readingType, String moduleName) throws Exception {
         Map<String,String> map= getODATAType();
+        Map<String, String> fieldNameVsDisplayNameMap = getFieldNameVsDisplayNameMap(moduleName);
         for (Map.Entry<String, FacilioField> entry : fieldMap.entrySet()) {
-            String s = map.get(entry.getValue().getDataTypeEnum().getTypeAsString());
+            String facilioDataTypeEnum = map.get(entry.getValue().getDataTypeEnum().getTypeAsString());
             CsdlProperty csdlProperty = new CsdlProperty();
-            csdlProperty.setName(entry.getValue().getName());
-            csdlProperty.setType(EdmPrimitiveTypeKind.getByName(s).getFullQualifiedName());
+            if(!isReadings) {
+                if(entry.getValue().getName().equalsIgnoreCase("siteId")){
+                    csdlProperty.setName("Site");
+                }else {
+                    if(entry.getValue().getName().equals("id")){
+                        csdlProperty.setName("Id");
+                    }else {
+                        String displayName = fieldNameVsDisplayNameMap.get(entry.getValue().getName());
+                        csdlProperty.setName(removeNameSpaces(displayName));
+                    }
+                }
+            }else {
+                String displayName = fieldNameVsDisplayNameMap.get(entry.getValue().getName());
+                csdlProperty.setName(removeNameSpaces(displayName));
+//                csdlProperty.setName(entry.getValue().getName());
+            }
+            csdlProperty.setType(EdmPrimitiveTypeKind.getByName(facilioDataTypeEnum).getFullQualifiedName());
             propertyList.add(csdlProperty);
         }
         if(isReadings) {
             propertyList.addAll(getReadingProperties(readingType));
         }
         return propertyList;
-    }
-    public static String getDisplayName(String fieldName){
-        String dispName;
-        dispName = fieldsAsMap.get(fieldName).getDisplayName();
-        return dispName;
     }
     public static List<CsdlProperty> getReadingProperties(int readingType){
         List<CsdlProperty> propertyList = new ArrayList<>();
@@ -120,55 +125,114 @@ public class ODATAUtil {
         propertyList.add(csdlProperty);
         return propertyList;
     }
-    public static EntityCollection  getMapAsEntityCollection(List<Map<String, Object>> propsMap) throws Exception {
-        List<Entity> newRecords = new ArrayList<>();
-        List<String> LookupFields = getLookupFields();
-        for (Map<String, Object> prop : propsMap) {
-            Entity entity = new Entity();
-            for (Map.Entry<String, Object> entry : prop.entrySet()) {
-                    if (ODATAUtil.isLookup(entry.getKey(),LookupFields)) {
-                        if (entry.getValue() instanceof Map && ((LinkedHashMap) entry.getValue()).containsKey("displayName")) {
-                            if(((LinkedHashMap) entry.getValue()).get("displayName")!=null) {
-                                String name = ((LinkedHashMap) entry.getValue()).get("displayName").toString();
-                                entity.addProperty(new Property(null, entry.getKey(), ValueType.PRIMITIVE, name));
-                            }
-                        } else if (entry.getValue() instanceof Map && ((LinkedHashMap) entry.getValue()).containsKey("status")) {
-                            if(((LinkedHashMap) entry.getValue()).get("status")!=null) {
-                                String name = ((LinkedHashMap) entry.getValue()).get("status").toString();
-                                entity.addProperty(new Property(null, entry.getKey(), ValueType.PRIMITIVE, name));
-                            }
-                        }else if(entry.getValue() instanceof ArrayList){
-                            List<Map<String,Object>> list = (List) entry.getValue();
-                            List<String> valueList = new ArrayList<>();
-                            if(list.get(0) instanceof Map) {
-                                for (Map<String, Object> obj : list) {
-                                    if (obj.get("displayName") != null) {
-                                        valueList.add((String) obj.get("displayName"));
-                                    } else if (obj.get("name") != null) {
-                                        valueList.add((String) obj.get("name"));
-                                    }
-                                }
-                            }
-                        entity.addProperty(new Property(null, entry.getKey(), ValueType.PRIMITIVE, valueList));
-                    }
-                } else {
-                        entity.addProperty(new Property(null,entry.getKey(), ValueType.PRIMITIVE, entry.getValue()));
+
+    private static Property getLookupEntity(Map.Entry<String,Object> entry,String displayName){
+        Property property = new Property();
+        property.setName(displayName);
+        Object value = entry.getValue();
+        if(entry.getValue() instanceof Map){
+            Map<String,Object> entryValueMap = (Map<String, Object>) value;
+            if(entryValueMap.containsKey("displayName")){
+                property.setValue(ValueType.PRIMITIVE,entryValueMap.get("displayName").toString());
+            }else if(entryValueMap.containsKey("status")){
+                property.setValue(ValueType.PRIMITIVE,entryValueMap.get("status").toString());
+            }else if(entryValueMap.containsKey("name")){
+                property.setValue(ValueType.PRIMITIVE,entryValueMap.get("name").toString());
+            }
+        }else if(entry.getValue() instanceof ArrayList){
+            List<Map<String,Object>> list = (List<Map<String, Object>>) entry.getValue();
+            List<String> valueList = new ArrayList<>();
+            for (Map<String, Object> obj : list) {
+                String name = obj.getOrDefault("displayName",obj.get("name")).toString();
+                if(name != null){
+                    valueList.add(name);
                 }
             }
-            newRecords.add(entity);
+            property.setValue(ValueType.PRIMITIVE,valueList);
         }
+        return property;
+    }
+    public static EntityCollection  getMapAsEntityCollection(List<Map<String, Object>> propsMap, FacilioModule module,boolean isReadings) throws Exception {
+        long startTime = System.currentTimeMillis();
+        List<Entity> newRecords = new ArrayList<>();
+        List<String> LookupFields = new ArrayList<>();
+        Map<String,FacilioField> fieldsAsMap = new HashMap<>();
+        
+        if(module != null){
+            LookupFields = getLookupFields(module);
+            fieldsAsMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(module.getName()));
+            fieldsAsMap.put("id",FieldFactory.getIdField(module));
+        }
+        Map<Long,String> siteMap = new HashMap<>();
+        Map<String, String> fieldNameVsDisplayNameMap = new HashMap<>();
+        if(!isReadings) {
+            fieldNameVsDisplayNameMap = getFieldNameVsDisplayNameMap(module.getName());
+        }
+        if(propsMap!= null && !propsMap.isEmpty()) {
+            for (Map<String, Object> prop : propsMap) {
+                Entity entity = new Entity();
+                for (Map.Entry<String, Object> entry : prop.entrySet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    String displayName = key;
+                    if (!isReadings && fieldNameVsDisplayNameMap.containsKey(key)) {
+                        displayName = removeNameSpaces(fieldNameVsDisplayNameMap.get(key));
+                    } else {
+                        if (key.equals("id")) {
+                            displayName = "Id";
+                        }
+                    }
+                    if (ODATAUtil.isLookup(key, LookupFields)) {
+                        entity.addProperty(getLookupEntity(entry, displayName));
+                    }
+                    /** Site details for siteId *special handling for specific modules */
+                    else if (key.equals("siteId")) {
+                        Long siteId = (Long)value;
+                        String siteName = "";
+                        if(siteMap.containsKey(siteId)){
+                            siteName = siteMap.get(siteId);
+                        }else{
+                            List<Long> siteIds = new ArrayList<>();
+                            siteIds.add(siteId);
+                            List<SiteContext> sites = SpaceAPI.getSites(siteIds);
+                            if (sites != null && !sites.isEmpty()) {
+                                siteMap.put(siteId,sites.get(0).getName());
+                            }
+                        }
+                        entity.addProperty(new Property(null, "Site", ValueType.PRIMITIVE, siteName));
+                    }
+                    else {
+                        if (fieldsAsMap.containsKey(key)) {
+                            FacilioField field = fieldsAsMap.get(key);
+                            String fieldType = field.getDataTypeEnum().getTypeAsString();
+                            if(fieldType.equalsIgnoreCase("system enum")){
+                               String enumValue = ((SystemEnumField)field).getValue((Integer)entry.getValue());
+                                entity.addProperty(new Property(null, displayName, ValueType.PRIMITIVE, enumValue));
+                            }else if(fieldType.equalsIgnoreCase("enum")){
+                                String enumValue = ((EnumField)field).getValue((Integer)entry.getValue());
+                                entity.addProperty(new Property(null, displayName, ValueType.PRIMITIVE, enumValue));
+                            }
+                            else if (fieldType.equals("DateTime") || fieldType.equals("Date")) {
+                                long dateTimeValue = (long) value;
+                                entity.addProperty(new Property(null, displayName, ValueType.PRIMITIVE, DateTimeUtil.getDateTime(dateTimeValue)));
+                            }else {
+                                entity.addProperty(new Property(null, displayName, ValueType.PRIMITIVE, value));
+                            }
+                        }else {
+                            entity.addProperty(new Property(null, displayName, ValueType.PRIMITIVE, value));
+                        }
+                    }
+                }
+                newRecords.add(entity);
+            }
+        }
+        long endTime = System.currentTimeMillis();
+        LOGGER.info("Time taken for Converting propsMap to entity list : "+(endTime-startTime));
         return getListAsEntityCollection(newRecords);
     }
-    public static Map<String, FacilioField> getFieldsAsMap() {
-        return fieldsAsMap;
-    }
 
-    public static void setFieldsAsMap(Map<String, FacilioField> fieldsAsMap) {
-        ODATAUtil.fieldsAsMap = fieldsAsMap;
-    }
-
-    public static List<String> getLookupFields() throws Exception {
-        fields = Constants.getModBean().getAllFields(moduleName);
+    public static List<String> getLookupFields(FacilioModule module) throws Exception {
+        List<FacilioField> fields = Constants.getModBean().getAllFields(module.getName());
         List<String> lookupFields = new ArrayList<>();
         for (FacilioField field : fields) {
             if (field.getDataTypeEnum() == FieldType.LOOKUP || field.getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
@@ -178,32 +242,95 @@ public class ODATAUtil {
         return lookupFields;
     }
     public static Boolean isLookup(String field, List<String> LookupFieldList) {
-        Boolean result = LookupFieldList.contains(field);
-        return result;
+        return LookupFieldList.contains(field);
     }
     public static EntityCollection getListAsEntityCollection(List<Entity> RecordList){
+        long startTime = System.currentTimeMillis();
         EntityCollection retEntitySet = new EntityCollection();
         for (Entity productEntity : RecordList) {
             retEntitySet.getEntities().add(productEntity);
         }
+        LOGGER.info("Time taken for Converting entity list to entity collection : "+(System.currentTimeMillis()-startTime));
         return retEntitySet;
 
     }
-    public static List<FullQualifiedName> getFQNLIST(List<String> EntityTypeList)
+    public static List<FullQualifiedName> getFQNLIST(List<String> EntityTypeList, String NAMESPACE)
     {
         List<FullQualifiedName> fqnList = new ArrayList<>();
         for(String entityType : EntityTypeList)
         {
-            fqnList.add(getFQN(entityType));
+            fqnList.add(getFQN(entityType, NAMESPACE));
         }
         return fqnList;
     }
-    public static FullQualifiedName getFQN(String entityType){
-        FullQualifiedName fqn = new FullQualifiedName(ModuleViewsEdmProvider.NAMESPACE, entityType);
-        return  fqn;
+    public static FullQualifiedName getFQN(String entityType, String NAMESPACE){
+        return new FullQualifiedName(NAMESPACE, entityType);
     }
     public static String splitFQN(FullQualifiedName fqn) {
-        String name = fqn.toString().substring(fqn.toString().indexOf('.')+1);
-        return name;
+        return fqn.toString().substring(fqn.toString().indexOf('.')+1);
+    }
+
+    public static void getFilterContextList(Expression operand,List<ODataFilterContext> filterContexts,String moduleName){
+        String value = "",field="";
+        if(operand instanceof BinaryImpl){
+            Expression lRightOp = ((BinaryImpl) operand).getRightOperand();
+            Expression lLeftOp = ((BinaryImpl) operand).getLeftOperand();
+            BinaryOperatorKind lOperator = ((BinaryImpl) operand).getOperator();
+            if(lRightOp instanceof LiteralImpl){
+                value = lRightOp.toString();
+            }
+            if(lLeftOp instanceof MemberImpl){
+                field = lLeftOp.toString().replace("[","").replace("]","");
+            }
+            ODataFilterContext dataFilterContext = new ODataFilterContext();
+            dataFilterContext.setField(field);
+            dataFilterContext.setModuleName(moduleName);
+            dataFilterContext.setValueList(value);
+            dataFilterContext.setOperatorName(lOperator.toString());
+            filterContexts.add(dataFilterContext);
+        }
+    }
+
+    public static Map<String,String> getFieldNameVsDisplayNameMap(String moduleName) throws Exception{
+        FacilioModule module = Constants.getModBean().getModule(moduleName);
+        List<FacilioField> fieldsList = Constants.getModBean().getAllFields(moduleName);
+        fieldsList.add(FieldFactory.getIdField(module));
+        return fieldsList.stream().collect(Collectors.toMap(FacilioField::getName,FacilioField::getDisplayName, (prevValue, curValue) -> prevValue));
+    }
+
+    public static Map<String,String> getDisplayNameVsFieldNameMap(String moduleName) throws Exception{
+        FacilioModule module = Constants.getModBean().getModule(moduleName);
+        List<FacilioField> fieldsList = Constants.getModBean().getAllFields(moduleName);
+        fieldsList.add(FieldFactory.getIdField(module));
+        return fieldsList.stream().collect(Collectors.toMap(FacilioField::getDisplayName,FacilioField::getName, (prevValue, curValue) -> prevValue));
+    }
+    /** modify display name without spaces */
+    public static String removeNameSpaces(String displayName) {
+        if(displayName.equalsIgnoreCase("space / asset")){
+            return displayName.replace(" ","");
+        }
+        return displayName.replace(" ","_");
+    }
+    public static String addNameSpaces(String displayName) {
+        if(displayName.equalsIgnoreCase("space/asset")){
+            return displayName.replace("/"," / ");
+        }
+        return displayName.replace("_"," ");
+    }
+
+    public static List<ODataFilterContext> getFilterContext(FilterOption filterOption, String moduleName){
+        List<ODataFilterContext> filterContexts = new ArrayList<>();
+        Expression expression =  filterOption.getExpression();
+        if(expression instanceof BinaryImpl){
+            if(((BinaryImpl)expression).getLeftOperand() instanceof BinaryImpl){
+                Expression leftOp = ((BinaryImpl)expression).getLeftOperand();
+                getFilterContextList(leftOp,filterContexts,moduleName);
+            }
+            if(((BinaryImpl)expression).getRightOperand() instanceof BinaryImpl){
+                Expression rightOp = ((BinaryImpl)expression).getRightOperand();
+                getFilterContextList(rightOp,filterContexts,moduleName);
+            }
+        }
+         return filterContexts;
     }
 }

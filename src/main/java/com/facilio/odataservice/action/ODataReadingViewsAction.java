@@ -13,6 +13,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.odataservice.util.ODataReadingViewsUtil;
+import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.log4j.LogManager;
@@ -25,29 +26,21 @@ import java.util.Map;
 import static com.facilio.odataservice.util.ODataReadingViewsUtil.addODataReadingViewName;
 
 @Getter @Setter
-public class ODataReadingViewsAction extends FacilioAction {
+public class ODataReadingViewsAction extends V3Action {
     ODataReadingsContext readingView;
     String readingName;
     long assetCategoryId;
-    Object data;
-    String tableName = ModuleFactory.getODataReadingModule().getTableName();
-    List<FacilioField> fields = FieldFactory.getODataReadingFields();
-    Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
     Boolean status;
-    int page;
-    int perPage;
-    String search;
     int count;
     private static final Logger LOGGER = LogManager.getLogger(ODataModuleAction.class.getName());
-
-
     public String addODataReadings() throws Exception {
         ODataReadingsContext context = addODataReadingViewName(readingView);
         ODataReadingViewsUtil.updateODataReadingsCriteriaId(context);
+        List<FacilioField> fields = FieldFactory.getODataReadingFields();
         Map<String, Object> prop = FieldUtil.getAsProperties(context);
         prop.put("isEnabled",true);
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                .table(tableName)
+                .table(ModuleFactory.getODataReadingModule().getTableName())
                 .ignoreSplNullHandling()
                 .fields(fields);
         insertBuilder.addRecord(prop);
@@ -55,14 +48,16 @@ public class ODataReadingViewsAction extends FacilioAction {
         return SUCCESS;
     }
     public String fetchODataReadings() throws Exception{
+        List<FacilioField> fields = FieldFactory.getODataReadingFields();
+        Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(tableName)
+                .table(ModuleFactory.getODataReadingModule().getTableName())
                 .select(fields);
-        if(search!=null && !search.isEmpty()){
-            selectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("displayName"),search,StringOperators.CONTAINS));
+        if(getSearch()!=null && !getSearch().isEmpty()){
+            selectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("displayName"),getSearch(),StringOperators.CONTAINS));
         }
-        selectRecordBuilder.limit(perPage)
-                            .offset(perPage * (page-1));
+        selectRecordBuilder.limit(getPerPage())
+                            .offset(getPerPage() * (getPage()-1));
 
         List<Map<String, Object>> result = selectRecordBuilder.get();
         List<ODataReadingsContext> resobj = FieldUtil.getAsBeanListFromMapList(result, ODataReadingsContext.class);
@@ -71,38 +66,44 @@ public class ODataReadingViewsAction extends FacilioAction {
             context.setCriteria(CriteriaAPI.getCriteria(context.getCriteriaId()));
             context.setEnabled((Boolean)result.get(i).get("isEnabled"));
         }
-        setData(resobj);
+        setData("data",resobj);
         return SUCCESS;
     }
     public String readingsCount() throws Exception{
+        List<FacilioField> fields = FieldFactory.getODataReadingFields();
+        Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(tableName)
+                .table(ModuleFactory.getODataReadingModule().getTableName())
                 .select(fields);
-        if(search!=null && !search.isEmpty()){
-            selectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("displayName"),search,StringOperators.CONTAINS));
+        if(getSearch()!=null && !getSearch().isEmpty()){
+            selectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("displayName"),getSearch(),StringOperators.CONTAINS));
         }
         setCount(selectRecordBuilder.get().size());
         return SUCCESS;
     }
     public String updateODataReadings() throws Exception {
+        List<FacilioField> fields = FieldFactory.getODataReadingFields();
+        Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         ODataReadingsContext context = readingView;
         context.setName(ODataReadingViewsUtil.getReadingViewName(context));
         ODataReadingViewsUtil.updateODataReadingsCriteriaId(context);
         Map<String, Object> prop = FieldUtil.getAsProperties(context);
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-                .table(tableName)
+                .table(ModuleFactory.getODataReadingModule().getTableName())
                 .fields(fields)
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("name"),readingName, StringOperators.IS));
         updateBuilder.update(prop);
         return SUCCESS;
     }
     public String changeStatus() throws Exception{
+        List<FacilioField> fields = FieldFactory.getODataReadingFields();
+        Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         ODataReadingsContext context = ODataReadingViewsUtil.getReadingView(readingName);
         context.setEnabled(status);
         Map<String, Object> prop = new HashMap<>();
         prop.put("isEnabled",status);
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-                .table(tableName)
+                .table(ModuleFactory.getODataReadingModule().getTableName())
                 .fields(fields)
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("name"),readingName, StringOperators.IS));
         updateBuilder.update(prop);
@@ -111,8 +112,10 @@ public class ODataReadingViewsAction extends FacilioAction {
     }
 
     public String deleteODataReadings() throws Exception {
+        List<FacilioField> fields = FieldFactory.getODataReadingFields();
+        Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
-                .table(tableName)
+                .table(ModuleFactory.getODataReadingModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("name"),readingName, StringOperators.IS));
         int deleted = deleteRecordBuilder.delete();
         return SUCCESS;
