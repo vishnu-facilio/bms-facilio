@@ -37,6 +37,8 @@ import java.util.*;
 import static com.facilio.bmsconsole.util.SystemButtonApi.addSystemButton;
 
 public class ServiceOrderModule extends BaseModuleConfig {
+
+    public static List<String> serviceOrderSupportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.FSM_APP);
     public ServiceOrderModule(){
         setModuleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
     }
@@ -218,7 +220,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         category.setEnumName("ServiceOrderCategory");
         fields.add(category);
 
-        SystemEnumField maintenanceType = FieldFactory.getDefaultField("maintenanceType","MaintenanceType","MAINTENANCE_TYPE",FieldType.SYSTEM_ENUM);
+        SystemEnumField maintenanceType = FieldFactory.getDefaultField("maintenanceType","Maintenance Type","MAINTENANCE_TYPE",FieldType.SYSTEM_ENUM);
         maintenanceType.setEnumName("ServiceOrderMaintenanceType");
         fields.add(maintenanceType);
 
@@ -248,13 +250,13 @@ public class ServiceOrderModule extends BaseModuleConfig {
         vendor.setLookupModule(bean.getModule(FacilioConstants.ContextNames.VENDORS));
         fields.add(vendor);
 
-        FacilioField preferredstarttime = FieldFactory.getDefaultField("preferredStartTime","PreferredStartTime","PREFERRED_START_TIME", FieldType.DATE_TIME);
+        FacilioField preferredstarttime = FieldFactory.getDefaultField("scheduledStartTime","Scheduled Start Time","SCHEDULED_START_TIME", FieldType.DATE_TIME);
         fields.add(preferredstarttime);
 
-        FacilioField preferredendtime = FieldFactory.getDefaultField("preferredEndTime","PreferredEndTime","PREFERRED_END_TIME", FieldType.DATE_TIME);
+        FacilioField preferredendtime = FieldFactory.getDefaultField("scheduledEndTime","Scheduled End Time","SCHEDULED_END_TIME", FieldType.DATE_TIME);
         fields.add(preferredendtime);
 
-        FacilioField autocreatesa = FieldFactory.getDefaultField("autoCreateSa","AutoCreateSA","AUTO_CREATE_SA", FieldType.BOOLEAN);
+        FacilioField autocreatesa = FieldFactory.getDefaultField("autoCreateSa","AutoCreate SA","AUTO_CREATE_SA", FieldType.BOOLEAN);
         fields.add(autocreatesa);
 
         FacilioField isallserviceappointmentsclosed = FieldFactory.getDefaultField("isAllSACompleted","Is All SA Completed","IS_ALL_SA_COMPLETED", FieldType.BOOLEAN);
@@ -263,22 +265,22 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField isTaskInitiated = FieldFactory.getDefaultField("isTaskInitiated","Is Task Initiated","IS_TASK_INITIATED", FieldType.BOOLEAN);
         fields.add(isTaskInitiated);
 
-        FacilioField responseDueDate = FieldFactory.getDefaultField("responseDueDate","ResponseDueDate","RESPONSE_DUE_DATE", FieldType.DATE_TIME);
+        FacilioField responseDueDate = FieldFactory.getDefaultField("responseDueDate","Response Due Date","RESPONSE_DUE_DATE", FieldType.DATE_TIME);
         fields.add(responseDueDate);
 
-        FacilioField resolutionDueDate = FieldFactory.getDefaultField("resolutionDueDate","ResolutionDueDate","RESOLUTION_DUE_DATE", FieldType.DATE_TIME);
+        FacilioField resolutionDueDate = FieldFactory.getDefaultField("resolutionDueDate","Resolution Due Date","RESOLUTION_DUE_DATE", FieldType.DATE_TIME);
         fields.add(resolutionDueDate);
 
-        FacilioField responseDueDuration = FieldFactory.getDefaultField("responseDueDuration","ResponseDueDuration","RESPONSE_DUE_DURATION", FieldType.DATE_TIME);
+        FacilioField responseDueDuration = FieldFactory.getDefaultField("responseDueDuration","Response Due Duration","RESPONSE_DUE_DURATION", FieldType.NUMBER);
         fields.add(responseDueDuration);
 
-        FacilioField resolutionDueDuration = FieldFactory.getDefaultField("resolutionDueDuration","ResolutionDueDuration","RESOLUTION_DUE_DURATION", FieldType.DATE_TIME);
+        FacilioField resolutionDueDuration = FieldFactory.getDefaultField("resolutionDueDuration","Resolution Due Duration","RESOLUTION_DUE_DURATION", FieldType.NUMBER);
         fields.add(resolutionDueDuration);
 
-        FacilioField resolvedTime = FieldFactory.getDefaultField("resolvedTime","ResolvedTime","RESOLVED_TIME", FieldType.DATE_TIME);
+        FacilioField resolvedTime = FieldFactory.getDefaultField("resolvedTime","Resolved Time","RESOLVED_TIME", FieldType.DATE_TIME);
         fields.add(resolvedTime);
 
-        SystemEnumField sourceType = FieldFactory.getDefaultField("sourceType","SourceType","SOURCE_TYPE",FieldType.SYSTEM_ENUM);
+        SystemEnumField sourceType = FieldFactory.getDefaultField("sourceType","Source Type","SOURCE_TYPE",FieldType.SYSTEM_ENUM);
         sourceType.setEnumName("ServiceOrderSourceType");
         fields.add(sourceType);
 
@@ -296,7 +298,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
 //        FacilioField modifiedTime = FieldFactory.getDefaultField("modifiedTime","ModifiedTime","SYS_MODIFIED_TIME", FieldType.DATE_TIME);
 //        fields.add(modifiedTime);
 
-        LookupField sysdeletedby = FieldFactory.getDefaultField("sysdeletedby","SysDeletedBy","SYS_DELETED_BY",FieldType.LOOKUP);
+        LookupField sysdeletedby = FieldFactory.getDefaultField("sysdeletedby","Sys Deleted By","SYS_DELETED_BY",FieldType.LOOKUP);
         sysdeletedby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(sysdeletedby);
 
@@ -304,39 +306,39 @@ public class ServiceOrderModule extends BaseModuleConfig {
         territory.setLookupModule(bean.getModule(FacilioConstants.Territory.TERRITORY));
         fields.add(territory);
 
-        FacilioField sysdeleted = FieldFactory.getDefaultField("sysDeleted","SysDeleted","SYS_DELETED", FieldType.BOOLEAN);
+        FacilioField sysdeleted = FieldFactory.getDefaultField("sysDeleted","Sys Deleted","SYS_DELETED", FieldType.BOOLEAN);
         fields.add(sysdeleted);
 
-        FacilioField sysdeletedtime = FieldFactory.getDefaultField("sysDeletedTime","SysDeletedTime","SYS_DELETED_TIME", FieldType.DATE_TIME);
+        FacilioField sysdeletedtime = FieldFactory.getDefaultField("sysDeletedTime","Sys Deleted Time","SYS_DELETED_TIME", FieldType.DATE_TIME);
         fields.add(sysdeletedtime);
 
-        FacilioField actualstarttime = FieldFactory.getDefaultField("actualStartTime","ActualStartTime","ACTUAL_START_TIME", FieldType.DATE_TIME);
+        FacilioField actualstarttime = FieldFactory.getDefaultField("actualStartTime","Actual Start Time","ACTUAL_START_TIME", FieldType.DATE_TIME);
         fields.add(actualstarttime);
 
-        FacilioField actualendtime = FieldFactory.getDefaultField("actualEndTime","ActualEndTime","ACTUAL_END_TIME", FieldType.DATE_TIME);
+        FacilioField actualendtime = FieldFactory.getDefaultField("actualEndTime","Actual End Time","ACTUAL_END_TIME", FieldType.DATE_TIME);
         fields.add(actualendtime);
 
-        FacilioField actualduration = FieldFactory.getDefaultField("actualDuration","ActualDuration","ACTUAL_DURATION", FieldType.DATE_TIME);
+        FacilioField actualduration = FieldFactory.getDefaultField("actualDuration","Actual Duration","ACTUAL_DURATION", FieldType.NUMBER);
         fields.add(actualduration);
 
-        LookupField assignedto = FieldFactory.getDefaultField("assignedTo","AssignedTo","ASSIGNED_TO",FieldType.LOOKUP);
+        LookupField assignedto = FieldFactory.getDefaultField("assignedTo","Assigned To","ASSIGNED_TO",FieldType.LOOKUP);
         assignedto.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(assignedto);
 
-        LookupField assignedby = FieldFactory.getDefaultField("assignedBy","AssignedBy","ASSIGNED_BY",FieldType.LOOKUP);
+        LookupField assignedby = FieldFactory.getDefaultField("assignedBy","Assigned By","ASSIGNED_BY",FieldType.LOOKUP);
         assignedby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(assignedby);
 
-        FacilioField duedate = FieldFactory.getDefaultField("dueDate","DueDate","DUE_DATE", FieldType.DATE_TIME);
+        FacilioField duedate = FieldFactory.getDefaultField("dueDate","Due Date","DUE_DATE", FieldType.DATE_TIME);
         fields.add(duedate);
 
-        FacilioField estimatedstarttime = FieldFactory.getDefaultField("estimatedStartTime","EstimatedStartTime","ESTIMATED_START_TIME", FieldType.DATE_TIME);
+        FacilioField estimatedstarttime = FieldFactory.getDefaultField("estimatedStartTime","Estimated Start Time","ESTIMATED_START_TIME", FieldType.DATE_TIME);
         fields.add(estimatedstarttime);
 
-        FacilioField estimatedendtime = FieldFactory.getDefaultField("estimatedEndTime","EstimatedEndTime","ESTIMATED_END_TIME", FieldType.DATE_TIME);
+        FacilioField estimatedendtime = FieldFactory.getDefaultField("estimatedEndTime","Estimated End Time","ESTIMATED_END_TIME", FieldType.DATE_TIME);
         fields.add(estimatedendtime);
 
-        FacilioField estimatedduration = FieldFactory.getDefaultField("estimatedDuration","EstimatedDuration","ESTIMATED_DURATION", FieldType.DATE_TIME);
+        FacilioField estimatedduration = FieldFactory.getDefaultField("estimatedDuration","Estimated Duration","ESTIMATED_DURATION", FieldType.NUMBER);
         fields.add(estimatedduration);
 
 //        FacilioField modulestate = FieldFactory.getDefaultField("modulestate","ModuleState","MODULE_STATE", FieldType.NUMBER);
@@ -347,26 +349,26 @@ public class ServiceOrderModule extends BaseModuleConfig {
         moduleStateField.setLookupModule(bean.getModule("ticketstatus"));
         fields.add(moduleStateField);
 
-        FacilioField noOfAttachments = FieldFactory.getDefaultField("noOfAttachments","NoOfAttachments","NO_OF_ATTACHMENTS", FieldType.NUMBER);
+        FacilioField noOfAttachments = FieldFactory.getDefaultField("noOfAttachments","No Of Attachments","NO_OF_ATTACHMENTS", FieldType.NUMBER);
         fields.add(noOfAttachments);
 
-        FacilioField noOfClosedTasks = FieldFactory.getDefaultField("noOfClosedTasks","NoOfClosedTasks","NO_OF_CLOSED_TASKS", FieldType.NUMBER);
+        FacilioField noOfClosedTasks = FieldFactory.getDefaultField("noOfClosedTasks","No Of ClosedTasks","NO_OF_CLOSED_TASKS", FieldType.NUMBER);
         fields.add(noOfClosedTasks);
 
-        FacilioField noOfNotes = FieldFactory.getDefaultField("noOfNotes","NoOfNotes","NO_OF_NOTES", FieldType.NUMBER);
+        FacilioField noOfNotes = FieldFactory.getDefaultField("noOfNotes","No Of Notes","NO_OF_NOTES", FieldType.NUMBER);
         fields.add(noOfNotes);
 
-        FacilioField noOfTasks = FieldFactory.getDefaultField("noOfTasks","NoOfTasks","NO_OF_TASKS", FieldType.NUMBER);
+        FacilioField noOfTasks = FieldFactory.getDefaultField("noOfTasks","No Of Tasks","NO_OF_TASKS", FieldType.NUMBER);
         fields.add(noOfTasks);
 
-        FacilioField slapolicyid = FieldFactory.getDefaultField("slaPolicyId","SlaPolicyId","SLA_POLICY_ID", FieldType.NUMBER);
+        FacilioField slapolicyid = FieldFactory.getDefaultField("slaPolicyId","Sla Policy Id","SLA_POLICY_ID", FieldType.NUMBER);
         fields.add(slapolicyid);
 
 //        LookupField slapolicyid = FieldFactory.getDefaultField("slapolicyid","SlaPolicyId","SLA_POLICY_ID",FieldType.LOOKUP);
 //        slapolicyid.setLookupModule(bean.getModule(FacilioConstants.ContextNames.SLA_POLICY));
 //        fields.add(slapolicyid);
 
-        FacilioField stateflowid = FieldFactory.getDefaultField("stateFlowId","StateFlowId","STATE_FLOW_ID", FieldType.NUMBER);
+        FacilioField stateflowid = FieldFactory.getDefaultField("stateFlowId","State Flow Id","STATE_FLOW_ID", FieldType.NUMBER);
         stateflowid.setDefault(true);
         fields.add(stateflowid);
 
@@ -376,13 +378,13 @@ public class ServiceOrderModule extends BaseModuleConfig {
 //        fields.add(stateflowid);
         //doubt need to remove?? ends
 
-        FacilioField approvalRuleId = FieldFactory.getDefaultField("approvalRuleId","ApprovalRuleId","APPROVAL_RULE_ID", FieldType.NUMBER);
+        FacilioField approvalRuleId = FieldFactory.getDefaultField("approvalRuleId","Approval Rule Id","APPROVAL_RULE_ID", FieldType.NUMBER);
         fields.add(approvalRuleId);
 
-        FacilioField approvalState = FieldFactory.getDefaultField("approvalState","ApprovalState","APPROVAL_STATE", FieldType.NUMBER);
+        FacilioField approvalState = FieldFactory.getDefaultField("approvalState","Approval State","APPROVAL_STATE", FieldType.NUMBER);
         fields.add(approvalState);
 
-        FacilioField parentso = FieldFactory.getDefaultField("parentSo","ParentSo","PARENT_SOID", FieldType.NUMBER);
+        FacilioField parentso = FieldFactory.getDefaultField("parentSo","Parent So","PARENT_SOID", FieldType.NUMBER);
         fields.add(parentso);
 
         LookupField pm = FieldFactory.getDefaultField("pm","PM","PM_ID",FieldType.LOOKUP);
@@ -400,25 +402,25 @@ public class ServiceOrderModule extends BaseModuleConfig {
         //doubt need to remove?? ends
 
         //doubt need to remove lookup?? starts
-        SystemEnumField prerequeststatus = FieldFactory.getDefaultField("prerequestStatus","PreRequestStatus","PRE_REQUEST_STATUS",FieldType.SYSTEM_ENUM);
+        SystemEnumField prerequeststatus = FieldFactory.getDefaultField("prerequestStatus","PreRequest Status","PRE_REQUEST_STATUS",FieldType.SYSTEM_ENUM);
         prerequeststatus.setEnumName("ServiceOrderPrerequisiteStatus");
         fields.add(prerequeststatus);
         //doubt need to remove lookup?? starts
 
-        FacilioField prerequisiteapproved = FieldFactory.getDefaultField("prerequisiteApproved","PreRequisiteApproved","PREREQUISITE_APPROVED", FieldType.BOOLEAN);
+        FacilioField prerequisiteapproved = FieldFactory.getDefaultField("prerequisiteApproved","PreRequisite Approved","PREREQUISITE_APPROVED", FieldType.BOOLEAN);
         fields.add(prerequisiteapproved);
 
-        FacilioField prerequisiteenabled = FieldFactory.getDefaultField("prerequisiteEnabled","PreRequisiteEnabled","PREREQUISITE_ENABLED", FieldType.BOOLEAN);
+        FacilioField prerequisiteenabled = FieldFactory.getDefaultField("prerequisiteEnabled","PreRequisite Enabled","PREREQUISITE_ENABLED", FieldType.BOOLEAN);
         fields.add(prerequisiteenabled);
 
-        FacilioField qrenabled = FieldFactory.getDefaultField("qrEnabled","QrEnabled","QR_ENABLED", FieldType.BOOLEAN);
+        FacilioField qrenabled = FieldFactory.getDefaultField("qrEnabled","Qr Enabled","QR_ENABLED", FieldType.BOOLEAN);
         fields.add(qrenabled);
 
-        LookupField requestedby = FieldFactory.getDefaultField("requestedBy","RequestedBy","REQUESTED_BY_ID",FieldType.LOOKUP);
+        LookupField requestedby = FieldFactory.getDefaultField("requestedBy","Requested by","REQUESTED_BY_ID",FieldType.LOOKUP);
         requestedby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(requestedby);
 
-        FacilioField localid = FieldFactory.getDefaultField("localId","LocalId","LOCAL_ID", FieldType.NUMBER);
+        FacilioField localid = FieldFactory.getDefaultField("localId","Local Id","LOCAL_ID", FieldType.NUMBER);
         fields.add(localid);
 
         module.setFields(fields);
@@ -477,10 +479,10 @@ public class ServiceOrderModule extends BaseModuleConfig {
         serviceTaskSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormField> scheduleAppointmentFields = new ArrayList<>();
-        scheduleAppointmentFields.add(new FormField("preferredStartTime", FacilioField.FieldDisplayType.DATETIME, "Preferred Start Time", FormField.Required.REQUIRED, 10, 2));
-        scheduleAppointmentFields.add(new FormField("preferredEndTime", FacilioField.FieldDisplayType.DATETIME, "Preferred End Time", FormField.Required.REQUIRED, 11, 2));
-        scheduleAppointmentFields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DATETIME, "Response Due Duration", FormField.Required.OPTIONAL, 8, 2));
-        scheduleAppointmentFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DATETIME, "Resolution Due Duration", FormField.Required.OPTIONAL, 9, 2));
+        scheduleAppointmentFields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 10, 2));
+        scheduleAppointmentFields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.REQUIRED, 11, 2));
+        scheduleAppointmentFields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DURATION, "Response Due Duration", FormField.Required.OPTIONAL, 8, 2));
+        scheduleAppointmentFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.OPTIONAL, 9, 2));
 
         FormSection scheduleAppointmentSection = new FormSection("Schedule and Appointment", 4, scheduleAppointmentFields, true);
         scheduleAppointmentSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -499,17 +501,149 @@ public class ServiceOrderModule extends BaseModuleConfig {
         return Collections.singletonList(webWorkOrderForm);
     }
 
+    public static Criteria getAllOpenServiceOrders() throws Exception {
+        ServiceOrderTicketStatusContext newState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.NEW);
+        ServiceOrderTicketStatusContext scheduledState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.SCHEDULED);
+        ServiceOrderTicketStatusContext inprogressState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.IN_PROGRESS);
 
-    public List<Map<String, Object>> getViewsAndGroups() {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        Criteria openCriteria = new Criteria();
+        openCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(newState.getId()), PickListOperators.IS));
+        openCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(scheduledState.getId()), PickListOperators.IS));
+        openCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(inprogressState.getId()), PickListOperators.IS));
+        openCriteria.setPattern("(1 or 2 or 3)");
+
+        return openCriteria;
+    }
+
+    public static Criteria getAllCompletedServiceOrders() throws Exception {
+        ServiceOrderTicketStatusContext completedState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.COMPLETED);
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        Criteria completedCriteria = new Criteria();
+        completedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(completedState.getId()), PickListOperators.IS));
+        completedCriteria.setPattern("(1)");
+
+        return completedCriteria;
+    }
+
+    public static Criteria getAllClosedServiceOrders() throws Exception {
+        ServiceOrderTicketStatusContext closedState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.CLOSED);
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        Criteria closedCriteria = new Criteria();
+        closedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(closedState.getId()), PickListOperators.IS));
+        closedCriteria.setPattern("(1)");
+
+        return closedCriteria;
+    }
+
+    public static Criteria getAllCancelledServiceOrders() throws Exception {
+        ServiceOrderTicketStatusContext cancelledState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.CANCELLED);
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        Criteria cancelledCriteria = new Criteria();
+        cancelledCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(cancelledState.getId()), PickListOperators.IS));
+        cancelledCriteria.setPattern("(1)");
+
+        return cancelledCriteria;
+    }
+
+    private static FacilioView getAllServiceOrders() {
+        FacilioModule serviceOrderModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, "Service Order", "ServiceOrders", FacilioModule.ModuleType.BASE_ENTITY, true);
+
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), false));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("all");
+        allView.setDisplayName("All Service Orders");
+        allView.setModuleName(serviceOrderModule.getName());
+        allView.setSortFields(sortFields);
+        allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
+        return allView;
+    }
+
+
+    private static FacilioView getOpenServiceOrders() throws Exception {
+        Criteria criteria = getAllOpenServiceOrders();
+        FacilioModule serviceOrderModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, "Service Order", "ServiceOrders", FacilioModule.ModuleType.BASE_ENTITY, true);
+        FacilioField idField = FieldFactory.getIdField();
+        idField.setModule(serviceOrderModule);
+        FacilioView allView = new FacilioView();
+        allView.setName("open");
+        allView.setDisplayName("Open");
+        allView.setCriteria(criteria);
+        allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
+        return allView;
+    }
+
+    private static FacilioView getCompletedServiceOrders() throws Exception {
+        Criteria criteria = getAllCompletedServiceOrders();
+        FacilioModule serviceOrderModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, "Service Order", "ServiceOrders", FacilioModule.ModuleType.BASE_ENTITY, true);
+        FacilioField idField = FieldFactory.getIdField();
+        idField.setModule(serviceOrderModule);
+        FacilioView allView = new FacilioView();
+        allView.setName("completed");
+        allView.setDisplayName("Completed");
+        allView.setCriteria(criteria);
+        allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
+        return allView;
+    }
+
+    private static FacilioView getClosedServiceOrders() throws Exception {
+        Criteria criteria = getAllClosedServiceOrders();
+        FacilioModule serviceOrderModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, "Service Order", "ServiceOrders", FacilioModule.ModuleType.BASE_ENTITY, true);
+        FacilioField idField = FieldFactory.getIdField();
+        idField.setModule(serviceOrderModule);
+        FacilioView allView = new FacilioView();
+        allView.setName("closed");
+        allView.setDisplayName("Closed");
+        allView.setCriteria(criteria);
+        allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
+        return allView;
+    }
+
+    private static FacilioView getCancelledServiceOrders() throws Exception {
+        Criteria criteria = getAllCancelledServiceOrders();
+        FacilioModule serviceOrderModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, "Service Order", "ServiceOrders", FacilioModule.ModuleType.BASE_ENTITY, true);
+        FacilioField idField = FieldFactory.getIdField();
+        idField.setModule(serviceOrderModule);
+        FacilioView allView = new FacilioView();
+        allView.setName("cancelled");
+        allView.setDisplayName("Cancelled");
+        allView.setCriteria(criteria);
+        allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
+        return allView;
+    }
+
+    public List<Map<String, Object>> getViewsAndGroups() throws Exception {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;
         int order = 1;
 
         ArrayList<FacilioView> all = new ArrayList<FacilioView>();
         all.add(getAllServiceOrders().setOrder(order++));
+        all.add(getOpenServiceOrders().setOrder(order++));
+        all.add(getCompletedServiceOrders().setOrder(order++));
+        all.add(getClosedServiceOrders().setOrder(order++));
+        all.add(getCancelledServiceOrders().setOrder(order++));
+
         groupDetails = new HashMap<>();
         groupDetails.put("name", "allserviceorders");
         groupDetails.put("displayName", "All Service Orders");
+        groupDetails.put("moduleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
         groupDetails.put("views", all);
         groupVsViews.add(groupDetails);
 
@@ -517,28 +651,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
 
-    private static FacilioView getAllServiceOrders() {
-        FacilioModule serviceOrderModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, "Service Order", "ServiceOrders", FacilioModule.ModuleType.BASE_ENTITY, true);
-        FacilioField createdTime = new FacilioField();
-        createdTime.setName("sysCreatedTime");
-        createdTime.setDataType(FieldType.NUMBER);
-        createdTime.setName("SYS_CREATED_TIME");
-        createdTime.setColumnName("SYS_CREATED_TIME");
-        createdTime.setModule(serviceOrderModule);
-        List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
-        FacilioView allView = new FacilioView();
-        allView.setName("all");
-        allView.setDisplayName("All Service Orders");
-//        allView.setSortFields(sortFields);
 
-        List<String> appLinkNames = new ArrayList<>();
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
-        allView.setAppLinkNames(appLinkNames);
-
-        return allView;
-    }
 
     private static void addStateFlow() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -656,7 +769,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         completeWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         completeWork.setIdentifier("completeWork");
         completeWork.setPermissionRequired(true);
-        completeWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        completeWork.setPermission("COMPLETE_SERVICE_ORDER");
         completeWork.setCriteria(inprogressCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,completeWork);
 
@@ -666,29 +779,29 @@ public class ServiceOrderModule extends BaseModuleConfig {
         cancelWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cancelWork.setIdentifier("cancelSO");
         cancelWork.setPermissionRequired(true);
-        cancelWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        cancelWork.setPermission("CANCEL_SERVICE_ORDER");
         cancelWork.setCriteria(inprogressCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cancelWork);
 
-        SystemButtonRuleContext cloneWork = new SystemButtonRuleContext();
-        cloneWork.setName("Clone");
-        cloneWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        cloneWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        cloneWork.setIdentifier("cloneSO");
-        cloneWork.setPermissionRequired(true);
-        cloneWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        cloneWork.setCriteria(inprogressCriteria);
-        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneWork);
-
-        SystemButtonRuleContext associateSP = new SystemButtonRuleContext();
-        associateSP.setName("Associate Service Plan");
-        associateSP.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        associateSP.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        associateSP.setIdentifier("associateSOSP");
-        associateSP.setPermissionRequired(true);
-        associateSP.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        associateSP.setCriteria(inprogressCriteria);
-        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,associateSP);
+//        SystemButtonRuleContext cloneWork = new SystemButtonRuleContext();
+//        cloneWork.setName("Clone");
+//        cloneWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        cloneWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        cloneWork.setIdentifier("cloneSO");
+//        cloneWork.setPermissionRequired(true);
+//        cloneWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//        cloneWork.setCriteria(inprogressCriteria);
+//        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneWork);
+//
+//        SystemButtonRuleContext associateSP = new SystemButtonRuleContext();
+//        associateSP.setName("Associate Service Plan");
+//        associateSP.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        associateSP.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        associateSP.setIdentifier("associateSOSP");
+//        associateSP.setPermissionRequired(true);
+//        associateSP.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//        associateSP.setCriteria(inprogressCriteria);
+//        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,associateSP);
 
         Criteria newCriteria = new Criteria();
         newCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(newState.getId()), PickListOperators.IS));
@@ -699,29 +812,29 @@ public class ServiceOrderModule extends BaseModuleConfig {
         cancelNewWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cancelNewWork.setIdentifier("cancelSO");
         cancelNewWork.setPermissionRequired(true);
-        cancelNewWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        cancelNewWork.setPermission("CANCEL_SERVICE_ORDER");
         cancelNewWork.setCriteria(newCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cancelNewWork);
 
-        SystemButtonRuleContext cloneNewWork = new SystemButtonRuleContext();
-        cloneNewWork.setName("Clone");
-        cloneNewWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        cloneNewWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        cloneNewWork.setIdentifier("cloneSO");
-        cloneNewWork.setPermissionRequired(true);
-        cloneNewWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        cloneNewWork.setCriteria(newCriteria);
-        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneNewWork);
-
-        SystemButtonRuleContext associateSPNew = new SystemButtonRuleContext();
-        associateSPNew.setName("Associate Service Plan");
-        associateSPNew.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        associateSPNew.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        associateSPNew.setIdentifier("associateSOSP");
-        associateSPNew.setPermissionRequired(true);
-        associateSPNew.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        associateSPNew.setCriteria(newCriteria);
-        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,associateSPNew);
+//        SystemButtonRuleContext cloneNewWork = new SystemButtonRuleContext();
+//        cloneNewWork.setName("Clone");
+//        cloneNewWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        cloneNewWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        cloneNewWork.setIdentifier("cloneSO");
+//        cloneNewWork.setPermissionRequired(true);
+//        cloneNewWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//        cloneNewWork.setCriteria(newCriteria);
+//        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneNewWork);
+//
+//        SystemButtonRuleContext associateSPNew = new SystemButtonRuleContext();
+//        associateSPNew.setName("Associate Service Plan");
+//        associateSPNew.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        associateSPNew.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        associateSPNew.setIdentifier("associateSOSP");
+//        associateSPNew.setPermissionRequired(true);
+//        associateSPNew.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//        associateSPNew.setCriteria(newCriteria);
+//        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,associateSPNew);
 
         Criteria scheduledCriteria = new Criteria();
         scheduledCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(scheduledState.getId()), PickListOperators.IS));
@@ -732,29 +845,29 @@ public class ServiceOrderModule extends BaseModuleConfig {
         cancelScheduledWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cancelScheduledWork.setIdentifier("cancelSO");
         cancelScheduledWork.setPermissionRequired(true);
-        cancelScheduledWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        cancelScheduledWork.setPermission("CANCEL_SERVICE_ORDER");
         cancelScheduledWork.setCriteria(scheduledCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cancelScheduledWork);
 
-        SystemButtonRuleContext cloneScheduledWork = new SystemButtonRuleContext();
-        cloneScheduledWork.setName("Clone");
-        cloneScheduledWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        cloneScheduledWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        cloneScheduledWork.setIdentifier("cloneSO");
-        cloneScheduledWork.setPermissionRequired(true);
-        cloneScheduledWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        cloneScheduledWork.setCriteria(scheduledCriteria);
-        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneScheduledWork);
-
-        SystemButtonRuleContext associateSPScheduled = new SystemButtonRuleContext();
-        associateSPScheduled.setName("Associate Service Plan");
-        associateSPScheduled.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        associateSPScheduled.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        associateSPScheduled.setIdentifier("associateSOSP");
-        associateSPScheduled.setPermissionRequired(true);
-        associateSPScheduled.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        associateSPScheduled.setCriteria(scheduledCriteria);
-        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,associateSPScheduled);
+//        SystemButtonRuleContext cloneScheduledWork = new SystemButtonRuleContext();
+//        cloneScheduledWork.setName("Clone");
+//        cloneScheduledWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        cloneScheduledWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        cloneScheduledWork.setIdentifier("cloneSO");
+//        cloneScheduledWork.setPermissionRequired(true);
+//        cloneScheduledWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//        cloneScheduledWork.setCriteria(scheduledCriteria);
+//        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneScheduledWork);
+//
+//        SystemButtonRuleContext associateSPScheduled = new SystemButtonRuleContext();
+//        associateSPScheduled.setName("Associate Service Plan");
+//        associateSPScheduled.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        associateSPScheduled.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        associateSPScheduled.setIdentifier("associateSOSP");
+//        associateSPScheduled.setPermissionRequired(true);
+//        associateSPScheduled.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//        associateSPScheduled.setCriteria(scheduledCriteria);
+//        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,associateSPScheduled);
 
         Criteria completedCriteria = new Criteria();
         completedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(completedState.getId()), PickListOperators.IS));
@@ -765,45 +878,45 @@ public class ServiceOrderModule extends BaseModuleConfig {
         closeCompleteWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         closeCompleteWork.setIdentifier("closeSO");
         closeCompleteWork.setPermissionRequired(true);
-        closeCompleteWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        closeCompleteWork.setPermission("CLOSE_SERVICE_ORDER");
         closeCompleteWork.setCriteria(completedCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,closeCompleteWork);
 
-        SystemButtonRuleContext cloneCompleteWork = new SystemButtonRuleContext();
-        cloneCompleteWork.setName("Clone");
-        cloneCompleteWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        cloneCompleteWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        cloneCompleteWork.setIdentifier("cloneSO");
-        cloneCompleteWork.setPermissionRequired(true);
-        cloneCompleteWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        cloneCompleteWork.setCriteria(completedCriteria);
-        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneCompleteWork);
+//        SystemButtonRuleContext cloneCompleteWork = new SystemButtonRuleContext();
+//        cloneCompleteWork.setName("Clone");
+//        cloneCompleteWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        cloneCompleteWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        cloneCompleteWork.setIdentifier("cloneSO");
+//        cloneCompleteWork.setPermissionRequired(true);
+//        cloneCompleteWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//        cloneCompleteWork.setCriteria(completedCriteria);
+//        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneCompleteWork);
 
         Criteria cancelledCriteria = new Criteria();
         cancelledCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(cancelledState.getId()), PickListOperators.IS));
 
-        SystemButtonRuleContext cloneCancelledWork = new SystemButtonRuleContext();
-        cloneCancelledWork.setName("Clone");
-        cloneCancelledWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        cloneCancelledWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        cloneCancelledWork.setIdentifier("cloneSO");
-        cloneCancelledWork.setPermissionRequired(true);
-        cloneCancelledWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        cloneCancelledWork.setCriteria(cancelledCriteria);
-        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneCancelledWork);
+//        SystemButtonRuleContext cloneCancelledWork = new SystemButtonRuleContext();
+//        cloneCancelledWork.setName("Clone");
+//        cloneCancelledWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        cloneCancelledWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        cloneCancelledWork.setIdentifier("cloneSO");
+//        cloneCancelledWork.setPermissionRequired(true);
+//        cloneCancelledWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//        cloneCancelledWork.setCriteria(cancelledCriteria);
+//        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneCancelledWork);
 
         Criteria closedCriteria = new Criteria();
         closedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"),Collections.singletonList(closedState.getId()), PickListOperators.IS));
 
-        SystemButtonRuleContext cloneClosedWork = new SystemButtonRuleContext();
-        cloneClosedWork.setName("Clone");
-        cloneClosedWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        cloneClosedWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        cloneClosedWork.setIdentifier("cloneSO");
-        cloneClosedWork.setPermissionRequired(true);
-        cloneClosedWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        cloneClosedWork.setCriteria(closedCriteria);
-        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneClosedWork);
+//        SystemButtonRuleContext cloneClosedWork = new SystemButtonRuleContext();
+//        cloneClosedWork.setName("Clone");
+//        cloneClosedWork.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        cloneClosedWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        cloneClosedWork.setIdentifier("cloneSO");
+//        cloneClosedWork.setPermissionRequired(true);
+//        cloneClosedWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//        cloneClosedWork.setCriteria(closedCriteria);
+//        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,cloneClosedWork);
 
         return false;
     }
@@ -908,8 +1021,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField vendorField = moduleBean.getField("vendor", moduleName);
         FacilioField clientField = moduleBean.getField("client", moduleName);
 
-        FacilioField prefStartTimeField = moduleBean.getField("preferredStartTime", moduleName);
-        FacilioField prefEndTimeField = moduleBean.getField("preferredEndTime", moduleName);
+        FacilioField prefStartTimeField = moduleBean.getField("scheduledStartTime", moduleName);
+        FacilioField prefEndTimeField = moduleBean.getField("scheduledEndTime", moduleName);
 
         FacilioField responseDueDurationField = moduleBean.getField("responseDueDate", moduleName);
         FacilioField resolutionDueDurationField = moduleBean.getField("resolutionDueDate", moduleName);
@@ -942,9 +1055,9 @@ public class ServiceOrderModule extends BaseModuleConfig {
         siteWidgetGroup.setDisplayName("Site Information");
 
         addSummaryFieldInWidgetGroup(siteWidgetGroup, siteField, 1 , 1, 1);
-        addSummaryFieldInWidgetGroup(siteWidgetGroup, locationField, 1 , 2, 1);
-        addSummaryFieldInWidgetGroup(siteWidgetGroup, spaceField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(siteWidgetGroup, assetField, 1 , 4, 1);
+//        addSummaryFieldInWidgetGroup(siteWidgetGroup, locationField, 1 , 2, 1);
+        addSummaryFieldInWidgetGroup(siteWidgetGroup, spaceField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(siteWidgetGroup, assetField, 1 , 3, 1);
 
         SummaryWidgetGroup userDetailsWidgetGroup = new SummaryWidgetGroup();
         userDetailsWidgetGroup.setDisplayName("User Details");

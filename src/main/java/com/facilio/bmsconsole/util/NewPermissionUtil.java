@@ -76,6 +76,9 @@ public class NewPermissionUtil {
         moduleTabType.put("DELETE_OWN", 16384);
         moduleTabType.put("UPDATE_WORKORDER_TASK", 32768);
         moduleTabType.put("CONTROL", 65536);
+        moduleTabType.put("CANCEL_SERVICE_ORDER", 131072);
+        moduleTabType.put("COMPLETE_SERVICE_ORDER", 262144);
+        moduleTabType.put("CLOSE_SERVICE_ORDER", 524288);
         //moduleTabType.put("READ_TASK", 131072);
         return moduleTabType;
     }
@@ -380,6 +383,23 @@ public class NewPermissionUtil {
         permissions.add(new PermissionGroup("Delete", deleteGroup));
         permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
         permissionMap.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        List<Permission> readGroups = new ArrayList<>();
+        readGroups.add(new Permission("READ", "All", moduleTabType.get("READ"), null));
+        readGroups.add(new Permission("READ_TEAM", "Team", moduleTabType.get("READ_TEAM"), null));
+        readGroups.add(new Permission("READ_OWN", "Own", moduleTabType.get("READ_OWN"), null));
+        permissions.add(new PermissionGroup("Read", readGroups));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("CONTROL", "Control", moduleTabType.get("CONTROL"), null));
+        permissions.add(new Permission("CANCEL_SERVICE_ORDER", "Cancel ServiceOrder", moduleTabType.get("CANCEL_SERVICE_ORDER"), null));
+        permissions.add(new Permission("CLOSE_SERVICEORDER_TASK", "Close ServiceOrder", moduleTabType.get("CLOSE_SERVICE_ORDER"), null));
+        permissions.add(new Permission("COMPLETE_SERVICEORDER_TASK", "Complete ServiceOrder", moduleTabType.get("COMPLETE_SERVICE_ORDER"), null));
+        permissionMap.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
         permissions = new ArrayList<>();

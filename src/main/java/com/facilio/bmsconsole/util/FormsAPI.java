@@ -1248,6 +1248,22 @@ public class FormsAPI {
 				fields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DURATION, "Response Due Duration", FormField.Required.REQUIRED, 12, 4));
 				fields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.REQUIRED, 13, 4));
 				break;
+			case ContextNames.FieldServiceManagement.SERVICE_ORDER:
+				fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
+				fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+				fields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Client", Required.OPTIONAL,6,3));
+				fields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX,"Category", Required.OPTIONAL,6,3));
+				fields.add(new FormField("priority", FacilioField.FieldDisplayType.SELECTBOX,"Priority", Required.REQUIRED,6,3));
+				fields.add(new FormField("space", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Space", Required.OPTIONAL,6,3));
+				fields.add(new FormField("asset",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Asset", Required.OPTIONAL,7,1));
+				fields.add(new FormField("fieldAgent",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Field Agent", Required.OPTIONAL,7,1));
+				fields.add(new FormField("vendor",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Vendor", Required.OPTIONAL,7,1));
+				fields.add(new FormField("scheduledStartTime",FacilioField.FieldDisplayType.DATETIME,"Scheduled Start Time", Required.OPTIONAL,7,1));
+				fields.add(new FormField("scheduledEndTime",FacilioField.FieldDisplayType.DATETIME,"Scheduled End Time", Required.OPTIONAL,7,1));
+				fields.add(new FormField("autoCreateSa",FacilioField.FieldDisplayType.DECISION_BOX,"AutoCreate SA", Required.OPTIONAL,7,1));
+				fields.add(new FormField("responseDueDuration", FieldDisplayType.DURATION,"Response Due Duration", Required.OPTIONAL,7,1));
+				fields.add(new FormField("resolutionDueDuration", FieldDisplayType.DURATION,"Resoultion Due Duration", Required.OPTIONAL,7,1));
+				break;
 			case ContextNames.SITE:
 				fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
 				fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
