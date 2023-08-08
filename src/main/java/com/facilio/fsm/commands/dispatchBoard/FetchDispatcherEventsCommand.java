@@ -1,4 +1,4 @@
-package com.facilio.fsm.commands;
+package com.facilio.fsm.commands.dispatchBoard;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Criteria;
@@ -12,7 +12,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
@@ -25,7 +24,7 @@ import org.json.simple.JSONObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class fetchDispatcherEventsCommand extends FacilioCommand {
+public class FetchDispatcherEventsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<Long,List<DispatcherEventContext>> events = new HashMap<>();

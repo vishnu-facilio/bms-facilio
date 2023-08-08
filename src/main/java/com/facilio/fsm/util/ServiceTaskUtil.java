@@ -45,6 +45,7 @@ public class ServiceTaskUtil {
                 timeSheetContext.setStartTime(currentTime);
                 timeSheetContext.setServiceAppointment(serviceAppointmentContext);
                 timeSheetContext.setServiceTasks(Collections.singletonList(timeSheetTask));
+                timeSheetContext.setServiceOrder(serviceAppointmentContext.getServiceOrder());
                 timeSheetContext.setFieldAgent(serviceAppointmentContext.getFieldAgent());
 
                 FacilioModule timeSheet = moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);

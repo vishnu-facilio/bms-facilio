@@ -206,7 +206,7 @@ public class ServiceAppointmentUtil {
                                     tasks.add(newTask);
                                 }
                             }
-                            recordProps.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,FieldUtil.getAsMapList(tasks,TimeSheetTaskContext.class));
+                            recordProps.put("serviceTasks",FieldUtil.getAsMapList(tasks,TimeSheetTaskContext.class));
                             V3Util.createRecord(timeSheetModule,recordProps);
                         }
 

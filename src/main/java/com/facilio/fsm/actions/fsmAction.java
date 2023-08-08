@@ -216,6 +216,9 @@ public class fsmAction extends V3Action {
             case FacilioConstants.ServiceAppointment.RESUME:
                 ServiceTaskUtil.moveToInProgress(getRecordId());
                 break;
+//            case FacilioConstants.ServiceAppointment.REOPEN:
+//                ServiceTaskUtil.moveToInProgress(getRecordId());
+//                break;
             case FacilioConstants.ServiceAppointment.COMPLETE:
                 ServiceTaskUtil.moveToCloseState(getRecordId(), ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
                 break;

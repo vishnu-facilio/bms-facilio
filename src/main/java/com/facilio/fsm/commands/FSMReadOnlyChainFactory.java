@@ -3,7 +3,10 @@ package com.facilio.fsm.commands;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.GenerateSearchConditionCommand;
 import com.facilio.chain.FacilioChain;
+import com.facilio.fsm.commands.dispatchBoard.FetchDispatcherEventsCommand;
+import com.facilio.fsm.commands.dispatchBoard.FetchDispatcherResourcesCommand;
 import com.facilio.fsm.commands.serviceAppointment.FetchServiceAppointmentListCommand;
+import com.facilio.fsm.commands.serviceAppointment.FetchViewCriteriaCommand;
 
 public class FSMReadOnlyChainFactory {
     private static FacilioChain getDefaultChain() {
@@ -14,13 +17,13 @@ public class FSMReadOnlyChainFactory {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GenerateCriteriaFromFilterCommand());
         c.addCommand(new GenerateSearchConditionCommand());
-        c.addCommand(new fetchDispatcherResourcesCommand());
+        c.addCommand(new FetchDispatcherResourcesCommand());
         return c;
     }
 
     public static FacilioChain fetchEventsListChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new fetchDispatcherEventsCommand());
+        c.addCommand(new FetchDispatcherEventsCommand());
         return c;
     }
 

@@ -3,24 +3,12 @@ package com.facilio.fsm.config;
 
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
-import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.LoadWorkorderActualsExtraFieldsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.SetWorkOrderToolsCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory.SetWorkOrderPlannedItemsCommandV3;
-import com.facilio.bmsconsoleV3.context.V3WorkorderToolsContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.faults.newreadingalarm.LoadSupplementsForFaultsCommand;
 import com.facilio.fsm.commands.*;
-import com.facilio.fsm.commands.actuals.SetServiceOrderItemsCommand;
-import com.facilio.fsm.commands.actuals.SetServiceOrderServiceCommand;
-import com.facilio.fsm.commands.actuals.SetServiceOrderToolsCommand;
-import com.facilio.fsm.commands.people.FetchLocationHistorySupplements;
-import com.facilio.fsm.commands.people.FetchPeopleSkillLevelSupplementsCommand;
-import com.facilio.fsm.commands.people.FetchPeopleTerritorySupplementsCommand;
-import com.facilio.fsm.commands.people.updatePeopleLocationHistoryCommand;
+import com.facilio.fsm.commands.actuals.*;
+import com.facilio.fsm.commands.people.*;
 import com.facilio.fsm.commands.plans.*;
 import com.facilio.fsm.commands.serviceAppointment.FetchServiceAppointmentSupplementsCommand;
 import com.facilio.fsm.commands.serviceOrders.LoadSupplementsForSOCommand;
@@ -28,6 +16,7 @@ import com.facilio.fsm.commands.serviceOrders.SetServiceTaskCommandV3;
 import com.facilio.fsm.commands.serviceTasks.LoadTaskPlansCommandV3;
 import com.facilio.fsm.commands.timeOff.FetchTimeOffSupplementsCommand;
 import com.facilio.fsm.commands.timeSheet.FetchTimeSheetSupplementsCommand;
+import com.facilio.fsm.commands.trip.FetchTripSupplementsCommand;
 import com.facilio.fsm.context.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -217,7 +206,7 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getLocationHistory(){
         return () -> new V3Config(V3LocationHistoryContext.class,null)
                 .create()
-                .afterSave(new updatePeopleLocationHistoryCommand())
+                .afterSave(new UpdatePeopleLocationHistoryCommand())
                 .list()
                 .beforeFetch(new FetchLocationHistorySupplements())
                 .build();
@@ -296,7 +285,9 @@ public class FieldServiceManagementV3Config {
                 .afterSave(new ConstructUpdateCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.Trip.TRIP_ACTIVITY))
                 .list()
+                .beforeFetch(new FetchTripSupplementsCommand())
                 .summary()
+                .beforeFetch(new FetchTripSupplementsCommand())
                 .delete()
                 .build();
     }

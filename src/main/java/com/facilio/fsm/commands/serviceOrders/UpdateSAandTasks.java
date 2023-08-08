@@ -1,4 +1,4 @@
-package com.facilio.fsm.commands;
+package com.facilio.fsm.commands.serviceOrders;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;

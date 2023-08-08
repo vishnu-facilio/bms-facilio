@@ -1,4 +1,4 @@
-package com.facilio.fsm.commands;
+package com.facilio.fsm.commands.dispatchBoard;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
@@ -7,10 +7,8 @@ import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.bmsconsoleV3.context.shift.ShiftSlot;
 import com.facilio.bmsconsoleV3.util.DispatcherUtil;
 import com.facilio.bmsconsoleV3.util.ShiftAPI;
-import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -24,10 +22,8 @@ import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
-import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -35,7 +31,7 @@ import java.util.*;
 import static com.facilio.bmsconsoleV3.util.ShiftAPI.DAY_IN_MILLIS;
 import static com.facilio.bmsconsoleV3.util.ShiftAPI.UNLIMITED_PERIOD;
 
-public class fetchDispatcherResourcesCommand extends FacilioCommand {
+public class FetchDispatcherResourcesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long startTime = (Long) context.get(FacilioConstants.ContextNames.START_TIME);

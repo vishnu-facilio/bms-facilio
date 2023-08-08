@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class updatePeopleLocationHistoryCommand extends FacilioCommand {
+public class UpdatePeopleLocationHistoryCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 

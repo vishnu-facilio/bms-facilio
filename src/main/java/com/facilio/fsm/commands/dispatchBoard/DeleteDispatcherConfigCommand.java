@@ -1,4 +1,4 @@
-package com.facilio.fsm.commands;
+package com.facilio.fsm.commands.dispatchBoard;
 
 import com.facilio.bmsconsoleV3.util.DispatcherUtil;
 import com.facilio.command.FacilioCommand;

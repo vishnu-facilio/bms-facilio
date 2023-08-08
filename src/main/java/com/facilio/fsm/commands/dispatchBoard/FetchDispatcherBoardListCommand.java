@@ -1,4 +1,4 @@
-package com.facilio.fsm.commands;
+package com.facilio.fsm.commands.dispatchBoard;
 
 
 import com.facilio.fsm.context.DispatcherSettingsContext;
@@ -9,7 +9,7 @@ import org.apache.commons.chain.Context;
 
 import java.util.List;
 
-public class fetchDispatcherBoardListCommand extends FacilioCommand {
+public class FetchDispatcherBoardListCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<DispatcherSettingsContext>dispatcherSettingsContextList = DispatcherUtil.getDispatcherList();

@@ -1,15 +1,9 @@
 package com.facilio.fsm.commands;
 
 import com.facilio.activity.AddActivitiesCommand;
-import com.facilio.bmsconsole.commands.LoadWorkorderToolLookupCommand;
-import com.facilio.bmsconsole.commands.UpdateTransactionEventTypeCommand;
-import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.ItemTransactionRemainingQuantityRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.PurchasedItemsQuantityRollUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.AddOrUpdateWorkorderCostCommandV3;
-import com.facilio.bmsconsoleV3.commands.workOrderInventory.UpdateWorkorderTotalCostCommandV3;
 import com.facilio.chain.FacilioChain;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.commands.actuals.UpdateServiceInvReservationCommand;
 import com.facilio.fsm.commands.plans.SetServiceOrderPlannedItemsCommand;
 import com.facilio.fsm.commands.plans.ValidateServiceOrderPlannedItemsCommand;
@@ -106,14 +100,14 @@ public class FsmTransactionChainFactoryV3 {
 
     public static FacilioChain getServiceAppointmentBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new rollupServiceAppointmentFieldsCommand());
+        c.addCommand(new RollUpServiceAppointmentFieldsCommand());
         c.addCommand(new ValidateSAMismatch());
         return c;
     }
 
     public static FacilioChain getServiceAppointmentAfterUpdateChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new rollUpServiceTaskCommand());
+        c.addCommand(new RollUpServiceTaskCommand());
         c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         return c;
     }
@@ -122,14 +116,14 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetDefaultAppointmentTypeCommand());
         c.addCommand(new SetServiceAppointmentStatusCommand());
-        c.addCommand(new rollupServiceAppointmentFieldsCommand());
+        c.addCommand(new RollUpServiceAppointmentFieldsCommand());
         c.addCommand(new ValidateSAMismatch());
         return c;
     }
 
     public static FacilioChain getServiceAppointmentAfterCreateChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new rollUpServiceTaskCommand());
+        c.addCommand(new RollUpServiceTaskCommand());
         c.addCommand(new ScheduleServiceOrderCommand());
         c.addCommand(new ConstructAddCustomActivityCommandV3());
         return c;

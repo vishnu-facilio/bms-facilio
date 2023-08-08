@@ -47,8 +47,9 @@ import com.facilio.delegate.command.GetAllMyDelegationCommand;
 import com.facilio.emailtemplate.command.GetAllEmailTemplatesCommand;
 import com.facilio.emailtemplate.command.GetEmailStructureCommand;
 import com.facilio.energystar.command.*;
-import com.facilio.fsm.commands.*;
 import com.facilio.fields.commands.FilterFieldsByPermissionCommand;
+import com.facilio.fsm.commands.dispatchBoard.FetchDispatcherBoardListCommand;
+import com.facilio.fsm.commands.dispatchBoard.FetchDispatcherConfigCommand;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.pdftemplate.command.GetPDFTemplatesListCommand;
 import com.facilio.pdftemplate.command.GetPDFTemplateCommand;
@@ -3549,13 +3550,13 @@ public class ReadOnlyChainFactory {
 	}
 	public static FacilioChain getDispatcherConfig(){
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new fetchDispatcherConfigCommand());
+		c.addCommand(new FetchDispatcherConfigCommand());
 		return c;
 	}
 
 	public static FacilioChain getDispatcherBoardList(){
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new fetchDispatcherBoardListCommand());
+		c.addCommand(new FetchDispatcherBoardListCommand());
 		return c;
 	}
 
