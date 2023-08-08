@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.System.currentTimeMillis;
+
 @Log4j
 public class AlarmWorkFlowHandler extends BaseHandler {
 
@@ -29,6 +31,7 @@ public class AlarmWorkFlowHandler extends BaseHandler {
 
         try {
             LOGGER.info("Current Thread in AlarmWorkFlowHandler---->" + Thread.currentThread());
+            Long startTime = currentTimeMillis();
             Map<String, Object> messageMap = message.getContent();
             AccountUtil.setCurrentAccount(message.getOrgId());
             FacilioChain chain = TransactionChainFactory.getV2UpdateAlarmChain();
@@ -44,6 +47,7 @@ public class AlarmWorkFlowHandler extends BaseHandler {
                 List<String> eventList = (List) messageMap.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
                 eventList.stream().forEach(m -> CommonCommandUtil.addEventType(EventType.valueOf(m), context));
             }
+            LOGGER.info(String.format("Time taken to execute alarm workflow %d", currentTimeMillis() - startTime));
             chain.execute();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -68,7 +72,7 @@ public class AlarmWorkFlowHandler extends BaseHandler {
             String moduleName = (String) oldChangeMap.getKey();
             FacilioModule module = ChainUtil.getModule(moduleName);
             V3Config v3Config = ChainUtil.getV3Config(module.getName());
-            oldChangeMap.setValue(FieldUtil.getAsBeanListFromMapList((List<Map<String, Object>>) oldChangeMap.getValue(),v3Config.getBeanClass()));
+            oldChangeMap.setValue(FieldUtil.getAsBeanListFromMapList((List<Map<String, Object>>) oldChangeMap.getValue(), v3Config.getBeanClass()));
         }
         context.put(FacilioConstants.ContextNames.RECORD_MAP, oldRecordMap);
     }

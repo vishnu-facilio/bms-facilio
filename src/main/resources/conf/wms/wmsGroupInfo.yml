@@ -66,7 +66,7 @@ groups:
   - group: alarm-wf
     sendToAll: false
     topics:
-      - { topic: alarm-workflow/#, handler: com.facilio.wmsv2.handler.AlarmWorkFlowHandler, isLiveMessage: false }
+      - { topic: alarm-workflow/#, handler: com.facilio.wmsv2.handler.AlarmWorkFlowHandler, recordTimeout: 15,isLiveMessage: false }
 
   - group: backgroundactivity
     sendToAll: false
