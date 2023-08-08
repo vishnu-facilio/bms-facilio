@@ -4,8 +4,10 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.util.WeatherUtil;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -21,8 +23,11 @@ import com.facilio.relation.util.RelationshipDataUtil;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.taskengine.job.JobContext;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.ServiceHttpUtils;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.weather.bean.WeatherBean;
 import com.facilio.weather.service.WeatherService;
 import com.facilio.weather.service.WeatherServiceType;
@@ -72,6 +77,7 @@ public class WeatherAPI {
 				nextTime = nextTime.plusMinutes(interval);
 			}
 
+
 			FacilioTimer.scheduleCalendarJob(jobId, jobName, System.currentTimeMillis(), scheduleInfo, "facilio");
 			LOGGER.info("Weather Service job "+jobName+" for jobid : " +jobId+" added successfully");
 		} catch (Exception e) {
@@ -96,6 +102,20 @@ public class WeatherAPI {
 		return selectBuilder.get();
 	}
 
+	public static List<V3WeatherStationContext> getStations(String stationIds) throws Exception {
+		ModuleBean modBean = Constants.getModBean();
+		FacilioModule module = modBean.getModule(FacilioConstants.ModuleNames.WEATHER_STATION);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ModuleNames.WEATHER_STATION);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		SelectRecordsBuilder<V3WeatherStationContext> selectBuilder = new SelectRecordsBuilder<V3WeatherStationContext>()
+				.select(fields)
+				.module(module)
+				.beanClass(V3WeatherStationContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(stationIds, module));
+		return selectBuilder.get();
+	}
+
 	public static JSONObject getStationCode(LocationContext location, String siteName) throws Exception {
 		if (location == null) {
 			return null;
@@ -106,11 +126,24 @@ public class WeatherAPI {
 			return null;
 		}
 		LOGGER.log(Level.INFO, " site: " + siteName + " lat: " + lat + " long: " + lng);
-		return getStationCode(lat, lng);
+
+		return getStationCode(lat, lng, WeatherServiceType.getWeatherService(FacilioProperties.getConfig("weather.service"), ""));
 	}
 
-	public static JSONObject getStationCode(double lat, double lng) throws Exception {
-		WeatherService weatherService = WeatherServiceType.getCurrentService();
+	public static JSONObject getStationCode(double lat, double lng, long serviceId) throws Exception {
+		V3WeatherServiceContext serviceContext = WeatherAPI.getWeatherServiceById(serviceId);
+		if(serviceId == 0){ //TODO - Seeni [weather]: backward compatability code. remove this after a week
+			serviceContext = WeatherAPI.getWeatherServiceByDisplayName("Facilio Weather");
+		}
+		if(serviceContext == null) {
+			throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, "Weather service not found for given service Id - "+serviceId );
+		}
+		WeatherService weatherService = WeatherServiceType.getWeatherService(serviceContext.getName().toString(), serviceContext.getApiKey());
+		return getStationCode(lat, lng, weatherService);
+
+	}
+
+	public static JSONObject getStationCode(double lat, double lng, WeatherService weatherService) throws Exception {
 		return weatherService.getStationCode(lat, lng);
 	}
 
@@ -119,7 +152,7 @@ public class WeatherAPI {
 		if (StringUtils.isEmpty(stationCode)) {
 			return null;
 		}
-		return service.getWeatherData(weatherStation, time, true);
+		return service.getWeatherData(weatherStation, time, true, WeatherAPI.isStartOfTheDay());
 	}
 
 	public static String doGet(String url) throws Exception {
@@ -140,6 +173,27 @@ public class WeatherAPI {
 				.select(fields)
 				.module(module)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"),name, StringOperators.IS))
+				.beanClass(V3WeatherServiceContext.class);
+		List<V3WeatherServiceContext> result = selectBuilder.get();
+		if(CollectionUtils.isEmpty(result)) {
+			return null;
+		}
+		return result.get(0);
+	}
+
+	public static V3WeatherServiceContext getWeatherServiceById(long id) throws Exception {
+		return V3RecordAPI.getRecord(FacilioConstants.ModuleNames.WEATHER_SERVICE, id);
+	}
+
+	public static V3WeatherServiceContext getWeatherServiceByDisplayName(String displayName) throws Exception {
+		ModuleBean modBean = Constants.getModBean();
+		FacilioModule module = modBean.getModule(FacilioConstants.ModuleNames.WEATHER_SERVICE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ModuleNames.WEATHER_SERVICE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<V3WeatherServiceContext> selectBuilder = new SelectRecordsBuilder<V3WeatherServiceContext>()
+				.select(fields)
+				.module(module)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("displayName"),displayName, StringOperators.IS))
 				.beanClass(V3WeatherServiceContext.class);
 		List<V3WeatherServiceContext> result = selectBuilder.get();
 		if(CollectionUtils.isEmpty(result)) {
@@ -238,4 +292,45 @@ public class WeatherAPI {
 		return false;
 	}
 
+	public static Map<Long, List<Map<String, Object>>> getWeatherReadings() throws Exception {
+		return WeatherUtil.getReadings(FacilioConstants.ContextNames.NEW_WEATHER_READING);
+	}
+
+	public static boolean isStartOfTheDay() {
+		return DateTimeUtil.getCurrenTime(true) == DateTimeUtil.getDayStartTime(true);
+	}
+
+	public static Long getTimeinMillis(Object time) {
+		return time != null ? (Long) time * 1000 : null;
+	}
+
+	public final static Long ROUND_OFF_MIN = (long) (5 * 60 * 1000); //5 mins
+	public static Long roundOfTime(Object time) {
+		long ttime = (long) time;
+		ttime /= ROUND_OFF_MIN;
+		ttime *= ROUND_OFF_MIN;
+		return ttime;
+	}
+
+	public static JSONObject formattedResponse(List<Map<String, Object>> weatherData) {
+		Map<String, Object> currentMap = null;
+		List<Map<String, Object>> hourlyList = new ArrayList<>();
+		for(Map map : weatherData) {
+			Long ttime = (Long) map.get("ttime");
+			if(ttime.equals(map.get("predictedTime"))) {
+				currentMap = map;
+				currentMap.put("time", ttime/1000);
+			} else {
+				map.put("time", ttime/1000);
+				hourlyList.add(map);
+			}
+		}
+
+		JSONObject hourlyObj = new JSONObject();
+		hourlyObj.put("data", hourlyList);
+		JSONObject formattedResponse = new JSONObject();
+		formattedResponse.put("currently", currentMap);
+		formattedResponse.put("forecast", hourlyObj);
+		return formattedResponse;
+	}
 }

@@ -273,6 +273,10 @@ enums:
 
   - name: MailStatus
     enumClassName: com.facilio.mailtracking.context.MailEnums$MailStatus
+
+  - name: ServiceType
+    enumClassName: com.facilio.weather.util.ServiceType
+
   - name: ReservationSource
     enumClassName: com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext$ReservationSource
 

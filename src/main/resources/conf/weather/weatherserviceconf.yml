@@ -4,3 +4,9 @@ weatherservices:
 
   - name: openweather
     class: com.facilio.weather.service.OpenWeatherService
+
+  - name: weatherapi
+    class: com.facilio.weather.service.WeatherApiService
+
+  - name: weatherbit
+    class: com.facilio.weather.service.WeatherBitService

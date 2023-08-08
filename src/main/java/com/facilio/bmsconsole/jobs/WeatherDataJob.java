@@ -1,14 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.weather.util.WeatherAPI;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -16,8 +8,14 @@ import com.facilio.bmsconsole.util.WeatherUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
-
+import com.facilio.weather.util.WeatherAPI;
 import lombok.extern.log4j.Log4j;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Log4j
 public class WeatherDataJob extends FacilioJob {
@@ -60,7 +58,7 @@ public class WeatherDataJob extends FacilioJob {
 				}
 				long siteId=site.getId();
 				Map<String,Object> currentWeather= (JSONObject)weatherData.get("currently");
-				ReadingContext reading=WeatherUtil.getHourlyReadingOld(siteId,FacilioConstants.ContextNames.WEATHER_READING,currentWeather);
+				ReadingContext reading=WeatherUtil.getWeatherReading(siteId,FacilioConstants.ContextNames.WEATHER_READING,currentWeather);
 				if(reading!=null) {
 					
 					WeatherUtil.populateMap(siteId, reading,siteCurrentReadings);
@@ -72,7 +70,7 @@ public class WeatherDataJob extends FacilioJob {
 					LOGGER.debug("The psychometric data: "+psychrometricReading);
 				}
 				//forecast..
-				List<ReadingContext> hourlyForecast= WeatherUtil.getHourlyForecastReadings(siteId,FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING,weatherData,true);
+				List<ReadingContext> hourlyForecast= WeatherUtil.getForecastReadings(siteId,FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING,weatherData,true);
 				List<ReadingContext> dailyForecast= WeatherUtil.getDailyForecastReadings(siteId,FacilioConstants.ContextNames.WEATHER_DAILY_FORECAST_READING,weatherData,true);
 				if(!hourlyForecast.isEmpty()) {
 					hourlyReadings.addAll(hourlyForecast);

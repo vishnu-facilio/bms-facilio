@@ -14,6 +14,9 @@ public class V3WeatherStationContext extends V3Context {
 	private long serviceId;
 	private String name;
 	private String description;
+	private double cddBaseTemperature = -1;
+	private double hddBaseTemperature = -1;
+	private double wddBaseTemperature = -1;
 	private V3WeatherServiceContext service;
 
 }

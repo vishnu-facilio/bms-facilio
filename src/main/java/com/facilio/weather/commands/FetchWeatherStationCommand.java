@@ -10,11 +10,13 @@ public class FetchWeatherStationCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Double lat = (Double) context.get("lat");
         Double lng = (Double) context.get("lng");
+        long serviceId = (long) context.get("serviceId");
 
         if(!WeatherAPI.allow()) {
             return getRandomStationCode(lat, lng, context);
         }
-        JSONObject stationData = WeatherAPI.getStationCode(lat, lng);
+
+        JSONObject stationData = WeatherAPI.getStationCode(lat, lng, serviceId);
         context.put("stationData", stationData);
         return false;
     }

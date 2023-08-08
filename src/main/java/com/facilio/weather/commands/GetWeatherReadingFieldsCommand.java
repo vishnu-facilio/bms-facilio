@@ -24,7 +24,7 @@ public class GetWeatherReadingFieldsCommand extends FacilioCommand {
                 "icon",
                 "summary",
                 //in openweather weather api, these values aren't calculated
-                "dewPoint",
+//                "dewPoint",
                 "windBearing",
                 "precipitationProbability",
                 "precipitationIntensityError",
@@ -35,6 +35,10 @@ public class GetWeatherReadingFieldsCommand extends FacilioCommand {
         fields = fields.stream()
                 .filter(row ->  !unwantedFields.contains(row.getName()))
                 .collect(Collectors.toList());
+
+        List<FacilioField> degreeDayFields = ReadingsAPI.filterSystemFields(modBean.getAllFields(FacilioConstants.ContextNames.DEGREE_DAY_READING));
+        fields.addAll(degreeDayFields);
+
         context.put("fields", fields);
         return false;
     }

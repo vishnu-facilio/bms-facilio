@@ -26,7 +26,7 @@ public class WeatherBeanImpl implements WeatherBean {
             Map<Long, List<ReadingContext>> stationCurrentReadings = new HashMap<>();
             parentId = Long.parseLong((String) content.get("stationId"));
             Map<String, Object> currentWeather = (Map<String, Object>) weatherData.get("currently");
-            ReadingContext reading = WeatherUtil.getHourlyReadingOld(parentId, FacilioConstants.ContextNames.NEW_WEATHER_READING, currentWeather);
+            ReadingContext reading = WeatherUtil.getWeatherReading(parentId, FacilioConstants.ContextNames.NEW_WEATHER_READING, currentWeather);
             if (reading != null) {
                 WeatherUtil.populateMap(parentId, reading, stationCurrentReadings);
                 ReadingContext psychrometricReading = WeatherUtil.getPsychrometricReading(parentId, currentWeather);
@@ -36,9 +36,10 @@ public class WeatherBeanImpl implements WeatherBean {
                 LOGGER.debug("The psychometric data: " + psychrometricReading);
             }
             //forecast..
-            List<ReadingContext> hourlyForecast = WeatherUtil.getHourlyForecastReadings(parentId, FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING, weatherData, true);
-            if (!hourlyForecast.isEmpty()) {
-                WeatherUtil.populateMap(parentId, hourlyForecast, stationCurrentReadings);
+            List<ReadingContext> forecastReadings = WeatherUtil.getForecastReadings(parentId,
+                    FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING, weatherData, false);
+            if (!forecastReadings.isEmpty()) {
+                WeatherUtil.populateMap(parentId, forecastReadings, stationCurrentReadings);
 
             }
             WeatherUtil.addDewPoint(parentId, stationCurrentReadings);

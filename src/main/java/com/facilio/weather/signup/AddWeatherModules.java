@@ -49,6 +49,7 @@ public class AddWeatherModules extends SignUpData {
         List< FacilioModule> subModules = new ArrayList<>();
         subModules.add(constructWeatherReadingModule());
         subModules.add(constructPsychrometricModule());
+        subModules.add(constructDegreeDayModule());
 
         FacilioChain addSubModuleChain = TransactionChainFactory.addSystemModuleChain();
         addSubModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, subModules);
@@ -64,6 +65,8 @@ public class AddWeatherModules extends SignUpData {
         addDefaultWeather.put("name", "facilioweather");
         addDefaultWeather.put("displayName", "Facilio Weather");
         addDefaultWeather.put("dataInterval", 30);
+        addDefaultWeather.put("apiKey", "default");
+        addDefaultWeather.put("status", true);
 
         V3Util.createRecord(module, addDefaultWeather);
     }
@@ -72,9 +75,16 @@ public class AddWeatherModules extends SignUpData {
         FacilioModule module = new FacilioModule("weatherservice", "Weather Service", "Weather_Service", FacilioModule.ModuleType.BASE_ENTITY);
 
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING, true));
-        fields.add(FieldFactory.getDefaultField("displayName", "Display Name", "DISPLAY_NAME", FieldType.STRING));
+        StringSystemEnumField nameField =  FieldFactory.getDefaultField("name", "Name", "NAME",
+                FieldType.STRING_SYSTEM_ENUM);
+        nameField.setEnumName("ServiceType");
+        fields.add(nameField);
+
+        fields.add(FieldFactory.getDefaultField("displayName", "Display Name", "DISPLAY_NAME", FieldType.STRING, true));
         fields.add(FieldFactory.getDefaultField("dataInterval", "Data Interval", "DATA_INTERVAL", FieldType.NUMBER));
+
+        fields.add(FieldFactory.getDefaultField("apiKey", "API Key", "API_KEY", FieldType.STRING));
+        fields.add(FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.BOOLEAN));
 
         module.setFields(fields);
         return module;
@@ -90,6 +100,21 @@ public class AddWeatherModules extends SignUpData {
         fields.add(FieldFactory.getDefaultField("lat", "Latitude", "LAT", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("lng", "Longtitude", "LNG", FieldType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("serviceId", "Service ID", "SERVICE_ID", FieldType.NUMBER));
+
+        NumberField cddTempField = FieldFactory.getDefaultField("cddBaseTemperature", "Cooling Degree Days Base Temperature", "CDD_BASE_TEMPERATURE", FieldType.DECIMAL);
+        cddTempField.setMetric(Metric.TEMPERATURE.getMetricId());
+        cddTempField.setUnitId(Unit.CELSIUS.getUnitId());
+        fields.add(cddTempField);
+
+        NumberField hddTempField = FieldFactory.getDefaultField("hddBaseTemperature", "Heading Degree Days Base Temperature", "HDD_BASE_TEMPERATURE", FieldType.DECIMAL);
+        hddTempField.setMetric(Metric.TEMPERATURE.getMetricId());
+        hddTempField.setUnitId(Unit.CELSIUS.getUnitId());
+        fields.add(hddTempField);
+
+        NumberField wddTempField = FieldFactory.getDefaultField("wddBaseTemperature", "Wet Degree Days Base Temperature", "WDD_BASE_TEMPERATURE", FieldType.DECIMAL);
+        wddTempField.setMetric(Metric.TEMPERATURE.getMetricId());
+        wddTempField.setUnitId(Unit.CELSIUS.getUnitId());
+        fields.add(wddTempField);
 
         LookupField service = FieldFactory.getDefaultField("service", "Service", "SERVICE", FieldType.LOOKUP);
         service.setLookupModule(serviceModule);
@@ -135,10 +160,35 @@ public class AddWeatherModules extends SignUpData {
         dewPointField.setUnitId(Unit.CELSIUS.getUnitId());
         fields.add(dewPointField);
 
-        NumberField pressureField = FieldFactory.getDefaultField("pressure", "Pressure", "Pressure", FieldType.DECIMAL);
+        NumberField pressureField = FieldFactory.getDefaultField("pressure", "Pressure", "PRESSURE", FieldType.DECIMAL);
         pressureField.setMetric(Metric.PRESSURE.getMetricId());
         pressureField.setUnitId(Unit.HECTOPASCAL.getUnitId());
         fields.add(pressureField);
+
+        NumberField coField = FieldFactory.getDefaultField("co", "Carbon monoxide", "CO", FieldType.DECIMAL);
+        coField.setMetric(Metric.CONCENTRATION.getMetricId());
+        coField.setUnitId(Unit.MICROGRAMPERCUBICMETER.getUnitId());
+        fields.add(coField);
+
+        NumberField noField = FieldFactory.getDefaultField("no", "Nitrogen monoxide", "NO", FieldType.DECIMAL);
+        noField.setMetric(Metric.CONCENTRATION.getMetricId());
+        noField.setUnitId(Unit.MICROGRAMPERCUBICMETER.getUnitId());
+        fields.add(noField);
+
+        NumberField nh3Field = FieldFactory.getDefaultField("nh3", "Ammonia", "NH3", FieldType.DECIMAL);
+        nh3Field.setMetric(Metric.CONCENTRATION.getMetricId());
+        nh3Field.setUnitId(Unit.MICROGRAMPERCUBICMETER.getUnitId());
+        fields.add(nh3Field);
+
+        NumberField pm2_5Field = FieldFactory.getDefaultField("pm2_5", "Particulate 2.5", "PM2_5", FieldType.DECIMAL);
+        pm2_5Field.setMetric(Metric.CONCENTRATION.getMetricId());
+        pm2_5Field.setUnitId(Unit.MICROGRAMPERCUBICMETER.getUnitId());
+        fields.add(pm2_5Field);
+
+        NumberField pm10Field = FieldFactory.getDefaultField("pm10", "Particulate 10", "PM10", FieldType.DECIMAL);
+        pm10Field.setMetric(Metric.CONCENTRATION.getMetricId());
+        pm10Field.setUnitId(Unit.MICROGRAMPERCUBICMETER.getUnitId());
+        fields.add(pm10Field);
 
         NumberField humidityField = FieldFactory.getDefaultField("humidity", "Humidity", "HUMIDITY", FieldType.DECIMAL);
         humidityField.setMetric(Metric.PERCENTAGE.getMetricId());
@@ -249,6 +299,32 @@ public class AddWeatherModules extends SignUpData {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.RELATION, siteVsStationRelation);
         chain.execute();
+    }
+
+    private FacilioModule constructDegreeDayModule() {
+        FacilioModule module = new FacilioModule("degreeDayReading", "Degree Day Reading", "Degree_Day_Reading",
+                FacilioModule.ModuleType.SYSTEM_SCHEDULED_FORMULA);
+        module.setDataInterval(24 * 60);
+        List<FacilioField> fields = new ArrayList<>();
+
+        NumberField cddTempField = FieldFactory.getDefaultField("cdd", "Cooling Degree Days", "CDD", FieldType.DECIMAL);
+        cddTempField.setMetric(Metric.TEMPERATURE.getMetricId());
+        cddTempField.setUnitId(Unit.CELSIUS.getUnitId());
+        fields.add(cddTempField);
+
+        NumberField hddTempField = FieldFactory.getDefaultField("hdd", "Heading Degree Days", "HDD", FieldType.DECIMAL);
+        hddTempField.setMetric(Metric.TEMPERATURE.getMetricId());
+        hddTempField.setUnitId(Unit.CELSIUS.getUnitId());
+        fields.add(hddTempField);
+
+        NumberField wddTempField = FieldFactory.getDefaultField("wdd", "Wet Degree Days", "WDD", FieldType.DECIMAL);
+        wddTempField.setMetric(Metric.TEMPERATURE.getMetricId());
+        wddTempField.setUnitId(Unit.CELSIUS.getUnitId());
+        fields.add(wddTempField);
+
+        fields.addAll(FieldFactory.getDefaultReadingFields(module));
+        module.setFields(fields);
+        return module;
     }
     
     private FacilioModule constructCDD() {

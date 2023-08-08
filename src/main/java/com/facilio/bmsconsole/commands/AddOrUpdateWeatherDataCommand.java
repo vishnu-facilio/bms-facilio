@@ -43,7 +43,7 @@ public class AddOrUpdateWeatherDataCommand extends FacilioCommand {
 				List<Long> sites = entry.getValue();
 				for(long siteId:sites) {
 					Map<String,Object> currentWeather= (JSONObject)weatherData.get("currently");
-					ReadingContext reading=WeatherUtil.getHourlyReadingOld(siteId,FacilioConstants.ContextNames.WEATHER_READING,currentWeather);
+					ReadingContext reading=WeatherUtil.getWeatherReading(siteId,FacilioConstants.ContextNames.WEATHER_READING,currentWeather);
 					if(reading!=null) {
 
 						WeatherUtil.populateMap(siteId, reading,siteCurrentReadings);
@@ -55,7 +55,7 @@ public class AddOrUpdateWeatherDataCommand extends FacilioCommand {
 						LOGGER.log(Level.INFO,"The psychometric data: "+psychrometricReading);
 					}
 					//forecast..
-					List<ReadingContext> hourlyForecast= WeatherUtil.getHourlyForecastReadings(siteId,FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING,weatherData,true);
+					List<ReadingContext> hourlyForecast= WeatherUtil.getForecastReadings(siteId,FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING,weatherData,true);
 					List<ReadingContext> dailyForecast= WeatherUtil.getDailyForecastReadings(siteId,FacilioConstants.ContextNames.WEATHER_DAILY_FORECAST_READING,weatherData,true);
 					if(!hourlyForecast.isEmpty()) {
 						hourlyReadings.addAll(hourlyForecast);

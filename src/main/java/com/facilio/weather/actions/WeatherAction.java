@@ -20,6 +20,7 @@ public class WeatherAction extends V3Action {
     private static final long serialVersionUID = 1L;
     private Double lat;
     private Double lng;
+    private long serviceId;
     private long stationId;
     private long siteId;
     private long buildingId;
@@ -31,6 +32,7 @@ public class WeatherAction extends V3Action {
         FacilioContext context = chain.getContext();
         context.put("lat", lat);
         context.put("lng", lng);
+        context.put("serviceId", serviceId);
         chain.execute();
         setData((JSONObject) context.get("stationData"));
         return V3Action.SUCCESS;

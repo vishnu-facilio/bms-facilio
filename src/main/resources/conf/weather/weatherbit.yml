@@ -1,0 +1,156 @@
+version: 1.0
+date: Jul 28, 2023
+url: https://www.weatherbit.io/api/codes
+
+weatherConditionInfo:
+  - code: 200
+    description: Thunderstorm with light rain
+    facilio-icon: thunderstorm
+
+  - code: 201
+    description: Thunderstorm with rain
+    facilio-icon: thunderstorm
+
+  - code: 202
+    description: Thunderstorm with heavy rain
+    facilio-icon: thunderstorm
+
+  - code: 230
+    description: Thunderstorm with light drizzle
+    facilio-icon: thunderstorm
+
+  - code: 231
+    description: Thunderstorm with drizzle
+    facilio-icon: thunderstorm
+
+  - code: 232
+    description: Thunderstorm with heavy drizzle
+    facilio-icon: thunderstorm
+
+  - code: 233
+    description: Thunderstorm with Hail
+    facilio-icon:
+
+  - code: 300
+    description: Light Drizzle
+    facilio-icon: thunderstorm
+
+  - code: 301
+    description: Drizzle
+    facilio-icon: rain
+
+  - code: 302
+    description: Heavy Drizzle
+    facilio-icon: rain
+
+  - code: 500
+    description: Light Rain
+    facilio-icon: rain
+
+  - code: 501
+    description: Moderate Rain
+    facilio-icon: rain
+
+  - code: 502
+    description: Heavy Rain
+    facilio-icon: rain
+
+  - code: 511
+    description: Freezing rain
+    facilio-icon: rain
+
+  - code: 520
+    description: Light shower rain
+    facilio-icon: rain
+
+  - code: 521
+    description: Shower rain
+    facilio-icon: rain
+
+  - code: 522
+    description: Heavy shower rain
+    facilio-icon: rain
+
+  - code: 600
+    description: Light snow
+    facilio-icon: rain
+
+  - code: 601
+    description: Snow
+    facilio-icon: snow
+
+  - code: 602
+    description: Heavy Snow
+    facilio-icon: snow
+
+  - code: 610
+    description: Mix snow/rain
+    facilio-icon: snow
+
+  - code: 611
+    description: Sleet
+    facilio-icon: sleet
+
+  - code: 612
+    description: Heavy sleet
+    facilio-icon: sleet
+
+  - code: 621
+    description: Snow shower
+    facilio-icon: snow
+
+  - code: 622
+    description: Heavy snow shower
+    facilio-icon: snow
+
+  - code: 623
+    description: Flurries
+    facilio-icon: snow
+
+  - code: 700
+    description: Mist
+    facilio-icon: fog
+
+  - code: 711
+    description: Smoke
+    facilio-icon: fog
+
+  - code: 721
+    description: Haze
+    facilio-icon: wind
+
+  - code: 731
+    description: Sand/dust
+    facilio-icon: fog
+
+  - code: 741
+    description: Fog
+    facilio-icon: fog
+
+  - code: 751
+    description: Freezing Fog
+    facilio-icon: fog
+
+  - code: 800
+    description: Clear sky
+    facilio-icon: clear-day
+
+  - code: 801
+    description: Few clouds
+    facilio-icon: cloudy
+
+  - code: 802
+    description: Scattered clouds
+    facilio-icon: partly-cloudy-day
+
+  - code: 803
+    description: Broken clouds
+    facilio-icon: cloudy
+
+  - code: 804
+    description: Overcast clouds
+    facilio-icon: cloudy
+
+  - code: 900
+    description: Unknown Precipitation
+    facilio-icon: clear-day

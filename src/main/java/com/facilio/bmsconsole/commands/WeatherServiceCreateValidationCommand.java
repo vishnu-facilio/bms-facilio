@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.weather.util.WeatherAPI;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
 import com.facilio.command.FacilioCommand;
@@ -26,19 +27,18 @@ public class WeatherServiceCreateValidationCommand extends FacilioCommand {
         }
 
         V3WeatherServiceContext weatherServiceContext = weatherServiceContexts.get(0);
-        if(StringUtils.isEmpty(weatherServiceContext.getName())) {
-            if(StringUtils.isEmpty(weatherServiceContext.getDisplayName())) {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Both service name and displayName can't be empty");
-            }
-            String serviceName = weatherServiceContext.getDisplayName();
-            serviceName = serviceName.toLowerCase();
-            serviceName = serviceName.replaceAll("[^a-z0-9]", "");
-            weatherServiceContext.setName(serviceName);
+        if(weatherServiceContext.getName() == null) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Weather service name can't be empty");
+        }
+        String serviceName = weatherServiceContext.getName().toString();
+
+        if(!FacilioProperties.getConfig("weather.service").equals(serviceName) && StringUtils.isEmpty(weatherServiceContext.getApiKey())) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "API key can't be empty for custom weather service");
         }
 
-        V3WeatherServiceContext existingService =  WeatherAPI.getWeatherServiceByName(weatherServiceContext.getName());
+        V3WeatherServiceContext existingService =  WeatherAPI.getWeatherServiceByDisplayName(weatherServiceContext.getDisplayName());
         if(existingService != null) { // normal check
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Given weather service name already exists");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Given weather service display name already exists");
         }
 
         return false;

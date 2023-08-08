@@ -33,9 +33,9 @@ public class FacilioWeatherService implements WeatherService {
         return  url;
     }
 
-    private String getWeatherURL(String stationCode, Long time) {
-        String url ="{0}/data?stationCode={1}";
-        url = MessageFormat.format(url, facilioWeatherURL, stationCode);
+    private String getWeatherURL(String stationCode, Long time, boolean doForecast, boolean dailyForecast) {
+        String url ="{0}/data?stationCode={1}&hourlyForecast={2}&dailyForecast={3}";
+        url = MessageFormat.format(url, facilioWeatherURL, stationCode, doForecast, dailyForecast);
         if(time != null) {
             url = url + "&ttime=" + time;
         }
@@ -50,14 +50,14 @@ public class FacilioWeatherService implements WeatherService {
     }
 
     @Override
-    public JSONObject getWeatherData(V3WeatherStationContext weatherStation, Long time, boolean doForecast) throws Exception {
-        String weatherURL = getWeatherURL(weatherStation.getStationCode(), time);
+    public JSONObject getWeatherData(V3WeatherStationContext weatherStation, Long time, boolean doForecast, boolean dailyForecast) throws Exception {
+        String weatherURL = getWeatherURL(weatherStation.getStationCode(), time, doForecast, dailyForecast);
 		return hitExternalWeatherService(weatherURL);
     }
 
     @Override
     public JSONObject getWeatherData(double lat, double lng, Long time) throws Exception {
-        String weatherURL = getWeatherURL(lat, lng, time);
+        String weatherURL = getWeatherURL(lat, lng, time, true, WeatherAPI.isStartOfTheDay());
         return hitExternalWeatherService(weatherURL);
     }
 
@@ -78,12 +78,13 @@ public class FacilioWeatherService implements WeatherService {
         return weatherData;
     }
 
-    private static String getWeatherURL(double lat, double lng, Long time) {
-        String url ="{0}/data?lat={1}&lng={2}";
-        url = MessageFormat.format(url, facilioWeatherURL, lat, lng);
+    private static String getWeatherURL(double lat, double lng, Long time, boolean doForecast, boolean dailyForecast) {
+        String url ="{0}/data?lat={1}&lng={2}&hourlyForecas={3}&dailyForecast={4}";
+        url = MessageFormat.format(url, facilioWeatherURL, lat, lng, doForecast, dailyForecast);
         if(time != null) {
             url = url + "&ttime=" + time;
         }
+
         LOGGER.log(Level.INFO, "Weather url is : " + url);
         return url;
     }

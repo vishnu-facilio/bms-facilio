@@ -7,7 +7,7 @@ public interface WeatherService {
 
     JSONObject getStationCode(Double lat, Double lng) throws Exception;
 
-    JSONObject getWeatherData(V3WeatherStationContext weatherStation, Long time, boolean doForecast) throws Exception;
+    JSONObject getWeatherData(V3WeatherStationContext weatherStation, Long time, boolean doForecast, boolean dailyForecast) throws Exception;
 
     @Deprecated
     JSONObject getWeatherData(double lat, double lng, Long time) throws Exception; // temp func, to support old Weather_Reading
