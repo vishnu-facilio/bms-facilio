@@ -488,7 +488,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 
 	@Override
 	public Object fetch(Map<String,Object> globalParams, List<Object> objects, ScriptContext workflowContext) throws Exception {
-		
+
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
 		DBParamContext dbParamContext = null;
@@ -503,7 +503,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		else if (objects.get(1) instanceof Map) {
 			dbParamContext = FieldUtil.getAsBeanFromMap((Map)objects.get(1), DBParamContext.class);
 		}
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		ScriptUtil.fillCriteriaField(dbParamContext.getCriteria(), module.getName());
@@ -515,8 +515,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			cache = (Map<String, List<Map<String, Object>>>) globalParams.get(WorkflowGlobalParamUtil.DATA_CACHE);
 			cachedRDM = (Map<String, ReadingDataMeta>) globalParams.get(WorkflowGlobalParamUtil.RDM_CACHE);
 		}
-		
-		
+
+
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = null;
 		
 		Object result = null;
@@ -586,15 +586,15 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				List<FacilioField> selectFields = new ArrayList<>();
 				
 				FacilioField selectOriginal = modBean.getField(dbParamContext.getFieldName(), module.getName());
-				
+
 				if(selectOriginal == null) {
 					throw new Exception("Field is null for FieldName - "+dbParamContext.getFieldName() +" moduleName - "+module.getName());
 				}
-				
+
 				FacilioField select = selectOriginal.clone();
-				
+
 				select.setName(RESULT_STRING);
-				
+
 				selectBuilder.andCustomWhere(select.getCompleteColumnName()+" is not null");
 				
 				if(dbParamContext.getAggregateOpperator() != null) {
@@ -688,22 +688,37 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				else {
 					selectFields.add(select);	// check
 				}
-				
+
 				selectBuilder.select(selectFields);
 			}
+			else if(CollectionUtils.isNotEmpty(dbParamContext.getFieldNames())){
+				       List <FacilioField> fetchFields=new ArrayList<>();
+						for(String fieldName: dbParamContext.getFieldNames()){
+							FacilioField moduleField = modBean.getField(fieldName,module.getName());
+							if(moduleField != null){
+								if(moduleField.getDataTypeEnum().isRelRecordField()) {
+									selectBuilder.fetchSupplement((SupplementRecord) moduleField);
+								}
+								else {
+									fetchFields.add(moduleField);
+								}
+							}
+						}
+					selectBuilder.select(fetchFields);
+			}
 			else {
-				List<FacilioField> selectFields = new ArrayList<>();
-				selectFields.add(FieldFactory.getIdField(module));
-				List<FacilioField> allFields = modBean.getAllFields(module.getName());
-				for(FacilioField field: allFields) {
-					if(field.getDataTypeEnum().isRelRecordField()) {
-						selectBuilder.fetchSupplement((SupplementRecord) field);
+					List<FacilioField> selectFields = new ArrayList<>();
+					selectFields.add(FieldFactory.getIdField(module));
+					List<FacilioField> allFields = modBean.getAllFields(module.getName());
+					for(FacilioField field: allFields) {
+						if(field.getDataTypeEnum().isRelRecordField()) {
+							selectBuilder.fetchSupplement((SupplementRecord) field);
+						}
+						else {
+							selectFields.add(field);
+						}
 					}
-					else {
-						selectFields.add(field);
-					}
-				}
-				selectBuilder.select(selectFields);
+					selectBuilder.select(selectFields);
 			}
 			
 			if(dbParamContext.getSortByFieldName() != null) {
