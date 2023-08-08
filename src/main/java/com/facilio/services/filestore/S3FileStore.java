@@ -18,6 +18,8 @@ import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
+import com.amazonaws.AbortedException;
+import com.amazonaws.services.s3.model.*;
 import com.facilio.util.FacilioUtil;
 import com.google.common.io.ByteSource;
 import org.apache.commons.collections4.ListUtils;
@@ -31,15 +33,7 @@ import com.amazonaws.services.cloudfront.util.SignerUtils;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest;
-import com.amazonaws.services.s3.model.DeleteObjectsResult;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.MultiObjectDeleteException;
 import com.amazonaws.services.s3.model.MultiObjectDeleteException.DeleteError;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
-import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.ImageScaleUtil;
@@ -236,9 +230,23 @@ public class S3FileStore extends FileStore {
 		LOGGER.debug("filePath: " + getBucketName() + "" + fileInfo.getFilePath());
 		LOGGER.debug("fileUrl: " + AwsUtil.getAmazonS3Client().getUrl(getBucketName(), fileInfo.getFilePath()));
 
+		return getS3ObjectInputStream(fileInfo,5);
+	}
+
+	private S3ObjectInputStream getS3ObjectInputStream(FileInfo fileInfo,int count) {
 		try {
-			S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(), fileInfo.getFilePath());
-			return so.getObjectContent();
+			try {
+				S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(), fileInfo.getFilePath());
+				return so.getObjectContent();
+			}
+			 catch(AbortedException e ){
+				if(count !=0) {
+					count--;
+					return getS3ObjectInputStream(fileInfo,count);
+				}else{
+					throw e;
+				}
+			 }
 		}
 		catch (Exception e) {
 			LOGGER.error("Error occurred while getting file : "+String.valueOf(fileInfo.getFilePath()), e);
