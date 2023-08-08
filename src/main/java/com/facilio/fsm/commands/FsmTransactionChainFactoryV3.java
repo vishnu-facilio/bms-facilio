@@ -36,12 +36,14 @@ public class FsmTransactionChainFactoryV3 {
         //update the task status before creation
         c.addCommand(new TaskStatusUpdate());
         c.addCommand(new SetPlansCommandV3());
+        c.addCommand(new SOSTAutoCreateBeforeCommand());
         return c;
     }
     public static FacilioChain getTaskAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         //update the task status before creation
         c.addCommand(new SOStatusChangeViaSTCommandV3());
+        c.addCommand(new SOSTAutoCreateAfterCommand());
         return c;
     }
     public static FacilioChain getTaskAfterUpdateChain() {

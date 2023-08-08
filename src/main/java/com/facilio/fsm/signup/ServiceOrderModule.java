@@ -572,6 +572,16 @@ public class ServiceOrderModule extends BaseModuleConfig {
         allView.setModuleName(serviceOrderModule.getName());
         allView.setSortFields(sortFields);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
+
+        List<ViewField> serviceOrderViewFields = new ArrayList<>();
+        serviceOrderViewFields.add(new ViewField("name","Subject"));
+        serviceOrderViewFields.add(new ViewField("site","Site"));
+        serviceOrderViewFields.add(new ViewField("priority","Priority"));
+        serviceOrderViewFields.add(new ViewField("space","Space"));
+        serviceOrderViewFields.add(new ViewField("asset","Asset"));
+        serviceOrderViewFields.add(new ViewField("status","Status"));
+        allView.setFields(serviceOrderViewFields);
+
         return allView;
     }
 
@@ -586,6 +596,15 @@ public class ServiceOrderModule extends BaseModuleConfig {
         allView.setDisplayName("Open");
         allView.setCriteria(criteria);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
+
+        List<ViewField> serviceOrderViewFields = new ArrayList<>();
+        serviceOrderViewFields.add(new ViewField("name","Subject"));
+        serviceOrderViewFields.add(new ViewField("site","Site"));
+        serviceOrderViewFields.add(new ViewField("priority","Priority"));
+        serviceOrderViewFields.add(new ViewField("space","Space"));
+        serviceOrderViewFields.add(new ViewField("asset","Asset"));
+        serviceOrderViewFields.add(new ViewField("status","Status"));
+        allView.setFields(serviceOrderViewFields);
         return allView;
     }
 
@@ -599,6 +618,15 @@ public class ServiceOrderModule extends BaseModuleConfig {
         allView.setDisplayName("Completed");
         allView.setCriteria(criteria);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
+
+        List<ViewField> serviceOrderViewFields = new ArrayList<>();
+        serviceOrderViewFields.add(new ViewField("name","Subject"));
+        serviceOrderViewFields.add(new ViewField("site","Site"));
+        serviceOrderViewFields.add(new ViewField("priority","Priority"));
+        serviceOrderViewFields.add(new ViewField("space","Space"));
+        serviceOrderViewFields.add(new ViewField("asset","Asset"));
+        serviceOrderViewFields.add(new ViewField("status","Status"));
+        allView.setFields(serviceOrderViewFields);
         return allView;
     }
 
@@ -612,6 +640,15 @@ public class ServiceOrderModule extends BaseModuleConfig {
         allView.setDisplayName("Closed");
         allView.setCriteria(criteria);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
+
+        List<ViewField> serviceOrderViewFields = new ArrayList<>();
+        serviceOrderViewFields.add(new ViewField("name","Subject"));
+        serviceOrderViewFields.add(new ViewField("site","Site"));
+        serviceOrderViewFields.add(new ViewField("priority","Priority"));
+        serviceOrderViewFields.add(new ViewField("space","Space"));
+        serviceOrderViewFields.add(new ViewField("asset","Asset"));
+        serviceOrderViewFields.add(new ViewField("status","Status"));
+        allView.setFields(serviceOrderViewFields);
         return allView;
     }
 
@@ -625,6 +662,15 @@ public class ServiceOrderModule extends BaseModuleConfig {
         allView.setDisplayName("Cancelled");
         allView.setCriteria(criteria);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
+
+        List<ViewField> serviceOrderViewFields = new ArrayList<>();
+        serviceOrderViewFields.add(new ViewField("name","Subject"));
+        serviceOrderViewFields.add(new ViewField("site","Site"));
+        serviceOrderViewFields.add(new ViewField("priority","Priority"));
+        serviceOrderViewFields.add(new ViewField("space","Space"));
+        serviceOrderViewFields.add(new ViewField("asset","Asset"));
+        serviceOrderViewFields.add(new ViewField("status","Status"));
+        allView.setFields(serviceOrderViewFields);
         return allView;
     }
 
@@ -1028,8 +1074,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField resolutionDueDurationField = moduleBean.getField("resolutionDueDate", moduleName);
         FacilioField responseDueDateField = moduleBean.getField("responseDueDate", moduleName);
         FacilioField resolutionDueDateField = moduleBean.getField("resolutionDueDate", moduleName);
-        FacilioField responseDueStatusField = moduleBean.getField("status", moduleName);
-        FacilioField resolutionDueStatusField = moduleBean.getField("status", moduleName);
+//        FacilioField responseDueStatusField = moduleBean.getField("status", moduleName);
+//        FacilioField resolutionDueStatusField = moduleBean.getField("status", moduleName);
 
         FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", moduleName);
         FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", moduleName);
@@ -1080,8 +1126,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         addSummaryFieldInWidgetGroup(slaWidgetGroup, responseDueDateField, 1 , 3, 1);
         addSummaryFieldInWidgetGroup(slaWidgetGroup, resolutionDueDateField, 1 , 4, 1);
 
-        addSummaryFieldInWidgetGroup(slaWidgetGroup, responseDueStatusField, 2 , 1, 1);
-        addSummaryFieldInWidgetGroup(slaWidgetGroup, resolutionDueStatusField, 2, 2, 1);
+//        addSummaryFieldInWidgetGroup(slaWidgetGroup, responseDueStatusField, 2 , 1, 1);
+//        addSummaryFieldInWidgetGroup(slaWidgetGroup, resolutionDueStatusField, 2, 2, 1);
 
         SummaryWidgetGroup systemWidgetGroup = new SummaryWidgetGroup();
         systemWidgetGroup.setDisplayName("System Details");

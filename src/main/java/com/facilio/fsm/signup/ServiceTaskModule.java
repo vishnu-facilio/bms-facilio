@@ -42,6 +42,8 @@ public class ServiceTaskModule extends BaseModuleConfig {
 
         addTaskSkillsField();
         addSystemButtons();
+        addServiceOrderTaskModule();
+        addServiceTasksField();
     }
 
     private FacilioModule constructServiceTaskModule() throws Exception {
@@ -166,6 +168,40 @@ public class ServiceTaskModule extends BaseModuleConfig {
         reOpen.setCriteria(reopenCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,reOpen);
 
+    }
+
+    private void addServiceOrderTaskModule() throws Exception {
+        List<FacilioModule> modules = new ArrayList<>();
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule serviceTaskModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+        FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+        FacilioModule serviceOrderTaskModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TASK,"Service Order Tasks","SERVICE_ORDER_TASK_REL",FacilioModule.ModuleType.SUB_ENTITY,true);
+        List<FacilioField> fields = new ArrayList<>();
+        LookupField serviceTaskField = new LookupField(serviceOrderTaskModule,"right","Service Tasks",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_TASK_ID",FieldType.LOOKUP,true,false,true,false,"Service Tasks",serviceTaskModule);
+        fields.add(serviceTaskField);
+        LookupField serviceAppointmentField = new LookupField(serviceOrderTaskModule,"left","Service Order", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_ORDER_ID",FieldType.LOOKUP,true,false,true,true,"Service Orders",serviceOrderModule);
+        fields.add(serviceAppointmentField);
+        serviceOrderTaskModule.setFields(fields);
+        modules.add(serviceOrderTaskModule);
+        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+        addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain.execute();
+    }
+    private void addServiceTasksField() throws Exception{
+        ModuleBean modBean = Constants.getModBean();
+        List<FacilioField>fields = new ArrayList<>();
+        MultiLookupField multiLookupTasksField = FieldFactory.getDefaultField("serviceTasks", "Service Tasks", null, FieldType.MULTI_LOOKUP);
+        multiLookupTasksField.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
+        multiLookupTasksField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
+        multiLookupTasksField.setLookupModule( modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK));
+        multiLookupTasksField.setRelModule(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TASK));
+        multiLookupTasksField.setRelModuleId(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TASK).getModuleId());
+        fields.add(multiLookupTasksField);
+        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
+        chain.execute();
     }
 
 }

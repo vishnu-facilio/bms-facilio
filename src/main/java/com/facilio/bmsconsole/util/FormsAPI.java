@@ -1263,6 +1263,7 @@ public class FormsAPI {
 				fields.add(new FormField("autoCreateSa",FacilioField.FieldDisplayType.DECISION_BOX,"AutoCreate SA", Required.OPTIONAL,7,1));
 				fields.add(new FormField("responseDueDuration", FieldDisplayType.DURATION,"Response Due Duration", Required.OPTIONAL,7,1));
 				fields.add(new FormField("resolutionDueDuration", FieldDisplayType.DURATION,"Resoultion Due Duration", Required.OPTIONAL,7,1));
+				fields.add(new FormField("serviceTasks", FacilioField.FieldDisplayType.SERVICE_TASK_ITEMS,"Tasks", Required.OPTIONAL,7,1));
 				break;
 			case ContextNames.SITE:
 				fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

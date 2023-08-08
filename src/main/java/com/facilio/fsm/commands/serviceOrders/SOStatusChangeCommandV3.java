@@ -28,7 +28,7 @@ public class SOStatusChangeCommandV3 extends FacilioCommand {
                     if(CollectionUtils.isEmpty(order.getServiceTask())){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR,"Atleast One Task must be present when AutoCreate SA is enabled");
                     }
-                    if(order.getPreferredStartTime() == null || order.getPreferredEndTime() == null || order.getPreferredStartTime() < 0 || order.getPreferredEndTime() < 0){
+                    if(order.getScheduledStartTime() == null || order.getScheduledEndTime() == null || order.getScheduledStartTime() < 0 || order.getScheduledEndTime() < 0){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR,"Scheduled Start and End time are mandatory when AutoCreate SA is enabled");
                     }
                     order.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.SCHEDULED));
