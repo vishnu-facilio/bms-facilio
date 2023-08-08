@@ -2755,6 +2755,9 @@ public class V2ReportAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.END_TIME, context.get(FacilioConstants.ContextNames.END_TIME));
         setResult((String) FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, context.get(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER));
         setResult(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE));
+        if(context.containsKey(FacilioConstants.ContextNames.DATE_OFFSET_VALUE) && context.get(FacilioConstants.ContextNames.DATE_OFFSET_VALUE) != null) {
+            setResult(FacilioConstants.ContextNames.DATE_OFFSET_VALUE, context.get(FacilioConstants.ContextNames.DATE_OFFSET_VALUE));
+        }
         setResult(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD,
                 context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD));
 
@@ -2830,6 +2833,7 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.DATE_FIELD, dateFieldId);
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateValue);
+        context.put(FacilioConstants.ContextNames.DATE_OFFSET_VALUE, dateOffset);
         context.put(FacilioConstants.ContextNames.START_TIME, startTime);
         context.put(FacilioConstants.ContextNames.END_TIME, endTime);
         context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, showTimelineFilter);
@@ -2859,6 +2863,7 @@ public class V2ReportAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.DATE_FIELD, dateFieldId);
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
         context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateValue);
+        context.put(FacilioConstants.ContextNames.DATE_OFFSET_VALUE, dateOffset);
         context.put(FacilioConstants.ContextNames.START_TIME, startTime);
         context.put(FacilioConstants.ContextNames.END_TIME, endTime);
         context.put(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER, showTimelineFilter);
@@ -2882,6 +2887,7 @@ public class V2ReportAction extends FacilioAction {
         pivotparams.setDrillDown(drillDown);
         pivotparams.setBuilderV2(isBuilderV2());
         pivotparams.setShowTimelineFilter(getShowTimelineFilter());
+        pivotparams.setDateOffset(dateOffset);
 
 
         if (reportContext == null) {
@@ -3020,6 +3026,7 @@ public class V2ReportAction extends FacilioAction {
             context.put(FacilioConstants.ContextNames.DATE_OPERATOR, pivotparams.getDateOperator());
             context.put(FacilioConstants.ContextNames.PIVOT_DRILL_DOWN, pivotparams.getDrillDown());
             context.put(FacilioConstants.ContextNames.IS_BUILDER_V2, pivotparams.isBuilderV2());
+            context.put(FacilioConstants.ContextNames.DATE_OFFSET_VALUE, pivotparams.getDateOffset());
 
             if (sortBy != null) {
                 context.put(FacilioConstants.ContextNames.SORTING, sortBy);
@@ -3145,6 +3152,15 @@ public class V2ReportAction extends FacilioAction {
 
     String dateValue;
 
+    public Integer getDateOffset() {
+        return dateOffset;
+    }
+
+    public void setDateOffset(Integer dateOffset) {
+        this.dateOffset = dateOffset;
+    }
+
+    public Integer dateOffset;
     public String getDateValue() {
         return dateValue;
     }

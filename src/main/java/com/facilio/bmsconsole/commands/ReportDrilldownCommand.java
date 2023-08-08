@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.operators.*;
@@ -196,6 +198,13 @@ public class ReportDrilldownCommand extends FacilioCommand {
 					groupByCondition = CriteriaAPI.getCondition(groupByField, groupByValues,
 							getOperator(groupByField, groupByXAggr));
 					criteria.addAndCondition(groupByCondition);
+				}
+				else if(groupBy.containsKey("colName") && groupBy.get("colName") != null && groupBy.get("colName").equals("siteId")){
+					FacilioField groupbyfield = FieldFactory.getSiteIdField(module);
+					SiteContext site = SpaceAPI.getSite(groupByValues);
+					if(site != null && site.getId() > 0) {
+						criteria.addAndCondition(CriteriaAPI.getCondition(groupbyfield, site.getId()+"", PickListOperators.IS));
+					}
 				}
 				else  if(groupBy.containsKey("colName") && groupBy.get("colName") != null)
 				{

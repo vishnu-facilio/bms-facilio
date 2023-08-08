@@ -172,4 +172,14 @@ public class ReportPivotParamsContext {
 	}
 
 	private List<PivotValueColumnContext> values = new ArrayList<>();
+
+	public Integer getDateOffset() {
+		return dateOffset;
+	}
+
+	public void setDateOffset(Integer dateOffset) {
+		this.dateOffset = dateOffset;
+	}
+
+	public  Integer dateOffset;
 }

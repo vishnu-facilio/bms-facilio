@@ -22,7 +22,7 @@ Map cardLayout(Map params) {
 
 
         if (params.cardFilters != null) {
-            baselineDateRangeObj = new NameSpace("dateRange").create(startTime, endTime, baseLineLabel);
+            baselineDateRangeObj = new NameSpace("dateRange").create(startTime, endTime, baseLineLabel, "none");
         } else {
             baselineDateRangeObj = date.getDateRange(params.dateRange, params.baseline);
         }

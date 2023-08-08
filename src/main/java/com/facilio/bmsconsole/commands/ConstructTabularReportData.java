@@ -339,6 +339,27 @@ public class ConstructTabularReportData extends FacilioCommand {
                             }
                         }
                     }
+                    else if( dateOperatorInt == DateOperators.LAST_N_DAYS.getOperatorId() ||
+                            dateOperatorInt == DateOperators.LAST_N_MONTHS.getOperatorId() || dateOperatorInt == DateOperators.LAST_N_WEEKS.getOperatorId())
+                    {
+                        String tabular_state = reportContext.getTabularState();
+                        if(tabular_state != null)
+                        {
+                            JSONParser parser = new JSONParser();
+                            JSONObject tabular_state_json = (JSONObject) parser.parse(tabular_state);
+                            if(tabular_state_json != null && tabular_state_json.containsKey("dateOffset") && tabular_state_json.get("dateOffset") != null)
+                            {
+                                String dateOffset = tabular_state_json.get("dateOffset").toString();
+                                if (dateOffset != null) {
+                                    DateRange dateRange = ((DateOperators)dateOperator).getRange(dateOffset);
+                                    if(dateRange != null){
+                                        Condition newCond = CriteriaAPI.getCondition(dateField, dateRange.toString(), DateOperators.BETWEEN);
+                                        otherCrit.addAndCondition(newCond);
+                                    }
+                                }
+                            }
+                        }
+                    }
                     else
                     {
                         Condition newCond = CriteriaAPI.getCondition(dateField, dateOperator);
