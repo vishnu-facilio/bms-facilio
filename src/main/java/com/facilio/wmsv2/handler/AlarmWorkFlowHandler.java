@@ -33,6 +33,7 @@ public class AlarmWorkFlowHandler extends BaseHandler {
             LOGGER.info("Current Thread in AlarmWorkFlowHandler---->" + Thread.currentThread());
             Long startTime = currentTimeMillis();
             Map<String, Object> messageMap = message.getContent();
+            Long startTime=currentTimeMillis();
             AccountUtil.setCurrentAccount(message.getOrgId());
             FacilioChain chain = TransactionChainFactory.getV2UpdateAlarmChain();
             FacilioContext context = chain.getContext();
@@ -49,7 +50,7 @@ public class AlarmWorkFlowHandler extends BaseHandler {
             }
             LOGGER.info(String.format("Time taken to execute alarm workflow %d", currentTimeMillis() - startTime));
             chain.execute();
-            if ((currentTimeMillis() - startTime) > 5000)
+            if ((currentTimeMillis() - startTime) > 60000)
                 LOGGER.info(String.format("Time taken to execute alarm workflow %d ms", currentTimeMillis() - startTime));
         } catch (Exception ex) {
             ex.printStackTrace();
