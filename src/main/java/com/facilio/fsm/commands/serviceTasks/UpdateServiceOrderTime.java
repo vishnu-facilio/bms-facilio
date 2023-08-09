@@ -35,7 +35,7 @@ public class UpdateServiceOrderTime extends FacilioCommand {
                     Long completeCount = 0L;
                     for (ServiceTaskContext st : serviceTaskList) {
                         //if status of all other tasks are new and the status of current task is in progress we increase the initCount
-                        if(st.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex() || (task.getId() == st.getId() && st.getStatus() == ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex()) ){
+                        if((task.getId() != st.getId() && st.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex()) || (task.getId() == st.getId() && st.getStatus() == ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex()) ){
                             initCount= (long) serviceTaskList.size();
                         }
                         //if status of all tasks are in completed status then we increase the completeCount

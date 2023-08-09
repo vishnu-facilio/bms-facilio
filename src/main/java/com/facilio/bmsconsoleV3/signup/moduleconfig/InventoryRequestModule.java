@@ -64,6 +64,7 @@ public class InventoryRequestModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -86,6 +87,7 @@ public class InventoryRequestModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         pendingInvReqView.setAppLinkNames(appLinkNames);
 
         return pendingInvReqView;
@@ -122,6 +124,7 @@ public class InventoryRequestModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         partiallyReservedInvReqView.setAppLinkNames(appLinkNames);
 
         return partiallyReservedInvReqView;
@@ -159,6 +162,7 @@ public class InventoryRequestModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         fullyReservedInvReqView.setAppLinkNames(appLinkNames);
 
         return fullyReservedInvReqView;
@@ -202,7 +206,7 @@ public class InventoryRequestModule extends BaseModuleConfig{
         inventoryRequestModuleForm.setName("default_inventoryrequest_web");
         inventoryRequestModuleForm.setModule(inventoryRequestModule);
         inventoryRequestModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        inventoryRequestModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        inventoryRequestModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> inventoryRequestModuleFormDefaultFields = new ArrayList<>();
         int seqNum = 0;

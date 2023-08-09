@@ -56,6 +56,7 @@ public class ShiftModule extends BaseModuleConfig{
         List<String> apps = Arrays.asList(
                 FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
                 FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
+                FacilioConstants.ApplicationLinkNames.FSM_APP,
                 FacilioConstants.ApplicationLinkNames.IWMS_APP
         );
         allView.setAppLinkNames(apps);
@@ -76,6 +77,7 @@ public class ShiftModule extends BaseModuleConfig{
         List<String> apps = Arrays.asList(
                 FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
                 FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
+                FacilioConstants.ApplicationLinkNames.FSM_APP,
                 FacilioConstants.ApplicationLinkNames.IWMS_APP
         );
         shiftModuleForm.setAppLinkNamesForForm(apps);

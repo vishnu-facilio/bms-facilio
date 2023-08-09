@@ -70,6 +70,7 @@ public class VendorsModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -85,7 +86,7 @@ public class VendorsModule extends BaseModuleConfig{
         vendorsForm.setName("default_vendors_web");
         vendorsForm.setModule(vendorsModule);
         vendorsForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        vendorsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        vendorsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> vendorsFormFields = new ArrayList<>();
         vendorsFormFields.add(new FormField("vendorLogo", FacilioField.FieldDisplayType.IMAGE, "Vendor Logo", FormField.Required.OPTIONAL, 1, 1));

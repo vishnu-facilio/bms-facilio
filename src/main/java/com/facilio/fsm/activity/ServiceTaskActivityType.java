@@ -28,11 +28,11 @@ public enum ServiceTaskActivityType implements ActivityType {
             return " assigned ";
         }
     },
-    ADD(126) {
+    ADD_SO(126) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " added Task ";
+            return "New Task (" +json.get("name") +") has been added";
         }
     },
     UPDATE(127) {

@@ -74,6 +74,7 @@ public class InsuranceModule extends BaseModuleConfig{
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -303,7 +304,7 @@ public class InsuranceModule extends BaseModuleConfig{
         insuranceForm.setName("default_insurance_web");
         insuranceForm.setModule(insuranceModule);
         insuranceForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        insuranceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        insuranceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> insuranceFormFields = new ArrayList<>();
         insuranceFormFields.add(new FormField("companyName", FacilioField.FieldDisplayType.TEXTBOX, "Company Name", FormField.Required.REQUIRED, 1, 1));

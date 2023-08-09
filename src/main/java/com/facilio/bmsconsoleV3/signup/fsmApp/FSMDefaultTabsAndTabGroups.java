@@ -91,6 +91,7 @@ public class FSMDefaultTabsAndTabGroups {
                 new WebTabContext("Visitor","visitor",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.VISITOR)), null, 29,null,appId),
                 new WebTabContext("Visits","visits",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.VISITOR_LOG)), null, 29,null,appId),
                 new WebTabContext("Invites","invites",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.INVITE_VISITOR)), null, 29,null,appId),
+
                 new WebTabContext("Reports","visitorreport",WebTabContext.Type.REPORT,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.VISITOR,FacilioConstants.ContextNames.VISITOR_LOG,FacilioConstants.ContextNames.INVITE_VISITOR)), "{\"type\": \"module_reports\"}", 29,null,appId),
                 new WebTabContext("Budget","budget",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.Budget.BUDGET)), null, 49,null,appId),
                 new WebTabContext("Chart Of Accounts","chartofaccounts",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.Budget.CHART_OF_ACCOUNT)), null, 49,null,appId),

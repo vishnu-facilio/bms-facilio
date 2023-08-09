@@ -55,6 +55,7 @@ public class InductionResponseModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -70,7 +71,7 @@ public class InductionResponseModule extends BaseModuleConfig{
         inductionForm.setName("default_" + FacilioConstants.Induction.INDUCTION_RESPONSE + "_web");
         inductionForm.setModule(inductionResponseModule);
         inductionForm.setDisplayName("Standard");
-        inductionForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        inductionForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
         inductionForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         inductionForm.setShowInWeb(true);
 

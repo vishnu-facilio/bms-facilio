@@ -69,6 +69,7 @@ public class TenantModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -95,6 +96,7 @@ public class TenantModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         activeTenantsView.setAppLinkNames(appLinkNames);
 
         return activeTenantsView;
@@ -140,7 +142,7 @@ public class TenantModule extends BaseModuleConfig{
         tenantForm.setName("default_tenant_web");
         tenantForm.setModule(tenantModule);
         tenantForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        tenantForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        tenantForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> tenantFormFields = new ArrayList<>();
         tenantFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Tenant Logo", FormField.Required.OPTIONAL,1,1));

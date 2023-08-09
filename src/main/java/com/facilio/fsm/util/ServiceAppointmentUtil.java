@@ -202,7 +202,7 @@ public class ServiceAppointmentUtil {
                             if(CollectionUtils.isNotEmpty(existingAppointment.getServiceTasks())){
                                 for(ServiceAppointmentTaskContext saTask : existingAppointment.getServiceTasks()){
                                     TimeSheetTaskContext newTask = new TimeSheetTaskContext();
-                                    newTask.setRight(saTask.getRight());
+                                    newTask.setId(saTask.getId());
                                     tasks.add(newTask);
                                 }
                             }

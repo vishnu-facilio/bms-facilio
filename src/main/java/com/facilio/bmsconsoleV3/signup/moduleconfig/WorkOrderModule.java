@@ -744,6 +744,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         openTicketsView.setAppLinkNames(appLinkNames);
 
         return openTicketsView;
@@ -766,6 +767,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         overdueView.setAppLinkNames(appLinkNames);
 
         return overdueView;
@@ -789,6 +791,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         overdueView.setAppLinkNames(appLinkNames);
 
         return overdueView;
@@ -823,6 +826,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         overdueView.setAppLinkNames(appLinkNames);
 
         return overdueView;
@@ -858,6 +862,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         overdueView.setAppLinkNames(appLinkNames);
 
         return overdueView;
@@ -881,6 +886,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         unassignedWOView.setAppLinkNames(appLinkNames);
 
         return unassignedWOView;
@@ -905,6 +911,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         openTicketsView.setAppLinkNames(appLinkNames);
 
         return openTicketsView;
@@ -929,6 +936,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         openTicketsView.setAppLinkNames(appLinkNames);
 
         return openTicketsView;
@@ -953,6 +961,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         view.setAppLinkNames(appLinkNames);
 
         return view;
@@ -986,6 +995,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         view.setAppLinkNames(appLinkNames);
 
         return view;
@@ -1046,6 +1056,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -1067,6 +1078,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         resolvedTicketsView.setAppLinkNames(appLinkNames);
 
         return resolvedTicketsView;
@@ -1088,6 +1100,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         openTicketsView.setAppLinkNames(appLinkNames);
 
         return openTicketsView;
@@ -1150,6 +1163,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         preOpenTicketsView.setAppLinkNames(appLinkNames);
 
         return preOpenTicketsView;
@@ -1188,6 +1202,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         preOpenTicketsView.setAppLinkNames(appLinkNames);
 
         return preOpenTicketsView;
@@ -1732,7 +1747,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         webWorkOrderForm.setName("default_workorder_web");
         webWorkOrderForm.setModule(workOrderModule);
         webWorkOrderForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        webWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        webWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> webWorkOrderFormDefaultFields = new ArrayList<>();
 
@@ -1781,7 +1796,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         alarmWorkOrderForm.setName("alarm_workorder_web");
         alarmWorkOrderForm.setModule(workOrderModule);
         alarmWorkOrderForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        alarmWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        alarmWorkOrderForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
         alarmWorkOrderForm.setHideInList(true);
         alarmWorkOrderForm.setIgnoreCustomFields(true);
 
@@ -1801,7 +1816,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         preventiveMaintenanceForm.setName("web_pm");
         preventiveMaintenanceForm.setModule(workOrderModule);
         preventiveMaintenanceForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        preventiveMaintenanceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        preventiveMaintenanceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
         preventiveMaintenanceForm.setHideInList(true);
 
         List<FormField> preventiveMaintenanceFormFields = new ArrayList<>();

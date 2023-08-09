@@ -1,14 +1,18 @@
 package com.facilio.fsm.commands.serviceOrders;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fsm.activity.ServiceTaskActivityType;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
 import com.facilio.fsm.context.ServiceTaskContext;
 import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +35,10 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
         Map<Long, ServiceTaskContext> oldMap = oldrecordMap != null ? oldrecordMap.get(moduleName) : new HashMap<>();
         for(ServiceTaskContext task : dataList) {
             if(task.getServiceOrder() != null){
+                //Task adding Activity in service Order
+//                JSONObject changeObj = new JSONObject();
+//                changeObj.put("name", task.getName());
+//                CommonCommandUtil.addActivityToContext(task.getServiceOrder().getId(), System.currentTimeMillis(), ServiceTaskActivityType.ADD_SO, changeObj, (FacilioContext) context);
                 Long orderId = task.getServiceOrder().getId();
                 if(orderId != null){
                     ServiceTaskContext oldTask = oldMap.get(task.getId());

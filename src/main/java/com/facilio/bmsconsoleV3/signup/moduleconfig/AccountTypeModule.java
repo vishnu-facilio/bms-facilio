@@ -52,6 +52,7 @@ public class AccountTypeModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -68,7 +69,7 @@ public class AccountTypeModule extends BaseModuleConfig{
         accountTypeForm.setName("default_" + FacilioConstants.ContextNames.Budget.ACCOUNT_TYPE + "_web");
         accountTypeForm.setModule(accountTypeModule);
         accountTypeForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        accountTypeForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        accountTypeForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> accountTypeFormFields = new ArrayList<>();
         accountTypeFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
