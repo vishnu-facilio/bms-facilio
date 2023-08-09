@@ -27,6 +27,10 @@ public class ServiceTaskContext extends V3Context {
     private List<ServiceOrderPlannedItemsContext> serviceOrderPlannedItems;
     private List<ServiceOrderPlannedToolsContext> serviceOrderPlannedTools;
     private List<ServiceOrderPlannedServicesContext> serviceOrderPlannedServices;
+    private List<ServiceOrderItemsContext> serviceOrderItems;
+    private List<ServiceOrderToolsContext> serviceOrderTools;
+    private List<ServiceOrderServiceContext> serviceOrderServices;
+
 
 
     public String getName() {
@@ -215,5 +219,29 @@ public class ServiceTaskContext extends V3Context {
 
     public void setTaskCode(String taskCode) {
         this.taskCode = taskCode;
+    }
+
+    public List<ServiceOrderItemsContext> getServiceOrderItems() {
+        return serviceOrderItems;
+    }
+
+    public void setServiceOrderItems(List<ServiceOrderItemsContext> serviceOrderItems) {
+        this.serviceOrderItems = serviceOrderItems;
+    }
+
+    public List<ServiceOrderToolsContext> getServiceOrderTools() {
+        return serviceOrderTools;
+    }
+
+    public void setServiceOrderTools(List<ServiceOrderToolsContext> serviceOrderTools) {
+        this.serviceOrderTools = serviceOrderTools;
+    }
+
+    public List<ServiceOrderServiceContext> getServiceOrderServices() {
+        return serviceOrderServices;
+    }
+
+    public void setServiceOrderServices(List<ServiceOrderServiceContext> serviceOrderServices) {
+        this.serviceOrderServices = serviceOrderServices;
     }
 }

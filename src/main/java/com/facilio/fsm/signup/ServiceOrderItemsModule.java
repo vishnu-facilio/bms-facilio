@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -15,6 +16,7 @@ import com.facilio.v3.context.Constants;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ServiceOrderItemsModule extends BaseModuleConfig {
     public ServiceOrderItemsModule(){
@@ -43,6 +45,18 @@ public class ServiceOrderItemsModule extends BaseModuleConfig {
             bean.addSubModule(serviceOrder.getModuleId(), serviceOrderItemsModule.getModuleId());
         }
 
+        addServiceOrderItemFieldInItemTransactions();
+
+    }
+    private void addServiceOrderItemFieldInItemTransactions() throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule itemTransactions = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+
+        LookupField serviceOrderItem = FieldFactory.getDefaultField("serviceOrderItem","Service Order Items","SERVICE_ORDER_ITEM",FieldType.LOOKUP);
+        serviceOrderItem.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS),"Service Order Items module doesn't exist."));
+        serviceOrderItem.setModule(itemTransactions);
+
+        modBean.addField(serviceOrderItem);
     }
     private FacilioModule constructServiceOrderItemsModule(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule itemTypeMod, FacilioModule storeRoomMod,FacilioModule itemMod, FacilioModule assetMod){
         FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, "Service Order Items", "Service_Order_Items", FacilioModule.ModuleType.SUB_ENTITY);

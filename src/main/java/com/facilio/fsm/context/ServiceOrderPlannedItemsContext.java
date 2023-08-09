@@ -74,7 +74,10 @@ public class ServiceOrderPlannedItemsContext  extends V3Context {
     }
 
     public Boolean getIsReserved() {
-        return isReserved;
+        if(isReserved!=null){
+            return isReserved.booleanValue();
+        }
+        return false;
     }
 
     public void setIsReserved(Boolean reserved) {

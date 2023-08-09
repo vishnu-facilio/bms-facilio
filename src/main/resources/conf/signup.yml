@@ -544,6 +544,7 @@ classes:
   - com.facilio.fsm.signup.ServiceOrderPlannedItemsModule
   - com.facilio.fsm.signup.ServiceOrderPlannedToolsModule
   - com.facilio.fsm.signup.ServiceOrderPlannedServicesModule
+  - com.facilio.fsm.signup.ServiceInventoryReservationModule
   - com.facilio.fsm.signup.TimeSheetModule
   - com.facilio.fsm.signup.ServiceOrderItemsModule
   - com.facilio.fsm.signup.ServiceOrderToolsModule

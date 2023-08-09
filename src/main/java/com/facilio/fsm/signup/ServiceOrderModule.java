@@ -29,6 +29,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
+import com.sun.mail.imap.protocol.MODSEQ;
 import org.json.simple.JSONObject;
 import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
 
@@ -54,8 +55,20 @@ public class ServiceOrderModule extends BaseModuleConfig {
         constructServiceOrderNotesModule(Constants.getModBean(), AccountUtil.getCurrentOrg().getId(), serviceOrderModule);
 
         addSystemButtons();
-    }
 
+        addServiceOrderFieldInItemTransactions();
+    }
+    private void addServiceOrderFieldInItemTransactions() throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule itemTransactions = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+
+        LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER",FieldType.LOOKUP);
+        serviceOrder.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER),"Service Order module doesn't exist."));
+        serviceOrder.setModule(itemTransactions);
+
+        modBean.addField(serviceOrder);
+
+    }
     public void addActivityModuleForServiceOrder() throws Exception {
         // TODO Auto-generated method stub
 

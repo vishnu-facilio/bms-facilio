@@ -300,4 +300,13 @@ public class V3ItemTransactionsContext extends V3Context {
     public void setServiceOrderItem(ServiceOrderItemsContext serviceOrderItem) {
         this.serviceOrderItem = serviceOrderItem;
     }
+    private ServiceInventoryReservationContext serviceInventoryReservation;
+
+    public ServiceInventoryReservationContext getServiceInventoryReservation() {
+        return serviceInventoryReservation;
+    }
+
+    public void setServiceInventoryReservation(ServiceInventoryReservationContext serviceInventoryReservation) {
+        this.serviceInventoryReservation = serviceInventoryReservation;
+    }
 }

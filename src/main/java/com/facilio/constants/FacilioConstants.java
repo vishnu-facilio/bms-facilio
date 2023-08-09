@@ -69,6 +69,7 @@ import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.ims.handler.AuditLogHandler;
 import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
+import com.facilio.fsm.context.ServiceInventoryReservationContext;
 import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
 import com.facilio.fsm.context.TimeOffTypeContext;
 import com.facilio.modules.FacilioModule;
@@ -91,6 +92,8 @@ import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.facilio.constants.FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION;
 //import com.facilio.custom.CustomController;
 
 public class FacilioConstants {
@@ -3366,6 +3369,7 @@ public class FacilioConstants {
 			classMap.put(ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY,ActivityContext.class);
 			classMap.put(TimeSheet.TIME_SHEET_ACTIVITY,ActivityContext.class);
 			classMap.put(Trip.TRIP_ACTIVITY,ActivityContext.class);
+			classMap.put(SERVICE_INVENTORY_RESERVATION, ServiceInventoryReservationContext.class);
 
 
 

@@ -1,8 +1,10 @@
 package com.facilio.fsm.commands.plans;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.enums.InventoryReservationStatus;
 import com.facilio.bmsconsoleV3.enums.ReservationSource;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceInventoryReservationContext;
@@ -35,8 +37,13 @@ public class ReserveServiceOrderPlannedItemsCommand extends FacilioCommand {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION);
                 ServiceInventoryReservationContext reservation = getReservationRecord(serviceOrderPlannedItem);
-                V3Util.createRecord(module, FacilioUtil.getAsMap(FieldUtil.getAsJSON(reservation)),null,null);
-                rollUpReservedItemForSoPlans(serviceOrderPlannedItem.getItemType(), serviceOrderPlannedItem.getStoreRoom(), serviceOrderPlannedItem.getReservationType(), serviceOrderPlannedItem.getQuantity());
+                FacilioContext reservationContext =V3Util.createRecord(module, FacilioUtil.getAsMap(FieldUtil.getAsJSON(reservation)),null,null);
+                Map<String, List> reservationRecordMap = (Map<String, List>) reservationContext.get(Constants.RECORD_MAP);
+                List<ServiceInventoryReservationContext> reservationRecords = reservationRecordMap.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION);
+                if(CollectionUtils.isNotEmpty(reservationRecords)){
+                    ServiceInventoryReservationContext  reservationRecord =reservationRecords.get(0);
+                    rollUpReservedItemForSoPlans(serviceOrderPlannedItem.getItemType(), serviceOrderPlannedItem.getStoreRoom(), serviceOrderPlannedItem.getReservationType(), serviceOrderPlannedItem.getQuantity(),reservationRecord);
+                }
             }
         }
         return false;

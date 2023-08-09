@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -30,6 +31,18 @@ public class ServiceInventoryReservationModule extends BaseModuleConfig {
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(serviceInventoryReservationModule));
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.execute();
+
+        addReservationFieldInItemTransactions();
+    }
+    private void  addReservationFieldInItemTransactions() throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule itemTransactions = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+
+        LookupField reservation = FieldFactory.getDefaultField("serviceInventoryReservation","Service Inventory Reservation","SERVICE_INV_RESERVATION",FieldType.LOOKUP);
+        reservation.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION),"Service Inventory Reservation module doesn't exist."));
+        reservation.setModule(itemTransactions);
+
+        modBean.addField(reservation);
     }
     private FacilioModule constructServiceInventoryReservationModule() throws Exception {
         ModuleBean bean = Constants.getModBean();
