@@ -178,12 +178,15 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
         FacilioField resolutionDueDuration = moduleBean.getField("resolutionDueDuration", moduleName);
         FacilioField responseDueTimeField = moduleBean.getField("responseDueTime", moduleName);
         FacilioField resolutionDueTimeField = moduleBean.getField("resolutionDueTime", moduleName);
-
+        FacilioField responseDueStatus=moduleBean.getField("responseDueStatus",moduleName);
+        FacilioField resolutionDueStatus=moduleBean.getField("resolutionDueStatus",moduleName);
 
         addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, responseDueDuration, 1, 1, 1);
         addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, resolutionDueDuration, 1, 2, 1);
         addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, responseDueTimeField, 1, 3, 1);
         addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, resolutionDueTimeField, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup,responseDueStatus,2,1,1);
+        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup,resolutionDueStatus,2,2,1);
 
 
         // System Details

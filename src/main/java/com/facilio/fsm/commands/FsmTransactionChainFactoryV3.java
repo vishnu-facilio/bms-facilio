@@ -116,6 +116,7 @@ public class FsmTransactionChainFactoryV3 {
 
     public static FacilioChain getServiceAppointmentBeforeCreateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetServiceAppointmentNameCommand());
         c.addCommand(new SetDefaultAppointmentTypeCommand());
         c.addCommand(new SetServiceAppointmentStatusCommand());
         c.addCommand(new RollUpServiceAppointmentFieldsCommand());

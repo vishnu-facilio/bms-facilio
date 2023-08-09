@@ -9,6 +9,8 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
@@ -102,14 +104,27 @@ public class TerritoryModule extends BaseModuleConfig {
         territoryForm.setModule(territoryModule);
         territoryForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         territoryForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
-        List<FormField> territoryFormFields = new ArrayList<>();
-        territoryFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
-        territoryFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
-        territoryFormFields.add(new FormField("color", FacilioField.FieldDisplayType.COLOR_PICKER, "Territory Color", FormField.Required.REQUIRED, 3, 3));
-        territoryFormFields.add(new FormField("geography", FacilioField.FieldDisplayType.TEXTAREA, "Geography", FormField.Required.REQUIRED, 4, 1));
-        FormSection section = new FormSection("Default", 1, territoryFormFields, false);
-        section.setSectionType(FormSection.SectionType.FIELDS);
-        territoryForm.setSections(Collections.singletonList(section));
+
+        List<FormField> territoryGeneralInfoFormFields = new ArrayList<>();
+        territoryGeneralInfoFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        territoryGeneralInfoFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+
+        List<FormField> territoryGeographyFormFields=new ArrayList<>();
+        territoryGeographyFormFields.add(new FormField("geography", FacilioField.FieldDisplayType.TERRITORY, "Geography", FormField.Required.REQUIRED, 3, 1));
+
+        FormSection generalInfosection = new FormSection("General Information", 1, territoryGeneralInfoFormFields, false);
+        FormSection geographySection = new FormSection("Geography", 2, territoryGeographyFormFields, false);
+
+        generalInfosection.setSectionType(FormSection.SectionType.FIELDS);
+
+        geographySection.setSectionType(FormSection.SectionType.FIELDS);
+
+        List<FormSection> webTerritoryFormSection=new ArrayList<>();
+        webTerritoryFormSection.add(generalInfosection);
+        webTerritoryFormSection.add(geographySection);
+
+        territoryForm.setSections(webTerritoryFormSection);
+
         territoryForm.setIsSystemForm(true);
         territoryForm.setType(FacilioForm.Type.FORM);
         List<FacilioForm> territoryModuleForms = new ArrayList<>();
@@ -316,4 +331,35 @@ public class TerritoryModule extends BaseModuleConfig {
 
         return FieldUtil.getAsJSON(widgetGroup);
     }
+
+    @Override
+    public List<Map<String, Object>> getViewsAndGroups() throws Exception {
+        List<Map<String, Object>> groupVsViews = new ArrayList<>();
+        Map<String, Object> groupDetails;
+        int order = 1;
+
+        ArrayList<FacilioView> all = new ArrayList<FacilioView>();
+        all.add(getAllTerritories().setOrder(order++));
+        groupDetails = new HashMap<>();
+        groupDetails.put("name", "systemviews");
+        groupDetails.put("displayName", "System Views");
+        groupDetails.put("views", all);
+        groupVsViews.add(groupDetails);
+
+        return groupVsViews;
+    }
+    private static FacilioView getAllTerritories() {
+        FacilioView allView = new FacilioView();
+        allView.setName("all");
+        allView.setDisplayName("All Territories");
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
+        allView.setAppLinkNames(appLinkNames);
+
+        return allView;
+    }
+
 }
