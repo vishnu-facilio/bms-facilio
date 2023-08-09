@@ -33,7 +33,6 @@ public class AlarmWorkFlowHandler extends BaseHandler {
             LOGGER.info("Current Thread in AlarmWorkFlowHandler---->" + Thread.currentThread());
             Long startTime = currentTimeMillis();
             Map<String, Object> messageMap = message.getContent();
-            Long startTime=currentTimeMillis();
             AccountUtil.setCurrentAccount(message.getOrgId());
             FacilioChain chain = TransactionChainFactory.getV2UpdateAlarmChain();
             FacilioContext context = chain.getContext();
