@@ -904,7 +904,7 @@ public class PackageBeanUtil {
                         emailElement.element("html").text(String.valueOf(((EMailTemplate) templateContext).getHtml()));
                         emailElement.element("message").cData(((EMailTemplate) templateContext).getMessage());
                         emailElement.element("sendAsSeparateMail").text(String.valueOf(((EMailTemplate) templateContext).getSendAsSeparateMail()));
-                        emailElement.element("sender").text(String.valueOf(((EMailTemplate) templateContext).getFromID()));
+                        emailElement.element("sender").text(((EMailTemplate) templateContext).getFrom());
                         emailElement.element("subject").text(((EMailTemplate) templateContext).getSubject());
                         emailElement.element("to").text(((EMailTemplate) templateContext).getTo());
                         break;
@@ -915,6 +915,9 @@ public class PackageBeanUtil {
                         String appLinkName = appId > 0 ? ApplicationApi.getApplicationForId(appId).getLinkName() : null;
                         JSONObject obj = ((PushNotificationTemplate) templateContext).getOriginalTemplate();
                         UserNotificationContext userNotification = UserNotificationContext.instance(obj);
+                        String moduleName = (String) ((JSONObject)obj.get("notification")).get("module_name");
+                        long parentModuleId = moduleBean.getModule(moduleName).getModuleId();
+                        userNotification.setParentModule(parentModuleId);
                         JSONObject structureObj = UserNotificationContext.getFcmObjectMaintainence(userNotification);
                         pushNotificationElement.element(PackageConstants.AppXMLConstants.APP_LINK_NAME).text(appLinkName);
                         pushNotificationElement.element("id").text(((PushNotificationTemplate) templateContext).getTo());
@@ -1074,7 +1077,6 @@ public class PackageBeanUtil {
                                     String emailStructureName = valueElement.getElement(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_NAME).getText();
                                     Template emailStructureTemplate = TemplateAPI.getTemplate(emailStructureName, Template.Type.EMAIL_STRUCTURE);
                                     templateJson.put(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_ID, emailStructureTemplate.getId());
-                                    templateJson.put(PackageConstants.WorkFlowRuleConstants.FROM_ADDR, Long.valueOf(valueElement.getElement("sender").getText()));
                                     templateJson.put("ftl", isFtl);
                                     templateJson.put("isAttachmentAdded", isAttachmentAdded);
                                     templateJson.put("message", valueElement.getElement("message").getCData());

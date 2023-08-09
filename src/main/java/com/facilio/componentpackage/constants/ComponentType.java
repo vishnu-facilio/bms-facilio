@@ -55,7 +55,8 @@ public enum ComponentType implements FacilioIntEnum {
     CUSTOM_BUTTON(null, MODULE, false),
     RELATIONSHIP(RelationshipPackageBeanImpl.class, MODULE, false),
     STATE_FLOW(StateFlowPackageBeanImpl.class,MODULE,false),
-    STATE_TRANSITION(StateTransitionPackageBeanImpl.class,MODULE,false)
+    STATE_TRANSITION(StateTransitionPackageBeanImpl.class,MODULE,false),
+    NOTIFICATION(NotificationPackageBeanImpl.class,MODULE,false)
     ;
 
     public static final List<ComponentType> ORDERED_COMPONENT_TYPE_LIST = Collections.unmodifiableList(initOrderedList());
@@ -101,6 +102,7 @@ public enum ComponentType implements FacilioIntEnum {
             add(WEBTAB);
             add(STATE_FLOW);
             add(STATE_TRANSITION);
+            add(NOTIFICATION);
         }};
         return componentOrder;
     }

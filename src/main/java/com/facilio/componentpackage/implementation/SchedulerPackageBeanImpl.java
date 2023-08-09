@@ -86,7 +86,7 @@ public class SchedulerPackageBeanImpl implements PackageBean<ScheduledWorkflowCo
     }
 
     @Override
-    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents, boolean isReUpdate) throws Exception {
+    public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             XMLBuilder schedulerElement = idVsData.getValue();
             if (schedulerElement != null) {
@@ -94,6 +94,11 @@ public class SchedulerPackageBeanImpl implements PackageBean<ScheduledWorkflowCo
                 updateScheduler(scheduledWorkflowContext);
             }
         }
+    }
+
+    @Override
+    public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+
     }
 
     @Override

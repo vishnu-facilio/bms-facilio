@@ -39,6 +39,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -413,7 +414,7 @@ public class WorkflowRuleAPI {
 		return updateBuilder.update(FieldUtil.getAsProperties(extendedRule));
 	}
 
-	public static WorkflowRuleContext getWorkflowRule(String name, FacilioModule module, RuleType type) throws Exception{
+	public static WorkflowRuleContext getWorkflowRule(String name, FacilioModule module, RuleType type,boolean actionNeeded) throws Exception{
 		if (name == null && module == null && type == null){
 			return null;
 		}
@@ -429,6 +430,10 @@ public class WorkflowRuleAPI {
 				.andCriteria(criteria);
 
 		WorkflowRuleContext workflowRule = FieldUtil.getAsBeanFromMap(builder.fetchFirst(),WorkflowRuleContext.class);
+		if (workflowRule != null && actionNeeded) {
+			List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), workflowRule.getId());
+			workflowRule.setActions(actions);
+		}
 		return  workflowRule;
 	}
 
@@ -702,8 +707,12 @@ public class WorkflowRuleAPI {
 	}
 
 	protected static void deleteChildIdsForWorkflow(WorkflowRuleContext oldRule, WorkflowRuleContext newRule) throws Exception {
-		if(newRule.getCriteria() != null && oldRule.getCriteriaId() != -1) {
-			CriteriaAPI.deleteCriteria(oldRule.getCriteriaId());
+		try {
+			if (newRule.getCriteria() != null && oldRule.getCriteriaId() != -1) {
+				CriteriaAPI.deleteCriteria(oldRule.getCriteriaId());
+			}
+		}catch (MySQLIntegrityConstraintViolationException e) {
+			LOGGER.info("Error while deleting existing workflow criteria", e);
 		}
 		if(newRule.getWorkflow() != null && oldRule.getWorkflowId() != -1) {
 			WorkflowUtil.deleteWorkflow(oldRule.getWorkflowId());

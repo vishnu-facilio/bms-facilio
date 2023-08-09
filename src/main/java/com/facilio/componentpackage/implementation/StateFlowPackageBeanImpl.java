@@ -135,7 +135,7 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
         FacilioModule module = moduleBean.getModule(stateFlowRuleContext.getModuleId());
 
         WorkflowRuleContext existingStateflow =  WorkflowRuleAPI.getWorkflowRule(stateFlowRuleContext.getName(),module,
-                stateFlowRuleContext.getRuleTypeEnum());
+                stateFlowRuleContext.getRuleTypeEnum(),false);
 
         if (existingStateflow != null){
             stateFlowRuleContext.setId(existingStateflow.getId());
