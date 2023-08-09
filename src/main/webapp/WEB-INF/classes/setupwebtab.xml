@@ -382,37 +382,39 @@
     </package>
     <!--     OData packages-->
     <package name="odatasettings" namespace="/api/v1/setup/odatasettings" extends="v2Api">
-        <action name="getodatamodules" class="com.facilio.odataservice.action.ODataModuleAction" method="fetchODataModules"/>
-        <action name="updateodatamodules" class="com.facilio.odataservice.action.ODataModuleAction" method="updateODataModules">
-        </action>
-        <action name="deleteselectedmodules" class="com.facilio.odataservice.action.ODataModuleAction" method="deleteODataModules">
-        </action>
-        <action name="addodatamodules" class="com.facilio.odataservice.action.ODataModuleAction" method="addODataModules">
-        </action>
-        <action name="fetchodatareadings" class="com.facilio.odataservice.action.ODataReadingViewsAction" method="fetchODataReadings">
-        </action>
-        <action name="changestatus" class="com.facilio.odataservice.action.ODataReadingViewsAction" method="changeStatus">
-        </action>
-        <action name="addodatareadings" class="com.facilio.odataservice.action.ODataReadingViewsAction" method="addODataReadings">
-            <result name="success" type="json">
-            </result>
-        </action>
-        <action name="readingscount" class="com.facilio.odataservice.action.ODataReadingViewsAction" method="readingsCount">
-            <result name="success" type="json">
-            </result>
-        </action>
-        <action name="modulescount" class="com.facilio.odataservice.action.ODataModuleAction" method="modulesCount">
-            <result name="success" type="json">
-            </result>
-        </action>
-        <action name="updateodatareadings" class="com.facilio.odataservice.action.ODataReadingViewsAction" method="updateODataReadings">
-            <result name="success" type="json">
-            </result>
-        </action>
-        <action name="deleteodatareading" class="com.facilio.odataservice.action.ODataReadingViewsAction" method="deleteODataReadings">
-            <result name="success" type="json">
-            </result>
-        </action>
+        <action name="getodatamodules"
+                class="com.facilio.odataservice.action.ODataModuleAction"
+                method="fetchODataModules"/>
+        <action name="updateodatamodules"
+                class="com.facilio.odataservice.action.ODataModuleAction"
+                method="updateODataModules"/>
+        <action name="deleteselectedmodules"
+                class="com.facilio.odataservice.action.ODataModuleAction"
+                method="deleteODataModules"/>
+        <action name="addodatamodules"
+                class="com.facilio.odataservice.action.ODataModuleAction"
+                method="addODataModules"/>
+        <action name="fetchodatareadings"
+                class="com.facilio.odataservice.action.ODataReadingViewsAction"
+                method="fetchODataReadings"/>
+        <action name="changestatus"
+                class="com.facilio.odataservice.action.ODataReadingViewsAction"
+                method="changeStatus"/>
+        <action name="addodatareadings"
+                class="com.facilio.odataservice.action.ODataReadingViewsAction"
+                method="addODataReadings"/>
+        <action name="readingscount"
+                class="com.facilio.odataservice.action.ODataReadingViewsAction"
+                method="readingsCount"/>
+        <action name="modulescount"
+                class="com.facilio.odataservice.action.ODataModuleAction"
+                method="modulesCount"/>
+        <action name="updateodatareadings"
+                class="com.facilio.odataservice.action.ODataReadingViewsAction"
+                method="updateODataReadings"/>
+        <action name="deleteodatareading"
+                class="com.facilio.odataservice.action.ODataReadingViewsAction"
+                method="deleteODataReadings"/>
    </package>
     <package name="womodulesetting" namespace="/api/v1/setup/womodulesetting" extends="v3Api">
         <action name="add" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdate"/>

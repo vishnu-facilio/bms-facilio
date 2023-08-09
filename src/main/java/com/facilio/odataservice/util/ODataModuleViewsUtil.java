@@ -238,7 +238,7 @@ public class ODataModuleViewsUtil {
         LOGGER.info("modified props");
         List<Map<String,Object>> newPropsMap = new ArrayList<>();
         if(!builderParams.get("selectFields").toString().equalsIgnoreCase("")){
-            String fieldName =  ODATAUtil.getDisplayNameVsFieldNameMap(moduleName).get(builderParams.get("selectFields").toString());
+            String fieldName =  ODATAUtil.getDisplayNameVsFieldNameMap(moduleName).get(addNameSpaces(builderParams.get("selectFields").toString()));
             if(fieldName == null){
                 fieldName = builderParams.get("selectFields").toString();
             }

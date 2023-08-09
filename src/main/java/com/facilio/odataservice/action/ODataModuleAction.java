@@ -13,7 +13,6 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.odataservice.service.*;
 import com.facilio.odataservice.util.ODataModuleViewsUtil;
-import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +33,6 @@ import java.util.*;
 @Setter
 public class ODataModuleAction extends FacilioAction {
     List<Long> selectedModuleIds;
-    int count;
     private String moduleName;
     private Map<String,Object> data;
 
@@ -128,10 +126,9 @@ public class ODataModuleAction extends FacilioAction {
             });
         }
         setSelectedModuleIds(moduleIds);
-        setCount(selectRecordBuilder.get().size());
-        Map<String,Object> count = new HashMap<>();
-        count.put("count",getCount());
-        setResult("data",count);
+        setResult("count",selectRecordBuilder.get().size());
+        setResult("selectedModuleIds",moduleIds);
+
         return SUCCESS;
     }
     public String addODataModules() throws Exception {

@@ -13,7 +13,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.odataservice.util.ODataReadingViewsUtil;
-import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.log4j.LogManager;
@@ -26,15 +25,14 @@ import java.util.Map;
 import static com.facilio.odataservice.util.ODataReadingViewsUtil.addODataReadingViewName;
 
 @Getter @Setter
-public class ODataReadingViewsAction extends V3Action {
-    ODataReadingsContext readingView;
-    String readingName;
-    long assetCategoryId;
-    Boolean status;
-    int count;
+public class ODataReadingViewsAction extends FacilioAction {
+    private ODataReadingsContext readingView;
+    private String readingName;
+    private long assetCategoryId;
+    private Boolean status;
     private static final Logger LOGGER = LogManager.getLogger(ODataModuleAction.class.getName());
     public String addODataReadings() throws Exception {
-        ODataReadingsContext context = addODataReadingViewName(readingView);
+        ODataReadingsContext context = addODataReadingViewName(getReadingView());
         ODataReadingViewsUtil.updateODataReadingsCriteriaId(context);
         List<FacilioField> fields = FieldFactory.getODataReadingFields();
         Map<String, Object> prop = FieldUtil.getAsProperties(context);
@@ -60,13 +58,13 @@ public class ODataReadingViewsAction extends V3Action {
                             .offset(getPerPage() * (getPage()-1));
 
         List<Map<String, Object>> result = selectRecordBuilder.get();
-        List<ODataReadingsContext> resobj = FieldUtil.getAsBeanListFromMapList(result, ODataReadingsContext.class);
-        for(int i=0;i<resobj.size();i++){
-            ODataReadingsContext context = resobj.get(i);
+        List<ODataReadingsContext> readingsContextList = FieldUtil.getAsBeanListFromMapList(result, ODataReadingsContext.class);
+        for(int i=0;i<readingsContextList.size();i++){
+            ODataReadingsContext context = readingsContextList.get(i);
             context.setCriteria(CriteriaAPI.getCriteria(context.getCriteriaId()));
             context.setEnabled((Boolean)result.get(i).get("isEnabled"));
         }
-        setData("data",resobj);
+        setResult("readings",readingsContextList);
         return SUCCESS;
     }
     public String readingsCount() throws Exception{
@@ -78,34 +76,34 @@ public class ODataReadingViewsAction extends V3Action {
         if(getSearch()!=null && !getSearch().isEmpty()){
             selectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("displayName"),getSearch(),StringOperators.CONTAINS));
         }
-        setCount(selectRecordBuilder.get().size());
+        setResult("count",selectRecordBuilder.get().size());
         return SUCCESS;
     }
     public String updateODataReadings() throws Exception {
         List<FacilioField> fields = FieldFactory.getODataReadingFields();
         Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        ODataReadingsContext context = readingView;
+        ODataReadingsContext context = getReadingView();
         context.setName(ODataReadingViewsUtil.getReadingViewName(context));
         ODataReadingViewsUtil.updateODataReadingsCriteriaId(context);
         Map<String, Object> prop = FieldUtil.getAsProperties(context);
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getODataReadingModule().getTableName())
                 .fields(fields)
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("name"),readingName, StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("name"),getReadingName(), StringOperators.IS));
         updateBuilder.update(prop);
         return SUCCESS;
     }
     public String changeStatus() throws Exception{
         List<FacilioField> fields = FieldFactory.getODataReadingFields();
         Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        ODataReadingsContext context = ODataReadingViewsUtil.getReadingView(readingName);
-        context.setEnabled(status);
+        ODataReadingsContext context = ODataReadingViewsUtil.getReadingView(getReadingName());
+        context.setEnabled(getStatus());
         Map<String, Object> prop = new HashMap<>();
-        prop.put("isEnabled",status);
+        prop.put("isEnabled",getStatus());
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getODataReadingModule().getTableName())
                 .fields(fields)
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("name"),readingName, StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("name"),getReadingName(), StringOperators.IS));
         updateBuilder.update(prop);
 
         return SUCCESS;
@@ -116,7 +114,7 @@ public class ODataReadingViewsAction extends V3Action {
         Map<String,FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
                 .table(ModuleFactory.getODataReadingModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("name"),readingName, StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("name"),getReadingName(), StringOperators.IS));
         int deleted = deleteRecordBuilder.delete();
         return SUCCESS;
     }
