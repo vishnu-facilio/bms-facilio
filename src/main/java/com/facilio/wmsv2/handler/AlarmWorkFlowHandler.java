@@ -49,6 +49,8 @@ public class AlarmWorkFlowHandler extends BaseHandler {
             }
             LOGGER.info(String.format("Time taken to execute alarm workflow %d", currentTimeMillis() - startTime));
             chain.execute();
+            if ((currentTimeMillis() - startTime) > 5000)
+                LOGGER.info(String.format("Time taken to execute alarm workflow %d ms", currentTimeMillis() - startTime));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
