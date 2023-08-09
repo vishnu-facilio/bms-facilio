@@ -25,6 +25,12 @@ public class SetServiceOrderPlannedServicesCommand  extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(serviceOrderPlannedServices)){
             for(ServiceOrderPlannedServicesContext serviceOrderPlannedService : serviceOrderPlannedServices){
                 V3ServiceContext service = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SERVICE,serviceOrderPlannedService.getService().getId(),V3ServiceContext.class);
+                if(serviceOrderPlannedService.getQuantity()==null){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
+                }
+                if(serviceOrderPlannedService.getService()==null){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service cannot be empty");
+                }
                 //number fields validation
                 if(serviceOrderPlannedService.getQuantity()!=null && serviceOrderPlannedService.getQuantity()<0){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Enter a valid quantity");
@@ -32,9 +38,10 @@ public class SetServiceOrderPlannedServicesCommand  extends FacilioCommand {
                 if(serviceOrderPlannedService.getUnitPrice()!=null && serviceOrderPlannedService.getUnitPrice()<0){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Enter a valid unit price");
                 }
-                if(serviceOrderPlannedService.getUnitPrice()!=null && serviceOrderPlannedService.getQuantity()!=null){
+                if(serviceOrderPlannedService.getQuantity()!=null){
+                    Double unitPrice = serviceOrderPlannedService.getUnitPrice()!=null ? serviceOrderPlannedService.getUnitPrice() : 0;
                     //total cost computation
-                    Double totalCost = serviceOrderPlannedService.getUnitPrice() * serviceOrderPlannedService.getQuantity();
+                    Double totalCost = unitPrice * serviceOrderPlannedService.getQuantity();
                     if(service.getPaymentTypeEnum().equals(V3ServiceContext.PaymentType.FIXED)){
                         serviceOrderPlannedService.setTotalCost(totalCost);
                     }else if(service.getPaymentTypeEnum().equals(V3ServiceContext.PaymentType.DURATION_BASED) && serviceOrderPlannedService.getDuration()!=null){

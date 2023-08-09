@@ -26,6 +26,12 @@ public class SetServiceOrderPlannedItemsCommand extends FacilioCommand {
         Map<String, Object> bodyParams = Constants.getBodyParams(context);
         if(CollectionUtils.isNotEmpty(serviceOrderPlannedItems)){
             for(ServiceOrderPlannedItemsContext serviceOrderPlannedItem : serviceOrderPlannedItems){
+                if(serviceOrderPlannedItem.getQuantity()==null){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
+                }
+                if(serviceOrderPlannedItem.getItemType()==null){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item Type cannot be empty");
+                }
                 serviceOrderPlannedItem.setReservationType(ReservationType.SOFT.getIndex());
 
                 if(MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("reserve") && (boolean) bodyParams.get("reserve")){
@@ -48,9 +54,10 @@ public class SetServiceOrderPlannedItemsCommand extends FacilioCommand {
                 if(serviceOrderPlannedItem.getUnitPrice()!=null && serviceOrderPlannedItem.getUnitPrice()<0){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Enter a valid unit price");
                 }
-                if(serviceOrderPlannedItem.getUnitPrice()!=null && serviceOrderPlannedItem.getQuantity()!=null){
+                if(serviceOrderPlannedItem.getQuantity()!=null){
+                    Double unitPrice = serviceOrderPlannedItem.getUnitPrice()!=null ? serviceOrderPlannedItem.getUnitPrice() : 0;
                     //total cost computation
-                    Double totalCost = serviceOrderPlannedItem.getUnitPrice() * serviceOrderPlannedItem.getQuantity();
+                    Double totalCost = unitPrice * serviceOrderPlannedItem.getQuantity();
                     serviceOrderPlannedItem.setTotalCost(totalCost);
                 }
             }
