@@ -7,6 +7,7 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.taskengine.ScheduleInfo;
 
 import java.time.LocalTime;
+import java.util.Collections;
 
 public class DefaultJobsOnSignUp extends SignUpData {
     private ScheduleInfo constructDailyScheduleInfoWithOneTime(String time) {
@@ -44,6 +45,15 @@ public class DefaultJobsOnSignUp extends SignUpData {
             scheduleInfo.addTime(LocalTime.of(i, 0));
             scheduleInfo.addTime(LocalTime.of(i, 30));
         }
+
+        return scheduleInfo;
+    }
+
+    private ScheduleInfo constructMonthlyScheduleInfoWithOneTime(String time, int date) {
+        ScheduleInfo scheduleInfo = new ScheduleInfo();
+        scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.MONTHLY_DAY);
+        scheduleInfo.addTime(time);
+        scheduleInfo.setValues(Collections.singletonList(date));
 
         return scheduleInfo;
     }
@@ -127,5 +137,7 @@ public class DefaultJobsOnSignUp extends SignUpData {
 
         // JOB TO DELETE "DELETED PRE-OPEN WORKORDERS"
         FacilioTimer.scheduleCalendarJob(orgId, "RemoveDeletedPreOpenWorkOrdersJob", System.currentTimeMillis(), constructDailyScheduleInfoWithOneTime("03:00"), "facilio");
+
+        FacilioTimer.scheduleCalendarJob(orgId, "DeleteScheduledOneTimeRuleExecution", System.currentTimeMillis(), constructMonthlyScheduleInfoWithOneTime("00:00",28), "facilio");
     }
 }
