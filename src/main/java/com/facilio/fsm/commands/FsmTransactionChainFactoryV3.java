@@ -1,6 +1,7 @@
 package com.facilio.fsm.commands;
 
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.ItemTransactionRemainingQuantityRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.PurchasedItemsQuantityRollUpCommandV3;
 import com.facilio.chain.FacilioChain;
@@ -116,6 +117,7 @@ public class FsmTransactionChainFactoryV3 {
 
     public static FacilioChain getServiceAppointmentBeforeCreateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new SetServiceAppointmentNameCommand());
         c.addCommand(new SetDefaultAppointmentTypeCommand());
         c.addCommand(new SetServiceAppointmentStatusCommand());
@@ -162,12 +164,14 @@ public class FsmTransactionChainFactoryV3 {
 
     public static FacilioChain getTimeSheetBeforeCreateChain() {
         FacilioChain c= getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckForExistingTimeSheetsCommand());
         return c;
     }
 
     public static FacilioChain getTripBeforeCreateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckForExistingTripsCommand());
         return c;
     }

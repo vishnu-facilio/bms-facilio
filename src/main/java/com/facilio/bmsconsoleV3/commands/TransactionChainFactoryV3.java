@@ -808,6 +808,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getEmployeeBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new PeopleValidationCommandV3());
         c.addCommand(new AddPeopleTypeForEmployeeCommandV3());
         return c;

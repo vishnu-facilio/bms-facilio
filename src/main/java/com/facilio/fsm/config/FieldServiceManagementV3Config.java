@@ -3,6 +3,7 @@ package com.facilio.fsm.config;
 
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
+import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount15;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount30_BS2;
 import com.facilio.constants.FacilioConstants;
@@ -189,6 +190,7 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTimeOff(){
         return () -> new V3Config(TimeOffContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
+                .beforeSave(new SetLocalIdCommandV3())
                 .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeOff.TIME_OFF_ACTIVITY))
                 .update()
@@ -215,6 +217,7 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTerritory(){
         return () -> new V3Config(TerritoryContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
+                .beforeSave(new SetLocalIdCommandV3())
                 .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.Territory.TERRITORY_ACTIVITY))
                 .update()

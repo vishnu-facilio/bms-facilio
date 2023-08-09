@@ -3370,6 +3370,7 @@ public class FacilioConstants {
 			classMap.put(TimeSheet.TIME_SHEET_ACTIVITY,ActivityContext.class);
 			classMap.put(Trip.TRIP_ACTIVITY,ActivityContext.class);
 			classMap.put(SERVICE_INVENTORY_RESERVATION, ServiceInventoryReservationContext.class);
+			classMap.put(TimeOff.TIME_OFF_ACTIVITY, ActivityContext.class);
 
 
 
@@ -4707,6 +4708,7 @@ public class FacilioConstants {
 		public static final String TIME_SHEET_ACTIVITY = "timeSheetActivity";
 		public static final String TIME_SHEET_NOTES="timeSheetnotes";
 		public static final String TIME_SHEET_ATTACHMENTS="timeSheetattachments";
+		public static final String STOP_TIME_SHEET="stopTimeSheet";
 	}
 	public static class Trip{
 		public static final String TRIP = "trip";

@@ -1,18 +1,32 @@
 package com.facilio.fsm.signup;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
+import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
+import com.facilio.qa.context.ResponseContext;
 import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
@@ -33,6 +47,9 @@ public class TimeSheetModule extends BaseModuleConfig {
         FacilioModule timeSheetModule = new FacilioModule(FacilioConstants.TimeSheet.TIME_SHEET,"Time Sheet","TIME_SHEET", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> timeSheetFields = new ArrayList<>();
+
+        NumberField localId = new NumberField(timeSheetModule,"localId","Id", FacilioField.FieldDisplayType.NUMBER,"LOCAL_ID",FieldType.NUMBER,false,false,true,false);
+        timeSheetFields.add(localId);
 
         DateField startTime = new DateField(timeSheetModule,"startTime","Start Time", FacilioField.FieldDisplayType.DATETIME,"START_TIME", FieldType.DATE_TIME,true,false,true,false);
         timeSheetFields.add(startTime);
@@ -85,6 +102,8 @@ public class TimeSheetModule extends BaseModuleConfig {
         addTimeSheetTasksField();
         addActivityModuleForTimeSheet();
         SignupUtil.addNotesAndAttachmentModule(timeSheetModule);
+        addStateFlow();
+        addSystemButtons();
 
     }
     private void addTimeSheetTaskModule() throws Exception {
@@ -307,4 +326,170 @@ public class TimeSheetModule extends BaseModuleConfig {
 
         return FieldUtil.getAsJSON(widgetGroup);
     }
+
+    private void addStateFlow() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule timeSheetModule = modBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
+
+
+        FacilioStatus inProgressStatus = new FacilioStatus();
+        inProgressStatus.setStatus("inProgress");
+        inProgressStatus.setDisplayName("In Progress");
+        inProgressStatus.setTypeCode(1);
+        TicketAPI.addStatus(inProgressStatus, timeSheetModule);
+
+        FacilioStatus completedStatus = new FacilioStatus();
+        completedStatus.setStatus("completed");
+        completedStatus.setDisplayName("Completed");
+        completedStatus.setTypeCode(2);
+        completedStatus.setRecordLocked(true);
+        TicketAPI.addStatus(completedStatus, timeSheetModule);
+
+        StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
+        stateFlowRuleContext.setName("Default Stateflow");
+        stateFlowRuleContext.setModuleId(timeSheetModule.getModuleId());
+        stateFlowRuleContext.setModule(timeSheetModule);
+        stateFlowRuleContext.setActivityType(EventType.CREATE);
+        stateFlowRuleContext.setExecutionOrder(1);
+        stateFlowRuleContext.setStatus(true);
+        stateFlowRuleContext.setDefaltStateFlow(true);
+        stateFlowRuleContext.setDefaultStateId(inProgressStatus.getId());
+        stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
+        WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
+
+        Criteria completionCriteria = new Criteria();
+        completionCriteria.addAndCondition(CriteriaAPI.getCondition("END_TIME", "endTime", null, CommonOperators.IS_NOT_EMPTY));
+
+        addStateflowTransitionContext(timeSheetModule, stateFlowRuleContext, "Complete Inspection", inProgressStatus,completedStatus, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,completionCriteria,null);
+    }
+
+    private StateflowTransitionContext addStateflowTransitionContext(FacilioModule module,StateFlowRuleContext parentStateFlow,String name,FacilioStatus fromStatus,FacilioStatus toStatus,AbstractStateTransitionRuleContext.TransitionType transitionType,Criteria criteria,List<ActionContext> actions) throws Exception {
+
+        StateflowTransitionContext stateFlowTransitionContext = new StateflowTransitionContext();
+        stateFlowTransitionContext.setName(name);
+        stateFlowTransitionContext.setModule(module);
+        stateFlowTransitionContext.setModuleId(module.getModuleId());
+        stateFlowTransitionContext.setActivityType(EventType.CREATE);
+        stateFlowTransitionContext.setExecutionOrder(1);
+        stateFlowTransitionContext.setButtonType(1);
+        stateFlowTransitionContext.setFromStateId(fromStatus.getId());
+        stateFlowTransitionContext.setToStateId(toStatus.getId());
+        stateFlowTransitionContext.setRuleType(WorkflowRuleContext.RuleType.STATE_RULE);
+        stateFlowTransitionContext.setType(transitionType);
+        stateFlowTransitionContext.setStateFlowId(parentStateFlow.getId());
+        stateFlowTransitionContext.setCriteria(criteria);
+
+        WorkflowRuleAPI.addWorkflowRule(stateFlowTransitionContext);
+
+        if (actions != null && !actions.isEmpty()) {
+            actions = ActionAPI.addActions(actions, stateFlowTransitionContext);
+            if(stateFlowTransitionContext != null) {
+                ActionAPI.addWorkflowRuleActionRel(stateFlowTransitionContext.getId(), actions);
+                stateFlowTransitionContext.setActions(actions);
+            }
+        }
+
+        return stateFlowTransitionContext;
+    }
+
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule timeSheetModule = modBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
+        FacilioForm timeSheetForm =new FacilioForm();
+        timeSheetForm.setDisplayName("Standard");
+        timeSheetForm.setName("default_timeSheet_web");
+        timeSheetForm.setModule(timeSheetModule);
+        timeSheetForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        timeSheetForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
+        List<FormField> generalInformationFields = new ArrayList<>();
+
+        generalInformationFields.add(new FormField("fieldAgent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Field Agent", FormField.Required.REQUIRED,1,2));
+        generalInformationFields.add(new FormField("serviceAppointment", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Service Appointment",FormField.Required.REQUIRED,2,2));
+        generalInformationFields.add(new FormField("startTime", FacilioField.FieldDisplayType.DATETIME, "Start Time", FormField.Required.REQUIRED, 3, 2));
+        generalInformationFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME, "End Time", FormField.Required.REQUIRED, 4, 2));
+
+        FormSection generalSection = new FormSection("General Information", 1, generalInformationFields, true);
+        generalSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        List<FormField> serviceTasksFields = new ArrayList<>();
+        serviceTasksFields.add(new FormField("serviceTasks", FacilioField.FieldDisplayType.SERVICE_APPOINTMENT_TASKS, "Tasks", FormField.Required.REQUIRED, 1, 1));
+        FormSection serviceTaskSection = new FormSection("Service Task Details", 2, serviceTasksFields, true);
+
+        serviceTaskSection.setSectionType(FormSection.SectionType.FIELDS);
+
+        List<FormSection> webTimeSheetFormSection = new ArrayList<>();
+        webTimeSheetFormSection.add(generalSection);
+        webTimeSheetFormSection.add(serviceTaskSection);
+
+        timeSheetForm.setSections(webTimeSheetFormSection);
+        timeSheetForm.setIsSystemForm(true);
+        timeSheetForm.setType(FacilioForm.Type.FORM);
+        List<FacilioForm> timeSheetModuleForms = new ArrayList<>();
+        timeSheetModuleForms.add(timeSheetForm);
+        return timeSheetModuleForms;
+    }
+
+    @Override
+    public List<Map<String, Object>> getViewsAndGroups() throws Exception{
+        List<Map<String, Object>> groupVsViews = new ArrayList<>();
+        Map<String, Object> groupDetails;
+
+        int order = 1;
+        ArrayList<FacilioView> timeSheetViews = new ArrayList<FacilioView>();
+        timeSheetViews.add(getAllTimeSheetViews().setOrder(order++));
+
+        groupDetails = new HashMap<>();
+        groupDetails.put("name", "systemviews");
+        groupDetails.put("displayName", "System Views");
+        groupDetails.put("moduleName", FacilioConstants.TimeSheet.TIME_SHEET);
+        groupDetails.put("views", timeSheetViews);
+        groupVsViews.add(groupDetails);
+
+        return groupVsViews;
+    }
+
+    private FacilioView getAllTimeSheetViews() throws Exception {
+
+        FacilioModule timeSheetModule = Constants.getModBean().getModule(FacilioConstants.TimeSheet.TIME_SHEET);
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(timeSheetModule), true));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("alltimesheets");
+        allView.setDisplayName("All Time Sheets");
+        allView.setModuleName(FacilioConstants.TimeSheet.TIME_SHEET);
+        allView.setSortFields(sortFields);
+
+        List<ViewField> timeSheetViewFields = new ArrayList<>();
+
+        timeSheetViewFields.add(new ViewField("fieldAgent","Field Agent"));
+        timeSheetViewFields.add(new ViewField("startTime","Start Time"));
+        timeSheetViewFields.add(new ViewField("endTime","End Time"));
+        timeSheetViewFields.add(new ViewField("serviceAppointment","Service Appointment"));
+        timeSheetViewFields.add(new ViewField("serviceTasks","Tasks"));
+
+        allView.setFields(timeSheetViewFields);
+
+        return allView;
+    }
+
+    private void addSystemButtons() throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.TimeSheet.TIME_SHEET);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        SystemButtonRuleContext stopTimeSheet = new SystemButtonRuleContext();
+        stopTimeSheet.setName("Stop Time Sheet");
+        stopTimeSheet.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        stopTimeSheet.setIdentifier(FacilioConstants.TimeSheet.STOP_TIME_SHEET);
+        stopTimeSheet.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        stopTimeSheet.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        stopTimeSheet.setPermissionRequired(true);
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.ENDTIME),CommonOperators.IS_EMPTY));
+        stopTimeSheet.setCriteria(criteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.TimeSheet.TIME_SHEET,stopTimeSheet);
+
+    }
+
 }
