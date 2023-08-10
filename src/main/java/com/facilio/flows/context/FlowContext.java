@@ -1,11 +1,13 @@
 package com.facilio.flows.context;
 
+import com.facilio.flowengine.enums.FlowVariableDataType;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.v3.context.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.jgrapht.alg.interfaces.FlowAlgorithm;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,6 +27,19 @@ public class FlowContext implements Serializable {
     private long sysModifiedTime = -1;
 
     private List<ParameterContext> parameters;
+    private String returnVariableName;
+    private FlowVariableDataType returnVariableDataType;
+
+    public FlowVariableDataType getReturnVariableDataType() {
+        return returnVariableDataType;
+    }
+
+    public void setReturnVariableDataType(FlowVariableDataType returnVariableDataType) {
+        this.returnVariableDataType = returnVariableDataType;
+    }
+    public void setReturnVariableDataType(String returnVariableDataType) {
+        this.returnVariableDataType = FlowVariableDataType.valueOf(returnVariableDataType);
+    }
 
     private FlowType flowType;
     public int getFlowType() {

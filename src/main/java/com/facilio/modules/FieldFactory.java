@@ -3497,6 +3497,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getSystemField("sysModifiedTime", module));
         fields.add(getNumberField("createdBy", "SYS_CREATED_BY", module));
         fields.add(getNumberField("modifiedBy", "SYS_MODIFIED_BY", module));
+        fields.add(getStringField("returnVariableName","RETURN_VARIABLE_NAME",module));
+        fields.add(getStringField("returnVariableDataType","RETURN_VARIABLE_DATA_TYPE",module));
 
         return fields;
     }
