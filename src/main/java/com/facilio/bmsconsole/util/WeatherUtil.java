@@ -189,7 +189,7 @@ public class WeatherUtil {
 			String url = getDarkSkyForecastURL(lat, lng, time);
 			return getDarkSkyWeatherData(url);
 		}
-		WeatherService service = WeatherServiceType.getWeatherService(weatherUrl, "");
+		WeatherService service = WeatherServiceType.getWeatherService(FacilioProperties.getConfig("weather.service"), "");
 		return service.getWeatherData(lat, lng, time);
 	}
 
