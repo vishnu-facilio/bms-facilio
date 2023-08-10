@@ -10,6 +10,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -35,64 +36,53 @@ public class GetOfflineStateTransitionCommand extends FacilioCommand {
         }
 
         FacilioStatus moduleState = record.getModuleState();
-        Long stateFlowId = record.getStateFlowId();
+        long stateFlowId = record.getStateFlowId();
 
         if (moduleState == null || stateFlowId <= 0) {
             return false;
         }
 
         List<WorkflowRuleContext> stateTransitions = StateFlowRulesAPI.getAllStateTransitionList(stateFlowId);
-
-        List<Long> visitedIds = new ArrayList<>();
         List<Long> stateIds = new ArrayList<>();
-        HashMap<Long,List<HashMap<String,Object>>> offlineStateTransition = new HashMap<>();
         stateIds.add(moduleState.getId());
 
         HashMap<Long,List<WorkflowRuleContext>> stateTransitionMap = getStateTransitionMap(stateTransitions);
 
-        offlineStateTransition = getOfflineStateTransitionMap(stateIds,stateTransitionMap,offlineStateTransition,visitedIds);
+        HashMap<Long,List<HashMap<String,Object>>> offlineStateTransition = getOfflineStateTransitionMap(moduleState.getId(), stateTransitionMap, new HashSet<>());
 
         context.put("offlineStateTransition",offlineStateTransition);
 
         return false;
     }
 
-    public static HashMap<Long, List<HashMap<String,Object>>> getOfflineStateTransitionMap(List<Long> stateIds,HashMap<Long,List<WorkflowRuleContext>> stateTransitions,HashMap<Long,List<HashMap<String,Object>>> stack,List<Long> visitedIds) throws Exception {
-        List<Long> unVisitedStateIds = new ArrayList<>();
-        Iterator<Long> stateIdsItr = stateIds.iterator();
+    public static HashMap<Long, List<HashMap<String,Object>>> getOfflineStateTransitionMap(long startStateId, HashMap<Long,List<WorkflowRuleContext>> stateTransitions, Set<Long> visitedIds) throws Exception {
+        HashMap<Long,List<HashMap<String,Object>>> stack = new HashMap<>();
 
-        if(stateTransitions == null){
-            return null;
+        if (visitedIds.contains(startStateId)) {
+            return stack;
+        }
+        visitedIds.add(startStateId);
+
+        final List<WorkflowRuleContext> workflowRuleContexts = stateTransitions.get(startStateId);
+        if (CollectionUtils.isEmpty(workflowRuleContexts)) {
+            return stack;
         }
 
-        while(stateIdsItr.hasNext()) {
-            Long stateId = stateIdsItr.next();
-            List<WorkflowRuleContext> transitions = stateTransitions.get(stateId);
-
-            if (CollectionUtils.isNotEmpty(transitions) && !visitedIds.contains(stateId)) {
-                visitedIds.add(stateId);
-                Iterator<WorkflowRuleContext> transitionItr = transitions.iterator();
-                List<HashMap<String, Object>> states = new ArrayList<>();
-
-                while (transitionItr.hasNext()) {
-                    StateflowTransitionContext stateTransition = (StateflowTransitionContext) transitionItr.next();
-                    if(stateTransition.getIsOffline() != null && stateTransition.getIsOffline()) {
-                        HashMap<String, Object> recordMap = getRecordAsMap(stateTransition);
-                        states.add(recordMap);
-                        unVisitedStateIds.add(stateTransition.getToStateId());
-                    }
+        for (WorkflowRuleContext workflowRule : workflowRuleContexts) {
+            StateflowTransitionContext transition = (StateflowTransitionContext) workflowRule;
+            if(transition.getIsOffline() != null && transition.getIsOffline()) {
+                long fromStateId = transition.getFromStateId();
+                List<HashMap<String, Object>> offlineStateTransition = stack.get(fromStateId);
+                if (offlineStateTransition == null) {
+                    offlineStateTransition = new ArrayList<>();
+                    stack.put(fromStateId, offlineStateTransition);
                 }
+                HashMap<String, Object> recordMap = getRecordAsMap(transition);
+                offlineStateTransition.add(recordMap);
 
-                if (CollectionUtils.isNotEmpty(states)) {
-                    stack.put(stateId, states);
-                }
+                stack.putAll(getOfflineStateTransitionMap(transition.getToStateId(), stateTransitions, visitedIds));
             }
-
-            stateIds.remove(stateId);
-            if(CollectionUtils.isEmpty(stateIds)) break;
         }
-
-        if(!unVisitedStateIds.isEmpty()) return getOfflineStateTransitionMap(unVisitedStateIds, stateTransitions, stack, visitedIds);
 
         return stack;
     }
@@ -125,10 +115,8 @@ public class GetOfflineStateTransitionCommand extends FacilioCommand {
             stateTransitionList.add((StateflowTransitionContext) stateTransition);
         }
 
-        HashMap<Long,List<WorkflowRuleContext>> stateTransitionMap = stateTransitionList.stream().collect(
+        return stateTransitionList.stream().collect(
                 Collectors.groupingBy(StateflowTransitionContext::getFromStateId,HashMap::new,Collectors.toList()));
-
-        return stateTransitionMap;
     }
 
     public static HashMap<String,Object> getOfflineStateTransitionMap(FacilioStatus state){
