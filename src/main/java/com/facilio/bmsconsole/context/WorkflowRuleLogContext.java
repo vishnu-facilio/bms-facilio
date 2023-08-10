@@ -49,15 +49,15 @@ public  class WorkflowRuleLogContext extends V3Context {
 
     public enum WorkflowLoggableRuleType implements FacilioIntEnum {
 
-        MODULE_RULE(1, WorkflowRuleContext.RuleType.MODULE_RULE,"Module Rule"),
-        STATE_RULE(2, WorkflowRuleContext.RuleType.STATE_RULE, "State Rule"),
+        MODULE_RULE(1, WorkflowRuleContext.RuleType.MODULE_RULE,"Workflow Rule"),
+        STATE_RULE(2, WorkflowRuleContext.RuleType.STATE_RULE, "State Transition Rule"),
         CUSTOM_BUTTON(3, WorkflowRuleContext.RuleType.CUSTOM_BUTTON,"Custom Button Rule"),
-        APPROVAL_STATE_FLOW(4, WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW,"Approval Stateflow Rule"),
+        APPROVAL_STATE_FLOW(4, WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW,"Approval Process Rule"),
         APPROVAL_STATE_TRANSITION(5, WorkflowRuleContext.RuleType.APPROVAL_STATE_TRANSITION,"Approval State Transition Rule"),
-        MODULE_RULE_NOTIFICATION(6,WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION,"Module Rule Notification"),
-        STATE_FLOW(7,WorkflowRuleContext.RuleType.STATE_FLOW,"State Flow"),
+        MODULE_RULE_NOTIFICATION(6,WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION,"Notification Rule"),
+        STATE_FLOW(7,WorkflowRuleContext.RuleType.STATE_FLOW,"State Flow Rule"),
         ASSIGNMENT_RULE(8, WorkflowRuleContext.RuleType.ASSIGNMENT_RULE,"Assignment Rule"),
-        SLA_WORKFLOW_RULE(9,WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE,"Sla Workflow Rule"),
+        SLA_WORKFLOW_RULE(9,WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE,"Sla Commitment Rule"),
         SLA_POLICY_RULE(10, WorkflowRuleContext.RuleType.SLA_POLICY_RULE,"Sla Policy Rule")
         ;
 

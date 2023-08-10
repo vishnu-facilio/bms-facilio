@@ -568,15 +568,15 @@ public class WorkflowRuleContext implements Serializable {
                 actionLogContextList.add(new WorkflowRuleActionLogContext(action.getActionTypeEnum(),status));
 			}
 		}
-//		try {
-//			if (this.getRuleTypeEnum().isLoggable && record instanceof ModuleBaseWithCustomFields) {
-//				ModuleBaseWithCustomFields recordData = (ModuleBaseWithCustomFields) record;
-//				String linkConfig=WorkflowRuleLogUtil.linkConfigForRuleType(this);
-//				WorkflowRuleLogUtil.sendWorkflowRuleLogs(new WorkflowRuleLogContext(recordData.getId(), this, true, true, true, true, true, actionLogContextList,linkConfig));
-//			}
-//		} catch (Exception e) {
-//			LOGGER.error("Exception occurred in workflowRuleLog", e);
-//		}
+		try {
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WORKFLOW_RULE_LOG) && this.getRuleTypeEnum().isLoggable() && record instanceof ModuleBaseWithCustomFields) {
+				ModuleBaseWithCustomFields recordData = (ModuleBaseWithCustomFields) record;
+				String linkConfig=WorkflowRuleLogUtil.linkConfigForRuleType(this);
+				WorkflowRuleLogUtil.sendWorkflowRuleLogs(new WorkflowRuleLogContext(recordData.getId(), this, true, true, true, true, true, actionLogContextList,linkConfig));
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception occurred in workflowRuleLog", e);
+		}
 	}
 
 	public void executeFalseActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {

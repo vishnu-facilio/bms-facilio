@@ -69,7 +69,7 @@ public class WorkflowRuleLogUtil {
 
             if (orgId > 0L) {
                 Message message = new Message();
-                message.setTopic(Topics.System.workflowLogs+"/"+orgId+"/"+workflowRuleLog.getModuleId()+"/"+workflowRuleLog.getWorkflowRuleId());
+                message.setTopic(Topics.System.workflowLogs+"/"+orgId+"/"+workflowRuleLog.getRecordModuleId()+"/"+workflowRuleLog.getWorkflowRuleId());
                 message.setOrgId(orgId);
                 message.setContent(workflowRuleLog.toJson());
                 WmsBroadcaster.getBroadcaster().sendMessage(message);

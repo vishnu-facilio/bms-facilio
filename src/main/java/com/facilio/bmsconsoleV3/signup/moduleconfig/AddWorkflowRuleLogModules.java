@@ -55,8 +55,8 @@ public class AddWorkflowRuleLogModules extends SignUpData {
         ModuleBean modBean=(ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fieldsList=new ArrayList<>();
         fieldsList.add(FieldFactory.getDefaultField("workflowRuleId","Workflow Rule Id","WORKFLOW_RULE_ID",FieldType.NUMBER));
-        fieldsList.add(FieldFactory.getDefaultField("workflowRuleName","Workflow Rule Name","WORKFLOW_RULE_NAME",FieldType.STRING,true));
-        fieldsList.add(FieldFactory.getDefaultField("recordId","Record Id","RECORD_ID",FieldType.NUMBER));
+        fieldsList.add(FieldFactory.getDefaultField("workflowRuleName","Workflow Name","WORKFLOW_RULE_NAME",FieldType.STRING,true));
+        fieldsList.add(FieldFactory.getDefaultField("recordId","Module Record Id","RECORD_ID",FieldType.NUMBER));
         fieldsList.add(FieldFactory.getDefaultField("recordModuleId","Record Module Id","RECORD_MODULE_ID",FieldType.NUMBER));
         fieldsList.add(FieldFactory.getDefaultField("executedOn","Executed On","EXECUTED_ON",FieldType.DATE_TIME));
         fieldsList.add(FieldFactory.getDefaultField("siteResult","Site Result","SITE_RESULT",FieldType.BOOLEAN));
@@ -64,10 +64,10 @@ public class AddWorkflowRuleLogModules extends SignUpData {
         fieldsList.add(FieldFactory.getDefaultField("miscResult","Misc Result","MISC_RESULT",FieldType.BOOLEAN));
         fieldsList.add(FieldFactory.getDefaultField("criteriaResult","Criteria Result","CRITERIA_RESULT",FieldType.BOOLEAN));
         fieldsList.add(FieldFactory.getDefaultField("workflowResult","Workflow Result","WORKFLOW_RESULT",FieldType.BOOLEAN));
-        SystemEnumField workflowRuleType = FieldFactory.getDefaultField("workflowLoggableRuleType","Workflow Rule Type","WORKFLOW_RULE_TYPE",FieldType.SYSTEM_ENUM);
+        SystemEnumField workflowRuleType = FieldFactory.getDefaultField("workflowLoggableRuleType","Rule Type","WORKFLOW_RULE_TYPE",FieldType.SYSTEM_ENUM);
         workflowRuleType.setEnumName("WorkflowLoggableRuleType");
         fieldsList.add(workflowRuleType);
-        SystemEnumField ruleStatus = FieldFactory.getDefaultField("ruleStatus","Rule Status","RULE_STATUS",FieldType.SYSTEM_ENUM);
+        SystemEnumField ruleStatus = FieldFactory.getDefaultField("ruleStatus","Status","RULE_STATUS",FieldType.SYSTEM_ENUM);
         ruleStatus.setEnumName("WorkflowRuleStatus");
         fieldsList.add(ruleStatus);
         LookupField executedBy = (LookupField) FieldFactory.getDefaultField("executedBy", "Performed By", "EXECUTED_BY", FieldType.LOOKUP);

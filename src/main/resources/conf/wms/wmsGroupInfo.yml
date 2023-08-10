@@ -30,7 +30,6 @@ groups:
       - { topic: __agent__/point/alarm/org/#, handler: com.facilio.wmsv2.handler.agent.ClearPointAlarmHandler, isLiveMessage: false }
       - { topic: __dashboard_update__, handler: com.facilio.wmsv2.handler.DashboardUpdateHandler, isLiveMessage: false }
       - { topic: __one_time_job_for_scheduled_rule__/#/#, handler: com.facilio.wmsv2.handler.AddOneTimeJobForScheduledRuleHandler,priority: -6,recordTimeout: 60, isLiveMessage: false }
-      - {topic: __workflow_rule_logs__/#/#/#, handler: com.facilio.wmsv2.handler.WorkFlowRuleLogHandler,priority: -5,deliverTo: SESSION,isLiveMessage: false}
 
   - group: receive-mail
     sendToAll: false
@@ -79,3 +78,8 @@ groups:
     topics:
       - { topic: __multi_import__, handler: com.facilio.wmsv2.handler.MultiImportProgressHandler, deliverTo: ORG, isLiveMessage: true }
       - { topic: __multi_import_error_records__, handler: com.facilio.wmsv2.handler.MultiImportErrorRecordsDownloadHandler, deliverTo: ORG, isLiveMessage: true }
+
+  - group: workflow-rulelog
+    sendToAll: false
+    topics:
+      - {topic: __workflow_rule_logs__/#/#/#, handler: com.facilio.wmsv2.handler.WorkFlowRuleLogHandler,priority: -5,deliverTo: SESSION,isLiveMessage: false}

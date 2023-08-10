@@ -610,7 +610,7 @@ public class AccountUtil {
 		AGENT_INTERVAL(145,getExponentValue(18),LicenseMapping.GROUP3LICENSE),//2^18
 		BULK_UPDATE(146,getExponentValue(19),LicenseMapping.GROUP3LICENSE),
 		NEW_SCHEDULED_WORKFLOW_RULE(147,getExponentValue(20),LicenseMapping.GROUP3LICENSE),
-		SYSTEM_BUTTON(148,getExponentValue(21),LicenseMapping.GROUP3LICENSE),
+		WORKFLOW_RULE_LOG(148,getExponentValue(21),LicenseMapping.GROUP3LICENSE),
 		DISABLE_FORM_VALIDATION_RULE(149,getExponentValue(22),LicenseMapping.GROUP3LICENSE),//2^22
 		SENSOR_RULE(150,getExponentValue(23),new String[]{ContextNames.SENSOR_ROLLUP_ALARM},LicenseMapping.GROUP3LICENSE),//2^23
 		WEAVE(151,getExponentValue(24),LicenseMapping.GROUP3LICENSE);//2^24
