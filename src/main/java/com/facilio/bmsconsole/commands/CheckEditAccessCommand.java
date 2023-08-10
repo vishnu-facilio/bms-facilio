@@ -73,7 +73,7 @@ public class CheckEditAccessCommand extends FacilioCommand {
             return false;
         }
 
-        Boolean isLocked = view.getIsLocked();
+        boolean isLocked = view.isLocked();
         if (isLocked){
             throw new IllegalArgumentException("You don’t have permission to access this View");
         }
