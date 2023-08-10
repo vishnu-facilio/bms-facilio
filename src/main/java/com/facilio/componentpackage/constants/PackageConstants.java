@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PackageConstants {
+    public static final String FIELDNAME="Field_Name";
+    public static final String FIELDS_LIST="Fields_List";
+    public static final String FIELDS="Fields";
+    public static final String FIELD_MODULE_NAME="Field_Module_Name";
     public static final String NAME = "name";
     public static final String UNIQUE_NAME = "uniqueName";
     public static final String DISPLAY_NAME = "displayName";
@@ -13,6 +17,13 @@ public class PackageConstants {
     public static final String VERSION = "version";
     public static final String TYPE = "type";
     public static final String SEQUENCE_NUMBER = "Sequence_Number";
+    public static final String LOOKUP_FIELD_NAME="Lookup_Field_Name";
+    public static final String LOOKUP_MODULE_NAME="Lookup_Module_Name";
+    public static final String USER_NAME="User_Name";
+    public static final String APPROVERS="Approvers";
+    public static final String APPROVER_LIST="Approver_List";
+    public static final String APPROVER_TYPE="Approver_Type";
+    public static final String FORM_NAME="Form_Name";
     public static final String VALUE_ELEMENT = "Value_Element";
     public static final String PACKAGE_TYPE = "packageType";
     public static final String FROM_ADMIN_TOOL = "fromAdminTool";
@@ -202,6 +213,7 @@ public class PackageConstants {
     }
 
     public static class RoleConstants {
+        public static final String ROLE_NAME="Role_Name";
         public static final String IS_SUPER_ADMIN = "Is_Super_Admin";
         public static final String IS_PRIVILEGED_ROLE = "Is_Privileged_Role";
         public static final String ROLE_APP_MAPPING = "Role_App_Mapping";
@@ -374,6 +386,27 @@ public class PackageConstants {
         public static final String IS_DEFAULT = "Is_Default";
 
     }
+    public static class CustomButtonConstants{
+        public static final String FORM_DATA_JSON="formDataJson";
+        public static final String WIDGET_LINK_NAME="Widget_Link_Name";
+        public static final String RECORD_ID="recordId";
+        public static final String CONFIG="config";
+        public static final String ACTION_TYPE="actionType";
+        public static final String URL="url";
+        public static final String CONNECTED_APP_ID="appId";
+        public static final String WIDGET_ID="widgetId";
+        public static final String NAVIGATE_TO="navigateTo";
+        public static final String CONNECTED_APP_LINK_NAME="Connected_App_Link_Name";
+        public static final String SELECTED_FIELD_ID="Selected_Field_Id";
+        public static final String SELECTED_FIELDS_MODULE_NAME="Selected_Fields_Module_Name";
+
+        public static final String SHOULD_FORM_INTERFACE_APPLY="Should_Form_Interface_Apply";
+        public static final String POSITION_TYPE="Position_Type";
+        public static final String FORM_MODULE_NAME="Form_Module_Name";
+        public static final String FORM_ID="Form_Id";
+        public static final String CUSTOM_BUTTON_CRITERIA="Custom_Button_Criteria";
+        public static final String BUTTON_TYPE="Button_Type";
+    }
     public static class AssetDepartmentConstants{
         public static final String ASSET_DEPARTMENT_NAME = "Asset_Department_Name";
     }
@@ -461,6 +494,7 @@ public class PackageConstants {
         public static final String APP_LINK_NAME = "App_Link_Name";
     }
     public static class GroupConstants {
+        public static final String GROUP_NAME="Group_Name";
         public static final String NAME = "Name";
         public static final String DESCRIPTION = "Description";
         public static final String SITE_NAME = "Site_Name";

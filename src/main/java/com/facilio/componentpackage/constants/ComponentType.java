@@ -52,7 +52,7 @@ public enum ComponentType implements FacilioIntEnum {
     SUB_FORM_RULE(SubFormRulePackageBeanImpl.class, FORM, false),
     VALIDATION_RULE(ValidationRulePackageBeanImpl.class, FORM, false),
     NAMED_CRITERIA(NamedCriteriaPackageBeanImpl.class, MODULE, false),
-    CUSTOM_BUTTON(null, MODULE, false),
+    CUSTOM_BUTTON(CustomButtonPackageBeanImpl.class, MODULE, false),
     RELATIONSHIP(RelationshipPackageBeanImpl.class, MODULE, false),
     STATE_FLOW(StateFlowPackageBeanImpl.class,MODULE,false),
     STATE_TRANSITION(StateTransitionPackageBeanImpl.class,MODULE,false),

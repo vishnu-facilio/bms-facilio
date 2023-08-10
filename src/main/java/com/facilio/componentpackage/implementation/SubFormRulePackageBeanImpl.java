@@ -174,7 +174,7 @@ public class SubFormRulePackageBeanImpl implements PackageBean<FormRuleContext> 
         formRuleContext.setRuleType(1);
 
         XMLBuilder criteriaElement = ruleElement.getElement(PackageConstants.FormRuleConstants.FORM_RULE_CRITERIA);
-        XMLBuilder subFormCriteriaElement = ruleElement.getElement(PackageConstants.FormRuleConstants.FORM_RULE_CRITERIA);
+        XMLBuilder subFormCriteriaElement = ruleElement.getElement(PackageConstants.FormRuleConstants.SUB_FORM_RULE_CRITERIA);
         // Criteria
         if (criteriaElement != null) {
             Criteria criteria = PackageBeanUtil.constructCriteriaFromBuilder(criteriaElement);
