@@ -54,7 +54,7 @@ public class ServiceOrderAction extends V3Action {
     }
     public String updateServiceOrders()throws Exception{
         if(orderId == null){
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order id can not be empty");
+            throw new FSMException(FSMErrorCode.SO_ID_NOT_EMPTY);
         }
         if(statusMap.get(identifier).equals("Clone") || statusMap.get(identifier).equals("Associate") ){
             throw new RESTException(ErrorCode.VALIDATION_ERROR, statusMap.get(identifier) +" feature is not enabled");

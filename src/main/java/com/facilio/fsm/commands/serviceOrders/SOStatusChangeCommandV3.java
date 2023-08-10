@@ -1,8 +1,14 @@
 package com.facilio.fsm.commands.serviceOrders;
 
+import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.fsm.exception.FSMErrorCode;
+import com.facilio.fsm.exception.FSMException;
 import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -24,13 +30,27 @@ public class SOStatusChangeCommandV3 extends FacilioCommand {
         List<ServiceOrderContext> serviceOrdersNew = new ArrayList<>();
         for(ServiceOrderContext order : dataList) {
             if(order.getStatus() ==null || order.getStatus().getTypeCode() < 0){
+
+                if(order.getVendor() != null && order.getVendor().getId() > 0 && order.getFieldAgent() != null && order.getFieldAgent().getId() > 0){
+                    V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,order.getFieldAgent().getId(),V3PeopleContext.class);
+                    if(people.getPeopleType() == V3PeopleContext.PeopleType.EMPLOYEE.getIndex()){
+                        throw new FSMException(FSMErrorCode.SO_VENDOR_INTERNAL_FIELD_AGENT);
+                    }
+                }
                 if(order.isAutoCreateSa()){
+
+                    if(order.getScheduledStartTime() == null || order.getScheduledStartTime() < 0 ){
+                        throw new FSMException(FSMErrorCode.SO_AUTOCREATE_SCHEDULEDSTART_TIME);
+                    }
+
+                    if(order.getScheduledEndTime() == null || order.getScheduledEndTime() < 0){
+                        throw new FSMException(FSMErrorCode.SO_AUTOCREATE_SCHEDULEDEND_TIME);
+                    }
+
                     if(CollectionUtils.isEmpty(order.getServiceTask())){
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR,"Atleast One Task must be present when AutoCreate SA is enabled");
+                        throw new FSMException(FSMErrorCode.SO_AUTOCREATE_TASKS_AVAILABILIY);
                     }
-                    if(order.getScheduledStartTime() == null || order.getScheduledEndTime() == null || order.getScheduledStartTime() < 0 || order.getScheduledEndTime() < 0){
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR,"Scheduled Start and End time are mandatory when AutoCreate SA is enabled");
-                    }
+
                     order.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.SCHEDULED));
                 }
                 else {

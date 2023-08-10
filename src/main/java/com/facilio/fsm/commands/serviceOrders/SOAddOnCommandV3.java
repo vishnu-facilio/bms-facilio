@@ -7,6 +7,8 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.TerritoryContext;
+import com.facilio.fsm.exception.FSMErrorCode;
+import com.facilio.fsm.exception.FSMException;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -33,15 +35,15 @@ public class SOAddOnCommandV3 extends FacilioCommand {
                 }
                 serviceOrdersNew.add(order);
             } else {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Site Cannot be Null for Service Order");
+                throw new FSMException(FSMErrorCode.SO_SITE_MANDATORY);
             }
 
             if(order.getName() == null || order.getName().isEmpty()){
-                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Service Order Name Cannot be empty");
+                throw new FSMException(FSMErrorCode.SO_NAME_MANDATORY);
             }
 
             if(order.getPriority() < 0){
-                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Priority is mandatory for Service Order");
+                throw new FSMException(FSMErrorCode.SO_PRIORITY_MANDATORY);
             }
         }
         recordMap.put(moduleName,serviceOrdersNew);

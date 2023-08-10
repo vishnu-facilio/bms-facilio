@@ -18,9 +18,9 @@ public class LoadSupplementsForSOCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<SupplementRecord> fetchLookupsList = GenericLoadSupplementsV3.getLookupList(
                 FacilioConstants.ServiceOrder.SERVICE_ORDER,
-                Arrays.asList("status","space","site")
+                Arrays.asList("status","space","site","fieldAgent","vendor","client","asset")
         );
-//        fetchAdditionalFields(context);
+        fetchAdditionalFields(context);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
 
         return false;
