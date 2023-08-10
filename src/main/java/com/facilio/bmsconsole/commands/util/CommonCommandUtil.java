@@ -930,7 +930,10 @@ public class CommonCommandUtil {
         return operators;
     }
 
-    public static void addActivityToContext(long parentId, long ttime, ActivityType type, JSONObject info, FacilioContext context) {
+    public static void addActivityToContext(long parentId,long ttime,ActivityType type,JSONObject info,FacilioContext context){
+        addActivityToContext(parentId,ttime,type,info,context,AccountUtil.getCurrentUser());
+    }
+    public static void addActivityToContext(long parentId, long ttime, ActivityType type, JSONObject info, FacilioContext context,User user) {
         ActivityContext activity = new ActivityContext();
         activity.setParentId(parentId);
 
@@ -941,7 +944,7 @@ public class CommonCommandUtil {
         }
         activity.setType(type);
         activity.setInfo(info);
-        activity.setDoneBy(AccountUtil.getCurrentUser());
+        activity.setDoneBy(user);
         List<ActivityContext> activities = (List<ActivityContext>) context.get(FacilioConstants.ContextNames.ACTIVITY_LIST);
         if (activities == null) {
             activities = new ArrayList<>();

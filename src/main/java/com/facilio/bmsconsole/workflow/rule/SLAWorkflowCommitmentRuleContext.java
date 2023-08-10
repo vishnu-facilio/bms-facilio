@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.amazonaws.regions.Regions;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
@@ -195,8 +197,10 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
         infoJson.put("oldDate", oldDate);
         infoJson.put("newDate", newDate);
 
+        User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+        user = user == null ? AccountUtil.getCurrentUser() : user;
         CommonCommandUtil.addActivityToContext(record.getId(), System.currentTimeMillis(), WorkOrderActivityType.SLA_ACTIVATED, infoJson,
-                (FacilioContext) context);
+                (FacilioContext) context,user);
     }
 
     public static class SLAEntityDuration {
