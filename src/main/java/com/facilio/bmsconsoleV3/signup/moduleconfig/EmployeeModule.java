@@ -209,15 +209,6 @@ public class EmployeeModule extends BaseModuleConfig{
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("employeeterritories", "TERRITORIES", true, null)
-                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("employeeterritories", null, null)
-                .addWidget("employeeterritorieswidget", "Territories", PageWidget.WidgetType.TERRITORIES, "flexiblewebterritories_60", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.EMPLOYEE))
-                .widgetDone()
-                .sectionDone()
-                .columnDone()
-                .tabDone()
-
                 .addWebTab("employeeworkschedule", "WORK SCHEDULE", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeeworkschedule", null, null)
