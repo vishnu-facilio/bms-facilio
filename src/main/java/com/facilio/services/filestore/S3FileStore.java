@@ -242,6 +242,8 @@ public class S3FileStore extends FileStore {
 			 catch(AbortedException e ){
 				if(count !=0) {
 					count--;
+					int retryCount = 5 - count;
+					LOGGER.info("Retrying count : " + retryCount + fileInfo.getFilePath());
 					return getS3ObjectInputStream(fileInfo,count);
 				}else{
 					throw e;
