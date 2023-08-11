@@ -230,11 +230,12 @@ public class ServiceTaskUtil {
                 .andCondition((CriteriaAPI.getCondition("SERVICE_APPOINTMENT_ID", "left", String.valueOf(appointmentId), NumberOperators.EQUALS)));
         List<Map<String, Object>> maps = selectBuilder.get();
         if (CollectionUtils.isNotEmpty(maps)) {
-            List<ServiceTaskContext> tasks = new ArrayList<>();
+            List<Long> tasks = new ArrayList<>();
             for(Map<String,Object> map:maps){
-                tasks.add((ServiceTaskContext) map.get("right"));
+                tasks.add((Long) map.get("right"));
             }
-            return tasks;
+            List<ServiceTaskContext> serviceTasks = V3RecordAPI.getRecordsList(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,tasks);
+            return serviceTasks;
 
 
         }
