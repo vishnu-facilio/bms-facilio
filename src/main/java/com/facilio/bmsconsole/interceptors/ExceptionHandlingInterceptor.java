@@ -43,12 +43,13 @@ public class ExceptionHandlingInterceptor extends AbstractInterceptor  {
                 errorType = false;
             }
             Map<String, Object> errorMap = new HashMap<>();
-            messageNull = ex.getMessage() == null || StringUtils.isEmpty(ex.getMessage());
+            messageNull = FacilioUtil.constructMessageFromException(ex) == null || StringUtils.isEmpty(FacilioUtil.constructMessageFromException(ex));
             //Handling exception for Multiple transactions in a thread(New Transaction Service)
             try {
                 errorMap.put("message", ((InvocationTargetException)ex).getTargetException().getMessage());
             }catch(Exception e){
-                errorMap.put("message", errorType ? values.getMessage() : messageNull ? "Error Occurred" :ex.getMessage());
+                LOGGER.error("Exception Handling Inerceptor - " + FacilioUtil.constructMessageFromException(ex));
+                errorMap.put("message", errorType ? values.getMessage() : messageNull ? "Error Occurred" :FacilioUtil.constructMessageFromException(ex));
             }
             errorMap.put("responseCode",errorType ? values.getErrorCode().getCode() : messageNull ? ErrorCode.UNHANDLED_EXCEPTION.getCode() : ErrorCode.ERROR.getCode());
             errorMap.put("code",errorType ? values.getErrorCode().getCode() : messageNull ? ErrorCode.UNHANDLED_EXCEPTION.getCode() : ErrorCode.ERROR.getCode());
