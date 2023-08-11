@@ -32,8 +32,6 @@ public class UpdatePeopleAvailabilityStatusCommand extends FacilioCommand {
         List<AttendanceTransaction> transactionsCreated = recordMap.get(ModName);
         List<FacilioField> fields = new ArrayList<>();
         fields.add(fieldMap.get(FacilioConstants.ContextNames.STATUS));
-        fields.add(fieldMap.get(FacilioConstants.ContextNames.LAST_CHECKED_IN_TIME));
-        fields.add(fieldMap.get(FacilioConstants.ContextNames.LAST_CHECKED_OUT_TIME));
         fields.add(fieldMap.get(FacilioConstants.ContextNames.CHECKED_IN));
         if(CollectionUtils.isNotEmpty(transactionsCreated) && eventType == EventType.CREATE){
             AttendanceTransaction transaction = transactionsCreated.get(0);
@@ -42,10 +40,12 @@ public class UpdatePeopleAvailabilityStatusCommand extends FacilioCommand {
                 V3PeopleContext people = new V3PeopleContext();
                 people.setId(peopleId);
                 if (transaction.getTransactionType() == AttendanceTransaction.Type.CHECK_IN) {
+                        fields.add(fieldMap.get(FacilioConstants.ContextNames.LAST_CHECKED_IN_TIME));
                         people.setStatus(V3PeopleContext.Status.AVAILABLE.getIndex());
                         people.setCheckedIn(true);
                         people.setLastCheckedInTime(transaction.getTransactionTime());
                 } else if (transaction.getTransactionType() == AttendanceTransaction.Type.CHECK_OUT) {
+                        fields.add(fieldMap.get(FacilioConstants.ContextNames.LAST_CHECKED_OUT_TIME));
                         people.setStatus(V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
                         people.setCheckedIn(false);
                         people.setLastCheckedOutTime(transaction.getTransactionTime());

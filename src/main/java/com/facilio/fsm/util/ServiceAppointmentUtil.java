@@ -315,11 +315,14 @@ public class ServiceAppointmentUtil {
                                 for(Long taskId : taskIds){
                                     FacilioContext taskContext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, Collections.singletonList(taskId));
                                     ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(taskContext).get(0);
-                                    oldRecords.add(existingTask);
-                                    Map<String,Object> updateProps = FieldUtil.getAsProperties(existingTask);
-                                    updateProps.put("status",ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
-                                    updateProps.put("actualEndTime",currentTime);
-                                    updateRecordList.add(updateProps);
+                                    if(existingTask.getStatusEnum() != ServiceTaskContext.ServiceTaskStatus.COMPLETED
+                                     && existingTask.getStatusEnum() != ServiceTaskContext.ServiceTaskStatus.CANCELLED ) {
+                                        oldRecords.add(existingTask);
+                                        Map<String, Object> updateProps = FieldUtil.getAsProperties(existingTask);
+                                        updateProps.put("status", ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
+                                        updateProps.put("actualEndTime", currentTime);
+                                        updateRecordList.add(updateProps);
+                                    }
                                 }
                                 V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
 
@@ -401,11 +404,14 @@ public class ServiceAppointmentUtil {
                             for(Long taskId : taskIds){
                                 FacilioContext taskContext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, Collections.singletonList(taskId));
                                 ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(taskContext).get(0);
-                                oldRecords.add(existingTask);
-                                Map<String,Object> updateProps = FieldUtil.getAsProperties(existingTask);
-                                updateProps.put("status",ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
-                                updateProps.put("actualEndTime",currentTime);
-                                updateRecordList.add(updateProps);
+                                if(existingTask.getStatusEnum() != ServiceTaskContext.ServiceTaskStatus.COMPLETED
+                                        && existingTask.getStatusEnum() != ServiceTaskContext.ServiceTaskStatus.CANCELLED ) {
+                                    oldRecords.add(existingTask);
+                                    Map<String,Object> updateProps = FieldUtil.getAsProperties(existingTask);
+                                    updateProps.put("status",ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
+                                    updateProps.put("actualEndTime",currentTime);
+                                    updateRecordList.add(updateProps);
+                                }
                             }
                             V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
                         }

@@ -24,6 +24,7 @@ public enum FSMErrorCode {
     SA_TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "You cannot start this service appointment while a timesheet is already running."),
     SA_TRIP_ALREADY_RUNNING(Severity.ERROR, "You cannot start a trip while another is already running."),
     SA_SCHEDULED_TIME_MISMATCH(Severity.ERROR, "The service appointment should be scheduled between valid time range."),
+    SA_DETAILS_REQUIED(Severity.ERROR, "Please provide all the required details."),
 
 
     // Time Sheet error codes

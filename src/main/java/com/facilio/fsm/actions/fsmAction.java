@@ -14,6 +14,8 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.fsm.commands.FSMReadOnlyChainFactory;
 import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
 import com.facilio.fsm.context.*;
+import com.facilio.fsm.exception.FSMErrorCode;
+import com.facilio.fsm.exception.FSMException;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.fsm.util.ServiceTaskUtil;
 import com.facilio.util.FacilioUtil;
@@ -127,6 +129,7 @@ public class fsmAction extends V3Action {
     }
     public String updateServiceAppointmentStatus() throws Exception{
         FacilioContext context = new FacilioContext();
+        HashMap<String, String> successMsg = new HashMap<>();
         context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
         switch(getIdentifier()){
             case FacilioConstants.ServiceAppointment.DISPATCH:
@@ -134,31 +137,41 @@ public class fsmAction extends V3Action {
                     context.put(FacilioConstants.ServiceAppointment.FIELD_AGENT_ID,getFieldAgentId());
                     FacilioChain dispatchChain = FsmTransactionChainFactoryV3.dispatchChain();
                     dispatchChain.execute(context);
+                    successMsg.put("message","Service Appointment Dispatched Successfully");
+                }
+                else {
+                    throw new FSMException(FSMErrorCode.SA_DETAILS_REQUIED);
                 }
                 break;
             case FacilioConstants.ServiceAppointment.START_TRIP:
                 context.put(FacilioConstants.Trip.TRIP,getTrip());
                 FacilioChain startTripChain = FsmTransactionChainFactoryV3.startTripChain();
                 startTripChain.execute(context);
+                successMsg.put("message","Trip Started Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.END_TRIP:
                 context.put(FacilioConstants.Trip.TRIP,getTrip());
                 FacilioChain endTripChain = FsmTransactionChainFactoryV3.endTripChain();
                 endTripChain.execute(context);
+                successMsg.put("message","Trip Ended Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.START_WORK:
                 FacilioChain startSAChain = FsmTransactionChainFactoryV3.startSAChain();
                 startSAChain.execute(context);
+                successMsg.put("message","Service Appointment Started Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.COMPLETE:
                 FacilioChain completeSAChain = FsmTransactionChainFactoryV3.completeSAChain();
                 completeSAChain.execute(context);
+                successMsg.put("message","Service Appointment Completed Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.CANCEL:
                 FacilioChain cancelSAChain = FsmTransactionChainFactoryV3.cancelSAChain();
                 cancelSAChain.execute(context);
+                successMsg.put("message","Service Appointment Cancelled Successfully");
                 break;
         }
+        setData(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_STATUS_ACTIONS,successMsg);
         return SUCCESS;
     }
     public String dispatchServiceAppointment() throws Exception {
@@ -218,20 +231,24 @@ public class fsmAction extends V3Action {
 
     public String updateServiceTaskStatus() throws Exception{
         FacilioContext context = new FacilioContext();
+        HashMap<String, String> successMsg = new HashMap<>();
         context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
         switch(getIdentifier()){
 
             case FacilioConstants.ServiceAppointment.START_WORK:
                 FacilioChain startTaskChain = FsmTransactionChainFactoryV3.startTaskChain();
                 startTaskChain.execute(context);
+                successMsg.put("message","Service Task Started Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.PAUSE:
                 FacilioChain pauseTaskChain = FsmTransactionChainFactoryV3.pauseTaskChain();
                 pauseTaskChain.execute(context);
+                successMsg.put("message","Service Task Paused Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.RESUME:
                 FacilioChain resumeTaskChain = FsmTransactionChainFactoryV3.resumeTaskChain();
                 resumeTaskChain.execute(context);
+                successMsg.put("message","Service Task Resumed Successfully");
                 break;
 //            case FacilioConstants.ServiceAppointment.REOPEN:
 //                ServiceTaskUtil.moveToInProgress(getRecordId());
@@ -239,12 +256,16 @@ public class fsmAction extends V3Action {
             case FacilioConstants.ServiceAppointment.COMPLETE:
                 FacilioChain completeTaskChain = FsmTransactionChainFactoryV3.completeTaskChain();
                 completeTaskChain.execute(context);
+                successMsg.put("message","Service Task Completed Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.CANCEL:
                 FacilioChain cancelTaskChain = FsmTransactionChainFactoryV3.cancelTaskChain();
                 cancelTaskChain.execute(context);
+                successMsg.put("message","Service Task Cancelled Successfully");
+
                 break;
         }
+        setData(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_STATUS_ACTIONS,successMsg);
 
         return SUCCESS;
     }
