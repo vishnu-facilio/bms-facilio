@@ -30,7 +30,7 @@ public class ExceptionHandlingInterceptor extends AbstractInterceptor  {
         try{
             result = invocation.invoke();
         } catch (Exception ex){
-            LOGGER.error(FacilioUtil.constructMessageFromException(ex));
+            LOGGER.error("Exception Handling Inerceptor - " + FacilioUtil.constructMessageFromException(ex));
             HttpServletResponse response = ServletActionContext.getResponse();
             Boolean errorType;
             Boolean messageNull;
