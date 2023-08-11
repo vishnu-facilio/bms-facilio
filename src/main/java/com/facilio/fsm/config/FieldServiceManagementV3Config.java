@@ -295,18 +295,6 @@ public class FieldServiceManagementV3Config {
                 .build();
     }
 
-    @Module(FacilioConstants.Territory.PEOPLE_TERRITORY)
-    public static Supplier<V3Config> getPeopleTerritory(){
-        return () -> new V3Config(PeopleTerritoryContext.class,null)
-                .create()
-                .update()
-                .list()
-                .beforeFetch(new FetchPeopleTerritorySupplementsCommand())
-                .summary()
-                .beforeFetch(new FetchPeopleTerritorySupplementsCommand())
-                .delete()
-                .build();
-    }
     @Module(FacilioConstants.Trip.TRIP_LOCATION_HISTORY)
     public static Supplier<V3Config> getTripLocationHistory(){
         return () -> new V3Config(TripContext.class,null)

@@ -30,6 +30,7 @@ import org.json.simple.JSONObject;
 import java.util.*;
 
 public class TripModule extends BaseModuleConfig {
+    public static List<String> tripSupportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.FSM_APP);
     public TripModule(){setModuleName(FacilioConstants.Trip.TRIP);}
 
     @Override
@@ -60,6 +61,7 @@ public class TripModule extends BaseModuleConfig {
 
         NumberField localId = FieldFactory.getDefaultField("localId", "Id", "LOCAL_ID", FieldType.NUMBER);
         fields.add(localId);
+        ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.Trip.TRIP);
 
         LookupField peopleId = FieldFactory.getDefaultField("people", "Field Agent", "PEOPLE_ID", FieldType.LOOKUP,true);
         peopleId.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
@@ -431,6 +433,8 @@ public class TripModule extends BaseModuleConfig {
         allView.setDisplayName("All Trips");
         allView.setModuleName(FacilioConstants.Trip.TRIP);
         allView.setSortFields(sortFields);
+        allView.setAppLinkNames(TripModule.tripSupportedApps);
+
 
         List<ViewField> tripViewFields = new ArrayList<>();
 

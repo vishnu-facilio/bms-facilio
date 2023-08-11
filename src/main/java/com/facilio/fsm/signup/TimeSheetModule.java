@@ -33,7 +33,7 @@ import org.json.simple.JSONObject;
 import java.util.*;
 
 public class TimeSheetModule extends BaseModuleConfig {
-
+    public static List<String> timeSheetSupportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.FSM_APP);
     public TimeSheetModule() throws Exception {
         setModuleName(FacilioConstants.TimeSheet.TIME_SHEET);
     }
@@ -50,6 +50,7 @@ public class TimeSheetModule extends BaseModuleConfig {
 
         NumberField localId = new NumberField(timeSheetModule,"localId","Id", FacilioField.FieldDisplayType.NUMBER,"LOCAL_ID",FieldType.NUMBER,false,false,true,false);
         timeSheetFields.add(localId);
+        ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.TimeSheet.TIME_SHEET);
 
         DateField startTime = new DateField(timeSheetModule,"startTime","Start Time", FacilioField.FieldDisplayType.DATETIME,"START_TIME", FieldType.DATE_TIME,true,false,true,false);
         timeSheetFields.add(startTime);
@@ -458,6 +459,7 @@ public class TimeSheetModule extends BaseModuleConfig {
         allView.setDisplayName("All Time Sheets");
         allView.setModuleName(FacilioConstants.TimeSheet.TIME_SHEET);
         allView.setSortFields(sortFields);
+        allView.setAppLinkNames(TimeSheetModule.timeSheetSupportedApps);
 
         List<ViewField> timeSheetViewFields = new ArrayList<>();
 

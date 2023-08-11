@@ -1,6 +1,7 @@
 package com.facilio.fsm.actions;
 
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -125,26 +126,37 @@ public class fsmAction extends V3Action {
         return SUCCESS;
     }
     public String updateServiceAppointmentStatus() throws Exception{
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
         switch(getIdentifier()){
             case FacilioConstants.ServiceAppointment.DISPATCH:
                 if(getRecordId() > 0 && (getFieldAgentId() != null && getFieldAgentId() >0)) {
-                    ServiceAppointmentUtil.dispatchServiceAppointment(getRecordId(), getFieldAgentId());
+                    context.put(FacilioConstants.ServiceAppointment.FIELD_AGENT_ID,getFieldAgentId());
+                    FacilioChain dispatchChain = FsmTransactionChainFactoryV3.dispatchChain();
+                    dispatchChain.execute(context);
                 }
                 break;
             case FacilioConstants.ServiceAppointment.START_TRIP:
-                ServiceAppointmentUtil.startTripForAppointment(getRecordId(),getTrip());
+                context.put(FacilioConstants.Trip.TRIP,getTrip());
+                FacilioChain startTripChain = FsmTransactionChainFactoryV3.startTripChain();
+                startTripChain.execute(context);
                 break;
             case FacilioConstants.ServiceAppointment.END_TRIP:
-                ServiceAppointmentUtil.endTripForAppointment(getRecordId(),getTrip());
+                context.put(FacilioConstants.Trip.TRIP,getTrip());
+                FacilioChain endTripChain = FsmTransactionChainFactoryV3.endTripChain();
+                endTripChain.execute(context);
                 break;
             case FacilioConstants.ServiceAppointment.START_WORK:
-                ServiceAppointmentUtil.startServiceAppointment(getRecordId());
+                FacilioChain startSAChain = FsmTransactionChainFactoryV3.startSAChain();
+                startSAChain.execute(context);
                 break;
             case FacilioConstants.ServiceAppointment.COMPLETE:
-                ServiceAppointmentUtil.completeServiceAppointment(getRecordId());
+                FacilioChain completeSAChain = FsmTransactionChainFactoryV3.completeSAChain();
+                completeSAChain.execute(context);
                 break;
             case FacilioConstants.ServiceAppointment.CANCEL:
-                ServiceAppointmentUtil.cancelServiceAppointment(getRecordId());
+                FacilioChain cancelSAChain = FsmTransactionChainFactoryV3.cancelSAChain();
+                cancelSAChain.execute(context);
                 break;
         }
         return SUCCESS;
@@ -205,28 +217,47 @@ public class fsmAction extends V3Action {
     }
 
     public String updateServiceTaskStatus() throws Exception{
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
         switch(getIdentifier()){
 
             case FacilioConstants.ServiceAppointment.START_WORK:
-                ServiceTaskUtil.moveToInProgress(getRecordId());
+                FacilioChain startTaskChain = FsmTransactionChainFactoryV3.startTaskChain();
+                startTaskChain.execute(context);
                 break;
             case FacilioConstants.ServiceAppointment.PAUSE:
-                ServiceTaskUtil.moveToCloseState(getRecordId(), ServiceTaskContext.ServiceTaskStatus.ON_HOLD.getIndex());
+                FacilioChain pauseTaskChain = FsmTransactionChainFactoryV3.pauseTaskChain();
+                pauseTaskChain.execute(context);
                 break;
             case FacilioConstants.ServiceAppointment.RESUME:
-                ServiceTaskUtil.moveToInProgress(getRecordId());
+                FacilioChain resumeTaskChain = FsmTransactionChainFactoryV3.resumeTaskChain();
+                resumeTaskChain.execute(context);
                 break;
 //            case FacilioConstants.ServiceAppointment.REOPEN:
 //                ServiceTaskUtil.moveToInProgress(getRecordId());
 //                break;
             case FacilioConstants.ServiceAppointment.COMPLETE:
-                ServiceTaskUtil.moveToCloseState(getRecordId(), ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
+                FacilioChain completeTaskChain = FsmTransactionChainFactoryV3.completeTaskChain();
+                completeTaskChain.execute(context);
                 break;
             case FacilioConstants.ServiceAppointment.CANCEL:
-                ServiceTaskUtil.moveToCloseState(getRecordId(), ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
+                FacilioChain cancelTaskChain = FsmTransactionChainFactoryV3.cancelTaskChain();
+                cancelTaskChain.execute(context);
                 break;
         }
 
+        return SUCCESS;
+    }
+
+    public String updateTimeSheetStatus() throws Exception{
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+        switch (getIdentifier()){
+            case FacilioConstants.TimeSheet.STOP_TIME_SHEET:
+                FacilioChain stopTimeSheetChain = FsmTransactionChainFactoryV3.stopTimeSheetChain();
+                stopTimeSheetChain.execute(context);
+                break;
+        }
         return SUCCESS;
     }
 

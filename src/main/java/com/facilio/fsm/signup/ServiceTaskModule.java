@@ -17,10 +17,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.MultiLookupField;
-import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
 
 import java.util.*;

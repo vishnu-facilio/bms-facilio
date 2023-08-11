@@ -32,6 +32,7 @@ import org.json.simple.JSONObject;
 import java.util.*;
 
 public class ServiceAppointmentModule extends BaseModuleConfig {
+    public static List<String> serviceAppointmentSupportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.FSM_APP);
     public ServiceAppointmentModule(){setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);}
         @Override
     public void addData() throws Exception {
@@ -51,6 +52,10 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         List<FacilioModule> modules = new ArrayList<>();
         FacilioModule serviceAppointmentModule = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,"Service Appointment","SERVICE_APPOINTMENT", FacilioModule.ModuleType.BASE_ENTITY,true);
         List<FacilioField> serviceAppointmentFields = new ArrayList<>();
+
+        NumberField localId = new NumberField(serviceAppointmentModule,"localId","Id", FacilioField.FieldDisplayType.NUMBER,"LOCAL_ID",FieldType.NUMBER,false,false,true,false);
+        serviceAppointmentFields.add(localId);
+        ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
 
         serviceAppointmentFields.add(new StringField(serviceAppointmentModule,"name","Name",FacilioField.FieldDisplayType.TEXTBOX,"NAME", FieldType.STRING,true,false,true,true));
 
@@ -337,6 +342,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         allView.setDisplayName("All Appointments");
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         allView.setSortFields(sortFields);
+        allView.setAppLinkNames(ServiceAppointmentModule.serviceAppointmentSupportedApps);
 
         List<ViewField> serviceAppointmentViewFields = new ArrayList<>();
 
@@ -367,6 +373,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         allView.setCriteria(criteria);
         allView.setSortFields(sortFields);
+        allView.setAppLinkNames(ServiceAppointmentModule.serviceAppointmentSupportedApps);
+
 
         List<ViewField> serviceAppointmentViewFields = new ArrayList<>();
 
@@ -413,6 +421,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         allView.setCriteria(criteria);
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         allView.setSortFields(sortFields);
+        allView.setAppLinkNames(ServiceAppointmentModule.serviceAppointmentSupportedApps);
+
 
         List<ViewField> serviceAppointmentViewFields = new ArrayList<>();
 
@@ -443,6 +453,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         allView.setCriteria(criteria);
         allView.setSortFields(sortFields);
+        allView.setAppLinkNames(ServiceAppointmentModule.serviceAppointmentSupportedApps);
+
 
         List<ViewField> serviceAppointmentViewFields = new ArrayList<>();
 
@@ -472,6 +484,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         allView.setCriteria(criteria);
         allView.setSortFields(sortFields);
+        allView.setAppLinkNames(ServiceAppointmentModule.serviceAppointmentSupportedApps);
+
 
         List<ViewField> serviceAppointmentViewFields = new ArrayList<>();
 
@@ -501,6 +515,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         allView.setCriteria(criteria);
         allView.setSortFields(sortFields);
+        allView.setAppLinkNames(ServiceAppointmentModule.serviceAppointmentSupportedApps);
+
 
         List<ViewField> serviceAppointmentViewFields = new ArrayList<>();
 
@@ -530,6 +546,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         allView.setCriteria(criteria);
         allView.setSortFields(sortFields);
+        allView.setAppLinkNames(ServiceAppointmentModule.serviceAppointmentSupportedApps);
+
 
         List<ViewField> serviceAppointmentViewFields = new ArrayList<>();
 
@@ -1006,6 +1024,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             startWork.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
             startWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
             startWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//            startWork.setPermission("START_WORK_ALL");
             startWork.setPermissionRequired(true);
             Criteria startWorkCriteria = new Criteria();
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(dispatchedStatus.getId()), PickListOperators.IS));
@@ -1024,6 +1043,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             complete.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
             complete.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
             complete.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//            complete.setPermission("COMPLETE_WORK_ALL");
             complete.setPermissionRequired(true);
             Criteria completeCriteria = new Criteria();
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(inProgressStatus.getId()), PickListOperators.IS));

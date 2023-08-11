@@ -2498,6 +2498,9 @@ public class FacilioConstants {
 		public static final String EMAIL_VS_PEOPLE_MAP = "emailVsPeopleMap";
 		public static final String PEOPLE_TYPE_LIST = "peopleTypeList";
 		public static final String PEOPLE_ID = "peopleId";
+		public static final String LAST_CHECKED_IN_TIME = "lastCheckedInTime";
+		public static final String LAST_CHECKED_OUT_TIME = "lastCheckedOutTime";
+		public static final String CHECKED_IN = "checkedIn";
 
 		public static final String PEOPLE_TYPE = "peopleType";
 		public static final String SECURITY_POLICY_ID = "securityPolicyId";

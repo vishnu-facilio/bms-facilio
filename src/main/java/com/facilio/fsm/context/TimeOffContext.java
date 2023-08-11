@@ -12,4 +12,5 @@ public class TimeOffContext extends V3Context {
     private Long endTime;
     private TimeOffTypeContext type;
     private V3PeopleContext people;
+    private String comments;
 }

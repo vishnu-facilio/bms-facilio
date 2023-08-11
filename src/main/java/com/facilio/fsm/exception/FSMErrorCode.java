@@ -23,13 +23,17 @@ public enum FSMErrorCode {
     // Service Appointment error codes
     SA_TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "You cannot start this service appointment while a timesheet is already running."),
     SA_TRIP_ALREADY_RUNNING(Severity.ERROR, "You cannot start a trip while another is already running."),
+    SA_SCHEDULED_TIME_MISMATCH(Severity.ERROR, "The service appointment should be scheduled between valid time range."),
 
 
     // Time Sheet error codes
     TIME_SHEET_NOT_ENOUGH_DETAILS(Severity.ERROR, "Not enough details to create a timesheet"),
 
     // Trip error codes
-    TRIP_NOT_ENOUGH_DETAILS(Severity.ERROR, "Not enough details to create a trip");
+    TRIP_NOT_ENOUGH_DETAILS(Severity.ERROR, "Not enough details to create a trip"),
+
+    //Service Task error codes
+    TIMESHEET_ALREADY_RUNNING(Severity.ERROR,"Cannot start or resume another service task when timesheet is running");
 
     private final Severity severity;
     private final String message;

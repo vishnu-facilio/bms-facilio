@@ -211,7 +211,7 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private List<Long> groups;
 	@Getter@Setter
 	private Long shiftId;
-	private TerritoryContext territory;
+	private List<TerritoryContext> territories;
 
 	private Status status;
 	public Integer getStatus() {

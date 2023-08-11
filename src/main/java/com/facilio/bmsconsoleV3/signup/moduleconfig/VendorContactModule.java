@@ -126,7 +126,38 @@ public class VendorContactModule extends BaseModuleConfig{
         newVendorContactForm.setIsSystemForm(true);
         newVendorContactForm.setType(FacilioForm.Type.FORM);
 
-        return Collections.singletonList(newVendorContactForm);
+        FacilioForm vendorContactForm = new FacilioForm();
+        vendorContactForm.setDisplayName("NEW VENDOR CONTACT");
+        vendorContactForm.setName("default_vendorcontact_fsm_web");
+        vendorContactForm.setModule(vendorContactModule);
+        vendorContactForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        vendorContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP));
+
+        List<FormField> vendorContactFormFields = new ArrayList<>();
+
+        vendorContactFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.FILE, "Upload Photo",FormField.Required.OPTIONAL, 1,2));
+        vendorContactFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 2));
+        //check
+        vendorContactFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.PHONE, "Phone", FormField.Required.REQUIRED, 3, 2));
+        vendorContactFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.REQUIRED, 4, 2));
+        vendorContactFormFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.REQUIRED, "vendors", 5, 2));
+        // CHANGE CURRENCY FIELD
+        vendorContactFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.TEXTBOX, "Rate per Hour", FormField.Required.OPTIONAL, 6, 2));
+        vendorContactFormFields.add(new FormField("isPrimaryContact", FacilioField.FieldDisplayType.DECISION_BOX, "Primary Contact", FormField.Required.OPTIONAL, 7, 1));
+        vendorContactFormFields.add(new FormField("dispatchable", FacilioField.FieldDisplayType.DECISION_BOX, "Dispatchable", FormField.Required.OPTIONAL, 8, 2));
+        vendorContactFormFields.add(new FormField("trackGeoLocation", FacilioField.FieldDisplayType.DECISION_BOX, "Track Geolocation", FormField.Required.OPTIONAL, 9, 2));
+
+
+        FormSection formSection = new FormSection("Vendor Contact Details", 1, vendorContactFormFields, true);
+        formSection.setSectionType(FormSection.SectionType.FIELDS);
+        vendorContactForm.setSections(Collections.singletonList(formSection));
+        vendorContactForm.setIsSystemForm(true);
+        vendorContactForm.setType(FacilioForm.Type.FORM);
+
+        List<FacilioForm> vendorContactModuleForms = new ArrayList<>();
+        vendorContactModuleForms.add(newVendorContactForm);
+        vendorContactModuleForms.add(vendorContactForm);
+        return vendorContactModuleForms;
     }
 
     public void addActivityModuleForVendorContacts() throws Exception {

@@ -9,7 +9,10 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
@@ -26,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class TimeOffModule extends BaseModuleConfig {
+    public static List<String> timeOffSupportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.FSM_APP);
 
     public TimeOffModule(){setModuleName(FacilioConstants.TimeOff.TIME_OFF);}
 
@@ -120,6 +124,11 @@ public class TimeOffModule extends BaseModuleConfig {
         FacilioModule timeOffModule = new FacilioModule(FacilioConstants.TimeOff.TIME_OFF,"Time Off","Time_Off", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> timeOffFields = new ArrayList<>();
+
+        NumberField localId = new NumberField(timeOffModule,"localId","Id", FacilioField.FieldDisplayType.NUMBER,"LOCAL_ID",FieldType.NUMBER,false,false,true,false);
+        timeOffFields.add(localId);
+        ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.TimeOff.TIME_OFF);
+
         DateField startTime = new DateField(timeOffModule,"startTime","Start Time", FacilioField.FieldDisplayType.DATETIME,"START_TIME",FieldType.DATE_TIME,true,false,true,false);
         timeOffFields.add(startTime);
 
@@ -175,14 +184,14 @@ public class TimeOffModule extends BaseModuleConfig {
         timeOffForm.setName("default_asset_web");
         timeOffForm.setModule(timeOffModule);
         timeOffForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        timeOffForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        timeOffForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> timeOffFormFields = new ArrayList<>();
-        timeOffFormFields.add(new FormField("startTime", FacilioField.FieldDisplayType.DATETIME, "From", FormField.Required.REQUIRED, 1, 3));
-        timeOffFormFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME, "To", FormField.Required.REQUIRED, 2, 3));
-        timeOffFormFields.add(new FormField("people",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"People",FormField.Required.REQUIRED,3,3));
-        timeOffFormFields.add(new FormField("type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Type", FormField.Required.REQUIRED,4,3));
-        timeOffFormFields.add(new FormField("comments",FacilioField.FieldDisplayType.TEXTAREA,"Comments",FormField.Required.OPTIONAL,5,1));
+        timeOffFormFields.add(new FormField("people",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Field Agent",FormField.Required.REQUIRED,1,2));
+        timeOffFormFields.add(new FormField("type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Time-Off Type", FormField.Required.REQUIRED,2,2));
+        timeOffFormFields.add(new FormField("startTime", FacilioField.FieldDisplayType.DATETIME, "Start Time", FormField.Required.REQUIRED, 3, 2));
+        timeOffFormFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME, "End Time", FormField.Required.REQUIRED, 4, 2));
+        timeOffFormFields.add(new FormField("comments",FacilioField.FieldDisplayType.TEXTAREA,"Comments",FormField.Required.OPTIONAL,3,1));
 
         FormSection section = new FormSection("Default", 1, timeOffFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
@@ -377,4 +386,49 @@ public class TimeOffModule extends BaseModuleConfig {
 
         return FieldUtil.getAsJSON(widgetGroup);
     }
+    @Override
+    public List<Map<String, Object>> getViewsAndGroups() throws Exception{
+        List<Map<String, Object>> groupVsViews = new ArrayList<>();
+        Map<String, Object> groupDetails;
+
+        int order = 1;
+        ArrayList<FacilioView> timeOffViews = new ArrayList<FacilioView>();
+        timeOffViews.add(getAllTimeOffViews().setOrder(order++));
+
+        groupDetails = new HashMap<>();
+        groupDetails.put("name", "systemviews");
+        groupDetails.put("displayName", "System Views");
+        groupDetails.put("moduleName", FacilioConstants.TimeOff.TIME_OFF);
+        groupDetails.put("views", timeOffViews);
+        groupVsViews.add(groupDetails);
+
+        return groupVsViews;
+    }
+
+    private FacilioView getAllTimeOffViews() throws Exception {
+
+        FacilioModule timeOffModule = Constants.getModBean().getModule(FacilioConstants.TimeOff.TIME_OFF);
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(timeOffModule), true));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("alltimeoff");
+        allView.setDisplayName("All Time Off");
+        allView.setModuleName(FacilioConstants.TimeOff.TIME_OFF);
+        allView.setSortFields(sortFields);
+        allView.setAppLinkNames(TimeOffModule.timeOffSupportedApps);
+
+
+        List<ViewField> timeOffViewFields = new ArrayList<>();
+
+        timeOffViewFields.add(new ViewField("people","Field Agent"));
+        timeOffViewFields.add(new ViewField("type","Time-Off Type"));
+        timeOffViewFields.add(new ViewField("startTime","Start Time"));
+        timeOffViewFields.add(new ViewField("endTime","End Time"));
+        timeOffViewFields.add(new ViewField("comments","Comments"));
+
+        allView.setFields(timeOffViewFields);
+
+        return allView;
+    }
+
 }

@@ -45,6 +45,7 @@ public class EmployeeModule extends BaseModuleConfig{
         ArrayList<FacilioView> employee = new ArrayList<FacilioView>();
         employee.add(getAllHiddenEmployees().setOrder(order++));
         employee.add(getAllEmployees().setOrder(order++));
+//        employee.add(getAllEmployeesForFsm());
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
@@ -83,9 +84,23 @@ public class EmployeeModule extends BaseModuleConfig{
         allView.setDisplayName("All Employees");
         allView.setModuleName(employeeModule.getName());
         allView.setSortFields(sortFields);
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
         return allView;
     }
+//    private static FacilioView getAllEmployeesForFsm(){
+//
+//        FacilioModule employeeModule = ModuleFactory.getEmployeeModule();
+//
+//        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+//
+//        FacilioView allView = new FacilioView();
+//        allView.setName("all-employees");
+//        allView.setDisplayName("All Employees");
+//        allView.setModuleName(employeeModule.getName());
+//        allView.setSortFields(sortFields);
+//        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP));
+//        return allView;
+//    }
 
     @Override
     public List<FacilioForm> getModuleForms() throws Exception {
@@ -113,7 +128,37 @@ public class EmployeeModule extends BaseModuleConfig{
         employeeContactForm.setIsSystemForm(true);
         employeeContactForm.setType(FacilioForm.Type.FORM);
 
-        return Collections.singletonList(employeeContactForm);
+        FacilioForm employeeForm = new FacilioForm();
+        employeeForm.setDisplayName("NEW EMPLOYEE");
+        employeeForm.setName("default_employee_fsm_web");
+        employeeForm.setModule(employeeModule);
+        employeeForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
+        employeeForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP));
+
+        List<FormField> employeeFormFields = new ArrayList<>();
+        // check this
+        employeeFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.FILE, "Upload Photo",FormField.Required.OPTIONAL, 1,2));
+        employeeFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 2));
+        //
+        employeeFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.PHONE, "Phone", FormField.Required.REQUIRED, 3, 2));
+        employeeFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.REQUIRED, 4, 2));
+        employeeFormFields.add(new FormField("designation", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Designation", FormField.Required.REQUIRED, 5, 2));
+
+        // CHANGE CURRENCY FIELD
+        employeeFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.TEXTBOX, "Rate per Hour", FormField.Required.OPTIONAL, 6, 2));
+        employeeFormFields.add(new FormField("dispatchable", FacilioField.FieldDisplayType.DECISION_BOX, "Dispatchable", FormField.Required.OPTIONAL, 7, 2));
+        employeeFormFields.add(new FormField("trackGeoLocation", FacilioField.FieldDisplayType.DECISION_BOX, "Track Geolocation", FormField.Required.OPTIONAL, 8, 2));
+
+        FormSection employeeSection = new FormSection("Employee Details", 1, employeeFormFields, true);
+        employeeSection.setSectionType(FormSection.SectionType.FIELDS);
+        employeeForm.setSections(Collections.singletonList(employeeSection));
+        employeeForm.setIsSystemForm(true);
+        employeeForm.setType(FacilioForm.Type.FORM);
+
+        List<FacilioForm> employeeModuleForms = new ArrayList<>();
+        employeeModuleForms.add(employeeContactForm);
+        employeeModuleForms.add(employeeForm);
+        return employeeModuleForms;
     }
 
     public void addActivityModuleForEmployee() throws Exception {

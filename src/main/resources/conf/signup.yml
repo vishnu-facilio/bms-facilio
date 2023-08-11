@@ -549,7 +549,6 @@ classes:
   - com.facilio.fsm.signup.ServiceOrderItemsModule
   - com.facilio.fsm.signup.ServiceOrderToolsModule
   - com.facilio.fsm.signup.ServiceOrderServicesModule
-  - com.facilio.fsm.signup.PeopleTerritoryModule
 
   #Adding Location History Module
   - com.facilio.fsm.signup.LocationHistoryModule

@@ -14,6 +14,7 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,11 @@ public class UpdatePeopleAvailabilityStatusCommand extends FacilioCommand {
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(peopleFields);
         Map<String, List> recordMap = (Map<String, List>) context.get("recordMap");
         List<AttendanceTransaction> transactionsCreated = recordMap.get(ModName);
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(fieldMap.get(FacilioConstants.ContextNames.STATUS));
+        fields.add(fieldMap.get(FacilioConstants.ContextNames.LAST_CHECKED_IN_TIME));
+        fields.add(fieldMap.get(FacilioConstants.ContextNames.LAST_CHECKED_OUT_TIME));
+        fields.add(fieldMap.get(FacilioConstants.ContextNames.CHECKED_IN));
         if(CollectionUtils.isNotEmpty(transactionsCreated) && eventType == EventType.CREATE){
             AttendanceTransaction transaction = transactionsCreated.get(0);
             if(transaction.getPeople() != null) {
@@ -37,11 +43,15 @@ public class UpdatePeopleAvailabilityStatusCommand extends FacilioCommand {
                 people.setId(peopleId);
                 if (transaction.getTransactionType() == AttendanceTransaction.Type.CHECK_IN) {
                         people.setStatus(V3PeopleContext.Status.AVAILABLE.getIndex());
+                        people.setCheckedIn(true);
+                        people.setLastCheckedInTime(transaction.getTransactionTime());
                 } else if (transaction.getTransactionType() == AttendanceTransaction.Type.CHECK_OUT) {
                         people.setStatus(V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
+                        people.setCheckedIn(false);
+                        people.setLastCheckedOutTime(transaction.getTransactionTime());
                 }
                 if(people.getStatus() != null){
-                    V3RecordAPI.updateRecord(people, peopleModule, Collections.singletonList(fieldMap.get(FacilioConstants.ContextNames.STATUS)));
+                    V3RecordAPI.updateRecord(people, peopleModule, fields);
 
                 }
             }

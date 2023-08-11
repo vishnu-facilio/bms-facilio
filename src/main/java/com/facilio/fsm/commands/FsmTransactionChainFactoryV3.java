@@ -12,6 +12,7 @@ import com.facilio.fsm.commands.serviceAppointment.*;
 import com.facilio.fsm.commands.serviceOrders.*;
 import com.facilio.fsm.commands.serviceTasks.*;
 import com.facilio.fsm.commands.timeSheet.CheckForExistingTimeSheetsCommand;
+import com.facilio.fsm.commands.timeSheet.StopTimeSheetCommand;
 import com.facilio.fsm.commands.trip.CheckForExistingTripsCommand;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
@@ -118,6 +119,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain getServiceAppointmentBeforeCreateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new ValidateSACommand());
         c.addCommand(new SetServiceAppointmentNameCommand());
         c.addCommand(new SetDefaultAppointmentTypeCommand());
         c.addCommand(new SetServiceAppointmentStatusCommand());
@@ -173,6 +175,78 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckForExistingTripsCommand());
+        return c;
+    }
+
+    public static FacilioChain startSAChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new StartSACommand());
+        return c;
+    }
+
+    public static FacilioChain completeSAChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CompleteSACommand());
+        return c;
+    }
+
+    public static FacilioChain cancelSAChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CancelSACommand());
+        return c;
+    }
+
+    public static FacilioChain startTripChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new StartTripCommand());
+        return c;
+    }
+
+    public static FacilioChain endTripChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new EndTripCommand());
+        return c;
+    }
+
+    public static FacilioChain dispatchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DispatchCommand());
+        return c;
+    }
+
+    public static FacilioChain startTaskChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new StartTaskCommand());
+        return c;
+    }
+
+    public static FacilioChain pauseTaskChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PauseTaskCommand());
+        return c;
+    }
+
+    public static FacilioChain resumeTaskChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ResumeTaskCommand());
+        return c;
+    }
+
+    public static FacilioChain completeTaskChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CompleteTaskCommand());
+        return c;
+    }
+
+    public static FacilioChain cancelTaskChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CancelTaskCommand());
+        return c;
+    }
+
+    public static FacilioChain stopTimeSheetChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new StopTimeSheetCommand());
         return c;
     }
 }

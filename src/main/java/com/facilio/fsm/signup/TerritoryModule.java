@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
@@ -17,10 +18,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.modules.fields.StringField;
+import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
@@ -33,9 +31,11 @@ public class TerritoryModule extends BaseModuleConfig {
 
     public void addData() throws Exception {
         addTerritoryModule();
-        addTerritoryLookupInPeople();
+//        addTerritoryLookupInPeople();
         addTerritoryLookupInSite();
         addActivityModuleForTerritory();
+        addPeopleTerritoryModule();
+        addTerritoriesField();
         SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.Territory.TERRITORY));
     }
 
@@ -44,6 +44,11 @@ public class TerritoryModule extends BaseModuleConfig {
         List<FacilioModule> modules = new ArrayList<>();
         FacilioModule territoryModule = new FacilioModule(FacilioConstants.Territory.TERRITORY, "Territory", "TERRITORY", FacilioModule.ModuleType.BASE_ENTITY, true);
         List<FacilioField> territoryFields = new ArrayList<>();
+
+        NumberField localId = new NumberField(territoryModule,"localId","Id", FacilioField.FieldDisplayType.NUMBER,"LOCAL_ID",FieldType.NUMBER,false,false,true,false);
+        territoryFields.add(localId);
+        ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.Territory.TERRITORY);
+
         territoryFields.add(new StringField(territoryModule, "name", "Name", FacilioField.FieldDisplayType.TEXTBOX, "NAME", FieldType.STRING, true, false, true, true));
         territoryFields.add(new StringField(territoryModule, "description", "Description", FacilioField.FieldDisplayType.TEXTAREA, "DESCRIPTION", FieldType.STRING, false, false, true, false));
         territoryFields.add(new StringField(territoryModule, "color", "Territory Color", FacilioField.FieldDisplayType.COLOR_PICKER, "COLOR", FieldType.STRING, true, false, true, false));
@@ -76,14 +81,14 @@ public class TerritoryModule extends BaseModuleConfig {
         addModuleChain.execute();
     }
 
-    private void addTerritoryLookupInPeople() throws Exception {
-        ModuleBean modBean = Constants.getModBean();
-        LookupField territoryLookup = new LookupField(modBean.getModule(FacilioConstants.ContextNames.PEOPLE), FacilioConstants.Territory.TERRITORY, "Territory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "TERRITORY_ID", FieldType.LOOKUP, false, false, true, false, "Territory", modBean.getModule(FacilioConstants.Territory.TERRITORY));
-        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
-        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PEOPLE);
-        chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(territoryLookup));
-        chain.execute();
-    }
+//    private void addTerritoryLookupInPeople() throws Exception {
+//        ModuleBean modBean = Constants.getModBean();
+//        LookupField territoryLookup = new LookupField(modBean.getModule(FacilioConstants.ContextNames.PEOPLE), FacilioConstants.Territory.TERRITORY, "Territory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "TERRITORY_ID", FieldType.LOOKUP, false, false, true, false, "Territory", modBean.getModule(FacilioConstants.Territory.TERRITORY));
+//        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
+//        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PEOPLE);
+//        chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(territoryLookup));
+//        chain.execute();
+//    }
 
     private void addTerritoryLookupInSite() throws Exception {
         ModuleBean modBean = Constants.getModBean();
@@ -360,6 +365,40 @@ public class TerritoryModule extends BaseModuleConfig {
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
+    }
+
+    private void addPeopleTerritoryModule() throws Exception {
+        List<FacilioModule> modules = new ArrayList<>();
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule territoryModule = modBean.getModule(FacilioConstants.Territory.TERRITORY);
+        FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        FacilioModule peopleTerritoryModule = new FacilioModule(FacilioConstants.Territory.PEOPLE_TERRITORY,"People Territories","PEOPLE_TERRITORY_REL",FacilioModule.ModuleType.SUB_ENTITY,true);
+        List<FacilioField> fields = new ArrayList<>();
+        LookupField peopleField = new LookupField(peopleTerritoryModule,"left","People",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"PEOPLE_ID",FieldType.LOOKUP,true,false,true,true,"People",peopleModule);
+        fields.add(peopleField);
+        LookupField territoryField = new LookupField(peopleTerritoryModule,"right","Territories", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"TERRITORY_ID",FieldType.LOOKUP,true,false,true,false,"Territories",territoryModule);
+        fields.add(territoryField);
+        peopleTerritoryModule.setFields(fields);
+        modules.add(peopleTerritoryModule);
+        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+        addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain.execute();
+    }
+    private void addTerritoriesField() throws Exception{
+        ModuleBean modBean = Constants.getModBean();
+        List<FacilioField>fields = new ArrayList<>();
+        MultiLookupField multiLookupTerritoryField = FieldFactory.getDefaultField("territories", "Territories", null, FieldType.MULTI_LOOKUP);
+        multiLookupTerritoryField.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
+        multiLookupTerritoryField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
+        multiLookupTerritoryField.setLookupModule( modBean.getModule(FacilioConstants.Territory.TERRITORY));
+        multiLookupTerritoryField.setRelModule(modBean.getModule(FacilioConstants.Territory.PEOPLE_TERRITORY));
+        multiLookupTerritoryField.setRelModuleId(modBean.getModule(FacilioConstants.Territory.PEOPLE_TERRITORY).getModuleId());
+        fields.add(multiLookupTerritoryField);
+        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PEOPLE);
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
+        chain.execute();
     }
 
 }
