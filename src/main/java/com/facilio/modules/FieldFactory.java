@@ -7986,6 +7986,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("roleId", "ROLE_ID", module, FieldType.NUMBER));
         fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
         fields.add(getField("sharingType", "SHARING_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("locked", "LOCKED", module, FieldType.BOOLEAN));
 
         return fields;
     }

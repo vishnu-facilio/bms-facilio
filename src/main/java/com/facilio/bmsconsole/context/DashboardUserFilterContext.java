@@ -16,6 +16,8 @@ import com.facilio.util.FacilioUtil;
 public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 	private Map<Object,FacilioField> widgetFieldMap=new HashMap<>();
+	private Map<Object,FacilioField> widgetExcludeFieldMap=new HashMap<>();
+	private Map<Long,String> widgetModuleMap=new HashMap<>();
 	Map<Long,FacilioField>  cascadingFilters;
 public Map<Long, FacilioField> getCascadingFilters() {
 		return cascadingFilters;
@@ -484,7 +486,18 @@ public Map<Long, FacilioField> getCascadingFilters() {
 	public void setWidgetFieldMap(Map<Object,FacilioField> widgetFieldMap) {
 		this.widgetFieldMap = widgetFieldMap;
 	}
-	
+	public Map<Long,String> getWidgetModuleMap() {
+		return this.widgetModuleMap;
+	}
+	public void setWidgetModuleMap(Map<Long,String> widgetModuleMap) {
+		this.widgetModuleMap = widgetModuleMap;
+	}
+	public Map<Object,FacilioField> getWidgetExcludeFieldMap() {
+		return this.widgetExcludeFieldMap;
+	}
+	public void setWidgetExcludeFieldMap(Map<Object,FacilioField> widgetExcludeFieldMap) {
+		this.widgetExcludeFieldMap = widgetExcludeFieldMap;
+	}
 	private long criteriaId = -1;
 	
 	public long getCriteriaId() {

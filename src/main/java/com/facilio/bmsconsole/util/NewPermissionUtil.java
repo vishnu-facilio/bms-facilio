@@ -55,6 +55,7 @@ public class NewPermissionUtil {
     private static Map<String, Integer> serviceCatalogTabType = Collections.unmodifiableMap(initServiceCatalogMap());
 
     private static Map<String, Integer> setupPermissionMap = Collections.unmodifiableMap(initSetupPermissionMap());
+    private static Map<String, Integer> newDashboardTabType = Collections.unmodifiableMap(initNewDashboardMap());
 
 
     private static Map<String, Integer> initModuleMap() {
@@ -167,6 +168,15 @@ public class NewPermissionUtil {
         dashboardTabType.put("DELETE", 8);
         dashboardTabType.put("SHARE", 16);
         return dashboardTabType;
+    }
+    private static Map<String, Integer> initNewDashboardMap() {
+        newDashboardTabType = new HashMap<>();
+        newDashboardTabType.put("CREATE", 1);
+        newDashboardTabType.put("VIEW", 2);
+        newDashboardTabType.put("EDIT", 4);
+        newDashboardTabType.put("DELETE", 8);
+        newDashboardTabType.put("SHARE", 16);
+        return newDashboardTabType;
     }
 
     private static Map<String, Integer> initCustomMap() {
@@ -597,6 +607,16 @@ public class NewPermissionUtil {
         permissionMap.put("*", permissions);
         permissionList.put(Type.SERVICE_CATALOG.getIndex(), permissionMap);
 
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("CREATE", "Create", newDashboardTabType.get("CREATE"), null));
+        permissions.add(new Permission("VIEW", "View", newDashboardTabType.get("VIEW"), null));
+        permissions.add(new Permission("EDIT", "Edit", newDashboardTabType.get("EDIT"), null));
+        permissions.add(new Permission("DELETE", "Delete", newDashboardTabType.get("DELETE"), null));
+        permissions.add(new Permission("SHARE", "Share", newDashboardTabType.get("SHARE"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.NEW_DASHBOARD.getIndex(), permissionMap);
+
         for(Type type : Type.values()) {
             if(type.getTabType().getIndex() == WebTabContext.TabType.SETUP.getIndex()) {
                 permissions = new ArrayList<>();
@@ -705,7 +725,8 @@ public class NewPermissionUtil {
                 return attendanceTabType.getOrDefault(action, -1);
             case 87:
                 return newKpiTabType.getOrDefault(action, -1);
-
+            case 94:
+                return newDashboardTabType.getOrDefault(action, -1);
             default:
                 return -1;
         }
@@ -888,6 +909,13 @@ public class NewPermissionUtil {
                 Map<String, Long> maps = new HashMap<>();
                 for (String key : newKpiTabType.keySet()) {
                     maps.put(key, Long.valueOf(newKpiTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 94: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : newDashboardTabType.keySet()) {
+                    maps.put(key, Long.valueOf(newDashboardTabType.get(key).toString()));
                 }
                 return maps;
             }

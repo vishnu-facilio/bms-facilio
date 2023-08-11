@@ -113,6 +113,9 @@ public class UpdateWidgetCommandV3 extends FacilioCommand {
                         updateWidgetSection.update(props);
                     }
                 }
+                if(updatewidget.getWidgetFieldMapping() != null && updatewidget.getWidgetFieldMapping().size() > 0) {
+                    DashboardUtil.addWidgetFieldMapping(updatewidget);
+                }
             }
         }
         return false;

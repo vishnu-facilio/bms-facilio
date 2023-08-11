@@ -68,9 +68,6 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 
 					JSONObject widgetSettings = widget.getWidgetSettings();
 					Boolean isFilterExclude = (widgetSettings == null) ? false : widgetSettings.containsKey("excludeDbFilters") ?   (Boolean) widgetSettings.get("excludeDbFilters") : false;
-					if (isFilterExclude != null && isFilterExclude == true) {
-						continue;
-					}
 
 					long widgetId = widget.getId();
 
@@ -178,11 +175,17 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 								}
 							
 								if (filterApplicableField != null) {
-									// add WIDGET->Widget-Field to apply filtwidgetUserFiltersMaper in filter obj
-									filter.getWidgetFieldMap().put(widgetId, filterApplicableField);
+									filter.getWidgetModuleMap().put(widgetId, widgetModule != null ? widgetModule.getName() : null);
+									if (isFilterExclude != null && isFilterExclude == true) {
+										filter.getWidgetExcludeFieldMap().put(widgetId, filterApplicableField);
+									}
+									else {
+										// add WIDGET->Widget-Field to apply filtwidgetUserFiltersMaper in filter obj
+										filter.getWidgetFieldMap().put(widgetId, filterApplicableField);
 
-									// add filter to list of applicable filters in widget
-									this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
+										// add filter to list of applicable filters in widget
+										this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
+									}
 
 								}
 								

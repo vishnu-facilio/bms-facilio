@@ -43,6 +43,13 @@ public class DashboardSharingContext extends ModuleBaseWithCustomFields {
 	public void setGroupId(long groupId) {
 		this.groupId = groupId;
 	}
+	private boolean locked = false;
+	public boolean getLocked() {
+		return locked;
+	}
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
 	
 	private SharingType sharingType;
 	public int getSharingType() {

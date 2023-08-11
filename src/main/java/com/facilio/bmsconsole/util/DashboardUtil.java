@@ -3670,7 +3670,22 @@ public class DashboardUtil {
 		}
 		return null;
 	}
-	
+	public static void addWidgetFieldMapping(DashboardWidgetContext widget) throws Exception {
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getDashboardUserFilterWidgetFieldMappingModule().getTableName())
+				.andCustomWhere("WIDGET_ID = ?", widget.getId());
+		deleteBuilder.delete();
+
+		List<Map<String, Object>> widgetFieldMappingProps = new ArrayList<>();
+		for(DashboardUserFilterWidgetFieldMappingContext widgetFieldMapping : widget.getWidgetFieldMapping()) {
+			widgetFieldMappingProps.add(FieldUtil.getAsProperties(widgetFieldMapping));
+		}
+		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getDashboardUserFilterWidgetFieldMappingModule().getTableName())
+				.fields(FieldFactory.getDashboardUserFilterWidgetFieldMappingFields())
+				.addRecords(widgetFieldMappingProps);
+		insertRecordBuilder.save();
+	}
 }
 class dashboardFolderSortByOrder implements Comparator<DashboardFolderContext> 
 { 

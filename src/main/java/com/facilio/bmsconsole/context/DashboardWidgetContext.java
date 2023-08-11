@@ -52,6 +52,13 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	public void setChild(boolean child) {
 		this.child = child;
 	}
+	private List<DashboardUserFilterWidgetFieldMappingContext> widgetFieldMapping;
+	public void setWidgetFieldMapping(List<DashboardUserFilterWidgetFieldMappingContext> widgetFieldMapping) {
+		this.widgetFieldMapping = widgetFieldMapping;
+	}
+	public List<DashboardUserFilterWidgetFieldMappingContext> getWidgetFieldMapping(){
+		return this.widgetFieldMapping;
+	}
 
 	public Long getSectionId() {
 		return sectionId;
