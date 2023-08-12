@@ -211,10 +211,13 @@ public class ODATAUtil {
                             }else if(fieldType.equalsIgnoreCase("enum")){
                                 String enumValue = ((EnumField)field).getValue((Integer)entry.getValue());
                                 entity.addProperty(new Property(null, displayName, ValueType.PRIMITIVE, enumValue));
-                            }
-                            else if (fieldType.equals("DateTime") || fieldType.equals("Date")) {
+                            }else if (fieldType.equals("DateTime")) {
                                 long dateTimeValue = (long) value;
                                 entity.addProperty(new Property(null, displayName, ValueType.PRIMITIVE, DateTimeUtil.getDateTime(dateTimeValue)));
+                            }
+                            else if (fieldType.equals("Date")) {
+                                long dateTimeValue = (long) value;
+                                entity.addProperty(new Property(null, displayName, ValueType.PRIMITIVE, DateTimeUtil.getDateTime(dateTimeValue).toLocalDate()));
                             }else {
                                 entity.addProperty(new Property(null, displayName, ValueType.PRIMITIVE, value));
                             }
