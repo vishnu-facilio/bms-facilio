@@ -1,14 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.chain.FacilioContext;
-import com.facilio.modules.FacilioModule;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.*;
 import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -16,7 +18,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ExecuteStateTransitionsCommand extends ExecuteAllWorkflowsCommand {
 	private static final long serialVersionUID = 1L;
@@ -46,31 +47,20 @@ public class ExecuteStateTransitionsCommand extends ExecuteAllWorkflowsCommand {
 
 	@Override
 	protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records, FacilioContext context) throws Exception {
-		List<WorkflowRuleContext> workflowRules = super.getWorkflowRules(module, activities, records, context);
 
-		Set<Long> stateFlowIds = new HashSet<>();
-		Set<Long> fromStateIds = new HashSet<>();
-		if (CollectionUtils.isNotEmpty(records) && CollectionUtils.isNotEmpty(workflowRules)) {
+		List<WorkflowRuleContext> workflowRules = new ArrayList<>();
+		List<Map<String, Long>> stateIds = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(records)) {
 			for (ModuleBaseWithCustomFields record : records) {
-				stateFlowIds.add(record.getStateFlowId());
-				if (record.getModuleState() != null) {
-					fromStateIds.add(record.getModuleState().getId());
-				}
+				long fromStateId = record.getModuleState() != null ? record.getModuleState().getId() : -1;
+				long stateFlowId = record.getStateFlowId() > 0 ? record.getStateFlowId() : -1;
+				Map<String, Long> idMap = new HashMap<>();
+				idMap.put("fromStateId",fromStateId);
+				idMap.put("stateFlowId",stateFlowId);
+				stateIds.add(idMap);
 			}
-			workflowRules = workflowRules.stream().filter(rule -> {
-				if (rule instanceof StateflowTransitionContext) {
-					StateflowTransitionContext stateflowTransitionContext = (StateflowTransitionContext) rule;
-					if (stateflowTransitionContext.getTypeEnum() != AbstractStateTransitionRuleContext.TransitionType.CONDITIONED) {
-						return false;
-					}
-					if (stateFlowIds.contains(stateflowTransitionContext.getStateFlowId()) && fromStateIds.contains(stateflowTransitionContext.getFromStateId())) {
-						return true;
-					}
-				}
-				return false;
-			}).collect(Collectors.toList());
 		}
-
+		workflowRules = StateFlowRulesAPI.getStateTransitions(stateIds, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED);
 		return workflowRules;
 	}
 }
