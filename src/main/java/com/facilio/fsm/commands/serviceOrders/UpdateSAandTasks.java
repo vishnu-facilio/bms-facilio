@@ -43,11 +43,15 @@ public class UpdateSAandTasks extends FacilioCommand {
 
                         case FacilioConstants.ServiceOrder.COMPLETED:
                             updateServiceTasks(serviceTaskIds, ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex(), currentTime);
-                            updateServiceAppointments(appointmentIds, currentTime, FacilioConstants.ServiceAppointment.COMPLETED);
+                            if(CollectionUtils.isNotEmpty(appointmentIds)){
+                                updateServiceAppointments(appointmentIds, currentTime, FacilioConstants.ServiceAppointment.COMPLETED);
+                            }
                             break;
                         case FacilioConstants.ServiceOrder.CANCELLED:
                             updateServiceTasks(serviceTaskIds, ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex(), currentTime);
-                            updateServiceAppointments(appointmentIds, currentTime, FacilioConstants.ServiceAppointment.CANCELLED);
+                            if(CollectionUtils.isNotEmpty(appointmentIds)) {
+                                updateServiceAppointments(appointmentIds, currentTime, FacilioConstants.ServiceAppointment.CANCELLED);
+                            }
                             break;
                     }
 
