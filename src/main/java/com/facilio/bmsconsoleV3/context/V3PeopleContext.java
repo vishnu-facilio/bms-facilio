@@ -147,7 +147,7 @@ public class V3PeopleContext extends V3Context {
     private String currentLocation;
     private Long lastSyncTime;
     private Double currentFreeCapacity;
-    private TerritoryContext territory;
+    private List<TerritoryContext> territories;
     private boolean trackGeoLocation;
     private Double batteryInfo;
     private Double signalInfo;

@@ -142,7 +142,7 @@ public class EmployeeModule extends BaseModuleConfig{
         //
         employeeFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.PHONE, "Phone", FormField.Required.REQUIRED, 3, 2));
         employeeFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.REQUIRED, 4, 2));
-        employeeFormFields.add(new FormField("designation", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Designation", FormField.Required.REQUIRED, 5, 2));
+        employeeFormFields.add(new FormField("designation", FacilioField.FieldDisplayType.TEXTBOX, "Designation", FormField.Required.REQUIRED, 5, 2));
 
         // CHANGE CURRENCY FIELD
         employeeFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.TEXTBOX, "Rate per Hour", FormField.Required.OPTIONAL, 6, 2));

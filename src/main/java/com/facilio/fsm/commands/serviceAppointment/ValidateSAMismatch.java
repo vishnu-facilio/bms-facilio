@@ -71,11 +71,6 @@ public class ValidateSAMismatch extends FacilioCommand {
                             }
                         }
                     }
-                    if(serviceAppointment.getTerritory() != null && fieldAgent.getTerritory() != null){
-                        if(serviceAppointment.getTerritory().getId() != fieldAgent.getTerritory().getId()){
-                            errors.append("Service Appointment is not located in the field agent's territory. ");
-                        }
-                    }
                     if(CollectionUtils.isNotEmpty(serviceAppointment.getSkills())){
                         List<Long> saSkillIds = serviceAppointment.getSkills().stream().map(obj -> obj.getId()).collect(Collectors.toList());
                         SelectRecordsBuilder<ServiceAppointmentSkillContext> saSkillsBuilder  = new SelectRecordsBuilder<ServiceAppointmentSkillContext>()

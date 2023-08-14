@@ -18,6 +18,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.modules.fields.MultiLookupMeta;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
@@ -42,12 +44,13 @@ public class FetchDispatcherResourcesCommand extends FacilioCommand {
         List<FacilioField> allPeopleFields = moduleBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(allPeopleFields);
         List<FacilioField> selectFields = new ArrayList<>();
-        List<String> defaultFieldNames = new ArrayList<>(Arrays.asList("name","territory","status","currentLocation"));
+        List<String> defaultFieldNames = new ArrayList<>(Arrays.asList("name","status","currentLocation"));
         for (String fieldName : defaultFieldNames){
             selectFields.add(fieldMap.get(fieldName));
         }
         List<SupplementRecord> supplementFields = new ArrayList<>();
-        supplementFields.add((SupplementRecord)fieldMap.get("territory"));
+        MultiLookupMeta territories = new MultiLookupMeta((MultiLookupField) fieldMap.get("territories"));
+        supplementFields.add(territories);
 
         String sortBy = "name";
         String sortOrder = "desc";
