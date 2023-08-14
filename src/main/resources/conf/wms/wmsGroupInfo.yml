@@ -35,7 +35,7 @@ groups:
   - group: receive-mail
     sendToAll: false
     topics:
-      - { topic: email-process/#, handler: com.facilio.wmsv2.handler.EmailProcessHandler, recordTimeout: 300, isLiveMessage: false }
+      - { topic: email-process/#, handler: com.facilio.wmsv2.handler.EmailProcessHandler, recordTimeout: 60, isLiveMessage: false }
 
   - group: long-running-task
     sendToAll: false
