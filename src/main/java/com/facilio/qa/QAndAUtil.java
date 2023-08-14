@@ -64,8 +64,8 @@ public class QAndAUtil {
     public static <E extends V3Context> void setDefaultPropsAsNullToReduceRespSize(E record) {
         record.setSysCreatedBy(null);
         record.setSysModifiedBy(null);
-        record.setSysCreatedTime(0);
-        record.setSysModifiedTime(0);
+//        record.setSysCreatedTime(0);
+//        record.setSysModifiedTime(0);
         record._setOrgId(null);
         record._setModuleId(null);
     }
@@ -384,6 +384,19 @@ public class QAndAUtil {
                 QuestionContext::setPage,
                 PageContext::setQuestions,
                 QAndAUtil::removeDefaultQuestionProps);
+    }
+
+    public static void populateQuestionsInPages(Collection<PageContext> pages, Criteria additionalCriteria) throws Exception {
+        fetchChildrenFromParent(pages,
+                FacilioConstants.QAndA.QUESTION,
+                "page",
+                "position",
+                q -> q.getPage().getId(),
+                QuestionContext::setPage,
+                PageContext::setQuestions,
+                QAndAUtil::removeDefaultQuestionProps,
+                additionalCriteria,
+                null);
     }
 
     private static void removeDefaultQuestionProps (QuestionContext question) {
