@@ -298,7 +298,16 @@ public class ReportFactoryFields {
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingTool"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingItem"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("lastIssuedToUser"));
-		
+
+		Map<String, FacilioField> parent_customFields = new HashMap<String, FacilioField>();
+		if(bean.getAllCustomFields(FacilioConstants.ContextNames.ASSET) != null) {
+			parent_customFields = FieldFactory.getAsMap(bean.getAllCustomFields(FacilioConstants.ContextNames.ASSET));
+			if(parent_customFields.size() != 0) {
+				for(String customFieldName: parent_customFields.keySet()) {
+					assetFields.add(parent_customFields.get(customFieldName));
+				}
+			}
+		}
 		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
 
 		
@@ -825,7 +834,10 @@ public class ReportFactoryFields {
 
 		// collect lookup modules , also replace special lookups(basespace/resource)
 		// with child lookups
-
+		FacilioField site_field = FieldFactory.getSiteField(facilioModule);
+		if(site_field != null){
+			selectedFields.add(site_field);
+		}
 		for (FacilioField field : allFields) {
 			if (field.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
 				LookupField lookupField = (LookupField) field;
@@ -837,11 +849,15 @@ public class ReportFactoryFields {
 					if (lookupModule.getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
 							|| lookupModule.getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
 						LookupField siteField = (LookupField) field.clone();
-						FacilioModule siteModule = bean.getModule("site");
-						siteField.setLookupModule(siteModule);
-						siteField.setLookupModuleId(siteModule.getModuleId());
-						siteField.setDisplayName("Site");
 						selectedFields.add(siteField);
+
+						LookupField lookupsiteField = (LookupField) field.clone();
+						FacilioModule siteModule = bean.getModule("site");
+						lookupsiteField.setLookupModule(siteModule);
+						lookupsiteField.setLookupModuleId(siteModule.getModuleId());
+						lookupsiteField.setDisplayName("Site");
+						selectedFields.add(lookupsiteField);
+
 
 						LookupField buildingField = (LookupField) field.clone();
 						FacilioModule buildingModule = bean.getModule("building");

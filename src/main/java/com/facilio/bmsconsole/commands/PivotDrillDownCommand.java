@@ -5,6 +5,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.PivotColumnContext;
 import com.facilio.report.context.PivotDataColumnContext;
@@ -50,6 +51,9 @@ public class PivotDrillDownCommand extends FacilioCommand {
     private FacilioField getField(PivotRowColumnContext rowColumn, ModuleBean modBean) throws Exception {
         if(rowColumn.getLookupFieldId() > 0){
             return modBean.getField(rowColumn.getLookupFieldId()).clone();
+        }
+        else if(rowColumn.getField().getId() <=0 && rowColumn.getField().getName() != null && rowColumn.getField().getName().equals("siteId")){
+            return  FieldFactory.getSiteField(modBean.getModule(rowColumn.getField().getModuleId()));
         }
         return modBean.getField(rowColumn.getField().getId()).clone();
     }

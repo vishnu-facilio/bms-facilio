@@ -307,10 +307,12 @@ public class ExportUtil {
 		    					}
 						}
 						if(value instanceof Double) {
-							value = BigDecimal.valueOf((Double)value).toPlainString();
+							row.createCell((short) j).setCellValue((Double) (value != null ? value : null));
 						}
-						row.createCell((short) j).setCellValue(value != null ? value.toString() : "");
-		    			}
+						else{
+							row.createCell((short) j).setCellValue(value != null ? value.toString() : "");
+						}
+					}
 				}
 				
 				rowCount++;

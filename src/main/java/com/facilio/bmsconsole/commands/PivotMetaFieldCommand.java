@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.PivotDataColumnContext;
 import com.facilio.report.context.PivotFormulaColumnContext;
@@ -42,7 +43,11 @@ public class PivotMetaFieldCommand extends FacilioCommand {
 
         for (PivotRowColumnContext row : rowColumns) {
             if (row.getAlias().equals(alias)) {
-                facilioField = modBean.getField(row.getField().getId()).clone();
+                if(row.getField().getId() <=0 && row.getField().getName() != null && row.getField().getName().equals("siteId")) {
+                    facilioField = FieldFactory.getSiteField(modBean.getModule(row.getField().getModuleId()));
+                }else{
+                    facilioField = modBean.getField(row.getField().getId()).clone();
+                }
             }
         }
 

@@ -32,9 +32,15 @@ public class PivotLookupMapCommand extends FacilioCommand {
         Map<String, Object> pivotLookupMap = new HashMap<>();
 
         for(PivotRowColumnContext row: rowColumns){
-            FacilioField facilioField = getField(row, modBean);
-            LookupField lookupField = getLookupField(row, modBean);
-            if(facilioField instanceof LookupField) {
+            FacilioField facilioField = null;
+            LookupField lookupField = null;
+            if(row.getField().getId() <=0 && row.getField().getName() != null && row.getField().getName().equals("siteId")){
+                facilioField = FieldFactory.getSiteField(modBean.getModule(row.getField().getModuleId()));
+            }else {
+                facilioField = getField(row, modBean);
+                lookupField = getLookupField(row, modBean);
+            }
+            if(facilioField instanceof LookupField && (facilioField != null && facilioField.getName() != null && !facilioField.getName().equals("siteId"))) {
                 LookupField newLookupField = (LookupField) facilioField;
                 List<Long> ids = getColumnArray(row.getAlias(), pivotTableData);
                 Map<Long, Object> lookupMap = getLookUpMap(newLookupField.getSpecialType(), newLookupField.getLookupModule(), ids);
@@ -105,14 +111,21 @@ public class PivotLookupMapCommand extends FacilioCommand {
     private Map<Object, Long> getLookUpMap(FacilioModule lookupModule, FacilioField facilioField, String data) throws Exception {
         Map<Object, Long> lookupMap = new HashMap<>();
 
+        boolean flag=true;
         List<FacilioField> selectFields = new ArrayList<>();
-        selectFields.add(FieldFactory.getIdField(lookupModule));
-        selectFields.add(facilioField);
+        if(lookupModule.getName().equals(facilioField.getModule().getName())){
+            selectFields.add(FieldFactory.getIdField(lookupModule));
+            selectFields.add(facilioField);
+            flag=false;
+        }else{
+            selectFields.add(FieldFactory.getIdField(facilioField.getModule()));
+            selectFields.add(facilioField);
+        }
 
         SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder()
-                .beanClass(FacilioConstants.ContextNames.getClassFromModule(lookupModule, false))
+                .beanClass(FacilioConstants.ContextNames.getClassFromModule(!flag ? lookupModule : facilioField.getModule(), false))
                 .select(selectFields)
-                .module(lookupModule);
+                .module(!flag ? lookupModule : facilioField.getModule());
 
         if(getOperatorId(facilioField) != null) {
             builder.andCondition(CriteriaAPI.getCondition(facilioField, data, getOperatorId(facilioField)));

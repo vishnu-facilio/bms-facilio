@@ -1648,13 +1648,32 @@ public class FetchReportDataCommand extends FacilioCommand {
             for (FacilioModule poll : extendedModules) {
                 if (poll != null && poll.equals(lookupFieldClone.getLookupModule())) {
                     currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
+                    /**
+                     * this code is used by all the orgs and tightly coupled with the pivots (so making any change can affect other orgs
+                     * pivot , thats the reason we are adding OrgId check here , once its stable after testing, will remove the orgId check
+                     */
+                    if((AccountUtil.getCurrentOrg().getId() == 965) && moduleVsAlias.containsKey(lookupFieldClone.getModule().getName())){
+                        lookupFieldClone.setTableAlias(moduleVsAlias.get(lookupFieldClone.getModule().getName()));
+                    }
                     String LookupJoinOn = lookupFieldClone.getCompleteColumnName() + " = " + currentModuleAlias + ".ID";
                     selectBuilder.leftJoin(lookupFieldClone.getLookupModule().getTableName() + " " + currentModuleAlias).on(LookupJoinOn);
                 } else {
-                    currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
-                    prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
-                    selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)
-                            .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
+                    /**
+                     * this code is used by all the orgs and tightly coupled with the pivots (so making any change can affect other orgs
+                     * pivot , thats the reason we are adding OrgId check here , once its stable after testing, will remove the orgId check
+                     */
+                    if((AccountUtil.getCurrentOrg().getId() == 965) && !moduleVsAlias.containsKey(poll.getName()))
+                    {
+                        currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
+                        prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
+                        selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)
+                                .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
+                    }else if(!(AccountUtil.getCurrentOrg().getId() == 965)){
+                        currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
+                        prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
+                        selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)
+                                .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
+                    }
                 }
                 prevModule = poll;
             }
