@@ -605,7 +605,8 @@ public class PageWidget {
 		SERVICE_APPOINTMENT_TRIP("serviceAppointmentTrip"),
 		GEOGRAPHY("geography"),
 		TIMESHEET_TASKS("timeSheetTasks"),
-		TRIP_JOURNEY("tripJourney")
+		TRIP_JOURNEY("tripJourney"),
+		SERVICE_ORDER_APPOINTMENTS("serviceOrderAppointments")
 
 		;
 

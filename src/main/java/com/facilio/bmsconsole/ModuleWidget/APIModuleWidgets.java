@@ -599,6 +599,9 @@ public class APIModuleWidgets {
                 .addModuleWidget("actuals","Actuals",PageWidget.WidgetType.SERVICE_ORDER_ACTUALS)
                 .addWidgetConfig("actuals_50_12","Actuals - 50 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)
                 .done()
+                .addModuleWidget("appointments","Appointments",PageWidget.WidgetType.SERVICE_ORDER_APPOINTMENTS)
+                .addWidgetConfig("appointments_50_12","Appointments - 50 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)
+                .done()
                 ;
 
     }

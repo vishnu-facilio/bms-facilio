@@ -357,7 +357,7 @@ public class TerritoryModule extends BaseModuleConfig {
     }
     private static FacilioView getAllTerritories() {
         FacilioModule territoryModule = new FacilioModule(FacilioConstants.Territory.TERRITORY,"Territory","TERRITORY", FacilioModule.ModuleType.BASE_ENTITY,true);
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(territoryModule), true));
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id","ID",territoryModule,FieldType.NUMBER), true));
 
         FacilioView allView = new FacilioView();
         allView.setName("all");
@@ -369,7 +369,7 @@ public class TerritoryModule extends BaseModuleConfig {
         List<ViewField> territoryViewFields = new ArrayList<>();
 
         territoryViewFields.add(new ViewField("name","Name"));
-        territoryViewFields.add(new ViewField("status","Appointment Status"));
+        territoryViewFields.add(new ViewField("moduleState","Status"));
         territoryViewFields.add(new ViewField("sysCreatedBy","Created By"));
         territoryViewFields.add(new ViewField("sysCreatedTime","Created Time"));
         territoryViewFields.add(new ViewField("sysModifiedBy","Modified By"));
