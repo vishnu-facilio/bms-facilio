@@ -3834,8 +3834,12 @@ public class FacilioConstants {
 
 		public static final String FSM_MANAGER = "FSM Manager";
 
-		public static final String FSM_DISPATCHER = "FSM Technician";
+		public static final String FSM_DISPATCHER = "Dispatcher";
 		public static final String FSM_TECHNICIAN = "FSM Technician";
+		public static final String FIELD_AGENT = "Field Agent";
+		public static final String ASSISTANT_FIELD_AGENT = "Assistant Field Agent";
+		public static final String STOREROOM_MANAGER = "Storeroom Manager";
+
 
 		public static final String DATA_LOADER_ADMIN = "Data Loader Admin";
 
