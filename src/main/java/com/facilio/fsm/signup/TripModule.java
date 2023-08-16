@@ -173,6 +173,7 @@ public class TripModule extends BaseModuleConfig {
         List<String> appNames = new ArrayList<>();
         appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
 
         Map<String, List<PagesContext>> appNameVsPage = new HashMap<>();
         for (String appName : appNames) {

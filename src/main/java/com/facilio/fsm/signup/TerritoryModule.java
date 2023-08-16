@@ -25,6 +25,7 @@ import org.json.simple.JSONObject;
 import java.util.*;
 
 public class TerritoryModule extends BaseModuleConfig {
+    public static List<String> territorySupportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.FSM_APP);
     public TerritoryModule() {
         setModuleName(FacilioConstants.Territory.TERRITORY);
     }
@@ -190,6 +191,7 @@ public class TerritoryModule extends BaseModuleConfig {
         List<String> appNames = new ArrayList<>();
         appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
 
         Map<String, List<PagesContext>> appNameVsPage = new HashMap<>();
         for (String appName : appNames) {
@@ -354,15 +356,26 @@ public class TerritoryModule extends BaseModuleConfig {
         return groupVsViews;
     }
     private static FacilioView getAllTerritories() {
+        FacilioModule territoryModule = new FacilioModule(FacilioConstants.Territory.TERRITORY,"Territory","TERRITORY", FacilioModule.ModuleType.BASE_ENTITY,true);
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(territoryModule), true));
+
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Territories");
+        allView.setModuleName(FacilioConstants.Territory.TERRITORY);
+        allView.setSortFields(sortFields);
+        allView.setAppLinkNames(TerritoryModule.territorySupportedApps);
 
-        List<String> appLinkNames = new ArrayList<>();
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
-        allView.setAppLinkNames(appLinkNames);
+        List<ViewField> territoryViewFields = new ArrayList<>();
+
+        territoryViewFields.add(new ViewField("name","Name"));
+        territoryViewFields.add(new ViewField("status","Appointment Status"));
+        territoryViewFields.add(new ViewField("sysCreatedBy","Created By"));
+        territoryViewFields.add(new ViewField("sysCreatedTime","Created Time"));
+        territoryViewFields.add(new ViewField("sysModifiedBy","Modified By"));
+        territoryViewFields.add(new ViewField("sysModifiedTime","Modified Time"));
+
+        allView.setFields(territoryViewFields);
 
         return allView;
     }
