@@ -16,10 +16,15 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
+import com.facilio.relation.context.RelationContext;
+import com.facilio.relation.context.RelationDataContext;
+import com.facilio.relation.context.RelationMappingContext;
+import com.facilio.relation.util.RelationUtil;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.ReportUserFilterContext;
+import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.ims.handler.AuditLogHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -71,6 +76,8 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
+
+import static com.facilio.ns.context.NsFieldType.RELATED_READING;
 
 public class V2ReportAction extends FacilioAction {
 
@@ -1465,15 +1472,17 @@ public class V2ReportAction extends FacilioAction {
                 yAxisJson.put("aggr", BmsAggregateOperators.NumberAggregateOperator.SUM.getValue());
             }
         }
-        List<Object> fieldId = new ArrayList<>();
+        List<String> resourseNdParentList = new ArrayList<>();
         // removing duplicate field Id in alarm report
         for (int i = 0; i < dataPoints.size(); i++) {
             JSONObject json = (JSONObject) dataPoints.get(i);
             JSONObject yAxisJson = (JSONObject) json.get("yAxis");
-            if (fieldId.contains(yAxisJson.get("fieldId"))) {
+            JSONArray parentIds = (JSONArray) json.get("parentId");
+            String parentFldKey = yAxisJson.get("fieldId") + "_" + parentIds.get(0);
+            if (resourseNdParentList.contains(parentFldKey)) {
                 dataPoints.remove(i);
             } else {
-                fieldId.add(yAxisJson.get("fieldId"));
+                resourseNdParentList.add(parentFldKey);
             }
         }
         fields = dataPoints.toJSONString();
@@ -1623,8 +1632,13 @@ public class V2ReportAction extends FacilioAction {
             if (readingFieldId > 0) {
                 JSONObject dataPoint = new JSONObject();
 
-                Long parentId = nsField.getResourceId()!= null ? nsField.getResourceId(): resource.getId();
-                dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(parentId));
+                List<Long> parentId = new ArrayList<>();
+                parentId.add(nsField.getResourceId() != null ? nsField.getResourceId() : resource.getId());
+
+                if (nsField.getNsFieldType().equals(RELATED_READING)) {
+                    parentId = getRelatedResourcesWithPosition(nsField.getRelatedInfo().getRelMapContext(),resource.getId());
+                }
+                dataPoint.put("parentId",FieldUtil.getAsJSONArray(parentId,Long.class));
 
                 JSONObject yAxisJson = new JSONObject();
                 yAxisJson.put("fieldId", readingFieldId);
@@ -1638,6 +1652,16 @@ public class V2ReportAction extends FacilioAction {
             }
         }
         return dataPoints;
+    }
+
+    private List<Long> getRelatedResourcesWithPosition(RelationMappingContext relMapCtx, Long resourceId) throws Exception {
+        RelationMappingContext.Position position = relMapCtx.getReversePosition();
+        List<Map<String, Object>> relationDataContexts = RelationUtil.getCustomRelationRecordWithRelId(relMapCtx.getRelationId());
+        if (CollectionUtils.isNotEmpty(relationDataContexts)) {
+            List<Long> relResourceIds = relationDataContexts.stream().filter(m -> m.get(position.getFieldName()) == resourceId).map(m -> (Long) m.get(relMapCtx.getPositionEnum().getFieldName())).collect(Collectors.toList());
+            return relResourceIds;
+        }
+        return new ArrayList<>();
     }
 
     private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource,

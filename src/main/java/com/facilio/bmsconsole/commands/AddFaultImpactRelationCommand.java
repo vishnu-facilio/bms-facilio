@@ -35,12 +35,13 @@ public class AddFaultImpactRelationCommand extends FacilioCommand {
             for (NewReadingRuleContext readingRule : list) {
                 if (readingRule.getImpact() != null && readingRule.getImpact().getId() != -1) {
 
+                    Long categoryId = readingRule.getAssetCategory().getId();
                     FaultImpactContext impact = (FaultImpactContext) V3Util.getRecord(FacilioConstants.FaultImpact.MODULE_NAME, readingRule.getImpact().getId(), null);
 
                     Map<Long, ResourceContext> assetsMap = (Map<Long, ResourceContext>) context.get(FacilioConstants.ContextNames.ASSETS);
 
                     readingRule.setImpact(FaultImpactAPI.getFaultImpactContext(readingRule.getImpact().getId()));
-                    NameSpaceContext impactNameSpaceContext = new NameSpaceContext(NSType.FAULT_IMPACT_RULE, readingRule.getId(), readingRule.getNs().getExecInterval(), readingRule.getImpact().getWorkflowId());
+                    NameSpaceContext impactNameSpaceContext = new NameSpaceContext(NSType.FAULT_IMPACT_RULE, readingRule.getId(), readingRule.getNs().getExecInterval(), readingRule.getImpact().getWorkflowId(),categoryId);
                     impactNameSpaceContext.setStatus(Boolean.TRUE);
                     NamespaceBean nsBean = Constants.getNsBean();
                     Long impactNameSpaceId = nsBean.addNamespace(impactNameSpaceContext);

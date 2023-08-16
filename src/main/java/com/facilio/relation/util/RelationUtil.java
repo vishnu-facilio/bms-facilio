@@ -14,6 +14,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.relation.context.RelationContext;
+import com.facilio.relation.context.RelationDataContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.v3.context.Constants;
@@ -408,6 +409,24 @@ public class RelationUtil {
     public static boolean isToOneRelationShipType(RelationMappingContext relationMapping) {
         return (relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()
                 || relationMapping.getRelationType() == RelationRequestContext.RelationType.MANY_TO_ONE.getIndex());
+    }
+
+    public static List<Map<String, Object>> getCustomRelationRecordWithRelId(Long relationId) throws Exception {
+        RelationContext relationContext = RelationUtil.getRelation(relationId, Boolean.FALSE);
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule(relationContext.getRelationModuleId());
+        List<FacilioField> relationFields = moduleBean.getAllFields(module.getName());
+
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(relationFields)
+                .andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(relationContext.getRelationModuleId()), NumberOperators.EQUALS));
+        List<Map<String, Object>> props = selectRecordBuilder.get();
+
+        if (CollectionUtils.isNotEmpty(props)) {
+            return props;
+        }
+        return new ArrayList<>();
     }
 
 }
