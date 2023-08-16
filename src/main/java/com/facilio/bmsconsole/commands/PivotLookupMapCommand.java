@@ -111,21 +111,14 @@ public class PivotLookupMapCommand extends FacilioCommand {
     private Map<Object, Long> getLookUpMap(FacilioModule lookupModule, FacilioField facilioField, String data) throws Exception {
         Map<Object, Long> lookupMap = new HashMap<>();
 
-        boolean flag=true;
         List<FacilioField> selectFields = new ArrayList<>();
-        if(lookupModule.getName().equals(facilioField.getModule().getName())){
-            selectFields.add(FieldFactory.getIdField(lookupModule));
-            selectFields.add(facilioField);
-            flag=false;
-        }else{
-            selectFields.add(FieldFactory.getIdField(facilioField.getModule()));
-            selectFields.add(facilioField);
-        }
+        selectFields.add(FieldFactory.getIdField(lookupModule));
+        selectFields.add(facilioField);
 
         SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder()
-                .beanClass(FacilioConstants.ContextNames.getClassFromModule(!flag ? lookupModule : facilioField.getModule(), false))
+                .beanClass(FacilioConstants.ContextNames.getClassFromModule(lookupModule, false))
                 .select(selectFields)
-                .module(!flag ? lookupModule : facilioField.getModule());
+                .module(lookupModule);
 
         if(getOperatorId(facilioField) != null) {
             builder.andCondition(CriteriaAPI.getCondition(facilioField, data, getOperatorId(facilioField)));

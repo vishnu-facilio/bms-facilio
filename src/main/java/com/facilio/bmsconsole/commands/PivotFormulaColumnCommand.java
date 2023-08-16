@@ -4,17 +4,24 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.report.context.PivotFormulaColumnContext;
+import com.facilio.report.context.ReportContext;
+import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.text.NumberFormat;
 import java.util.*;
 
 
 public class PivotFormulaColumnCommand extends FacilioCommand {
+    private static final Logger LOGGER = Logger.getLogger(PivotFormulaColumnCommand.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<PivotFormulaColumnContext> formulaContextList = (List<PivotFormulaColumnContext>) context.get(FacilioConstants.ContextNames.FORMULA);
@@ -44,8 +51,26 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
             paramList.add(params);
         }
 
+        long dateFieldId = (long) context.get(FacilioConstants.ContextNames.DATE_FIELD);
+        long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
+        long endTime = (long) context.get(FacilioConstants.ContextNames.END_TIME);
+        Boolean timelinefilterApplied  = (Boolean) context.get(FacilioConstants.ContextNames.IS_TIMELINE_FILTER_APPLIED);
+        Boolean showTimelineFilter = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_TIME_LINE_FILTER);
+        DateRange range = null;
+        if(dateFieldId > 0 && startTime > 0 && endTime > 0 && timelinefilterApplied != null && timelinefilterApplied == Boolean.TRUE){
+            range = new DateRange(startTime, endTime);
+        }else if(showTimelineFilter && context.containsKey(FacilioConstants.ContextNames.DATE_OPERATOR) && context.get(FacilioConstants.ContextNames.DATE_OPERATOR) != null){
+            int date_operator = (int) context.get(FacilioConstants.ContextNames.DATE_OPERATOR);
+            DateOperators dateOperator = (DateOperators) Operator.getOperator(date_operator);
+            try {
+                range = dateOperator.getRange(null);
+            }catch (Exception e){
+                LOGGER.log(Level.INFO, "error while getting daterange for pivot script");
+                range = null;
+            }
+        }
         for(PivotFormulaColumnContext formulaContext : formulaContextList) {
-            String script = this.generateScript(formulaContext.getVariableMap(),formulaContext.getExpression());
+            String script = this.generateScript(formulaContext.getVariableMap(),formulaContext.getExpression(), range);
             ArrayList<String> variablesUsedInExp = getVariablesUsedInExp(formulaContext.getVariableMap());
             if (isRequiredVariablesAvailable(columnHeaders, rowHeaders, variablesUsedInExp)) {
                 this.executeFormulaColumn(script,paramList,formulaContext.getAlias());
@@ -95,10 +120,15 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
         return result;
     }
 
-    private String generateScript(Map<String, String> aliases, String expression){
+
+    private String generateScript(Map<String, String> aliases, String expression, DateRange range){
         StringJoiner scriptString = new StringJoiner("\n");
         scriptString.add("void test(List data, String key)");
         scriptString.add("{");
+        if(range != null && range.getStartTime() > 0 && range.getEndTime() > 0) {
+            scriptString.add("startTime=" +range.getStartTime()+";");
+            scriptString.add("endTime=" +range.getStartTime()+";");
+        }
         scriptString.add("for each index, value in data {");
         String varInitTemplate = "${variable} = new NameSpace(\"map\").get(value, \"${alias}\");";
         String varExpressionTemplate = "result = ${expression};";
