@@ -20,6 +20,8 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -34,13 +36,16 @@ public class FetchQuestionsFromPagesCommand extends FacilioCommand {
         Long createdTime=null;
         if(responseId!=null && responseModuleName!=null) {
             FacilioModule module = modBean.getModule(responseModuleName);
-            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                    .select(modBean.getModuleFields(responseModuleName))
-                    .table(modBean.getModule(responseModuleName).getTableName())
-                    .andCondition(CriteriaAPI.getIdCondition(responseId, module));
+            FacilioField field = modBean.getField("createdTime",responseModuleName);
+            if(field!=null) {
+                GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                        .select(Collections.singletonList(field))
+                        .table(modBean.getModule(responseModuleName).getTableName())
+                        .andCondition(CriteriaAPI.getIdCondition(responseId, module));
 
-            Map<String, Object> responseList = selectBuilder.fetchFirst();
-            createdTime = FacilioUtil.parseLong(responseList.get("createdTime"));
+                Map<String, Object> responseList = selectBuilder.fetchFirst();
+                createdTime = FacilioUtil.parseLong(responseList.get("createdTime"));
+            }
         }
         if(createdTime!=null){
             FacilioField questionSysCreatedTimeField = modBean.getField("sysCreatedTime", FacilioConstants.QAndA.QUESTION);
