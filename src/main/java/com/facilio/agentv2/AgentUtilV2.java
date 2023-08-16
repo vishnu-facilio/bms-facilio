@@ -292,10 +292,10 @@ public class AgentUtilV2
         List<FacilioField>fields = new ArrayList<>();
         if (pointModule == null){
             pointModule = ModuleFactory.getPointModule();
-            fields = FieldFactory.getPointFields();
+            fields = Collections.singletonList(FieldFactory.getIdField(AgentConstants.getPointModule()));
         }
         else {
-            fields = moduleBean.getAllFields(AgentConstants.POINT);
+            fields = Collections.singletonList(moduleBean.getField(AgentConstants.ID, AgentConstants.POINT));
         }
         Map<String,FacilioField>fieldMap = FieldFactory.getAsMap(fields);
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
