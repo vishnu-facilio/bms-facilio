@@ -42,51 +42,51 @@ public class GetCustomkKioskButtonCommand extends FacilioCommand {
         for(V3CustomKioskContext customKiosk : customKioskmoduleContexts) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<V3CustomDeviceButtonMappingContext> button = customKiosk.getCustomDeviceButton();
-            for (V3CustomDeviceButtonMappingContext terms : button) {
-                long id = terms.getId();
-                GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(modBean.getAllFields(FacilioConstants.ContextNames.CUSTOM_KIOSK_BUTTON))
-                        .table(modBean.getModule(FacilioConstants.ContextNames.CUSTOM_KIOSK_BUTTON).getTableName())
-                        .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(id), NumberOperators.EQUALS));
+            if (!CollectionUtils.isEmpty(button)){
+                for (V3CustomDeviceButtonMappingContext terms : button) {
+                    long id = terms.getId();
+                    GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(modBean.getAllFields(FacilioConstants.ContextNames.CUSTOM_KIOSK_BUTTON))
+                            .table(modBean.getModule(FacilioConstants.ContextNames.CUSTOM_KIOSK_BUTTON).getTableName())
+                            .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(id), NumberOperators.EQUALS));
 
-                List<Map<String, Object>> props = selectBuilder.get();
+                    List<Map<String, Object>> props = selectBuilder.get();
 
-                Map<String, Object> record = props.get(0);
+                    Map<String, Object> record = props.get(0);
 
-                long connectedAppWidgetId = (long) record.get("connectedAppWidgetId");
-                GenericSelectRecordBuilder Builder = new GenericSelectRecordBuilder().select(FieldFactory.getConnectedAppWidgetsFields())
-                        .table(ModuleFactory.getConnectedAppWidgetsModule().getTableName())
-                        .andCondition(CriteriaAPI.getCondition("ID","id", String.valueOf(connectedAppWidgetId), NumberOperators.EQUALS));
-                List<Map<String, Object>> prop = Builder.get();
-                connectedAppWidgetDetails = FieldUtil.getAsBeanListFromMapList(prop, ConnectedAppWidgetContext.class);
+                    long connectedAppWidgetId = (long) record.get("connectedAppWidgetId");
+                    GenericSelectRecordBuilder Builder = new GenericSelectRecordBuilder().select(FieldFactory.getConnectedAppWidgetsFields())
+                            .table(ModuleFactory.getConnectedAppWidgetsModule().getTableName())
+                            .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(connectedAppWidgetId), NumberOperators.EQUALS));
+                    List<Map<String, Object>> prop = Builder.get();
+                    connectedAppWidgetDetails = FieldUtil.getAsBeanListFromMapList(prop, ConnectedAppWidgetContext.class);
 
 
-                for(ConnectedAppWidgetContext widgetDetails:connectedAppWidgetDetails){
-                    long connectedAppId=widgetDetails.getConnectedAppId();
-                    GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().select(FieldFactory.getConnectedAppFields())
-                            .table(ModuleFactory.getConnectedAppsModule().getTableName())
-                            .andCondition(CriteriaAPI.getCondition("ID","id", String.valueOf(connectedAppId), NumberOperators.EQUALS));
-                    List<Map<String, Object>> details = select.get();
-                    List<ConnectedAppContext>connectedApp= FieldUtil.getAsBeanListFromMapList(details,ConnectedAppContext.class);
+                    for (ConnectedAppWidgetContext widgetDetails : connectedAppWidgetDetails) {
+                        long connectedAppId = widgetDetails.getConnectedAppId();
+                        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().select(FieldFactory.getConnectedAppFields())
+                                .table(ModuleFactory.getConnectedAppsModule().getTableName())
+                                .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(connectedAppId), NumberOperators.EQUALS));
+                        List<Map<String, Object>> details = select.get();
+                        List<ConnectedAppContext> connectedApp = FieldUtil.getAsBeanListFromMapList(details, ConnectedAppContext.class);
 
-                    for(ConnectedAppContext app:connectedApp){
-                        widgetDetails.setConnectedAppLinkName(app.getLinkName());
-                        widgetDetails.setProductionBaseUrl(app.getProductionBaseUrl());
-                        widgetDetails.setSandBoxBaseUrl(app.getSandBoxBaseUrl());
+                        for (ConnectedAppContext app : connectedApp) {
+                            widgetDetails.setConnectedAppLinkName(app.getLinkName());
+                            widgetDetails.setProductionBaseUrl(app.getProductionBaseUrl());
+                            widgetDetails.setSandBoxBaseUrl(app.getSandBoxBaseUrl());
+                        }
+
                     }
 
-                }
+                    int buttonType = (int) record.get("buttonType");
+                    connectedWidget = FieldUtil.getAsBeanListFromMapList(props, V3CustomKioskButtonContext.class);
+                    for (V3CustomKioskButtonContext widget : connectedWidget) {
+                        widget.setId(id);
+                        widget.setButtonTypeEnum(V3CustomKioskButtonContext.ButtonType.valueOf(buttonType));
+                        widget.setConnectedAppWidgetContext(connectedAppWidgetDetails);
+                        connectedAppWidgetList.add(widget);
+                    }
 
-                int buttonType = (int) record.get("buttonType");
-                connectedWidget= FieldUtil.getAsBeanListFromMapList(props, V3CustomKioskButtonContext.class);
-                for (V3CustomKioskButtonContext widget : connectedWidget)
-                {
-                    widget.setId(id);
-                    widget.setButtonTypeEnum(V3CustomKioskButtonContext.ButtonType.valueOf(buttonType));
-                    widget.setConnectedAppWidgetContext(connectedAppWidgetDetails);
-                    connectedAppWidgetList.add(widget);
-                }
-
-                customKiosk.setConnectedAppWidgetList(connectedAppWidgetList);
+                    customKiosk.setConnectedAppWidgetList(connectedAppWidgetList);
 
 
 //                if (buttonType == 1) {
@@ -110,6 +110,7 @@ public class GetCustomkKioskButtonCommand extends FacilioCommand {
 //                customKiosk.setCheckInButtons(CheckInButtons);
 //                customKiosk.setCheckOutButtons(CheckOutButtons);
 
+                }
             }
         }
         return false;
