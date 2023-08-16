@@ -276,7 +276,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
         addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedByField, 1, 3, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedTimeField, 1, 4, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedByField,2, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTimeField, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTimeField, 2, 2, 1);
 
 
         widgetGroup.setName("moduleDetails");

@@ -132,7 +132,7 @@ public class WidgetGroupUtil {
 
         if(CollectionUtils.isNotEmpty(widgets)) {
             Map<Long, PageSectionWidgetContext> widgetIdMap = widgets.stream()
-                    .peek(f->f.setWidgetWrapperType(WidgetWrapperType.DEFAULT))
+                    .peek(f->f.setWidgetWrapperType(WidgetWrapperType.WIDGET_GROUP))
                     .collect(Collectors.toMap(PageSectionWidgetContext::getId, Function.identity()));
 
             WidgetConfigUtil.setWidgetDetailForWidgets(appId, moduleName, widgetIdMap, WidgetWrapperType.WIDGET_GROUP);
