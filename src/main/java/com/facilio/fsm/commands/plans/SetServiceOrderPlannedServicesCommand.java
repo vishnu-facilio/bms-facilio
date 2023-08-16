@@ -5,6 +5,8 @@ import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlann
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.fsm.context.ServiceOrderCostContext;
 import com.facilio.fsm.context.ServiceOrderPlannedServicesContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -12,6 +14,7 @@ import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,9 +25,14 @@ public class SetServiceOrderPlannedServicesCommand  extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<ServiceOrderPlannedServicesContext> serviceOrderPlannedServices = recordMap.get(moduleName);
+        List<ServiceOrderContext> serviceOrders = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(serviceOrderPlannedServices)){
             for(ServiceOrderPlannedServicesContext serviceOrderPlannedService : serviceOrderPlannedServices){
                 V3ServiceContext service = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SERVICE,serviceOrderPlannedService.getService().getId(),V3ServiceContext.class);
+                if(serviceOrderPlannedService.getServiceOrder()==null){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");
+                }
+                serviceOrders.add(serviceOrderPlannedService.getServiceOrder());
                 if(serviceOrderPlannedService.getQuantity()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
                 }
@@ -49,6 +57,9 @@ public class SetServiceOrderPlannedServicesCommand  extends FacilioCommand {
                     }
                 }
             }
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_LIST,serviceOrders);
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.INVENTORY_COST_TYPE,ServiceOrderCostContext.InventoryCostType.SERVICES);
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.INVENTORY_SOURCE, ServiceOrderCostContext.InventorySource.PLANS);
         }
 
         return false;

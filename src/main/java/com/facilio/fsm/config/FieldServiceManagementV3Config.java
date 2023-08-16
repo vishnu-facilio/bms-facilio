@@ -12,6 +12,7 @@ import com.facilio.fsm.commands.actuals.*;
 import com.facilio.fsm.commands.people.*;
 import com.facilio.fsm.commands.plans.*;
 import com.facilio.fsm.commands.serviceAppointment.FetchServiceAppointmentSupplementsCommand;
+import com.facilio.fsm.commands.serviceOrders.AddOrUpdateServiceOrderCostCommand;
 import com.facilio.fsm.commands.serviceOrders.LoadSupplementsForSOCommand;
 import com.facilio.fsm.commands.serviceOrders.SetServiceTaskCommandV3;
 import com.facilio.fsm.commands.serviceTasks.LoadTaskPlansCommandV3;
@@ -92,9 +93,10 @@ public class FieldServiceManagementV3Config {
         return () -> new V3Config(ServiceOrderPlannedItemsContext.class, null)
                 .create()
                 .beforeSave(new SetServiceOrderPlannedItemsCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand())
                 .update()
                 .beforeSave(FsmTransactionChainFactoryV3.getSoPlannedItemsBeforeUpdateChain())
-                .afterSave(new ReserveServiceOrderPlannedItemsCommand())
+                .afterSave(FsmTransactionChainFactoryV3.getSoPlannedItemsAfterUpdateChain())
                 .list()
                 .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, "itemType")
                 .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, "storeRoom")
@@ -103,6 +105,7 @@ public class FieldServiceManagementV3Config {
                 .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, "storeRoom")
                 .delete()
                 .beforeDelete(new ValidateSoPlannedItemsBeforeDeleteCommand())
+                .afterDelete(new AddOrUpdateServiceOrderCostCommand())
                 .build();
     }
     @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS)
@@ -110,8 +113,10 @@ public class FieldServiceManagementV3Config {
         return () -> new V3Config(ServiceOrderPlannedToolsContext.class, null)
                 .create()
                 .beforeSave(new SetServiceOrderPlannedToolsCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand())
                 .update()
                 .beforeSave(new SetServiceOrderPlannedToolsCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand())
                 .list()
                 .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, "toolType")
                 .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, "storeRoom")
@@ -119,6 +124,8 @@ public class FieldServiceManagementV3Config {
                 .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, "toolType")
                 .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, "storeRoom")
                 .delete()
+                .beforeDelete(new ServiceOrderPlannedToolsCostBeforeDelete())
+                .afterDelete(new AddOrUpdateServiceOrderCostCommand())
                 .build();
     }
     @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES)
@@ -126,13 +133,17 @@ public class FieldServiceManagementV3Config {
         return () -> new V3Config(ServiceOrderPlannedServicesContext.class, null)
                 .create()
                 .beforeSave(new SetServiceOrderPlannedServicesCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand())
                 .update()
                 .beforeSave(new SetServiceOrderPlannedServicesCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand())
                 .list()
                 .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES, "service")
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES, "service")
                 .delete()
+                .beforeDelete(new ServiceOrderPlannedServiceCostBeforeDelete())
+                .afterDelete(new AddOrUpdateServiceOrderCostCommand())
                 .build();
     }
     @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS)
@@ -162,6 +173,8 @@ public class FieldServiceManagementV3Config {
                 .beforeSave(new SetServiceOrderToolsCommand())
                 .afterSave(FsmTransactionChainFactoryV3.getServiceOrderToolsAfterSaveChain())
                 .update()
+                .beforeSave(new SetServiceOrderToolsCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand())
                 .list()
                 .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS, "tool")
                 .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS, "storeRoom")
@@ -178,7 +191,10 @@ public class FieldServiceManagementV3Config {
         return () -> new V3Config(ServiceOrderServiceContext.class, null)
                 .create()
                 .beforeSave(new SetServiceOrderServiceCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand())
                 .update()
+                .beforeSave(new SetServiceOrderServiceCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand())
                 .list()
                 .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES, "service")
                 .summary()

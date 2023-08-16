@@ -2885,6 +2885,10 @@ public class FacilioConstants {
 			public static final String WORK_TYPE_LINE_ITEMS = "workTypeLineItems";
 			public static final String WORK_TYPE_SKILLS = "workTypeSkills";
 			public static final String SERVICE_ORDER = "serviceOrder";
+			public static final String SERVICE_ORDER_LIST = "serviceOrderList";
+			public static final String INVENTORY_COST_TYPE = "inventoryCostType";
+			public static final String INVENTORY_SOURCE = "inventorySource";
+			public static final String SERVICE_ORDER_COST = "serviceOrderCost";
 			public static final String SERVICE_ORDER_TICKET_STATUS = "serviceOrderTicketStatus";
 			public static final String SERVICE_ORDER_TASK = "serviceOrderTask";
 			public static final String SERVICE_ORDER_ATTACHMENTS = "serviceOrderAttachments";

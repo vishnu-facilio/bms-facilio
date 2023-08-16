@@ -2,6 +2,9 @@ package com.facilio.fsm.commands.plans;
 
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.fsm.context.ServiceOrderCostContext;
 import com.facilio.fsm.context.ServiceOrderPlannedToolsContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -9,6 +12,7 @@ import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +23,13 @@ public class SetServiceOrderPlannedToolsCommand extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<ServiceOrderPlannedToolsContext> serviceOrderPlannedTools = recordMap.get(moduleName);
+        List<ServiceOrderContext> serviceOrders = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(serviceOrderPlannedTools)){
             for(ServiceOrderPlannedToolsContext serviceOrderPlannedTool : serviceOrderPlannedTools){
+                if(serviceOrderPlannedTool.getServiceOrder()==null){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");
+                }
+                serviceOrders.add(serviceOrderPlannedTool.getServiceOrder());
                 if(serviceOrderPlannedTool.getQuantity()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
                 }
@@ -45,6 +54,10 @@ public class SetServiceOrderPlannedToolsCommand extends FacilioCommand {
                     serviceOrderPlannedTool.setTotalCost(totalCost);
                 }
             }
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_LIST,serviceOrders);
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.INVENTORY_COST_TYPE,ServiceOrderCostContext.InventoryCostType.TOOLS);
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.INVENTORY_SOURCE, ServiceOrderCostContext.InventorySource.PLANS);
+
         }
 
         return false;

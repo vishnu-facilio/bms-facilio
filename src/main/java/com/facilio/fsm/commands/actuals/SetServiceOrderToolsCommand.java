@@ -9,6 +9,8 @@ import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.fsm.context.ServiceOrderCostContext;
 import com.facilio.fsm.context.ServiceOrderToolsContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
@@ -34,6 +36,7 @@ public class SetServiceOrderToolsCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(serviceOrderTools)){
             List<V3ToolTransactionContext> toolTransactions = new ArrayList<>();
             List<ServiceOrderToolsContext> serviceOrderToolsContexts = new ArrayList<>();
+            List<ServiceOrderContext> serviceOrders = new ArrayList<>();
             for(ServiceOrderToolsContext serviceOrderTool : serviceOrderTools){
                 if(serviceOrderTool.getReturnTime()!=null && serviceOrderTool.getIssueTime()!=null &&  serviceOrderTool.getIssueTime() > serviceOrderTool.getReturnTime()){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Return time cannot be greater than issued time");
@@ -44,18 +47,24 @@ public class SetServiceOrderToolsCommand extends FacilioCommand {
                 if(serviceOrderTool.getQuantity() <= 0) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
                 }
+                serviceOrders.add(serviceOrderTool.getServiceOrder());
                 V3ToolContext tool = V3RecordAPI.getRecord(FacilioConstants.ContextNames.TOOL,serviceOrderTool.getTool().getId(),V3ToolContext.class);
                 if(tool==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tool cannot be empty");
                 }
-                if (tool.getCurrentQuantity() < serviceOrderTool.getQuantity()) {
+                if (serviceOrderTool.getId()<0 && tool.getCurrentQuantity() < serviceOrderTool.getQuantity()) {
                     throw new IllegalArgumentException("Insufficient quantity in inventory!");
                 }
-                V3ToolTransactionContext toolTransaction = setToolTransaction(tool,serviceOrderTool);
-                Double duration = getDuration(serviceOrderTool.getIssueTime(),serviceOrderTool.getReturnTime());
-                if(duration!=null){
-                    serviceOrderTool.setDuration(getDuration(serviceOrderTool.getIssueTime(),serviceOrderTool.getReturnTime()));
+                Double duration =null;
+                if(serviceOrderTool.getDuration()!=null){
+                    duration = serviceOrderTool.getDuration();
+                }else{
+                    duration = getDuration(serviceOrderTool.getIssueTime(),serviceOrderTool.getReturnTime());
+                    if(duration!=null){
+                        serviceOrderTool.setDuration(duration);
+                    }
                 }
+
                 if(duration !=null && duration > 0 && serviceOrderTool.getIssueTime() != null && serviceOrderTool.getIssueTime() >0 && (serviceOrderTool.getReturnTime() == null || serviceOrderTool.getReturnTime() <= 0) ) {
                     Long returnTime = V3InventoryUtil.getReturnTimeFromDurationAndIssueTime(duration, serviceOrderTool.getIssueTime());
                     serviceOrderTool.setReturnTime(returnTime);
@@ -73,16 +82,25 @@ public class SetServiceOrderToolsCommand extends FacilioCommand {
                    Double totalCost = tool.getRate() * (duration / 3600) * serviceOrderTool.getQuantity();
                    serviceOrderTool.setTotalCost(totalCost);
                 }
-                toolTransactions.add(toolTransaction);
+                if(serviceOrderTool.getId()<0){
+                    V3ToolTransactionContext toolTransaction = setToolTransaction(tool,serviceOrderTool);
+                    toolTransactions.add(toolTransaction);
+                }
                 serviceOrderToolsContexts.add(serviceOrderTool);
             }
-            V3Util.createRecordList(modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS), FieldUtil.getAsMapList(toolTransactions, V3ToolTransactionContext.class),null,null);
             recordMap.put(moduleName,serviceOrderToolsContexts);
-            List<Long> toolIds = serviceOrderToolsContexts.stream().map(serviceOrderTool -> serviceOrderTool.getTool().getId()).collect(Collectors.toList());
-            List<Long> toolTypeIds = serviceOrderToolsContexts.stream().map(serviceOrderTool -> serviceOrderTool.getToolType().getId()).collect(Collectors.toList());
-            context.put(FacilioConstants.ContextNames.TOOL_IDS, toolIds);
-            context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS,toolTypeIds);
-            context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransactions);
+            if(CollectionUtils.isNotEmpty(toolTransactions)){
+                V3Util.createRecordList(modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS), FieldUtil.getAsMapList(toolTransactions, V3ToolTransactionContext.class),null,null);
+                List<Long> toolIds = serviceOrderToolsContexts.stream().map(serviceOrderTool -> serviceOrderTool.getTool().getId()).collect(Collectors.toList());
+                List<Long> toolTypeIds = serviceOrderToolsContexts.stream().map(serviceOrderTool -> serviceOrderTool.getToolType().getId()).collect(Collectors.toList());
+                context.put(FacilioConstants.ContextNames.TOOL_IDS, toolIds);
+                context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS,toolTypeIds);
+                context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransactions);
+            }
+
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_LIST,serviceOrders);
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.INVENTORY_COST_TYPE,ServiceOrderCostContext.InventoryCostType.TOOLS);
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.INVENTORY_SOURCE, ServiceOrderCostContext.InventorySource.ACTUALS);
         }
         return false;
     }

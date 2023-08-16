@@ -529,3 +529,9 @@ enums:
 
   - name: Category
     enumClassName: com.facilio.fsm.context.ServiceAppointmentContext$Category
+
+  - name: InventoryCostType
+    enumClassName: com.facilio.fsm.context.ServiceOrderCostContext$InventoryCostType
+
+  - name: InventorySource
+    enumClassName: com.facilio.fsm.context.ServiceOrderCostContext$InventorySource

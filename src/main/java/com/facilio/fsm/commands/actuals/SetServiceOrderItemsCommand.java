@@ -18,8 +18,10 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.fsm.context.ServiceOrderCostContext;
 import com.facilio.fsm.context.ServiceOrderItemsContext;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -51,6 +53,7 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
         List<ServiceOrderItemsContext> serviceOrderItems = recordMap.get(moduleName);
         List<V3ItemTransactionsContext> itemTransactions = new ArrayList<>();
         List<ServiceOrderItemsContext> serviceOrderItemsContexts = new ArrayList<>();
+        List<ServiceOrderContext> serviceOrders = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(serviceOrderItems)){
             for(ServiceOrderItemsContext serviceOrderItem : serviceOrderItems){
                 V3ItemTransactionsContext itemTransaction = new V3ItemTransactionsContext();
@@ -64,7 +67,7 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
                 if(serviceOrderItem.getItem()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item cannot be empty");
                 }
-
+                serviceOrders.add(serviceOrderItem.getServiceOrder());
                 ServiceOrderContext serviceOrderRecord = getServiceOrder(serviceOrderItem.getServiceOrder().getId());
                 if(!isStoreroomServingServiceOderSite(serviceOrderItem.getItem(),serviceOrderRecord)){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storeroom does not serve the selected Service Order's site");
@@ -167,6 +170,9 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
             context.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, serviceOrderItemsContexts);
             context.put(FacilioConstants.ContextNames.ITEM_IDS, itemIds);
             context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, itemTypeIds);
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_LIST,serviceOrders);
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.INVENTORY_COST_TYPE,ServiceOrderCostContext.InventoryCostType.ITEMS);
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.INVENTORY_SOURCE, ServiceOrderCostContext.InventorySource.ACTUALS);
         }
         return false;
     }

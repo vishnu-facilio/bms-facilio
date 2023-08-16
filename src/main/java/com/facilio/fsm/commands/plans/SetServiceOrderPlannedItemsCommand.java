@@ -6,6 +6,9 @@ import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.fsm.context.ServiceOrderCostContext;
 import com.facilio.fsm.context.ServiceOrderPlannedItemsContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -14,6 +17,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,14 +28,19 @@ public class SetServiceOrderPlannedItemsCommand extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<ServiceOrderPlannedItemsContext> serviceOrderPlannedItems = recordMap.get(moduleName);
         Map<String, Object> bodyParams = Constants.getBodyParams(context);
+        List<ServiceOrderContext> serviceOrders = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(serviceOrderPlannedItems)){
             for(ServiceOrderPlannedItemsContext serviceOrderPlannedItem : serviceOrderPlannedItems){
+                if(serviceOrderPlannedItem.getServiceOrder()==null){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");
+                }
                 if(serviceOrderPlannedItem.getQuantity()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
                 }
                 if(serviceOrderPlannedItem.getItemType()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item Type cannot be empty");
                 }
+                serviceOrders.add(serviceOrderPlannedItem.getServiceOrder());
                 serviceOrderPlannedItem.setReservationType(ReservationType.SOFT.getIndex());
 
                 if(MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("reserve") && (boolean) bodyParams.get("reserve")){
@@ -61,6 +70,9 @@ public class SetServiceOrderPlannedItemsCommand extends FacilioCommand {
                     serviceOrderPlannedItem.setTotalCost(totalCost);
                 }
             }
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_LIST,serviceOrders);
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.INVENTORY_COST_TYPE,ServiceOrderCostContext.InventoryCostType.ITEMS);
+            context.put(FacilioConstants.ContextNames.FieldServiceManagement.INVENTORY_SOURCE, ServiceOrderCostContext.InventorySource.PLANS);
         }
 
         return false;
