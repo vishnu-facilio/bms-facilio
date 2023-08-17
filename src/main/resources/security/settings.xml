@@ -2618,7 +2618,184 @@
             <property name="fromBuilder" type="boolean" mandatory="false"/>
         </urlparams>
     </request>
-    <request path="/api/v2/flowTransition/updateConnection" method="POST">
+    <request path="/api/v2/views/editStatus" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="status" type="boolean" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <!-- Flows -->
+    <request path="/api/v2/flows/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="flow" type="object">
+                <property name="name" type="string"/>
+                <property name="description" type="string"/>
+                <property name="moduleId" type="number"/>
+                <property name="returnVariableName" type="string"/>
+                <property name="returnVariableDataType" type="string"/>
+                <property name="flowType" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/flows/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="flow" type="object">
+                <property name="name" type="string"/>
+                <property name="description" type="string"/>
+                <property name="moduleId" type="number"/>
+                <property name="returnVariableName" type="string"/>
+                <property name="returnVariableDataType" type="string"/>
+                <property name="flowType" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/flows/list" method="GET">
+        <urlparams>
+            <property name="type" type="number"/>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/flows/list" method="GET">
+        <urlparams>
+            <property name="type" type="number"/>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/flows/get" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/flows/get" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/flows/delete" method="DELETE">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/flows/delete" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/flows/executeFlow" method="GET">
+        <requestbody type="object">
+            <property name="flowId" type="number"/>
+            <property name="recordId" type="number"/>
+            <property name="moduleName" type="string"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/flows/executeFlow" method="GET">
+        <requestbody type="object">
+            <property name="flowId" type="number"/>
+            <property name="recordId" type="number"/>
+            <property name="moduleName" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/flows/operators" method="GET">
+    </request>
+    <request path="/api/v1/setup/flows/operators" method="GET">
+    </request>
+
+    <!-- Flow Transition-->
+    <request path="/api/v2/flowTransition/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="flowTransition" type="object">
+                <property name="id" type="number"/>
+                <property name="name" type="string"/>
+                <property name="flowId" type="number"/>
+                <property name="connectedFrom" type="number"/>
+                <property name="position" type="string"/>
+                <property name="handlePosition" type="string"/>
+                <property name="configData" type="string"/>
+                <property name="blockType" type="string"/>
+                <property name="isStartBlock" type="boolean"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/flowTransition/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="flowTransition" type="object">
+                <property name="id" type="number"/>
+                <property name="name" type="string"/>
+                <property name="flowId" type="number"/>
+                <property name="connectedFrom" type="number"/>
+                <property name="position" type="string"/>
+                <property name="handlePosition" type="string"/>
+                <property name="configData" type="string"/>
+                <property name="blockType" type="string"/>
+                <property name="isStartBlock" type="boolean"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/flowTransition/list" method="GET">
+        <urlparams>
+            <property name="flowId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/flowTransition/list" method="GET">
+        <urlparams>
+            <property name="flowId" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/flowTransition/view" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/flowTransition/view" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/flowTransition/delete" method="DELETE">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/flowTransition/delete" method="DELETE">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/flowTransition/deleteConnection" method="POST">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/flowTransition/deleteConnection" method="POST">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/flowTransition/availableBlocks" method="GET">
+        <urlparams>
+            <property name="type" type="number" mandatory="true"/>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/flowTransition/availableBlocks" method="GET">
+        <urlparams>
+            <property name="type" type="number" mandatory="true"/>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/flowTransition/updateConnection" method="PATCH">
         <requestbody type="object">
             <property name="flowId" type="number" mandatory="true"/>
             <property name="fromBlock" type="object">
@@ -2630,16 +2807,19 @@
             <property name="handlePosition" type="string"/>
         </requestbody>
     </request>
-    <request path="/api/v2/views/editStatus" method="POST">
+    <request path="/api/v1/setup/flowTransition/updateConnection" method="PATCH">
         <requestbody type="object">
-            <property name="id" type="number" mandatory="true"/>
-            <property name="status" type="boolean" mandatory="true"/>
+            <property name="flowId" type="number" mandatory="true"/>
+            <property name="fromBlock" type="object">
+                <property name="id" type="number" mandatory="true"/>
+            </property>
+            <property name="toBlock" type="object" mandatory="true">
+                <property name="id" type="number"/>
+            </property>
+            <property name="handlePosition" type="string"/>
         </requestbody>
     </request>
 
-
-    <request path="/api/v2/flows/operators" method="GET">
-    </request>
     <!-- WORKORDER FEATURE SETTINGS API: SETUP PAGE -->
     <request path="/api/v1/setup/workOrderFeatureSettings/add" method="PUT">
         <requestbody type="object">
