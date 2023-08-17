@@ -86,7 +86,16 @@ public class FacilioForm implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+	private List<FacilioForm> subFormList;
+	public List<FacilioForm> getSubFormList() {
+		return subFormList;
+	}
+
+	public void setSubFormList(List<FacilioForm> subFormList) {
+		this.subFormList = subFormList;
+	}
+
 	private String displayName;
 	public String getDisplayName() {
 		return displayName;

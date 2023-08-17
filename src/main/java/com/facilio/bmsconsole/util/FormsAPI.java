@@ -7,11 +7,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.wmsv2.handler.AuditLogHandler;
 import org.apache.commons.chain.Context;
@@ -2174,4 +2177,90 @@ public class FormsAPI {
 		return null;
 	}
 
+
+	public static void addDefaultSubForm(FacilioForm defaultForm) throws Exception {
+
+		List<FacilioForm> subFormList = defaultForm.getSubFormList();
+		String moduleName = defaultForm.getModule().getName();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		FacilioChain chain = ReadOnlyChainFactory.getSubFormModulesChain();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.MODULE_NAME, moduleName);
+		chain.execute();
+
+		List<FacilioModule> subModules =(List<FacilioModule>)  context.get(FacilioConstants.ContextNames.MODULE_LIST);
+
+		if(CollectionUtils.isEmpty(subModules)){
+			LOGGER.info(moduleName+" module don't have a sub modules.");
+			return;
+		}
+
+		Set<String> subModulesName = subModules.stream().collect(Collectors.toMap(FacilioModule::getName,Function.identity())).keySet();
+
+		for(FacilioForm subForm : subFormList){
+
+			FacilioModule subFormModule = subForm.getModule();
+
+			if(!subModulesName.contains(subFormModule.getName()) || !Objects.equals(defaultForm.getAppLinkName(), subForm.getAppLinkName())){
+				continue;
+			}
+
+			Map<String,FacilioField> allFields = modBean.getAllFields(subFormModule.getName()).stream().collect(Collectors.toMap(FacilioField::getName, Function.identity(),(name1, name2) -> { return name1; }));
+
+			List<FormSection> newSections = new ArrayList<>();
+			for (FormSection section : subForm.getSections()) {
+				List<FormField> formFields = FormsAPI.getFormFieldsFromSections(Collections.singletonList(section));
+				List<FormField> newFormFields = new ArrayList<>();
+				for (FormField formField : formFields) {
+					if (formField.getName() != null) {
+						FacilioField field = allFields.get(formField.getName());
+						if (field != null) {
+							formField.setField(field);
+							formField.setFieldId(field.getId());
+						}
+						newFormFields.add(formField);
+					}
+				}
+				section.setFields(newFormFields);
+				newSections.add(section);
+			}
+
+			subForm.setSections(newSections);
+			subForm.setHideInList(true);
+			subForm.setType(FacilioForm.Type.SUB_FORM);
+			subForm.setAppLinkName(SignupUtil.getSignupApplicationLinkName());
+			subForm.setDisplayName(subFormModule.getName() + " " + defaultForm.getId());
+			subForm.setIsSystemForm(true);
+
+			addSubFormToExistingForm(subForm,defaultForm);
+
+		}
+
+	}
+
+
+	private static void addSubFormToExistingForm(FacilioForm defaultSubForm ,FacilioForm defaultForm) throws Exception{
+
+		long parentFormId = defaultForm.getId();
+
+		FacilioChain subformChain = TransactionChainFactory.getAddSubformChain();
+		FacilioContext context = subformChain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, defaultSubForm.getModule().getName());
+		context.put(FacilioConstants.ContextNames.FORM, defaultSubForm);
+		context.put(ContextNames.PARENT_FORM_ID, parentFormId);
+		subformChain.execute();
+
+		defaultSubForm = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
+
+		FormSection subFormSection = new FormSection();
+		subFormSection.setSubFormId(defaultSubForm.getId());
+		subFormSection.setSectionType(FormSection.SectionType.SUB_FORM);
+		subFormSection.setName("Subform");
+		subFormSection.setShowLabel(true);
+		subFormSection.setSequenceNumber(defaultForm.getSections().size()+1);
+
+		addFormSections(parentFormId,Collections.singletonList(subFormSection));
+
+	}
 }

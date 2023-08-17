@@ -206,7 +206,6 @@ public class SignupUtil {
                                                 FacilioField field = allFields.get(formField.getName());
                                                 if (field != null) {
                                                         formField.setField(field);
-                                                        formField.setName(field.getName());
                                                         formField.setFieldId(field.getId());
                                                 }
                                                 newFormFields.add(formField);
@@ -263,8 +262,11 @@ public class SignupUtil {
                 context.put(FacilioConstants.ContextNames.MODULE_NAME,module.getName());
                 context.put(FacilioConstants.ContextNames.FORM,form);
                 newForm.execute();
-                if(form.getDefaultFormRules()!=null) {
+                if(CollectionUtils.isNotEmpty(form.getDefaultFormRules())) {
                         addDefaultFormRule(form);
+                }
+                if(CollectionUtils.isNotEmpty(form.getSubFormList())){
+                        FormsAPI.addDefaultSubForm(form);
                 }
         }
         private static void addDefaultFormRule(FacilioForm form) throws  Exception{

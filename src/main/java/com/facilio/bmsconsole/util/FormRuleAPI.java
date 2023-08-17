@@ -6,7 +6,9 @@ import java.util.regex.Pattern;
 
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -272,8 +274,8 @@ public class FormRuleAPI {
 			field=formField.getField();
 		}
 
-		if(field!=null && formRuleActionContext.getActionTypeEnum() == FormActionType.APPLY_FILTER && field instanceof LookupField){
-			moduleName = ((LookupField) field).getLookupModule().getName();
+		if(field!=null && formRuleActionContext.getActionTypeEnum() == FormActionType.APPLY_FILTER && (field instanceof LookupField || field instanceof MultiLookupField)){
+			moduleName = ((BaseLookupField) field).getLookupModule().getName();
 		}
 		if(field!=null && formRuleActionContext.getActionTypeEnum() != FormActionType.APPLY_FILTER){
 			moduleName = field.getModule().getName();
