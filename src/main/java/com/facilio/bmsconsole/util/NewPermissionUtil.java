@@ -79,6 +79,17 @@ public class NewPermissionUtil {
         moduleTabType.put("CANCEL_SERVICE_ORDER", 131072);
         moduleTabType.put("COMPLETE_SERVICE_ORDER", 262144);
         moduleTabType.put("CLOSE_SERVICE_ORDER", 524288);
+        moduleTabType.put("START_WORK_ALL", 1048576);
+        moduleTabType.put("START_WORK_OWN", 2097152);
+        moduleTabType.put("COMPLETE_WORK_ALL", 4194304);
+        moduleTabType.put("COMPLETE_WORK_OWN", 8388608);
+        moduleTabType.put("CANCEL", 16777216);
+        moduleTabType.put("DISPATCH",33554432);
+        moduleTabType.put("RESERVE",67108864);
+        moduleTabType.put("VIEW_PRICING",134217728);
+
+
+
         //moduleTabType.put("READ_TASK", 131072);
         return moduleTabType;
     }
@@ -400,6 +411,30 @@ public class NewPermissionUtil {
         permissions.add(new Permission("CLOSE_SERVICEORDER_TASK", "Close ServiceOrder", moduleTabType.get("CLOSE_SERVICE_ORDER"), null));
         permissions.add(new Permission("COMPLETE_SERVICEORDER_TASK", "Complete ServiceOrder", moduleTabType.get("COMPLETE_SERVICE_ORDER"), null));
         permissionMap.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        List<Permission> readPermissions = new ArrayList<>();
+        readPermissions.add(new Permission("READ", "All", moduleTabType.get("READ"), null));
+        readPermissions.add(new Permission("READ_OWN", "Own", moduleTabType.get("READ_OWN"), null));
+        permissions.add(new PermissionGroup("Read", readPermissions));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("CANCEL", "Cancel", moduleTabType.get("CANCEL"), null));
+        permissions.add(new Permission("DISPATCH", "Dispatch", moduleTabType.get("DISPATCH"), null));
+        List<Permission> startWorkGroups = new ArrayList<>();
+        startWorkGroups.add(new Permission("START_WORK_ALL", "All", moduleTabType.get("START_WORK_ALL"), null));
+        startWorkGroups.add(new Permission("START_WORK_OWN", "Own", moduleTabType.get("START_WORK_OWN"), null));
+        permissions.add(new PermissionGroup("Start Work", startWorkGroups));
+        List<Permission> completeWork = new ArrayList<>();
+        completeWork.add(new Permission("COMPLETE_WORK_ALL", "All", moduleTabType.get("COMPLETE_WORK_ALL"), null));
+        completeWork.add(new Permission("COMPLETE_WORK_OWN", "Own", moduleTabType.get("COMPLETE_WORK_OWN"), null));
+        permissions.add(new PermissionGroup("Complete Work", completeWork));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("RESERVE", "Reserve Inventory", moduleTabType.get("RESERVE"), null));
+        permissions.add(new Permission("VIEW_PRICING", "View Pricing", moduleTabType.get("VIEW_PRICING"), null));
+        permissionMap.put(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
         permissions = new ArrayList<>();
