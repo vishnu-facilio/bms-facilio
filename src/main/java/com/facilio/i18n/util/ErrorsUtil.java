@@ -44,26 +44,36 @@ public class ErrorsUtil {
     }
 
     public static JSONObject getFSMExceptionAsJson(FSMException fsmException) {
-        String localizedMessage = getString(fsmException.getFsmErrorCode().name(), fsmException.getMessageParams());
+        String localizedTitle = getString(fsmException.getFsmErrorCode().name() + ".TITLE");
+        if (StringUtils.isEmpty(localizedTitle)) {
+            localizedTitle = fsmException.getFsmErrorCode().getTitle();
+        }
+        String localizedMessage = getString(fsmException.getFsmErrorCode().name() + ".MESSAGE", fsmException.getMessageParams());
         if (StringUtils.isEmpty(localizedMessage)) {
             localizedMessage = MessageFormat.format(fsmException.getMessage(), fsmException.getMessageParams());
         }
 
         JSONObject errorData = new JSONObject();
         errorData.put("errorCode", fsmException.getFsmErrorCode().name());
+        errorData.put("errorTitle", localizedTitle);
         errorData.put("errorMessage", localizedMessage);
         errorData.put("errorSeverity", fsmException.getFsmErrorCode().getSeverity().name());
 
         if (fsmException.getAdditionalExceptions() != null) {
             JSONArray additionalErrors = new JSONArray();
             for (FSMException additionalExp : fsmException.getAdditionalExceptions()) {
-                String localizedAdditionalMessage = getString(additionalExp.getFsmErrorCode().name(), additionalExp.getMessageParams());
+                String localizedAdditionalTitle = getString(additionalExp.getFsmErrorCode().name() + ".TITLE");
+                if (StringUtils.isEmpty(localizedAdditionalTitle)) {
+                    localizedAdditionalTitle = additionalExp.getFsmErrorCode().getTitle();
+                }
+                String localizedAdditionalMessage = getString(additionalExp.getFsmErrorCode().name() + ".MESSAGE", additionalExp.getMessageParams());
                 if (StringUtils.isEmpty(localizedAdditionalMessage)) {
                     localizedAdditionalMessage = MessageFormat.format(additionalExp.getMessage(), additionalExp.getMessageParams());
                 }
 
                 JSONObject additionalErrorData = new JSONObject();
                 additionalErrorData.put("errorCode", additionalExp.getFsmErrorCode().name());
+                additionalErrorData.put("errorTitle", localizedAdditionalTitle);
                 additionalErrorData.put("errorMessage", localizedAdditionalMessage);
                 additionalErrorData.put("errorSeverity", additionalExp.getFsmErrorCode().getSeverity().name());
             }
