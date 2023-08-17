@@ -120,7 +120,11 @@ public class ServiceOrderAction extends V3Action {
             setData(FacilioConstants.ServiceOrder.SERVICE_ORDER_STATUS_ACTIONS,successMsg);
 
         }catch(Exception e){
-            throw new RESTException(ErrorCode.VALIDATION_ERROR,e.getMessage());
+            if(e instanceof FSMException){
+                throw e;
+            } else {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR,e.getMessage());
+            }
         }
         return SUCCESS;
     }

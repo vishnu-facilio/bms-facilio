@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.interceptors;
 
 import com.facilio.exception.ErrorResponseUtil;
+import com.facilio.fsm.exception.FSMException;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -34,7 +35,11 @@ public class ExceptionHandlingInterceptor extends AbstractInterceptor  {
             HttpServletResponse response = ServletActionContext.getResponse();
             Boolean errorType;
             Boolean messageNull;
+            String errorTitle = "";
             ErrorResponseUtil values = null;
+            if(ex instanceof FSMException){
+                errorTitle = ((FSMException) ex).getFsmErrorCode().getTitle();
+            }
             if(ex instanceof RESTException){
                 errorType = true;
                 values = new ErrorResponseUtil((RESTException) ex);
@@ -56,6 +61,7 @@ public class ExceptionHandlingInterceptor extends AbstractInterceptor  {
             errorMap.put("isErrorGeneralized", errorType ? values.getIsErrorGeneralized(): false);
             errorMap.put("isVisible",  errorType ? values.getIsVisible(): true);
             errorMap.put("correctiveAction", errorType ? values.getCorrectiveAction(): "");
+            errorMap.put("title", errorTitle);
             write(errorMap, errorType ? values.getErrorCode().getHttpStatus() : messageNull ? ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus() : ErrorCode.ERROR.getHttpStatus(), response);
             LOGGER.log(Level.FATAL, "error thrown from action class", ex);
         }
