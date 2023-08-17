@@ -4730,5 +4730,7 @@ public class FacilioConstants {
 		public static final String TRIP_ACTIVITY = "tripActivity";
 		public static final String TRIP_NOTES = "tripnotes";
 		public static final String TRIP_ATTACHMENTS = "tripattachments";
+		public static final String START_LOCATION="startLocation";
+		public static final String END_LOCATION="endLocation";
 	}
 }

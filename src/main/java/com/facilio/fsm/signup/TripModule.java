@@ -44,6 +44,7 @@ public class TripModule extends BaseModuleConfig {
             addModuleChain.execute();
             addActivityModuleForTrip();
             SignupUtil.addNotesAndAttachmentModule(trip);
+            addStateFlow();
         }catch (Exception ex) {
             ex.printStackTrace();
         }

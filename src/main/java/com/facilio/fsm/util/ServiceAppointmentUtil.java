@@ -19,6 +19,8 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fsm.context.*;
+import com.facilio.fsm.exception.FSMErrorCode;
+import com.facilio.fsm.exception.FSMException;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -430,7 +432,7 @@ public class ServiceAppointmentUtil {
         }
     }
 
-    public static void startTripForAppointment(Long appointmentId, TripContext tripData) throws Exception {
+    public static void startTripForAppointment(Long appointmentId, LocationContext location) throws Exception {
         String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
@@ -457,17 +459,26 @@ public class ServiceAppointmentUtil {
                     agent.setStatus(V3PeopleContext.Status.EN_ROUTE.getIndex());
                     V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
 
-                    if (!checkForOngoingTrip(agentId)){
-
+                    List<TripContext> ongoingTrips = getOngoingTrips(agentId,null);
+                    if(CollectionUtils.isNotEmpty(ongoingTrips)){
+                        List<Long> ongoingServiceAppointments = new ArrayList<>();
+                        for (TripContext ongoingTrip : ongoingTrips){
+                            if(ongoingTrip.getServiceAppointment() != null){
+                                ongoingServiceAppointments.add(ongoingTrip.getServiceAppointment().getId());
+                            }
+                        }
+                        throw new FSMException(FSMErrorCode.TRIP_CANNOT_BE_STARTED,StringUtils.join(ongoingServiceAppointments,","));
+                    } else {
                         TripContext newTrip = new TripContext();
                         newTrip.setServiceAppointment(existingAppointment);
                         newTrip.setStartTime(DateTimeUtil.getCurrenTime());
                         newTrip.setPeople(existingAppointment.getFieldAgent());
                         newTrip.setServiceOrder(existingAppointment.getServiceOrder());
-                        if(tripData != null && tripData.getStartLocation() != null){
-                            LocationContext location = tripData.getStartLocation();
+                        if(location != null){
                             if (location != null && location.getLat() != -1 && location.getLng() != -1) {
-                                location.setName(existingAppointment.getName()+"Trip_Location_"+DateTimeUtil.getCurrenTime());
+                                if(location.getName() == null) {
+                                    location.setName(existingAppointment.getName() + "Trip_Location_" + DateTimeUtil.getCurrenTime());
+                                }
                                 Context locationContext = new FacilioContext();
                                 Constants.setRecord(locationContext, location);
                                 if (location.getId() > 0) {
@@ -502,7 +513,7 @@ public class ServiceAppointmentUtil {
         }
     }
 
-    public static void endTripForAppointment(Long appointmentId, TripContext tripData) throws Exception {
+    public static void endTripForAppointment(Long appointmentId, LocationContext location) throws Exception {
         String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
@@ -536,10 +547,13 @@ public class ServiceAppointmentUtil {
                     if(CollectionUtils.isNotEmpty(OngoingTrips)){
                         for(TripContext OngoingTrip : OngoingTrips){
                             OngoingTrip.setEndTime(DateTimeUtil.getCurrenTime());
-                            if(tripData != null && tripData.getEndLocation() != null){
-                                LocationContext location = tripData.getEndLocation();
+                            Long duration = OngoingTrip.getEndTime() - OngoingTrip.getStartTime();
+                            OngoingTrip.setTripDuration(duration);
+                            if(location != null){
                                 if (location != null && location.getLat() != -1 && location.getLng() != -1) {
-                                    location.setName(existingAppointment.getName()+"Trip_Location_"+DateTimeUtil.getCurrenTime());
+                                    if(location.getName() == null) {
+                                        location.setName(existingAppointment.getName() + "Trip_Location_" + DateTimeUtil.getCurrenTime());
+                                    }
                                     Context locationContext = new FacilioContext();
                                     Constants.setRecord(locationContext, location);
                                     if (location.getId() > 0) {

@@ -32,6 +32,7 @@ public enum FSMErrorCode {
 
     // Trip error codes
     TRIP_NOT_ENOUGH_DETAILS(Severity.ERROR, "Mandatory field missing", "Not enough details to create a trip"),
+    TRIP_CANNOT_BE_STARTED(Severity.ERROR,"Trip cannot be started","You currently have an active trip in progress. To manage your ongoing trip, please navigate to the associated service appointment.{0}"),
 
     //Service Task error codes
     TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Timesheet conflict", "Cannot start or resume another service task when timesheet is running");

@@ -3,6 +3,7 @@ package com.facilio.fsm.actions;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
@@ -49,8 +50,8 @@ public class fsmAction extends V3Action {
     private boolean skipValidation;
     private Long scheduledStartTime;
     private Long scheduledEndTime;
-
-    private TripContext trip;
+    private LocationContext startLocation;
+    private LocationContext endLocation;
 
     public String getViewName() {
         return viewName;
@@ -144,13 +145,13 @@ public class fsmAction extends V3Action {
                 }
                 break;
             case FacilioConstants.ServiceAppointment.START_TRIP:
-                context.put(FacilioConstants.Trip.TRIP,getTrip());
+                context.put(FacilioConstants.Trip.START_LOCATION,getStartLocation());
                 FacilioChain startTripChain = FsmTransactionChainFactoryV3.startTripChain();
                 startTripChain.execute(context);
                 successMsg.put("message","Trip Started Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.END_TRIP:
-                context.put(FacilioConstants.Trip.TRIP,getTrip());
+                context.put(FacilioConstants.Trip.END_LOCATION,getEndLocation());
                 FacilioChain endTripChain = FsmTransactionChainFactoryV3.endTripChain();
                 endTripChain.execute(context);
                 successMsg.put("message","Trip Ended Successfully");

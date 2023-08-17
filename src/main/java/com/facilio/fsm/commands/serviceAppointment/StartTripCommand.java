@@ -1,5 +1,7 @@
 package com.facilio.fsm.commands.serviceAppointment;
 
+import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.TripContext;
@@ -10,8 +12,8 @@ public class StartTripCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-        TripContext trip = (TripContext) context.get(FacilioConstants.Trip.TRIP);
-        ServiceAppointmentUtil.startTripForAppointment(recordId,trip);
+        LocationContext startLocation = (LocationContext) context.get(FacilioConstants.Trip.START_LOCATION);
+        ServiceAppointmentUtil.startTripForAppointment(recordId,startLocation);
         return false;
     }
 }
