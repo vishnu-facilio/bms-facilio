@@ -36,9 +36,18 @@ public class WorkOrderRequestAPI {
                     .addRecord(workOrderEmailProps);
             insertBuilder.save();
             
-			WmsBroadcaster.getBroadcaster().sendMessage(new Message()
-			        .setTopic(EmailProcessHandler.TOPIC+"/"+recipient)
-			        .setContent(FieldUtil.getAsJSON(workOrderEmailProps)));
+            
+            if(recipient != null && (recipient.contains("@tutenlabs.facilio-us.com") || recipient.contains("some test org"))) {
+            	
+            	WmsBroadcaster.getBroadcaster().sendMessage(new Message()
+    			        .setTopic(EmailProcessHandler.TOPIC_TUTEN_LABS+"/"+recipient)
+    			        .setContent(FieldUtil.getAsJSON(workOrderEmailProps)));
+            }
+            else {
+            	WmsBroadcaster.getBroadcaster().sendMessage(new Message()
+    			        .setTopic(EmailProcessHandler.TOPIC+"/"+recipient)
+    			        .setContent(FieldUtil.getAsJSON(workOrderEmailProps)));
+            }
 
             LOGGER.info("ID of the workOrder : "+workOrderEmailProps.get("id"));
             return (long) workOrderEmailProps.get("id");

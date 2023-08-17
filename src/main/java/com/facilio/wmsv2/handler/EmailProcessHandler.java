@@ -29,6 +29,7 @@ import java.util.Map;
 @Log4j
 public class EmailProcessHandler extends BaseHandler{
 	public static final String TOPIC = "email-process";
+	public static final String TOPIC_TUTEN_LABS = "email-process-tutenlabs";
 	public static final String S3_BUCKET_NAME = FacilioProperties.getIncomingEmailS3Bucket();
 
 	@Override
