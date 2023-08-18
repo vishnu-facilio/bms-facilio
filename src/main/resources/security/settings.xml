@@ -3166,4 +3166,10 @@
             </property>
         </requestbody>
     </request>
+    
+    <request path="/api/v3/serviceRequest/:id/site" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
 </config>

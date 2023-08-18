@@ -1824,5 +1824,11 @@
         </action>
     </package>
 
-
+    <package name="serviceRequestSiteApi" extends="v3Api" namespace="/api/v3/serviceRequest">
+        <action name="*/site"
+                class="com.facilio.bmsconsoleV3.actions.SiteWithoutScopingAction"
+                method="fetchSite">
+            <param name="id">{1}</param>
+        </action>
+    </package>
 </struts>

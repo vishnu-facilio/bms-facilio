@@ -36,6 +36,7 @@ import com.facilio.bmsconsoleV3.commands.shift.*;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.reports.*;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.*;
+import com.facilio.bmsconsoleV3.commands.site.FetchSiteWithoutScoping;
 import com.facilio.bmsconsoleV3.commands.storeroom.SetLocationObjectFromSiteV3;
 import com.facilio.bmsconsoleV3.commands.storeroom.UpdateServingSitesinStoreRoomCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantcontact.GetOldTenantContactRecordMap;
@@ -3481,6 +3482,10 @@ public class TransactionChainFactoryV3 {
         FacilioChain chain=getDefaultChain();
         chain.addCommand(new UpdateAssetCategoryLevelStatusCommand());
         return chain;
+    public static FacilioChain fetchSiteDetailsWithoutScopingCommand(){
+        FacilioChain c=getDefaultChain();
+        c.addCommand(new FetchSiteWithoutScoping());
+        return c;
     }
 }
 
