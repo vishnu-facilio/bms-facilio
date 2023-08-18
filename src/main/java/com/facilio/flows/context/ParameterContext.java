@@ -1,5 +1,6 @@
 package com.facilio.flows.context;
 
+import com.facilio.flowengine.enums.FlowVariableDataType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,6 @@ public class ParameterContext implements Serializable {
 
     private long id = -1;
     private long flowId = -1;
-    private String parameter;
-
+    private String parameterName;
+    private FlowVariableDataType dataType;
 }

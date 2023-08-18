@@ -3537,7 +3537,8 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getIdField(module));
         fields.add(getNumberField("flowId","FLOW_ID",module));
-        fields.add(getStringField("parameter","PARAMETER",module));
+        fields.add(getStringField("parameterName","PARAMETER_NAME",module));
+        fields.add(getStringField("dataType","DATA_TYPE",module));
         return fields;
     }
     public static List<FacilioField> getScriptBlockConfigDataFields(){
