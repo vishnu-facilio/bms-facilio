@@ -1,7 +1,5 @@
 package com.facilio.readingkpi.context;
 
-import java.util.List;
-
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
@@ -9,11 +7,13 @@ import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
-import com.facilio.ns.context.NamespaceFrequency;
 import com.facilio.ns.context.NameSpaceContext;
+import com.facilio.ns.context.NamespaceFrequency;
 import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.V3Context;
 import lombok.Data;
+
+import java.util.List;
 
 
 @Data
@@ -30,7 +30,7 @@ public class ReadingKPIContext extends V3Context {
     private FacilioField readingField;
     private FacilioModule readingModule;
 
-    private Long readingFieldId = -1l;
+    private Long readingFieldId = -1L;
     private Long readingModuleId = -1l;
 
     private PreventiveMaintenance.PMAssignmentType resourceType;
@@ -44,6 +44,16 @@ public class ReadingKPIContext extends V3Context {
     private List<Long> assets;
 
     private List<Long> matchedResourcesIds;
+
+    public ReadingKPIContext(){
+
+    }
+
+    public ReadingKPIContext(String name, Long readingFieldId, KPIType kpiType) {
+        this.name = name;
+        this.readingFieldId = readingFieldId;
+        this.kpiType = kpiType;
+    }
 
     public PreventiveMaintenance.PMAssignmentType getResourceTypeEnum() {
         return resourceType;

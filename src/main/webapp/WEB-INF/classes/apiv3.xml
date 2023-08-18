@@ -1174,6 +1174,12 @@
         </action>
     </package>
 
+    <package name="ReadingKpiAnalytics" namespace="/api/v3/readingKpi/analytics" extends="v3Api">
+        <action name="fetchAssetCategoriesContainingKpis" class="com.facilio.readingkpi.ReadingKpiAction" method="fetchAssetCategoriesContainingKpis"/>
+        <action name="getReadingsForSpecificAssetCategory" class="com.facilio.readingkpi.ReadingKpiAction" method="getReadingsForSpecificAssetCategory"/>
+        <action name="fetchReadingsData" class="com.facilio.readingkpi.ReadingKpiAction" method="fetchReadingsData"/>
+        <action name="getDynamicKpisForAsset" class="com.facilio.readingkpi.ReadingKpiAction" method="getDynamicKpisForAsset"/>
+    </package>
     <package name="ReadingKpiHistorical" namespace="/api/v3/readingKpi/historical" extends="v3Api">
         <action name="run" class="com.facilio.readingkpi.ReadingKpiAction" method="runHistorical"/>
         <action name="fetchAssetDetails" class="com.facilio.readingkpi.ReadingKpiAction" method="fetchAssetDetails"/>

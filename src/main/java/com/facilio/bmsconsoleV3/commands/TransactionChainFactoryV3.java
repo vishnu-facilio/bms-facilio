@@ -89,6 +89,9 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.AddAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.DeleteAccessibleSpacesCommand;
 import com.facilio.bmsconsoleV3.commands.accessibleSpaces.FetchAccessibleSpacesCommand;
+import com.facilio.bmsconsoleV3.commands.asset.AddRotatingItemToolCommandV3;
+import com.facilio.bmsconsoleV3.commands.asset.AssetSupplementsSupplyCommand;
+import com.facilio.bmsconsoleV3.commands.asset.SparePartsSelectionCommand;
 import com.facilio.bmsconsoleV3.commands.assetCategory.AddAssetCategoryModuleCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.UpdateCategoryAssetModuleIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetCategory.ValidateAssetCategoryDeletionV3;
@@ -2590,7 +2593,6 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain addReadingKpi() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new PrepareReadingKpiCreationCommand());
-        chain.addCommand(getAddCategoryReadingChain());
         chain.addCommand(new SetFieldAndModuleIdCommand());
         return chain;
     }

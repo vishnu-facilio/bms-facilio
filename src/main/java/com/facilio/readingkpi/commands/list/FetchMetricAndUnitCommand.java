@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.readingkpi.context.KPIType;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -21,6 +22,9 @@ public class FetchMetricAndUnitCommand extends FacilioCommand {
         List<ReadingKPIContext> list = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(list)) {
             for (ReadingKPIContext kpi : list) {
+                if (kpi.getKpiTypeEnum() == KPIType.DYNAMIC) {
+                    continue;
+                }
                 Long fieldId = kpi.getReadingFieldId();
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 NumberField readingField = (NumberField) modBean.getField(fieldId);

@@ -7,9 +7,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
-import com.facilio.ns.context.NameSpaceContext;
+import com.facilio.readingkpi.context.KPIType;
 import com.facilio.readingkpi.context.ReadingKPIContext;
-import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
 
@@ -23,8 +22,10 @@ public class UpdateNamespaceAndFieldsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         this.readingKpi = (ReadingKPIContext) context.get(FacilioConstants.ReadingKpi.READING_KPI);
 
-        updateFields(context);
-        updateReadingModuleName(context);
+        if (this.readingKpi.getKpiTypeEnum() != KPIType.DYNAMIC) {
+            updateFields(context);
+            updateReadingModuleName(context);
+        }
         return false;
     }
 
@@ -47,7 +48,7 @@ public class UpdateNamespaceAndFieldsCommand extends FacilioCommand {
             field.setUnit(customUnit);
             field.setUnitId(-99);
             field.setMetric(0);
-        } else if (unitId!=null && unitId > 0) {
+        } else if (unitId != null && unitId > 0) {
             field.setUnitId(unitId);
             field.setMetric(this.readingKpi.getMetricId());
         }
@@ -55,10 +56,11 @@ public class UpdateNamespaceAndFieldsCommand extends FacilioCommand {
         field.setId(this.readingKpi.getReadingFieldId());
         modBean.updateField(field);
     }
+
     private void updateReadingModuleName(Context context) throws Exception {
-        List<ReadingKPIContext> kpis = (List<ReadingKPIContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(FacilioConstants.ReadingKpi.READING_KPI));
+        List<ReadingKPIContext> kpis = (List<ReadingKPIContext>) (((Map<String, Object>) context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(FacilioConstants.ReadingKpi.READING_KPI));
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        for(ReadingKPIContext kpi : kpis) {
+        for (ReadingKPIContext kpi : kpis) {
             FacilioModule module = new FacilioModule();
             module.setModuleId(kpi.getReadingModuleId());
             module.setDisplayName(kpi.getName());

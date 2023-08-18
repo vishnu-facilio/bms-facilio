@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsoleV3.context.report.ReportDynamicKpiContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -22,6 +23,8 @@ import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.ns.context.NameSpaceField;
+import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
@@ -35,6 +38,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+
+import static com.facilio.readingkpi.ReadingKpiAPI.getReadingKpi;
 
 public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 	
@@ -164,30 +169,59 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
 		dataPoint.setMetaData(metric.getMetaData());
 		dataPoint.setDefaultSortPoint(metric.isDefaultSortPoint());
+		if(metric.getKpiType()!=null) {
+			dataPoint.setKpiType(metric.getKpiType());
+		}
 		ReportYAxisContext yAxis = metric.getyAxis();
-		FacilioField yField = modBean.getField(metric.getyAxis().getFieldId());
-		yAxis.setField(yField.getModule(), yField);
-		dataPoint.setyAxis(yAxis);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
-		setXAndDateFields(dataPoint, mode, fieldMap);
-		setCriteria(dataPoint, fieldMap, metric);
-		if(metric.isxDataPoint()) {
-			dataPoint.setxDataPoint(metric.isxDataPoint());
-		}
-		if(metric.isduplicateDataPoint()) {
+		/**
+		 * code handling for dynamic kpi
+		 */
+		if(yAxis != null && (yAxis.getDynamicKpi() != null && !"".equals(yAxis.getDynamicKpi())) && yAxis.getFieldId() <=0 ){
+			ReportDynamicKpiContext dynamic_kpi = new ReportDynamicKpiContext();
+			dynamic_kpi.setDynamicKpi(yAxis.getDynamicKpi());
+			dynamic_kpi.setParentId(metric.getParentId());
+			dataPoint.setDynamicKpi(dynamic_kpi);
+			ReadingKPIContext dynKpi = getReadingKpi(Long.valueOf(yAxis.getDynamicKpi()));
+			for (NameSpaceField nsField : dynKpi.getNs().getFields()) {
+				FacilioField field = nsField.getField();
+				List<FacilioField> allFields = modBean.getAllFields(field.getModule().getName());
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+				setXAndDateFields(dataPoint, mode, fieldMap);
+				break;
+			}
+			yAxis.setLabel(metric.getName());
+			yAxis.setDataType(FieldType.DECIMAL);
+			dataPoint.setyAxis(yAxis);
 			dataPoint.setduplicateDataPoint(metric.isduplicateDataPoint());
+			dataPoint.addMeta(FacilioConstants.ContextNames.PARENT_ID_LIST, metric.getParentId());
 		}
-		String moduleName = metric.getModuleName();
-		if (moduleName == null) {
-			moduleName = FacilioConstants.ContextNames.RESOURCE;
-			metric.setModuleName(moduleName);
-		}
-		if (dataPoint.isFetchResource()) {
-			resourceAlias.put(report.getxAlias(), moduleName);
-		}
-		dataPoint.setModuleName(moduleName);
-		if(metric.getRule_aggr_type() != null) {
-			dataPoint.setRule_aggr_type(metric.getRule_aggr_type());
+		else
+		{
+			FacilioField yField = modBean.getField(metric.getyAxis().getFieldId());
+			yAxis.setField(yField.getModule(), yField);
+			dataPoint.setyAxis(yAxis);
+
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
+			setXAndDateFields(dataPoint, mode, fieldMap);
+			setCriteria(dataPoint, fieldMap, metric);
+			if (metric.isxDataPoint()) {
+				dataPoint.setxDataPoint(metric.isxDataPoint());
+			}
+			if (metric.isduplicateDataPoint()) {
+				dataPoint.setduplicateDataPoint(metric.isduplicateDataPoint());
+			}
+			String moduleName = metric.getModuleName();
+			if (moduleName == null) {
+				moduleName = FacilioConstants.ContextNames.RESOURCE;
+				metric.setModuleName(moduleName);
+			}
+			if (dataPoint.isFetchResource()) {
+				resourceAlias.put(report.getxAlias(), moduleName);
+			}
+			dataPoint.setModuleName(moduleName);
+			if (metric.getRule_aggr_type() != null) {
+				dataPoint.setRule_aggr_type(metric.getRule_aggr_type());
+			}
 		}
 		dataPoint.setRightInclusive(metric.isRightInclusive());
 		return dataPoint;
@@ -302,7 +336,11 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 						joiner.add(resource.getName());
 						}
 					}
-					if(joiner.length() > 0) {
+					if(joiner.length() >0 && metric.getKpiType() !=null && yField.getDynamicKpi()!=null){
+						ReadingKPIContext dynamicKpi = getReadingKpi(Long.valueOf(yField.getDynamicKpi()));
+						return joiner+" ("+ dynamicKpi.getName()+ ")";
+					}
+					else if(joiner.length() > 0) {
 						return joiner.toString()+" ("+ yField.getLabel()+(metric.getPredictedTime() == -1 ? "" : (" @ "+DateTimeUtil.getDateTimeFormat("yyyy-MM-dd HH:mm").format(DateTimeUtil.getDateTime(metric.getPredictedTime()))))+")";
 					}
 					else {
@@ -432,7 +470,7 @@ private long getAssetCategoryId(ReportYAxisContext yField, ReportMode mode, Repo
 	private Map<Long, ResourceContext> getResourceMap(List<ReadingAnalysisContext> metrics) throws Exception {
 		Set<Long> resourceIds = new HashSet<>();
 		for (ReadingAnalysisContext metric : metrics) {
-			if (metric.getyAxis().getFieldId() != -1 && metric.getParentId() != null) {
+			if (metric.getyAxis().getFieldId() != -1 && metric.getParentId() != null || (metric.getyAxis() != null && metric.getyAxis().getDynamicKpi() != null)) {
 				for (Long parentId : metric.getParentId()) {
 					resourceIds.add(parentId);
 				}

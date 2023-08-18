@@ -33,6 +33,7 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
             for (NewReadingRuleContext readingRule : list) {
                 readingRule.getNs().getWorkflowContext().setIsV2Script(Boolean.TRUE);
                 readingRule.getNs().setType(NSType.READING_RULE.getIndex());
+                readingRule.getNs().setStatus(true);
 
                 WorkflowContext workflow=readingRule.getNs().getWorkflowContext();
 

@@ -1,49 +1,17 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
-import com.facilio.db.criteria.operators.*;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.AssetMovementContext;
-import com.facilio.bmsconsole.context.AssetTypeContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsoleV3.context.AssetDepartmentContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -53,18 +21,23 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
+import java.sql.*;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class AssetsAPI {
 	
@@ -1269,28 +1242,38 @@ public class AssetsAPI {
         return true;
    }
    
-	public static JSONObject getAssetCategoryWithReadings (List<Long> buildingIds, boolean fetchOnlyAlarmPoints) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	public static JSONObject getAssetCategoryWithReadings (List<Long> buildingIds, boolean fetchOnlyAlarmPoints, boolean fetchOnlyKpiPoints) throws Exception {
+		List<AssetCategoryContext> assetcategories = getListOfAssetCategoriesWithReadings(buildingIds, fetchOnlyAlarmPoints, fetchOnlyKpiPoints);
+		JSONObject data = new JSONObject();
 		
+		for(AssetCategoryContext assetcategory : assetcategories) {
+			data.put(assetcategory.getId(),assetcategory.getDisplayName());
+		}
+		return data;
+	}
+
+	public static List<AssetCategoryContext> getListOfAssetCategoriesWithReadings(List<Long> buildingIds, boolean fetchOnlyAlarmPoints, boolean fetchOnlyKpiPoints) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
 		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> assetFields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
 		Map<String, FacilioField> assetFieldMap = FieldFactory.getAsMap(assetFields);
-		
+
 		FacilioModule assetCategoryModule = modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY);
 		List<FacilioField> assetCategoryFields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY));
 		Map<String, FacilioField> assetCategoryFieldMap = FieldFactory.getAsMap(assetCategoryFields);
-		
+
 		FacilioModule readingDataMetaModule = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> readingFields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(readingFields);
-		
+
 		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-		
+
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(FieldFactory.getIdField(assetCategoryModule));
 		fields.add(assetCategoryFieldMap.get("name"));
 		fields.add(assetCategoryFieldMap.get("displayName"));
-		
+
 		SelectRecordsBuilder<AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
 				.select(fields)
 				.table(assetCategoryModule.getTableName())
@@ -1307,7 +1290,7 @@ public class AssetsAPI {
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T))
 				.groupBy(FieldFactory.getIdField(assetCategoryModule).getCompleteColumnName());
-		
+
 		if(fetchOnlyAlarmPoints) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
 					String.valueOf(ReadingInputType.ALARM_POINT_FIELD.getValue()), PickListOperators.IS));
@@ -1316,22 +1299,24 @@ public class AssetsAPI {
 					String.valueOf(ReadingInputType.ALARM_POINT_FIELD.getValue()), PickListOperators.ISN_T));
 		}
 
+		if(fetchOnlyKpiPoints) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
+					String.valueOf(ReadingInputType.FORMULA_FIELD.getValue()), PickListOperators.IS));
+		} else{
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
+					String.valueOf(ReadingInputType.FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
+		}
 		if (buildingIds != null && !buildingIds.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
 		}
-		
-		List<AssetCategoryContext> assetcategories = selectBuilder.get();
-		JSONObject data = new JSONObject();
-		
-		for(AssetCategoryContext assetcategory : assetcategories) {
-			data.put(assetcategory.getId(),assetcategory.getDisplayName());
-		}
-		return data;
+
+		return selectBuilder.get();
 	}
-	public static JSONObject getAssetsWithReadingsForSpecificCategory(List<Long> buildingIds, List<Long> categoryIds, boolean fetchOnlyAlarmPoints) throws Exception{
-		return getAssetsWithReadingsForSpecificCategory(buildingIds, categoryIds, fetchOnlyAlarmPoints, null);
+
+	public static JSONObject getAssetsWithReadingsForSpecificCategory(List<Long> buildingIds, List<Long> categoryIds, boolean fetchOnlyAlarmPoints, boolean fetchOnlyKpiPoints) throws Exception{
+		return getAssetsWithReadingsForSpecificCategory(buildingIds, categoryIds, fetchOnlyAlarmPoints, fetchOnlyKpiPoints,null);
 	}
-	public static JSONObject getAssetsWithReadingsForSpecificCategory(List<Long> buildingIds, List<Long> categoryIds, boolean fetchOnlyAlarmPoints, Criteria criteria) throws Exception{
+		public static JSONObject getAssetsWithReadingsForSpecificCategory(List<Long> buildingIds, List<Long> categoryIds, boolean fetchOnlyAlarmPoints, boolean fetchOnlyKpiPoints, Criteria criteria) throws Exception{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> assetFields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
@@ -1367,7 +1352,14 @@ public class AssetsAPI {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
 					String.valueOf(ReadingInputType.ALARM_POINT_FIELD.getValue()), PickListOperators.ISN_T));
 		}
-		
+		if(fetchOnlyKpiPoints) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
+					String.valueOf(ReadingInputType.FORMULA_FIELD.getValue()), PickListOperators.IS));
+		} else{
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
+					String.valueOf(ReadingInputType.FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
+		}
+
 		if (categoryIds != null && !categoryIds.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(assetFieldMap.get("category"), StringUtils.join(categoryIds, ","), NumberOperators.EQUALS));
 		}

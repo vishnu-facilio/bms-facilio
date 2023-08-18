@@ -140,11 +140,16 @@ public class ConstructReportDataCommand extends FacilioCommand {
                     }
                     xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine, x_report_Aggr);
                     Object formattedxVal = formatVal(dataPoint.getxAxis(), x_report_Aggr, xVal, null, false, dpLookUpMap, dpMultiLookUpMap);
-                    Object yVal = prop.get(ReportUtil.getAggrFieldName(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum()));
+                    Object yVal = null;
+                    if(dataPoint.getDynamicKpi() != null){
+                        yVal = prop.get("result");
+                    }else {
+                        yVal = prop.get(ReportUtil.getAggrFieldName(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum()));
+                    }
                     Object minYVal = null, maxYVal = null;
                     if (yVal != null) {
-                        yVal = formatVal(dataPoint.getyAxis(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleEnum(), dpLookUpMap, dpMultiLookUpMap);
-                        if (dataPoint.getyAxis().isFetchMinMax()) {
+                        yVal = dataPoint.getDynamicKpi() != null ? DECIMAL_FORMAT.format(yVal) : formatVal(dataPoint.getyAxis(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleEnum(), dpLookUpMap, dpMultiLookUpMap);
+                        if (dataPoint.getyAxis() != null && dataPoint.getyAxis().isFetchMinMax()) {
                             minYVal = formatVal(dataPoint.getyAxis(), NumberAggregateOperator.MIN, prop.get(dataPoint.getyAxis().getField().getName() + "_min"), xVal, dataPoint.isHandleEnum(), dpLookUpMap, dpMultiLookUpMap);
                             maxYVal = formatVal(dataPoint.getyAxis(), NumberAggregateOperator.MAX, prop.get(dataPoint.getyAxis().getField().getName() + "_max"), xVal, dataPoint.isHandleEnum(), dpLookUpMap, dpMultiLookUpMap);
                         }
@@ -205,7 +210,7 @@ public class ConstructReportDataCommand extends FacilioCommand {
         } else {
             data.put(yAlias, yVal);
 
-            if (dataPoint.getyAxis().isFetchMinMax()) {
+            if (dataPoint.getyAxis() != null && dataPoint.getyAxis().isFetchMinMax()) {
                 data.put(yAlias + ".min", minYVal);
                 data.put(yAlias + ".max", maxYVal);
             }

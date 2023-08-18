@@ -73,6 +73,7 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
             newCtx.getNs().setId(oldRule.getNs().getId());
             newCtx.getNs().getWorkflowContext().setId(oldRule.getNs().getWorkflowId());
             newCtx.getNs().setWorkflowId(newCtx.getNs().getWorkflowContext().getId());
+            newCtx.getNs().setStatus(true);
             oldRule.setNs(newCtx.getNs());
         }
 

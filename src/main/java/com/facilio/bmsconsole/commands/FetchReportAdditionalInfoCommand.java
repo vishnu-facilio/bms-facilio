@@ -93,7 +93,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 					}
 
 					for (ReportDataPointContext dp : report.getDataPoints()) {
-						if (!validateFetchingOfAdditionalInfo(dp)) {
+						if (!validateFetchingOfAdditionalInfo(dp) || dp.getDynamicKpi() != null) {
 							return false; // All datapoints should be valid to fetch alarms
 						}
 

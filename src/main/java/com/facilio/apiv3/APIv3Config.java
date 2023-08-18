@@ -219,6 +219,7 @@ import com.facilio.readingkpi.commands.delete.DeleteKpiLoggersCommand;
 import com.facilio.readingkpi.commands.list.LoadSupplementsForKpiLogger;
 import com.facilio.readingkpi.commands.delete.DeleteNamespaceReadingKpiCommand;
 import com.facilio.readingkpi.commands.list.LoadSupplementsForReadingKPICommand;
+import com.facilio.readingkpi.commands.update.NullFieldIdAndModuleIdForDynamicKpi;
 import com.facilio.readingkpi.context.KpiLoggerContext;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.readingkpi.context.ReadingKpiLogsContext;
@@ -2710,6 +2711,7 @@ public class APIv3Config {
                 .beforeSave(TransactionChainFactoryV3.addReadingKpi())
                 .afterSave(TransactionChainFactoryV3.addReadingKpiNamespace())
                 .update()
+                .beforeSave(new NullFieldIdAndModuleIdForDynamicKpi())
                 .afterSave(TransactionChainFactoryV3.updateReadingKpiWorkflowAndNamespace())
                 .list()
                 .beforeFetch(new LoadSupplementsForReadingKPICommand())

@@ -720,12 +720,12 @@ public class AssetAction extends FacilioAction {
   	}
 	
 	public String getReadingsWithAssetsForSpecificCategories() throws Exception {
-		assetsReadings = AssetsAPI.getAssetsWithReadingsForSpecificCategory(buildingIds, categoryIds, fetchOnlyAlarmPoints != null && fetchOnlyAlarmPoints);
+		assetsReadings = AssetsAPI.getAssetsWithReadingsForSpecificCategory(buildingIds, categoryIds, fetchOnlyAlarmPoints != null && fetchOnlyAlarmPoints, fetchOnlyKpiPoints!=null && fetchOnlyKpiPoints);
 		return SUCCESS;
   	}
 	
 	public String getAssetCategoryWithReadings () throws Exception {
-			assetCategoriesWithReadings = AssetsAPI.getAssetCategoryWithReadings(buildingIds, fetchOnlyAlarmPoints != null && fetchOnlyAlarmPoints);
+			assetCategoriesWithReadings = AssetsAPI.getAssetCategoryWithReadings(buildingIds, fetchOnlyAlarmPoints != null && fetchOnlyAlarmPoints, fetchOnlyKpiPoints!=null && fetchOnlyKpiPoints);
 		return SUCCESS;
 	}
 	
@@ -768,7 +768,15 @@ public class AssetAction extends FacilioAction {
 	public void setFetchOnlyAlarmPoints(Boolean fetchOnlyAlarmPoints) {
 		this.fetchOnlyAlarmPoints = fetchOnlyAlarmPoints;
 	}
-	
+
+	private Boolean fetchOnlyKpiPoints;
+	public Boolean getFetchOnlyKpiPoints() {
+		return fetchOnlyKpiPoints;
+	}
+	public void setFetchOnlyKpiPoints(Boolean fetchOnlyKpiPoints) {
+		this.fetchOnlyKpiPoints = fetchOnlyKpiPoints;
+	}
+
 	private List<Long> assetIds;
 	public List<Long> getAssetIds() {
 		return assetIds;
@@ -1058,3 +1066,4 @@ public class AssetAction extends FacilioAction {
 	}
 	
 }
+

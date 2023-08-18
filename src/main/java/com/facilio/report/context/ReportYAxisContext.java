@@ -27,7 +27,16 @@ public class ReportYAxisContext extends ReportFieldContext {
 	public void setFetchMinMax(boolean fetchMinMax) {
 		this.fetchMinMax = fetchMinMax;
 	}
-	
+
+	public String getDynamicKpi() {
+		return dynamicKpi;
+	}
+
+	public void setDynamicKpi(String dynamicKpi) {
+		this.dynamicKpi = dynamicKpi;
+	}
+
+	public String dynamicKpi;
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

@@ -5,7 +5,8 @@ import com.facilio.modules.FacilioIntEnum;
 public enum KPIType implements FacilioIntEnum {
 
     LIVE,
-    SCHEDULED;
+    SCHEDULED,
+    DYNAMIC;
 
     public static KPIType valueOf(int idx) {
         if (idx > 0 && idx <= values().length) {

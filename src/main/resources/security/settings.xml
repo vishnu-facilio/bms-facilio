@@ -2820,6 +2820,9 @@
         </requestbody>
     </request>
 
+
+    <request path="/api/v2/flows/operators" method="GET">
+    </request>
     <!-- WORKORDER FEATURE SETTINGS API: SETUP PAGE -->
     <request path="/api/v1/setup/workOrderFeatureSettings/add" method="PUT">
         <requestbody type="object">
@@ -3109,5 +3112,32 @@
             <property name="categoryId" type="number" mandatory="true"/>
             <property name="readingFieldId" type="number" mandatory="true"/>
         </urlparams>
+    </request>
+
+
+    <!--Kpi analytics page-->
+    <request path="/api/v3/readingKpi/analytics/fetchAssetCategoriesContainingKpis" method="GET">
+        <requestbody type="object">
+            <property name="buildingIds" type="array" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/readingKpi/analytics/getReadingsForSpecificAssetCategory" method="GET">
+        <requestbody type="object">
+            <property name="categoryId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/readingKpi/analytics/getReadingsForSpecificAssetCategory" method="GET">
+        <requestbody type="object">
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="parentId" type="number" mandatory="true"/>
+            <property name="startTime" type="number" mandatory="true"/>
+            <property name="endTime" type="number" mandatory="true"/>
+            <property name="aggregateOperator" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/readingKpi/analytics/getDynamicKpisForAsset" method="GET">
+        <requestbody type="object">
+            <property name="assetId" type="number" mandatory="true"/>
+        </requestbody>
     </request>
 </config>

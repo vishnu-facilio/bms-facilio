@@ -41,6 +41,15 @@ public class ReadingAnalysisContext {
 	public void setName(String name) {
 		this.name = name;
 	}
+	private String kpiType;
+
+	public String getKpiType() {
+		return kpiType;
+	}
+
+	public void setKpiType(String kpiType) {
+		this.kpiType = kpiType;
+	}
 
 	private List<Long> parentId;
 	public List<Long> getParentId() {
@@ -82,6 +91,8 @@ public class ReadingAnalysisContext {
 	public void setType(int type) {
 		this.type = DataPointType.valueOf(type);
 	}
+
+
 
 	private Map<String, String> aliases; 
 	public Map<String, String> getAliases() {

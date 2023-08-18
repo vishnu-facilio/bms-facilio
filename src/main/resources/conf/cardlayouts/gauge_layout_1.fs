@@ -3,7 +3,12 @@ Map cardLayout(Map params) {
     date = new NameSpace("date");
     dateRangeObj = null;
     period = null;
-    
+
+    kpiType = {};
+    kpiType["live"] = 1;
+    kpiType["schedule"] = 2;
+    kpiType["dynamic"] = 3;
+
     if(params.cardFilters!=null){
             cardFilters=params.cardFilters;
             startTime=cardFilters.startTime;
@@ -18,6 +23,14 @@ Map cardLayout(Map params) {
         dateRangeObj = date.getDateRange("Current Month");
         period = "Last Value";
     }
+
+    newStartTime = null;
+    newEndTime = null;
+    if(dateRangeObj !=null){
+       newStartTime = dateRangeObj.getStartTime();
+       newEndTime = dateRangeObj.getEndTime();
+    }
+
     fieldObj = new NameSpace("module").getField(params.reading.fieldName, params.reading.moduleName);
     if (fieldObj != null) {
         fieldid = fieldObj.id();
@@ -51,17 +64,39 @@ Map cardLayout(Map params) {
             valueMap["dataType"] = fieldMapInfo.get("dataTypeEnum");
         }
         result["value"] = valueMap;
-    } else {
+    }
+    else if(params.reading!=null && params.reading.kpiType == "DYNAMIC"){
+         readingObj = params.reading;
+         valueMap = {};
+         dynamicResult = new NameSpace("readingkpi").getResult(kpiType.dynamic,readingObj.fieldId,readingObj.parentId,newStartTime,newEndTime);
+         valueMap["actualValue"] = dynamicResult.value;
+         valueMap["dataType"] = dynamicResult.dataType;
+         valueMap["unit"] = dynamicResult.unit;
+         valueMap["value"] = dynamicResult.value;
+         result["value"] = valueMap;
+    }
+    else {
         valueMap = {};
         valueMap["value"] = null;
         result["value"] = valueMap;
     }
     if (params.minSafeLimitType != null) {
+        minSafeLimitObj =  params.minSafeLimitReading;
         if (params.minSafeLimitType == "constant") {
             targetValueMap = {};
             targetValueMap["value"] = params.minSafeLimitConstant;
             result["minValue"] = targetValueMap;
-        } else {
+        }
+        else if (minSafeLimitObj !=null && minSafeLimitObj.kpiType =="DYNAMIC"){
+            valueMap = {};
+            minDynamicResult = new NameSpace("readingkpi").getResult(kpiType.dynamic,minSafeLimitObj.fieldId,minSafeLimitObj.parentId,newStartTime,newEndTime);
+            valueMap["actualValue"] = minDynamicResult.value;
+            valueMap["dataType"] = minDynamicResult.dataType;
+            valueMap["unit"] = minDynamicResult.unit;
+            valueMap["value"] = minDynamicResult.value;
+            result["minValue"] = valueMap;
+        }
+        else {
             targetFieldObj = new NameSpace("module").getField(params.minSafeLimitReading.fieldName, params.minSafeLimitReading.moduleName);
             targetFieldId = targetFieldObj.id();
             targetFieldMap = targetFieldObj.asMap();
@@ -75,7 +110,7 @@ Map cardLayout(Map params) {
             enumMap = Reading(targetFieldId, params.minSafeLimitReading.parentId).getEnumMap();
             valueMap = {};
             valueMap["value"] = cardValue;
-            if (fieldMapInfo.dataTypeEnum == "BOOLEAN") {
+            if (fieldMapInfo!=null && fieldMapInfo.dataTypeEnum == "BOOLEAN") {
                 if (cardValue == true && fieldMapInfo.trueVal != null) {
                     valueMap["value"] = fieldMapInfo.trueVal;
                 }
@@ -98,11 +133,22 @@ Map cardLayout(Map params) {
         result["minValue"] = null;
     }
     if (params.maxSafeLimitType != null) {
+        maxSafeLimitObj = params.maxSafeLimitReading;
         if (params.maxSafeLimitType == "constant") {
             targetValueMap = {};
             targetValueMap["value"] = params.maxSafeLimitConstant;
             result["maxValue"] = targetValueMap;
-        } else {
+        }
+        else if(maxSafeLimitObj!=null && maxSafeLimitObj.kpiType == "DYNAMIC"){
+            valueMap = {};
+            maxDynamicResult = new NameSpace("readingkpi").getResult(kpiType.dynamic,maxSafeLimitObj.fieldId,maxSafeLimitObj.parentId,newStartTime,newEndTime);
+            valueMap["actualValue"] = maxDynamicResult.value;
+            valueMap["dataType"] = maxDynamicResult.dataType;
+            valueMap["unit"] = maxDynamicResult.unit;
+            valueMap["value"] = maxDynamicResult.value;
+            result["maxValue"] = valueMap;
+        }
+        else {
             targetFieldObj = new NameSpace("module").getField(params.maxSafeLimitReading.fieldName, params.maxSafeLimitReading.moduleName);
             targetFieldId = targetFieldObj.id();
             targetFieldMap = targetFieldObj.asMap();
@@ -116,7 +162,7 @@ Map cardLayout(Map params) {
             enumMap = Reading(targetFieldId, params.maxSafeLimitReading.parentId).getEnumMap();
             valueMap = {};
             valueMap["value"] = cardValue;
-            if (fieldMapInfo.dataTypeEnum == "BOOLEAN") {
+            if (fieldMapInfo!=null && fieldMapInfo.dataTypeEnum == "BOOLEAN") {
                 if (cardValue == true && fieldMapInfo.trueVal != null) {
                     valueMap["value"] = fieldMapInfo.trueVal;
                 }

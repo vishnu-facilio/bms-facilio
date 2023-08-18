@@ -34,40 +34,47 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
                 setContextForNsAndWorkflow(context, kpi);
                 String kpiName = kpi.getName();
                 context.put(FacilioConstants.ContextNames.READING_NAME, kpiName);
-                NumberField field = FieldFactory.getField(null, kpiName, "RESULT", null, FieldType.DECIMAL);
-
-                String customUnit = kpi.getCustomUnit();
-                if (customUnit != null) {
-                    field.setUnit(customUnit);
-                    field.setMetric(0);
+                if (kpi.getKpiTypeEnum() != KPIType.DYNAMIC) {
+                    addReadingRelatedFieldsAndDataToContext(context, kpi, kpiName);
                 } else {
-                    Integer unitId = 0;
-                    if (kpi.getUnitId() != null) {
-                        unitId = kpi.getUnitId();
-                    }
-                    if (unitId > 0) {
-                        field.setUnitId(unitId);
-                        field.setMetric(kpi.getMetricId());
-                    }
+                    kpi.setReadingFieldId(null);
+                    kpi.setReadingModuleId(null);
                 }
 
-                field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
-                kpi.setReadingField(field);
-                ArrayList<FacilioField> fieldList = new ArrayList<FacilioField>() {
-                    {
-                        add(kpi.getReadingField());
-                        add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_INFO, kpi.getName() + " - Sys Info", "SYS_INFO", null, FieldType.BIG_STRING));
-                    }
-                };
-                context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fieldList);
-
-                context.put(FacilioConstants.ContextNames.MODULE_TYPE, getModuleTypeFromKpiType(kpi.getKpiTypeEnum()));
-
                 setReadingParent(kpi, context);
-                context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, FacilioConstants.ReadingKpi.READING_KPI_READINGS_TABLE);
             }
         }
         return false;
+    }
+
+    private void addReadingRelatedFieldsAndDataToContext(Context context, ReadingKPIContext kpi, String kpiName) {
+        NumberField field = FieldFactory.getField(null, kpiName, "RESULT", null, FieldType.DECIMAL);
+        String customUnit = kpi.getCustomUnit();
+        if (customUnit != null) {
+            field.setUnit(customUnit);
+            field.setMetric(0);
+        } else {
+            Integer unitId = 0;
+            if (kpi.getUnitId() != null) {
+                unitId = kpi.getUnitId();
+            }
+            if (unitId > 0) {
+                field.setUnitId(unitId);
+                field.setMetric(kpi.getMetricId());
+            }
+        }
+        field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
+        kpi.setReadingField(field);
+        ArrayList<FacilioField> fieldList = new ArrayList<FacilioField>() {
+            {
+                add(kpi.getReadingField());
+                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_INFO, kpi.getName() + " - Sys Info", "SYS_INFO", null, FieldType.BIG_STRING));
+            }
+        };
+        context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fieldList);
+
+        context.put(FacilioConstants.ContextNames.MODULE_TYPE, getModuleTypeFromKpiType(kpi.getKpiTypeEnum()));
+        context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, FacilioConstants.ReadingKpi.READING_KPI_READINGS_TABLE);
     }
 
     private void setReadingParent(ReadingKPIContext kpi, Context context) throws Exception {
@@ -96,14 +103,15 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
     }
 
     public void setContextForNsAndWorkflow(Context context, ReadingKPIContext kpi) throws Exception {
-        WorkflowContext workflow=kpi.getNs().getWorkflowContext();
-        if(workflow==null){
+        WorkflowContext workflow = kpi.getNs().getWorkflowContext();
+        if (workflow == null) {
             throw new Exception("WorkFlow can not be null for KPI");
         }
         context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
         context.put(NamespaceConstants.NAMESPACE_FIELDS, kpi.getNs().getFields());
         context.put(NamespaceConstants.NAMESPACE, kpi.getNs());
-        kpi.getNs().setExecInterval(kpi.getFrequencyEnum().getMs());
+        kpi.getNs().setExecInterval(kpi.getFrequencyEnum() != null ? kpi.getFrequencyEnum().getMs() : null);
         kpi.getNs().setType(NSType.KPI_RULE.getIndex());
+        kpi.getNs().setStatus(kpi.getKpiTypeEnum()==KPIType.LIVE);
     }
 }

@@ -24,15 +24,15 @@ public class PrepareReadingKpiForUpdateCommand extends FacilioCommand {
         NameSpaceContext nameSpaceContext = NamespaceAPI.getNameSpaceByRuleId(readingKPIContext.getId(), NSType.KPI_RULE);
         WorkflowContext workflow = readingKPIContext.getNs().getWorkflowContext();
         workflow.setId(nameSpaceContext.getWorkflowId());
-        context.put(WorkflowV2Util.WORKFLOW_CONTEXT,workflow );
+        context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
         readingKPIContext.getNs().setStatus(readingKPIContext.getStatus());
 
-        Long execInterval = readingKPIContext.getFrequencyEnum().getMs();
+        Long execInterval = readingKPIContext.getFrequencyEnum() != null ? readingKPIContext.getFrequencyEnum().getMs() : null;
         readingKPIContext.getNs().setExecInterval(execInterval);
         ReadingKPIContext existingReadingKpi = ReadingKpiAPI.getReadingKpi(readingKPIContext.getId());
         context.put("oldReadingKpi", existingReadingKpi);
         readingKPIContext.getNs().setId(existingReadingKpi.getNs().getId());
-        context.put(FacilioConstants.ReadingKpi.READING_KPI,readingKPIContext );
+        context.put(FacilioConstants.ReadingKpi.READING_KPI, readingKPIContext);
         return false;
     }
 }

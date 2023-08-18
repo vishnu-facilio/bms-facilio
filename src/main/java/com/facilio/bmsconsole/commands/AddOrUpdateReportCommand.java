@@ -59,7 +59,7 @@ public class AddOrUpdateReportCommand extends FacilioCommand {
 				reportFields.add(constructReportField(dataPoint.getxAxis().getModule(), dataPoint.getxAxis().getField(), report.getId()));
 			}
 			
-			if(dataPoint.getyAxis() != null) {
+			if(dataPoint.getyAxis() != null && dataPoint.getDynamicKpi() == null) {
 				reportFields.add(constructReportField(dataPoint.getyAxis().getModule(), dataPoint.getyAxis().getField(), report.getId()));
 			}
 			

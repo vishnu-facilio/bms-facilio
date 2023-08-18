@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.report.ReportDynamicKpiContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
@@ -46,6 +47,16 @@ public class ReportDataPointContext implements  Cloneable{
 	}
 
 	public boolean rightInclusive;
+	public ReportDynamicKpiContext getDynamicKpi() {
+		return dynamicKpi;
+	}
+
+	public void setDynamicKpi(ReportDynamicKpiContext dynamicKpi) {
+		this.dynamicKpi = dynamicKpi;
+	}
+
+	public ReportDynamicKpiContext dynamicKpi;
+
 	public String getConvertTounit() {
 		return convertTounit;
 	}
@@ -112,7 +123,17 @@ public class ReportDataPointContext implements  Cloneable{
 	public void setReportId(long reportId) {
 		this.reportId = reportId;
 	}
-	
+
+	 private String kpiType;
+
+	public String getKpiType() {
+		return kpiType;
+	}
+
+	public void setKpiType(String kpiType) {
+		this.kpiType = kpiType;
+	}
+
 	private ReportFieldContext xAxis;
 	public ReportFieldContext getxAxis() {
 		return xAxis;

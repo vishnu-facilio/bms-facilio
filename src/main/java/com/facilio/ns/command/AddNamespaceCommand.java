@@ -18,18 +18,12 @@ public class AddNamespaceCommand extends FacilioCommand {
         NameSpaceContext ns = (NameSpaceContext) context.get(NamespaceConstants.NAMESPACE);
         V3Util.throwRestException(ns == null, ErrorCode.VALIDATION_ERROR, "Namespace cannot be null.");
 
-        if(context.get(WorkflowV2Util.WORKFLOW_CONTEXT)!=null) {
+        if (context.get(WorkflowV2Util.WORKFLOW_CONTEXT) != null) {
             Long workflowId = ((WorkflowContext) context.get(WorkflowV2Util.WORKFLOW_CONTEXT)).getId();
             ns.setWorkflowId(workflowId);
         }
         Long categoryId= (Long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
-        Long parentRuleId = (Long) context.get(NamespaceConstants.PARENT_RULE_ID);
         ns.setCategoryId(categoryId);
-        ns.setStatus(true);
-
-        if (parentRuleId != null) {
-            ns.setParentRuleId(parentRuleId);
-        }
 
         Long id = Constants.getNsBean().addNamespace(ns);
 

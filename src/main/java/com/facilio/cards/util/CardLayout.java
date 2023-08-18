@@ -14,7 +14,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.*;
 import com.facilio.readingkpi.ReadingKpiAPI;
+import com.facilio.readingkpi.context.ReadingKPIContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +24,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -52,14 +53,6 @@ import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BaseLineContext;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateRange;
@@ -67,6 +60,9 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+
+import static com.facilio.readingkpi.ReadingKpiAPI.getReadingKpi;
+import static com.facilio.readingkpi.ReadingKpiAPI.getResultForDynamicKpi;
 
 public enum CardLayout {
 
@@ -133,7 +129,7 @@ public enum CardLayout {
 			Long parentId;
 			String yAggr;
 			boolean isNewKpi = false;
-		
+		    String type;
 				
 				if (cardParams.containsKey("kpi") && cardParams.get("kpi") instanceof JSONObject) {
 					JSONObject kpiConfig = (JSONObject) cardParams.get("kpi");
@@ -141,12 +137,14 @@ public enum CardLayout {
 					parentId = (Long) kpiConfig.get("parentId");
 					yAggr = (String) kpiConfig.get("yAggr");
 					isNewKpi = kpiConfig.containsKey("isNewKpi") ? (boolean) kpiConfig.get("isNewKpi") : false;
+					type = (String) kpiConfig.get("type");
 				} else if (cardParams.containsKey("kpi") && cardParams.get("kpi") instanceof Map) {
 					Map<String, Object> kpiConfig = (Map<String, Object>) cardParams.get("kpi");
 					kpiId = (Long) kpiConfig.get("kpiId");
 					parentId = (Long) kpiConfig.get("parentId");
 					yAggr = (String) kpiConfig.get("yAggr");
 					isNewKpi = kpiConfig.containsKey("isNewKpi") ? (boolean) kpiConfig.get("isNewKpi") : false;
+					type = (String) kpiConfig.get("type");
 				} else {
 					FacilioUtil.throwIllegalArgumentException(true,"KPI should not be empty");
 					throw new IllegalStateException();
@@ -226,7 +224,34 @@ public enum CardLayout {
 			} else if ("reading".equalsIgnoreCase(kpiType)) {
 				try {
 					if (isNewKpi) {
-						cardValue = ReadingKpiAPI.getCurrentValueOfKpi(kpiId, parentId);
+                       if(type!=null && type.equals("DYNAMIC")){
+						   Map<Long, List<Map<String, Object>>> dynamicCardValue = null;
+						   DateRange dynamicDateRange = null;
+						   if(cardContext.getCardFilters() != null){
+							   Long startTime = (Long) cardContext.getCardFilters().get("startTime");
+							   Long endTime = (Long) cardContext.getCardFilters().get("endTime");
+							   if(startTime !=null && endTime !=null) {
+								   dynamicDateRange = new DateRange(startTime ,endTime);
+							   }
+
+						   }
+						   else if(dateRange!=null){
+							   DateOperators operators = (DateOperators) DateOperators.getAllOperators().get(dateRange);
+							   if(operators != null){
+								   dynamicDateRange =  operators.getRange(null);
+							   }
+						   }
+
+						   ReadingKPIContext dynamicKpi = getReadingKpi(kpiId);
+						   dynamicCardValue = getResultForDynamicKpi(Collections.singletonList(parentId), dynamicDateRange,null,dynamicKpi.getNs());
+					       if(!dynamicCardValue.get(parentId).isEmpty() && dynamicCardValue.get(parentId).get(0)!=null){
+							   cardValue = dynamicCardValue.get(parentId).get(0).get("result");
+						   }
+
+					   }
+					   else {
+						   cardValue = ReadingKpiAPI.getCurrentValueOfKpi(kpiId, parentId);
+					   }
 
 					} else {
 						cardValue = FormulaFieldAPI.getFormulaCurrentValue(kpiId, parentId);
