@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.modules.*;
+import com.facilio.report.context.ReportDataPointContext;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 
@@ -16,6 +17,7 @@ import com.facilio.util.FacilioUtil;
 public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 	private Map<Object,FacilioField> widgetFieldMap=new HashMap<>();
+	private Map<Object,List<ReportDataPointContext>> readingWidgetFieldMap = new HashMap<>();
 	private Map<Object,FacilioField> widgetExcludeFieldMap=new HashMap<>();
 	private Map<Long,String> widgetModuleMap=new HashMap<>();
 	Map<Long,FacilioField>  cascadingFilters;
@@ -491,6 +493,12 @@ public Map<Long, FacilioField> getCascadingFilters() {
 	}
 	public void setWidgetModuleMap(Map<Long,String> widgetModuleMap) {
 		this.widgetModuleMap = widgetModuleMap;
+	}
+	public Map<Object, List<ReportDataPointContext>> getReadingWidgetFieldMap() {
+		return this.readingWidgetFieldMap;
+	}
+	public void setReadingWidgetFieldMap(Map<Object,List<ReportDataPointContext>> readingWidgetFieldMap) {
+		this.readingWidgetFieldMap = readingWidgetFieldMap;
 	}
 	public Map<Object,FacilioField> getWidgetExcludeFieldMap() {
 		return this.widgetExcludeFieldMap;

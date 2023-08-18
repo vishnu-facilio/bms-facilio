@@ -33,6 +33,7 @@ public class DashboardExecuteMetaContext {
 
 
     public JSONObject global_filter_widget_map = new JSONObject();
+    public JSONObject reading_filter_widget_map = new JSONObject();
     public JSONObject global_timeline_filter_widget_map = new JSONObject();
     public Map<Long, Map<String, String>> timeline_widget_field_map = new HashMap<>();
     public List<Long> rule_applied_widget_ids = new ArrayList<>();

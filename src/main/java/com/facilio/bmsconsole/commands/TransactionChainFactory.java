@@ -6542,6 +6542,11 @@ public class TransactionChainFactory {
 		chain.addCommand(new UpdateWidgetFilterSettingsCommand());
 		return chain;
 	}
+	public static FacilioChain getUpdateReadingWidgetFilterChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateReadingFilterCommand());
+		return chain;
+	}
 
 	public static FacilioChain getAddOrUpdateAlarmImpactChain() {
 		FacilioChain chain = getDefaultChain();

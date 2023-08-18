@@ -10876,6 +10876,17 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("widgetFieldId", "WIDGET_FIELD_ID", module, FieldType.NUMBER));
         return fields;
     }
+    public static List<FacilioField>  getDashboardFilterReadingWidgetFieldMappingFields()
+    {
+        FacilioModule module = ModuleFactory.getDashboardFilterReadingWidgetFieldMappingModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getField("triggerWidgetId", "TRIGGER_WIDGET_ID", module, FieldType.NUMBER));
+        fields.add(getField("targetWidgetId", "TARGET_WIDGET_ID", module, FieldType.NUMBER));
+        fields.add(getField("reportId", "REPORTID", module, FieldType.NUMBER));
+        fields.add(getField("dataPointAlias", "DATAPOINT_ALIAS", module, FieldType.STRING));
+        return fields;
+    }
 
     public static List<FacilioField> getAgentPreprocessorFields() {
         FacilioModule module = ModuleFactory.getAgentPreProcessorModule();

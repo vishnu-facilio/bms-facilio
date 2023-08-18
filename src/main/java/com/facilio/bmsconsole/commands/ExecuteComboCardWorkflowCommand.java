@@ -41,7 +41,11 @@ public class ExecuteComboCardWorkflowCommand extends FacilioCommand {
                     chain.execute();
                     childCard.put("cardContext", chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT));
                     childCard.put("data", chain.getContext().get(FacilioConstants.ContextNames.CARD_RETURN_VALUE));
-                    childCard.put("state", ((WidgetCardContext) chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT)).getCardState());
+                    if (chain.getContext().get(FacilioConstants.ContextNames.CARD_STATE) != null) {
+                        childCard.put("state", chain.getContext().get(FacilioConstants.ContextNames.CARD_STATE));
+                    } else {
+                        childCard.put("state", ((WidgetCardContext) chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT)).getCardState());
+                    }
                     card.add(childCard);
                 }
                 context.put("cardResult",card);

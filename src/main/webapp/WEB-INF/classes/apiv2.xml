@@ -7362,6 +7362,10 @@
 			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:EDIT</param>
 		</action>
+		<action name="addOrUpdateReadingFilter"
+				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
+				method="addOrUpdateReadingFilter">
+		</action>
 		<action name="updateWidgetSettings"
 				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
 				method="updateWidgetSettings">			

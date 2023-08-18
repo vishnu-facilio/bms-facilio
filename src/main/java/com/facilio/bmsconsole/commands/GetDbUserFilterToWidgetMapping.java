@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.bmsconsole.context.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.FieldType;
 import org.apache.commons.chain.Context;
@@ -14,12 +15,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.DashboardContext;
-import com.facilio.bmsconsole.context.DashboardFilterContext;
-import com.facilio.bmsconsole.context.DashboardTabContext;
-import com.facilio.bmsconsole.context.DashboardUserFilterContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -119,6 +114,21 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 											FacilioField ttimeField = modBean.getField("ttime", energyModule.getName());
 											filter.getWidgetFieldMap().put(widgetId, ttimeField);
 											this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
+										}
+									}
+									if(filter.getModule().getName().equals("asset")){
+										FacilioModule energyModule = modBean.getModule(report.getModuleId());
+										if(energyModule != null && energyModule.getName().equals("energydata")) {
+											List<ReportDataPointContext> dpContexts = new ArrayList<>();
+											List<DashboardReadingWidgetFilterContext> mappings = DashboardFilterUtil.getReadingFilterMappingsForFilterId(filter.getWidget_id(), widgetId);
+											for(ReportDataPointContext dp: report.getDataPoints()){
+												if(mappings.stream().anyMatch(mapping -> mapping.getDataPointAlias().equals(dp.getAliases().get("actual")))){
+													dpContexts.add(dp);
+												}
+											}
+											if(dpContexts != null && dpContexts.size() > 0){
+												filter.getReadingWidgetFieldMap().put(widgetId,dpContexts);
+											}
 										}
 									}
 								}

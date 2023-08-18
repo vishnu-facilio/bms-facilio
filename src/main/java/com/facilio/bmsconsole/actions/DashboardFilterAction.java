@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardFilterContext;
+import com.facilio.bmsconsole.context.DashboardReadingWidgetFilterContext;
 import com.facilio.bmsconsole.context.DashboardUserFilterContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.chain.FacilioChain;
@@ -24,14 +25,19 @@ public class DashboardFilterAction extends FacilioAction{
 	private Long dashboardId;
 	private Long dashboardTabId;
 	private Long userFilterId;
+	private Long targetWidgetId;
 	public Long getUserFilterId() {
 		return userFilterId;
 	}
 	public void setUserFilterId(Long userFilterId) {
 		this.userFilterId = userFilterId;
 	}
+	public Long getTargetWidgetId() { return targetWidgetId; }
+	public void setTargetWidgetId(Long targetWidgetId) {
+		this.targetWidgetId = targetWidgetId;
+	}
 	private DashboardFilterContext dashboardFilter;
-	
+	private Map<String, List<DashboardReadingWidgetFilterContext>> readingWidgetFilterMapping;
 	private List<Map<String,Object>> widgets;
 	
 	public List<Map<String, Object>> getWidgets() {
@@ -39,6 +45,12 @@ public class DashboardFilterAction extends FacilioAction{
 	}
 	public void setWidgets(List<Map<String, Object>> widgets) {
 		this.widgets = widgets;
+	}
+	public  Map<String, List<DashboardReadingWidgetFilterContext>> getReadingWidgetFilterMapping() {
+		return this.readingWidgetFilterMapping;
+	}
+	public void setReadingWidgetFilterMapping( Map<String, List<DashboardReadingWidgetFilterContext>> readingWidgetFilterMapping) {
+		this.readingWidgetFilterMapping = readingWidgetFilterMapping;
 	}
 	public DashboardFilterContext getDashboardFilter() {
 		return this.dashboardFilter;
@@ -93,6 +105,15 @@ public class DashboardFilterAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.WIDGET_UPDATE_LIST, getWidgets());
 		chain.execute();
 		setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+		return SUCCESS;
+	}
+	public String addOrUpdateReadingFilter() throws Exception
+	{
+		FacilioChain chain = TransactionChainFactory.getUpdateReadingWidgetFilterChain();
+		FacilioContext context = chain.getContext();
+		context.put("readingWidgetMappings",readingWidgetFilterMapping);
+		context.put(ContextNames.WIDGET_ID,targetWidgetId);
+		chain.execute();
 		return SUCCESS;
 	}
 	public String getDashboardUserFilter() throws Exception {

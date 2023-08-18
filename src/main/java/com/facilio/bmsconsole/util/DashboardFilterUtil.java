@@ -622,6 +622,38 @@ public static Criteria getUserFilterCriteriaForModule(DashboardCustomScriptFilte
 		}
 		return filterMappingIds;
 	}
+	public static List<Long> getReadingFilterMappingIdForFilterId(Long widgetId, Long filterId) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getDashboardFilterReadingWidgetFieldMappingModule().getTableName())
+				.select(FieldFactory.getDashboardFilterReadingWidgetFieldMappingFields())
+				.andCondition(CriteriaAPI.getCondition("TRIGGER_WIDGET_ID","triggerWidgetId", String.valueOf(filterId),NumberOperators.EQUALS));
+		if(widgetId != null && widgetId > 0){
+			builder.andCondition(CriteriaAPI.getCondition("TARGET_WIDGET_ID","targetWidgetId", String.valueOf(widgetId),NumberOperators.EQUALS));
+		}
+		List<Map<String, Object>> props = builder.get();
+		List<Long> filterMappingIds = new ArrayList<>();
+		for(Map<String, Object> prop : props){
+			filterMappingIds.add((Long) prop.get("id"));
+		}
+		return filterMappingIds;
+	}
+	public static List<DashboardReadingWidgetFilterContext> getReadingFilterMappingsForFilterId(Long filterId, Long widgetId) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getDashboardFilterReadingWidgetFieldMappingModule().getTableName())
+				.select(FieldFactory.getDashboardFilterReadingWidgetFieldMappingFields());
+		if(filterId != null && filterId > 0){
+			builder.andCondition(CriteriaAPI.getCondition("TRIGGER_WIDGET_ID","triggerWidgetId", String.valueOf(filterId),NumberOperators.EQUALS));
+		}
+		if(widgetId != null && widgetId > 0){
+			builder.andCondition(CriteriaAPI.getCondition("TARGET_WIDGET_ID","targetWidgetId", String.valueOf(widgetId),NumberOperators.EQUALS));
+		}
+		List<Map<String, Object>> props = builder.get();
+		List<DashboardReadingWidgetFilterContext> filterMappings = new ArrayList<>();
+		for(Map<String, Object> prop : props){
+			filterMappings.add(FieldUtil.getAsBeanFromMap(prop, DashboardReadingWidgetFilterContext.class));
+		}
+		return filterMappings;
+	}
 	public static List<DashboardFieldMappingContext> getFilterMappingsForFilterId(long id) throws Exception {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(ModuleFactory.getDashboardFieldMappingModule().getTableName()).select(FieldFactory.getDashboardFieldMappingsFields())
 				.andCondition(CriteriaAPI.getCondition("DASHBOARD_USER_FILTER_ID","dashboardUserFilterId", String.valueOf(id),NumberOperators.EQUALS));

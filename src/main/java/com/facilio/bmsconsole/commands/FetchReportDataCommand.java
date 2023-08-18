@@ -95,6 +95,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         reportModule = modBean.getModule(report.getModuleId());
 
         LinkedHashMap<String, String> tableAlias = (LinkedHashMap<String, String>) context.get(FacilioConstants.ContextNames.TABLE_ALIAS);
+        JSONObject userFilters = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_USER_FILTER_VALUE);
 
         if (tableAlias != null) {
             moduleVsAlias = tableAlias;
@@ -175,7 +176,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         ReportDataPointContext sortPoint = getSortPoint(dataPoints);
         ReportDataContext sortedData = null;
         if (sortPoint != null) {
-            sortedData = fetchDataForGroupedDPList(Collections.singletonList(sortPoint), report, false, null, shouldIncludeMarked, getModuleFromDp);
+            sortedData = fetchDataForGroupedDPList(Collections.singletonList(sortPoint), report, false, null, shouldIncludeMarked, getModuleFromDp, userFilters);
             reportData.add(sortedData);
         }
         if (globalContext != null && globalContext.containsKey("datapoint_rule") && globalContext.get("datapoint_rule") != null) {
@@ -195,7 +196,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                     dataPoints.remove(dataPointList.get(0));
                     report.setHasEdit(false);
                 } else if (isSortPointIncluded(dataPointList.get(0), report.getTypeEnum(), sortPoint)) {
-                    ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues(), shouldIncludeMarked, getModuleFromDp);
+                    ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues(), shouldIncludeMarked, getModuleFromDp, userFilters);
                     reportData.add(data);
                 }
                 else if(dataPointList.get(0) != null && dataPointList.get(0).getDynamicKpi() != null && dataPointList.get(0).getDynamicKpi().getDynamicKpi() != null)
@@ -282,7 +283,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         return null;
     }
 
-    private ReportDataContext fetchDataForGroupedDPList(List<ReportDataPointContext> dataPointList, ReportContext report, boolean hasSortedDp, String xValues, boolean shouldIncludeMarked, boolean getModuleFromDp) throws Exception {
+    private ReportDataContext fetchDataForGroupedDPList(List<ReportDataPointContext> dataPointList, ReportContext report, boolean hasSortedDp, String xValues, boolean shouldIncludeMarked, boolean getModuleFromDp, JSONObject userFilters) throws Exception {
         ReportDataContext data = new ReportDataContext();
         data.setDataPoints(dataPointList);
 
@@ -399,7 +400,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
         boolean noMatch = hasSortedDp && (xValues == null || xValues.isEmpty());
         Map<String, List<Map<String, Object>>> props = new HashMap<>();
-        List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null, xAggrField, xValues, addedModules);
+        List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null, xAggrField, xValues, addedModules, userFilters);
         props.put(FacilioConstants.Reports.ACTUAL_DATA, dataProps);
         if (AccountUtil.getCurrentOrg().getId() == 75) {
             LOGGER.info("Date Props : " + dataProps);
@@ -418,7 +419,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
         if (report.getBaseLines() != null && !report.getBaseLines().isEmpty()) {
             for (ReportBaseLineContext reportBaseLine : report.getBaseLines()) {
-                props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, reportBaseLine, xAggrField, data.getxValues() == null ? xValues : data.getxValues(), addedModules));
+                props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, reportBaseLine, xAggrField, data.getxValues() == null ? xValues : data.getxValues(), addedModules, userFilters));
                 data.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
             }
         }
@@ -499,7 +500,7 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
     }
 
-    private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine, FacilioField xAggrField, String xValues, Set<FacilioModule> addedModules) throws Exception {
+    private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine, FacilioField xAggrField, String xValues, Set<FacilioModule> addedModules, JSONObject userFilters) throws Exception {
         SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
         if(report.getTypeEnum() == ReportType.PIVOT_REPORT && baseModule != null && baseModule.getName().equals("inspectionResponse"))
         {
@@ -521,6 +522,10 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
 
         Long parentId = null;
+        Map<String, JSONObject> filterMap = null;
+        if(userFilters != null) {
+            filterMap = (Map<String, JSONObject>) userFilters.get(dp.getAliases().get("actual"));
+        }
         if (report.getReportTemplate() != null) {
             System.out.println("catergory Filter" + report.getReportTemplate().getCategoryFillter());
             Long templateType = report.getReportTemplate().getTemplateType();
@@ -543,7 +548,36 @@ public class FetchReportDataCommand extends FacilioCommand {
                       newSelectBuilder.andCriteria(templateCriteria);
                   }
             }
-        } else {
+        }else if(userFilters != null && filterMap != null) {
+            Criteria criteria = new Criteria();
+            FacilioField appliedField = modBean.getField("parentId", baseModule.getName());
+            for(String alias: filterMap.keySet()){
+                Condition condition = new Condition();
+                condition.setField(appliedField);
+                HashMap selected_dp_map = (HashMap) filterMap.get(String.valueOf(alias));
+                Long operatorId = (Long) selected_dp_map.get("operatorId");
+                condition.setOperatorId(operatorId.intValue());
+                StringJoiner parentIds = new StringJoiner(",");
+                if(alias.equals("space")){
+                    List<Long> baseSpaceIds = new ArrayList<>();
+                    List<String> value = (List<String>) selected_dp_map.get("value");
+                    value.forEach(val -> baseSpaceIds.add(Long.parseLong(val)));
+                    List<Long> values = AssetsAPI.getAssetIdsFromBaseSpaceIds(baseSpaceIds);
+                    if(values != null && values.size() > 0){
+                        values.forEach(id -> parentIds.add(String.valueOf(id)));
+                        condition.setValue(parentIds.toString());
+                    }
+                }
+                else{
+                    List<String> selected_values = (List<String>) selected_dp_map.get("value");
+                    selected_values.forEach(id -> parentIds.add(id));
+                    condition.setValue(parentIds.toString());
+                }
+                criteria.addAndCondition(condition);
+            }
+            newSelectBuilder.andCriteria(criteria);
+        }
+        else {
             if (xValues == null || report.getTypeEnum() == ReportType.PIVOT_REPORT) {
                 if (dp.getAllCriteria() != null && dp.getAllCriteria().getConditions() != null && dp.getAllCriteria().getConditions().size() > 0) {
                     try {

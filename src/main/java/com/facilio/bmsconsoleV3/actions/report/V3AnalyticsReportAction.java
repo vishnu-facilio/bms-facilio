@@ -103,6 +103,7 @@ public class V3AnalyticsReportAction extends V3Action {
     private JSONObject templateJSON;
     private boolean unsavedReport;
     private String reportDataId;
+    private JSONObject userFilter;
 
     public void setTemplateString(String templateJSON) throws Exception {
         JSONObject jsonObject = (JSONObject) new JSONParser().parse(templateJSON);
@@ -524,6 +525,7 @@ public class V3AnalyticsReportAction extends V3Action {
             context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, spaceId);
             context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentId);
         }
+        context.put(FacilioConstants.ContextNames.REPORT_USER_FILTER_VALUE, userFilter);
         chain.execute();
         return setReportResult(context);
     }
