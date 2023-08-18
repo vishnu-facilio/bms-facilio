@@ -37,7 +37,8 @@ public class WorkOrderRequestAPI {
             insertBuilder.save();
             
             
-            if(recipient != null && (recipient.contains("@tutenlabs.facilio-us.com") || recipient.contains("some test org"))) {
+            if(recipient != null && (recipient.contains("@tutenlabs.facilio-us.com") || recipient.contains("amalhadeez+tuten@"))) {
+                LOGGER.info(recipient+" Functioning Inside Tuten Lab seperate group");
             	
             	WmsBroadcaster.getBroadcaster().sendMessage(new Message()
     			        .setTopic(EmailProcessHandler.TOPIC_TUTEN_LABS+"/"+recipient)
