@@ -1,7 +1,10 @@
 package com.facilio.fsm.commands.serviceTasks;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.fsm.context.ServiceTaskStatusContext;
+import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
@@ -15,7 +18,8 @@ public class TaskStatusUpdate extends FacilioCommand {
         List<ServiceTaskContext> serviceTask = (List<ServiceTaskContext>) recordMap.get(context.get("moduleName"));
         for(ServiceTaskContext task : serviceTask) {
             //defaulting the status of all tasks to new when created
-            task.setStatus(ServiceTaskContext.ServiceTaskStatus.NEW.getIndex());
+            ServiceTaskStatusContext taskStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.NEW);
+            task.setStatus(taskStatus);
         }
         recordMap.put((String) context.get("moduleName"),serviceTask);
         context.put(Constants.RECORD_MAP,recordMap);

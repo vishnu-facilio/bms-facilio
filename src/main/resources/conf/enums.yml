@@ -518,9 +518,6 @@ enums:
   - name: ServiceOrderStatus
     enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderStatus
 
-  - name: ServiceTaskStatus
-    enumClassName: com.facilio.fsm.context.ServiceTaskContext$ServiceTaskStatus
-
   - name: AppointmentType
     enumClassName: com.facilio.fsm.context.ServiceAppointmentContext$AppointmentType
 

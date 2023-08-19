@@ -8,6 +8,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
 import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.fsm.context.ServiceTaskStatusContext;
+import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
@@ -32,6 +34,10 @@ public class RollUpServiceTaskCommand extends FacilioCommand {
         FacilioModule serviceTaskModule = Constants.getModBean().getModule("serviceTask");
         FacilioField serviceAppointmentId = modBean.getField("serviceAppointment", "serviceTask");
         if(CollectionUtils.isNotEmpty(serviceAppointments) && CollectionUtils.isNotEmpty(serviceTaskIds)) {
+            ServiceTaskStatusContext scheduled = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.SCHEDULED);
+            ServiceTaskStatusContext newStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.NEW);
+            ServiceTaskStatusContext dispatched = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.DISPATCHED);
+
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
                 ServiceAppointmentTicketStatusContext appointmentStatus = serviceAppointment.getStatus();
                 if (eventType == EventType.EDIT) {
@@ -49,7 +55,7 @@ public class RollUpServiceTaskCommand extends FacilioCommand {
                         ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(task).get(0);
 
                         existingTask.setServiceAppointment(null);
-                        existingTask.setStatus(ServiceTaskContext.ServiceTaskStatus.NEW.getIndex());
+                        existingTask.setStatus(newStatus);
                         V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,id, FieldUtil.getAsJSON(existingTask), null, null, null, null, null,null, null, null);
 
 
@@ -75,9 +81,9 @@ public class RollUpServiceTaskCommand extends FacilioCommand {
 
 
                         if(appointmentStatus != null && appointmentStatus.getStatus() != FacilioConstants.ServiceAppointment.SCHEDULED){
-                            existingTask.setStatus(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
+                            existingTask.setStatus(dispatched);
                         } else {
-                            existingTask.setStatus(ServiceTaskContext.ServiceTaskStatus.SCHEDULED.getIndex());
+                            existingTask.setStatus(scheduled);
                         }
                         V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null,null, null, null);
 //                        V3RecordAPI.updateRecord(serviceTask, serviceTaskModule, Collections.singletonList(serviceAppointmentId));
@@ -95,9 +101,10 @@ public class RollUpServiceTaskCommand extends FacilioCommand {
 
                     existingTask.setServiceAppointment(serviceAppointment);
                     if(appointmentStatus != null && appointmentStatus.getStatus() == FacilioConstants.ServiceAppointment.DISPATCHED){
-                        existingTask.setStatus(ServiceTaskContext.ServiceTaskStatus.DISPATCHED.getIndex());
+                        ServiceTaskStatusContext taskStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.SCHEDULED);
+                        existingTask.setStatus(dispatched);
                     } else {
-                        existingTask.setStatus(ServiceTaskContext.ServiceTaskStatus.SCHEDULED.getIndex());
+                        existingTask.setStatus(scheduled);
                     }
 
 

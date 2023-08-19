@@ -23,6 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.facilio.fsm.util.ServiceTaskUtil.updateServiceTasks;
+
 public class UpdateSAandTasks extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -42,13 +44,13 @@ public class UpdateSAandTasks extends FacilioCommand {
                     switch(serviceOrderStatus){
 
                         case FacilioConstants.ServiceOrder.COMPLETED:
-                            updateServiceTasks(serviceTaskIds, ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex(), currentTime);
+                            updateServiceTasks(serviceTaskIds, FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED, currentTime);
                             if(CollectionUtils.isNotEmpty(appointmentIds)){
                                 updateServiceAppointments(appointmentIds, currentTime, FacilioConstants.ServiceAppointment.COMPLETED);
                             }
                             break;
                         case FacilioConstants.ServiceOrder.CANCELLED:
-                            updateServiceTasks(serviceTaskIds, ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex(), currentTime);
+                            updateServiceTasks(serviceTaskIds,  FacilioConstants.ContextNames.ServiceTaskStatus.CANCELLED, currentTime);
                             if(CollectionUtils.isNotEmpty(appointmentIds)) {
                                 updateServiceAppointments(appointmentIds, currentTime, FacilioConstants.ServiceAppointment.CANCELLED);
                             }
@@ -114,39 +116,6 @@ public class UpdateSAandTasks extends FacilioCommand {
                 }
             }
         }
-
-    }
-
-    public static void updateServiceTasks(List<Long> taskIds, int status, Long currentTime) throws Exception {
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule taskModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
-        List<FacilioField> taskFields = modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
-
-        Map<String, FacilioField> taskFieldMap = FieldFactory.getAsMap(taskFields);
-        List<FacilioField> updateTaskFields = new ArrayList<>();
-        updateTaskFields.add(taskFieldMap.get("status"));
-        updateTaskFields.add(taskFieldMap.get("actualEndTime"));
-
-        List<Integer>endStatus = new ArrayList<>();
-        endStatus.add(ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex());
-        endStatus.add(ServiceTaskContext.ServiceTaskStatus.CANCELLED.getIndex());
-
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getIdCondition(taskIds, taskModule));
-        criteria.addAndCondition(CriteriaAPI.getCondition("STATUS","status",StringUtils.join(endStatus,","),NumberOperators.NOT_EQUALS));
-
-
-        UpdateRecordBuilder<ServiceTaskContext> updateBuilder = new UpdateRecordBuilder<ServiceTaskContext>()
-                .module(taskModule)
-                .fields(updateTaskFields)
-                .andCriteria(criteria);
-
-        Map<String, Object> updateProps = new HashMap<>();
-        updateProps.put("status", status);
-        updateProps.put("actualEndTime", currentTime);
-
-        updateBuilder.updateViaMap(updateProps);
 
     }
 

@@ -7,13 +7,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fsm.context.ServiceAppointmentContext;
-import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
-import com.facilio.fsm.context.ServiceOrderContext;
-import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.fsm.context.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -55,7 +53,8 @@ public class ServiceOrderAPI {
         selectAppointmentsBuilder.select(serviceTaskFields)
                 .module(serviceTaskModule)
                 .beanClass(ServiceTaskContext.class)
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("serviceOrder"),String.valueOf(serviceOrderId), StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("serviceOrder"),String.valueOf(serviceOrderId), NumberOperators.EQUALS))
+                .fetchSupplement((LookupField) fieldMap.get("status"));
         return selectAppointmentsBuilder.get();
     }
 
@@ -89,6 +88,18 @@ public class ServiceOrderAPI {
             return statuses.get(0);
         }
         return null;
+    }
+    public static ServiceTaskStatusContext getTaskStatus(String status) throws Exception
+    {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        SelectRecordsBuilder<ServiceTaskStatusContext> builder = new SelectRecordsBuilder<ServiceTaskStatusContext>()
+                .moduleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_STATUS)
+                .beanClass(ServiceTaskStatusContext.class)
+                .select(modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_STATUS))
+                .andCondition(CriteriaAPI.getCondition("NAME","name",status,StringOperators.IS));
+
+        ServiceTaskStatusContext taskStatus = builder.fetchFirst();
+        return taskStatus;
     }
 
     public static List<ServiceOrderTicketStatusContext> getStatusOfStatusType(ServiceOrderTicketStatusContext.StatusType statusType) throws Exception

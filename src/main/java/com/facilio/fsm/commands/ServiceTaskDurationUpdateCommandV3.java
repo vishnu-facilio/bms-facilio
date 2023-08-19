@@ -19,14 +19,17 @@ public class ServiceTaskDurationUpdateCommandV3 extends FacilioCommand {
         Map<Long,ServiceTaskContext> oldServiceTaskRecordMap = (Map<Long,ServiceTaskContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.OLD_RECORD_MAP)).get("serviceTask"));
         List<ServiceTaskContext> serviceTasks = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(serviceTasks)){
+            String inProgress = FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS;
+            String completed = FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED;
+
             for(ServiceTaskContext serviceTask : serviceTasks){
                 if(serviceTask!=null){
                     ServiceTaskContext oldServiceTask = oldServiceTaskRecordMap.get(serviceTask.getId());
                     if(oldServiceTask != null && !Objects.equals(serviceTask.getStatus(), oldServiceTask.getStatus())){
-                        if(serviceTask.getStatusEnum()!=null && serviceTask.getStatusEnum().equals(ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS)){
+                        if(serviceTask.getStatus()!=null && serviceTask.getStatus().getName().equals(inProgress)){
                             serviceTask.setActualStartTime(System.currentTimeMillis());
                         }
-                        if(serviceTask.getStatusEnum()!=null && serviceTask.getStatusEnum().equals(ServiceTaskContext.ServiceTaskStatus.COMPLETED)){
+                        if(serviceTask.getStatus()!=null && serviceTask.getStatus().getName().equals(completed)){
                             serviceTask.setActualEndTime(System.currentTimeMillis());
                             if(serviceTask.getActualStartTime()!=null && serviceTask.getActualEndTime()!=null) {
                                 serviceTask.setActualDuration(getDuration(serviceTask.getActualStartTime(), serviceTask.getActualEndTime()));

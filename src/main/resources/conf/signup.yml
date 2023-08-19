@@ -537,6 +537,7 @@ classes:
   - com.facilio.fsm.signup.ServiceOrderTicketStatus
   - com.facilio.fsm.signup.ServiceOrderModule
   - com.facilio.fsm.signup.TimeOffModule
+  - com.facilio.fsm.signup.ServiceTaskStatusModule
   - com.facilio.fsm.signup.ServiceTaskModule
   - com.facilio.fsm.signup.ServiceTaskAttachmentsModule
   - com.facilio.fsm.signup.ServiceAppointmentTicketStatus

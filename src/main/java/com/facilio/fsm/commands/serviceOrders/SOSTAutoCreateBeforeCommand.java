@@ -9,6 +9,8 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.fsm.context.ServiceTaskStatusContext;
+import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -45,7 +47,8 @@ public class SOSTAutoCreateBeforeCommand extends FacilioCommand {
                     ServiceAppointmentContext selectAppointments = selectAppointmentsBuilder.fetchFirst();
                     if(selectAppointments != null){
                         task.setServiceAppointment(selectAppointments);
-                        task.setStatus(ServiceTaskContext.ServiceTaskStatus.SCHEDULED.getIndex());
+                        ServiceTaskStatusContext taskStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.SCHEDULED);
+                        task.setStatus(taskStatus);
                     }
                 }
             }

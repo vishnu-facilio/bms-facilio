@@ -30,6 +30,10 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
         ServiceOrderTicketStatusContext newStatus = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.NEW);
         ServiceOrderTicketStatusContext scheduledStatus = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.SCHEDULED);
         ServiceOrderTicketStatusContext inProgressStatus = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.IN_PROGRESS);
+        String newTask = FacilioConstants.ContextNames.ServiceTaskStatus.NEW;
+        String completedTask = FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED;
+        String inProgressTask = FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS;
+        String scheduledTask = FacilioConstants.ContextNames.ServiceTaskStatus.SCHEDULED;
         List<ServiceTaskContext> dataList = (List<ServiceTaskContext>) recordMap.get(moduleName);
         Map<String, Map<Long, ServiceTaskContext>> oldrecordMap = (Map<String, Map<Long, ServiceTaskContext>>) context.get(FacilioConstants.ContextNames.OLD_RECORD_MAP);
         Map<Long, ServiceTaskContext> oldMap = oldrecordMap != null ? oldrecordMap.get(moduleName) : new HashMap<>();
@@ -43,7 +47,7 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
                 if(orderId != null){
                     ServiceTaskContext oldTask = oldMap.get(task.getId());
                     ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,orderId);
-                    if(task.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex() || ( oldTask != null && oldTask.getStatusEnum().equals(ServiceTaskContext.ServiceTaskStatus.COMPLETED) && task.getStatus() == ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex())){
+                    if(task.getStatus()!=null && task.getStatus().getName().equals(newTask) || ( oldTask != null && oldTask.getStatus().getName().equals(completedTask) && task.getStatus().getName().equals(inProgressTask))){
                         if(serviceOrderInfo.getStatus() != null && (serviceOrderInfo.getStatus().getId() != newStatus.getId() && serviceOrderInfo.getStatus().getId() != scheduledStatus.getId())){
 //                        if(serviceOrderInfo.getStatus() != null && (serviceOrderInfo.getStatus().getId() != inProgressStatus.getId())){
                             serviceOrderInfo.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.IN_PROGRESS));
@@ -56,10 +60,10 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
                         }
                     }else {
                         List<ServiceTaskContext> serviceTasks = getServiceTasksByServiceOrder(orderId);
-                        if(serviceOrderInfo.getStatus() != null && serviceOrderInfo.getStatus().getId() == newStatus.getId() && task.getStatus() == ServiceTaskContext.ServiceTaskStatus.SCHEDULED.getIndex()){
+                        if(serviceOrderInfo.getStatus() != null && serviceOrderInfo.getStatus().getId() == newStatus.getId() && task.getStatus()!=null && task.getStatus().getName().equals(scheduledTask)){
                             serviceOrderInfo.setStatus(scheduledStatus);
                             updateServiceOrder(serviceOrderInfo);
-                        } else if ( task.getStatus() == ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex() &&  (serviceOrderInfo.getStatus() != null && (serviceOrderInfo.getStatus().getId() == newStatus.getId() ||  serviceOrderInfo.getStatus().getId() == scheduledStatus.getId()))){
+                        } else if ( task.getStatus()!=null && task.getStatus().getName().equals(inProgressTask) &&  (serviceOrderInfo.getStatus() != null && (serviceOrderInfo.getStatus().getId() == newStatus.getId() ||  serviceOrderInfo.getStatus().getId() == scheduledStatus.getId()))){
                             serviceOrderInfo.setStatus(inProgressStatus);
                             if(serviceOrderInfo.getActualStartTime() == null){
                                 serviceOrderInfo.setActualStartTime(System.currentTimeMillis());
@@ -70,7 +74,7 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
                             Long completedCount = 0L;
                             for(ServiceTaskContext soTask: serviceTasks){
                                 if(soTask.getServiceAppointment() != null && soTask.getServiceAppointment().getId() > 0){
-                                    if(soTask.getStatus().equals(ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex())){
+                                    if(soTask.getStatus().getName().equals(completedTask)){
                                         completedCount++;
                                     }
                                 }

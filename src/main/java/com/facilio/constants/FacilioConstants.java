@@ -67,11 +67,8 @@ import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeContext;
 import com.facilio.control.*;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.util.ControlActionUtil;
+import com.facilio.fsm.context.*;
 import com.facilio.ims.handler.AuditLogHandler;
-import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
-import com.facilio.fsm.context.ServiceInventoryReservationContext;
-import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
-import com.facilio.fsm.context.TimeOffTypeContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
@@ -2907,10 +2904,19 @@ public class FacilioConstants {
 			public static final String SERVICE_TASK_IDS = "serviceTaskIds";
 			public static final String OLD_SERVICE_TASK_IDS = "oldServiceTaskIds";
 			public static final String SERVICE_TASK_STATUS_ACTIONS = "serviceTaskStatusActions";
-
-
+			public static final String SERVICE_TASK_STATUS = "serviceTaskStatus";
 		}
-		// etisalat changes
+		public static class ServiceTaskStatus {
+			public static final String NEW = "new";
+			public static final String SCHEDULED = "scheduled";
+			public static final String DISPATCHED = "dispatched";
+			public static final String IN_PROGRESS = "inProgress";
+			public static final String ON_HOLD = "onHold";
+			public static final String COMPLETED = "completed";
+			public static final String CANCELLED = "cancelled";
+		}
+
+			// etisalat changes
 		public static final String BILL_ALERT = "custom_alert";
 		public static final String BILL_INVOICE = "custom_invoices";
 		public static final String BILL_TARIFF = "custom_tariffinfo";
@@ -3380,7 +3386,15 @@ public class FacilioConstants {
 			classMap.put(Trip.TRIP_ACTIVITY,ActivityContext.class);
 			classMap.put(SERVICE_INVENTORY_RESERVATION, ServiceInventoryReservationContext.class);
 			classMap.put(TimeOff.TIME_OFF_ACTIVITY, ActivityContext.class);
-
+			classMap.put(FieldServiceManagement.SERVICE_TASK, ServiceTaskContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_TASK_STATUS, ServiceTaskStatusContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_TASK_SKILLS, ServiceTaskSkillsContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, ServiceOrderPlannedItemsContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, ServiceOrderPlannedToolsContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES, ServiceOrderPlannedServicesContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER_ITEMS, ServiceOrderItemsContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER_TOOLS, ServiceOrderToolsContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER_SERVICES, ServiceOrderServiceContext.class);
 
 
 			for (QuestionType type : QuestionType.values()) {

@@ -5,6 +5,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderPlannedToolsContext;
 import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.fsm.context.ServiceTaskStatusContext;
+import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -27,7 +29,8 @@ public class SetTaskStatusCommandV3  extends FacilioCommand {
                     List<ServiceTaskContext> serviceTasks = serviceOrder.getServiceTask();
                     for(ServiceTaskContext serviceTask : serviceTasks){
                         if(serviceTask.getStatus()==null){
-                            serviceTask.setStatus(ServiceTaskContext.ServiceTaskStatus.NEW.getIndex());
+                            ServiceTaskStatusContext taskStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.NEW);
+                            serviceTask.setStatus(taskStatus);
                         }
                     }
                     subForm.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, FieldUtil.getAsMapList(serviceTasks, ServiceTaskContext.class));

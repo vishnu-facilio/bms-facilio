@@ -9,6 +9,8 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.fsm.context.ServiceTaskStatusContext;
+import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -61,12 +63,14 @@ public class UpdateServiceAppointment extends FacilioCommand {
 
                 if (CollectionUtils.isNotEmpty(taskList)) {
                     //fetching the list of all service tasks based on service task ids fetched (tasks that are in completed status)
+                    ServiceTaskStatusContext taskStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED);
+
                     SelectRecordsBuilder<ServiceTaskContext> selectRecordsBuilder = new SelectRecordsBuilder<ServiceTaskContext>();
                     selectRecordsBuilder.select(modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK))
                             .module(serviceTaskModule)
                             .beanClass(ServiceTaskContext.class)
                             .andCondition(CriteriaAPI.getIdCondition(taskList, serviceTaskModule))
-                            .andCondition(CriteriaAPI.getCondition(serviceTaskMap.get("status"),ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex().toString(),StringOperators.IS ));
+                            .andCondition(CriteriaAPI.getCondition(serviceTaskMap.get("status"),String.valueOf(taskStatus.getId()),NumberOperators.EQUALS));
 
                     List<ServiceTaskContext> serviceTasksList = selectRecordsBuilder.get();
                     if (CollectionUtils.isNotEmpty(serviceTasksList)) {

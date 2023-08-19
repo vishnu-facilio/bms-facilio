@@ -19,7 +19,7 @@ public class ServiceTaskContext extends V3Context {
     private Double actualDuration;
     private Long actualStartTime;
     private Long actualEndTime;
-    private ServiceTaskStatus status;
+    private ServiceTaskStatusContext status;
     private String remarks;
     private ServiceOrderContext serviceOrder;
     private ServiceAppointmentContext serviceAppointment;
@@ -105,54 +105,62 @@ public class ServiceTaskContext extends V3Context {
         this.actualEndTime = actualEndTime;
     }
 
-    public Integer getStatus() {
-        if (status != null) {
-            return status.getIndex();
-        }
-        return null;
-    }
-
-    public void setStatus(Integer status) {
-        if(status != null) {
-            this.status = ServiceTaskStatus.valueOf(status);
-        }
-    }
-    public ServiceTaskStatus getStatusEnum(){
+    public ServiceTaskStatusContext getStatus() {
         return status;
     }
-    public static enum ServiceTaskStatus implements FacilioIntEnum {
-        NEW("New"),
-        SCHEDULED("Scheduled"),
-        DISPATCHED("Dispatched"),
-        IN_PROGRESS("In Progress"),
-        ON_HOLD("On Hold"),
-        COMPLETED("Completed"),
-        REOPENED("Reopened"),
-        CANCELLED("Cancelled");
 
-        private String name;
-
-        ServiceTaskStatus(String name) {
-            this.name = name;
-        }
-
-        public static ServiceTaskStatus valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
-
-        @Override
-        public Integer getIndex() {
-            return ordinal() + 1;
-        }
-
-        @Override
-        public String getValue() {
-            return name;
-        }
+    public void setStatus(ServiceTaskStatusContext status) {
+        this.status = status;
     }
+
+    //    public Integer getStatus() {
+//        if (status != null) {
+//            return status.getIndex();
+//        }
+//        return null;
+//    }
+//
+//    public void setStatus(Integer status) {
+//        if(status != null) {
+//            this.status = ServiceTaskStatus.valueOf(status);
+//        }
+//    }
+//    public ServiceTaskStatus getStatusEnum(){
+//        return status;
+//    }
+//    public static enum ServiceTaskStatus implements FacilioIntEnum {
+//        NEW("New"),
+//        SCHEDULED("Scheduled"),
+//        DISPATCHED("Dispatched"),
+//        IN_PROGRESS("In Progress"),
+//        ON_HOLD("On Hold"),
+//        COMPLETED("Completed"),
+//        REOPENED("Reopened"),
+//        CANCELLED("Cancelled");
+//
+//        private String name;
+//
+//        ServiceTaskStatus(String name) {
+//            this.name = name;
+//        }
+//
+//        public static ServiceTaskStatus valueOf(int value) {
+//            if (value > 0 && value <= values().length) {
+//                return values()[value - 1];
+//            }
+//            return null;
+//        }
+//
+//        @Override
+//        public Integer getIndex() {
+//            return ordinal() + 1;
+//        }
+//
+//        @Override
+//        public String getValue() {
+//            return name;
+//        }
+//    }
 
     public ServiceOrderContext getServiceOrder() {
         return serviceOrder;

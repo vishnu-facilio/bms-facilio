@@ -19,6 +19,10 @@ public class UpdateServiceOrderTime extends FacilioCommand {
 
         HashMap<String,Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
         List<ServiceTaskContext> serviceTasks = (List<ServiceTaskContext>) recordMap.get(context.get("moduleName"));
+        String newStatus = FacilioConstants.ContextNames.ServiceTaskStatus.NEW;
+        String inProgress = FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS;
+        String completed = FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED;
+
         for(ServiceTaskContext task : serviceTasks) {
             //fetching the service task info based on the service task id
             ServiceTaskContext serviceTask = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,task.getId());
@@ -35,11 +39,11 @@ public class UpdateServiceOrderTime extends FacilioCommand {
                     Long completeCount = 0L;
                     for (ServiceTaskContext st : serviceTaskList) {
                         //if status of all other tasks are new and the status of current task is in progress we increase the initCount
-                        if((task.getId() != st.getId() && st.getStatus() == ServiceTaskContext.ServiceTaskStatus.NEW.getIndex()) || (task.getId() == st.getId() && st.getStatus() == ServiceTaskContext.ServiceTaskStatus.IN_PROGRESS.getIndex()) ){
+                        if(st.getStatus()!=null && (task.getId() != st.getId() && st.getStatus().getName().equals(newStatus)) || (task.getId() == st.getId() && st.getStatus().getName().equals(inProgress))){
                             initCount= (long) serviceTaskList.size();
                         }
                         //if status of all tasks are in completed status then we increase the completeCount
-                        else if (st.getStatus() == ServiceTaskContext.ServiceTaskStatus.COMPLETED.getIndex() ){
+                        else if (st.getStatus()!=null && st.getStatus().getName().equals(completed)){
                             completeCount++;
                         }
                     }
