@@ -256,7 +256,7 @@ public class WidgetDashboardFilterContext extends DashboardWidgetContext
         JSONObject layoutJson = new JSONObject();
         layoutJson.put("height", getLayoutHeight());
         layoutJson.put("width", getLayoutWidth());
-        layoutJson.put("x", 0);
+        layoutJson.put("x", getxPosition());
         layoutJson.put("y", getyPosition());
         layoutJson.put("position", getLayoutPosition());
         resultJson.put("layout", layoutJson);
