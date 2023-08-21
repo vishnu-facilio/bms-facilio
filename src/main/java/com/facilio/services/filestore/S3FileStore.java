@@ -98,7 +98,7 @@ public class S3FileStore extends FileStore {
 		LOGGER.debug("addFile: fileName: " + fileName);
 
 		try {
-			PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, file);
+			PutObjectResult rs = getPutObjectResult(file, filePath,5);
 			if (rs != null) {
 				updateFileEntry(namespace, fileId, fileName, filePath, fileSize, contentType);
 				scheduleCompressJob(namespace, fileId, contentType);
@@ -111,6 +111,23 @@ public class S3FileStore extends FileStore {
 		} catch (Exception e) {
 			deleteFileEntry(namespace, fileId);
 			throw e;
+		}
+	}
+
+	private PutObjectResult getPutObjectResult(File file, String filePath, int count) {
+		try {
+			PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, file);
+			return rs;
+		}
+		catch (AbortedException e) {
+			if(count !=0) {
+				count--;
+				int retryCount = 5 - count;
+				LOGGER.info("Retrying count : " + retryCount + filePath);
+				return getPutObjectResult(file, filePath, count);
+			}else{
+				throw e;
+			}
 		}
 	}
 
