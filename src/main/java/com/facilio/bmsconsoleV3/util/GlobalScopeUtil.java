@@ -1,16 +1,15 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ValueGeneratorBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
+import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorCacheContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datastructure.dag.DAG;
@@ -33,6 +32,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.util.Strings;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -40,6 +40,7 @@ import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j
 public class GlobalScopeUtil {
@@ -191,7 +192,7 @@ public class GlobalScopeUtil {
             if (scopeLookup.getLookupModule() != null && scopeLookup.getLookupModule().getName() != null && scopeLookup.getLookupModule().getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
                 isbuildingOperatorSpecialHandling = true;
                 if (scopeVariable.getTypeEnum() == GlobalScopeVariableContext.Type.SCOPED) {
-                    List<Long> evaluatedIds = getEvaluatedValuesForGlobalScopeVariable(scopeVariable.getLinkName());
+                    List<Long> evaluatedIds = getEvaluatedValuesForGlobalScopeVariable(scopeVariable);
                     if (CollectionUtils.isNotEmpty(evaluatedIds)) {
                         List<Long> ids = AccountUtil.getCurrentUser().getAccessibleSpace();
                         if (CollectionUtils.isNotEmpty(ids)) {
@@ -310,7 +311,7 @@ public class GlobalScopeUtil {
                         if (crit == null) {
                             crit = new Criteria();
                         }
-                        List<Long> ids = getEvaluatedValuesForGlobalScopeVariable(scopeVariable.getLinkName());
+                        List<Long> ids = getEvaluatedValuesForGlobalScopeVariable(scopeVariable);
                         if (ids != null) {
                             String val = StringUtils.join(ids, ",");
                             if (scopeVariable.getApplicableModuleName() != null && scopeVariable.getApplicableModuleName().equals("users")) {
@@ -419,16 +420,31 @@ public class GlobalScopeUtil {
         }catch (NumberFormatException e) {}
         return null;
     }
-    private static List<Long> getEvaluatedValuesForGlobalScopeVariable(String linkName) {
-        Map<String, GlobalScopeVariableEvaluationContext> variableEvaluationMap = AccountUtil.getGlobalScopeVariableValues();
-        if (MapUtils.isNotEmpty(variableEvaluationMap)) {
-            GlobalScopeVariableEvaluationContext scopeVariableEvaluationContext = variableEvaluationMap.get(linkName);
-            if (scopeVariableEvaluationContext != null) {
-                List<Long> values = scopeVariableEvaluationContext.getValues();
-                if (values != null) {
-                    return values;
+    private static List<Long> getEvaluatedValuesForGlobalScopeVariable(GlobalScopeVariableContext scopeVariable) throws Exception {
+        if(scopeVariable != null && StringUtils.isNotEmpty(scopeVariable.getLinkName())) {
+            ValueGeneratorBean valGenBean = (ValueGeneratorBean) BeanFactory.lookup("ValueGeneratorBean");
+            ValueGeneratorCacheContext valueGeneratorContext = valGenBean.getValueGenerator(scopeVariable.getValueGeneratorId());
+            String valueGeneratorLinkName = valueGeneratorContext.getLinkName();
+
+            Map<String, GlobalScopeVariableEvaluationContext> globalScopeVariableValues = AccountUtil.getGlobalScopeVariableValues(); //threadLocal Variable
+            String globalScopeVariableLinkName = scopeVariable.getLinkName();
+            GlobalScopeVariableEvaluationContext globalScopeVariableEvaluationContext = null;
+            List<Long> evaluatedValues = null;
+
+            if (MapUtils.isEmpty(globalScopeVariableValues) || !globalScopeVariableValues.containsKey(valueGeneratorLinkName)) {
+                if(globalScopeVariableValues == null){
+                    globalScopeVariableValues = new HashMap<>();
                 }
+                ValueGenerator valueGenerator = ScopingUtil.getValueGeneratorForLinkName(valueGeneratorLinkName);
+                evaluatedValues = computeAndSetValueGenerators(valueGenerator);
+                globalScopeVariableEvaluationContext = new GlobalScopeVariableEvaluationContext(globalScopeVariableLinkName, scopeVariable.getApplicableModuleName(), scopeVariable.getApplicableModuleId(), scopeVariable.getScopeVariableModulesFieldsList(), evaluatedValues, scopeVariable.getTypeEnum());
+                globalScopeVariableValues.put(valueGeneratorLinkName,globalScopeVariableEvaluationContext);
+                AccountUtil.setGlobalScopeVariableValues(globalScopeVariableValues);
+            } else {
+                globalScopeVariableEvaluationContext = globalScopeVariableValues.get(valueGeneratorLinkName);
+                evaluatedValues = globalScopeVariableEvaluationContext.getValues();
             }
+            return evaluatedValues;
         }
         return null;
     }
@@ -478,5 +494,38 @@ public class GlobalScopeUtil {
             }
         }
         return null;
+    }
+
+    private static List<Long> computeAndSetValueGenerators(ValueGenerator valueGenerator) throws Exception {
+        if (valueGenerator != null) {
+            String linkName = valueGenerator.getLinkName();
+            if (StringUtils.isNotEmpty(linkName)) {
+                String value = "";
+                List<Long> ids = new ArrayList<>();
+                Map<String, String> valueGenerators = null;
+                if (MapUtils.isNotEmpty(AccountUtil.getValueGenerator())) {
+                    valueGenerators = AccountUtil.getValueGenerator();
+                } else {
+                    valueGenerators = new HashMap<>();
+                }
+                if (valueGenerators.containsKey(linkName)) {
+                    value = valueGenerators.get(linkName);
+                }
+                else {
+                    value = ScopeOperator.SCOPING_IS.getEvaluatedValues(valueGenerator);
+                    valueGenerators.put(linkName, value);
+                }
+                if(value != null && !value.equals(Strings.EMPTY)) {
+                    if(value.equals(FacilioConstants.ContextNames.ALL_VALUE)) {
+                        ids = null;
+                    } else {
+                        ids = Arrays.stream(value.split(",")).map(Long::parseLong).collect(Collectors.toList());
+                    }
+                }
+                AccountUtil.setValueGenerator(valueGenerators);
+                return ids;
+            }
+        }
+        return new ArrayList<>();
     }
 }
