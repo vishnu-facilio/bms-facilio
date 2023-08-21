@@ -456,6 +456,7 @@ public class ScopingUtil {
                 case "com.facilio.modules.CurrentUserValueGenerator" :
                 case "com.facilio.modules.VendorValueGenerator" :
                 case "com.facilio.modules.TenantValueGenerator" :
+                case "com.facilio.modules.ClientValueGenerator" :
                     return "com.facilio.modules.ContainsUserValueGenerator";
             }
         }

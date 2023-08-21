@@ -2585,6 +2585,7 @@ public class FacilioConstants {
 			public static final String VENDOR = "Is Current Vendor";
 			public static final String CURRENT_USER = "Is Current User";
 			public static final String CURRENT_ORG_USER_USER = "Is Current Org User";
+			public static final String CLIENT = "Is Current Client";
 
 		}
 

@@ -22,6 +22,7 @@ public class AddValueGenerators extends SignUpData {
         linkNameVsTypeModule.put("com.facilio.modules.AudienceValueGenerator", Pair.of(ValueGeneratorContext.ValueGeneratorType.IDENTIFIER,FacilioConstants.ContextNames.AUDIENCE));
         linkNameVsTypeModule.put("com.facilio.modules.TenantValueGenerator", Pair.of(ValueGeneratorContext.ValueGeneratorType.SUB_QUERY,FacilioConstants.ContextNames.TENANT));
         linkNameVsTypeModule.put("com.facilio.modules.VendorValueGenerator", Pair.of(ValueGeneratorContext.ValueGeneratorType.SUB_QUERY,FacilioConstants.ContextNames.VENDORS));
+        linkNameVsTypeModule.put("com.facilio.modules.ClientValueGenerator", Pair.of(ValueGeneratorContext.ValueGeneratorType.SUB_QUERY,FacilioConstants.ContextNames.CLIENT));
 
         Reflections reflections = new Reflections("com.facilio.modules");
         Set<Class<? extends ValueGenerator>> valueGeneratorClasses = reflections.getSubTypesOf(ValueGenerator.class);

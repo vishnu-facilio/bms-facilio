@@ -64,5 +64,17 @@ public class AddDefaultGlobalScopeVariable extends SignUpData {
         vendorUserScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
         vendorUserScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.VendorValueGenerator").getId());
         scopeBean.addScopeVariable(vendorUserScopeVariable);
+
+        //Client app - client
+        GlobalScopeVariableContext clientUserScopeVariable = new GlobalScopeVariableContext();
+        clientUserScopeVariable.setLinkName("default_client_user");
+        clientUserScopeVariable.setApplicableModuleId(modBean.getModule(FacilioConstants.ContextNames.CLIENT).getModuleId());
+        clientUserScopeVariable.setStatus(true);
+        clientUserScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP));
+        clientUserScopeVariable.setDescription("Default User Scope Variable");
+        clientUserScopeVariable.setDisplayName("User Scope Variable");
+        clientUserScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
+        clientUserScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.ClientValueGenerator").getId());
+        scopeBean.addScopeVariable(clientUserScopeVariable);
     }
 }
