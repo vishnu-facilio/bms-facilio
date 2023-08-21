@@ -3645,4 +3645,19 @@
     </request>
     <request path="/api/fsm/dispatcher/list" method="GET"/>
 
+
+    <request path="/api/v3/serviceRequest/:id/site" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/systemButton/getAvailableButtonsForList" method="GET">
+       <requestbody type="object">
+        <property name="recordIds" type="array">
+            <items type="number"/>
+        </property>
+         <property name="moduleName" type="string"/>
+         <property name="positionType" type="number"/>
+       </requestbody>
+    </request>
 </config>
