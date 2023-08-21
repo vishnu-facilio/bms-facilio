@@ -4,8 +4,8 @@ import com.facilio.modules.FacilioIntEnum;
 
 public class ModbusUtils {
     public enum RegisterType implements FacilioIntEnum {
-        COIL_STATUS("Coils status",false),
-        INPUT_STATUS("Input status",true),
+        COIL_STATUS("Coils status",true),
+        INPUT_STATUS("Input status",false),
         HOLDING_REGISTER("Holding register",true),
         INPUT_REGISTER("Input register",false);
 
