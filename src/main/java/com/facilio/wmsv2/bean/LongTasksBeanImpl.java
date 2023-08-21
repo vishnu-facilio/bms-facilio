@@ -1,16 +1,31 @@
 package com.facilio.wmsv2.bean;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.IAMUser;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.componentpackage.command.PackageChainFactory;
+import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.componentpackage.context.PackageContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fms.message.Message;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.ims.handler.LongRunningTaskHandler;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.relation.util.RelationshipDataUtil;
+import com.facilio.sandbox.context.SandboxConfigContext;
+import com.facilio.sandbox.utils.SandboxAPI;
+import com.facilio.sandbox.utils.SandboxConstants;
+import com.facilio.sandbox.utils.SandboxUtil;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.time.DateTimeUtil;
@@ -94,7 +109,134 @@ public class LongTasksBeanImpl implements LongTasksBean {
 			RelationshipDataUtil.associateRelation(parentModuleName, dataMap, queryParameters, null);
 			
 		}
-		
+	}
+	@Override
+	public void addDefaultSignupDataToSandbox(JSONObject data){
+		try {
+			JSONObject content = new JSONObject();
+			long productionOrgId = ((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue();
+			long sandboxOrgId = ((Number)data.get(PackageConstants.TARGET_ORG_ID)).longValue();
+			long sandboxId = ((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue();
+			Map<String, Object> sandboxOrgData = (Map<String, Object>)data.get(SandboxConstants.SANDBOX_ORG);
+			Map<String, Object> signupData = (Map<String, Object>)data.get(FacilioConstants.ContextNames.SIGNUP_INFO);
+			Map<String, Object> userData = (Map<String, Object>)data.get(SandboxConstants.SANDBOX_ORG_USER);
+			JSONObject signupDataJson = SandboxUtil.getSandboxSignUpDataParser(signupData);
+			Organization sandBoxOrg = SandboxUtil.constructSandboxOrganizationFromMap(sandboxOrgData);
+			IAMUser iamUser = SandboxUtil.constructSandboxIAMUserFromMap(userData);
+			Account account = new Account(sandBoxOrg, new User(iamUser));
+			AccountUtil.setCurrentAccount(account);
+			LOGGER.info("####Sandbox - Initiating Sandbox Org Creation");
+			FacilioChain signupChain = TransactionChainFactory.getOrgSignupChain();
+			FacilioContext signupContext = signupChain.getContext();
+			signupContext.put("orgId", sandboxOrgId);
+			signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupDataJson);
+			signupChain.execute();
+			LOGGER.info("####Sandbox - Completed Sandbox Org creation");
+			content.put(SandboxConstants.SANDBOX_ID, sandboxId);
+			content.put(PackageConstants.SOURCE_ORG_ID, productionOrgId);
+			content.put("methodName", "createPackageForSandboxData");
+			content.put("startTime", DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")) + "");
+			Messenger.getMessenger().sendMessage(new Message()
+					.setKey(LongRunningTaskHandler.KEY + "/" + DateTimeUtil.getCurrenTime())
+					.setOrgId(productionOrgId)
+					.setContent(content));
+		}catch (Exception e){
+			LOGGER.error("####Sandbox - Error While Creating Sandbox Org",e);
+		}
+	}
+	@Override
+	public void createPackageForSandboxData(JSONObject data) throws Exception {
+		AccountUtil.setCurrentAccount(((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
+		try {
+			SandboxConfigContext sandboxConfigContext = SandboxAPI.getSandboxById(((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue());
+			boolean fromAdminTool = (Boolean) data.getOrDefault(PackageConstants.FROM_ADMIN_TOOL, false);
+			if (sandboxConfigContext == null) {
+				LOGGER.info("####Sandbox --context is null, returning without creating and installing package");
+				return;
+			}
+			List<Integer> skipComponents = (List<Integer>) data.getOrDefault(PackageConstants.SKIP_COMPONENTS,new ArrayList<>());
+			JSONObject content = new JSONObject();
+			try {
+				LOGGER.info("####Sandbox - Initiating Package creation");
+				FacilioChain createPackageChain = PackageChainFactory.getCreatePackageChain();
+				FacilioContext context = createPackageChain.getContext();
+				context.put(PackageConstants.DISPLAY_NAME, "package_" + sandboxConfigContext.getOrgId() + "_" + sandboxConfigContext.getSubDomain()+ "_" + System.currentTimeMillis());
+				context.put(PackageConstants.SOURCE_ORG_ID, sandboxConfigContext.getOrgId());
+				context.put(PackageConstants.TARGET_ORG_ID, sandboxConfigContext.getSandboxOrgId());
+				context.put(PackageConstants.SANDBOX_DOMAIN_NAME, sandboxConfigContext.getSubDomain());
+				context.put(PackageConstants.SKIP_COMPONENTS, skipComponents);
+				context.put(PackageConstants.PACKAGE_TYPE, PackageContext.PackageType.SANDBOX);
+				context.put(PackageConstants.FROM_ADMIN_TOOL, fromAdminTool);
+				createPackageChain.execute();
+				content.put(PackageConstants.FILE_ID, context.get(PackageConstants.FILE_ID));
+				LOGGER.info("####Sandbox - Completed Package creation");
+				sandboxConfigContext.setStatus(4);
+				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
+				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
+			} catch (Exception e) {
+				sandboxConfigContext.setStatus(5);
+				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
+				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
+				return;
+			}
+			content.put("methodName", "installPackageForSandboxData");
+			content.put("startTime", DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")) + "");
+			content.put(PackageConstants.SOURCE_ORG_ID, sandboxConfigContext.getOrgId());
+			content.put(PackageConstants.TARGET_ORG_ID, sandboxConfigContext.getSandboxOrgId());
+			content.put(SandboxConstants.SANDBOX_ID, sandboxConfigContext.getId());
+			Messenger.getMessenger().sendMessage(new Message()
+					.setKey(LongRunningTaskHandler.KEY + "/" + DateTimeUtil.getCurrenTime())
+					.setOrgId(sandboxConfigContext.getSandboxOrgId())
+					.setContent(content));
+		}catch(Exception e){
+			LOGGER.error("####Sandbox - Error while Creating Package",e);
+		}
 	}
 
+	@Override
+	public void installPackageForSandboxData(JSONObject data) throws Exception {
+		AccountUtil.setCurrentAccount(((Number)data.get(PackageConstants.TARGET_ORG_ID)).longValue());
+		SandboxConfigContext sandboxConfigContext = null;
+		List<Integer> skipComponents = (List<Integer>) data.getOrDefault(PackageConstants.SKIP_COMPONENTS,new ArrayList<>());
+		try {
+			LOGGER.info("####Sandbox - Initiating Package Deployment");
+			FacilioChain deployPackageChain = PackageChainFactory.getDeployPackageChain();
+			FacilioContext deployContext = deployPackageChain.getContext();
+			deployContext.put(PackageConstants.FILE_ID, ((Number)data.get(PackageConstants.FILE_ID)).longValue());
+			deployContext.put(PackageConstants.SOURCE_ORG_ID, ((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
+			deployContext.put(PackageConstants.TARGET_ORG_ID, ((Number)data.get(PackageConstants.TARGET_ORG_ID)).longValue());
+			deployContext.put(PackageConstants.SKIP_COMPONENTS, skipComponents);
+			deployPackageChain.execute();
+			LOGGER.info("####Sandbox - Completed Package Deployment");
+			AccountUtil.cleanCurrentAccount();
+			try {
+				AccountUtil.setCurrentAccount(((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
+				sandboxConfigContext = SandboxAPI.getSandboxById(((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue());
+				if(sandboxConfigContext == null){
+					LOGGER.error("####Sandbox - Error occurred while changing status to Success");
+					return;
+				}
+				sandboxConfigContext.setStatus(1);
+				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
+				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
+			}catch(Exception e){
+				LOGGER.error("####Sandbox - Error occurred while changing status ",e);
+			}
+		}catch(Exception e){
+			try {
+				LOGGER.info("####Sandbox - Error while  Package Deployment");
+				AccountUtil.setCurrentAccount(((Number) data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
+				sandboxConfigContext = SandboxAPI.getSandboxById(((Number) data.get(SandboxConstants.SANDBOX_ID)).longValue());
+				if (sandboxConfigContext == null) {
+					LOGGER.error("####Sandbox - Error occurred while changing status to Failed");
+					return;
+				}
+				sandboxConfigContext.setStatus(6);
+				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
+				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
+			} catch(Exception ex){
+				LOGGER.error("####Sandbox - Error occurred while changing status", ex);
+			}
+		}
+	}
 }

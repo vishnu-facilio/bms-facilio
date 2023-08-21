@@ -33,12 +33,20 @@ public class SandboxTransactionChainFactory {
         c.addCommand(new ChangeSandboxStatusCommand());
         return c;
     }
-
-    public static FacilioChain getAddSandboxDefaultDataChain() {
+    public static FacilioChain getAddSandboxDefaultDataAndCreationInstallationChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddSandboxDomainCommand());
-        c.addCommand(new AddDefaultSignupDataToSandboxCommand());
+        c.addCommand(new AddDefaultSignupDataAndCreationInstallationCommand());
         return c;
     }
-
+    public static FacilioChain getSandboxDataCreationInstallationChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CreateAndInstallPackageCommand());
+        return c;
+    }
+    public static FacilioChain getSandboxDataInstallationChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new InstallPackageAloneCommand());
+        return c;
+    }
 }

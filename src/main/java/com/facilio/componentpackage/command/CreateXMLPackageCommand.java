@@ -13,6 +13,7 @@ import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.sandbox.utils.SandboxAPI;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.xml.builder.XMLBuilder;
@@ -82,7 +83,10 @@ public class CreateXMLPackageCommand extends FacilioCommand implements PostTrans
 		String downloadUrl = FacilioFactory.getFileStore().getDownloadUrl(fileId);
 		context.put(PackageConstants.DOWNLOAD_URL, downloadUrl);
 		context.put(PackageConstants.FILE_ID, fileId);
-
+		String domainName = (String) context.getOrDefault(PackageConstants.SANDBOX_DOMAIN_NAME, null);
+		if(domainName != null) {
+			SandboxAPI.setRecentPackageId(domainName, fileId);
+		}
 		return false;
 	}
 

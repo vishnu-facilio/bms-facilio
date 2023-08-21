@@ -8,6 +8,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.cache.FacilioCache;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.modules.FieldFactory;
@@ -42,6 +43,14 @@ public class GlobalVariableUtil {
         GlobalVariableGroupContext variableGroup = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), GlobalVariableGroupContext.class);
         return variableGroup;
     }
+    public static GlobalVariableGroupContext getVariableGroupForLinkName(String linkName) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getGlobalVariableGroupModule().getTableName())
+                .select(FieldFactory.getGlobalVariableGroupFields())
+                .andCondition(CriteriaAPI.getCondition("LINK_NAME","linkName", linkName, StringOperators.IS));
+        GlobalVariableGroupContext variableGroup = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), GlobalVariableGroupContext.class);
+        return variableGroup;
+    }
 
     /**
      * Deletes variable group, along with variables assigned with this group.
@@ -67,6 +76,13 @@ public class GlobalVariableUtil {
                 .table(ModuleFactory.getGlobalVariableModule().getTableName())
                 .select(FieldFactory.getGlobalVariableFields())
                 .andCondition(CriteriaAPI.getCondition("GROUP_ID", "groupId", String.valueOf(groupId), NumberOperators.EQUALS));
+        List<GlobalVariableContext> list = FieldUtil.getAsBeanListFromMapList(builder.get(), GlobalVariableContext.class);
+        return list;
+    }
+    public static List<GlobalVariableContext> getAllGlobalVariables() throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getGlobalVariableModule().getTableName())
+                .select(FieldFactory.getGlobalVariableFields());
         List<GlobalVariableContext> list = FieldUtil.getAsBeanListFromMapList(builder.get(), GlobalVariableContext.class);
         return list;
     }

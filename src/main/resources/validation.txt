@@ -2760,8 +2760,10 @@
 /api/v3/unrelated/:parentModuleName/fetchAll/:moduleName
 /api/v3/unrelated/:parentModuleName/fetch/:moduleName/:id
 /api/v1/setup/sandbox/add
+/api/v1/setup/sandbox/rerun
 /api/v1/setup/sandbox/get
 /api/v1/setup/sandbox/list
+/api/v1/setup/sandbox/count
 /api/v1/setup/sandbox/update
 /api/v1/setup/sandbox/changeStatus
 /api/v3/weather/allWeatherFields

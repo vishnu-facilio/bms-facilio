@@ -20,22 +20,20 @@ public class PreFillSandboxConfigCommand extends FacilioCommand {
             if(sandboxConfig.getStatusEnum() == null) {
                 sandboxConfig.setStatus(SandboxConfigContext.SandboxStatus.CREATION_IN_PROGRESS);
             }
-            if(!sandboxConfig.getSubDomain().startsWith("sandbox-")) {
-                sandboxConfig.setSubDomain("sandbox-"+sandboxConfig.getSubDomain());
+            if(sandboxConfig.getSubDomain().contains("-")) {
+                sandboxConfig.setSubDomain(sandboxConfig.getSubDomain().replaceAll("-","_"));
             }
+            sandboxConfig.getSandboxSharing().stream().forEach((sharingContext) -> {
+                if (sharingContext.getId() < 0 && sharingContext.getSharedBy() < 0)
+                {
+                    sharingContext.setSharedBy(AccountUtil.getCurrentUser().getOuid());
+                }
+            });
         }
         else {
             sandboxConfig.setSysModifiedTime(DateTimeUtil.getCurrenTime());
             sandboxConfig.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
         }
-
-        sandboxConfig.getSandboxSharing().stream().forEach((sharingContext) -> {
-            if (sharingContext.getId() < 0 && sharingContext.getSharedBy() < 0)
-            {
-                sharingContext.setSharedBy(AccountUtil.getCurrentUser().getOuid());
-            }
-        });
-
         return false;
     }
 }

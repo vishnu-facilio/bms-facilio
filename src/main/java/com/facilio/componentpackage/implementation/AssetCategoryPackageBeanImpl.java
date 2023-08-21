@@ -3,9 +3,11 @@ package com.facilio.componentpackage.implementation;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.chain.FacilioContext;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -194,6 +196,11 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
             List<ModuleBaseWithCustomFields> oldRecords = (List<ModuleBaseWithCustomFields>) PackageBeanUtil.getModuleDataListsForIds(keyList, module, V3AssetCategoryContext.class);
             V3Config v3Config = ChainUtil.getV3Config(module);
             V3Util.updateBulkRecords(module, v3Config, oldRecords, newAssetCategoryDatas, keyList, null, null, null, null, null, null, null, null, false, false, null, null);
+        }
+        List<Long> targetAssetCategoryIds = new ArrayList<>(idVsXMLComponents.keySet());
+        Map<String, Long> assetCategoriesUIdVsIdsFromPackage = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.ASSET_CATEGORY);
+        if(PackageUtil.isInstallThread()) {
+            PackageBeanUtil.deleteV3OldRecordFromTargetOrg(module.getName(), assetCategoriesUIdVsIdsFromPackage,targetAssetCategoryIds);
         }
     }
 

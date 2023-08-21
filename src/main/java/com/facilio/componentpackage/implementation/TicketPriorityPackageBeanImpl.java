@@ -5,9 +5,11 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -139,7 +141,13 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
 
     @Override
     public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
-
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule("ticketpriority");
+        List<Long> targetTicketPriorityIds = new ArrayList<>(idVsXMLComponents.keySet());
+        Map<String, Long> ticketPrioritiesUIdVsIdsFromPackage = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.TICKET_PRIORITY);
+        if(PackageUtil.isInstallThread()) {
+            PackageBeanUtil.deleteV3OldRecordFromTargetOrg(module.getName(), ticketPrioritiesUIdVsIdsFromPackage,targetTicketPriorityIds);
+        }
     }
 
     @Override

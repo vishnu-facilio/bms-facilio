@@ -11,6 +11,7 @@ import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import lombok.extern.log4j.Log4j;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +27,11 @@ public class ComponentPostTransactionCommand extends FacilioCommand {
                 .getFirstLevelElementListForTagName(PackageConstants.PackageXMLConstants.COMPONENT);
         PackageFolderContext componentsFolder = rootFolder.getFolder(PackageConstants.COMPONENTS_FOLDER_NAME);
 
+        List<Integer> skipComponents = (List<Integer>) context.getOrDefault(PackageConstants.SKIP_COMPONENTS, new ArrayList<>());
+
         for(XMLBuilder component : allComponents) {
             ComponentType componentType = ComponentType.valueOf(component.getAttribute(PackageConstants.PackageXMLConstants.COMPONENT_TYPE));
-            if (componentType.getComponentClass() == null || !componentType.isPostTransactionRequired() ) {
+            if (componentType.getComponentClass() == null || !componentType.isPostTransactionRequired() || skipComponents.contains(componentType.getIndex())) {
                 continue;
             }
 

@@ -33,6 +33,7 @@ public class AddOrUpdateSandboxCommand extends FacilioCommand {
 
             insert.save();
             sandboxConfig.setId((long) sandboxProps.get("id"));
+            sandboxConfig.setOrgId((long)sandboxProps.get("orgId"));
         } else {
             SandboxAPI.updateSandboxConfig(sandboxConfig, FieldFactory.getFacilioSandboxUpdatableFields());
         }

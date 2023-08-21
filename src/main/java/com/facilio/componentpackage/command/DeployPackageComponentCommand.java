@@ -39,9 +39,11 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 									.getFirstLevelElementListForTagName(PackageConstants.PackageXMLConstants.COMPONENT);
 		PackageFolderContext componentsFolder = rootFolder.getFolder(PackageConstants.COMPONENTS_FOLDER_NAME);
 
+		List<Integer> skipComponents = (List<Integer>) context.getOrDefault(PackageConstants.SKIP_COMPONENTS, new ArrayList<>());
+
 		for(XMLBuilder component : allComponents) {
 			ComponentType componentType = ComponentType.valueOf(component.getAttribute(PackageConstants.PackageXMLConstants.COMPONENT_TYPE));
-			if(componentType.getComponentClass() == null) {
+			if(componentType.getComponentClass() == null || skipComponents.contains(componentType.getIndex())) {
 				continue;
 			}
 			LOGGER.info("####Sandbox - Started Deploying ComponentType - " + componentType.name());

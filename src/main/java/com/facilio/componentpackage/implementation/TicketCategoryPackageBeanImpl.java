@@ -5,9 +5,11 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -108,7 +110,13 @@ public class TicketCategoryPackageBeanImpl implements PackageBean<TicketCategory
 
     @Override
     public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
-
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule("ticketcategory");
+        List<Long> targetTicketCategoryIds = new ArrayList<>(idVsXMLComponents.keySet());
+        Map<String, Long> ticketCategoriesUIdVsIdsFromPackage = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.TICKET_CATEGORY);
+        if(PackageUtil.isInstallThread()) {
+            PackageBeanUtil.deleteV3OldRecordFromTargetOrg(module.getName(), ticketCategoriesUIdVsIdsFromPackage,targetTicketCategoryIds);
+        }
     }
 
     @Override

@@ -9,4 +9,5 @@ topics:
   - { topic: __livereading__, deliverTo: ORG }
   - { topic: __multi_import__, deliverTo: ORG }
   - { topic: __multi_import_error_records__, deliverTo: ORG }
-  - { topic: __background__activity__live__/+/send, deliverTo: ALL }
+  - { topic: __background__activity__live__/+/send, deliverTo: ORG }
+  - { topic: __migration__/+/+/sandbox, deliverTo: ORG}

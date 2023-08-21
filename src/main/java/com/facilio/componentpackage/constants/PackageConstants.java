@@ -41,6 +41,7 @@ public class PackageConstants {
     public static final String FILE_ID = "fileId";
     public static final String SOURCE_ORG_ID = "sourceOrgId";
     public static final String TARGET_ORG_ID = "targetOrgId";
+    public static final String SANDBOX_DOMAIN_NAME = "sandboxDomainName";
     public static final String PACKAGE_ROOT_FOLDER = "Package_root_folder";
     public static final String PREVIOUS_VERSION = "previousVersion";
     public static final String PACKAGE_CONFIG_XML = "packageConfigXML";
@@ -531,5 +532,16 @@ public class PackageConstants {
 
         public static final String FILTER_CRITERIA = "Filter_Criteria";
         public static final String FORM_FIELD_DISPLAY_NAME = "Form_Field_Display_Name";
+    }
+    public class GlobalVariableConstants{
+        public static final String VARIABLE_NAME = "Variable_Name";
+        public static final String LINK_NAME = "Link_Name";
+        public static final String TYPE = "Type";
+        public static final String VALUE_STRING = "Value_String";
+        public static final String GROUP_LINK_NAME = "Group_Link_Name";
+    }
+    public class GlobalVariableGroupConstants{
+        public static final String LINK_NAME = "Link_Name";
+        public static final String GROUP_NAME = "Variable_Name";
     }
 }

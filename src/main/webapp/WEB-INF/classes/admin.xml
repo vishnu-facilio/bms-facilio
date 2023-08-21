@@ -322,6 +322,33 @@
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
 		</action>
+		<action name="sandboxRerun" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/sandboxRerun.jsp</result>
+		</action>
+		<action name="reRunSandbox" class="com.facilio.sandbox.action.SandboxAction" method="rerun" >
+			<result name="success" type="json">
+				<param name="root">result</param>
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+			</result>
+		</action>
+		<action name="doInstallAlone" class="com.facilio.sandbox.action.SandboxAction" method="doInstall" >
+			<result name="success" type="json">
+				<param name="root">result</param>
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+			</result>
+		</action>
 		<action name="multiCurrencyFieldMigration" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/multiCurrencyFieldMigration.jsp</result>
 		</action>

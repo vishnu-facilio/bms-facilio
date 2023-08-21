@@ -11367,7 +11367,7 @@ public class FieldFactory extends BaseFieldFactory {
 
     public static List<FacilioField> getFacilioSandboxFields() {
         List<FacilioField> fields = new ArrayList<>();
-        FacilioModule module = ModuleFactory.getSandboxModule();
+        FacilioModule module = ModuleFactory.getFacilioSandboxModule();
 
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
@@ -11375,21 +11375,24 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("subDomain", "DOMAIN_NAME", module, FieldType.STRING));
         fields.add(getField("sandboxOrgId", "SANDBOX_ORG_ID", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+        fields.add(getField("sandboxType", "SANDBOX_TYPE", module, FieldType.NUMBER));
         fields.add(getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.NUMBER));
         fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.NUMBER));
         fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("packageFileId", "PACKAGE_FILE_ID", module, FieldType.NUMBER));
         return fields;
     }
 
     public static List<FacilioField> getFacilioSandboxUpdatableFields() {
         List<FacilioField> fields = new ArrayList<>();
-        FacilioModule module = ModuleFactory.getSandboxModule();
+        FacilioModule module = ModuleFactory.getFacilioSandboxModule();
 
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+        fields.add(getField("sandboxType", "SANDBOX_TYPE", module, FieldType.NUMBER));
         fields.add(getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.NUMBER));
         fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
         return fields;

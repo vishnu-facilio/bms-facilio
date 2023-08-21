@@ -56,7 +56,10 @@ public enum ComponentType implements FacilioIntEnum {
     RELATIONSHIP(RelationshipPackageBeanImpl.class, MODULE, false),
     STATE_FLOW(StateFlowPackageBeanImpl.class,MODULE,false),
     STATE_TRANSITION(StateTransitionPackageBeanImpl.class,MODULE,false),
-    NOTIFICATION(NotificationPackageBeanImpl.class,MODULE,false)
+    NOTIFICATION(NotificationPackageBeanImpl.class,MODULE,false),
+    APPROVAL_STATE_FLOW(ApprovalStateFlowPackageBeanImpl.class,MODULE,false),
+    GLOBAL_GROUP_VARIABLE(GlobalVariableGroupPackageBeanImpl.class,MODULE,false),
+    GLOBAL_VARIABLE(GlobalVariablePackageBeanImpl.class,MODULE,false),
     ;
 
     public static final List<ComponentType> ORDERED_COMPONENT_TYPE_LIST = Collections.unmodifiableList(initOrderedList());
@@ -103,6 +106,9 @@ public enum ComponentType implements FacilioIntEnum {
             add(STATE_FLOW);
             add(STATE_TRANSITION);
             add(NOTIFICATION);
+            add(APPROVAL_STATE_FLOW);
+            add(GLOBAL_GROUP_VARIABLE);
+            add(GLOBAL_VARIABLE);
         }};
         return componentOrder;
     }

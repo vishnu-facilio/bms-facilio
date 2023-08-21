@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetTypeContext;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
@@ -33,6 +34,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
@@ -1215,6 +1217,19 @@ public class PackageBeanUtil {
         Map<String, Object> prop = ruleSelectBuilder.fetchFirst();
         return MapUtils.isNotEmpty(prop) ? (Long) prop.get("id") : -1;
 
+    }
+
+    public static void deleteV3OldRecordFromTargetOrg(String moduleName, Map<String, Long> sourceOrgComponentUIdVsId , List<Long> targetOrgComponentIds) throws Exception {
+        if (CollectionUtils.isNotEmpty(targetOrgComponentIds) && MapUtils.isNotEmpty(sourceOrgComponentUIdVsId)) {
+            targetOrgComponentIds.removeAll(sourceOrgComponentUIdVsId.values());
+            if (CollectionUtils.isNotEmpty(targetOrgComponentIds)) {
+                for (long id : targetOrgComponentIds) {
+                    JSONObject data = new JSONObject();
+                    data.put(moduleName, id);
+                    V3Util.deleteRecords(moduleName, data,null,null,false);
+                }
+            }
+        }
     }
 
 }

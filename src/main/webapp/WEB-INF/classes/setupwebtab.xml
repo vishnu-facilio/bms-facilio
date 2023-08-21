@@ -68,6 +68,10 @@
                 class="com.facilio.sandbox.action.SandboxAction"
                 method="get">
         </action>
+        <action name="count"
+                class="com.facilio.sandbox.action.SandboxAction"
+                method="count">
+        </action>
         <action name="add"
                 class="com.facilio.sandbox.action.SandboxAction"
                 method="add">
@@ -79,6 +83,10 @@
         <action name="changeStatus"
                 class="com.facilio.sandbox.action.SandboxAction"
                 method="changeStatus">
+        </action>
+        <action name="rerun"
+                class="com.facilio.sandbox.action.SandboxAction"
+                method="rerun">
         </action>
     </package>
 

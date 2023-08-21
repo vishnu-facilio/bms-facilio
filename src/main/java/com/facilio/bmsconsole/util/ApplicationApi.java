@@ -3080,6 +3080,7 @@ public class ApplicationApi {
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Import Data","importdata", WebTabContext.Type.IMPORT_DATA,null,appId,null,AccountUtil.FeatureLicense.IMPORT_DATA.getFeatureId()));
             webTabs.add(new WebTabContext("OData Configuration", "odatasettings", WebTabContext.Type.ODATA_CONFIGURATION, null, appId, null,AccountUtil.FeatureLicense.ODATA_API.getFeatureId()));
+            webTabs.add(new WebTabContext("Sandbox","sandbox", WebTabContext.Type.SANDBOX,null,appId,null,AccountUtil.FeatureLicense.SANDBOX.getFeatureId()));
 
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
 
@@ -3200,6 +3201,7 @@ public class ApplicationApi {
             webTabGroups.add(new WebTabGroupContext( "Data Administration","dataadministration", layout.getId(),101, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Import Data","importdata", WebTabContext.Type.IMPORT_DATA,null,appId,null,AccountUtil.FeatureLicense.IMPORT_DATA.getFeatureId()));
+            webTabs.add(new WebTabContext("Sandbox","sandbox", WebTabContext.Type.SANDBOX,null,appId,null,AccountUtil.FeatureLicense.SANDBOX.getFeatureId()));
 
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
 
@@ -3331,6 +3333,7 @@ public class ApplicationApi {
             webTabGroups.add(new WebTabGroupContext( "Data Administration","dataadministration", layout.getId(),101, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Import Data","importdata", WebTabContext.Type.IMPORT_DATA,null,appId,null,AccountUtil.FeatureLicense.IMPORT_DATA.getFeatureId()));
+            webTabs.add(new WebTabContext("Sandbox","sandbox", WebTabContext.Type.SANDBOX,null,appId,null,AccountUtil.FeatureLicense.SANDBOX.getFeatureId()));
 
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
 

@@ -23,13 +23,45 @@ public class SandboxConfigContext implements Serializable {
     private Long sysModifiedBy;
     private Long sandboxOrgId;
     private SharingContext<SingleSharingContext> sandboxSharing;
+    private SandboxType sandboxType;
+    public SandboxType getSandboxTypeEnum() {
+        return sandboxType;
+    }
+    public void setSandboxType(SandboxType sandboxType) {
+        this.sandboxType = sandboxType;
+    }
+    public int getSandboxType() {
+        if (sandboxType != null) {
+            return sandboxType.getIndex();
+        }
+        return -1;
+    }
+    public void setSandboxType(int sandboxType) {
+        this.sandboxType = SandboxType.valueOf(sandboxType);
+    }
+    public static enum SandboxType implements FacilioIntEnum {
+        CUSTOMIZATION,
+        CUSTOMIZATION_AND_DATA;
 
+        @Override
+        public String getValue() {
+            return name();
+        }
+
+        public static SandboxType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
     public static enum SandboxStatus implements FacilioIntEnum {
         ACTIVE,
         INACTIVE,
         CREATION_IN_PROGRESS,
         UPGRADE_IN_PROGRESS,
-        FAILED;
+        PACKAGE_FAILED,
+        INSTALL_FAILED;
 
         @Override
         public String getValue() {
@@ -60,6 +92,5 @@ public class SandboxConfigContext implements Serializable {
     public void setStatus(int status) {
         this.status = SandboxStatus.valueOf(status);
     }
-
 
 }
