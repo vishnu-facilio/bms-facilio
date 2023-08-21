@@ -3478,10 +3478,11 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public  static FacilioChain updateConnectedCategoryStatusChain(){
-        FacilioChain chain=getDefaultChain();
+    public  static FacilioChain updateConnectedCategoryStatusChain() {
+        FacilioChain chain = getDefaultChain();
         chain.addCommand(new UpdateAssetCategoryLevelStatusCommand());
         return chain;
+    }
     public static FacilioChain fetchSiteDetailsWithoutScopingCommand(){
         FacilioChain c=getDefaultChain();
         c.addCommand(new FetchSiteWithoutScoping());
