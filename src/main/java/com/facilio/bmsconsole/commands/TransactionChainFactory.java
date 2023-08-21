@@ -7030,6 +7030,15 @@ public class TransactionChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getCloneFormChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new CreateClonedFormCommand());
+		c.addCommand(new CloneValidationRuleCommand());
+		c.addCommand(new CloneFormSharingCommand());
+		c.addCommand(new CloneFormRuleCommand());
+		return c;
+	}
+
 	public static FacilioChain getFormSharingRolesChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetFormSharingRolesCommand());

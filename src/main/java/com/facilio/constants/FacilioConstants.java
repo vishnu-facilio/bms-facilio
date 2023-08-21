@@ -1990,9 +1990,11 @@ public class FacilioConstants {
 		public static final String CUSTOM_OBJECT = "customObject";
 		public static final String FORM_NAME = "formName";
 		public static final String FORM_ID = "formId";
+		public static final String CLONED_FORM_ID = "clonedFormId";
 		public static final String PARENT_FORM_ID = "parentFormId";
 		public static final String SUB_FORM_ID = "subFormId";
 		public static final String FORM = "form";
+		public static final String CLONED_FORM = "clonedForm";
 		public static final String SUB_FORM = "subForm";
 		public static final String FORMS_LIST = "formsList";
 		public static final String FORMS_RESPONSE_LIST = "formsResponseList";
@@ -2002,6 +2004,8 @@ public class FacilioConstants {
 		public static final String FORM_FIELD_ID = "formFieldId";
 		public static final String FORM_FIELDS = "formFields";
 		public static final String FORM_OBJECT = "formObject";
+
+		public static final String FORM_RULE_FORM_OBJECT = "##formRuleFormObject##";
 		public static final String FORM_TYPE = "formType";
 		public static final String APP_LINKNAME = "appLinkName";
 		public static final String HIDE_IN_LIST = "hideInList";

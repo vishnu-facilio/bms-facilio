@@ -34,6 +34,7 @@ public class DeleteFormRuleActionCommand extends FacilioCommand {
 
 
 		FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(selectRecordBuilder.fetchFirst(),FormRuleContext.class);
+		context.put(FormRuleAPI.OLD_FORM_RULE_CONTEXT,formRuleContext);
 
 		List<FormRuleActionContext> oldactions = FormRuleAPI.getFormRuleActionContext(formRule.getId());
 		List<FormRuleActionContext> newActions=formRule.getActions();

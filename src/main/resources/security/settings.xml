@@ -1322,6 +1322,12 @@
         </requestbody>
     </request>
 
+    <request path="/api/v2/forms/clone" method="POST">
+        <requestbody type="object">
+            <property name="appLinkName" type="string" mandatory="true"/>
+            <property name="formId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
 
     <request path="/api/v3/formrelation/addOrUpdate">
         <requestbody type="object">

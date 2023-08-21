@@ -19,6 +19,7 @@ public class DeleteFormRuleCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		
 		FormRuleContext formRule = (FormRuleContext)context.get(FormRuleAPI.FORM_RULE_CONTEXT);
+		FormRuleContext oldFormRule = (FormRuleContext) context.getOrDefault(FormRuleAPI.OLD_FORM_RULE_CONTEXT,new FormRuleContext());
 		List<FormRuleActionContext> actions = FormRuleAPI.getFormRuleActionContext(formRule.getId());
 
 		if(CollectionUtils.isNotEmpty(actions)){
@@ -30,7 +31,7 @@ public class DeleteFormRuleCommand extends FacilioCommand {
 			}
 		}
 
-		    if(formRule.getIsDefault()){
+		if(oldFormRule.getIsDefault()){
 			throw new IllegalArgumentException("Default form rule cannot be deleted");
 		}
 

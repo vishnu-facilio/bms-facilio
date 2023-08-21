@@ -692,6 +692,16 @@ public String getServicePortalForms() throws Exception{
 		return SUCCESS;
 	}
 
+	public String cloneFacilioForm() throws Exception {
+
+		FacilioChain facilioChain = TransactionChainFactory.getCloneFormChain();
+		FacilioContext context = facilioChain.getContext();
+		context.put(ContextNames.FORM_ID,getFormId());
+		context.put(ContextNames.APP_LINKNAME,getAppLinkName());
+		facilioChain.execute();
+
+		return SUCCESS;
+	}
 	public String getFormSharingRolesForForms() throws Exception{
 
 		FacilioChain facilioChain = TransactionChainFactory.getFormSharingRolesChain();

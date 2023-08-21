@@ -3193,6 +3193,12 @@
             <param name="tabType">SETUP</param>
 			<param name="setupTab">SERVICE_CATALOGS,APPROVALS,MODULES</param>
 		</action>
+		<action name="clone" class="com.facilio.bmsconsole.actions.FormAction"
+				method="cloneFacilioForm">
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
+		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="reorderForms" >

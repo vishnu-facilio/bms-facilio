@@ -48,6 +48,7 @@ public class FormRuleAPI {
 	public static final String FORM_RULE_RESULT_JSON = "formRuleResultJSON";
 	public static final String SUB_FORM_RULE_RESULT_JSON = "subFormRuleResultJSON";
 	public static final String FORM_RULE_CONTEXT = "formRuleContext";
+	public static final String OLD_FORM_RULE_CONTEXT = "oldFormRuleContext";
 	public static final String FORM_RULE_CONTEXTS = "formRuleContexts";
 	public static final String FORM_RULE_ACTION_CONTEXT = "formRuleActionContext";
 	

@@ -1,24 +1,5 @@
 package com.facilio.workflows.context;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.facilio.workflowv2.contexts.WorkflowFieldsRelContext;
-import com.facilio.workflowv2.contexts.WorkflowModuleRelContext;
-import com.facilio.workflowv2.contexts.WorkflowNameSpaceRelContext;
-import com.facilio.workflowv2.parser.ScriptValidator;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonToken;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.commons.collections4.MapUtils;
-import org.json.simple.JSONArray;
-
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
@@ -34,18 +15,32 @@ import com.facilio.scriptengine.context.ErrorListener;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
-import com.facilio.workflowlog.context.WorkflowLogContext;
 import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogStatus;
 import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
+import com.facilio.workflowv2.contexts.WorkflowFieldsRelContext;
+import com.facilio.workflowv2.contexts.WorkflowModuleRelContext;
+import com.facilio.workflowv2.contexts.WorkflowNameSpaceRelContext;
 import com.facilio.workflowv2.parser.ScriptParser;
 import com.facilio.workflowv2.parser.ScriptValidationException;
-
+import com.facilio.workflowv2.parser.ScriptValidator;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONArray;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Getter
 @Setter
@@ -128,7 +123,7 @@ public class WorkflowContext extends ScriptContext{
 	String workflowString;
 	Map<String,Object> globalParameters;
 	List<Object> params;
-	
+
 	long recordId;
 	public long getRecordId() {
 		return recordId;

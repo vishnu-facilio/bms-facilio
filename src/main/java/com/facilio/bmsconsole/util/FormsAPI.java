@@ -462,7 +462,6 @@ public class FormsAPI {
 				if (StringUtils.isEmpty(f.getName())) {
 					f.setName("Default Section");
 				}
-				f.setLinkName(f.getName().toLowerCase().replaceAll("[^a-zA-Z0-9_]+", ""));
 				f.setId(-1);
 				f.setFormId(formId);
 				f.setOrgId(orgId);
@@ -706,7 +705,6 @@ public class FormsAPI {
 						} else if (Objects.equals(formField.getName(), "siteId")) {
 							field = FieldFactory.getSiteIdField(module);
 							formField.setField(field);
-							formField.setFieldId(field.getFieldId());
 						}
 					}
 				}
@@ -2286,13 +2284,8 @@ public class FormsAPI {
 		for(FacilioForm subForm : subFormList){
 
 			FacilioModule subFormModule = subForm.getModule();
-			if(!subModulesName.contains(subFormModule.getName())){
-				continue;
-			}
 
-			if(CollectionUtils.isNotEmpty(subForm.getAppLinkNamesForForm())){
-				subForm.setAppLinkNamesForForm(Arrays.asList(defaultForm.getAppLinkName()));
-			}else if (!subForm.getAppLinkNamesForForm().contains(defaultForm.getAppLinkName())){
+			if(!subModulesName.contains(subFormModule.getName()) && (!subForm.getAppLinkNamesForForm().contains(defaultForm.getAppLinkName()) || CollectionUtils.isEmpty(subForm.getAppLinkNamesForForm()))){
 				continue;
 			}
 
@@ -2360,5 +2353,66 @@ public class FormsAPI {
 
 		addFormSections(parentFormId,Collections.singletonList(subFormSection));
 
+	}
+
+	public static FacilioForm getClonedForm(FacilioForm oldForm, String appLinkName,String clonedFormName) throws Exception {
+
+		if (oldForm == null && StringUtils.isEmpty(appLinkName)) {
+			throw new IllegalArgumentException("Form id or app name cannot be empty.");
+		}
+
+		String moduleName = oldForm.getModule().getName();
+		long systemTime = System.currentTimeMillis();
+		User currentUser = AccountUtil.getCurrentUser();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName);
+		FacilioForm clonedForm = FieldUtil.cloneBean(oldForm, FacilioForm.class);
+		clonedForm.setName(clonedFormName);
+		clonedForm.setId(-1l);
+		clonedForm.setAppLinkName(appLinkName);
+		clonedForm.setAppId(application.getId());
+		clonedForm.setType(FacilioForm.Type.FORM);
+		clonedForm.setIsSystemForm(false);
+
+		for (FormSection section : clonedForm.getSections()) {
+
+			section.setSysCreatedBy(systemTime);
+			section.setSysModifiedTime(systemTime);
+
+			if (currentUser != null) {
+				section.setSysCreatedBy(currentUser.getPeopleId());
+				section.setSysModifiedBy(currentUser.getPeopleId());
+			}
+
+			if (section.getSectionTypeEnum() == FormSection.SectionType.SUB_FORM) {
+
+				String signupAppLinkName = SignupUtil.getSignupApplicationLinkName();
+				FacilioForm subForm =  section.getSubForm();
+				FacilioModule subFormModule = subForm.getModule();
+				long subFormId = section.getSubFormId();
+				String clonedSubFormName = "copy_of_"+subForm.getName();
+
+				if(subForm==null && subFormId>0){
+					subForm = getFormFromDB(subFormId);
+				}
+
+				FacilioForm clonedSubForm = getClonedForm(subForm,signupAppLinkName,clonedSubFormName);
+				clonedSubForm.setId(-1l);
+				long newSubFormId = FormsAPI.createForm(clonedSubForm,subFormModule);
+
+				section.setSectionType(FormSection.SectionType.SUB_FORM);
+				section.setSubFormId(newSubFormId);
+
+			} else {
+
+				section.setSectionType(FormSection.SectionType.FIELDS);
+				FormsAPI.setFieldDetails(modBean, section.getFields(), moduleName);
+
+			}
+
+		}
+
+		return clonedForm;
 	}
 }

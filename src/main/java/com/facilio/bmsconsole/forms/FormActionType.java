@@ -1,16 +1,5 @@
 package com.facilio.bmsconsole.forms;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -27,6 +16,16 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public enum FormActionType {
 
@@ -249,12 +248,15 @@ public enum FormActionType {
 			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
 			
 			Map<String,Object> formData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
-			
+
+			FacilioForm form = formRuleActionContext.getRuleContext().getFormContext();
+			formData.put(ContextNames.FORM_RULE_FORM_OBJECT,form);
+
 			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
 			
 			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(formRuleActionContext.getWorkflowId());
 			workflowContext.setLogNeeded(true);
-			
+
 			FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
 			
 			FacilioContext context = chain.getContext();
