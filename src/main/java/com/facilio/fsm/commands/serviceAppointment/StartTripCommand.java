@@ -13,7 +13,8 @@ public class StartTripCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
         LocationContext startLocation = (LocationContext) context.get(FacilioConstants.Trip.START_LOCATION);
-        ServiceAppointmentUtil.startTripForAppointment(recordId,startLocation);
+        TripContext trip = ServiceAppointmentUtil.startTripForAppointment(recordId,startLocation);
+        context.put(FacilioConstants.ContextNames.DATA,trip);
         return false;
     }
 }

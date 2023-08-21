@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.attendance.Attendance;
+import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.bmsconsoleV3.util.AttendanceAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
@@ -21,10 +22,12 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fsm.context.*;
 import com.facilio.fsm.exception.FSMErrorCode;
 import com.facilio.fsm.exception.FSMException;
+import com.facilio.fsm.signup.TripModule;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -436,7 +439,8 @@ public class ServiceAppointmentUtil {
         }
     }
 
-    public static void startTripForAppointment(Long appointmentId, LocationContext location) throws Exception {
+    public static TripContext startTripForAppointment(Long appointmentId, LocationContext location) throws Exception {
+        TripContext trip = null;
         String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
@@ -502,7 +506,9 @@ public class ServiceAppointmentUtil {
                             }
                         }
                         //Creating new trip record
-                        V3Util.createRecord(tripModule,FieldUtil.getAsProperties(newTrip));
+                        FacilioContext tripContext = V3Util.createRecord(tripModule,FieldUtil.getAsProperties(newTrip));;
+                        Map<String, List> recordMap = (Map<String, List>) tripContext.get(Constants.RECORD_MAP);
+                        trip = (TripContext) recordMap.get(FacilioConstants.Trip.TRIP).get(0);
                     }
                 }
                 //updating service appointment status to en-route only if it is in scheduled or dispatched state
@@ -515,6 +521,7 @@ public class ServiceAppointmentUtil {
 
             }
         }
+        return trip;
     }
 
     public static void endTripForAppointment(Long appointmentId, LocationContext location) throws Exception {

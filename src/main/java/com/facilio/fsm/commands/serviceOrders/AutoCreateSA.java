@@ -38,7 +38,7 @@ public class AutoCreateSA extends FacilioCommand {
             if(order.isAutoCreateSa()){
                 ServiceAppointmentContext sa = new ServiceAppointmentContext();
                 sa.setAppointmentType(ServiceAppointmentContext.AppointmentType.SERVICE_WORK_ORDER);
-                sa.setName("Service Appointment for "+ order.getName() + "(AC)");
+                sa.setName(order.getName());
                 sa.setDescription(order.getDescription());
                 sa.setScheduledStartTime(order.getScheduledStartTime());
                 sa.setScheduledEndTime(order.getScheduledEndTime());

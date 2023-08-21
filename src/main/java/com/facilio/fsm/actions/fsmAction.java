@@ -148,6 +148,10 @@ public class fsmAction extends V3Action {
                 context.put(FacilioConstants.Trip.START_LOCATION,getStartLocation());
                 FacilioChain startTripChain = FsmTransactionChainFactoryV3.startTripChain();
                 startTripChain.execute(context);
+                TripContext result = (TripContext) context.get(FacilioConstants.ContextNames.DATA);
+                if(result != null){
+                    setData(FacilioConstants.Trip.TRIP,result);
+                }
                 successMsg.put("message","Trip Started Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.END_TRIP:
