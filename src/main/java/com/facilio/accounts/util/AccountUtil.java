@@ -614,7 +614,8 @@ public class AccountUtil {
 		DISABLE_FORM_VALIDATION_RULE(149,getExponentValue(22),LicenseMapping.GROUP3LICENSE),//2^22
 		SENSOR_RULE(150,getExponentValue(23),new String[]{ContextNames.SENSOR_ROLLUP_ALARM},LicenseMapping.GROUP3LICENSE),//2^23
 		WEAVE(151,getExponentValue(24),LicenseMapping.GROUP3LICENSE),//2^24
-		METER(152, getExponentValue(25), new String[]{FacilioConstants.Meter.METER,FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE}, LicenseMapping.GROUP3LICENSE);//2^25
+		METER(152, getExponentValue(25), new String[]{FacilioConstants.Meter.METER,FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE}, LicenseMapping.GROUP3LICENSE),//2^25
+		WIZARD_RESOURCE_FILTER(153,getExponentValue(26),LicenseMapping.GROUP3LICENSE);//2^26
 
 		public int featureId;
 		private long license;
