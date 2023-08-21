@@ -5,7 +5,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.v3.context.Constants;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -356,7 +358,13 @@ public class DashboardFilterUtil {
 
 				}
 		 }
-		 
+		 else if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && widget.getWidgetType().equals(WidgetType.FILTER)){
+			 DashboardUserFilterContext userFilterContext = DashboardFilterUtil.getDashboardUserFiltersForWidgetId(widget.getId());
+			 if(userFilterContext.getModuleName() != null){
+				 ModuleBean modBean = Constants.getModBean();
+				 moduleId = modBean.getModule(userFilterContext.getModuleName()).getModuleId();
+			 }
+		 }
 		 
 		 return moduleId;
 		 
@@ -685,5 +693,19 @@ public static Criteria getUserFilterCriteriaForModule(DashboardCustomScriptFilte
 			}
 		}
 		return filter;
+	}
+	public static DashboardUserFilterContext getDashboardUserFiltersForWidgetId(Long widgetId) throws Exception {
+		DashboardUserFilterContext newFilterContext = new DashboardUserFilterContext();
+		if(widgetId != null){
+			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+					.table(ModuleFactory.getDashboardUserFilterModule().getTableName())
+					.select(FieldFactory.getDashboardUserFilterFields())
+					.andCondition(CriteriaAPI.getCondition("WIDGET_ID","widget_id",String.valueOf(widgetId),NumberOperators.EQUALS));
+			List<Map<String, Object>> props = selectRecordBuilder.get();
+			if(props != null && !props.isEmpty()){
+				newFilterContext = FieldUtil.getAsBeanListFromMapList(props,DashboardUserFilterContext.class).get(0);
+			}
+		}
+		return newFilterContext;
 	}
 }

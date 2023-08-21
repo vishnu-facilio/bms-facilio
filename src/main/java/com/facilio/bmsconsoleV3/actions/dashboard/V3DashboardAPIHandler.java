@@ -673,6 +673,9 @@ public class V3DashboardAPIHandler {
 
         for (DashboardWidgetContext dashboardWidgetContext : widgets)
         {
+            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && trigger_widget != null && trigger_widget.getId() == dashboardWidgetContext.getId()){
+                continue;
+            }
             if(dashboardWidgetContext.getWidgetType() != null && dashboardWidgetContext.getWidgetType().equals(DashboardWidgetContext.WidgetType.SECTION))
             {
                 continue;
@@ -748,7 +751,7 @@ public class V3DashboardAPIHandler {
         }
     }
     public static void constructReadingFilter(DashboardFilterContext dashboard_filter, DashboardExecuteMetaContext dashboard_execute_data, List<DashboardWidgetContext> widgets_list)throws Exception {
-        if(dashboard_filter != null && dashboard_filter.getDashboardUserFilters().size() > 0){
+        if(dashboard_filter != null && dashboard_filter.getDashboardUserFilters() !=  null && dashboard_filter.getDashboardUserFilters().size() > 0){
             for (DashboardUserFilterContext user_filter : dashboard_filter.getDashboardUserFilters()) {
                 if(user_filter != null && user_filter.getModuleName() != null){
                     List<DashboardReadingWidgetFilterContext> mappingIds = DashboardFilterUtil.getReadingFilterMappingsForFilterId(user_filter.getWidget_id(), null);
