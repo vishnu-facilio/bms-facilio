@@ -5,6 +5,7 @@ import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.ItemTransactionRemainingQuantityRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.PurchasedItemsQuantityRollUpCommandV3;
 import com.facilio.chain.FacilioChain;
+import com.facilio.fsm.commands.actuals.GetServiceOrderItemFromReservation;
 import com.facilio.fsm.commands.actuals.UpdateServiceInvReservationCommand;
 import com.facilio.fsm.commands.plans.ReserveServiceOrderPlannedItemsCommand;
 import com.facilio.fsm.commands.plans.SetServiceOrderPlannedItemsCommand;
@@ -254,6 +255,11 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain stopTimeSheetChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new StopTimeSheetCommand());
+        return c;
+    }
+    public static FacilioChain getServiceOrderItemFromReservation(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetServiceOrderItemFromReservation());
         return c;
     }
 }

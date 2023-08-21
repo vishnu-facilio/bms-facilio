@@ -2023,4 +2023,11 @@
             <param name="status">{1}</param>
         </action>
     </package>
+    <package name="serviceOrderItem" namespace="/api/v3/serviceOrderItem"
+             extends="v3Api">
+        <action name="serviceOrderItemFromReservation"
+                class="com.facilio.fsm.actions.ServiceOrderItemsAction"
+                method="serviceOrderItemFromReservation">
+        </action>
+    </package>
 </struts>

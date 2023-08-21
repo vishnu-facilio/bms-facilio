@@ -80,6 +80,7 @@ public class ServiceInventoryReservationModule extends BaseModuleConfig {
         fields.add(requestedBy);
 
         LookupField itemType = FieldFactory.getDefaultField("itemType","Item Type","ITEM_TYPE",FieldType.LOOKUP);
+        itemType.setMainField(true);
         itemType.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.ITEM_TYPES),"Item type module doesn't exist."));
         fields.add(itemType);
 
