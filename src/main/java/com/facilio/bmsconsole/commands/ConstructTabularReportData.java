@@ -1,10 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.BaseLineAPI;
@@ -43,6 +39,8 @@ public class ConstructTabularReportData extends FacilioCommand {
     private LinkedHashMap<String, String> tableAlias = new LinkedHashMap<String, String>();
     private Context globalContext;
     private int maxLimit = 2000;
+
+    private List<FacilioModule.ModuleType> READING_MODULE_TYPES = new ArrayList<>(Arrays.asList(FacilioModule.ModuleType.READING, FacilioModule.ModuleType.READING_RULE, FacilioModule.ModuleType.SYSTEM_SCHEDULED_FORMULA, FacilioModule.ModuleType.LIVE_FORMULA));
 //    private Boolean isDataColumnSort=false;
 
     @Override
@@ -276,7 +274,7 @@ public class ConstructTabularReportData extends FacilioCommand {
             if (reportContext.getTypeEnum() == ReportType.PIVOT_REPORT) {
                 if(data.getBaselineLabel() != null && ((data.getDateFieldId() > 0 && data.getDatePeriod() > 0) || (data.getReadingField() != null && data.getModuleType() != null && data.getModuleType().equals("2")))){
                     FacilioField dateField = null;
-                    if(yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING || yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING_RULE)
+                    if(yField.getModule().getTypeEnum() != null && READING_MODULE_TYPES.contains(yField.getModule().getTypeEnum()))
                         dateField = FieldFactory.getDateField("ttime", "TTIME", yField.getModule()).clone();
                     else
                         dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName()).clone();
@@ -367,7 +365,8 @@ public class ConstructTabularReportData extends FacilioCommand {
                         otherCrit.addAndCondition(newCond);
                     }
                     dataPointContext.setOtherCriteria(otherCrit);
-                } else if(data.getStartTime() > -1 && data.getEndTime() > -1 && data.getDatePeriod() == 20 && data.getReadingField() == null){
+                }
+                else if(data.getStartTime() > -1 && data.getEndTime() > -1 && data.getDatePeriod() == 20 && data.getReadingField() == null){
                     FacilioField dateField = modBean.getField(data.getDateFieldId(), yAxisModule.getName()).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
                     DateRange range = new DateRange(data.getStartTime(), data.getEndTime());
@@ -383,8 +382,9 @@ public class ConstructTabularReportData extends FacilioCommand {
                     Condition newCond = CriteriaAPI.getCondition(dateField, dateOperator);
                     otherCrit.addAndCondition(newCond);
                     dataPointContext.setOtherCriteria(otherCrit);
-                } else if (startTime > 0 && endTime > 0
-                        && (yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING || yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING_RULE) && dateFieldId > 0 && !data.isExcludeFromTimelineFilter() ) {
+                } else if ((startTime > 0 && endTime > 0
+                         && dateFieldId > 0 && !data.isExcludeFromTimelineFilter())
+                        && READING_MODULE_TYPES.contains(yField.getModule().getTypeEnum())) {
                     FacilioField dateField = FieldFactory
                             .getDateField("ttime", "TTIME", yField.getModule()).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
@@ -393,8 +393,19 @@ public class ConstructTabularReportData extends FacilioCommand {
                     Condition newCond = CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN);
                     otherCrit.addAndCondition(newCond);
                     dataPointContext.setOtherCriteria(otherCrit);
-                } else if (data.getDatePeriod() > 0
-                        && (yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING || yField.getModule().getTypeEnum() == FacilioModule.ModuleType.READING_RULE)) {
+                }
+                else if(data.isExcludeFromTimelineFilter() && data.getStartTime() > -1 && data.getEndTime() > -1 && data.getDatePeriod() == 20 && data.getReadingField() != null && READING_MODULE_TYPES.contains(yField.getModule().getTypeEnum())){
+                    FacilioField dateField = FieldFactory
+                            .getDateField("ttime", "TTIME", yField.getModule()).clone();
+                    dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));
+                    DateRange range = new DateRange(data.getStartTime(), data.getEndTime());
+                    Criteria otherCrit = new Criteria();
+                    Condition newCond = CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN);
+                    otherCrit.addAndCondition(newCond);
+                    dataPointContext.setOtherCriteria(otherCrit);
+                }
+                else if (data.getDatePeriod() > 0
+                        && READING_MODULE_TYPES.contains(yField.getModule().getTypeEnum())) {
                     FacilioField dateField = FieldFactory
                             .getDateField("ttime", "TTIME", yField.getModule()).clone();
                     dateField.setTableAlias(getAndSetTableAlias(dateField.getModule().getName()));

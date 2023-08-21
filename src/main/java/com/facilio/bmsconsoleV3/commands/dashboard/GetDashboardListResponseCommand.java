@@ -62,6 +62,9 @@ public class GetDashboardListResponseCommand extends FacilioCommand {
         {
             dashboard_list_prop.getFolders().removeIf(folder -> (folder.getDashboards() == null || folder.getDashboards().size() == 0));
         }
+        if(dashboard_list_prop.isOnlyMobile() && dashboard_list_prop.getFolders() != null && dashboard_list_prop.getFolders().size() > 2){
+            dashboard_list_prop.setFolders(DashboardUtil.sortDashboardFolderByOrder(dashboard_list_prop.getFolders()));
+        }
 
     }
 }

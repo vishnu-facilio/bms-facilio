@@ -127,7 +127,7 @@ public class PivotFormulaColumnCommand extends FacilioCommand {
         scriptString.add("{");
         if(range != null && range.getStartTime() > 0 && range.getEndTime() > 0) {
             scriptString.add("startTime=" +range.getStartTime()+";");
-            scriptString.add("endTime=" +range.getStartTime()+";");
+            scriptString.add("endTime=" +range.getEndTime()+";");
         }
         scriptString.add("for each index, value in data {");
         String varInitTemplate = "${variable} = new NameSpace(\"map\").get(value, \"${alias}\");";

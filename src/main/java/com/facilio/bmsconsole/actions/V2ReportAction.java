@@ -2793,6 +2793,7 @@ public class V2ReportAction extends FacilioAction {
                     }
                 }
                 if (records_list != null && records_list.size() > limit) {
+                    setResult("showLimitBubble", Boolean.TRUE);
                     List<LinkedHashMap> firstNElementsList = records_list.stream().limit(limit).collect(Collectors.toList());
                     dataresult.put("records", firstNElementsList);
                     setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, dataresult);
