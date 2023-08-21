@@ -24,14 +24,14 @@ public class CheckForExistingTripsCommand extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(trips)){
             for(TripContext trip : trips){
-//                if(trip.getPeople() != null && trip.getStartTime() > 0){
-//                    List<TimeSheetContext> records = ServiceAppointmentUtil.getTimeSheetsForTimeRange(trip.getPeople().getId(), trip.getStartTime(), trip.getEndTime());
-//                    if(CollectionUtils.isNotEmpty(records)){
-//                        throw new FSMException(FSMErrorCode.SA_TRIP_ALREADY_RUNNING);
-//                    }
-//                } else {
-//                    throw new FSMException(FSMErrorCode.TRIP_NOT_ENOUGH_DETAILS);
-//                }
+                if(trip.getPeople() != null && trip.getStartTime() > 0){
+                    List<TripContext> records = ServiceAppointmentUtil.getTripsForTimeRange(trip.getPeople().getId(), trip.getStartTime(), trip.getEndTime());
+                    if(CollectionUtils.isNotEmpty(records)){
+                        throw new FSMException(FSMErrorCode.SA_TRIP_ALREADY_RUNNING);
+                    }
+                } else {
+                    throw new FSMException(FSMErrorCode.TRIP_NOT_ENOUGH_DETAILS);
+                }
             }
         }
         return false;

@@ -750,7 +750,7 @@ public class ServiceAppointmentUtil {
                 .module(tripModule)
                 .beanClass(TripContext.class)
                 .select(tripFields)
-                .andCondition(CriteriaAPI.getCondition(tripFieldMap.get("fieldAgent"),String.valueOf(peopleId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(tripFieldMap.get("people"),String.valueOf(peopleId),NumberOperators.EQUALS))
                 .andCriteria(timeCriteria)
                 ;
         List<TripContext> tripContexts = tripBuilder.get();
