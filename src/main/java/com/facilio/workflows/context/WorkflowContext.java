@@ -1,14 +1,9 @@
 package com.facilio.workflows.context;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -251,10 +246,9 @@ public class WorkflowContext extends ScriptContext{
 		return variableResultMap;
 	}
 
-
-	private List<WorkflowModuleRelContext> moduleRels=new ArrayList<>();
-	private List<WorkflowNameSpaceRelContext> nameSpaceRels= new ArrayList<>();
-	private List<WorkflowFieldsRelContext> fieldRels= new ArrayList<>();
+	private Set<WorkflowModuleRelContext> moduleRels=new TreeSet<>();
+	private Set<WorkflowNameSpaceRelContext> nameSpaceRels= new TreeSet<>();
+	private Set<WorkflowFieldsRelContext> fieldRels= new TreeSet<>();
 	public void setVariableResultMap(Map<String, Object> variableToExpresionMap) {
 		this.variableResultMap = variableToExpresionMap;
 	}

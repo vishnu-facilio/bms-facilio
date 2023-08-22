@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowHistoryUtil;
 import com.facilio.workflowv2.util.WorkflowRelUtil;
 import org.apache.commons.chain.Context;
 
@@ -41,6 +42,8 @@ public class AddWorkflowCommand extends FacilioCommand {
 
 		WorkflowUtil.scriptSyntaxValidation(workflow);
 		workflow.validateScript();
+		WorkflowHistoryUtil.trackWorkflowVersionHistory(workflow);
+
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getWorkflowModule().getTableName())
@@ -52,6 +55,7 @@ public class AddWorkflowCommand extends FacilioCommand {
 		
 		workflow.setId((Long) props.get("id"));
 		WorkflowRelUtil.addWorkflowRelations(workflow);
+		WorkflowHistoryUtil.trackWorkflowVersionHistory(workflow);
 		return false;
 	}
 

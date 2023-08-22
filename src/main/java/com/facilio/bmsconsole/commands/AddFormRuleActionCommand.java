@@ -19,14 +19,18 @@ public class AddFormRuleActionCommand extends FacilioCommand {
 		for(FormRuleActionContext action :formRule.getActions()) {
 			
 			action.setFormRuleId(formRule.getId());
-			if (action.getWorkflow() != null) {
-				long workflowId = WorkflowUtil.addWorkflow(action.getWorkflow());
-				action.setWorkflowId(workflowId);
-			}
-			
-			FormRuleAPI.addFormRuleActionContext(action);
-			
-			if (action.getActionTypeEnum() != FormActionType.EXECUTE_SCRIPT) {
+
+			if (action.getActionTypeEnum() == FormActionType.EXECUTE_SCRIPT) {
+				Long workflowId = action.getWorkflow().getId();
+				if(workflowId > 0){
+					WorkflowUtil.updateWorkflow(action.getWorkflow(), workflowId);
+				}else{
+					workflowId = WorkflowUtil.addWorkflow(action.getWorkflow());
+					action.setWorkflowId(workflowId);
+					FormRuleAPI.addFormRuleActionContext(action);
+				}
+			}else {
+				FormRuleAPI.addFormRuleActionContext(action);
 				FormRuleAPI.addFormRuleActionFieldsContext(action);
 			}
 			

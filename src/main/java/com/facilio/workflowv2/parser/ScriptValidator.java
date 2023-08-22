@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import com.facilio.modules.FacilioModule.ModuleType;
 
 
 /** This Validator is used to validate script on save(creation of workflow) */
@@ -40,6 +41,10 @@ public class ScriptValidator extends CommonParser<Value> {
     private String nameSpace;
 
     private Value assignmentValue = null;
+
+    public static List <Integer> skipModuleType = new ArrayList<>();
+    public static List<String> scriptWhiteListedModules= new ArrayList<>();
+
 
     private Map<String, Value> varMemoryMap = new HashMap<String, Value>();
 
@@ -55,6 +60,175 @@ public class ScriptValidator extends CommonParser<Value> {
             return varMemoryMap.get(key);
         }
         return null;
+    }
+
+    static {
+        // Addition Module Type to skip Validation
+        skipModuleType.add(ModuleType.READING.getValue());
+        skipModuleType.add(ModuleType.SCHEDULED_FORMULA.getValue());
+        skipModuleType.add(ModuleType.LIVE_FORMULA.getValue());
+        skipModuleType.add(ModuleType.SYSTEM_SCHEDULED_FORMULA.getValue());
+        skipModuleType.add(ModuleType.PREDICTED_READING.getValue());
+        skipModuleType.add(ModuleType.ML_FORECASTING_DATA.getValue());
+        skipModuleType.add(ModuleType.ML_LOG_READING.getValue());
+        skipModuleType.add(ModuleType.ML_READING.getValue());
+        skipModuleType.add(ModuleType.LOOKUP_REL_MODULE.getValue());
+        skipModuleType.add(ModuleType.ENUM_REL_MODULE.getValue());
+        skipModuleType.add(ModuleType.READING_AGGREGATION.getValue());
+        skipModuleType.add(ModuleType.CUSTOM_MODULE_DATA_FAILURE_CLASS_RELATIONSHIP.getValue());
+        skipModuleType.add(ModuleType.CLASSIFICATION_DATA.getValue());
+        skipModuleType.add(ModuleType.READING_RULE.getValue());
+
+        // Addition of script allowed modules:
+        scriptWhiteListedModules.add("invitevisitor");
+        scriptWhiteListedModules.add("visitorlogging");
+        scriptWhiteListedModules.add("newsandinformationnotes");
+        scriptWhiteListedModules.add("qandaQuestion");
+        scriptWhiteListedModules.add("basespace");
+        scriptWhiteListedModules.add("visitorType");
+        scriptWhiteListedModules.add("requestForQuotation");
+        scriptWhiteListedModules.add("building");
+        scriptWhiteListedModules.add("warrantycontractlineitems");
+        scriptWhiteListedModules.add("controlActionCommand");
+        scriptWhiteListedModules.add("quote");
+        scriptWhiteListedModules.add("peopleGroupMember");
+        scriptWhiteListedModules.add("purchaseorder");
+        scriptWhiteListedModules.add("neighbourhood");
+        scriptWhiteListedModules.add("quoteterms");
+        scriptWhiteListedModules.add("tenant");
+        scriptWhiteListedModules.add("announcement");
+        scriptWhiteListedModules.add("qandaPage");
+        scriptWhiteListedModules.add("requester");
+        scriptWhiteListedModules.add("audience");
+        scriptWhiteListedModules.add("item");
+        scriptWhiteListedModules.add("assetdepreciationRel");
+        scriptWhiteListedModules.add("pmTrigger");
+        scriptWhiteListedModules.add("assetbreakdown");
+        scriptWhiteListedModules.add("inspectionTemplate");
+        scriptWhiteListedModules.add("mvproject");
+        scriptWhiteListedModules.add("facilityBookingInternalAttendee");
+        scriptWhiteListedModules.add("crafts");
+        scriptWhiteListedModules.add("readingrule");
+        scriptWhiteListedModules.add("deliveryArea");
+        scriptWhiteListedModules.add("workorder");
+        scriptWhiteListedModules.add("admindocuments");
+        scriptWhiteListedModules.add("readingalarm");
+        scriptWhiteListedModules.add("pmResourcePlanner");
+        scriptWhiteListedModules.add("role");
+        scriptWhiteListedModules.add("businesshours");
+        scriptWhiteListedModules.add("newsandinformationattachments");
+        scriptWhiteListedModules.add("insuranceattachments");
+        scriptWhiteListedModules.add("desks");
+        scriptWhiteListedModules.add("requestForQuotationLineItems");
+        scriptWhiteListedModules.add("labour");
+        scriptWhiteListedModules.add("purchaserequestlineitems");
+        scriptWhiteListedModules.add("workorderCost");
+        scriptWhiteListedModules.add("warrantycontracts");
+        scriptWhiteListedModules.add("ticketattachments");
+        scriptWhiteListedModules.add("energymeter");
+        scriptWhiteListedModules.add("toolTypes");
+        scriptWhiteListedModules.add("assettype");
+        scriptWhiteListedModules.add("workpermit");
+        scriptWhiteListedModules.add("sensorrollupalarm");
+        scriptWhiteListedModules.add("inductionTemplate");
+        scriptWhiteListedModules.add("peoplenotes");
+        scriptWhiteListedModules.add("purchaserequest");
+        scriptWhiteListedModules.add("ticketnotes");
+        scriptWhiteListedModules.add("receivable");
+        scriptWhiteListedModules.add("lockers");
+        scriptWhiteListedModules.add("readingalarmoccurrence");
+        scriptWhiteListedModules.add("people");
+        scriptWhiteListedModules.add("dealsandoffersattachments");
+        scriptWhiteListedModules.add("site");
+        scriptWhiteListedModules.add("inspectionResponse");
+        scriptWhiteListedModules.add("audienceSharing");
+        scriptWhiteListedModules.add("qandaMcqSingleOptions");
+        scriptWhiteListedModules.add("dealsandoffers");
+        scriptWhiteListedModules.add("watermeter");
+        scriptWhiteListedModules.add("qandaAnswer");
+        scriptWhiteListedModules.add("asset");
+        scriptWhiteListedModules.add("alarmseverity");
+        scriptWhiteListedModules.add("facility");
+        scriptWhiteListedModules.add("clientcontact");
+        scriptWhiteListedModules.add("tasksection");
+        scriptWhiteListedModules.add("insurance");
+        scriptWhiteListedModules.add("tenantcontact");
+        scriptWhiteListedModules.add("qandaAnswerattachments");
+        scriptWhiteListedModules.add("storeRoom");
+        scriptWhiteListedModules.add("tenantspaces");
+        scriptWhiteListedModules.add("quoteattachments");
+        scriptWhiteListedModules.add("pmPlanner");
+        scriptWhiteListedModules.add("employee");
+        scriptWhiteListedModules.add("workorderItem");
+        scriptWhiteListedModules.add("space");
+        scriptWhiteListedModules.add("taskattachments");
+        scriptWhiteListedModules.add("ticketcategory");
+        scriptWhiteListedModules.add("alarmoccurrence");
+        scriptWhiteListedModules.add("purchaseorderlineitems");
+        scriptWhiteListedModules.add("plannedmaintenance");
+        scriptWhiteListedModules.add("inductionResponse");
+        scriptWhiteListedModules.add("announcementattachments");
+        scriptWhiteListedModules.add("contact");
+        scriptWhiteListedModules.add("vendors");
+        scriptWhiteListedModules.add("budget");
+        scriptWhiteListedModules.add("servicerequestsnotes");
+        scriptWhiteListedModules.add("spacecategory");
+        scriptWhiteListedModules.add("assetdepartment");
+        scriptWhiteListedModules.add("resource");
+        scriptWhiteListedModules.add("vendorQuotesLineItems");
+        scriptWhiteListedModules.add("inventoryCategory");
+        scriptWhiteListedModules.add("newsandinformation");
+        scriptWhiteListedModules.add("parkingstall");
+        scriptWhiteListedModules.add("users");
+        scriptWhiteListedModules.add("tool");
+        scriptWhiteListedModules.add("workorderTimeLog");
+        scriptWhiteListedModules.add("neighbourhoodattachments");
+        scriptWhiteListedModules.add("craftSkill");
+        scriptWhiteListedModules.add("facilitybooking");
+        scriptWhiteListedModules.add("vendorQuotes");
+        scriptWhiteListedModules.add("task");
+        scriptWhiteListedModules.add("insurancenotes");
+        scriptWhiteListedModules.add("quotelineitems");
+        scriptWhiteListedModules.add("usernotification");
+        scriptWhiteListedModules.add("ticketstatus");
+        scriptWhiteListedModules.add("ticketpriority");
+        scriptWhiteListedModules.add("visitor");
+        scriptWhiteListedModules.add("tenantunit");
+        scriptWhiteListedModules.add("watchlist");
+        scriptWhiteListedModules.add("inventoryrequest");
+        scriptWhiteListedModules.add("vendorcontact");
+        scriptWhiteListedModules.add("assetcategory");
+        scriptWhiteListedModules.add("servicerequestpriority");
+        scriptWhiteListedModules.add("itemTransactions");
+        scriptWhiteListedModules.add("bmsalarm");
+        scriptWhiteListedModules.add("slot");
+        scriptWhiteListedModules.add("pmTriggerV2");
+        scriptWhiteListedModules.add("newreadingalarm");
+        scriptWhiteListedModules.add("workorderService");
+        scriptWhiteListedModules.add("visitorlog");
+        scriptWhiteListedModules.add("serviceRequest");
+        scriptWhiteListedModules.add("client");
+        scriptWhiteListedModules.add("floor");
+        scriptWhiteListedModules.add("tickettype");
+        scriptWhiteListedModules.add("department");
+        scriptWhiteListedModules.add("preventivemaintenance");
+        scriptWhiteListedModules.add("peopleGroup");
+        scriptWhiteListedModules.add("itemTypes");
+        scriptWhiteListedModules.add("bookingslot");
+        scriptWhiteListedModules.add("peopleannouncement");
+        scriptWhiteListedModules.add("groups");
+        scriptWhiteListedModules.add("servicerequestsattachments");
+        scriptWhiteListedModules.add("workorderTools");
+        scriptWhiteListedModules.add("labourCraftSkill");
+        scriptWhiteListedModules.add("basealarm");
+        scriptWhiteListedModules.add("service");
+        scriptWhiteListedModules.add("moves");
+        scriptWhiteListedModules.add("facilityBookingExternalAttendee");
+        scriptWhiteListedModules.add("urlRecord");
+        scriptWhiteListedModules.add("location");
+        scriptWhiteListedModules.add("transferrequest");
+        scriptWhiteListedModules.add("toolTransactions");
+        scriptWhiteListedModules.add("sensoralarm");
     }
 
     @Override
@@ -222,21 +396,21 @@ public class ScriptValidator extends CommonParser<Value> {
             char moduleNameStart = moduleName.charAt(0);
             char moduleNameEnd = moduleName.charAt(moduleName.length()-1);
 
-	        moduleName = moduleName.substring(1, moduleName.length()-1);
-	        
-        	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        	FacilioModule module = modBean.getModule(moduleName);
-	        if(module == null && (moduleNameStart == '"' && moduleNameEnd=='"')) {
-	            throw new ScriptValidationException("Module "+moduleName+ " Does not exist");
-	        }
-//	        Will be enabled after migration
-//	        if(!WorkflowV2Util.scriptWhiteListedModules.contains(moduleName) && !module.isCustom()){
-//	            throw new ScriptValidationException("Module action for "+moduleName+ " cannot be done through script");
-//	        }
-	        setModuleObj(module);
-	        workflowModuleRel.setModuleId(module.getModuleId());
-	        workflowContext.getModuleRels().add(workflowModuleRel);
-	        return new Value(module);
+            if((moduleNameStart == '"' && moduleNameEnd=='"')){
+                moduleName = moduleName.substring(1, moduleName.length()-1);
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule module = modBean.getModule(moduleName);
+                if(module == null) {
+                    throw new ScriptValidationException("Module "+moduleName+ " Does not exist");
+                }
+    	        if(!scriptWhiteListedModules.contains(moduleName) && !module.isCustom() && !skipModuleType.contains(module.getType())) {
+    	            throw new ScriptValidationException("Module action for "+moduleName+ " cannot be done through script");
+    	        }
+                    setModuleObj(module);
+                    workflowModuleRel.setModuleId(module.getModuleId());
+                    workflowContext.getModuleRels().add(workflowModuleRel);
+                return new Value(module);
+            }
 	    }
     	catch(ScriptValidationException e) {
             log.error(e.getMessage(), e);
@@ -253,15 +427,19 @@ public class ScriptValidator extends CommonParser<Value> {
     @Override
     public Value visitNewKeywordIntitialization(WorkflowV2Parser.NewKeywordIntitializationContext ctx) {
         String nameSpaceName = ctx.expr(0).getText();
-        nameSpaceName = nameSpaceName.substring(1, nameSpaceName.length()-1);
-        FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceName);
+        char nameSpaceNameStart = nameSpaceName.charAt(0);
+        char nameSpaceNameEnd = nameSpaceName.charAt(nameSpaceName.length()-1);
 
-
-        if(nameSpaceEnum == null) {
-            setNameSpace(nameSpaceName);
-            return new Value(nameSpaceName);
+        if((nameSpaceNameStart == '"' && nameSpaceNameEnd=='"')){
+            nameSpaceName = nameSpaceName.substring(1, nameSpaceName.length()-1);
+            FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceName);
+            if(nameSpaceEnum == null) {
+                setNameSpace(nameSpaceName);
+                return new Value(nameSpaceName);
+            }
+            return new Value(nameSpaceEnum);
         }
-        return new Value(nameSpaceEnum);
+        return Value.VOID;
     }
 
     @Override

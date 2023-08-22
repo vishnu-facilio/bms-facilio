@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.templates.*;
 
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -726,8 +725,14 @@ public class ActionAPI {
 		WorkflowTemplate workflowTemplate = FieldUtil.getAsBeanFromJson(workflowTemplateJson, WorkflowTemplate.class);
 		
 		workflowTemplate.getResultWorkflowContext().setWorkflowString(null);
-		Long workflowId = WorkflowUtil.addWorkflow(workflowTemplate.getResultWorkflowContext());
-		
+		WorkflowContext workflowContext = workflowTemplate.getResultWorkflowContext();
+		Long workflowId = workflowContext.getId();
+		if(workflowId != null && workflowId > 0){
+			WorkflowUtil.updateWorkflow(workflowContext, workflowId);
+		}
+		else{
+			workflowId = WorkflowUtil.addWorkflow(workflowContext);
+		}
 		if(templatePrefix != null) {
 			workflowTemplate.setName(templatePrefix+"_json_template");
 		}

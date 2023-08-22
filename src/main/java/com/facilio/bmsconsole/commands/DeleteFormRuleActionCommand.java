@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class DeleteFormRuleActionCommand extends FacilioCommand {
 
@@ -35,22 +36,26 @@ public class DeleteFormRuleActionCommand extends FacilioCommand {
 		FormRuleContext formRuleContext = FieldUtil.getAsBeanFromMap(selectRecordBuilder.fetchFirst(),FormRuleContext.class);
 
 		List<FormRuleActionContext> oldactions = FormRuleAPI.getFormRuleActionContext(formRule.getId());
-		
+		List<FormRuleActionContext> newActions=formRule.getActions();
+		boolean isScriptAvailable = true;
+		if(CollectionUtils.isNotEmpty(newActions)){
+			isScriptAvailable = newActions.stream().anyMatch(formRuleActionContext -> formRuleActionContext.getActionTypeEnum()==FormActionType.EXECUTE_SCRIPT);
+		}
+
 		for(FormRuleActionContext action :oldactions) {
-			if(action.getActionTypeEnum() == FormActionType.EXECUTE_SCRIPT) {
-				long oldWorkflowId = action.getWorkflowId();
-				WorkflowUtil.deleteWorkflow(oldWorkflowId);
-			}
-			else {
+			if(action.getActionTypeEnum() != FormActionType.EXECUTE_SCRIPT) {
 				for(FormRuleActionFieldsContext actionField : action.getFormRuleActionFieldsContext()) {
-					
 					if(actionField.getCriteriaId() > 0) {
 						CriteriaAPI.deleteCriteria(actionField.getCriteriaId());
 					}
 				}
+				FormRuleAPI.deleteFormRuleActionContext(action);
 			}
-			
-			FormRuleAPI.deleteFormRuleActionContext(action);
+			else if(!isScriptAvailable){
+				long workflowId = action.getWorkflowId();
+				WorkflowUtil.deleteWorkflow(workflowId);
+				FormRuleAPI.deleteFormRuleActionContext(action);
+			}
 		}
 		return false;
 	}

@@ -3168,6 +3168,8 @@ public class APIv3Config {
         return () -> new V3Config(WorkflowVersionHistoryContext.class,null)
         		.create()
         		.beforeSave(TransactionChainFactoryV3.getWorkflowVersionHistoryBeforeSaveCommand())
+                .list()
+                .beforeFetch(new FillWorkflowVersionHistorySupplementsCommand())
         		.build();
     }
     

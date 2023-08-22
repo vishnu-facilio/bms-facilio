@@ -9,10 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class WorkflowVersionHistoryContext extends V3Context {
-	
-	
-	public WorkflowVersionHistoryContext() {
-		
+
+	public WorkflowVersionHistoryContext(){
+
 	}
 	
 	public WorkflowVersionHistoryContext(Long workflowId,String workflowString,Long createdTime,Long modifiedTime,V3PeopleContext createdByPeople,V3PeopleContext modifiedByPeople) {

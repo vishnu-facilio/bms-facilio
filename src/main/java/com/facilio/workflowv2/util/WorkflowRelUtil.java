@@ -18,6 +18,7 @@ import org.owasp.esapi.util.CollectionsUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 public class WorkflowRelUtil {
@@ -40,8 +41,9 @@ public class WorkflowRelUtil {
     }
 
     /** Util for adding workflow - module relation */
-    private static void insertWorkflowModuleRelations(long workflowId, List<WorkflowModuleRelContext> moduleRels) throws Exception{
+    private static void insertWorkflowModuleRelations(long workflowId, Set<WorkflowModuleRelContext> moduleRels) throws Exception{
         deleteExistingWorkflowRel(workflowId);
+        List <WorkflowModuleRelContext> moduleRelContexts= new ArrayList<>(moduleRels);
         List<FacilioField> addFields = new ArrayList<>();
         addFields.add(FieldFactory.getDefaultField("workflowId","Workflow ID","WORKFLOWID", FieldType.NUMBER));
         addFields.add(FieldFactory.getDefaultField("moduleId","Module ID","MODULEID", FieldType.NUMBER));
@@ -49,7 +51,7 @@ public class WorkflowRelUtil {
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(WORKFLOW_REL_TABLE)
                 .fields(addFields);
-        builder.addRecords(FieldUtil.getAsMapList(moduleRels,WorkflowModuleRelContext.class ));
+        builder.addRecords(FieldUtil.getAsMapList(moduleRelContexts,WorkflowModuleRelContext.class ));
         builder.save();
     }
 
@@ -60,7 +62,7 @@ public class WorkflowRelUtil {
         builder.delete();
     }
 
-    private static void addWorkflowModuleRelations(long workflowId, List<WorkflowModuleRelContext> moduleRels ) throws Exception{
+    private static void addWorkflowModuleRelations(long workflowId, Set<WorkflowModuleRelContext> moduleRels ) throws Exception{
         if(CollectionUtils.isNotEmpty(moduleRels)){
             for (WorkflowModuleRelContext moduleRel : moduleRels) {
                 moduleRel.setWorkflowId(workflowId);
@@ -71,8 +73,9 @@ public class WorkflowRelUtil {
 
 
     /** Util for adding workflow - userNameSpaceFunction relation */
-    private static void insertWorkflowNameSpaceRelations(long workflowId, List<WorkflowNameSpaceRelContext> nameSpaceRels) throws Exception{
+    private static void insertWorkflowNameSpaceRelations(long workflowId, Set<WorkflowNameSpaceRelContext> nameSpaceRels) throws Exception{
         deleteExistingNameSpaceRel(workflowId);
+        List <WorkflowNameSpaceRelContext> nameSpaceRelContexts= new ArrayList<>(nameSpaceRels);
         List<FacilioField> addFields = new ArrayList<>();
         addFields.add(FieldFactory.getDefaultField("workflowId","Workflow ID","WORKFLOWID", FieldType.NUMBER));
         addFields.add(FieldFactory.getDefaultField("functionId","Function ID","FUNCTIONID", FieldType.NUMBER));
@@ -80,7 +83,7 @@ public class WorkflowRelUtil {
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(NAMESPACE_REL_TABLE)
                 .fields(addFields);
-        builder.addRecords(FieldUtil.getAsMapList(nameSpaceRels,WorkflowNameSpaceRelContext.class ));
+        builder.addRecords(FieldUtil.getAsMapList(nameSpaceRelContexts,WorkflowNameSpaceRelContext.class ));
         builder.save();
     }
 
@@ -91,7 +94,7 @@ public class WorkflowRelUtil {
         builder.delete();
     }
 
-    private static void addWorkflowNameSpaceRelations(long workflowId, List<WorkflowNameSpaceRelContext> nameSpaceRels ) throws Exception{
+    private static void addWorkflowNameSpaceRelations(long workflowId, Set<WorkflowNameSpaceRelContext> nameSpaceRels ) throws Exception{
         if(CollectionUtils.isNotEmpty(nameSpaceRels)){
             for (WorkflowNameSpaceRelContext moduleRel : nameSpaceRels) {
                 moduleRel.setWorkflowId(workflowId);
@@ -102,8 +105,9 @@ public class WorkflowRelUtil {
 
 
     /** Util for adding workflow - fields relation */
-    private static void insertWorkflowFieldsRelations(long workflowId, List<WorkflowFieldsRelContext> fieldsRel) throws Exception{
+    private static void insertWorkflowFieldsRelations(long workflowId, Set<WorkflowFieldsRelContext> fieldsRel) throws Exception{
         deleteExistingFieldsRel(workflowId);
+        List<WorkflowFieldsRelContext> fieldsRelContexts = new ArrayList<>(fieldsRel);
         List<FacilioField> addFields = new ArrayList<>();
         addFields.add(FieldFactory.getDefaultField("workflowId","Workflow ID","WORKFLOWID", FieldType.NUMBER));
         addFields.add(FieldFactory.getDefaultField("moduleId","Module ID","MODULEID", FieldType.NUMBER));
@@ -112,7 +116,7 @@ public class WorkflowRelUtil {
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(FIELD_REL_TABLE)
                 .fields(addFields);
-        builder.addRecords(FieldUtil.getAsMapList(fieldsRel,WorkflowFieldsRelContext.class ));
+        builder.addRecords(FieldUtil.getAsMapList(fieldsRelContexts,WorkflowFieldsRelContext.class ));
         builder.save();
     }
 
@@ -123,7 +127,7 @@ public class WorkflowRelUtil {
         builder.delete();
     }
 
-    private static void addWorkflowNameFieldRelations(long workflowId, List<WorkflowFieldsRelContext> fieldRels )  throws Exception{
+    private static void addWorkflowNameFieldRelations(long workflowId, Set<WorkflowFieldsRelContext> fieldRels )  throws Exception{
         if(CollectionUtils.isNotEmpty(fieldRels)){
             for (WorkflowFieldsRelContext fieldRel : fieldRels) {
                 fieldRel.setWorkflowId(workflowId);

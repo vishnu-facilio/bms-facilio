@@ -15,6 +15,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -30,9 +31,16 @@ public class ValidationRulesAPI {
 
 	public static void addOrUpdateFormValidations(ValidationContext validationContext, FacilioModule validationModule) throws Exception {
 		List<FacilioField> fields = FieldFactory.getValidationRuleFields(validationModule);
+		WorkflowContext workflowContext= validationContext.getErrorMessagePlaceHolderScript();
 
-		if (validationContext.getErrorMessagePlaceHolderScript() != null) {
-			Long workflowId = WorkflowUtil.addWorkflow(validationContext.getErrorMessagePlaceHolderScript());
+		if (workflowContext != null) {
+			Long workflowId=workflowContext.getId();
+			if(workflowId!=null && workflowId > 0){
+				WorkflowUtil.updateWorkflow(workflowContext, workflowId);
+			}
+			else{
+				workflowId = WorkflowUtil.addWorkflow(workflowContext);
+			}
 			validationContext.setErrorMessagePlaceHolderScriptId(workflowId);
 		}
 		if(validationContext.getId() > 0) {
@@ -43,11 +51,7 @@ public class ValidationRulesAPI {
 					.table(validationModule.getTableName())
 					.fields(fields)
 					.andCondition(CriteriaAPI.getIdCondition(validationContext.getId(), validationModule));
-			int updateCount = updateBuilder.update(FieldUtil.getAsProperties(validationContext));
-
-			if(updateCount > 0 && existingValidation.getErrorMessagePlaceHolderScriptId() > 0) {
-				WorkflowUtil.deleteWorkflow(existingValidation.getErrorMessagePlaceHolderScriptId());
-			}
+			updateBuilder.update(FieldUtil.getAsProperties(validationContext));
 		}
 		else {
 			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()

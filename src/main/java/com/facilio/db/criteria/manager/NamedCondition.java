@@ -151,7 +151,14 @@ public class NamedCondition {
                 if (getWorkflowContext() == null) {
                     throw new IllegalArgumentException("Workflow cannot be empty");
                 }
-                setWorkflowId(WorkflowUtil.addWorkflow(getWorkflowContext()));
+                Long workflowId = getWorkflowContext().getId();
+                if(workflowId!=null && workflowId > 0){
+                    WorkflowUtil.updateWorkflow(getWorkflowContext(), workflowId);
+                    setWorkflowId(workflowId);
+                }
+                else{
+                    setWorkflowId(WorkflowUtil.addWorkflow(getWorkflowContext()));
+                }
                 break;
 
             case SYSTEM_FUNCTION:

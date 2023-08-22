@@ -3,7 +3,6 @@ package com.facilio.workflows.command;
 import java.util.Collections;
 import java.util.Map;
 
-import com.facilio.constants.FacilioConstants;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowRelUtil;
 import org.apache.commons.chain.Context;
@@ -28,6 +27,7 @@ import com.facilio.workflowlog.context.WorkflowVersionHistoryContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import com.facilio.workflowv2.util.WorkflowHistoryUtil;
 
 import lombok.extern.log4j.Log4j;
 
@@ -51,8 +51,8 @@ public class UpdateWorkflowCommand extends FacilioCommand {
 
 			WorkflowUtil.scriptSyntaxValidation(workflow);
 			workflow.validateScript();
-			
-			trackWorkflowVersionHistory(workflow);
+			WorkflowHistoryUtil.trackWorkflowVersionHistory(workflow);
+
 
 			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
 			update.table(ModuleFactory.getWorkflowModule().getTableName());
@@ -62,39 +62,11 @@ public class UpdateWorkflowCommand extends FacilioCommand {
 			Map<String, Object> prop = FieldUtil.getAsProperties(workflow);
 			prop.put("runAsAdmin",workflow.getRunAsAdmin());
 			update.update(prop);
-			
 			WorkflowRelUtil.addWorkflowRelations(workflow);
+
 		}
 		
 		return false;
 	}
 
-	private void trackWorkflowVersionHistory(WorkflowContext newWorkflow) throws Exception {
-		
-		try {
-			
-			WorkflowContext oldWorkflow = WorkflowUtil.getWorkflowContext(newWorkflow.getId());
-			
-			WorkflowVersionHistoryContext version = new WorkflowVersionHistoryContext(newWorkflow.getId(),oldWorkflow.getWorkflowV2String(),oldWorkflow.getSysModifiedTime(),newWorkflow.getSysModifiedTime());
-			
-			UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", AccountUtil.getCurrentOrg().getId());
-			
-			Long createdByPeopleId = userBean.getUser(oldWorkflow.getSysModifiedBy(), true).getPeopleId();
-			Long modifiedByPeopleId = userBean.getUser(newWorkflow.getSysModifiedBy(), true).getPeopleId();
-			
-			V3PeopleContext createdByPeopleContext = new V3PeopleContext();
-			createdByPeopleContext.setId(createdByPeopleId);
-			
-			V3PeopleContext modifiedByPeopleContext = new V3PeopleContext();
-			modifiedByPeopleContext.setId(modifiedByPeopleId);
-			
-			version.setCreatedByPeople(createdByPeopleContext);
-			version.setModifiedByPeople(modifiedByPeopleContext);
-			
-			V3Util.createRecord(Constants.getModBean().getModule(FacilioConstants.Workflow.WORKFLOW_VERSION_HISTORY), FieldUtil.getAsProperties(version));
-		}
-		catch( Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-	}
 }

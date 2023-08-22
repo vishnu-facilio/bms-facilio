@@ -23,7 +23,9 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.scriptengine.systemfunctions.*;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.functions.*;
+import com.facilio.workflowv2.util.WorkflowHistoryUtil;
 import com.facilio.workflowv2.util.WorkflowRelUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -510,8 +512,12 @@ public class WorkflowUtil {
 
 		scriptSyntaxValidation(workflowContext);
 		workflowContext.validateScript();
-		
+		workflowContext.setSysCreatedBy(AccountUtil.getCurrentUser().getOuid());
+		workflowContext.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
+		workflowContext.setSysCreatedTime(DateTimeUtil.getCurrenTime());
+		workflowContext.setSysModifiedTime(DateTimeUtil.getCurrenTime());
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getWorkflowModule().getTableName())
@@ -523,6 +529,8 @@ public class WorkflowUtil {
 		
 		workflowContext.setId((Long) props.get("id"));
 		WorkflowRelUtil.addWorkflowRelations(workflowContext);
+		WorkflowHistoryUtil.trackWorkflowVersionHistory(workflowContext);
+
 
 		if(!workflowContext.isV2Script()) {
 			
@@ -549,14 +557,19 @@ public class WorkflowUtil {
 	public static void updateWorkflow(WorkflowContext workflowContext, Long workflowId) throws Exception{
 		scriptSyntaxValidation(workflowContext);
 		workflowContext.validateScript();
+		workflowContext.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
+		workflowContext.setSysModifiedTime(DateTimeUtil.getCurrenTime());
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		WorkflowRelUtil.addWorkflowRelations(workflowContext);
+		WorkflowHistoryUtil.trackWorkflowVersionHistory(workflowContext);
+
 		Map<String, Object> props = FieldUtil.getAsProperties(workflowContext);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getWorkflowModule().getTableName())
 				.fields(FieldFactory.getWorkflowFields())
 				.andCondition(CriteriaAPI.getIdCondition(workflowId,ModuleFactory.getWorkflowModule()));
 		updateBuilder.update(props);
+		WorkflowRelUtil.addWorkflowRelations(workflowContext);
+
 	}
 	
 	public static List<WorkflowFieldContext>  getWorkflowField(WorkflowContext workflowContext) throws Exception {
