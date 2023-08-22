@@ -105,4 +105,9 @@ public class ReadingKPIContext extends V3Context {
         }
         return inputUnit;
     }
+
+    public String getUnitLabel(){
+        Unit sysUnit = this.unitId != null && this.unitId > 0 ? Unit.valueOf(this.unitId) : null;
+        return sysUnit == null ? this.getCustomUnit() : sysUnit.getSymbol();
+    }
 }

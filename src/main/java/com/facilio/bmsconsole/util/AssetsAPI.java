@@ -1302,10 +1302,8 @@ public class AssetsAPI {
 		if(fetchOnlyKpiPoints) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
 					String.valueOf(ReadingInputType.FORMULA_FIELD.getValue()), PickListOperators.IS));
-		} else{
-			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
-					String.valueOf(ReadingInputType.FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
 		}
+		
 		if (buildingIds != null && !buildingIds.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
 		}
@@ -1355,9 +1353,6 @@ public class AssetsAPI {
 		if(fetchOnlyKpiPoints) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
 					String.valueOf(ReadingInputType.FORMULA_FIELD.getValue()), PickListOperators.IS));
-		} else{
-			selectBuilder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),
-					String.valueOf(ReadingInputType.FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
 		}
 
 		if (categoryIds != null && !categoryIds.isEmpty()) {

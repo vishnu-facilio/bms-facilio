@@ -217,7 +217,7 @@ import com.facilio.mailtracking.context.V3OutgoingRecipientContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.readingkpi.commands.delete.DeleteKpiLoggersCommand;
 import com.facilio.readingkpi.commands.list.LoadSupplementsForKpiLogger;
-import com.facilio.readingkpi.commands.delete.DeleteNamespaceReadingKpiCommand;
+import com.facilio.readingkpi.commands.delete.ReadingKpiPostDeleteCommand;
 import com.facilio.readingkpi.commands.list.LoadSupplementsForReadingKPICommand;
 import com.facilio.readingkpi.commands.update.NullFieldIdAndModuleIdForDynamicKpi;
 import com.facilio.readingkpi.context.KpiLoggerContext;
@@ -2721,7 +2721,7 @@ public class APIv3Config {
                 .afterFetch(TransactionChainFactoryV3.getNameSpaceAndSupplements())
                 .delete()
                 .beforeDelete(new DeleteKpiLoggersCommand())
-                .afterDelete(new DeleteNamespaceReadingKpiCommand())
+                .afterDelete(new ReadingKpiPostDeleteCommand())
                 .build();
 
     }

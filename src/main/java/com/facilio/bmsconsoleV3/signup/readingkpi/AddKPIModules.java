@@ -79,7 +79,7 @@ public class AddKPIModules extends SignUpData {
         NumberField unitId = FieldFactory.getDefaultField("unitId", "Unit ID", "UNIT_ID", FieldType.NUMBER);
         fields.add(unitId);
 
-        FacilioField customUnit = FieldFactory.getDefaultField("unit", "Custom Unit", "CUSTOM_UNIT", FieldType.STRING);
+        FacilioField customUnit = FieldFactory.getDefaultField("customUnit", "Custom Unit", "CUSTOM_UNIT", FieldType.STRING);
         fields.add(customUnit);
 
         NumberField metric = FieldFactory.getDefaultField("metricId", "Metric", "METRIC", FieldType.NUMBER);
