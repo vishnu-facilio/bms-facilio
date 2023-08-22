@@ -97,6 +97,8 @@ public class BaseAlarmContext extends V3Context {
 
 	private AlarmOccurrenceContext lastOccurrence;
 
+	private AlarmOccurrenceContext prevOccurrence;
+
 	@JsonIgnore
 	public AlarmOccurrenceContext getLastOccurrence() {
 		return lastOccurrence;

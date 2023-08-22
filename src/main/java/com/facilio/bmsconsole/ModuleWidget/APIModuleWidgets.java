@@ -258,4 +258,11 @@ public class APIModuleWidgets {
                 .done()
                 ;
     }
+    @WidgetsForModule("bmsalarm")
+    public static Supplier<ModuleWidgets> getBmsAlarmWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("bmsOccurrenceHistory", "BMS Alarm", PageWidget.WidgetType.OCCURRENCE_HISTORY)
+                .addFlexibleWidgetConfig("webOccurrenceHistory-24", "Full Width Occurrence History - 24", 24, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
 }

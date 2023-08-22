@@ -212,6 +212,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.elasticsearch.command.PushDataToESCommand;
+import com.facilio.faults.LoadOccurrenceForAlarmCommand;
 import com.facilio.faults.UpdateOccurrenceCommand;
 import com.facilio.faults.alarmoccurrence.LoadSupplementsForAlarmOccurrenceCommand;
 import com.facilio.faults.baseevent.LoadSupplementsForBaseEventCommand;
@@ -2555,6 +2556,7 @@ public class APIv3Config {
                 .beforeFetch(new LoadSupplementsForBMSAlarmCommand())
                 .summary()
                 .beforeFetch(new LoadSupplementsForBMSAlarmCommand())
+                .afterFetch(new LoadOccurrenceForAlarmCommand())
                 .delete()
                 .afterDelete(new AfterDeleteAlarmCommand())
                 .build();
