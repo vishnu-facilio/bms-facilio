@@ -566,3 +566,7 @@ classes:
 
   #Adding Trip Location History Module
   - com.facilio.fsm.signup.TripLocationHistoryModule
+
+
+#  adding default email templates of workorder
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.DefaultEmailTemplateForWorkorder
