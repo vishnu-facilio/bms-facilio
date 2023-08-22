@@ -129,6 +129,8 @@ public class TimeOffModule extends BaseModuleConfig {
         timeOffFields.add(localId);
         ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.TimeOff.TIME_OFF);
 
+        timeOffFields.add(new StringField(timeOffModule,"code","Code",FacilioField.FieldDisplayType.TEXTBOX,"CODE", FieldType.STRING,true,false,true,false));
+
         DateField startTime = new DateField(timeOffModule,"startTime","Start Time", FacilioField.FieldDisplayType.DATETIME,"START_TIME",FieldType.DATE_TIME,true,false,true,false);
         timeOffFields.add(startTime);
 

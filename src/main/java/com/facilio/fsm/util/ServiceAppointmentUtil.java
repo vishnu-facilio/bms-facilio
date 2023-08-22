@@ -719,9 +719,9 @@ public class ServiceAppointmentUtil {
 
     private static long getAppointmentDuration(long peopleId,long appointmentId) throws Exception {
         long duration = 0;
-        List<TimeSheetContext> ongoingTimeSheets = getOngoingTimeSheets(peopleId,appointmentId);
-        if(CollectionUtils.isNotEmpty(ongoingTimeSheets)){
-            for (TimeSheetContext ts : ongoingTimeSheets){
+        List<TimeSheetContext> closedTimeSheets = getClosedTimeSheets(peopleId,appointmentId);
+        if(CollectionUtils.isNotEmpty(closedTimeSheets)){
+            for (TimeSheetContext ts : closedTimeSheets){
                 if (ts.getDuration() != null) {
                     duration += ts.getDuration();
                 }
@@ -759,4 +759,71 @@ public class ServiceAppointmentUtil {
         }
         return null;
     }
+
+    public static List<TimeSheetContext> getClosedTimeSheets(Long peopleId, Long appointmentId) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule timeSheetModule = moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
+        List<FacilioField> timeSheetFields = moduleBean.getAllFields(FacilioConstants.TimeSheet.TIME_SHEET);
+        Map<String,FacilioField> timeSheetFieldMap = FieldFactory.getAsMap(timeSheetFields);
+        SelectRecordsBuilder<TimeSheetContext> timeSheetBuilder = new SelectRecordsBuilder<TimeSheetContext>()
+                .module(timeSheetModule)
+                .beanClass(TimeSheetContext.class)
+                .select(timeSheetFields)
+                .andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ContextNames.START_TIME),CommonOperators.IS_NOT_EMPTY))
+                .andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ContextNames.ENDTIME),CommonOperators.IS_NOT_EMPTY));
+        if(peopleId != null && peopleId >0){
+            timeSheetBuilder.andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get("fieldAgent"),String.valueOf(peopleId),NumberOperators.EQUALS));
+        }
+        if(appointmentId != null && appointmentId > 0){
+            timeSheetBuilder.andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),String.valueOf(appointmentId), NumberOperators.EQUALS));
+        }
+        List<TimeSheetContext> closedTimeSheets = timeSheetBuilder.get();
+        if(CollectionUtils.isNotEmpty(closedTimeSheets)){
+            return closedTimeSheets;
+        }
+        return null;
+    }
+
+    public static String generateAlphaNumericCode(String moduleName)throws Exception{
+        String code = null;
+        long localId = getModuleLocalId(moduleName);
+        switch (moduleName){
+            case FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT:
+                code = "SA-" +(localId+ 1);
+                break;
+            case FacilioConstants.TimeSheet.TIME_SHEET:
+                code = "TS-" +(localId+ 1);
+                break;
+            case FacilioConstants.TimeOff.TIME_OFF:
+                code = "TO-" +(localId+ 1);
+                break;
+            case FacilioConstants.Trip.TRIP:
+                code = "TP-" +(localId+ 1);
+                break;
+            case FacilioConstants.Territory.TERRITORY:
+                code = "TR-" +(localId+ 1);
+                break;
+        }
+        return code;
+
+    }
+
+
+    public static long getModuleLocalId(String moduleName) throws Exception {
+
+        FacilioModule module = ModuleFactory.getModuleLocalIdModule();
+
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(FieldFactory.getModuleLocalIdFields())
+                .andCondition(CriteriaAPI.getCondition("MODULE_NAME", "moduleName", moduleName, StringOperators.IS));
+
+        List<Map<String, Object>> props = selectRecordBuilder.get();
+        if (props != null && !props.isEmpty()) {
+            return (long) props.get(0).get("localId");
+        }
+        return -1;
+
+    }
+
 }

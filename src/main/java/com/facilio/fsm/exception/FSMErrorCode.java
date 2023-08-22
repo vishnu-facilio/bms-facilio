@@ -21,7 +21,7 @@ public enum FSMErrorCode {
     SO_ID_NOT_EMPTY(Severity.ERROR, "SO ID is required", "Service Order Id cannot be empty."),
 
     // Service Appointment error codes
-    SA_TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Timesheet conflict", "You cannot start this service appointment while a timesheet is already running."),
+    SA_TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Timesheet conflict", "You cannot start this service appointment while a timesheet is in progress or exists for the given time range."),
     SA_TRIP_ALREADY_RUNNING(Severity.ERROR, "Trip conflict", "You cannot start a trip while another is already running."),
     SA_SCHEDULED_TIME_MISMATCH(Severity.ERROR, "Scheduled time range is invalid", "The service appointment should be scheduled between valid time range."),
     SA_DETAILS_REQUIED(Severity.ERROR, "Mandatory field missing", "Please provide all the required details."),

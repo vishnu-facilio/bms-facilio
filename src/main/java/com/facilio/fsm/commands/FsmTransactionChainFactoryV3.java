@@ -1,6 +1,5 @@
 package com.facilio.fsm.commands;
 
-import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.ItemTransactionRemainingQuantityRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.PurchasedItemsQuantityRollUpCommandV3;
@@ -13,9 +12,12 @@ import com.facilio.fsm.commands.plans.ValidateServiceOrderPlannedItemsCommand;
 import com.facilio.fsm.commands.serviceAppointment.*;
 import com.facilio.fsm.commands.serviceOrders.*;
 import com.facilio.fsm.commands.serviceTasks.*;
+import com.facilio.fsm.commands.timeOff.GenerateTimeOffCodeCommand;
+import com.facilio.fsm.commands.timeSheet.GenerateTimeSheetCodeCommand;
 import com.facilio.fsm.commands.timeSheet.CheckForExistingTimeSheetsCommand;
 import com.facilio.fsm.commands.timeSheet.StopTimeSheetCommand;
 import com.facilio.fsm.commands.trip.CheckForExistingTripsCommand;
+import com.facilio.fsm.commands.trip.GenerateTripCodeCommand;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 
@@ -127,6 +129,7 @@ public class FsmTransactionChainFactoryV3 {
         c.addCommand(new SetServiceAppointmentStatusCommand());
         c.addCommand(new RollUpServiceAppointmentFieldsCommand());
         c.addCommand(new ValidateSAMismatch());
+        c.addCommand(new GenerateSACodeCommand());
         return c;
     }
 
@@ -176,6 +179,14 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c= getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckForExistingTimeSheetsCommand());
+        c.addCommand(new GenerateTimeSheetCodeCommand());
+        return c;
+    }
+
+    public static FacilioChain getTimeSheetAferCreateChain() {
+        FacilioChain c= getDefaultChain();
+        c.addCommand(new ConstructAddCustomActivityCommandV3());
+        c.addCommand(new CheckForExistingTimeSheetsCommand());
         return c;
     }
 
@@ -183,6 +194,14 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckForExistingTripsCommand());
+        c.addCommand(new GenerateTripCodeCommand());
+        return c;
+    }
+
+    public static FacilioChain getTimeOffBeforeCreateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
+        c.addCommand(new GenerateTimeOffCodeCommand());
         return c;
     }
 

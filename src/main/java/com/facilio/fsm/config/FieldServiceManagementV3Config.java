@@ -206,7 +206,7 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTimeOff(){
         return () -> new V3Config(TimeOffContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
-                .beforeSave(new SetLocalIdCommandV3())
+                .beforeSave(FsmTransactionChainFactoryV3.getTimeOffBeforeCreateChain())
                 .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeOff.TIME_OFF_ACTIVITY))
                 .update()

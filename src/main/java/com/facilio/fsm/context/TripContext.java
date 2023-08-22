@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter @Setter
 public class TripContext extends V3Context {
 
+    private String code;
     private V3PeopleContext people;
     private LocationContext startLocation;
     private LocationContext endLocation;

@@ -10,6 +10,7 @@ import java.util.List;
 
 @Getter@Setter
 public class TimeSheetContext extends V3Context {
+    private String code;
     private Long startTime;
     private Long endTime;
     private Long duration;

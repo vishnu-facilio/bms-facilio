@@ -48,46 +48,60 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
         List<Map<String,Object>> map = getWebtabIdVsRoute(fsm.getId());
         Long soId = 0L;
         Long saId = 0L;
-        for(Map<String,Object> item : map){
-            if(item.get("route").equals("serviceOrder")){
-                soId = (Long)item.get("id");
+        Long timeSheetId = 0L;
+        Long tripId = 0L;
+        if(CollectionUtils.isNotEmpty(map)) {
+            for (Map<String, Object> item : map) {
+                if (item.get("route").equals("serviceOrder")) {
+                    soId = (Long) item.get("id");
+                } else if(item.get("route").equals("serviceAppointment")){
+                    saId = (Long) item.get("id");
+                } else if(item.get("route").equals("timeSheet")){
+                    timeSheetId = (Long) item.get("id");
+                } else if (item.get("route").equals("trip")){
+                    tripId = (Long) item.get("id");
+                }
             }
-            else{
-                saId = (Long)item.get("id");
-            }
-        }
 
-        RoleApp roleApp = new RoleApp();
-        roleApp.setApplicationId(fsm.getId());
+            RoleApp roleApp = new RoleApp();
+            roleApp.setApplicationId(fsm.getId());
 
-        List<RoleApp> roleApps = new ArrayList<>();
-        roleApps.add(roleApp);
+            List<RoleApp> roleApps = new ArrayList<>();
+            roleApps.add(roleApp);
 
-        //fsmDispatcher
-        NewPermission sAPermission = new NewPermission(saId,256901165);
-        NewPermission sOPermission = new NewPermission(soId,983085);
-        List<NewPermission> newPermissions = new ArrayList<>();
-        newPermissions.add(sAPermission);
-        newPermissions.add(sOPermission);
+            //fsmDispatcher
+            NewPermission sAPermission = new NewPermission(saId, 256901165);
+            NewPermission sOPermission = new NewPermission(soId, 983085);
+            NewPermission tripPermission = new NewPermission(tripId,4194317);
+            NewPermission timeSheetPermission = new NewPermission(timeSheetId,536870925);
+            List<NewPermission> newPermissions = new ArrayList<>();
+            newPermissions.add(sAPermission);
+            newPermissions.add(sOPermission);
+            newPermissions.add(tripPermission);
+            newPermissions.add(timeSheetPermission);
 
-        addDefaultTabPermissionForRoles(fsmDispatcher,newPermissions,roleApps);
-
-
-        //fieldAgent
-        List<NewPermission> fieldAgentPermissions = new ArrayList<>();
-        fieldAgentPermissions.add(new NewPermission(saId,211812512));
-
-        addDefaultTabPermissionForRoles(fieldAgent,fieldAgentPermissions,roleApps);
-
-        //assistantFieldAgent
+            addDefaultTabPermissionForRoles(fsmDispatcher, newPermissions, roleApps);
 
 
-        List<NewPermission> assistantFieldAgentPermissions = new ArrayList<>();
-        assistantFieldAgentPermissions.add(new NewPermission(saId,10485888));
+            //fieldAgent
+            List<NewPermission> fieldAgentPermissions = new ArrayList<>();
+            fieldAgentPermissions.add(new NewPermission(saId, 211812512));
+            fieldAgentPermissions.add(new NewPermission(tripId,276824704));
+            fieldAgentPermissions.add(new NewPermission(timeSheetId,1342177920));
 
-        addDefaultTabPermissionForRoles(assistantFieldAgent,assistantFieldAgentPermissions,roleApps);
+            addDefaultTabPermissionForRoles(fieldAgent, fieldAgentPermissions, roleApps);
 
-        //storeRoomManager
+            //assistantFieldAgent
+
+
+            List<NewPermission> assistantFieldAgentPermissions = new ArrayList<>();
+            assistantFieldAgentPermissions.add(new NewPermission(saId, 10485888));
+            assistantFieldAgentPermissions.add(new NewPermission(tripId,276824704));
+            assistantFieldAgentPermissions.add(new NewPermission(timeSheetId,1342177920));
+
+            addDefaultTabPermissionForRoles(assistantFieldAgent, assistantFieldAgentPermissions, roleApps);
+
+            //storeRoomManager
 
 //
 //        List<NewPermission> newStoreRoomManagerPermissions = new ArrayList<>();
@@ -95,7 +109,7 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
 //
 //
 //        addDefaultTabPermissionForRoles(storeRoomManager,newStoreRoomManagerPermissions,roleApps);
-
+        }
 
         return false;
     }
@@ -104,6 +118,8 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
         List<String> routeList = new ArrayList<>();
         routeList.add("serviceOrder");
         routeList.add("serviceAppointment");
+        routeList.add("timeSheet");
+        routeList.add("trip");
 
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getIdField(ModuleFactory.getWebTabModule()));
@@ -112,20 +128,10 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(fields)
                 .table("WebTab")
-                .andCondition((CriteriaAPI.getCondition("ROUTE", "route", StringUtils.join(routeList,","), StringOperators.CONTAINS)))
+                .andCondition((CriteriaAPI.getCondition("ROUTE", "route", StringUtils.join(routeList,","), StringOperators.IS)))
                 .andCondition((CriteriaAPI.getCondition("APPLICATION_ID","applicationId", String.valueOf(appId),NumberOperators.EQUALS)));
         List<Map<String, Object>> props = selectBuilder.get();
-        List<Map<String,Object>> list = new ArrayList<>();
-        if(CollectionUtils.isNotEmpty(props)){
-            for (Map<String,Object> prop : props){
-                Map<String,Object> map = new HashMap<>();
-                map.put("route",prop.get("route"));
-                map.put("id",prop.get("id"));
-                list.add(map);
-            }
-
-        }
-        return list;
+        return props;
 
     }
 

@@ -13,6 +13,7 @@ import java.util.List;
 
 @Getter@Setter
 public class ServiceAppointmentContext extends V3Context {
+    private String code;
     private String name;
     private String description;
     private ServiceOrderContext serviceOrder;

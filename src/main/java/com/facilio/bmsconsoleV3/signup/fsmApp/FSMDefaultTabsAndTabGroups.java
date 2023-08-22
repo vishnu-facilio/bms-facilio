@@ -118,6 +118,7 @@ public class FSMDefaultTabsAndTabGroups {
                 new WebTabContext("Service Appointments","serviceAppointment",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)), null, null,null,appId),
                 new WebTabContext("Employees","employees",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.EMPLOYEE)), null, null,null,appId),
                 new WebTabContext("Trips","trip",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.Trip.TRIP)), null, null,null,appId),
+                new WebTabContext("Time Sheets","timeSheet",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.TimeSheet.TIME_SHEET)), null, null,null,appId),
                 new WebTabContext("Time-off","timeoff",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.TimeOff.TIME_OFF)), null, null,null,appId),
                 new WebTabContext("Dispatch","dispatch",WebTabContext.Type.DISPATCHER_CONSOLE,null, null, null,null,appId)
         );
@@ -137,7 +138,7 @@ public class FSMDefaultTabsAndTabGroups {
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("dispatch")), "Dispatch", "dispatch", 6, 4, null,layoutId,IconType.automation),
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("quote")), "Financials", "financials", 6, 5, null,layoutId,IconType.procurement),
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("client"),tabsMap.get("clientcontact")), "Client", "client", 17, 6, null,layoutId,IconType.client),
-                new WebTabGroupContext(Arrays.asList(tabsMap.get("employees"),tabsMap.get("shift"),tabsMap.get("attendance"),tabsMap.get("trip"),tabsMap.get("timeoff")), "Workforce", "workforce", 17, 7, null,layoutId,IconType.people),
+                new WebTabGroupContext(Arrays.asList(tabsMap.get("employees"),tabsMap.get("shift"),tabsMap.get("attendance"),tabsMap.get("trip"),tabsMap.get("timeSheet"),tabsMap.get("timeoff")), "Workforce", "workforce", 17, 7, null,layoutId,IconType.people),
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("items"),tabsMap.get("tools"),tabsMap.get("service"),tabsMap.get("storeroom"),tabsMap.get("itemtypes"),tabsMap.get("tooltypes")), "Inventory", "inventory", 17, 8, null,layoutId,IconType.inventory)
         );
         return webTabGroups;

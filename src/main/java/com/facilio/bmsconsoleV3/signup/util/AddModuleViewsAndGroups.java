@@ -286,6 +286,7 @@ public class AddModuleViewsAndGroups {
             view.setId(viewId);
             ViewAPI.addOrUpdateExtendedViewDetails(view, viewProp, true);
             if (view.getViewSharing() != null) {
+                view.getViewSharing().forEach(singleSharing -> singleSharing.setId(-1L));
                 ViewAPI.addViewSharing(view);
             }
 

@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Getter @Setter
 public class TimeOffContext extends V3Context {
+    private String code;
     private Long startTime;
     private Long endTime;
     private TimeOffTypeContext type;

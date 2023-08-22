@@ -1,6 +1,8 @@
 package com.facilio.fsm.signup;
 
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -11,6 +13,7 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
@@ -21,7 +24,9 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
+import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -56,6 +61,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         NumberField localId = new NumberField(serviceAppointmentModule,"localId","Id", FacilioField.FieldDisplayType.NUMBER,"LOCAL_ID",FieldType.NUMBER,false,false,true,false);
         serviceAppointmentFields.add(localId);
         ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+
+        serviceAppointmentFields.add(new StringField(serviceAppointmentModule,"code","Code",FacilioField.FieldDisplayType.TEXTBOX,"CODE", FieldType.STRING,true,false,true,false));
 
         serviceAppointmentFields.add(new StringField(serviceAppointmentModule,"name","Name",FacilioField.FieldDisplayType.TEXTBOX,"NAME", FieldType.STRING,true,false,true,true));
 
@@ -313,13 +320,18 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         int order = 1;
         ArrayList<FacilioView> serviceAppointmentViews = new ArrayList<FacilioView>();
+        serviceAppointmentViews.add(getOpenServiceAppointmentViews().setOrder(order++));
+        serviceAppointmentViews.add(getMyOpenAppointmentViews().setOrder(order++));
         serviceAppointmentViews.add(getAllServiceAppointmentViews().setOrder(order++));
         serviceAppointmentViews.add(getScheduledServiceAppointmentViews().setOrder(order++));
-        serviceAppointmentViews.add(getDispatchedServiceAppointmentViews().setOrder(order++));
-        serviceAppointmentViews.add(getInProgressServiceAppointmentViews().setOrder(order++));
-        serviceAppointmentViews.add(getEnRouteServiceAppointmentViews().setOrder(order++));
+        serviceAppointmentViews.add(getHighPriorityScheduledAppointmentViews().setOrder(order++));
+        serviceAppointmentViews.add(getOverdueAppointmentViews().setOrder(order++));
+        serviceAppointmentViews.add(getMyOverdueAppointmentViews().setOrder(order++));
         serviceAppointmentViews.add(getCompletedServiceAppointmentViews().setOrder(order++));
+        serviceAppointmentViews.add(getMyClosedServiceAppointmentViews().setOrder(order++));
         serviceAppointmentViews.add(getCancelledServiceAppointmentViews().setOrder(order++));
+        serviceAppointmentViews.add(getMyCancelledServiceAppointmentViews().setOrder(order++));
+
 
 
         groupDetails = new HashMap<>();
@@ -332,13 +344,55 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         return groupVsViews;
     }
 
-    private FacilioView getAllServiceAppointmentViews() {
+    private FacilioView getOpenServiceAppointmentViews() throws Exception{
+
+        FacilioModule serviceAppointmentModule = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,"Service Appointment","SERVICE_APPOINTMENT", FacilioModule.ModuleType.BASE_ENTITY,true);
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(serviceAppointmentModule), true));
+
+        Criteria criteria=new Criteria();
+        criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.SCHEDULED));
+        criteria.addOrCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.DISPATCHED));
+        criteria.addOrCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.IN_PROGRESS));
+        criteria.addOrCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.EN_ROUTE));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("openAppointments");
+        allView.setDisplayName("Open Appointments");
+        allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        allView.setCriteria(criteria);
+        allView.setSortFields(sortFields);
+        allView.setAppLinkNames(ServiceAppointmentModule.serviceAppointmentSupportedApps);
+
+
+        List<ViewField> serviceAppointmentViewFields = new ArrayList<>();
+
+        serviceAppointmentViewFields.add(new ViewField("name","Name"));
+        serviceAppointmentViewFields.add(new ViewField("site","Site"));
+        serviceAppointmentViewFields.add(new ViewField("priority","Priority"));
+        serviceAppointmentViewFields.add(new ViewField("space","Space"));
+        serviceAppointmentViewFields.add(new ViewField("asset","Asset"));
+        serviceAppointmentViewFields.add(new ViewField("status","Appointment Status"));
+        serviceAppointmentViewFields.add(new ViewField("actualCost","Actual Cost"));
+
+        allView.setFields(serviceAppointmentViewFields);
+
+        List<String> roles = new ArrayList<>();
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_DISPATCHER);
+
+        allView.setViewSharing(getSharingContext(roles));
+
+        return allView;
+    }
+
+    private FacilioView getAllServiceAppointmentViews() throws Exception{
 
         FacilioModule serviceAppointmentModule = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,"Service Appointment","SERVICE_APPOINTMENT", FacilioModule.ModuleType.BASE_ENTITY,true);
         List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(serviceAppointmentModule), true));
 
         FacilioView allView = new FacilioView();
-        allView.setName("allappointments");
+        allView.setName("allAppointments");
         allView.setDisplayName("All Appointments");
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         allView.setSortFields(sortFields);
@@ -356,6 +410,13 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         allView.setFields(serviceAppointmentViewFields);
 
+        List<String> roles = new ArrayList<>();
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_DISPATCHER);
+
+        allView.setViewSharing(getSharingContext(roles));
+
         return allView;
     }
 
@@ -368,7 +429,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.SCHEDULED));
 
         FacilioView allView = new FacilioView();
-        allView.setName("Scheduledappointments");
+        allView.setName("scheduledAppointments");
         allView.setDisplayName("Scheduled Appointments");
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         allView.setCriteria(criteria);
@@ -388,38 +449,86 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         allView.setFields(serviceAppointmentViewFields);
 
-        return allView;
-    }
-    private static Condition getServiceAppointmentConditions(String viewName) throws Exception{
-        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = moduleBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        List<String> roles = new ArrayList<>();
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_DISPATCHER);
 
-        FacilioField statusField = moduleBean.getField("status", module.getName());
+        allView.setViewSharing(getSharingContext(roles));
 
-        Map<String, ServiceAppointmentTicketStatusContext> statusMap = ServiceAppointmentUtil.getStatusMap(null);
-        ServiceAppointmentTicketStatusContext dispatchedStatus = statusMap.get(viewName);
-
-
-        Condition allView = new Condition();
-        allView.setField(statusField);
-        allView.setOperator(NumberOperators.EQUALS);
-        allView.setValue(String.valueOf(dispatchedStatus.getId()));
 
         return allView;
     }
-    private FacilioView getDispatchedServiceAppointmentViews() throws Exception{
+
+    private FacilioView getHighPriorityScheduledAppointmentViews() throws Exception{
 
         FacilioModule serviceAppointmentModule = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,"Service Appointment","SERVICE_APPOINTMENT", FacilioModule.ModuleType.BASE_ENTITY,true);
         List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(serviceAppointmentModule), true));
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> saFields = modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        Map<String,FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+        Integer priority =ServiceOrderContext.ServiceOrderPriority.HIGH.getIndex();
+
+        Criteria criteria=new Criteria();
+        criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.SCHEDULED));
+        criteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.PRIORITY), String.valueOf(priority),NumberOperators.EQUALS));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("highPriorityScheduledAppointments");
+        allView.setDisplayName("High Priority Scheduled Appointments");
+        allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        allView.setCriteria(criteria);
+        allView.setSortFields(sortFields);
+        allView.setAppLinkNames(ServiceAppointmentModule.serviceAppointmentSupportedApps);
+
+
+        List<ViewField> serviceAppointmentViewFields = new ArrayList<>();
+
+        serviceAppointmentViewFields.add(new ViewField("name","Name"));
+        serviceAppointmentViewFields.add(new ViewField("site","Site"));
+        serviceAppointmentViewFields.add(new ViewField("priority","Priority"));
+        serviceAppointmentViewFields.add(new ViewField("space","Space"));
+        serviceAppointmentViewFields.add(new ViewField("asset","Asset"));
+        serviceAppointmentViewFields.add(new ViewField("status","Appointment Status"));
+        serviceAppointmentViewFields.add(new ViewField("actualCost","Actual Cost"));
+
+        allView.setFields(serviceAppointmentViewFields);
+
+        List<String> roles = new ArrayList<>();
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_DISPATCHER);
+
+        allView.setViewSharing(getSharingContext(roles));
+
+        return allView;
+    }
+
+    private FacilioView getMyOpenAppointmentViews() throws Exception{
+
+        FacilioModule serviceAppointmentModule = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,"Service Appointment","SERVICE_APPOINTMENT", FacilioModule.ModuleType.BASE_ENTITY,true);
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(serviceAppointmentModule), true));
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> saFields = modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        Map<String,FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
 
         Criteria criteria=new Criteria();
         criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.DISPATCHED));
+        criteria.addOrCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.IN_PROGRESS));
+        criteria.addOrCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.EN_ROUTE));
+
+        Criteria fieldAgentCriteria = new Criteria();
+        fieldAgentCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.IS));
+
+        criteria.andCriteria(fieldAgentCriteria);
 
         FacilioView allView = new FacilioView();
-        allView.setName("dispatchedappointments");
-        allView.setDisplayName("Dispatched Appointments");
-        allView.setCriteria(criteria);
+        allView.setName("myOpenAppointments");
+        allView.setDisplayName("My Open Appointments");
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        allView.setCriteria(criteria);
         allView.setSortFields(sortFields);
         allView.setAppLinkNames(ServiceAppointmentModule.serviceAppointmentSupportedApps);
 
@@ -435,21 +544,43 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         serviceAppointmentViewFields.add(new ViewField("actualCost","Actual Cost"));
 
         allView.setFields(serviceAppointmentViewFields);
+
+        List<String> roles = new ArrayList<>();
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FIELD_AGENT);
+        roles.add(FacilioConstants.DefaultRoleNames.ASSISTANT_FIELD_AGENT);
+
+        allView.setViewSharing(getSharingContext(roles));
 
         return allView;
     }
 
-    private FacilioView getInProgressServiceAppointmentViews() throws Exception{
+
+    private FacilioView getOverdueAppointmentViews() throws Exception{
 
         FacilioModule serviceAppointmentModule = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,"Service Appointment","SERVICE_APPOINTMENT", FacilioModule.ModuleType.BASE_ENTITY,true);
         List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(serviceAppointmentModule), true));
 
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> saFields = modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        Map<String,FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+        Integer overDue = ServiceAppointmentContext.DueStatus.OVERDUE.getIndex();
+
         Criteria criteria=new Criteria();
-        criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.IN_PROGRESS));
+        criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.DISPATCHED));
+        criteria.addOrCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.IN_PROGRESS));
+        criteria.addOrCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.EN_ROUTE));
+
+        Criteria dueStatus = new Criteria();
+        dueStatus.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.RESPONSE_DUE_STATUS), String.valueOf(overDue),NumberOperators.EQUALS));
+        dueStatus.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.RESPONSE_DUE_STATUS), String.valueOf(overDue),NumberOperators.EQUALS));
+
+        criteria.andCriteria(dueStatus);
 
         FacilioView allView = new FacilioView();
-        allView.setName("inProgressappointments");
-        allView.setDisplayName("In Progress Appointments");
+        allView.setName("overdueAppointments");
+        allView.setDisplayName("Overdue Appointments");
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         allView.setCriteria(criteria);
         allView.setSortFields(sortFields);
@@ -467,20 +598,46 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         serviceAppointmentViewFields.add(new ViewField("actualCost","Actual Cost"));
 
         allView.setFields(serviceAppointmentViewFields);
+
+        List<String> roles = new ArrayList<>();
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_DISPATCHER);
+
+        allView.setViewSharing(getSharingContext(roles));
 
         return allView;
     }
-    private FacilioView getEnRouteServiceAppointmentViews() throws Exception{
+
+    private FacilioView getMyOverdueAppointmentViews() throws Exception{
 
         FacilioModule serviceAppointmentModule = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,"Service Appointment","SERVICE_APPOINTMENT", FacilioModule.ModuleType.BASE_ENTITY,true);
         List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(serviceAppointmentModule), true));
 
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> saFields = modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        Map<String,FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+        Integer overDue = ServiceAppointmentContext.DueStatus.OVERDUE.getIndex();
+
         Criteria criteria=new Criteria();
-        criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.EN_ROUTE));
+        criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.DISPATCHED));
+        criteria.addOrCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.IN_PROGRESS));
+        criteria.addOrCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.EN_ROUTE));
+
+        Criteria dueStatus = new Criteria();
+        dueStatus.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.RESPONSE_DUE_STATUS), String.valueOf(overDue),NumberOperators.EQUALS));
+        dueStatus.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.RESPONSE_DUE_STATUS), String.valueOf(overDue),NumberOperators.EQUALS));
+
+        Criteria loggedInPeople = new Criteria();
+        loggedInPeople.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.IS));
+
+        criteria.andCriteria(dueStatus);
+        criteria.andCriteria(loggedInPeople);
+
 
         FacilioView allView = new FacilioView();
-        allView.setName("enRouteappointments");
-        allView.setDisplayName("En Route Appointments");
+        allView.setName("myOverdueAppointments");
+        allView.setDisplayName("My Overdue Appointments");
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         allView.setCriteria(criteria);
         allView.setSortFields(sortFields);
@@ -498,6 +655,14 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         serviceAppointmentViewFields.add(new ViewField("actualCost","Actual Cost"));
 
         allView.setFields(serviceAppointmentViewFields);
+
+        List<String> roles = new ArrayList<>();
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FIELD_AGENT);
+        roles.add(FacilioConstants.DefaultRoleNames.ASSISTANT_FIELD_AGENT);
+
+        allView.setViewSharing(getSharingContext(roles));
 
         return allView;
     }
@@ -510,7 +675,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.COMPLETED));
 
         FacilioView allView = new FacilioView();
-        allView.setName("completedappointments");
+        allView.setName("completedAppointments");
         allView.setDisplayName("Completed Appointments");
         allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         allView.setCriteria(criteria);
@@ -530,8 +695,62 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         allView.setFields(serviceAppointmentViewFields);
 
+        List<String> roles = new ArrayList<>();
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_DISPATCHER);
+
+        allView.setViewSharing(getSharingContext(roles));
+
+
         return allView;
     }
+
+    private FacilioView getMyClosedServiceAppointmentViews() throws Exception{
+
+        FacilioModule serviceAppointmentModule = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,"Service Appointment","SERVICE_APPOINTMENT", FacilioModule.ModuleType.BASE_ENTITY,true);
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(serviceAppointmentModule), true));
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> saFields = modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        Map<String,FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+
+        Criteria criteria=new Criteria();
+        criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.COMPLETED));
+        criteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.IS));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("closedAppointments");
+        allView.setDisplayName("My Closed Appointments");
+        allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        allView.setCriteria(criteria);
+        allView.setSortFields(sortFields);
+        allView.setAppLinkNames(ServiceAppointmentModule.serviceAppointmentSupportedApps);
+
+
+        List<ViewField> serviceAppointmentViewFields = new ArrayList<>();
+
+        serviceAppointmentViewFields.add(new ViewField("name","Name"));
+        serviceAppointmentViewFields.add(new ViewField("site","Site"));
+        serviceAppointmentViewFields.add(new ViewField("priority","Priority"));
+        serviceAppointmentViewFields.add(new ViewField("space","Space"));
+        serviceAppointmentViewFields.add(new ViewField("asset","Asset"));
+        serviceAppointmentViewFields.add(new ViewField("status","Appointment Status"));
+        serviceAppointmentViewFields.add(new ViewField("actualCost","Actual Cost"));
+
+        allView.setFields(serviceAppointmentViewFields);
+
+        List<String> roles = new ArrayList<>();
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FIELD_AGENT);
+        roles.add(FacilioConstants.DefaultRoleNames.ASSISTANT_FIELD_AGENT);
+
+        allView.setViewSharing(getSharingContext(roles));
+
+        return allView;
+    }
+
     private FacilioView getCancelledServiceAppointmentViews() throws Exception{
 
         FacilioModule serviceAppointmentModule = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,"Service Appointment","SERVICE_APPOINTMENT", FacilioModule.ModuleType.BASE_ENTITY,true);
@@ -561,8 +780,92 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         allView.setFields(serviceAppointmentViewFields);
 
+        List<String> roles = new ArrayList<>();
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_DISPATCHER);
+
+        allView.setViewSharing(getSharingContext(roles));
+
+
         return allView;
     }
+
+    private FacilioView getMyCancelledServiceAppointmentViews() throws Exception{
+
+        FacilioModule serviceAppointmentModule = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,"Service Appointment","SERVICE_APPOINTMENT", FacilioModule.ModuleType.BASE_ENTITY,true);
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(serviceAppointmentModule), true));
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> saFields = modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        Map<String,FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+
+        Criteria criteria=new Criteria();
+        criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.CANCELLED));
+        criteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.IS));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("myCancelledAppointments");
+        allView.setDisplayName("My Cancelled Appointments");
+        allView.setModuleName(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        allView.setCriteria(criteria);
+        allView.setSortFields(sortFields);
+        allView.setAppLinkNames(ServiceAppointmentModule.serviceAppointmentSupportedApps);
+
+
+        List<ViewField> serviceAppointmentViewFields = new ArrayList<>();
+
+        serviceAppointmentViewFields.add(new ViewField("name","Name"));
+        serviceAppointmentViewFields.add(new ViewField("site","Site"));
+        serviceAppointmentViewFields.add(new ViewField("priority","Priority"));
+        serviceAppointmentViewFields.add(new ViewField("space","Space"));
+        serviceAppointmentViewFields.add(new ViewField("asset","Asset"));
+        serviceAppointmentViewFields.add(new ViewField("status","Appointment Status"));
+        serviceAppointmentViewFields.add(new ViewField("actualCost","Actual Cost"));
+
+        allView.setFields(serviceAppointmentViewFields);
+
+        List<String> roles = new ArrayList<>();
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FSM_ADMIN);
+        roles.add(FacilioConstants.DefaultRoleNames.FIELD_AGENT);
+        roles.add(FacilioConstants.DefaultRoleNames.ASSISTANT_FIELD_AGENT);
+
+        allView.setViewSharing(getSharingContext(roles));
+
+        return allView;
+    }
+
+    private static Condition getServiceAppointmentConditions(String appointmentStatus) throws Exception{
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+
+        FacilioField statusField = moduleBean.getField("status", module.getName());
+
+        Map<String, ServiceAppointmentTicketStatusContext> statusMap = ServiceAppointmentUtil.getStatusMap(null);
+        ServiceAppointmentTicketStatusContext status = statusMap.get(appointmentStatus);
+
+        Condition allView = new Condition();
+        allView.setField(statusField);
+        allView.setOperator(NumberOperators.EQUALS);
+        allView.setValue(String.valueOf(status.getId()));
+
+        return allView;
+    }
+
+    private static  SharingContext<SingleSharingContext> getSharingContext(List<String> roles)throws Exception{
+        SharingContext<SingleSharingContext> sharingContext = new SharingContext<>();
+        for(String role: roles){
+            Role fsmRole = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), role);
+            SingleSharingContext context = new SingleSharingContext();
+            context.setType(SingleSharingContext.SharingType.ROLE.ordinal()+1);
+            context.setRoleId(fsmRole.getRoleId());
+            sharingContext.add(context);
+        }
+        return sharingContext;
+    }
+
+
     private static void addStateFlow() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule serviceAppointmentModule = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
@@ -1023,8 +1326,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             startWork.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
             startWork.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
             startWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-            startWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-//            startWork.setPermission("START_WORK_ALL");
+//            startWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+            startWork.setPermission("START_WORK_ALL");
             startWork.setPermissionRequired(true);
             Criteria startWorkCriteria = new Criteria();
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(dispatchedStatus.getId()), PickListOperators.IS));
@@ -1033,6 +1336,17 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
             startWork.setCriteria(startWorkCriteria);
             SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,startWork);
+
+            SystemButtonRuleContext startWorkOwn = new SystemButtonRuleContext();
+            startWorkOwn.setName("Start Work");
+            startWorkOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+            startWorkOwn.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK_OWN);
+            startWorkOwn.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+            startWorkOwn.setPermission("START_WORK_OWN");
+            startWorkOwn.setPermissionRequired(true);
+            startWorkOwn.setCriteria(startWorkCriteria);
+            SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,startWorkOwn);
+
         }
 
         ServiceAppointmentTicketStatusContext inProgressStatus = statusMap.get(FacilioConstants.ServiceAppointment.IN_PROGRESS);
@@ -1042,8 +1356,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             complete.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
             complete.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
             complete.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-            complete.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-//            complete.setPermission("COMPLETE_WORK_ALL");
+//            complete.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+            complete.setPermission("COMPLETE_ALL");
             complete.setPermissionRequired(true);
             Criteria completeCriteria = new Criteria();
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(inProgressStatus.getId()), PickListOperators.IS));
@@ -1053,6 +1367,17 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.ACTUAL_START_TIME), CommonOperators.IS_NOT_EMPTY));
             complete.setCriteria(completeCriteria);
             SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,complete);
+
+            SystemButtonRuleContext completeOwn = new SystemButtonRuleContext();
+            completeOwn.setName("Complete");
+            completeOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+            completeOwn.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE_OWN);
+            completeOwn.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+            completeOwn.setPermission("COMPLETE_OWN");
+            completeOwn.setPermissionRequired(true);
+            completeOwn.setCriteria(completeCriteria);
+            SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,completeOwn);
+
         }
 
         ServiceAppointmentTicketStatusContext completedStatus = statusMap.get(FacilioConstants.ServiceAppointment.COMPLETED);

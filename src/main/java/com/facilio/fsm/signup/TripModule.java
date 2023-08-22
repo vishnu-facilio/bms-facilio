@@ -20,10 +20,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.DateField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
@@ -63,6 +60,8 @@ public class TripModule extends BaseModuleConfig {
         NumberField localId = FieldFactory.getDefaultField("localId", "Id", "LOCAL_ID", FieldType.NUMBER);
         fields.add(localId);
         ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.Trip.TRIP);
+
+        fields.add(new StringField(module,"code","Code",FacilioField.FieldDisplayType.TEXTBOX,"CODE", FieldType.STRING,true,false,true,false));
 
         LookupField peopleId = FieldFactory.getDefaultField("people", "Field Agent", "PEOPLE_ID", FieldType.LOOKUP,true);
         peopleId.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));

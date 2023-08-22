@@ -52,6 +52,8 @@ public class TimeSheetModule extends BaseModuleConfig {
         timeSheetFields.add(localId);
         ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.TimeSheet.TIME_SHEET);
 
+        timeSheetFields.add(new StringField(timeSheetModule,"code","Code",FacilioField.FieldDisplayType.TEXTBOX,"CODE", FieldType.STRING,true,false,true,false));
+
         DateField startTime = new DateField(timeSheetModule,"startTime","Start Time", FacilioField.FieldDisplayType.DATETIME,"START_TIME", FieldType.DATE_TIME,true,false,true,false);
         timeSheetFields.add(startTime);
 
