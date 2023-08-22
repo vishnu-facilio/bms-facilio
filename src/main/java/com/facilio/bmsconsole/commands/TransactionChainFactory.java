@@ -417,12 +417,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteScoringRulesCommand());
 
 			if (sendNotification) {
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {
 					c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION));
-				} else {
-					c.addCommand(new ForkChainToInstantJobCommand(false)
-							.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION)));
-				}
 			}
 			return c;
 		}
