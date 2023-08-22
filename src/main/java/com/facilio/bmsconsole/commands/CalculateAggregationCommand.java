@@ -50,7 +50,7 @@ public class CalculateAggregationCommand extends FacilioCommand {
 			Map<String, Object> aggrData = new HashMap<>();
 
 			for (ReportDataPointContext dp : report.getDataPoints()) {
-				if (!dp.isAggrCalculated() && dp.getDynamicKpi() == null) {//Whenever new aggregation is handled for another field type, dp.setAggregation should be updated there
+				if (!dp.isAggrCalculated()) {//Whenever new aggregation is handled for another field type, dp.setAggregation should be updated there
 					switch (dp.getyAxis().getDataTypeEnum()) {
 						case NUMBER:
 						case DECIMAL:

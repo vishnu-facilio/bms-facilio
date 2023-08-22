@@ -189,6 +189,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 				setXAndDateFields(dataPoint, mode, fieldMap);
 				break;
 			}
+			yAxis.setUnitStr(dynKpi.getUnitLabel());
 			yAxis.setLabel(metric.getName());
 			yAxis.setDataType(FieldType.DECIMAL);
 			dataPoint.setyAxis(yAxis);
