@@ -40,7 +40,10 @@ public class AddOrUpdateMultiResourceForWorkorderCommandV3 extends FacilioComman
 			List<V3WorkOrderContext> workOrderList = Constants.getRecordList((FacilioContext) context);
 			Map<Long,V3WorkOrderContext> oldRecordMap = Constants.getOldRecordMap((FacilioContext) context);
 	
-			
+			if(CollectionUtils.isEmpty(workOrderList)){
+				return false;
+			}
+
 			for(V3WorkOrderContext workOrder : workOrderList) {
 				if(MapUtils.isNotEmpty(oldRecordMap)) {
 					 oldRecord = oldRecordMap.get(workOrder.getId());
