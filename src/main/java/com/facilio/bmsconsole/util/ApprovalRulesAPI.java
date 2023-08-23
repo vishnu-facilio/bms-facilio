@@ -217,6 +217,8 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		}
 		updateExtendedRule(rule, ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields());
 
+		addAppRelation(rule);
+
 		return rule;
 	}
 

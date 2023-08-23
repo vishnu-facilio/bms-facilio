@@ -18,6 +18,7 @@ import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import java.util.List;
 import java.util.Map;
 
 public class CustomButtonRuleContext extends ApproverWorkflowRuleContext implements FormInterface {
@@ -246,4 +247,9 @@ public class CustomButtonRuleContext extends ApproverWorkflowRuleContext impleme
             return name;
         }
     }
+
+    @Getter
+    @Setter
+    List<CustomButtonAppRelContext> customButtonAppRel;
+
 }

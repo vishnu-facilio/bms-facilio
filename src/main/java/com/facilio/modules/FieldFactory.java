@@ -9318,6 +9318,17 @@ public class FieldFactory extends BaseFieldFactory {
 
         return list;
     }
+    
+    public static List<FacilioField> getCustomButtonAppRelFields(){
+        FacilioModule module = ModuleFactory.getCustomButtonAppRelModule();
+        List<FacilioField> fields = new ArrayList<>();
+        
+        fields.add(getIdField(module));
+        fields.add(getNumberField("customButtonId","CUSTOM_BUTTON_ID",module));
+        fields.add(getNumberField("appId","APP_ID",module));
+
+        return fields;
+    }
 
     public static List<FacilioField> getSystemButtonRuleFields() {
         FacilioModule module = ModuleFactory.getSystemButtonRuleModule();

@@ -1,20 +1,22 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CustomButtonAPI {
     public static List<WorkflowRuleContext> getCustomButtons(FacilioModule module, CustomButtonRuleContext.PositionType... positionTypes) throws Exception {
@@ -32,9 +34,18 @@ public class CustomButtonAPI {
 
         criteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 
-        List<WorkflowRuleContext> customButtons = WorkflowRuleAPI.getExtendedWorkflowRules(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(),
-                criteria, null, null, CustomButtonRuleContext.class);
-        customButtons = WorkflowRuleAPI.getWorkFlowsFromMapList(FieldUtil.getAsMapList(customButtons, CustomButtonRuleContext.class), true, true);
+        Criteria appCriteria = new Criteria();
+        appCriteria.addAndCondition(CriteriaAPI.getCondition("APP_ID","appId","NULL",CommonOperators.IS_EMPTY));
+        ApplicationContext app = AccountUtil.getCurrentApp();
+        if (app != null) {
+            appCriteria.addOrCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(app.getId()), NumberOperators.EQUALS));
+        }
+        criteria.andCriteria(appCriteria);
+
+        List<WorkflowRuleContext> customButtons = WorkflowRuleAPI.getExtendedCustomButtonRules(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(),
+                criteria, null,null,CustomButtonRuleContext.class);
+
+        customButtons = WorkflowRuleAPI.getWorkFlowsFromMapList(FieldUtil.getAsMapList(FieldUtil.getAsMapList(customButtons, CustomButtonRuleContext.class), CustomButtonRuleContext.class), true, true);
         return customButtons;
     }
 
@@ -54,5 +65,43 @@ public class CustomButtonAPI {
             }
         }
         return availableButtons;
+    }
+
+
+
+    public static boolean isCustomButtonAppRelListForId(long customButtonId) throws Exception{
+
+        if (customButtonId == -1l){
+            return false;
+        }
+        boolean isPresent = false;
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(ModuleFactory.getCustomButtonAppRelModule().getTableName())
+                .select(FieldFactory.getCustomButtonAppRelFields())
+                .andCondition(CriteriaAPI.getCondition("CUSTOM_BUTTON_ID","customButtonId", String.valueOf(customButtonId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("APP_ID","appId", String.valueOf(0),NumberOperators.GREATER_THAN));
+
+        List<Map<String, Object>> customButtonAppRelList = builder.get();
+
+        if (customButtonAppRelList.size() > 0 ){
+            isPresent = true;
+        }
+
+        return isPresent;
+    }
+
+
+    public static void deleteCustomButtonAppRelList(long customButtonId) throws Exception{
+
+        if (customButtonId == -1l){
+            return;
+        }
+
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getCustomButtonAppRelModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("CUSTOM_BUTTON_ID","customButtonId", String.valueOf(customButtonId),NumberOperators.EQUALS));
+
+        builder.delete();
+
     }
 }

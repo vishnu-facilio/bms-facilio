@@ -2160,6 +2160,14 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getCustomButtonChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetCustomButtonCommand());
+		chain.addCommand(new GetActionListForWorkflowRulesCommand());
+		chain.addCommand(new SetCustomButtonAppCommand());
+		return chain;
+	}
+
 	public static FacilioChain getAvailableButtons() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddFieldsAndLookupFieldsInContextCommand());

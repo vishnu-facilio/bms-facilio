@@ -750,6 +750,7 @@
             <param name="setupTab">PEOPLE</param>
         </action>
     </package>
+
     <package name="role" namespace="/api/v1/setup/role" extends="v2Api">
         <action name="fetchRolesApps" class="com.facilio.bmsconsole.actions.RoleAppAction" method="getRolesApps">
             <param name="permission">ALL</param>
@@ -787,6 +788,12 @@
 
     <package name="role" namespace="/api/v1/setup/role" extends="v2Api">
         <action name="fetchRolesApps" class="com.facilio.bmsconsole.actions.RoleAppAction" method="getRolesApps">
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
+        </action>
+    </package>
+    <package name="getCustomButton" namespace="/api/v1/setup/customButton" extends="v2Api">
+        <action name="get" class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getCustomButton">
             <param name="permission">ALL</param>
             <param name="setupTab">MODULES</param>
         </action>

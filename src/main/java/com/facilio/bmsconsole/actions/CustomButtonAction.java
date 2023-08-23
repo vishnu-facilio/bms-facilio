@@ -197,4 +197,14 @@ public class CustomButtonAction extends FacilioAction {
         setResult(Constants.CUSTOM_BUTTONS_RECORDS,context.get(Constants.CUSTOM_BUTTONS_RECORDS));
         return SUCCESS;
     }
+
+    public String getCustomButton() throws Exception{
+        FacilioChain chain = ReadOnlyChainFactory.getCustomButtonChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, ruleId);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE));
+        return SUCCESS;
+    }
 }

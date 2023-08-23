@@ -3166,7 +3166,13 @@
             </property>
         </requestbody>
     </request>
-    
+
+    <request path="/api/v1/setup/customButton/get" method="GET">
+       <requestbody type="object">
+           <property name="ruleId" type="number"/>
+       </requestbody>
+    </request>
+
     <request path="/api/v3/serviceRequest/:id/site" method="GET">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>

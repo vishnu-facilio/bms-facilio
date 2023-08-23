@@ -31,7 +31,6 @@ import com.facilio.scriptengine.context.ScriptContext.WorkflowUIMode;
 import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.util.TriggerUtil;
@@ -183,6 +182,7 @@ public class WorkflowRuleAPI {
 				}
 				ruleProps = FieldUtil.getAsProperties(rule);
 				addExtendedProps(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(), ruleProps);
+				addAppRelation((CustomButtonRuleContext) rule);
 				break;
 			case SYSTEM_BUTTON:
 				ApprovalRulesAPI.addApproverRuleChildren((ApproverWorkflowRuleContext) rule);
@@ -276,6 +276,32 @@ public class WorkflowRuleAPI {
 		if((rule.getActivityType() != -1 && rule.getModule() != null) && rule.getRuleType() == RuleType.RECORD_SPECIFIC_RULE.getIntVal() && EventType.SCHEDULED.isPresent(rule.getActivityType())) {
 			SingleRecordRuleAPI.validateRecordSpecificScheduledRule(rule, false);
 		}
+	}
+
+	public static void addAppRelation(CustomButtonRuleContext customButtonRule) throws Exception{
+
+		if (customButtonRule.getCustomButtonAppRel() == null){
+			return;
+		}
+
+		long customButtonId = customButtonRule.getId();
+
+		if (CustomButtonAPI.isCustomButtonAppRelListForId(customButtonId)){
+			CustomButtonAPI.deleteCustomButtonAppRelList(customButtonId);
+		}
+
+			List<CustomButtonAppRelContext> customButtonAppRels = customButtonRule.getCustomButtonAppRel();
+			FacilioModule module = ModuleFactory.getCustomButtonAppRelModule();
+			List<FacilioField> fields = FieldFactory.getCustomButtonAppRelFields();
+			for (CustomButtonAppRelContext customButtonAppRel : customButtonAppRels) {
+				customButtonAppRel.setCustomButtonId(customButtonRule.getId());
+			}
+			List<Map<String, Object>> customButtonRelProps = FieldUtil.getAsMapList(customButtonAppRels,CustomButtonAppRelContext.class);
+
+			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(module.getTableName())
+					.fields(fields)
+					.addRecords(customButtonRelProps);
+			builder.save();
 	}
 
 	private static void addExtendedProps(FacilioModule module, List<FacilioField> fields, Map<String, Object> ruleProps) throws SQLException, RuntimeException {
@@ -562,6 +588,44 @@ public class WorkflowRuleAPI {
 				;
 
 		return getWorkFlowsFromMapList(builder.get(), fetchChildren, true);
+	}
+
+	public static List<WorkflowRuleContext> getExtendedCustomButtonRules(FacilioModule module, List<FacilioField> fields, Criteria criteria, String searchQuery, JSONObject pagination, Class clazz) throws Exception{
+		fields.addAll(FieldFactory.getWorkflowRuleFields());
+		fields.addAll(FieldFactory.getCustomButtonAppRelFields());
+		FacilioModule workflowRuleModule = ModuleFactory.getWorkflowRuleModule();
+		FacilioModule customAppRelModule = ModuleFactory.getCustomButtonAppRelModule();
+		FacilioField ruleNameField = FieldFactory.getAsMap(fields).get("name");
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(workflowRuleModule.getTableName())
+				.select(fields)
+				.innerJoin(module.getTableName()).on("Workflow_Rule.ID = " + module.getTableName() + ".ID")
+				.leftJoin(customAppRelModule.getTableName())
+				.on("CustomButton_App_Rel.CUSTOM_BUTTON_ID = " + module.getTableName() + ".ID")
+				;
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+
+			builder.offset(offset);
+			builder.limit(perPage);
+		}
+		if (StringUtils.isNotEmpty(searchQuery)) {
+			builder.andCondition(CriteriaAPI.getCondition(ruleNameField, searchQuery, StringOperators.CONTAINS));
+		}
+		if(criteria != null && !criteria.isEmpty()) {
+			builder.andCriteria(criteria);
+		}
+		builder.orderBy("EXECUTION_ORDER");
+
+		List<Map<String, Object>> list = builder.get();
+		return FieldUtil.getAsBeanListFromMapList(list, clazz);
 	}
 
 	public static List<WorkflowRuleContext> getExtendedWorkflowRules(FacilioModule module, List<FacilioField> fields, Criteria criteria, String searchQuery, JSONObject pagination, Class clazz) throws Exception {
