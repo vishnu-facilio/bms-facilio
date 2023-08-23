@@ -105,13 +105,14 @@ public class AddCustomPageCommand extends FacilioCommand {
 
         if (customPage.getCriteria() != null) {
             Criteria criteria = customPage.getCriteria();
-            criteria.validatePattern();
             for (String key : criteria.getConditions().keySet()) {
                 Condition condition = criteria.getConditions().get(key);
-                FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
-                condition.setField(field);
+                if(condition.getField() == null && StringUtils.isEmpty(condition.getColumnName())) {
+                    FacilioField field = modBean.getField(condition.getFieldName(), condition.getModuleName() != null ? condition.getModuleName() : moduleName);
+                    condition.setField(field);
+                }
             }
-            long criteriaId = CriteriaAPI.addCriteria(criteria, Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId());
+            long criteriaId = CriteriaAPI.addCriteria(criteria);
             customPage.setCriteriaId(criteriaId);
         }
 

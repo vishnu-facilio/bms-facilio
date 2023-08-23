@@ -32,18 +32,7 @@ public class GetWidgetUnUsedRelationShipsCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(existingRelMappingInWidget)) {
             relationRequests.removeIf(f -> existingRelMappingInWidget.contains(f.getRelMappingId()));
         }
-
-        List<RelationshipWidget> relationshipWidgets = new ArrayList<>();
-        if(CollectionUtils.isNotEmpty(relationRequests)) {
-
-            for(RelationRequestContext relRequest : relationRequests) {
-                RelationshipWidget relShipWidget = new RelationshipWidget();
-                relShipWidget.setDisplayName(relRequest.getName());
-                relShipWidget.setRelationMappingId(relRequest.getRelMappingId());
-                relShipWidget.setRelationName(relRequest.getRelationName());
-                relationshipWidgets.add(relShipWidget);
-            }
-        }
+        List<RelationshipWidget> relationshipWidgets = RelationshipWidgetUtil.getRelationshipWidgetsFromRelations(relationRequests);
 
         context.put(FacilioConstants.ContextNames.RELATIONSHIP, FieldUtil.getAsJSONArray(relationshipWidgets, RelationshipWidget.class));
         return false;

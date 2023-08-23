@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.RelatedListWidgetContext;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -9,11 +11,8 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -21,37 +20,15 @@ public class GetRelatedModulesForBuilder extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-        List<FacilioModule.ModuleType> moduleTypes = new ArrayList<>(Arrays.asList(FacilioModule.ModuleType.BASE_ENTITY, FacilioModule.ModuleType.Q_AND_A_RESPONSE, FacilioModule.ModuleType.Q_AND_A));
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule currModule = modBean.getModule(moduleName);
 
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioModule> relatedModules = modBean.getSubModules(moduleName, null, null,moduleTypes.toArray(new FacilioModule.ModuleType[]{}));
+        if(currModule != null) {
+            JSONObject bulkRelatedList = RelatedListWidgetUtil.fetchAllRelatedListForModule(currModule);
+            List<RelatedListWidgetContext> relatedLists = (List<RelatedListWidgetContext>) bulkRelatedList.get("relatedList");
 
-        List<Map<String, Object>> relatedFieldsVsModulesMap = new ArrayList<>();
-
-        if (CollectionUtils.isNotEmpty(relatedModules)) {
-            FacilioModule currModule = modBean.getModule(moduleName);
-            for (FacilioModule relatedModule : relatedModules) {
-                List<FacilioField> allFields = modBean.getAllFields(relatedModule.getName(), null, null, fetchLookupFieldsCriteria());
-                allFields.stream()
-                        .filter(field -> ((LookupField) field).getLookupModuleId() == currModule.getModuleId())
-                        .forEach(field -> {
-                            Map<String, Object> fieldVsModuleMap = new HashMap<>();
-                            fieldVsModuleMap.put("subModuleName", relatedModule.getName());
-                            if(StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
-                                fieldVsModuleMap.put("displayName", ((LookupField) field).getRelatedListDisplayName());
-                            }
-                            else {
-                                fieldVsModuleMap.put("displayName", relatedModule.getDisplayName());
-                            }
-                            fieldVsModuleMap.put("subModuleId", relatedModule.getModuleId());
-                            fieldVsModuleMap.put("fieldId", field.getFieldId());
-                            fieldVsModuleMap.put("fieldName", field.getName());
-                            relatedFieldsVsModulesMap.add(fieldVsModuleMap);
-                        });
-            }
+            context.put(FacilioConstants.ContextNames.MODULE_LIST, relatedLists);
         }
-
-        context.put(FacilioConstants.ContextNames.MODULE_LIST, relatedFieldsVsModulesMap);
         return false;
 
     }

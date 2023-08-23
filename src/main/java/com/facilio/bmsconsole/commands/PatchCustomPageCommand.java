@@ -13,8 +13,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import java.util.Objects;
 public class PatchCustomPageCommand extends FacilioCommand {
@@ -51,13 +51,14 @@ public class PatchCustomPageCommand extends FacilioCommand {
         if (customPage.getCriteria() != null) {
 
             Criteria criteria = customPage.getCriteria();
-            criteria.validatePattern();
             for (String key : criteria.getConditions().keySet()) {
                 Condition condition = criteria.getConditions().get(key);
-                FacilioField field = modBean.getField(condition.getFieldName(), module.getName());
-                condition.setField(field);
+                if(condition.getField() == null && StringUtils.isEmpty(condition.getColumnName())) {
+                    FacilioField field = modBean.getField(condition.getFieldName(), condition.getModuleName() != null ? condition.getModuleName() : module.getName());
+                    condition.setField(field);
+                }
             }
-            long criteriaId = CriteriaAPI.addCriteria(criteria, Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId());
+            long criteriaId = CriteriaAPI.addCriteria(criteria);
             customPage.setCriteriaId(criteriaId);
 
         }

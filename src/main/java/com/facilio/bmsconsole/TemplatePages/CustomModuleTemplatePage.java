@@ -5,17 +5,17 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.util.RelationshipWidgetUtil;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class CustomModuleTemplatePage implements TemplatePageFactory {
@@ -60,11 +60,11 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .addTab("related", "RELATED", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
-                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0,  null, null)
+                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0,  null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
                     .widgetDone()
                     .sectionDone()
                     .addSection("relatedlist", "Related List", "List of related records across modules")
-                    .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_29", 0, 4,  null, null)
+                    .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_29", 0, 4,  null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -118,7 +118,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .addTab("related", "RELATED", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("relatedwidgetgroup", null, null)
-                    .addWidget("relatedwidgetGroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblemobilewidgetgroup_8", 0, 0,  null, getMobileRelatedWidgetGroup())
+                    .addWidget("relatedwidgetGroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblemobilewidgetgroup_8", 0, 0,  null, getMobileRelatedWidgetGroup(module))
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -151,11 +151,11 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .addTab("related", "RELATED", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
-                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
+                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_29", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
                     .widgetDone()
                     .sectionDone()
                     .addSection("relatedlist", "Related List", "List of related records across modules")
-                    .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_29", 0, 4,  null, null)
+                    .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_29", 0, 4,  null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -193,7 +193,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
                     .addTab("related", "RELATED", PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("relatedwidgetgroup", null, null)
-                    .addWidget("relatedwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblemobilewidgetgroup_8", 0, 0,  null, getMobileRelatedWidgetGroup())
+                    .addWidget("relatedwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblemobilewidgetgroup_8", 0, 0,  null, getMobileRelatedWidgetGroup(module))
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -286,16 +286,16 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
         return FieldUtil.getAsJSON(widgetGroup);
     }
 
-    private static JSONObject getMobileRelatedWidgetGroup() throws Exception {
+    private static JSONObject getMobileRelatedWidgetGroup(FacilioModule module) throws Exception {
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                     .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
-                        .addWidget("relationships", null, PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblemobilebulkrelationshipwidget_8", 0,0, null, null)
+                        .addWidget("relationships", null, PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblemobilebulkrelationshipwidget_8", 0,0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
                         .widgetGroupWidgetDone()
                     .widgetGroupSectionDone()
                     .addSection("relatedlistsection", "Related List", "List of related records across modules")
-                        .addWidget("relatedlist", null, PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblemobilebulkrelatedlist_8", 0, 0, null, null)
+                        .addWidget("relatedlist", null, PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblemobilebulkrelatedlist_8", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
                         .widgetGroupWidgetDone()
                     .widgetGroupSectionDone();
 

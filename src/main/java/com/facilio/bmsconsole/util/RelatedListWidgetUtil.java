@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.BulkRelatedListContext;
 import com.facilio.bmsconsole.context.PageSectionWidgetContext;
 import com.facilio.bmsconsole.context.RelatedListWidgetContext;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.page.factory.PageFactory;
 import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -21,6 +22,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.function.Function;
@@ -82,6 +84,97 @@ public class RelatedListWidgetUtil {
         }
     }
 
+    /**This is used to add RelatedList in the pageCreation**/
+    public static JSONObject fetchAllRelatedListForModule(FacilioModule module) throws Exception {
+        BulkRelatedListContext bulkRelatedListWidget = new BulkRelatedListContext();
+        List<RelatedListWidgetContext> relLists = new ArrayList<>();
+        if(module != null) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            List<FacilioModule.ModuleType> subModuleTypesToFetch = getSubModuleTypesToFetchForRelatedList(module);
+
+            List<String> modulesToAdd = new ArrayList<>();
+            List<String> modulesToRemove = new ArrayList<>();
+            addOrRemoveModulesFromRelatedLists(module, modulesToAdd, modulesToRemove);
+
+            List<FacilioModule> subModules = modBean.getSubModules(module.getName(), subModuleTypesToFetch.toArray(new FacilioModule.ModuleType[]{}));
+            if(CollectionUtils.isNotEmpty(modulesToAdd)) {
+                List<String> existingSubModuleNames = subModules
+                        .stream()
+                        .map(FacilioModule::getName)
+                        .collect(Collectors.toList());
+                List<String> modulesToAddInSubModules =  new ArrayList<>(modulesToAdd);
+                modulesToAddInSubModules.removeAll(existingSubModuleNames);
+                subModules.addAll(modBean.getModuleList(modulesToAddInSubModules));
+            }
+
+            if(CollectionUtils.isNotEmpty(modulesToRemove)) {
+                subModules.removeIf(mod->modulesToRemove.contains(mod.getName()));
+            }
+            for(FacilioModule subModule : subModules ) {
+                if (subModule.isModuleHidden()) {
+                    continue;
+                }
+
+                List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
+                List<FacilioField> fields = allFields.stream()
+                        .filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == module.getModuleId()))
+                        .collect(Collectors.toList());
+
+                long moduleId = module.getModuleId();
+                if (CollectionUtils.isNotEmpty(fields)) {
+
+                    for(FacilioField field : fields ) {
+                        if (PageFactory.relatedListHasPermission(moduleId, subModule, field)) {
+                            RelatedListWidgetContext relList = new RelatedListWidgetContext();
+                            if (StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
+                                relList.setDisplayName(((LookupField) field).getRelatedListDisplayName());
+                            } else {
+                                relList.setDisplayName(field.getDisplayName());
+                            }
+                            relList.setSubModuleName(subModule.getName());
+                            relList.setSubModuleId(subModule.getModuleId());
+                            relList.setFieldName(field.getName());
+                            relList.setFieldId(field.getFieldId());
+                            relLists.add(relList);
+                        }
+                    }
+                }
+            }
+        }
+        bulkRelatedListWidget.setRelatedList(relLists);
+        return FieldUtil.getAsJSON(bulkRelatedListWidget);
+    };
+
+    /**
+    This moduleTypes are fetched in RelatedList for both Builder and for pageCreation,
+    to support new moduleType for specific modules add the moduleType in the switch case
+    **/
+    public static List<FacilioModule.ModuleType> getSubModuleTypesToFetchForRelatedList(FacilioModule module) throws Exception{
+        List<FacilioModule.ModuleType> moduleTypes = new ArrayList<>(Arrays.asList(FacilioModule.ModuleType.BASE_ENTITY,
+                FacilioModule.ModuleType.Q_AND_A_RESPONSE,
+                FacilioModule.ModuleType.Q_AND_A));
+        if(module != null) {
+            if(module.isCustom()) {
+                moduleTypes.add(FacilioModule.ModuleType.CUSTOM_LINE_ITEM);
+            }
+            else {
+                switch (module.getName()) {
+                    default:
+                }
+            }
+        }
+        return moduleTypes;
+    }
+
+    /**
+     modulesToAdd -- except those fetched using moduleTypes these modules are added to relatedList
+     modulesToRemove -- these are removed if fetched subModules contains It.
+     **/
+    public static void addOrRemoveModulesFromRelatedLists(FacilioModule module, List<String> modulesToAdd, List<String> modulesToRemove) {
+        switch (module.getName()) {
+            default:
+        }
+    }
     public static void addAllRelatedModuleToWidget(FacilioModule module, PageSectionWidgetContext widget) throws Exception{
         if(module != null && widget != null ) {
             FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() != PageWidget.WidgetType.BULK_RELATED_LIST, "Invalid widget type to add related list");

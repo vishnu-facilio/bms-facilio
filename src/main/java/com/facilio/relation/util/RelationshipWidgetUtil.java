@@ -20,6 +20,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.relation.context.RelationRequestContext;
 import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -140,6 +141,37 @@ public class RelationshipWidgetUtil {
         }
     }
 
+    public static JSONObject fetchRelationshipsOfModule(FacilioModule module) throws Exception {
+        List<RelationRequestContext> relationRequests = RelationUtil.getAllRelations(module);
+
+        BulkRelationshipWidget bulkRelationshipWidget = new BulkRelationshipWidget();
+        List<RelationshipWidget> relationshipWidgets = getRelationshipWidgetsFromRelations(relationRequests);
+        bulkRelationshipWidget.setRelationships(relationshipWidgets);
+        return FieldUtil.getAsJSON(bulkRelationshipWidget);
+    }
+
+    public static List<RelationshipWidget> getRelationshipWidgetsFromRelations(List<RelationRequestContext> relationRequests) {
+        if(CollectionUtils.isNotEmpty(relationRequests)) {
+            List<RelationshipWidget> relationshipWidgets = new ArrayList<>();
+
+            for(RelationRequestContext relRequest : relationRequests) {
+                RelationshipWidget relationshipWidget = getRelationshipWidgetFromRelation(relRequest);
+                relationshipWidgets.add(relationshipWidget);
+            }
+            return relationshipWidgets;
+        }
+        return null;
+    }
+    public static RelationshipWidget getRelationshipWidgetFromRelation(RelationRequestContext relRequest) {
+        if(relRequest != null) {
+            RelationshipWidget relShipWidget = new RelationshipWidget();
+            relShipWidget.setDisplayName(relRequest.getName());
+            relShipWidget.setRelationMappingId(relRequest.getRelMappingId());
+            relShipWidget.setRelationName(relRequest.getRelationName());
+            return relShipWidget;
+        }
+        return null;
+    }
     public static BulkRelationshipWidget getBulkRelationShipWidgetForWidgetId(Long widgetId, WidgetWrapperType widgetWrapperType) throws Exception {
         List<RelationshipWidget> relShips = getRelationshipsOfWidget(widgetId, widgetWrapperType);
         if(CollectionUtils.isNotEmpty(relShips)) {

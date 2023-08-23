@@ -8,11 +8,11 @@ import lombok.Setter;
 @Setter
 public class RelationshipWidget extends PageSectionWidgetContext {
     private long id;
-    private long widgetId;
-    private long widgetGroupWidgetId;
+    private long widgetId = -1;
+    private long widgetGroupWidgetId = -1;
     private String displayName;
     private String relationName;
-    private long relationMappingId;
+    private long relationMappingId = -1;
     private Double sequenceNumber;
     private RelationRequestContext relation;
 }

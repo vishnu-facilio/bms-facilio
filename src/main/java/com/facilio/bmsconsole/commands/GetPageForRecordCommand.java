@@ -2,24 +2,23 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.ApplicationLayoutContext;
 import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.CustomPageAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+
+import java.util.*;
 
 public class GetPageForRecordCommand extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(GetPageForRecordCommand.class.getName());
@@ -39,9 +38,7 @@ public class GetPageForRecordCommand extends FacilioCommand {
         }
 
         FacilioContext recordContext = V3Util.getSummary(moduleName, Collections.singletonList(recordId));
-        Map<String,Object> record = (Map<String,Object>) recordContext.get("recordMap");
-        Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
-        Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, placeHolders);
+        Map<String,Object> recordMap = (Map<String,Object>) recordContext.get("recordMap");
 
         Long appId = (Long) context.get(FacilioConstants.ContextNames.APP_ID);
         ApplicationContext app = appId == null || appId <= 0 ? AccountUtil.getCurrentApp() : ApplicationApi.getApplicationForId(appId);
@@ -65,7 +62,8 @@ public class GetPageForRecordCommand extends FacilioCommand {
                     break;
                 }
                 else {
-                    criteriaflag = customPage.getCriteria().computePredicate(recordPlaceHolders).evaluate(((List<FacilioContext>) record.get(moduleName)).get(0));
+                    recordMap=FieldUtil.getAsProperties(CriteriaAPI.setLookupFieldsData(customPage.getCriteria(),recordMap));
+                    criteriaflag = customPage.getCriteria().computePredicate(recordMap).evaluate(((ArrayList<ModuleBaseWithCustomFields>)recordMap.get(moduleName)).get(0));
                     if (criteriaflag) {
                         context.put(FacilioConstants.CustomPage.PAGE_ID, customPage.getId());
                         context.put(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);

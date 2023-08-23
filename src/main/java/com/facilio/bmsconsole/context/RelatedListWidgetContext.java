@@ -9,15 +9,16 @@ import lombok.Setter;
 @Setter
 public class RelatedListWidgetContext extends PageSectionWidgetContext {
     private long id;
-    private Long widgetId;
-    private long widgetGroupWidgetId;
+    private Long widgetId = -1L;
+    private long widgetGroupWidgetId = -1L;
     private String subModuleDisplayName;
     private String displayName;
     private FacilioModule module;
     private String subModuleName;
-    private Long subModuleId;
+    private Long subModuleId = -1L;
+    private Long connectedAppWidgetId = -1L;
     private FacilioField field;
-    private Long fieldId;
+    private Long fieldId = -1L;
     private String fieldName;
     private Double sequenceNumber;
     private Boolean status = false;

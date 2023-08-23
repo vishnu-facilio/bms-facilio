@@ -195,8 +195,7 @@ public class CustomPageAction extends FacilioAction {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         chain.execute();
-        List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS);
-        setResult("fields", FieldUtil.getAsJSONArray(fields, FacilioField.class));
+        setResult("fields", context.get(FacilioConstants.ContextNames.FIELDS));
         return SUCCESS;
     }
 
