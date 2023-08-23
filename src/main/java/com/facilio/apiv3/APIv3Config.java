@@ -368,13 +368,13 @@ public class APIv3Config {
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTE_ACTIVITY))
 
                 .update()
-                .beforeSave(new QuotationValidationAndCostCalculationCommand())
+                .beforeSave(TransactionChainFactoryV3.getQuotationBeforeUpdateChain())
                 .afterSave(TransactionChainFactoryV3.getQuotationAfterUpdateChain())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTE_ACTIVITY))
 
                 .summary()
                 .beforeFetch(new QuotationFillLookupFields())
-                .afterFetch(new QuotationFillDetailsCommand())
+                .afterFetch(ReadOnlyChainFactoryV3.getQuoteAfterfetchSummayChain())
 
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getQuoteBeforeFetchChain())
@@ -886,7 +886,7 @@ public class APIv3Config {
                 .build();
     }
 
-    @Module("vendorQuotes")
+@Module("vendorQuotes")
     public static Supplier<V3Config> getVendorQuotes() {
         return () -> new V3Config(V3VendorQuotesContext.class, new ModuleCustomFieldCount30())
                 .create()

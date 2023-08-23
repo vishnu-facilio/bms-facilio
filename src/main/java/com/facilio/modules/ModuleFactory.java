@@ -5541,6 +5541,14 @@ public class ModuleFactory {
 		return RDM_Controller;
 	}
 
+	public static FacilioModule getQuoteSettingModule() {
+		FacilioModule readingImportModule = new FacilioModule();
+		readingImportModule.setName("quotesetting");
+		readingImportModule.setDisplayName("Quote Setting");
+		readingImportModule.setTableName("Quote_Setting");
+		return readingImportModule;
+	}
+
 public static FacilioModule getSpaceBookingFormRelationModule(){
 		FacilioModule spaceBookingFormRelationModule = new FacilioModule();
 		spaceBookingFormRelationModule.setName(ContextNames.SpaceCategoryFormRelation.SPACE_CATEGORY_FORM_RELATION);

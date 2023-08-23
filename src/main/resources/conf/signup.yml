@@ -369,6 +369,9 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.CustomKioskButtonModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.CustomDeviceButtonMappingModule
 
+    #Quotation module
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.QuotationModule
+
 #   Decommission Logs Module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.DecommissionLogsModule
 

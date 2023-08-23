@@ -3297,4 +3297,50 @@
 
         </requestbody>
     </request>
+    <request path="/api/v1/setup/quotesetting/add" method="POST">
+        <requestbody type="object">
+            <property name="vendorquote" type="boolean" />
+            <property name="enduserquote" type="boolean" />
+            <property name="allowUserSeeMarkup" type="boolean" />
+            <property name="canShowMarkupDefaultValue" type="boolean"/>
+            <property name="markupDefaultValue" type="number" />
+            <property name="markupdisplayMode" type="number" />
+            <property name="id" type="number" />
+            <property name="globalMarkupValue" type="number" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/quotesetting/update" method="POST">
+        <requestbody type="object">
+            <property name="vendorquote" type="boolean" />
+            <property name="enduserquote" type="boolean" />
+            <property name="allowUserSeeMarkup" type="boolean" />
+            <property name="canShowMarkupDefaultValue" type="boolean"/>
+            <property name="markupDefaultValue" type="number" />
+            <property name="markupdisplayMode" type="number" />
+            <property name="id" type="number" />
+            <property name="globalMarkupValue" type="number" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/quotesetting/fetch" method="GET">
+        <requestbody type="object">
+            <property name="vendorquote" type="boolean" />
+            <property name="enduserquote" type="boolean" />
+            <property name="showMarkupValue" type="boolean" />
+            <property name="allowUserSeeMarkup" type="boolean" />
+            <property name="canShowMarkupDefaultValue" type="boolean"/>
+            <property name="markupDefaultValue" type="number" />
+            <property name="markupdisplayMode" type="number" />
+            <property name="id" type="number" />
+            <property name="globalMarkupValue" type="number" />
+        </requestbody>
+     </request>
+
+    <request path="/api/v1/setup/quotesetting/delete" method="POST">
+        <requestbody type="object">
+            <property name="delete" type="boolean" />
+        </requestbody>
+    </request>
+    
 </config>

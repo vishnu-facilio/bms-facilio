@@ -5,6 +5,8 @@ import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.bmsconsoleV3.context.quotation.TaxContext;
 import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
 
 public class BaseLineItemContext extends V3Context {
 
@@ -21,6 +23,9 @@ public class BaseLineItemContext extends V3Context {
     private Double taxAmount;
     private String description;
     private Long unitOfMeasure;
+
+    @Getter @Setter
+    private Double markup;
 
     public V3ItemTypesContext getItemType() {
         return itemType;

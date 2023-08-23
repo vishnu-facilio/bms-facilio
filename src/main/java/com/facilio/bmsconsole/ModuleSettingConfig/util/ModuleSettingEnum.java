@@ -10,6 +10,8 @@ import java.util.Map;
 public enum ModuleSettingEnum {
     STATE_FLOW(FacilioConstants.SettingConfigurationContextNames.STATE_FLOW,"State Flow","Configure a workflow to streamline a process",true,null),
     Glimpse(FacilioConstants.ContextNames.GLIMPSE,"Glimpse","Configure fields to enable quick access to this module",true, GlimpseConfiguration.class),
+    MARKUP_PREFERENCES(FacilioConstants.ContextNames.MARKUP_PREFERENCES,"Markup Preferences","Configure fields to enable quick access to this module",true, GlimpseConfiguration.class),
+
     SITE_MAP_VIEW(FacilioConstants.ContextNames.SITE_MAP_VIEW,"Site Map View","Configure to show Google map view in the site list page",true,null);
 
 

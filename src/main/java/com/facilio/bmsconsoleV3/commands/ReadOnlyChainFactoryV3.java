@@ -41,8 +41,7 @@ import com.facilio.bmsconsoleV3.commands.people.FetchPeopleMeta;
 import com.facilio.bmsconsoleV3.commands.people.FetchScopingForPeopleCommandV3;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.V3FetchPeopleGroupCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.FetchExtraFieldsForPPMCommand;
-import com.facilio.bmsconsoleV3.commands.quotation.AddDefaultCriteriaForQuoteFetchCommandV3;
-import com.facilio.bmsconsoleV3.commands.quotation.QuotationFillLookupFields;
+import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.FetchMyReadingImportDataList;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.FetchReadingImportDataById;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.FetchReadingImportDataList;
@@ -140,6 +139,7 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new QuotationFillLookupFields());
         return c;
     }
+
 
     public static FacilioChain getUserNotificationBeforeFetchChain() {
         FacilioChain c = getDefaultChain();
@@ -592,4 +592,21 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new LoadDealsAndOffersFixedFieldsCommand());
         return c;
     }
+
+    public static  FacilioChain getQuotationSettingData() {
+
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchQuotationSetting());
+        return c;
+    }
+
+    public static FacilioChain getQuoteAfterfetchSummayChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new QuotationFillDetailsCommand());
+        c.addCommand(new HandlePortalQuoteSettingCommand());
+        c.addCommand(new HandlePortalSummaryMarkupDataCommand());
+        return c;
+    }
+
+
 }

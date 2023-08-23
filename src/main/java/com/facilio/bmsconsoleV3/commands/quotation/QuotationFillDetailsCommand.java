@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.quotation;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsoleV3.context.V3VendorContactContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsoleV3.context.V3ClientContactContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
@@ -48,6 +49,14 @@ public class QuotationFillDetailsCommand extends FacilioCommand {
                             List<V3ClientContactContext> clientContacts = V3PeopleAPI.getClientContacts(quotation.getClient().getId(), false);
                             if (CollectionUtils.isNotEmpty(clientContacts)) {
                                 quotation.getClient().setPeopleClientContacts(clientContacts);
+                            }
+                        }
+                    }
+                    else if (quotation.getCustomerTypeEnum() == QuotationContext.CustomerType.VENDOR) {
+                        if (QuotationAPI.lookupValueIsNotEmpty(quotation.getVendor())) {
+                            List<V3VendorContactContext> vendorContacts = V3PeopleAPI.getVendorContacts(quotation.getVendor().getId(), false);
+                            if (CollectionUtils.isNotEmpty(vendorContacts)) {
+                                //
                             }
                         }
                     }

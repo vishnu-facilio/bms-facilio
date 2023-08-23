@@ -12216,6 +12216,23 @@ public class FieldFactory extends BaseFieldFactory {
         return fieldList;
     }
 
+    public static List<FacilioField> getQuoteSettingFields(){
+        FacilioModule module = ModuleFactory.getQuoteSettingModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getBooleanField("vendorquote","VENDOR_QUOTE",module));
+        fieldList.add(getNumberField("id","ID",module));
+        fieldList.add(getBooleanField("enduserquote","END_USER_QUOTE",module));
+        fieldList.add(getBooleanField("allowUserSeeMarkup","ALLOW_USER_SEE_MARKUP",module));
+        fieldList.add(getBooleanField("canShowMarkupDefaultValue","SHOW_DEFAULT_MARKUP_VALUE",module));
+        fieldList.add(getNumberField("markupDefaultValue","DEFAULT_MARKUP_VALUE",module));
+        fieldList.add(getNumberField("markupdisplayMode","MARKUP_DISPLAY_MODE",module));
+        fieldList.add(getNumberField("globalMarkupValue","GLOBAL_MARKUP_VALUE",module));
+
+        return fieldList;
+    }
+
+
+
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:

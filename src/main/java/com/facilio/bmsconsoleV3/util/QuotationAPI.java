@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.util;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.Preference;
 import com.facilio.bmsconsole.context.TermsAndConditionContext;
@@ -16,16 +17,15 @@ import com.facilio.bmsconsoleV3.context.BaseLineItemsParentModuleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
@@ -33,12 +33,16 @@ import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xpath.operations.Bool;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -69,6 +73,201 @@ public class QuotationAPI {
         }
         return null;
     }
+
+    public static Double getDefaultorStoredMarkupValue(Context context, Double lineItemMarkup) throws Exception {
+        QuotationSettingContext quotationSetting = (QuotationSettingContext) context.get(FacilioConstants.ContextNames.QUOTATIONSETTING);
+        Double markupValue = 0.0;
+        if(quotationSetting != null && quotationSetting.getMarkupdisplayMode() == 1) {
+            markupValue = quotationSetting.getGlobalMarkupValue();
+        }
+        else if(quotationSetting != null && quotationSetting.getMarkupdisplayMode() == 2 && lineItemMarkup != null) {
+            return lineItemMarkup;
+        }
+        else if(quotationSetting != null && quotationSetting.getMarkupDefaultValue() != null && quotationSetting.getCanShowMarkupDefaultValue()) {
+            markupValue = quotationSetting.getMarkupDefaultValue().doubleValue();
+        }
+
+        return markupValue;
+    }
+
+    public static  Double getMarkupValue(BaseLineItemContext lineItem, QuotationContext quotation, Boolean isGlobalMarkup, Context context) throws Exception {
+        Double globalMarkupValue = getDefaultorStoredMarkupValue(context, null);
+
+        Double markup =  getDefaultorStoredMarkupValue(context, lineItem.getMarkup());
+
+
+        if(isGlobalMarkup) {
+             markup = globalMarkupValue;
+        }
+        Double unitPrice = lineItem.getUnitPrice();
+//        Double quantity = lineItem.getQuantity();
+        Double percentageValue = 0.0;
+        if(markup != null && unitPrice != null) {
+            Double perValue = ((markup / 100) * unitPrice);
+            BigDecimal bd = new BigDecimal(perValue).setScale(2, RoundingMode.HALF_UP);
+            percentageValue = bd.doubleValue();
+        }
+        return  percentageValue;
+    }
+
+    public static  Double getGlobalMarkupValue(BaseLineItemContext lineItem, Double markup) throws Exception {
+        Double markupValue = markup != null ? markup : 0.0;
+
+        Double unitPrice = lineItem.getUnitPrice();
+        Double quantity = lineItem.getQuantity();
+
+        Double percentageValue = 0.0;
+        if(unitPrice != null) {
+            Double perValue = ((markupValue / 100) * unitPrice) * quantity;
+            BigDecimal bd = new BigDecimal(perValue).setScale(2, RoundingMode.HALF_UP);
+            percentageValue = bd.doubleValue();
+        }
+        return  percentageValue;
+    }
+
+    public static  Boolean showMarkupValue(Context context) throws Exception {
+        /*
+        this menthod is used to control the markup value calcuation;
+        */
+
+        ApplicationContext app = AccountUtil.getCurrentApp();
+        QuotationSettingContext quotationSetting = (QuotationSettingContext) context.get(FacilioConstants.ContextNames.QUOTATIONSETTING);
+        if( app != null && quotationSetting != null) {
+            if ( (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP) || app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) && (quotationSetting.getVendorquote() || quotationSetting.getEnduserquote())) {
+                return true;
+            }
+            else if(((app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) || (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) && quotationSetting.getAllowUserSeeMarkup()))) {
+                return true;
+            }
+            else if(((app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) && quotationSetting.getVendorquote())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static  Boolean getGlobalMarkupValue(Context context) throws Exception {
+        /*
+        this menthod is used to control global or lineitem level markupvalue
+        */
+        QuotationSettingContext quotationSetting = (QuotationSettingContext) context.get(FacilioConstants.ContextNames.QUOTATIONSETTING);
+        if(quotationSetting != null && quotationSetting.getMarkupdisplayMode() == 1) {
+            return true;
+        }
+        return false;
+    }
+
+
+
+    public static void lineItemsCostCalculationsForQuotation(QuotationContext record, List lineItems, Context context) throws Exception {
+  /*
+        Tax Modes ==>    1 = Line Item Level
+                         2 = Transaction Level
+        Discount Modes => 1 = Before Tax
+                          2 = After Tax
+        Based on these these two preferences there will be 4 different types of calculations
+
+        */
+        Double totalTaxAmount = 0.0;
+        Double lineItemsSubtotal = 0.0;
+        Double quotationTotalCost = 0.0;
+        Boolean showMarkup = showMarkupValue(context);
+        Long taxMode = getTaxMode();
+        Long discountMode = getDiscountMode();
+        Boolean isGlobalMarkup = getGlobalMarkupValue(context);
+        Double totalMarkup = 0.0;
+
+
+        if (CollectionUtils.isNotEmpty(lineItems)) {
+            List<Long> uniqueTaxIds = ((List<BaseLineItemContext>)lineItems).stream().filter(lineItem -> lookupValueIsNotEmpty(lineItem.getTax())).map(lineItem -> lineItem.getTax().getId()).distinct().collect(Collectors.toList());
+            List<TaxContext> taxList = getTaxesForIdList(uniqueTaxIds);
+            Map<Long, Double> taxIdVsRateMap = new HashMap<>();
+            if (CollectionUtils.isNotEmpty(taxList)) {
+                taxList.forEach(tax -> taxIdVsRateMap.put(tax.getId(), tax.getRate()));
+            }
+
+            for (BaseLineItemContext lineItem : (List<BaseLineItemContext>) lineItems) {
+                if (lineItem.getQuantity() == null || lineItem.getQuantity() < 0) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be negative or empty for Line Item");
+                } else if (lineItem.getUnitPrice() == null || lineItem.getUnitPrice() < 0) {
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Unit Price cannot be negative or empty for Line Item");
+                } else {
+                    Double taxRate = 0d;
+                    Double taxAmount = 0d;
+                    Double lineItemCost = lineItem.getQuantity() * lineItem.getUnitPrice();
+                    Double markupValue = getMarkupValue(lineItem, record, isGlobalMarkup, context);
+
+                    if (showMarkup && markupValue != null && !isGlobalMarkup) {
+                        lineItemCost = lineItem.getQuantity() * (lineItem.getUnitPrice() + markupValue);
+                    }
+                    else if(showMarkup && markupValue != null) {
+                        /* This method used to calculate the totalmarkup value*/
+                        totalMarkup += (markupValue * lineItem.getQuantity());
+                    }
+                    lineItem.setCost(lineItemCost);
+                    if (Objects.equals(taxMode, 1l) && Objects.equals(discountMode, 2l) && lookupValueIsNotEmpty(lineItem.getTax())) {
+                        taxRate = taxIdVsRateMap.get(lineItem.getTax().getId());
+                        taxAmount = taxRate * lineItem.getCost() / 100;
+                    }
+                    lineItem.setTaxAmount(taxAmount);
+                    totalTaxAmount += taxAmount;
+                    lineItemsSubtotal += lineItemCost;
+                }
+            }
+            if (Objects.equals(discountMode, 2l) && Objects.equals(taxMode, 2l)) {
+                if (lookupValueIsNotEmpty(record.getTax())) {
+                    TaxContext tax = getTaxDetails(record.getTax().getId());
+                    totalTaxAmount = (lineItemsSubtotal * tax.getRate()) / 100;
+                    record.setTotalTaxAmount(totalTaxAmount);
+                }
+            }
+            // set totalMarkupValueToSubTotal
+            if(showMarkup && isGlobalMarkup) {
+                lineItemsSubtotal += totalMarkup;
+            }
+            record.setSubTotal(lineItemsSubtotal);
+            quotationTotalCost = lineItemsSubtotal + totalTaxAmount;
+            if (record.getDiscountPercentage() != null) {
+                Double discountAmount = (quotationTotalCost * record.getDiscountPercentage() / 100);
+                record.setDiscountAmount(discountAmount);
+                quotationTotalCost = quotationTotalCost - discountAmount;
+            } else if (record.getDiscountAmount() != null) {
+                quotationTotalCost -= record.getDiscountAmount();
+            }
+
+            if (Objects.equals(discountMode, 1l) && Objects.equals(taxMode, 2l)) {
+                if (lookupValueIsNotEmpty(record.getTax())) {
+                    TaxContext tax = getTaxDetails(record.getTax().getId());
+                    totalTaxAmount = (quotationTotalCost * tax.getRate()) / 100;
+                    record.setTotalTaxAmount(totalTaxAmount);
+                    quotationTotalCost += totalTaxAmount;
+                }
+            }
+            if (Objects.equals(discountMode, 1l) && Objects.equals(taxMode, 1l)) {
+                for (BaseLineItemContext lineItem : (List<BaseLineItemContext>)lineItems) {
+                    Double taxRate;
+                    Double taxAmount = 0d;
+                    if (lookupValueIsNotEmpty(lineItem.getTax())) {
+                        Double relativeLineItemCost = relativeLineItemCost(lineItem.getUnitPrice(), lineItem.getQuantity(), lineItemsSubtotal, record.getDiscountAmount());
+                        taxRate = taxIdVsRateMap.get(lineItem.getTax().getId());
+                        taxAmount = Math.round(((taxRate * relativeLineItemCost) / 100) * 100.0) / 100.0;
+                    }
+                    lineItem.setTaxAmount(taxAmount);
+                    totalTaxAmount += taxAmount;
+                }
+                quotationTotalCost += totalTaxAmount;
+            }
+            record.setTotalTaxAmount(totalTaxAmount);
+            if(showMarkup && isGlobalMarkup) {
+                record.setTotalMarkup(totalMarkup);
+//                quotationTotalCost += totalMarkup;
+            }
+
+            record.setTotalCost(quotationTotalCost);
+
+        }
+    }
+
 
     public static void lineItemsCostCalculations(BaseLineItemsParentModuleContext record, List lineItems) throws Exception {
         /*
@@ -637,5 +836,22 @@ public class QuotationAPI {
             List<FacilioField> fields = modBean.getAllFields(module.getName());
             RecordAPI.addRecord(false, associatedTerms, module, fields);
         }
+    }
+
+    public static QuotationSettingContext fetchQuotationSetting() throws Exception {
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+        .select(FieldFactory.getQuoteSettingFields())
+        .table(ModuleFactory.getQuoteSettingModule().getTableName())
+        .limit(1);
+
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        if (props != null && !props.isEmpty()) {
+            QuotationSettingContext quotationSettingDATA = FieldUtil.getAsBeanFromMap(props.get(0), QuotationSettingContext.class);
+
+            return quotationSettingDATA;
+        }
+        return null;
     }
 }

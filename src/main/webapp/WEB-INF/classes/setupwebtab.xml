@@ -806,4 +806,10 @@
             <param name="setupTab">MODULES</param>
         </action>
     </package>
+    <package name="quotesetting" namespace="/api/v1/setup/quotesetting" extends="v3Api">
+        <action name="add" class="com.facilio.bmsconsoleV3.actions.QuotationSettingAction" method="addQuotationSetting"/>
+        <action name="fetch" class="com.facilio.bmsconsoleV3.actions.QuotationSettingAction" method="fetchQuotationSetting"/>
+        <action name="update" class="com.facilio.bmsconsoleV3.actions.QuotationSettingAction" method="updateQuotationSetting"/>
+        <action name="delete" class="com.facilio.bmsconsoleV3.actions.QuotationSettingAction" method="deleteQuoteSetting"/>
+    </package>
 </struts>

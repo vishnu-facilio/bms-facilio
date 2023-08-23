@@ -4,6 +4,8 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.File;
 import java.util.List;
@@ -39,6 +41,59 @@ public class QuotationContext extends BaseLineItemsParentModuleContext {
     private Long revisionNumber;
     private Boolean isQuotationRevised;
     private Boolean revisionHistoryAvailable;
+
+    @Getter @Setter
+    private Double markup;
+
+    @Getter @Setter
+    private QuotationSettingContext quotationSetting;
+
+    @Getter @Setter
+    private Double totalMarkup;
+
+    @Getter @Setter
+    private Boolean showMarkupValue;
+
+
+    @Getter @Setter
+    private Boolean isGlobalMarkup;
+
+//    public Boolean getIsGlobalMarkup() {
+//        return isGlobalMarkup;
+//    }
+//
+//    public void setIsGlobalMarkup(Boolean isGlobalMarkup) {
+//        this.isGlobalMarkup = isGlobalMarkup;
+//    }
+//
+//    public Boolean isGlobalMarkup() {
+//        if (isGlobalMarkup != null) {
+//            return isGlobalMarkup.booleanValue();
+//        }
+//        return false;
+//    }
+
+//    public Boolean getShowMarkupValue() {
+//        return showMarkupValue;
+//    }
+//
+//    public void setShowMarkupValue(Boolean showMarkupValue) {
+//        this.showMarkupValue = showMarkupValue;
+//    }
+//
+//    public Boolean showMarkupValue() {
+//        if (showMarkupValue != null) {
+//            return showMarkupValue.booleanValue();
+//        }
+//        return false;
+//    }
+
+
+    @Getter @Setter
+    private QuotationContext parentQuotationId;
+
+    @Getter @Setter
+    private V3VendorContext vendor;
 
 
     public V3WorkOrderContext getWorkorder() {
@@ -244,7 +299,9 @@ public class QuotationContext extends BaseLineItemsParentModuleContext {
     public enum CustomerType implements FacilioIntEnum {
         TENANT("Tenant"),
         CLIENT("Client"),
-        OTHERS("Others");
+        OTHERS("Others"),
+        VENDOR("Vendor");
+
         private String name;
 
         CustomerType(String name) {

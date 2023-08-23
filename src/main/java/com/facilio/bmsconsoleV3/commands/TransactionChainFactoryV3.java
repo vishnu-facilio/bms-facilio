@@ -32,6 +32,7 @@ import com.facilio.bmsconsoleV3.commands.pivot.GetPivotModulesListCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.*;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestExtraFields;
+import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivablesExtraFields;
 import com.facilio.bmsconsoleV3.commands.servicerequest.*;
@@ -176,11 +177,6 @@ import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersComm
 import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
 import com.facilio.bmsconsoleV3.commands.purchaserequest.PurchaseRequestTotalCostRollUpCommandV3;
-import com.facilio.bmsconsoleV3.commands.quotation.InsertQuotationLineItemsAndActivitiesCommand;
-import com.facilio.bmsconsoleV3.commands.quotation.QuotationValidationAndCostCalculationCommand;
-import com.facilio.bmsconsoleV3.commands.quotation.ReviseQuotationCommand;
-import com.facilio.bmsconsoleV3.commands.quotation.UpdateQuotationParentIdCommand;
-import com.facilio.bmsconsoleV3.commands.quotation.UpdateQuotationTermsAndConditionCommand;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.AddReadingImportAppDataCommand;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.DeleteReadingImportDataCommand;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.UpdateReadingImportDataCommand;
@@ -553,6 +549,14 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getQuotationBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ReviseQuotationCommand());
+        c.addCommand(new HandleQuoteSettingCommand());
+        c.addCommand(new QuotationValidationAndCostCalculationCommand());
+        return c;
+    }
+
+    public static FacilioChain getQuotationBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new HandleQuoteSettingCommand());
         c.addCommand(new QuotationValidationAndCostCalculationCommand());
         return c;
     }
@@ -3875,4 +3879,25 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
         return c;
     }
+
+    public static FacilioChain addQuotationSetting(){
+        FacilioChain c=getDefaultChain();
+        c.addCommand(new addQuotationSettingCommand());
+        return c;
+    }
+
+    public static FacilioChain updateQuotationSetting(){
+        FacilioChain c=getDefaultChain();
+        c.addCommand(new updateQuotationSettingCommand());
+        return c;
+    }
+
+    public static  FacilioChain getDeleteQuoteSettingChain() {
+
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteQuoteSettingCommand());
+        return c;
+    }
+
+
 }

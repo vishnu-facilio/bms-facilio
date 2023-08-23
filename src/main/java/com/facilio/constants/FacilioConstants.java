@@ -403,7 +403,13 @@ public class FacilioConstants {
 		public static final String SUMMARY = "summary";
 		public static final String GLIMPSE = "glimpse";
 
+
+
 		public static final String SITE_MAP_VIEW = "siteMapView";
+		public static final String MARKUP_PREFERENCES = "markuppreferences";
+
+		public static final String QUOTATIONSETTING = "quotationsetting";
+
 		public static final String GLIMPSE_META_DATA = "glimpseMetaData";
 		public static final String GLIMPSE_RECORD = "glimpseRecord";
 		public static final String GLIMPSE_CONTEXT = "glimpseContext";
