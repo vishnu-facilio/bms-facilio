@@ -8,7 +8,10 @@ import com.facilio.ns.context.NameSpaceField;
 import java.util.List;
 
 public interface NamespaceBean {
+	
     NameSpaceCacheContext getNamespace(Long nsId) throws Exception;
+    
+    NameSpaceCacheContext getNamespaceForParent(Long parentId, NSType type) throws Exception;
 
     Long addNamespace(NameSpaceContext ns) throws Exception;
 

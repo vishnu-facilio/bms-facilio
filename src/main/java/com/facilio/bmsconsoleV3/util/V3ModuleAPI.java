@@ -107,7 +107,9 @@ public class V3ModuleAPI {
         ATTENDANCE(FacilioConstants.Attendance.ATTENDANCE, Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         CLIENT_CONTACT(ContextNames.CLIENT_CONTACT,Arrays.asList()),
         VENDOR_DOCUMENTS(ContextNames.VENDOR_DOCUMENTS, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        SENSOR_ROLLUP_ALARM(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        SENSOR_ROLLUP_ALARM(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        METER(FacilioConstants.Meter.METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        VIRTUAL_METER_TEMPLATE(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         private String moduleName;
         private List<String> applicationLinkNames;

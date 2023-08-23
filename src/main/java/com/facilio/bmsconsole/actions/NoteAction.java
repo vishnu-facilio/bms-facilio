@@ -188,6 +188,9 @@ public class NoteAction extends FacilioAction {
 		else if(moduleName.equals(FacilioConstants.ContextNames.PURCHASE_ORDER_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.PURCHASE_ORDER_ACTIVITY);
 		}
+		else if (moduleName.equals(FacilioConstants.Meter.METER_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.Meter.METER_ACTIVITY);
+		}
 		else {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule parentModule = modBean.getModule(parentModuleName);

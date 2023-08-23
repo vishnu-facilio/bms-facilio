@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.asset.V3WaterMeterContext;
 import com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction;
 import com.facilio.bmsconsoleV3.context.budget.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.*;
@@ -41,6 +42,7 @@ import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inspection.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.meter.*;
 import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
@@ -2857,6 +2859,8 @@ public class FacilioConstants {
 			classMap.put(TENANT_ACTIVITY, ActivityContext.class);
 			classMap.put(SERVICE_REQUEST_ACTIVITY, ActivityContext.class);
 			classMap.put(Shift.SHIFT_ACTIVITY, ActivityContext.class);
+			classMap.put(Meter.METER_ACTIVITY, ActivityContext.class);
+			classMap.put(Meter.VIRTUAL_METER_TEMPLATE_ACTIVITY, ActivityContext.class);
 
 			classMap.put(MODBUS_TCP_CONTROLLER_MODULE_NAME, ModbusTcpControllerContext.class);
 			classMap.put(MODBUS_RTU_CONTROLLER_MODULE_NAME, ModbusRtuControllerContext.class);
@@ -3191,6 +3195,13 @@ public class FacilioConstants {
 			classMap.put(INVENTORY_RESERVATION, InventoryReservationContext.class);
 			classMap.put(VENDOR_QUOTES_ACTIVITY, ActivityContext.class);
 
+			classMap.put(Meter.METER, V3MeterContext.class);
+			classMap.put(Meter.ELECTRICITY_METER, V3ElectricityUtilityMeterContext.class);
+			classMap.put(Meter.WATER_METER, V3WaterUtilityMeterContext.class);
+			classMap.put(Meter.GAS_METER, V3GasUtilityMeterContext.class);
+			classMap.put(Meter.HEAT_METER, V3HeatUtilityMeterContext.class);
+			classMap.put(Meter.BTU_METER, V3BTUUtilityMeterContext.class);
+
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());
@@ -3216,6 +3227,10 @@ public class FacilioConstants {
 
 				// Temp fix until Asset is entirely moved to V3
 				if (moduleClass == null && checkParent && module.instanceOf(ContextNames.ASSET)) {
+					return getClassFromModule(module.getExtendModule(), checkParent);
+				}
+				
+				if (moduleClass == null && checkParent && module.instanceOf(FacilioConstants.Meter.METER)) {
 					return getClassFromModule(module.getExtendModule(), checkParent);
 				}
 
@@ -4282,9 +4297,38 @@ public class FacilioConstants {
 		public static final String ROLE ="ROLE";
 		public static final String USER_STATUS ="USER STATUS";
 		public static final String INVITE_STATUS ="INVITE STATUS";
+	}
 
 
 
+	public static class Meter {
+		public static final String METER = "meter";
+		public static final String UTILITY_TYPE = "utilitytype";
+		public static final String GAS_METER = "gasmeter";
+		public static final String WATER_METER = "waterutilitymeter";
+		public static final String ELECTRICITY_METER = "electricitymeter";
+		public static final String HEAT_METER = "heatmeter";
+		public static final String BTU_METER = "btumeter";
+		public static final String PARENT_UTILITY_TYPE_ID = "parentUtilityTypeId";
+		public static final String METER_NOTES = "meternotes";
+		public static final String METER_ATTACHMENTS = "meterattachments";
+		public static final String METER_PHOTOS = "meterphotos";
+		public static final String ELECTRICITY_DATA_READING = "electricitydata";
+		public static final String GAS_DATA_READING = "gasdata";
+		public static final String WATER_DATA_READING = "waterdata";
+		public static final String HEAT_DATA_READING = "heatdata";
+		public static final String BTU_DATA_READING = "btudata";
+		public static final String METER_ACTIVITY = "meteractivity";
+		
+		
+		public static final String VIRTUAL_METER_TEMPLATE_RESOURCE = "virtualMeterTemplateResource";
+		public static final String VIRTUAL_METER_TEMPLATE_READING = "virtualMeterTemplateReading";
+		public static final String VIRTUAL_METER_TEMPLATE_SITES = "virtualMeterTemplateSites";
+		public static final String VIRTUAL_METER_TEMPLATE = "virtualMeterTemplate";
+		
+		public static final String VIRTUAL_METER_TEMPLATE_ID = "virtualMeterTemplateId";
+		public static final String VIRTUAL_METER_TEMPLATE_BUILDINGS = "virtualMeterTemplateBuildings";
+		public static final String VIRTUAL_METER_TEMPLATE_ACTIVITY = "virtualMeterTemplateActivity";
 	}
 
 	public static class SensorRule{

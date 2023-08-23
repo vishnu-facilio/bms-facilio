@@ -3055,6 +3055,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Asset Depreciation", "depreciation", WebTabContext.Type.ASSET_DEPRECIATION, null, appId, null));
             webTabs.add(new WebTabContext("Weather Station", "weatherstation", WebTabContext.Type.WEATHER_STATION, null, appId, null,AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()));
             webTabs.add(new WebTabContext("Decommission", "decommission", WebTabContext.Type.DECOMMISSION, null, appId, null,AccountUtil.FeatureLicense.COMMISSIONING.getFeatureId()));
+            webTabs.add(new WebTabContext("Meter Customization", "metercustomization", WebTabContext.Type.METER_CUSTOMIZATION, null, appId, null,AccountUtil.FeatureLicense.METER.getFeatureId()));
             groupNameVsWebTabsMap.put("portfoliosettings", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("Workorder Settings", "workordersettings", layout.getId(), 203, groupOrder++));

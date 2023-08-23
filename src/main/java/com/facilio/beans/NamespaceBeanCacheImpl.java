@@ -22,6 +22,13 @@ public class NamespaceBeanCacheImpl extends NamespaceBeanImpl implements Namespa
         String key = CacheUtil.NAMESPACE_KEY(AccountUtil.getCurrentOrg().getId(), nsId);
         return FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(nameSpaceCache, key, () -> super.getNamespace(nsId));
     }
+    
+    @Override
+    public NameSpaceCacheContext getNamespaceForParent(Long parentId, NSType type) throws Exception {
+        FacilioCache<String, NameSpaceCacheContext> nameSpaceParentCache = LRUCache.getNameSpaceParentCache();
+        String key = CacheUtil.NAMESPACE_PARENT_KEY(AccountUtil.getCurrentOrg().getId(), parentId, type.getIndex());
+        return FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(nameSpaceParentCache, key, () -> super.getNamespaceForParent(parentId,type));
+    }
 
     @Override
     public List<Long> getNamespaceIdsForFieldId(Long fieldId) throws Exception {

@@ -1831,4 +1831,8 @@
             <param name="id">{1}</param>
         </action>
     </package>
+
+    <package name="virtualMeterTemplate" namespace="/api/v3/virtualMeterTemplate" extends="v3Api">
+        <action name="publish" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="publishVMTemplate"></action>
+    </package>
 </struts>

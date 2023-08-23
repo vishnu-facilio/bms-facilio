@@ -61,7 +61,9 @@ public class GetModulesListCommand extends FacilioCommand {
 			ContextNames.ANNOUNCEMENT,
 			ContextNames.JOB_PLAN,
 			ContextNames.ATTENDANCE,
-			FacilioConstants.PeopleGroup.PEOPLE_GROUP);
+			FacilioConstants.PeopleGroup.PEOPLE_GROUP,
+	        FacilioConstants.Meter.METER,
+			FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
 
 	
 	@Override

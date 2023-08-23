@@ -519,7 +519,17 @@ public class PageWidget {
 		BULK_RELATED_LIST("bulkRelatedList"),
 		WIDGET_GROUP("widgetGroup"),
 		BULK_RELATION_SHIP_WIDGET("bulkRelationShipWidget"),
-		COMMANDS_WIDGET("commandsWidget");
+		COMMANDS_WIDGET("commandsWidget"),
+		PHYSICAL_METER_DETAILS_WIDGET("physicalMeterDetailsWidget"),
+		VIRTUAL_METER_DETAILS_WIDGET("virtualMeterDetailsWidget"),
+		CHILD_METERS("childMeters"),
+		METER_READINGS("meterReadings"),
+		MONTHLY_CONSUMPTION("monthlyConsumption"),
+		TOTAL_CONSUMPTION("totalConsumption"),
+		PEAK_DEMAND("peakDemand"),
+		VIRTUAL_METER_TEMPLATE_DETAILS("virtualMeterTemplateDetails"),
+		VIRTUAL_METER_TEMPLATE_READINGS("virtualMeterTemplateReadings"),
+		RELATED_VIRTUAL_METERS_LIST("relatedVirtualMetersList");
 
 		private String name;
 		@Getter

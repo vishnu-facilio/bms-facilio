@@ -106,7 +106,8 @@ public class V3ResourceContext extends V3Context {
 		ASSET (FacilioConstants.ContextNames.ASSET),
 		PM (FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE),
 		USER (FacilioConstants.ContextNames.USERS),
-		CONTROLLER (FacilioConstants.ContextNames.CONTROLLER_MODULE_NAME);
+		CONTROLLER (FacilioConstants.ContextNames.CONTROLLER_MODULE_NAME),
+		METER (FacilioConstants.Meter.METER);
 
 		private String subModuleName;
 		private ResourceType (String module) {

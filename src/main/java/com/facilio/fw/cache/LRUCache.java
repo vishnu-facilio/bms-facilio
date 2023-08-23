@@ -52,6 +52,7 @@ public class LRUCache {
 	private static FacilioCache<String, DAGCache> globalScopeGraphCache = new PubSubLRUCache<>("globalScopeGraph", 2000);
 	private static FacilioCache<String, ValueGeneratorCacheContext> valueGeneratorCache = new PubSubLRUCache<>("valueGeneratorCache", 2000);
 	private static FacilioCache<String, NameSpaceCacheContext> nameSpaceCache = new PubSubLRUCache<>("nameSpaceCache", 2000);
+	private static FacilioCache<String, NameSpaceCacheContext> nameSpaceParentCache = new PubSubLRUCache<>("nameSpaceParentCache", 2000);
 	private static FacilioCache<String, List<Long>> nameSpaceIdsCache = new PubSubLRUCache("nameSpaceIdsCache", 2000);
 	private static FacilioCache<String, Object> superAdminCache = new PubSubLRUCache("superAdminCache", 2000);
 	private static FacilioCache<String, Long> peopleScopingCache = new PubSubLRUCache("peopleScopingCache", 2000);
@@ -148,6 +149,8 @@ public class LRUCache {
 	}
 
 	public static FacilioCache<String, NameSpaceCacheContext> getNameSpaceCache(){ return nameSpaceCache;}
+	
+	public static FacilioCache<String, NameSpaceCacheContext> getNameSpaceParentCache(){ return nameSpaceParentCache;}
 
 	public static FacilioCache<String, List<Long>> getNameSpaceIdCache() {
 		return nameSpaceIdsCache;

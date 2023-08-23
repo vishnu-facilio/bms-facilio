@@ -5,5 +5,7 @@ import org.json.simple.JSONObject;
 public interface LongTasksBean {
 
     void addBulkWeatherStationMigration(JSONObject data) throws Exception;
+    
+    void populateVMData(JSONObject data) throws Exception;
 
 }

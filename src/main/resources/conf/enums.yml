@@ -362,3 +362,6 @@ enums:
 
   - name: BaseMailConversionTypeState
     enumClassName: com.facilio.bmsconsoleV3.context.BaseMailMessageContext$BaseMailConversionType
+
+  - name: VirtualMeterTemplateStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext$VMTemplateStatus

@@ -6,7 +6,9 @@ public enum NSType implements FacilioIntEnum {
     READING_RULE("Reading Rule"),
     FAULT_IMPACT_RULE("Fault Impact Rule"),
     KPI_RULE("KPI"),
-    SENSOR_RULE("Sensor Rule");
+    SENSOR_RULE("Sensor Rule"),
+    VIRTUAL_METER("Virtual Meter")
+    ;
 
     private String name;
 

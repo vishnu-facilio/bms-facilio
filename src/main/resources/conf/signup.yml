@@ -405,3 +405,24 @@ classes:
    #agentDataLog Module
 #  - com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataLoggerModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataProcessingLoggerModule
+  
+  #Adding Meter Modules
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityTypeModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AddVirtualMeterTemplateModules
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.MeterModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.GasMeterModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.WaterMeterModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.ElectricityMeterModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.HeatMeterModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.BTUMeterModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.MeterNotesModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.MeterAttachmentsModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.MeterActivityModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.VirtualMeterTemplateActivityModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.ElectricityDataReadingModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.GasDataReadingModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.WaterDataReadingModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.HeatDataReadingModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.BTUDataReadingModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.VMTemplateModule
+  

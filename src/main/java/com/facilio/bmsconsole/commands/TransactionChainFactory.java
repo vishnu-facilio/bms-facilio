@@ -7182,6 +7182,16 @@ public class TransactionChainFactory {
 		c.addCommand(new FaultToWorkorderStatusChangeCommand());
 		return c;
 	}
+	public static FacilioChain getAddUtilityTypeReadingChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetUtilityTypeModuleCommand());
+		c.addCommand(getAddReadingsChain());
+		c.addCommand(new GetUtilityTypeResourcesCommand());
+		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
+		c.addCommand(new SetValidationRulesContextCommand());
+		c.addCommand(new AddValidationRulesCommand());
+		return c;
+	}
 
 	public static FacilioChain updateDecommissionedResources() {
 		FacilioChain chain = getDefaultChain();

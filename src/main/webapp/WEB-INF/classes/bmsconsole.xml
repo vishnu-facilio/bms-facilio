@@ -1586,6 +1586,14 @@
 				<param name="includeProperties">photos.*</param>
 			</result>
 		</action>
+
+		<action name="getmeterphoto" class="com.facilio.bmsconsole.actions.PhotosAction"
+				method="getMeterPhoto">
+			<result name="success" type="json">
+				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
+				<param name="includeProperties">photos.*</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="moduleApi" namespace="/api/module" extends="homeApi">

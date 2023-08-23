@@ -4,6 +4,7 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.IAMUserManagement.*;
 import com.facilio.bmsconsole.commands.form.HandleFormFieldsCommand;
 import com.facilio.bmsconsole.enums.OfflineUpdateType;
+import com.facilio.bmsconsoleV3.commands.meter.GetUtilityTypeReadingsCommand;
 import com.facilio.bmsconsoleV3.commands.shift.AssignShiftToUserCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.GetScheduledWoCommandV3;
 import com.facilio.command.FacilioCommand;
@@ -2610,6 +2611,28 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new RevokeAppAccessCommand());
 		c.addCommand(new UpdatePortalAccessCommand());
+		return c;
+	}
+	public static FacilioChain getUploadMeterPhotosChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new UploadPhotosCommand());
+		c.addCommand(new UpdateMeterResourcePhotoCommand());
+		return c;
+	}
+	public static FacilioChain getDeleteMeterResourcePhotoChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeleteMeterResourcePhotoCommand());
+		return c;
+	}
+	public static FacilioChain getUtilityTypeReadingsChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new GetUtilityTypeReadingsCommand());
+		c.addCommand(new GetReadingFieldsCommand());
+		return c;
+	}
+	public static FacilioChain getMeterPhotoChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new GetMeterPhotoCommand());
 		return c;
 	}
 }

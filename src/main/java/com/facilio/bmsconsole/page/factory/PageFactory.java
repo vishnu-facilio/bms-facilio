@@ -17,6 +17,8 @@ import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
+import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.bmsconsoleV3.context.spacebooking.V3SpaceBookingContext;
@@ -494,6 +496,10 @@ public class PageFactory {
 				return SpaceBookingPageFactory.getSpaceBookingPage((V3SpaceBookingContext) record, module);
 			case ContextNames.ROUTES:
 				return RoutePageFactory.getRoutePage((RoutesContext) record, module);
+			case FacilioConstants.Meter.METER:
+				return MeterPageFactory.getMeterPage((V3MeterContext) record);
+			case FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE:
+				return VirtualMeterTemplatePageFactory.getVirtualMeterTemplatePage((VirtualMeterTemplateContext) record);
 		}
 		if (module.getExtendModule() == null) {    // temp
 			// etisalat changes will be changed to standard method

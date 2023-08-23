@@ -24,6 +24,7 @@ import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesExtraFields;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.*;
+import com.facilio.bmsconsoleV3.commands.meter.*;
 import com.facilio.bmsconsoleV3.commands.people.*;
 import com.facilio.bmsconsoleV3.commands.pivot.GetPivotModulesListCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.*;
@@ -46,6 +47,10 @@ import com.facilio.bmsconsoleV3.commands.tool.*;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesExtraFields;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.userScoping.*;
+import com.facilio.bmsconsoleV3.commands.utilityType.AddUtilityTypeModuleCommand;
+import com.facilio.bmsconsoleV3.commands.utilityType.SetUtilityTypeModuleCommand;
+import com.facilio.bmsconsoleV3.commands.utilityType.UpdateUtilityTypeMeterModuleIdCommand;
+import com.facilio.bmsconsoleV3.commands.utilityType.ValidateUtilityTypeDeletion;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorsExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.CheckVendorPortalAccessibilityCommandV3;
@@ -3487,6 +3492,130 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain fetchSiteDetailsWithoutScopingCommand(){
         FacilioChain c=getDefaultChain();
         c.addCommand(new FetchSiteWithoutScoping());
+        return c;
+    }
+
+    public static FacilioChain getCreateMeterBeforeSaveChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FillDefaultValuesForMetersCommand());
+        c.addCommand(new UtilityTypeAdditionInExtendModuleCommand());
+        c.addCommand(new ValidateMeterQrValueCommand());
+        c.addCommand(new AssignMeterActivityModuleCommand());
+        return c;
+    }
+    public static FacilioChain getCreateMeterAfterSaveChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new MeterAfterSaveCommand());
+        c.addCommand(new GetUtilityTypeReadingsCommand());
+        c.addCommand(new GetReadingFieldsCommand());
+        c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+        c.addCommand(new RemoveMeterExtendedModulesFromRecordMap());
+        return c;
+    }
+    public static FacilioChain getUpdateMeterBeforeSaveChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UtilityTypeAdditionInExtendModuleCommand());
+        c.addCommand(new ValidateMeterQrValueCommand());
+        c.addCommand(new AssignMeterActivityModuleCommand());
+        return c;
+    }
+    public static FacilioChain getUpdateMeterAfterSaveChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new RemoveMeterExtendedModulesFromRecordMap());
+        return c;
+    }
+    public static FacilioChain getMeterSummaryBeforeFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new MeterSupplementsSupplyCommand());
+        return c;
+    }
+    public static FacilioChain getMeterSummaryAfterFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadMeterDetailsCommand());
+        return c;
+    }
+    public static FacilioChain getMeterListBeforeFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new MeterSupplementsSupplyCommand());
+        return c;
+    }
+    public static FacilioChain getCreateUtilityTypeBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddUtilityTypeModuleCommand());
+        c.addCommand(TransactionChainFactory.commonAddModuleChain());
+        c.addCommand(new UpdateUtilityTypeMeterModuleIdCommand());
+        return c;
+    }
+    public static FacilioChain getUtilityTypeBeforeDeleteChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateUtilityTypeDeletion());
+        return c;
+    }
+    public static FacilioChain getUtilityTypeSummaryAfterFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetUtilityTypeModuleCommand());
+        return c;
+    }
+    public static FacilioChain getUtilityTypeListAfterFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SetUtilityTypeModuleCommand());
+        return c;
+    }
+
+    public static FacilioChain getCreateVirtualMeterTemplateBeforeChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FillDefaultValuesAndValidateForVMTemplates());
+        c.addCommand(new AddRelationshipWithParentModuleCommand());
+        c.addCommand(new AssignVMTemplateActivityModuleCommand());
+        return c;
+    }
+
+    public static FacilioChain getCreateVirtualMeterTemplateAfterChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddVirtualMeterTemplateReadingCommand());
+        return c;
+    }
+
+    public static FacilioChain getPublishVirtualMeterTemplateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddWMSMessageForVirtualMeterPopulationCommand());
+        c.addCommand(new MarkVMAsPublishedCommand());
+        return c;
+    }
+
+    public static FacilioChain getVirtualMeterTemplateSummaryBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new VMTemplateSupplementsSupplyCommand());
+        return c;
+    }
+
+    public static FacilioChain getVirtualMeterTemplateSummaryAfterFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FillVirtualMeterTemplateDetailsCommand());
+        return c;
+    }
+
+    public static FacilioChain getVirtualMeterTemplateListBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new VMTemplateSupplementsSupplyCommand());
+        return c;
+    }
+
+    public static FacilioChain getVirtualMeterTemplateListAfterFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FillVirtualMeterTemplateDetailsCommand());
+        return c;
+    }
+
+    public static FacilioChain getUpdateVirtualMeterTemplateBeforeChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AssignVMTemplateActivityModuleCommand());
+        return c;
+    }
+
+    public static FacilioChain getUpdateVirtualMeterTemplateAfterChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateVMTemplateReadingCommand());
         return c;
     }
 }

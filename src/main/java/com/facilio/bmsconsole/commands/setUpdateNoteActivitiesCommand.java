@@ -120,6 +120,9 @@ public class setUpdateNoteActivitiesCommand extends FacilioCommand {
                 else if(moduleName.equals(FacilioConstants.ContextNames.PURCHASE_ORDER_NOTES)) {
                     CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.UPDATE_NOTES, info, (FacilioContext) context);
                 }
+                else if(moduleName.equals(FacilioConstants.Meter.METER_NOTES)) {
+                    CommonCommandUtil.addActivityToContext(note.getParentId(), -1, CommonActivityType.UPDATE_NOTES, info, (FacilioContext) context);
+                }
                 else  {
                     FacilioModule parentModule = modBean.getModule(parentModuleName);
                     if (parentModule.isCustom()) {

@@ -468,7 +468,8 @@ public class FieldUtil {
 					FacilioConstants.Induction.INDUCTION_RESPONSE,
 					FacilioConstants.Survey.SURVEY_TEMPLATE,
 					FacilioConstants.Survey.SURVEY_RESPONSE,
-					ContextNames.PLANNEDMAINTENANCE
+					ContextNames.PLANNEDMAINTENANCE,
+					FacilioConstants.Meter.METER
 					)));
 
 
@@ -493,6 +494,7 @@ public class FieldUtil {
 		}
 		return SITE_ID_ALLOWED_MODULES.contains(module.getName())
 				|| (module.getExtendModule() != null && (module.getExtendModule().getName().equals("asset")
+				|| module.getExtendModule().getName().equals("meter")
 				|| module.getExtendModule().getName().equals("controller")));
 	}
 

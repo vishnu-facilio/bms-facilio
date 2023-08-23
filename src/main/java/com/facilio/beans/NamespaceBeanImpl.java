@@ -9,6 +9,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
@@ -38,6 +39,31 @@ public class NamespaceBeanImpl implements NamespaceBean {
                 .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
                 .leftJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldRelatedModule().getTableName()).on("Namespace_Fields.ID=Namespace_Field_Related.NAMESPACE_FIELD_ID")
                 .andCondition(CriteriaAPI.getIdCondition(nsId, NamespaceModuleAndFieldFactory.getNamespaceModule()));
+
+        List<Map<String, Object>> props = selectRecordBuilder.get();
+        if (CollectionUtils.isNotEmpty(props)) {
+            List<NameSpaceContext> nameSpaceContexts = constructNamespaceAndFields(props);
+            return new NameSpaceCacheContext(nameSpaceContexts.get(0));
+        }
+        throw new Exception("Invalid namespace Id");
+
+    }
+    
+    
+    @Override
+    public NameSpaceCacheContext getNamespaceForParent(Long parentId, NSType type) throws Exception {
+        
+    	LOGGER.debug("Namespace Direct Fetch, parentId: " + parentId +" type -- "+type);
+    	
+    	Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(NamespaceModuleAndFieldFactory.getNSAndFields());
+    	
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
+                .select(NamespaceModuleAndFieldFactory.getNSAndFields())
+                .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
+                .leftJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldRelatedModule().getTableName()).on("Namespace_Fields.ID=Namespace_Field_Related.NAMESPACE_FIELD_ID")
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("parentRuleId"), ""+parentId, NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("type"), ""+type.getIndex(), NumberOperators.EQUALS));
 
         List<Map<String, Object>> props = selectRecordBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {

@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.PMStatus;
 import com.facilio.bmsconsoleV3.context.jobplan.PMJobPlanContextV3;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioIntEnum;
 
 import lombok.Getter;
@@ -624,23 +625,30 @@ public class PreventiveMaintenance extends ResourceContext {
 
 	public static enum PMAssignmentType implements FacilioIntEnum {
 		
-		ALL_FLOORS("All Floors"),			//1
-		ALL_SPACES("All Spaces"),
-		SPACE_CATEGORY("Space Category"),		//3
-		ASSET_CATEGORY("Asset Category"),
-		CURRENT_ASSET("Current Asset"),		//5
-		SPECIFIC_ASSET("Specific Asset"),
-		ALL_BUILDINGS("All Buildings"),		//7
-		ALL_SITES("All Sites")
+		ALL_FLOORS("All Floors",FacilioConstants.ContextNames.FLOOR),			//1
+		ALL_SPACES("All Spaces",FacilioConstants.ContextNames.SPACE),
+		SPACE_CATEGORY("Space Category",FacilioConstants.ContextNames.SPACE),		//3
+		ASSET_CATEGORY("Asset Category",FacilioConstants.ContextNames.ASSET),
+		CURRENT_ASSET("Current Asset",FacilioConstants.ContextNames.ASSET),		//5
+		SPECIFIC_ASSET("Specific Asset",FacilioConstants.ContextNames.ASSET),
+		ALL_BUILDINGS("All Buildings",FacilioConstants.ContextNames.BUILDING),		//7
+		ALL_SITES("All Sites",FacilioConstants.ContextNames.SITE)
 		;
 		String name;
+		String moduleName;
 		@Override
 		public String getValue() {
 			// TODO Auto-generated method stub
 			return this.name;
 		}
-		PMAssignmentType(String name) {
+		
+		public String getModuleName() {
+			// TODO Auto-generated method stub
+			return this.moduleName;
+		}
+		PMAssignmentType(String name,String moduleName) {
 			this.name = name;
+			this.moduleName = moduleName;
 		}
 		public int getVal() {
 			return ordinal() + 1;

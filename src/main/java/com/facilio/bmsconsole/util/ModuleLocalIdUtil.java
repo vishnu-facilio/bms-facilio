@@ -79,6 +79,7 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.Tenant.CONTACT_DIRECTORY);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
+		modulesWithLocalId.add(FacilioConstants.Meter.METER);
 
 
 		return modulesWithLocalId;

@@ -80,6 +80,7 @@ import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
 import com.facilio.bmsconsoleV3.commands.jobplanSection.AddCriteriaForJobPlanSectionInputOptionsBeforeFetchCommand;
 import com.facilio.bmsconsoleV3.commands.jobplanTask.AddCriteriaForJobPlanTaskInputOptionsBeforeFetchCommand;
 import com.facilio.bmsconsoleV3.commands.labour.*;
+import com.facilio.bmsconsoleV3.commands.meter.*;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
 import com.facilio.bmsconsoleV3.commands.people.*;
@@ -150,6 +151,10 @@ import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.bmsconsoleV3.context.labour.LabourCraftAndSkillContext;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
+import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
+import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext;
+import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateReadingContext;
 import com.facilio.bmsconsoleV3.context.peoplegroup.V3PeopleGroupContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PoAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
@@ -3202,6 +3207,67 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module("meter")
+    public static Supplier<V3Config> getMeter() {
+        return () -> new V3Config(V3MeterContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getCreateMeterBeforeSaveChain())
+                .afterSave(TransactionChainFactoryV3.getCreateMeterAfterSaveChain())
+                .update()
+                .beforeSave(TransactionChainFactoryV3.getUpdateMeterBeforeSaveChain())
+                .afterSave(TransactionChainFactoryV3.getUpdateMeterAfterSaveChain())
+                .delete()
+                .summary()
+                .beforeFetch(TransactionChainFactoryV3.getMeterSummaryBeforeFetchChain())
+                .afterFetch(TransactionChainFactoryV3.getMeterSummaryAfterFetchChain())
+                .list()
+                .beforeFetch(TransactionChainFactoryV3.getMeterListBeforeFetchChain())
+                .build();
+    }
+
+    @Module("utilitytype")
+    public static Supplier<V3Config> getUtilityType() {
+        return () -> new V3Config(V3UtilityTypeContext.class, null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getCreateUtilityTypeBeforeSaveChain())
+                .list()
+                .afterFetch(TransactionChainFactoryV3.getUtilityTypeListAfterFetchChain())
+                .summary()
+                .afterFetch(TransactionChainFactoryV3.getUtilityTypeSummaryAfterFetchChain())
+                .update()
+                .delete()
+                .beforeDelete(TransactionChainFactoryV3.getUtilityTypeBeforeDeleteChain())
+                .build();
+    }
+    
+    
+    @Module(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE)
+    public static Supplier<V3Config> getVirtualMeterTemplate() {
+        return () -> new V3Config(VirtualMeterTemplateContext.class, null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getCreateVirtualMeterTemplateBeforeChain())
+                .afterSave(TransactionChainFactoryV3.getCreateVirtualMeterTemplateAfterChain())
+                .update()
+                .beforeSave(TransactionChainFactoryV3.getUpdateVirtualMeterTemplateBeforeChain())
+                .afterSave(TransactionChainFactoryV3.getUpdateVirtualMeterTemplateAfterChain())
+                .list()
+                .beforeFetch(TransactionChainFactoryV3.getVirtualMeterTemplateListBeforeFetchChain())
+                .afterFetch(TransactionChainFactoryV3.getVirtualMeterTemplateListAfterFetchChain())
+                .summary()
+                .beforeFetch(TransactionChainFactoryV3.getVirtualMeterTemplateSummaryBeforeFetchChain())
+                .afterFetch(TransactionChainFactoryV3.getVirtualMeterTemplateSummaryAfterFetchChain())
+                .build();
+    }
+    
+    @Module(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE_READING)
+    public static Supplier<V3Config> getVirtualMeterTemplateReading() {
+        return () -> new V3Config(VirtualMeterTemplateReadingContext.class, null)
+                .create()
+                .afterSave(new PopulateNameSpaceAndFieldForVMReadingsCommand())
+                .summary()
+                .afterFetch(new FetchNameSpaceAndFieldForVMReadingsCommand())
+                .build();
+    }
 
     @Module(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGS)
     public static Supplier<V3Config> getWorkflowRuleLogs(){

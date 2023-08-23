@@ -208,6 +208,10 @@ public class CacheUtil {
 	public static String NAMESPACE_KEY(long orgId, long nsId) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + nsId ;
 	}
+	
+	public static String NAMESPACE_PARENT_KEY(long orgId, long parentId, int type) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + parentId + KEY_SEPARATOR + type;
+	}
 
 	public static String NAMESPACE_IDS_KEY(long orgId, long fieldId) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + NS_FIELD_ID + KEY_SEPARATOR + fieldId;

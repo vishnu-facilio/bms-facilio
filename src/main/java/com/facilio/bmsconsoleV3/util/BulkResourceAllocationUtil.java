@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -29,6 +30,16 @@ import com.facilio.db.criteria.operators.PickListOperators;
 @Log4j
 public class BulkResourceAllocationUtil {
 
+	
+	public static List<Long> getMultipleResourceIdToBeAddedFromPM(PMAssignmentType pmAssignmentType, List<Long> resourceIds,Long spaceCategoryID,Long assetCategoryID,Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeRess, boolean isMultiSite) throws Exception {
+		
+		List<ResourceContext> resources = getMultipleResourceToBeAddedFromPM(pmAssignmentType, resourceIds, spaceCategoryID, assetCategoryID, currentAssetId, includeExcludeRess, isMultiSite);
+		
+		if(!CollectionUtils.isEmpty(resources)) {
+			return resources.stream().map((res) -> res.getId()).collect(Collectors.toList());
+		}
+		return null;
+	}
 	
 	public static List<ResourceContext> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType, List<Long> resourceIds,Long spaceCategoryID,Long assetCategoryID,Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeRess, boolean isMultiSite) throws Exception {
 		List<Long> includedIds = null;

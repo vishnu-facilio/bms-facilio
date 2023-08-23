@@ -321,4 +321,49 @@ public class PhotosAction extends FacilioAction {
 		this.photos = photos;
 	}
 
+	public String uploadMeterPhotos() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.file);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.fileFileName);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.fileContentType);
+		context.put(FacilioConstants.ContextNames.RECORD_ID, parentId);
+
+		FacilioChain updateMeterPhotoChain = FacilioChainFactory.getUploadMeterPhotosChain();
+		updateMeterPhotoChain.execute(context);
+
+		setPhotos((List<PhotosContext>) context.get(FacilioConstants.ContextNames.PHOTOS));
+
+		setResult(ContextNames.PHOTOS, getPhotos());
+		return SUCCESS;
+	}
+
+	public String deleteMeterPhotos() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+
+		FileStore fs = FacilioFactory.getFileStore();
+		FileInfo file = fs.getFileInfo(photoId);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, Collections.singletonList(file.getFileName()));
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, Collections.singletonList(file.getContentType()));
+		context.put(FacilioConstants.ContextNames.RECORD_ID, parentId);
+		context.put(FacilioConstants.ContextNames.PHOTO_ID, photoId);
+
+		FacilioChain updateMeterPhotoChain = FacilioChainFactory.getDeleteMeterResourcePhotoChain();
+		updateMeterPhotoChain.execute(context);
+		return SUCCESS;
+	}
+
+	public String getMeterPhoto() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+
+		FacilioChain getMeterPhotoChain = FacilioChainFactory.getMeterPhotoChain();
+		getMeterPhotoChain.execute(context);
+
+		setPhotos((List<PhotosContext>) context.get(FacilioConstants.ContextNames.PHOTOS));
+
+		return SUCCESS;
+	}
 }

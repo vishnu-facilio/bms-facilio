@@ -127,6 +127,9 @@ public class ReadingAction extends FacilioAction {
 		case "Space":
 			 addSpaceCategoryReading();
 			break;
+			case "meter":
+				addMeterReading();
+				break;
 		case "Building":
 		case "floor":
 		case "site":
@@ -1942,6 +1945,57 @@ public class ReadingAction extends FacilioAction {
 		context.setId(ruleId);
 		FormulaFieldAPI.updateKPIReadingsStatus(context);
 		setResult("result", "success");
+		return SUCCESS;
+	}
+
+	private long parentUtilityTypeId = -1;
+	public long getParentUtilityTypeId() {
+		return parentUtilityTypeId;
+	}
+	public void setParentUtilityTypeId(long parentUtilityTypeId) {
+		this.parentUtilityTypeId = parentUtilityTypeId;
+	}
+
+	public String v2getUtilityTypeReadings() throws Exception {
+		setParentUtilityTypeId(id);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
+		context.put(FacilioConstants.ContextNames.FETCH_CONTROLLABLE_FIELDS, fetchControllableFields);
+		context.put(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID, getParentUtilityTypeId());
+		if (StringUtils.isNotEmpty(getReadingType())) {
+			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
+		}
+
+		FacilioChain getCategoryReadingChain = FacilioChainFactory.getUtilityTypeReadingsChain();
+		getCategoryReadingChain.execute(context);
+
+		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		if (getFetchValidationRules()) {
+			fieldVsRules = (Map<Long, List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.VALIDATION_RULES);
+		}
+		List<FacilioField> fields = new ArrayList<>();
+		if (this.readings != null) {
+			fields = this.readings.stream().map(r -> r.getFields()).flatMap(r -> r.stream()).collect(Collectors.toList());
+		}
+		setResult("readings", fields);
+		if (getFetchValidationRules()) {
+			setResult("fieldVsRules", fieldVsRules);
+		}
+		return SUCCESS;
+	}
+
+	public String addMeterReading() throws Exception {
+		String parentModule = FacilioConstants.Meter.UTILITY_TYPE;
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModule);
+		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
+		context.put(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID, getParentUtilityTypeId());
+		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, getFieldReadingRules());
+
+		FacilioChain addReadingChain = TransactionChainFactory.getAddUtilityTypeReadingChain();
+		addReadingChain.execute(context);
+
 		return SUCCESS;
 	}
 }
