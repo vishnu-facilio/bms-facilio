@@ -524,7 +524,8 @@ public class ServiceAppointmentUtil {
         return trip;
     }
 
-    public static void endTripForAppointment(Long appointmentId, LocationContext location) throws Exception {
+    public static List<TripContext> endTripForAppointment(Long appointmentId, LocationContext location) throws Exception {
+        List<TripContext> OngoingTrips = null;
         String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
@@ -554,7 +555,7 @@ public class ServiceAppointmentUtil {
                     V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
 
 
-                    List<TripContext> OngoingTrips = getOngoingTrips(agentId,existingAppointment.getId());
+                    OngoingTrips = getOngoingTrips(agentId,existingAppointment.getId());
                     if(CollectionUtils.isNotEmpty(OngoingTrips)){
                         for(TripContext OngoingTrip : OngoingTrips){
                             OngoingTrip.setEndTime(DateTimeUtil.getCurrenTime());
@@ -611,6 +612,7 @@ public class ServiceAppointmentUtil {
                 V3RecordAPI.updateRecord(existingAppointment, serviceAppointment, Collections.singletonList(saFieldMap.get(FacilioConstants.ContextNames.STATUS)));
             }
         }
+        return OngoingTrips;
     }
 
     public static boolean checkForOngoingTrip(long peopleId) throws Exception {
