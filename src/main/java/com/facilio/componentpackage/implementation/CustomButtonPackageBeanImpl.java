@@ -194,7 +194,7 @@ public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleCont
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder builder = idVsData.getValue();
-            customButtonRule = constructCustomButtonRuleFromBuilder(builder, modBean);
+            customButtonRule = constructCustomButtonRuleFromBuilder(builder, modBean,true);
             if(customButtonRule==null){
                 continue;
             }
@@ -220,8 +220,8 @@ public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleCont
 
             XMLBuilder builder = idVsData.getValue();
 
-            customButtonRule = constructCustomButtonRuleFromBuilder(builder, moduleBean);
-            if(customButtonRule!=null)  continue;
+            customButtonRule = constructCustomButtonRuleFromBuilder(builder, moduleBean,false);
+            if(customButtonRule==null)  continue;
             customButtonRule.setId(ruleId);
 
             addOrUpdateCustomButtonRule(customButtonRule);
@@ -241,7 +241,7 @@ public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleCont
 
     }
 
-    private CustomButtonRuleContext constructCustomButtonRuleFromBuilder(XMLBuilder builder, ModuleBean modBean) throws Exception
+    private CustomButtonRuleContext constructCustomButtonRuleFromBuilder(XMLBuilder builder, ModuleBean modBean,boolean isCreate) throws Exception
     {
         if(builder.getElement(PackageConstants.MODULENAME)==null) return null;
         CustomButtonRuleContext customButtonRule=new CustomButtonRuleContext();
@@ -298,8 +298,8 @@ public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleCont
             if(form!=null) customButtonRule.setFormId(form.getId());
 
         }
-
-            customButtonRule.setShouldFormInterfaceApply(false);
+        if(isCreate) customButtonRule.setShouldFormInterfaceApply(false);
+        else customButtonRule.setShouldFormInterfaceApply(true);
 
 
         XMLBuilder configXml= builder.getElement(PackageConstants.CustomButtonConstants.CONFIG);

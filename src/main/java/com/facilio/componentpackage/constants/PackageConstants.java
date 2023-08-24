@@ -4,10 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PackageConstants {
+    public static final String RESEND_APPROVER_LIST="Resend_Approver_List";
     public static final String FIELDNAME="Field_Name";
     public static final String FIELDS_LIST="Fields_List";
     public static final String FIELDS="Fields";
     public static final String FIELD_MODULE_NAME="Field_Module_Name";
+    public static final String LOOKUP_FIELD_NAME="Lookup_Field_Name";
+    public static final String LOOKUP_MODULE_NAME="Lookup_Module_Name";
+    public static final String USER_NAME="User_Name";
+    public static final String APPROVERS="Approvers";
+    public static final String APPROVER_LIST="Approver_List";
+    public static final String APPROVER_TYPE="Approver_Type";
+    public static final String FORM_NAME="Form_Name";
     public static final String NAME = "name";
     public static final String UNIQUE_NAME = "uniqueName";
     public static final String DISPLAY_NAME = "displayName";
@@ -17,13 +25,6 @@ public class PackageConstants {
     public static final String VERSION = "version";
     public static final String TYPE = "type";
     public static final String SEQUENCE_NUMBER = "Sequence_Number";
-    public static final String LOOKUP_FIELD_NAME="Lookup_Field_Name";
-    public static final String LOOKUP_MODULE_NAME="Lookup_Module_Name";
-    public static final String USER_NAME="User_Name";
-    public static final String APPROVERS="Approvers";
-    public static final String APPROVER_LIST="Approver_List";
-    public static final String APPROVER_TYPE="Approver_Type";
-    public static final String FORM_NAME="Form_Name";
     public static final String VALUE_ELEMENT = "Value_Element";
     public static final String PACKAGE_TYPE = "packageType";
     public static final String FROM_ADMIN_TOOL = "fromAdminTool";
@@ -32,6 +33,7 @@ public class PackageConstants {
     public static final String XML_FILE_EXTN = "xml";
     public static final String PACKAGE_CONTEXT = "packageContext";
     public static final String CREATED_USER_ID = "createdUserId";
+    public static final String RELATED_MODULE = "Related_Module";
     public static final String MODULENAME = "moduleName";
     public static final String UNIQUE_IDENTIFIER = "uniqueIdentifier";
     public static final String FILE_PATH_SEPARATOR = "/";
@@ -88,6 +90,26 @@ public class PackageConstants {
         public static final String ENUM_FIELD_VALUE = "EnumField_Value";
         public static final String ENUM_FIELD_VALUES = "EnumField_Values";
         public static final String DUPLICATE_FIELD_ERROR = "Field with name already present";
+
+    }
+    public static class Approvals{
+       public static final String CONFIG="Config";
+        public static final String REJECT_FORM="Reject_Form";
+        public static final String RESEND_FORM="Resend_Form";
+        public static final String APPROVAL_FORM="Approval_Form";
+        public static final String REJECT_DIALOG_TYPE="Reject_Dialog_Type";
+        public static final String APPROVAL_DIALOG_TYPE="Approval_Dialog_Type";
+        public static final String CONFIG_JSON="Config_Json";
+        public static final String APPROVAL_ACTIONS="Approval_Actions";
+        public static final String RESEND_ACTIONS_LIST="Resend_Actions";
+        public static final String REJECT_ACTIONS_LIST="Reject_Actions";
+        public static final String APPROVAL_ENTRY_ACTIONS_LIST ="Approval_Entry_Actions";
+        public static final String IS_ALL_APPROVAL_NEEDED="Is_All_Approval_Needed";
+        public static final String EVENT_TYPE="Event_Type";
+        public static final String APPROVAL_STATEFLOW_MODULE_NAME="Approval_StateFlow_ModuleName";
+        public static final String APPROVAL_STATEFLOW_NAME="Approval_StateFlow_NAME";
+        public static final String APPROVAL_STATETRANSITION="Approval_StateFlow_ModuleName";
+
 
     }
 
