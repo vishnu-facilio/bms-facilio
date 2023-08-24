@@ -70,7 +70,7 @@ public class ListCommand extends FacilioCommand {
             if (sorting != null && !sorting.isEmpty()) {
                 String sortBy = (String) sorting.get("orderBy");
                 String sortType = (String) sorting.get("orderType");
-                selectRecordsBuilder.orderBy(sortBy + " " + sortType);
+                selectRecordsBuilder.orderBy(getFinalSortQuery(sortBy,sortType));
             }
         }
         List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
@@ -206,6 +206,18 @@ public class ListCommand extends FacilioCommand {
         selectRecordsBuilder.orderBy(orderBy);
 
         return selectRecordsBuilder;
+    }
+    private String getFinalSortQuery(String sortBy,String sortType){
+        StringBuilder finalSortQuery = new StringBuilder();
+
+        finalSortQuery.append(sortBy+" "+ sortType);
+
+        if(!sortBy.equals(FieldFactory.getIdField(module).getCompleteColumnName())){
+            finalSortQuery.append(",")
+                    .append(FieldFactory.getIdField(module).getCompleteColumnName()+" "+sortType);
+        }
+
+        return finalSortQuery.toString();
     }
 
 }
