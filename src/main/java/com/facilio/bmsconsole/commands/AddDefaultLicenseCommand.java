@@ -62,11 +62,7 @@ public class AddDefaultLicenseCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-
-
-        if(FacilioProperties.isPreProd()) {
-            throw new RuntimeException("Don't Signup From Pre Prod Env");
-        }
+        
 
         Map<String, Object> defaultLicenseVal = DEFAULT_FEATURE_LIST.stream()
                 .collect(Collectors.groupingBy(
