@@ -222,6 +222,10 @@ public class ServiceOrderModule extends BaseModuleConfig {
         client.setLookupModule(bean.getModule(FacilioConstants.ContextNames.CLIENT));
         fields.add(client);
 
+        LookupField tenant = FieldFactory.getDefaultField("tenant","Tenant","TENANT_ID",FieldType.LOOKUP);
+        tenant.setLookupModule(bean.getModule(FacilioConstants.ContextNames.TENANT));
+        fields.add(tenant);
+
         FacilioField subject = FieldFactory.getDefaultField("name","Name","NAME", FieldType.STRING,true);
         subject.setRequired(true);
         fields.add(subject);
@@ -272,11 +276,11 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField autocreatesa = FieldFactory.getDefaultField("autoCreateSa","AutoCreate SA","AUTO_CREATE_SA", FieldType.BOOLEAN);
         fields.add(autocreatesa);
 
-        FacilioField isallserviceappointmentsclosed = FieldFactory.getDefaultField("isAllSACompleted","Is All SA Completed","IS_ALL_SA_COMPLETED", FieldType.BOOLEAN);
-        fields.add(isallserviceappointmentsclosed);
-
-        FacilioField isTaskInitiated = FieldFactory.getDefaultField("isTaskInitiated","Is Task Initiated","IS_TASK_INITIATED", FieldType.BOOLEAN);
-        fields.add(isTaskInitiated);
+//        FacilioField isallserviceappointmentsclosed = FieldFactory.getDefaultField("isAllSACompleted","Is All SA Completed","IS_ALL_SA_COMPLETED", FieldType.BOOLEAN);
+//        fields.add(isallserviceappointmentsclosed);
+//
+//        FacilioField isTaskInitiated = FieldFactory.getDefaultField("isTaskInitiated","Is Task Initiated","IS_TASK_INITIATED", FieldType.BOOLEAN);
+//        fields.add(isTaskInitiated);
 
         FacilioField responseDueDate = FieldFactory.getDefaultField("responseDueDate","Response Due Date","RESPONSE_DUE_DATE", FieldType.DATE_TIME);
         fields.add(responseDueDate);
@@ -284,10 +288,10 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField resolutionDueDate = FieldFactory.getDefaultField("resolutionDueDate","Resolution Due Date","RESOLUTION_DUE_DATE", FieldType.DATE_TIME);
         fields.add(resolutionDueDate);
 
-        FacilioField responseDueDuration = FieldFactory.getDefaultField("responseDueDuration","Response Due Duration","RESPONSE_DUE_DURATION", FieldType.NUMBER);
+        FacilioField responseDueDuration = FieldFactory.getDefaultField("responseDueDuration","Response Due Duration","RESPONSE_DUE_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION);
         fields.add(responseDueDuration);
 
-        FacilioField resolutionDueDuration = FieldFactory.getDefaultField("resolutionDueDuration","Resolution Due Duration","RESOLUTION_DUE_DURATION", FieldType.NUMBER);
+        FacilioField resolutionDueDuration = FieldFactory.getDefaultField("resolutionDueDuration","Resolution Due Duration","RESOLUTION_DUE_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION);
         fields.add(resolutionDueDuration);
 
         FacilioField resolvedTime = FieldFactory.getDefaultField("resolvedTime","Resolved Time","RESOLVED_TIME", FieldType.DATE_TIME);
@@ -331,36 +335,36 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField actualendtime = FieldFactory.getDefaultField("actualEndTime","Actual End Time","ACTUAL_END_TIME", FieldType.DATE_TIME);
         fields.add(actualendtime);
 
-        FacilioField actualduration = FieldFactory.getDefaultField("actualDuration","Actual Duration","ACTUAL_DURATION", FieldType.NUMBER);
+        FacilioField actualduration = FieldFactory.getDefaultField("actualDuration","Actual Duration","ACTUAL_DURATION", FieldType.NUMBER,FacilioField.FieldDisplayType.DURATION);
         fields.add(actualduration);
 
-        LookupField assignedto = FieldFactory.getDefaultField("assignedTo","Assigned To","ASSIGNED_TO",FieldType.LOOKUP);
-        assignedto.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
-        fields.add(assignedto);
+//        LookupField assignedto = FieldFactory.getDefaultField("assignedTo","Assigned To","ASSIGNED_TO",FieldType.LOOKUP);
+//        assignedto.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
+//        fields.add(assignedto);
+//
+//        LookupField assignedby = FieldFactory.getDefaultField("assignedBy","Assigned By","ASSIGNED_BY",FieldType.LOOKUP);
+//        assignedby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
+//        fields.add(assignedby);
 
-        LookupField assignedby = FieldFactory.getDefaultField("assignedBy","Assigned By","ASSIGNED_BY",FieldType.LOOKUP);
-        assignedby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
-        fields.add(assignedby);
+//        FacilioField duedate = FieldFactory.getDefaultField("dueDate","Due Date","DUE_DATE", FieldType.DATE_TIME);
+//        fields.add(duedate);
 
-        FacilioField duedate = FieldFactory.getDefaultField("dueDate","Due Date","DUE_DATE", FieldType.DATE_TIME);
-        fields.add(duedate);
-
-        FacilioField estimatedstarttime = FieldFactory.getDefaultField("estimatedStartTime","Estimated Start Time","ESTIMATED_START_TIME", FieldType.DATE_TIME);
-        fields.add(estimatedstarttime);
-
-        FacilioField estimatedendtime = FieldFactory.getDefaultField("estimatedEndTime","Estimated End Time","ESTIMATED_END_TIME", FieldType.DATE_TIME);
-        fields.add(estimatedendtime);
-
-        FacilioField estimatedduration = FieldFactory.getDefaultField("estimatedDuration","Estimated Duration","ESTIMATED_DURATION", FieldType.NUMBER);
-        fields.add(estimatedduration);
+//        FacilioField estimatedstarttime = FieldFactory.getDefaultField("estimatedStartTime","Estimated Start Time","ESTIMATED_START_TIME", FieldType.DATE_TIME);
+//        fields.add(estimatedstarttime);
+//
+//        FacilioField estimatedendtime = FieldFactory.getDefaultField("estimatedEndTime","Estimated End Time","ESTIMATED_END_TIME", FieldType.DATE_TIME);
+//        fields.add(estimatedendtime);
+//
+//        FacilioField estimatedduration = FieldFactory.getDefaultField("estimatedDuration","Estimated Duration","ESTIMATED_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION);
+//        fields.add(estimatedduration);
 
 //        FacilioField modulestate = FieldFactory.getDefaultField("modulestate","ModuleState","MODULE_STATE", FieldType.NUMBER);
 //        fields.add(modulestate);
 
-        LookupField moduleStateField = FieldFactory.getDefaultField("moduleState", "Status", "MODULE_STATE", FieldType.LOOKUP);
-        moduleStateField.setDefault(true);
-        moduleStateField.setLookupModule(bean.getModule("ticketstatus"));
-        fields.add(moduleStateField);
+//        LookupField moduleStateField = FieldFactory.getDefaultField("moduleState", "Status", "MODULE_STATE", FieldType.LOOKUP);
+//        moduleStateField.setDefault(true);
+//        moduleStateField.setLookupModule(bean.getModule("ticketstatus"));
+//        fields.add(moduleStateField);
 
         FacilioField noOfAttachments = FieldFactory.getDefaultField("noOfAttachments","No Of Attachments","NO_OF_ATTACHMENTS", FieldType.NUMBER);
         fields.add(noOfAttachments);
@@ -381,9 +385,9 @@ public class ServiceOrderModule extends BaseModuleConfig {
 //        slapolicyid.setLookupModule(bean.getModule(FacilioConstants.ContextNames.SLA_POLICY));
 //        fields.add(slapolicyid);
 
-        FacilioField stateflowid = FieldFactory.getDefaultField("stateFlowId","State Flow Id","STATE_FLOW_ID", FieldType.NUMBER);
-        stateflowid.setDefault(true);
-        fields.add(stateflowid);
+//        FacilioField stateflowid = FieldFactory.getDefaultField("stateFlowId","State Flow Id","STATE_FLOW_ID", FieldType.NUMBER);
+//        stateflowid.setDefault(true);
+//        fields.add(stateflowid);
 
         //doubt need to remove?? starts
 //        LookupField stateflowid = FieldFactory.getDefaultField("stateflowid","StateFlowId","STATE_FLOW_ID",FieldType.LOOKUP);
@@ -391,11 +395,11 @@ public class ServiceOrderModule extends BaseModuleConfig {
 //        fields.add(stateflowid);
         //doubt need to remove?? ends
 
-        FacilioField approvalRuleId = FieldFactory.getDefaultField("approvalRuleId","Approval Rule Id","APPROVAL_RULE_ID", FieldType.NUMBER);
-        fields.add(approvalRuleId);
-
-        FacilioField approvalState = FieldFactory.getDefaultField("approvalState","Approval State","APPROVAL_STATE", FieldType.NUMBER);
-        fields.add(approvalState);
+//        FacilioField approvalRuleId = FieldFactory.getDefaultField("approvalRuleId","Approval Rule Id","APPROVAL_RULE_ID", FieldType.NUMBER);
+//        fields.add(approvalRuleId);
+//
+//        FacilioField approvalState = FieldFactory.getDefaultField("approvalState","Approval State","APPROVAL_STATE", FieldType.NUMBER);
+//        fields.add(approvalState);
 
         FacilioField parentso = FieldFactory.getDefaultField("parentSo","Parent So","PARENT_SOID", FieldType.NUMBER);
         fields.add(parentso);
@@ -415,23 +419,23 @@ public class ServiceOrderModule extends BaseModuleConfig {
         //doubt need to remove?? ends
 
         //doubt need to remove lookup?? starts
-        SystemEnumField prerequeststatus = FieldFactory.getDefaultField("prerequestStatus","PreRequest Status","PRE_REQUEST_STATUS",FieldType.SYSTEM_ENUM);
-        prerequeststatus.setEnumName("ServiceOrderPrerequisiteStatus");
-        fields.add(prerequeststatus);
-        //doubt need to remove lookup?? starts
-
-        FacilioField prerequisiteapproved = FieldFactory.getDefaultField("prerequisiteApproved","PreRequisite Approved","PREREQUISITE_APPROVED", FieldType.BOOLEAN);
-        fields.add(prerequisiteapproved);
-
-        FacilioField prerequisiteenabled = FieldFactory.getDefaultField("prerequisiteEnabled","PreRequisite Enabled","PREREQUISITE_ENABLED", FieldType.BOOLEAN);
-        fields.add(prerequisiteenabled);
+//        SystemEnumField prerequeststatus = FieldFactory.getDefaultField("prerequestStatus","PreRequest Status","PRE_REQUEST_STATUS",FieldType.SYSTEM_ENUM);
+//        prerequeststatus.setEnumName("ServiceOrderPrerequisiteStatus");
+//        fields.add(prerequeststatus);
+//        //doubt need to remove lookup?? starts
+//
+//        FacilioField prerequisiteapproved = FieldFactory.getDefaultField("prerequisiteApproved","PreRequisite Approved","PREREQUISITE_APPROVED", FieldType.BOOLEAN);
+//        fields.add(prerequisiteapproved);
+//
+//        FacilioField prerequisiteenabled = FieldFactory.getDefaultField("prerequisiteEnabled","PreRequisite Enabled","PREREQUISITE_ENABLED", FieldType.BOOLEAN);
+//        fields.add(prerequisiteenabled);
 
         FacilioField qrenabled = FieldFactory.getDefaultField("qrEnabled","Qr Enabled","QR_ENABLED", FieldType.BOOLEAN);
         fields.add(qrenabled);
-
-        LookupField requestedby = FieldFactory.getDefaultField("requestedBy","Requested by","REQUESTED_BY_ID",FieldType.LOOKUP);
-        requestedby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
-        fields.add(requestedby);
+//
+//        LookupField requestedby = FieldFactory.getDefaultField("requestedBy","Requested by","REQUESTED_BY_ID",FieldType.LOOKUP);
+//        requestedby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
+//        fields.add(requestedby);
 
         FacilioField localid = FieldFactory.getDefaultField("localId","Local Id","LOCAL_ID", FieldType.NUMBER);
         fields.add(localid);
@@ -470,17 +474,18 @@ public class ServiceOrderModule extends BaseModuleConfig {
         generalInfoSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormField> siteClientFields = new ArrayList<>();
-        siteClientFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, FacilioConstants.ContextNames.SITE, 1, 2));
-        siteClientFields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.CLIENT, 2, 2));
-        siteClientFields.add(new FormField("space", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space", FormField.Required.OPTIONAL,FacilioConstants.ContextNames.SPACE, 3, 2));
-        siteClientFields.add(new FormField("asset", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.ASSET,4, 2));
+        siteClientFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, FacilioConstants.ContextNames.SITE, 1, 1));
+        siteClientFields.add(new FormField("space", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Space", FormField.Required.OPTIONAL,FacilioConstants.ContextNames.SPACE, 2, 2));
+        siteClientFields.add(new FormField("asset", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.ASSET,3, 2));
+        siteClientFields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.CLIENT, 4, 2));
+        siteClientFields.add(new FormField("tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.TENANT, 5, 2));
 
         FormSection siteClientSection = new FormSection("Site & Client Information", 2, siteClientFields, true);
         siteClientSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormField> assignmentDetailFields = new ArrayList<>();
-        assignmentDetailFields.add(new FormField("fieldAgent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Field Agent", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.PEOPLE,1, 2));
-        assignmentDetailFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.VENDORS, 2, 2));
+        assignmentDetailFields.add(new FormField("fieldAgent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Field Agent", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.PEOPLE,2, 2));
+        assignmentDetailFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.VENDORS, 1, 2));
 
         FormSection assignmentDetailsSection = new FormSection("Assignment Details", 3, assignmentDetailFields, true);
         assignmentDetailsSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -997,7 +1002,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addWebTab("task", "TASK", true, null)
+                .addWebTab("task", "SERVICE TASK", true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("task", null, null)
                 .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
@@ -1029,14 +1034,14 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addWebTab("related", "RELATED", true, null)
-                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("relatedlist", null, null)
-                .addWidget("bulkRelatedList", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(FacilioConstants.ContextNames.QUOTE))
-                .widgetDone()
-                .sectionDone()
-                .columnDone()
-                .tabDone()
+//                .addWebTab("related", "RELATED", true, null)
+//                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
+//                .addSection("relatedlist", null, null)
+//                .addWidget("bulkRelatedList", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(FacilioConstants.ContextNames.QUOTE))
+//                .widgetDone()
+//                .sectionDone()
+//                .columnDone()
+//                .tabDone()
                 .addWebTab("history", "HISTORY", true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("activity", null, null)

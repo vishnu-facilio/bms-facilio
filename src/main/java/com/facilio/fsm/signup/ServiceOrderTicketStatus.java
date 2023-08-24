@@ -35,9 +35,9 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         FacilioModule serviceOrderTicketStatus = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS,"Service Order Ticket Status","ServiceOrder_TicketStatus", FacilioModule.ModuleType.PICK_LIST,false);
         List<FacilioField> fields = new ArrayList<>();
 
-        fields.add(new StringField(serviceOrderTicketStatus,"status","Status",FacilioField.FieldDisplayType.TEXTBOX,"STATUS", FieldType.STRING,true,false,true,true));
+        fields.add(new StringField(serviceOrderTicketStatus,"status","Status",FacilioField.FieldDisplayType.TEXTBOX,"STATUS", FieldType.STRING,true,false,true,false));
 
-        fields.add(new StringField(serviceOrderTicketStatus,"displayName","Display Name",FacilioField.FieldDisplayType.TEXTBOX,"DISPLAY_NAME",FieldType.STRING,false,false,true,false));
+        fields.add(new StringField(serviceOrderTicketStatus,"displayName","Display Name",FacilioField.FieldDisplayType.TEXTBOX,"DISPLAY_NAME",FieldType.STRING,false,false,true,true));
 
         fields.add(new StringField(serviceOrderTicketStatus,"color","Background Color",FacilioField.FieldDisplayType.TEXTBOX,"COLOR",FieldType.STRING,false,false,true,false));
 
@@ -86,7 +86,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         ServiceOrderTicketStatusContext scheduledState = new ServiceOrderTicketStatusContext();
         scheduledState.setStatus(FacilioConstants.ServiceOrder.SCHEDULED);
         scheduledState.setDisplayName("Scheduled");
-        scheduledState.setColor("neutral");
+        scheduledState.setColor("information");
         scheduledState.setTextColor("#ffffff");
         scheduledState.setTypeCode(1);
         scheduledState.setRecordLocked(false);
@@ -126,7 +126,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         ServiceOrderTicketStatusContext cancelledState = new ServiceOrderTicketStatusContext();
         cancelledState.setStatus(FacilioConstants.ServiceAppointment.CANCELLED);
         cancelledState.setDisplayName("Cancelled");
-        cancelledState.setColor("danger");
+        cancelledState.setColor("default");
         cancelledState.setTextColor("#ffffff");
         cancelledState.setTypeCode(3);
         cancelledState.setRecordLocked(true);

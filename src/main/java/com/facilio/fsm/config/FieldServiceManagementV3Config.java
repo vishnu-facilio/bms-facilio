@@ -82,6 +82,7 @@ public class FieldServiceManagementV3Config {
                 .afterSave(FsmTransactionChainFactoryV3.afterSOUpdateChain())
                 .afterTransaction(new AddActivitiesCommandV3())
                 .list()
+                .beforeFetch(new LoadSupplementsForSOCommand())
                 .summary()
                 .beforeFetch(new LoadSupplementsForSOCommand())
                 .afterFetch(new SetServiceTaskCommandV3())

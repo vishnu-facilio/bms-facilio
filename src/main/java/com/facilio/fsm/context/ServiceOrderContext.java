@@ -1,6 +1,7 @@
 package com.facilio.fsm.context;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
@@ -21,6 +22,7 @@ public class ServiceOrderContext extends V3Context {
     private String description;
     private V3SiteContext site;
     private ClientContext client;
+    private TenantContext tenant;
     private ServiceOrderMaintenanceType maintenanceType;
     private List<ServiceTaskContext> serviceTask;
     private ServiceOrderCategory category;
