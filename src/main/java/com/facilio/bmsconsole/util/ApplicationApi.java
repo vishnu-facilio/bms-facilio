@@ -3073,7 +3073,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("KPI Execution Logs", "readingkpilogs", WebTabContext.Type.KPI_EXEC_LOGS, null, appId, null, AccountUtil.FeatureLicense.NEW_KPI.getFeatureId()));
             webTabs.add(new WebTabContext("Rule Logs", "readingrulelogs", WebTabContext.Type.RULE_LOGS, null, appId, null, AccountUtil.FeatureLicense.NEW_READING_RULE.getFeatureId()));
             webTabs.add(new WebTabContext("Inbound Mail Conversion", "inboundmailconversion", WebTabContext.Type.INBOUND_MAIL_CONVERSION, null, appId, null));
-            webTabs.add(new WebTabContext("Workflow Rule Logs","workflowrulelogs", WebTabContext.Type.WORKFLOW_RULE_LOGS,null,appId,null,AccountUtil.FeatureLicense.WORKFLOW_RULE_LOG.getFeatureId()));
+            webTabs.add(new WebTabContext("Workflow Logs","workflowrulelogs", WebTabContext.Type.WORKFLOW_RULE_LOGS,null,appId,null,AccountUtil.FeatureLicense.WORKFLOW_RULE_LOG.getFeatureId()));
 
             groupNameVsWebTabsMap.put("logs", webTabs);
 
