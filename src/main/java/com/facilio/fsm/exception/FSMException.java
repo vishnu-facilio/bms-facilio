@@ -1,6 +1,7 @@
 package com.facilio.fsm.exception;
 
 import com.facilio.fw.FacilioException;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ public class FSMException extends FacilioException {
     private String[] messageParams;
 
     private List<FSMException> additionalExceptions;
+    private JSONObject relatedData;
 
     public FSMErrorCode getFsmErrorCode() {
         return fsmErrorCode;
@@ -49,5 +51,14 @@ public class FSMException extends FacilioException {
 
     public List<FSMException> getAdditionalExceptions() {
         return additionalExceptions;
+    }
+
+    public FSMException setRelatedData(JSONObject relatedData) {
+        this.relatedData = relatedData;
+        return this;
+    }
+
+    public JSONObject getRelatedData() {
+        return relatedData;
     }
 }

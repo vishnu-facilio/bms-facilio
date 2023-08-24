@@ -58,6 +58,9 @@ public class ErrorsUtil {
         errorData.put("errorTitle", localizedTitle);
         errorData.put("errorMessage", localizedMessage);
         errorData.put("errorSeverity", fsmException.getFsmErrorCode().getSeverity().name());
+        if (fsmException.getRelatedData() != null) {
+            errorData.put("errorRelatedData", fsmException.getRelatedData());
+        }
 
         if (fsmException.getAdditionalExceptions() != null) {
             JSONArray additionalErrors = new JSONArray();
@@ -76,6 +79,9 @@ public class ErrorsUtil {
                 additionalErrorData.put("errorTitle", localizedAdditionalTitle);
                 additionalErrorData.put("errorMessage", localizedAdditionalMessage);
                 additionalErrorData.put("errorSeverity", additionalExp.getFsmErrorCode().getSeverity().name());
+                if (additionalExp.getRelatedData() != null) {
+                    additionalErrorData.put("errorRelatedData", additionalExp.getRelatedData());
+                }
             }
             errorData.put("additionalErrors", additionalErrors);
         }
