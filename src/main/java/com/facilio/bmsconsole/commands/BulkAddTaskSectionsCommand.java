@@ -36,6 +36,8 @@ public class BulkAddTaskSectionsCommand extends FacilioCommand {
 			LOGGER.info("Done BulkAddTaskSectionsCommand with some of the objects empty");
 			return false;
 		}
+		LOGGER.severe("bulkWorkOrderContext workorder size:" + bulkWorkOrderContext.getWorkOrderContexts().size());
+		LOGGER.severe("bulkWorkOrderContext taskMap size:" + bulkWorkOrderContext.getTaskMaps().size());
 
 		boolean isRecordPresent = false;
 
@@ -53,8 +55,18 @@ public class BulkAddTaskSectionsCommand extends FacilioCommand {
 			if (taskMap == null) {
 				continue;
 			}
-			if(sectionNamesList == null){
-				LOGGER.severe("sectionNamesList is null" + workOrder.getResource());
+			if(sectionNamesList == null) {
+				LOGGER.severe("sectionNamesList is null " + workOrder.getResource());
+				LOGGER.severe("WO ID:" + workOrder.getId());
+				LOGGER.severe("WO PMID:" + (workOrder.getPm() != null ? workOrder.getPm().getId() : -10L));
+				LOGGER.severe("WO sectionNamesList:" + workOrder.getSectionNameList());
+				LOGGER.severe("WO taskMap:" + taskMap);
+				// Handling the case where WorkOrders generated from PMv1 of creationType 1 or 2.
+				sectionNamesList = new ArrayList<>();
+				for (Map.Entry<String, List<TaskContext>> entry: taskMap.entrySet()) {
+					sectionNamesList.add(entry.getKey());
+				}
+				LOGGER.severe("sectionNamesList from taskMap:" + sectionNamesList);
 			}
 			for(String sectionName : sectionNamesList) {
 				if(!sectionName.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
