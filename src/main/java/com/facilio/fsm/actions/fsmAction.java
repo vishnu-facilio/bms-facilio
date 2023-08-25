@@ -52,6 +52,7 @@ public class fsmAction extends V3Action {
     private Long scheduledEndTime;
     private LocationContext startLocation;
     private LocationContext endLocation;
+    private long peopleId;
 
     public String getViewName() {
         return viewName;
@@ -290,6 +291,16 @@ public class fsmAction extends V3Action {
                 stopTimeSheetChain.execute(context);
                 break;
         }
+        return SUCCESS;
+    }
+    public String workScheduleList() throws Exception{
+        FacilioContext context=new FacilioContext();
+        context.put(FacilioConstants.ContextNames.PEOPLE_ID,getPeopleId());
+        context.put(FacilioConstants.ContextNames.START_TIME,getStartTime());
+        context.put(FacilioConstants.ContextNames.END_TIME,getEndTime());
+        FacilioChain fetchListChain = FSMReadOnlyChainFactory.fetchAppointmentsChain();
+        fetchListChain.execute(context);
+        setData(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,context.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
         return SUCCESS;
     }
 
