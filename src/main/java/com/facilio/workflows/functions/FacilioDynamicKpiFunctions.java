@@ -32,7 +32,7 @@ public class FacilioDynamicKpiFunctions {
         ReadingKPIContext dynamicKpi = getReadingKpi(kpiId);
         Double kpiValue = null;
         JSONObject cardValue = new JSONObject();
-        cardValue.put("unit",dynamicKpi.getUnit());
+        cardValue.put("unit",dynamicKpi.getUnitLabel());
         cardValue.put("dataType","DECIMAL");
         List<Map<String, Object>> result =  ReadingKpiAPI.getResultForDynamicKpi(parentIds, new DateRange(startTime, endTime), null, dynamicKpi.getNs()).get(objects[2]);
         if(!result.isEmpty() && result.get(0)!=null) {
