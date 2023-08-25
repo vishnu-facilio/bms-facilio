@@ -4,11 +4,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.PermissionSetBean;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.PeopleUserContext;
-import com.facilio.bmsconsoleV3.commands.peoplegroup.PeopleGroupUtils;
-import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
-import com.facilio.bmsconsoleV3.context.shift.Shift;
-import com.facilio.bmsconsoleV3.util.AccessibleSpacesUtil;
-import com.facilio.bmsconsoleV3.util.ShiftAPI;
+import com.facilio.bmsconsole.context.ScopingContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -36,6 +33,11 @@ public class UpdatePeopleRelatedDataCommand  extends FacilioCommand {
                 if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_USER_SCOPING)) {
                     Long scopingId = people.getScopingId();
                     userScopeBean.updatePeopleScoping(people.getId(), scopingId);
+                }else{
+                    ScopingContext defaultScoping = ApplicationApi.getDefaultScopingForApp(user.getApplicationId());
+                    if(defaultScoping != null){
+                        ApplicationApi.updateScopingForUser(defaultScoping.getId(), user.getApplicationId(),ouid);
+                    }
                 }
 //                Long shiftId = people.getShiftId();
 //                if(shiftId != null && shiftId > 0){

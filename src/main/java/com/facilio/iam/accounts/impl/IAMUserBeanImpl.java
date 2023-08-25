@@ -21,6 +21,7 @@ import javax.transaction.TransactionManager;
 import javax.xml.bind.DatatypeConverter;
 
 import com.facilio.accounts.dto.*;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.sso.AccountSSO;
 import com.facilio.accounts.sso.DomainSSO;
 import com.facilio.accounts.sso.SSOUtil;
@@ -1359,8 +1360,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public IAMUser createUserFromProps(Map<String, Object> prop) throws Exception {
-		IAMUser user = FieldUtil.getAsBeanFromMap(prop, IAMUser.class);
+	public User createUserFromProps(Map<String, Object> prop) throws Exception {
+		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
 		if (user.getPhotoId() > 0) {
 			FileStore fs = FacilioFactory.getFileStoreFromOrg(user.getOrgId(), -1);
 			user.setAvatarUrl(fs.newPreviewFileUrl("user", user.getPhotoId()));
@@ -1589,7 +1590,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (userMobileSetting.getCreatedTime() == -1) {
 			userMobileSetting.setCreatedTime(System.currentTimeMillis());
 		}
-		
+
 		// Fetching and adding only if it's not present already
 		FacilioModule module = IAMAccountConstants.getUserMobileSettingModule();
 		List<FacilioField> fields = IAMAccountConstants.getUserMobileSettingFields();

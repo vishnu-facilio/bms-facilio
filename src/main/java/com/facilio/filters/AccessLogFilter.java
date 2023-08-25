@@ -191,6 +191,7 @@ public class AccessLogFilter implements Filter {
                 contextMap.put("query",event.getProperty(RequestUtil.QUERY));
                 contextMap.put("userId",event.getProperty(RequestUtil.USERID_HEADER));
                 contextMap.put("uid",event.getProperty(RequestUtil.IAM_USERID_HEADER));
+                contextMap.put("userMobileSettingId",event.getProperty(RequestUtil.X_USER_MOBILE_SETTING_ID));
                 contextMap.put("responseCode",responseCode);
                 contextMap.put("timeTaken",String.valueOf(timeTaken));
                 contextMap.put("thread",thread.getName());
@@ -219,6 +220,7 @@ public class AccessLogFilter implements Filter {
                 long orgId = Long.parseLong(event.getProperty(RequestUtil.ORGID_HEADER));
                 long userId = Long.parseLong(event.getProperty(RequestUtil.USERID_HEADER));
                 long iamUserId = Long.parseLong(event.getProperty(RequestUtil.IAM_USERID_HEADER));
+                long userMobileSettingId = Long.parseLong(event.getProperty(RequestUtil.X_USER_MOBILE_SETTING_ID));
                 if((orgId > 0L) && (userId > 0)) {
                     Map<String, Object> props = new HashMap<>();
                     props.put("orgId",orgId);
@@ -234,6 +236,7 @@ public class AccessLogFilter implements Filter {
                     props.put("responseSize",responseSize);
                     props.put("requestSize",event.getProperty("requestSize"));
                     props.put("deviceType",event.getProperty(RequestUtil.DEVICE_TYPE));
+                    props.put("userMobileSettingId",userMobileSettingId);
                     props.put("timeInMilliSec",System.currentTimeMillis());
                     props.put("appVersion",event.getProperty("appVersion"));
                     props.put("executor",event.getProperty("executor"));

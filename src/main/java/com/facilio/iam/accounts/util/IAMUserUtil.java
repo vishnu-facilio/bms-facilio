@@ -270,7 +270,7 @@ public class IAMUserUtil {
 	public static boolean rollbackUserAdded(long userId, long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().deleteUserv2(userId, orgId));
 	}
-	
+
 	public static boolean addUserMobileSettings(UserMobileSetting userMobileSetting) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().addUserMobileSetting(userMobileSetting));
 	}

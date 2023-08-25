@@ -848,6 +848,12 @@ public class IAMAccountConstants {
 			userStatus.setModule(module);
 			fields.add(userStatus);
 
+			FacilioField invitedTime = new FacilioField();
+			invitedTime.setName("invitedTime");
+			invitedTime.setDataType(FieldType.DATE_TIME);
+			invitedTime.setColumnName("INVITED_TIME");
+			userStatus.setModule(module);
+			fields.add(invitedTime);
 
 			return fields;
 		}
@@ -1189,6 +1195,12 @@ public class IAMAccountConstants {
 			fields.add(FieldFactory.getField("fromPortal", "IS_FROM_PORTAL", module, FieldType.BOOLEAN));
 
 			fields.add(FieldFactory.getStringField("appLinkName","APP_LINK_NAME",module));
+			fields.add(FieldFactory.getField("appName","APP_NAME",module,FieldType.STRING));
+			fields.add(FieldFactory.getField("updatedVersion","UPDATED_VERSION",module,FieldType.STRING));
+			fields.add(FieldFactory.getField("updatedTime","UPDATED_TIME",module,FieldType.DATE_TIME));
+			fields.add(FieldFactory.getField("osVersion","OS_VERSION",module,FieldType.STRING));
+			fields.add(FieldFactory.getField("modelName","MODEL_NAME",module,FieldType.STRING));
+			fields.add(FieldFactory.getField("orientation","ORIENTATION",module,FieldType.STRING));
 
 			return fields;
 		}

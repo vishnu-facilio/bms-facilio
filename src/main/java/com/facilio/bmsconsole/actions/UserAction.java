@@ -12,9 +12,9 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.PeopleNotificationSettings;
-import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.iam.accounts.util.IAMUserException;
+import com.facilio.identity.client.dto.UserMobileSettings;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +37,6 @@ import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
@@ -653,15 +652,15 @@ public class UserAction extends FacilioAction {
 		return ERROR;
 	}
 	
-	private UserMobileSetting userMobileSetting;
-	public UserMobileSetting getUserMobileSetting() {
+	private UserMobileSettings userMobileSetting;
+	public UserMobileSettings getUserMobileSetting() {
 		return userMobileSetting;
 	}
 
-	public void setUserMobileSetting(UserMobileSetting userMobileSetting) {
+	public void setUserMobileSetting(UserMobileSettings userMobileSetting) {
 		this.userMobileSetting = userMobileSetting;
 	}
-	
+
 	public String addMobileSetting() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -669,7 +668,7 @@ public class UserAction extends FacilioAction {
 
 		Command addUserMobileSettingCommand = FacilioChainFactory.getAddUserMobileSettingCommand();
 		addUserMobileSettingCommand.execute(context);
-				
+
 		return SUCCESS;
 	}
 	public String removeMobileSetting() throws Exception {

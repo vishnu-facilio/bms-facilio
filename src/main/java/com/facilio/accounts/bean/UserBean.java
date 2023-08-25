@@ -30,7 +30,7 @@ public interface UserBean {
 	public boolean acceptInvite(String token, String password) throws Exception;
 	
 	public boolean updateUser(User user) throws Exception;
-	
+
 	public void addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception;
 	
 	public void removeUserMobileSetting(String mobileInstanceId) throws Exception;

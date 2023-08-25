@@ -81,7 +81,7 @@ public interface IAMUserBean {
 	public long signUpSuperAdminUserv3(long orgId, IAMUser user, String identifier) throws Exception;
 		
 	public boolean verifyUser(long userId) throws Exception;
-	
+
 	public boolean addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception;
 	
 	public boolean removeUserMobileSetting(String mobileInstanceId, boolean isPortal) throws Exception;
