@@ -229,6 +229,8 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add("transferrequest");
         scriptWhiteListedModules.add("toolTransactions");
         scriptWhiteListedModules.add("sensoralarm");
+        scriptWhiteListedModules.add("agent");
+        scriptWhiteListedModules.add("points");
     }
 
     @Override
