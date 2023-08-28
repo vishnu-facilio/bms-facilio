@@ -49,6 +49,10 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
     public void convertToXMLComponent(WorkflowRuleContext stateflowTransition, XMLBuilder element) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
 
+        if (stateflowTransition.getModuleName().equals(FacilioConstants.ContextNames.VISITOR_INVITE_REL)){
+            return;
+        }
+
         element.element(PackageConstants.MODULENAME).text(stateflowTransition.getModuleName());
         long formStateId = ((AbstractStateTransitionRuleContext) stateflowTransition).getFromStateId();
         FacilioStatus fromState = TicketAPI.getStatus(formStateId);

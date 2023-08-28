@@ -60,6 +60,8 @@ public enum ComponentType implements FacilioIntEnum {
     APPROVAL_STATE_FLOW(ApprovalStateFlowPackageBeanImpl.class,MODULE,false),
     GLOBAL_GROUP_VARIABLE(GlobalVariableGroupPackageBeanImpl.class,MODULE,false),
     GLOBAL_VARIABLE(GlobalVariablePackageBeanImpl.class,MODULE,false),
+    SLA_ENTITY(SLAEntityPackageBeanImpl.class,MODULE,false),
+    SLA_POLICY(SLAPackageBeanImpl.class,MODULE,false)
     ;
 
     public static final List<ComponentType> ORDERED_COMPONENT_TYPE_LIST = Collections.unmodifiableList(initOrderedList());
@@ -109,6 +111,8 @@ public enum ComponentType implements FacilioIntEnum {
             add(APPROVAL_STATE_FLOW);
             add(GLOBAL_GROUP_VARIABLE);
             add(GLOBAL_VARIABLE);
+            add(SLA_ENTITY);
+            add(SLA_POLICY);
         }};
         return componentOrder;
     }

@@ -8,6 +8,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
@@ -110,6 +111,23 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
             }
         }
         return slaEntityContext;
+    }
+
+    public static SLAEntityContext getSLAEntity(long moduleId,String slaEntityName) throws Exception{
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getSLAEntityModule().getTableName())
+                .select(FieldFactory.getSLAEntityFields())
+                .andCondition(CriteriaAPI.getCondition("MODULEID","moduleId", String.valueOf(moduleId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("NAME","name",slaEntityName, StringOperators.IS));
+        SLAEntityContext slaEntityContext = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), SLAEntityContext.class);
+        if (slaEntityContext != null) {
+            if (slaEntityContext.getCriteriaId() > 0) {
+                slaEntityContext.setCriteria(CriteriaAPI.getCriteria(slaEntityContext.getCriteriaId()));
+            }
+        }
+        return slaEntityContext;
+
     }
 
     public static long addSLABreachJobExecution(SLABreachJobExecution slaBreachJobExecution) throws Exception{

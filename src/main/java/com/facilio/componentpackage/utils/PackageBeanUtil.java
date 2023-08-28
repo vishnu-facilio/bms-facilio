@@ -28,6 +28,7 @@ import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -712,7 +713,9 @@ public class PackageBeanUtil {
                 messagePlaceHolder.element(PackageConstants.WorkFlowRuleConstants.IS_V2_SCRIPT).text(String.valueOf(confirmationDialog.getMessagePlaceHolderScript().isV2Script()));
                 messagePlaceHolder.element("workflowV2String").cData(confirmationDialog.getMessagePlaceHolderScript().getWorkflowV2String());
             }
-            builder.element("namedCriteriaName").text(confirmationDialog.getNamedCriteria().getName());
+            long namedCriteriaId = confirmationDialog.getNamedCriteriaId();
+            NamedCriteria namedCriteria = NamedCriteriaAPI.getNamedCriteria(namedCriteriaId);
+            builder.element("namedCriteriaName").text(namedCriteria.getName());
         }
     }
 
@@ -1078,17 +1081,23 @@ public class PackageBeanUtil {
                                 for (XMLBuilder valueElement : valueElements) {
                                     String emailStructureName = valueElement.getElement(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_NAME).getText();
                                     Template emailStructureTemplate = TemplateAPI.getTemplate(emailStructureName, Template.Type.EMAIL_STRUCTURE);
-                                    templateJson.put(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_ID, emailStructureTemplate.getId());
-                                    templateJson.put("ftl", isFtl);
-                                    templateJson.put("isAttachmentAdded", isAttachmentAdded);
-                                    templateJson.put("message", valueElement.getElement("message").getCData());
-                                    templateJson.put("name", templateName);
-                                    templateJson.put("sendAsSeparateMail", Boolean.parseBoolean(valueElement.getElement("sendAsSeparateMail").getText()));
-                                    templateJson.put("subject", valueElement.getElement("subject").getText());
-                                    templateJson.put("to", valueElement.getElement("to").getText());
-                                    templateJson.put("type", templateType);
-                                    templateJson.put("userWorkflow", FieldUtil.getAsProperties(userWorkflowContext));
-                                    templateJson.put("workflow", FieldUtil.getAsProperties(workflowParamExp));
+                                    if (emailStructureTemplate != null) {
+                                        templateJson.put(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_ID, emailStructureTemplate.getId());
+                                        templateJson.put("message", ((EMailStructure)emailStructureTemplate).getMessage());
+                                        templateJson.put("name", templateName);
+                                        templateJson.put("subject", ((EMailStructure) emailStructureTemplate).getSubject());
+                                    }else {
+                                        templateJson.put("message", valueElement.getElement("message").getCData());
+                                        templateJson.put("name", templateName);
+                                        templateJson.put("subject", valueElement.getElement("subject").getText());
+                                    }
+                                        templateJson.put("ftl", isFtl);
+                                        templateJson.put("isAttachmentAdded", isAttachmentAdded);
+                                        templateJson.put("sendAsSeparateMail", Boolean.parseBoolean(valueElement.getElement("sendAsSeparateMail").getText()));
+                                        templateJson.put("to", valueElement.getElement("to").getText());
+                                        templateJson.put("type", templateType);
+                                        templateJson.put("userWorkflow", FieldUtil.getAsProperties(userWorkflowContext));
+                                        templateJson.put("workflow", FieldUtil.getAsProperties(workflowParamExp));
                                 }
                                 break;
 

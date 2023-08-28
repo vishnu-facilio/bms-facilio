@@ -82,6 +82,9 @@ public class SubFormRulePackageBeanImpl implements PackageBean<FormRuleContext> 
 
             formRule = constructRuleFromXMLBuilder(formElement, moduleBean);
 
+            if(formRule==null){
+                continue;
+            }
             FacilioChain addRuleChain = TransactionChainFactory.getAddFormRuleChain();
             FacilioContext context = addRuleChain.getContext();
             context.put(FormRuleAPI.FORM_RULE_CONTEXT, formRule);
@@ -106,6 +109,9 @@ public class SubFormRulePackageBeanImpl implements PackageBean<FormRuleContext> 
             XMLBuilder ruleElement = idVsData.getValue();
 
             FormRuleContext formRule = constructRuleFromXMLBuilder(ruleElement, moduleBean);
+            if(formRule==null){
+                continue;
+            }
             formRule.setId(ruleId);
 
             FacilioChain c = TransactionChainFactory.getUpdateFormRuleChain();
@@ -160,12 +166,12 @@ public class SubFormRulePackageBeanImpl implements PackageBean<FormRuleContext> 
         FormRuleContext formRuleContext = new FormRuleContext();
         formRuleContext.setOrgId(orgId);
         formRuleContext.setStatus(ruleStatus);
-        if (form != null) {
-            formRuleContext.setFormId(form.getId());
+        if (form == null || subForm == null) {
+            return null;
         }
-        if(subForm!=null){
-            formRuleContext.setSubFormId(subForm.getId());
-        }
+
+        formRuleContext.setFormId(form.getId());
+        formRuleContext.setSubFormId(subForm.getId());
         formRuleContext.setName(ruleName);
         formRuleContext.setDescription(description);
         formRuleContext.setType(type != null ? type.getIntVal() : -1);

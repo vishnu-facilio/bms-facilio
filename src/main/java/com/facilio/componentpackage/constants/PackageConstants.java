@@ -301,6 +301,12 @@ public class PackageConstants {
         public static final String ACTIONS_LIST = "Actions_List";
         public static final String ACTION_TYPE = "Action_Type";
         public static final String ACTION_STATUS = "Action_Status";
+
+        public static final String BASE_FIELD_NAME = "BaseFieldName";
+        public static final String DUE_FIELD_NAME = "DueFieldName";
+        public static final String COMMITMENTS = "Commitments";
+        public static final String ENTITIES = "Entities";
+        public static final String VERBNAME = "VerbName";
         public static final String DEFAULT_TEMPLATE = "Default_Template";
         public static final String START_TIME = "Start_Time";
 
@@ -337,8 +343,12 @@ public class PackageConstants {
         public static final String VALIDATION_LIST = "ValidationList";
         public static final String CONFIRMATION_LIST = "ConfirmationList";
 
+        public static final String ESCALATIONS = "Escalations";
+        public static final String LEVELS = "Levels";
         public static final String TEMPLATE = "Template";
         public static final String TEMPLATE_NAME = "Template_Name";
+
+        public static final String TEMPLATE_JSON = "templateJson";
         public static final String TEMPLATE_TYPE = "Template_Type";
         public static final String PLACEHOLDER = "Placeholder";
         public static final String WORKFLOW_CONTEXT = "Workflow_Context";

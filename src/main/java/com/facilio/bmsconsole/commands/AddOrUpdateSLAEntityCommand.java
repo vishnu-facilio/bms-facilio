@@ -57,6 +57,7 @@ public class AddOrUpdateSLAEntityCommand extends FacilioCommand {
             else {
                 addSLAEntity(slaEntity);
             }
+            context.put(FacilioConstants.ContextNames.ID,slaEntity.getId());
         }
         return false;
     }
