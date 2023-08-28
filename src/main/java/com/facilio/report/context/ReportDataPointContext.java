@@ -37,6 +37,15 @@ public class ReportDataPointContext implements  Cloneable{
 		this.siteId = siteId;
 	}
 
+	public Criteria getParentCriteriaFilter() {
+		return parentCriteriaFilter;
+	}
+
+	public void setParentCriteriaFilter(Criteria parentCriteriaFilter) {
+		this.parentCriteriaFilter = parentCriteriaFilter;
+	}
+
+	public Criteria parentCriteriaFilter;
 	private long buildingId = -1;
 	public boolean isRightInclusive() {
 		return rightInclusive;

@@ -11,6 +11,7 @@ public class PivotColumnContext {
     private String moduleName;
     private Criteria criteria;
 
+    private Criteria dataFilter;
     public ReportPivotTableColumnType getColumnType() {
         return columnType;
     }
@@ -57,5 +58,13 @@ public class PivotColumnContext {
 
     public void setCriteria(Criteria criteria) {
         this.criteria = criteria;
+    }
+
+    public Criteria getDataFilter() {
+        return dataFilter;
+    }
+
+    public void setDataFilter(Criteria dataFilter) {
+        this.dataFilter = dataFilter;
     }
 }

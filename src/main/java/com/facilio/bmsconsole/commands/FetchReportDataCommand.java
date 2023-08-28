@@ -578,8 +578,12 @@ public class FetchReportDataCommand extends FacilioCommand {
             newSelectBuilder.andCriteria(criteria);
         }
         else {
-            if (xValues == null || report.getTypeEnum() == ReportType.PIVOT_REPORT) {
-                if (dp.getAllCriteria() != null && dp.getAllCriteria().getConditions() != null && dp.getAllCriteria().getConditions().size() > 0) {
+            if (xValues == null || report.getTypeEnum() == ReportType.PIVOT_REPORT)
+            {
+                if(report.getTypeEnum() == ReportType.PIVOT_REPORT && isReadingModule(dp.getyAxis().getModule().getTypeEnum())){
+                    setPivotDataConditionInBuilder(dp, reportType, newSelectBuilder);
+                }
+                else if (dp.getAllCriteria() != null && dp.getAllCriteria().getConditions() != null && dp.getAllCriteria().getConditions().size() > 0) {
                     try {
                         Criteria allCriteria = dp.getAllCriteria();
 
@@ -590,7 +594,6 @@ public class FetchReportDataCommand extends FacilioCommand {
                             if(field == null) continue;
                             condition.setField(field);
                         }
-
                         if (report.getTypeEnum() == ReportType.PIVOT_REPORT) {
                             Map<String, Condition> conditionsMap = (Map<String, Condition>) allCriteria.getConditions();
                             for (String key : allCriteria.getConditions().keySet()) {
@@ -619,8 +622,9 @@ public class FetchReportDataCommand extends FacilioCommand {
                                         if (columnName.split("\\.").length > 1) {
                                             columnName = columnName.split("\\.")[1];
                                         }
-                                        tableNameAndColumnName = getAndSetModuleAlias(dp.getyAxis().getModuleName()) + "." + columnName;
-                                        dp.getAllCriteria().getConditions().get(key).setColumnName(tableNameAndColumnName);
+                                            tableNameAndColumnName = getAndSetModuleAlias(dp.getyAxis().getModuleName()) + "." + columnName;
+                                            dp.getAllCriteria().getConditions().get(key).setColumnName(tableNameAndColumnName);
+
                                     }
                                 }
                             }
@@ -634,7 +638,10 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
             else if (xValues != null)
             {
-                if (dp.getAllCriteria() != null && dp.getAllCriteria().getConditions() != null && dp.getAllCriteria().getConditions().size() > 0) {
+                if(report.getTypeEnum() == ReportType.PIVOT_REPORT && isReadingModule(dp.getyAxis().getModule().getTypeEnum())){
+                    setPivotDataConditionInBuilder(dp, reportType, newSelectBuilder);
+                }
+                else if (dp.getAllCriteria() != null && dp.getAllCriteria().getConditions() != null && dp.getAllCriteria().getConditions().size() > 0) {
                     try {
                         Criteria allCriteria = dp.getAllCriteria();
 
@@ -738,7 +745,6 @@ public class FetchReportDataCommand extends FacilioCommand {
         if (dp.getDpCriteria() != null) {
             newSelectBuilder.andCriteria(dp.getDpCriteria());
         }
-
         JSONObject timeFilter = report.getTimeFilterJSON();
         if (timeFilter != null && !timeFilter.isEmpty()) {
             Criteria timeFilterCriteria = FilterUtil.getTimeFilterCriteria(dp.getxAxis().getModuleName(), timeFilter);
@@ -1838,7 +1844,7 @@ public class FetchReportDataCommand extends FacilioCommand {
             }
         }
 
-        if(module.getTypeEnum() == ModuleType.READING || module.getTypeEnum() == ModuleType.SYSTEM_SCHEDULED_FORMULA || module.getTypeEnum() == ModuleType.READING_RULE){
+        if(module.getTypeEnum() == ModuleType.READING || module.getTypeEnum() == ModuleType.SYSTEM_SCHEDULED_FORMULA || module.getTypeEnum() == ModuleType.READING_RULE || module.getTypeEnum() == ModuleType.LIVE_FORMULA){
             FacilioField facilioField = (FacilioField) pivotField.get("field");
             FacilioField moduleField = modBean.getField(facilioField.getFieldId()).clone();
 
@@ -2216,5 +2222,55 @@ public class FetchReportDataCommand extends FacilioCommand {
             return new DateRange(start_time, end_time);
         }
         return baseline != null ? baseline.getBaseLineRange() : report.getDateRange();
+    }
+    private void addColumnNameInCondition(Criteria criteria, String moduleName)throws Exception{
+        if(criteria != null)
+        {
+            for (String key : criteria.getConditions().keySet()) {
+                Condition condition = criteria.getConditions().get(key);
+                if(condition.getFieldName() != null) {
+                    FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
+                    condition.setField(field);
+                }
+            }
+        }
+    }
+    private void replaceTableNameWithAliasInCondition(Criteria criteria, String moduleName)throws Exception{
+        if(criteria != null)
+        {
+            for (String key : criteria.getConditions().keySet()) {
+                Condition condition = criteria.getConditions().get(key);
+                if (condition.getColumnName() != null) {
+                    String tableNameAndColumnName = condition.getColumnName();
+                    String columnName = tableNameAndColumnName;
+                    if (columnName.split("\\.").length > 1) {
+                        columnName = columnName.split("\\.")[1];
+                    }
+                    tableNameAndColumnName = getAndSetModuleAlias(moduleName) + "." + columnName;
+                    condition.setColumnName(tableNameAndColumnName);
+                }
+            }
+
+        }
+    }
+    private boolean isReadingModule(ModuleType moduleType)
+    {
+        return moduleType == ModuleType.READING || moduleType == ModuleType.READING_RULE
+                || moduleType == ModuleType.SYSTEM_SCHEDULED_FORMULA
+                || moduleType == ModuleType.LIVE_FORMULA;
+    }
+    private void setPivotDataConditionInBuilder(ReportDataPointContext dp, ReportType type, SelectRecordsBuilder newSelectBuilder)throws Exception
+    {
+        if(type == ReportType.PIVOT_REPORT && isReadingModule(dp.getyAxis().getModule().getTypeEnum())){
+            addColumnNameInCondition(dp.getAllCriteria(), dp.getyAxis().getModule().getName());
+            replaceTableNameWithAliasInCondition(dp.getAllCriteria(), dp.getyAxis().getModule().getName());
+            newSelectBuilder.andCriteria(dp.getAllCriteria());
+            if(dp.getParentCriteriaFilter() != null && baseModule != null)
+            {
+                addColumnNameInCondition(dp.getParentCriteriaFilter(), baseModule.getName());
+//                replaceTableNameWithAliasInCondition(dp.getParentCriteriaFilter(), baseModule.getName());
+                newSelectBuilder.andCriteria(dp.getParentCriteriaFilter());
+            }
+        }
     }
 }

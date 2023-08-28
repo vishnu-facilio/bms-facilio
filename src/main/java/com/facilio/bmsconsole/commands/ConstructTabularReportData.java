@@ -261,6 +261,7 @@ public class ConstructTabularReportData extends FacilioCommand {
             if (criteria != null) {
                 dataPointContext.setCriteria(criteria);
             }
+            dataPointContext.setParentCriteriaFilter(data.getDataFilter() != null ? data.getDataFilter() : null);
             boolean isTimeLineFilterApplied = true;
             boolean showTimelineFilter = false;
             int dateOperatorInt = -1;

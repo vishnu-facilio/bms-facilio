@@ -19,6 +19,7 @@ import com.facilio.services.filestore.FileStore;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -50,6 +51,7 @@ public class GetExportReportFileCommand extends FacilioCommand {
 	private ReportContext report;
 	private ReportMode mode;
 	private Map<String, Object> dataMap = new HashMap<>();
+	private Map<String, String> chart_dataMap = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -90,7 +92,7 @@ public class GetExportReportFileCommand extends FacilioCommand {
 				JSONParser parser = new JSONParser();
 	    			tableState = (Map<String, Object>) parser.parse(report.getTabularState());
 			}
-			
+			setDataMapAndGetColumnsFromChartJson();
 			List<Map<String, Object>> columns = setDataMapAndGetColumns(tableState);
 			List<String> headers = getTableHeaders(columns);
 			
@@ -147,7 +149,25 @@ public class GetExportReportFileCommand extends FacilioCommand {
 		
 		return false;
 	}
-	
+	private void setDataMapAndGetColumnsFromChartJson()throws Exception
+	{
+		String chartStateString = report.getChartState();
+		JSONParser parser = new JSONParser();
+		Map<String, Object> chartState = (Map<String, Object>) parser.parse(chartStateString);
+		if(chartState != null && chartState.containsKey("dataPoints"))
+		{
+			JSONArray dp_arr = (JSONArray) chartState.get("dataPoints");
+			if(dp_arr != null)
+			{
+				int len = dp_arr.size();
+				for(int i=0;i<len ;i++)
+				{
+					JSONObject datapoint = (JSONObject)  dp_arr.get(i);
+					chart_dataMap.put((String)datapoint.get("alias"), (String)datapoint.get("label"));
+				}
+			}
+		}
+	}
 	private List<Map<String, Object>> setDataMapAndGetColumns (Map<String, Object> tableState) {
 		List<String> currentHeaderKeys = new ArrayList<>();
 		currentHeaderKeys.add(report.getxAlias() != null ? report.getxAlias() : "X");
@@ -242,6 +262,7 @@ public class GetExportReportFileCommand extends FacilioCommand {
 				ReportDataPointContext dataPoint;
 				ReportBaseLineContext baseLine = null;
 				Object pointObj = dataMap.get(col.get(ALIAS));
+				String label = chart_dataMap.get(col.get(ALIAS));
 				if (pointObj instanceof ReportDataPointContext) {
 					dataPoint = (ReportDataPointContext) pointObj;
 				}
@@ -250,8 +271,10 @@ public class GetExportReportFileCommand extends FacilioCommand {
 					dataPoint = (ReportDataPointContext) dataMap.get(alias);
 					baseLine = (ReportBaseLineContext) ((Map<String, Object>) pointObj).get("baseline");
 				}
-				
 				StringBuilder builder = new StringBuilder(dataPoint.getName());
+				if(dataPoint.getName() != null && label != null && !label.equals(dataPoint.getName())){
+					builder = new StringBuilder(label);
+				}
 				if (baseLine != null) {
 					builder.append(" - ").append(baseLine.getBaseLine().getName());
 				}

@@ -1268,7 +1268,7 @@ public class AssetsAPI {
 		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(readingFields);
 
 		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-
+		StringBuilder deleted_sb = new StringBuilder(" AND ").append(resourceModule.getTableName()).append(".SYS_DELETED IS NULL");
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(FieldFactory.getIdField(assetCategoryModule));
 		fields.add(assetCategoryFieldMap.get("name"));
@@ -1284,7 +1284,7 @@ public class AssetsAPI {
 				.innerJoin(resourceModule.getTableName())
 				.on(resourceModule.getTableName()+'.'+FieldFactory.getIdField(resourceModule).getColumnName()+'='+assetModule.getTableName()+".ID")
 				.innerJoin(readingDataMetaModule.getTableName())
-				.on(readingDataMetaModule.getTableName()+"."+readingFieldsMap.get("resourceId").getColumnName()+"="+assetModule.getTableName()+".ID")
+				.on(readingDataMetaModule.getTableName()+"."+readingFieldsMap.get("resourceId").getColumnName()+"="+assetModule.getTableName()+".ID" + deleted_sb.toString())
 				.setAggregation()
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T))
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY))
