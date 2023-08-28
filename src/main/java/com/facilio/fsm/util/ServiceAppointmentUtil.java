@@ -35,6 +35,7 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.function.Function;
@@ -106,7 +107,7 @@ public class ServiceAppointmentUtil {
         return null;
     }
 
-    public static void dispatchServiceAppointment(long appointmentId,long peopleId) throws Exception {
+    public static void dispatchServiceAppointment(long appointmentId,long peopleId,Long scheduledStartTime, Long scheduledEndTime, Boolean skipValidation) throws Exception {
         if(appointmentId > 0 && peopleId > 0) {
             String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
             ModuleBean moduleBean = Constants.getModBean();
@@ -123,17 +124,31 @@ public class ServiceAppointmentUtil {
 
             if (Constants.getRecordList(context) != null) {
                 ServiceAppointmentContext existingAppointment = (ServiceAppointmentContext) Constants.getRecordList(context).get(0);
+                List<ModuleBaseWithCustomFields> oldSARecords = new ArrayList<>();
+                List<Map<String,Object>> updateSARecordList = new ArrayList<>();
                 if (existingAppointment != null) {
-
+                    oldSARecords.add(existingAppointment);
+                    Map<String,Object> updateSAProps = FieldUtil.getAsProperties(existingAppointment);
                     V3PeopleContext fieldAgent = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, peopleId, V3PeopleContext.class);
-
-                    existingAppointment.setFieldAgent(fieldAgent);
+                    updateSAProps.put("fieldAgent",fieldAgent);
                     ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("dispatched");
                     if (appointmentStatus == null) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Missing in-progress state");
                     }
-                    existingAppointment.setStatus(appointmentStatus);
-                    V3RecordAPI.updateRecord(existingAppointment, serviceAppointment, updateFields);
+                    updateSAProps.put("status",appointmentStatus);
+                    if(scheduledStartTime != null && scheduledStartTime > 0){
+                        updateSAProps.put("scheduledStartTime",scheduledStartTime);
+                    }
+                    if(scheduledEndTime != null && scheduledEndTime > 0){
+                        updateSAProps.put("scheduledEndTime",scheduledEndTime);
+                    }
+                    JSONObject bodyParams = new JSONObject();
+                    if(skipValidation != null && !skipValidation){
+                        bodyParams.put(FacilioConstants.ServiceAppointment.SKIP_VALIDATION,false);
+                    }
+                    updateSARecordList.add(updateSAProps);
+                    V3Util.processAndUpdateBulkRecords(serviceAppointment, oldSARecords, updateSARecordList, bodyParams, null, null, null, null, null, null, null, true,false);
+
 
                     FacilioField taskField = Constants.getModBean().getField("right", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
 

@@ -40,9 +40,6 @@ public class FetchDispatcherEventsCommand extends FacilioCommand {
             List<FacilioField> timeOffFields = moduleBean.getAllFields(timeOffModuleName);
             Map<String, FacilioField> timeOffFieldMap = FieldFactory.getAsMap(timeOffFields);
 
-//            EnumField typeEnumField = (EnumField) timeOffFieldMap.get(FacilioConstants.ContextNames.TYPE);
-//            Map<Integer, Object> timeOffEnum = typeEnumField.getEnumMap();
-
             List<TimeOffContext> timeOffData = new ArrayList<>();
             Map<Long,List<TimeOffContext>> timeOffMap= new HashMap<>();
 

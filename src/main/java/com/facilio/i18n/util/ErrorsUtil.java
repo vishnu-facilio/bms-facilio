@@ -37,7 +37,7 @@ public class ErrorsUtil {
     public static String getString(String key, String... args) {
         ResourceBundle bundle = getBundle();
         String val = bundle.getString(key);
-        if (val != null && args.length > 0) {
+        if (val != null && args != null && args.length > 0) {
             val = MessageFormat.format(val, args);
         }
         return val;
@@ -82,6 +82,7 @@ public class ErrorsUtil {
                 if (additionalExp.getRelatedData() != null) {
                     additionalErrorData.put("errorRelatedData", additionalExp.getRelatedData());
                 }
+                additionalErrors.add(additionalErrorData);
             }
             errorData.put("additionalErrors", additionalErrors);
         }

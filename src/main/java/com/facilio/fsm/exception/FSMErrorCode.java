@@ -21,6 +21,10 @@ public enum FSMErrorCode {
     SO_ID_NOT_EMPTY(Severity.ERROR, "SO ID is required", "Service Order Id cannot be empty."),
 
     // Service Appointment error codes
+    SA_MISMATCH(Severity.WARNING,"Dispatch Alert: Mismatched Assignment","The Service Appointment does not match the selected Field Agent due to the following reasons. Do you want to proceed?"),
+    SA_TERRITORY_MISMATCH(Severity.WARNING,"Dispatch Alert: Mismatched Assignment","The selected Field Agent is not associated to the same territory as the service appointment"),
+    SA_TIME_MISMATCH(Severity.WARNING,"Dispatch Alert: Mismatched Assignment","The selected Field Agent is not available for the scheduled service appointment time."),
+    SA_SKILL_MISMATCH(Severity.WARNING,"Dispatch Alert: Mismatched Assignment","Skills of the selected Field Agent do not match with the required skill for this service appointment"),
     SA_TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Timesheet conflict", "You cannot start this service appointment while a timesheet is in progress or exists for the given time range."),
     SA_TRIP_ALREADY_RUNNING(Severity.ERROR, "Trip conflict", "You cannot start a trip while another is already running."),
     SA_SCHEDULED_TIME_MISMATCH(Severity.ERROR, "Scheduled time range is invalid", "The service appointment should be scheduled between valid time range."),

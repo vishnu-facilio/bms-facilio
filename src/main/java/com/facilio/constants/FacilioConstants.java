@@ -4714,6 +4714,8 @@ public class FacilioConstants {
 		public static final String PRIORITY = "priority";
 		public static final String RESPONSE_DUE_STATUS = "responseDueStatus";
 		public static final String RESOLUTION_DUE_STATUS = "resolutionDueStatus";
+
+		public static final String SKIP_VALIDATION = "skipValidation";
 	}
 
 	public static class ServiceOrder{
