@@ -100,6 +100,9 @@
 		<action name="buildInfo" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/buildinfo.jsp</result>
 		</action>
+		<action name="changeUserEmail" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/changeUserEmail.jsp</result>
+		</action>
 
 		<action name="usermanagement" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/usermanagement.jsp</result>

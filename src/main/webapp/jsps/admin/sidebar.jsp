@@ -124,6 +124,13 @@ if (buildinfo == null) {
                    <span class="nav-title">Inspection Monitoring</span>
                </a>
            </li>
+                 <li>
+                      <a href="changeUserEmail">
+                          <span class="nav-icon">
+                              <i class=" sidebar-icon fa fa-exclamation-triangle fa-fw "></i> </span>
+                          <span class="nav-title">Change User Email</span>
+                      </a>
+                 </li>
             <li>
                 <a href="pmV1TasksToJobPlan">
                <span class="nav-icon">

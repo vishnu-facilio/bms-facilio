@@ -23,6 +23,13 @@ import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.bmsconsole.ModuleSettingConfig.impl.PageBuilderConfigUtil;
 import com.facilio.bmsconsole.ModuleSettingConfig.impl.PreCommitWorkflowRuleUtil;
 import com.facilio.bmsconsole.util.MLServiceUtil;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Level;
@@ -913,5 +920,94 @@ public class AdminAction extends ActionSupport {
 		}
 		getSecretFiles();
 		return SUCCESS;
+	}
+
+	public static String updateAccountUserEmail(String currentEmail, String newEmail) {
+		try {
+			if(currentEmail == null || newEmail == null){
+				return "Please enter a email";
+			}
+			V3PeopleContext existingUser = V3PeopleAPI.getPeople(newEmail);
+			if (existingUser != null) {
+				return "Email already exists!";
+			}
+			Map<String, Object> prop = new HashMap<>();
+			prop.put("email", newEmail);
+			updateEmailInPeopleTable(currentEmail, prop);
+			prop.clear();
+			prop.put("userName", newEmail);
+			updateUserNameInDc_LoopupTable(currentEmail, prop);
+			prop.put("email", newEmail);
+			updateEmailInAccount_UsersTable(currentEmail, prop);
+			prop.clear();
+			return "Email updated successfully";
+		} catch (Exception e) {
+			LOGGER.log(Level.INFO, "Exception while updating user email : " + e.getMessage(), e);
+			return "cannot update email";
+		}
+	}
+
+	public static boolean isEmailInManyOrg(String email) throws Exception {
+		try {
+			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(new HashSet<>())
+					.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldsMap.get("email"))
+					.table("Account_Users")
+					.innerJoin("Account_ORG_Users")
+					.on("Account_ORG_Users.USERID = Account_Users.USERID");
+
+			selectBuilder.andCondition(CriteriaAPI.getCondition("EMAIL", "email", email, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+			selectBuilder.groupBy("Account_ORG_Users.ORGID");
+
+			List<Map<String, Object>> props = selectBuilder.get();
+			int emailInOrgs = org.apache.commons.collections.CollectionUtils.isNotEmpty(props) ? props.size() : 0;
+
+			return emailInOrgs != 1;
+		}catch (Exception e){
+			LOGGER.log(Level.INFO, "Exception while seaching for email in orgs : " + e.getMessage(), e);
+			return false;
+		}
+	}
+
+	private static void updateUserNameInDc_LoopupTable(String currentEmail, Map<String, Object> prop) throws SQLException {
+		try {
+			GenericUpdateRecordBuilder updateDc_LookupTable = new GenericUpdateRecordBuilder()
+					.table(IAMAccountConstants.getDCLookupModule().getTableName())
+					.fields(IAMAccountConstants.getDCFields())
+					.andCondition(CriteriaAPI.getCondition("USERNAME", "userName", currentEmail, StringOperators.IS));
+			updateDc_LookupTable.update(prop);
+		}catch (Exception e){
+			LOGGER.log(Level.INFO, "Exception while updating email in DC_Lookup table : " + e.getMessage(), e);
+		}
+	}
+
+	private static void updateEmailInPeopleTable(String currentEmail, Map<String, Object> prop) throws Exception {
+		try {
+			List<FacilioField> peopleFields = Constants.getModBean().getAllFields(ContextNames.PEOPLE);
+
+			GenericUpdateRecordBuilder updatePeopleTable = new GenericUpdateRecordBuilder()
+					.table(ModuleFactory.getPeopleModule().getTableName())
+					.fields(peopleFields)
+					.andCondition(CriteriaAPI.getCondition("EMAIL", "email", currentEmail, StringOperators.IS));
+			updatePeopleTable.update(prop);
+		}catch (Exception e){
+			LOGGER.log(Level.INFO, "Exception while updating email in People table : " + e.getMessage(), e);
+		}
+	}
+
+	private static void updateEmailInAccount_UsersTable(String currentEmail, Map<String, Object> prop) throws SQLException {
+		try {
+			GenericUpdateRecordBuilder updateAccount_UsersTable = new GenericUpdateRecordBuilder()
+					.table(IAMAccountConstants.getAccountsUserModule().getTableName())
+					.fields(IAMAccountConstants.getAccountsUserFields())
+					.andCondition(CriteriaAPI.getCondition("EMAIL", "email", currentEmail, StringOperators.IS))
+					.andCondition(CriteriaAPI.getCondition("USERNAME", "UserName", currentEmail, StringOperators.IS));
+			updateAccount_UsersTable.update(prop);
+		}catch (Exception e){
+			LOGGER.log(Level.INFO, "Exception while updating email in Account_Users table : " + e.getMessage(), e);
+		}
 	}
 }
