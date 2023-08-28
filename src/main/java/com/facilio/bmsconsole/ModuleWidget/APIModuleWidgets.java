@@ -205,19 +205,13 @@ public class APIModuleWidgets {
                     .addWidgetConfig("webcurrentstatus_22_6","Employee Current Status - 22 - 6", WidgetConfigContext.ConfigType.FIXED,22,6, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("skill","SKILL",PageWidget.WidgetType.SKILL)
-                    .addWidgetConfig("flexiblewebskill_60","Skill - 60", WidgetConfigContext.ConfigType.FLEXIBLE,60,-1, PagesContext.PageLayoutType.WEB)
-                .done()
-                .addModuleWidget("territories","TERRITORIES",PageWidget.WidgetType.TERRITORIES)
-                    .addWidgetConfig("flexiblewebterritories_60","Territories - 60", WidgetConfigContext.ConfigType.FLEXIBLE,60,-1, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfig("flexiblewebskill_50","Skill - 50", WidgetConfigContext.ConfigType.FLEXIBLE,50,-1, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("workschedule","WORK SCHEDULE",PageWidget.WidgetType.WORK_SCHEDULE)
-                    .addWidgetConfig("flexiblewebworkschedule_60","Work Schedule 60", WidgetConfigContext.ConfigType.FLEXIBLE,60,-1, PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfig("flexiblewebworkschedule_50","Work Schedule 50", WidgetConfigContext.ConfigType.FLEXIBLE,50,-1, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("employeeLocation","EMPLOYEE LOCATION",PageWidget.WidgetType.EMPLOYEE_LOCATION)
-                    .addWidgetConfig("flexiblewebactivity_60","Employee Location 60", WidgetConfigContext.ConfigType.FLEXIBLE, 60,-1, PagesContext.PageLayoutType.WEB)
-                .done()
-                .addModuleWidget("vendorLocation","VENDOR LOCATION",PageWidget.WidgetType.VENDOR_LOCATION)
-                    .addWidgetConfig("flexiblewebactivity_60","Vendor Location 60", WidgetConfigContext.ConfigType.FLEXIBLE,60, -1,PagesContext.PageLayoutType.WEB)
+                    .addWidgetConfig("flexiblewebactivity_50","Employee Location 50", WidgetConfigContext.ConfigType.FLEXIBLE, 50,-1, PagesContext.PageLayoutType.WEB)
                 .done()
                 ;
     }
@@ -294,6 +288,26 @@ public class APIModuleWidgets {
                 .addModuleWidget("actionsListView","Actions List View",PageWidget.WidgetType.ACTIONS_LIST_VIEW)
                 .done()
                 ;
+    }
+
+    @WidgetsForModule("vendorcontact")
+    public static Supplier<ModuleWidgets> getVendorContactWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("vendorcontactlastknowlocation","VENDOR CONTACT LAST KNOWN LOCATION",PageWidget.WidgetType.VENDOR_CONTACT_LAST_KNOW_LOCATION)
+                .addWidgetConfig("webvendorcontactlastknowlocation_22_6","Last Known Location Widget - 22 - 6", WidgetConfigContext.ConfigType.FIXED,22,6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("vendorcontactcurrentstatus","VENDOR CONTACT CURRENT STATUS",PageWidget.WidgetType.VENDOR_CONATCT_CURRENT_STATUS)
+                .addWidgetConfig("webvendorcontactcurrentstatus_22_6","Employee Current Status - 22 - 6", WidgetConfigContext.ConfigType.FIXED,22,6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("vendorcontactskill","VENDOR CONTACT SKILL",PageWidget.WidgetType.VENDOR_CONTACT_SKILL)
+                .addWidgetConfig("flexiblewebvendorcontactskill_50","Skill - 50", WidgetConfigContext.ConfigType.FLEXIBLE,50,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("vendorcontactworkschedule","VENDOR CONTACT WORK SCHEDULE",PageWidget.WidgetType.VENDOR_CONTACT_WORK_SCHEDULE)
+                .addWidgetConfig("flexiblewebvendorcontactworkschedule_50","Work Schedule 50", WidgetConfigContext.ConfigType.FLEXIBLE,50,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("vendorLocation","VENDOR LOCATION",PageWidget.WidgetType.VENDOR_LOCATION)
+                .addWidgetConfig("flexiblewebactivity_50","Vendor Location 50", WidgetConfigContext.ConfigType.FLEXIBLE,50, -1,PagesContext.PageLayoutType.WEB)
+                .done();
     }
 
     @WidgetsForModule("space")
@@ -610,10 +624,10 @@ public class APIModuleWidgets {
     public static Supplier<ModuleWidgets> getTerritoryWidgets() {
         return () -> new ModuleWidgets()
                 .addModuleWidget("sites","Sites",PageWidget.WidgetType.TERRITORY_SITES)
-                .addWidgetConfig("flexiblewebterritorysites_60","Sites - 60", WidgetConfigContext.ConfigType.FLEXIBLE,60,-1, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("flexiblewebterritorysites_50","Sites - 50", WidgetConfigContext.ConfigType.FLEXIBLE,50,-1, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("fieldAgents","Field Agents",PageWidget.WidgetType.FIELD_AGENTS)
-                .addWidgetConfig("flexibleterritoryfieldagents_60","Field Agents - 60", WidgetConfigContext.ConfigType.FLEXIBLE,60,-1, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("flexibleterritoryfieldagents_50","Field Agents - 50", WidgetConfigContext.ConfigType.FLEXIBLE,50,-1, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("geography","Geography",PageWidget.WidgetType.GEOGRAPHY)
                 .addWidgetConfig("fixedterritorygeography_22_6","Geography - 22 - 6", WidgetConfigContext.ConfigType.FIXED,22,6, PagesContext.PageLayoutType.WEB)
@@ -626,7 +640,7 @@ public class APIModuleWidgets {
     public static Supplier<ModuleWidgets> getServiceAppointmentWidgets() {
         return () -> new ModuleWidgets()
                 .addModuleWidget("serviceappointmentservicetasks","Service Tasks",PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS)
-                .addWidgetConfig("serviceappointmentservicetasks_50_12","Service Tasks - 60 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("serviceappointmentservicetasks_50_12","Service Tasks - 50 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("serviceappointmentplans","Plans",PageWidget.WidgetType.SERVICE_APPOINTMENT_PLANS)
                 .addWidgetConfig("serviceappointmentplans_50_12","Plans - 50 - 12", WidgetConfigContext.ConfigType.FIXED,50,12, PagesContext.PageLayoutType.WEB)

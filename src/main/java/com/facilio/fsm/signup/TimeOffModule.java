@@ -289,7 +289,7 @@ public class TimeOffModule extends BaseModuleConfig {
                 .addWebTab("timeoffhistory", "History", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
-                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0, historyWidgetParam, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

@@ -9,7 +9,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.json.simple.JSONObject;
 
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class VendorModuleTemplatePage implements TemplatePageFactory {
+public class VendorContactModuleTemplatePage implements TemplatePageFactory {
     @Override
     public String getModuleName() {
         return FacilioConstants.ContextNames.VENDOR_CONTACT;
@@ -33,9 +32,9 @@ public class VendorModuleTemplatePage implements TemplatePageFactory {
                 .widgetDone()
                 .sectionDone()
                 .addSection("vendorlocationstatus", null, null)
-                .addWidget("vendorlastknowlocationwidget", "Last Known Location", PageWidget.WidgetType.LAST_KNOW_LOCATION, "weblastknowlocation_22_6", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
+                .addWidget("vendorlastknowlocationwidget", "Last Known Location", PageWidget.WidgetType.VENDOR_CONTACT_LAST_KNOW_LOCATION, "webvendorcontactlastknowlocation_22_6", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
                 .widgetDone()
-                .addWidget("vendorcurrentstatuswidget", "Vendor Current Status", PageWidget.WidgetType.CURRENT_STATUS, "webcurrentstatus_22_6", 6, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
+                .addWidget("vendorcurrentstatuswidget", "Vendor Current Status", PageWidget.WidgetType.VENDOR_CONATCT_CURRENT_STATUS, "webvendorcontactcurrentstatus_22_6", 6, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -48,16 +47,7 @@ public class VendorModuleTemplatePage implements TemplatePageFactory {
                 .addWebTab("vendorskill", "SKILL", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("vendorskill", null, null)
-                .addWidget("vendorskillwidget", "Skill", PageWidget.WidgetType.SKILL, "flexiblewebskill_60", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
-                .widgetDone()
-                .sectionDone()
-                .columnDone()
-                .tabDone()
-
-                .addWebTab("vendorterritories", "TERRITORIES", true, null)
-                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("vendorterritories", null, null)
-                .addWidget("vendorterritorieswidget", "Territories", PageWidget.WidgetType.TERRITORIES, "flexiblewebterritories_60", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
+                .addWidget("vendorskillwidget", "Skill", PageWidget.WidgetType.VENDOR_CONTACT_SKILL, "flexiblewebvendorcontactskill_50", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -66,29 +56,29 @@ public class VendorModuleTemplatePage implements TemplatePageFactory {
                 .addWebTab("vendorworkschedule", "WORK SCHEDULE", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("vendorworkschedule", null, null)
-                .addWidget("vendorworkschedulewidget", "Work Schedule", PageWidget.WidgetType.WORK_SCHEDULE, "flexiblewebworkschedule_60", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
+                .addWidget("vendorworkschedulewidget", "Work Schedule", PageWidget.WidgetType.VENDOR_CONTACT_WORK_SCHEDULE, "flexiblewebvendorcontactworkschedule_50", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("vendorrelated", "RELATED", true, null)
-                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("vendorrelationships", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("vendorbulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
-                .widgetDone()
-                .sectionDone()
-                .addSection("vendorrelatedlist", "Related List", "List of related records across modules")
-                .addWidget("vendorbulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(getModuleName()))
-                .widgetDone()
-                .sectionDone()
-                .columnDone()
-                .tabDone()
+//                .addWebTab("vendorrelated", "RELATED", true, null)
+//                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+//                .addSection("vendorrelationships", "Relationships", "List of relationships and types between records across modules")
+//                .addWidget("vendorbulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
+//                .widgetDone()
+//                .sectionDone()
+//                .addSection("vendorrelatedlist", "Related List", "List of related records across modules")
+//                .addWidget("vendorbulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(getModuleName()))
+//                .widgetDone()
+//                .sectionDone()
+//                .columnDone()
+//                .tabDone()
 
                 .addWebTab("vendorhistory", "HISTORY", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
-                .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_60", 0, 0, null, getHistoryWidgetGroup(false))
+                .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_50", 0, 0, null, getHistoryWidgetGroup(false))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -181,11 +171,11 @@ public class VendorModuleTemplatePage implements TemplatePageFactory {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("fieldUpdate", "Field Update", "")
-                .addWidget("fieldUpdatewidget", "Field Update", PageWidget.WidgetType.ACTIVITY, isMobile ? "flexiblemobilecomment_8" : "flexiblewebactivity_60", 0, 0, historyWidgetParam, null)
+                .addWidget("fieldUpdatewidget", "Field Update", PageWidget.WidgetType.ACTIVITY, isMobile ? "flexiblemobilecomment_8" : "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("location", "Location", "")
-                .addWidget("locationwidget", "Location", PageWidget.WidgetType.VENDOR_LOCATION, isMobile ? "flexiblemobileattachment_8" : "flexiblewebactivity_60", 0, 0, null, null)
+                .addWidget("locationwidget", "Location", PageWidget.WidgetType.VENDOR_LOCATION, isMobile ? "flexiblemobileattachment_8" : "flexiblewebactivity_50", 0, 0, null, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

@@ -606,7 +606,11 @@ public class PageWidget {
 		GEOGRAPHY("geography"),
 		TIMESHEET_TASKS("timeSheetTasks"),
 		TRIP_JOURNEY("tripJourney"),
-		SERVICE_ORDER_APPOINTMENTS("serviceOrderAppointments")
+		SERVICE_ORDER_APPOINTMENTS("serviceOrderAppointments"),
+		VENDOR_CONTACT_LAST_KNOW_LOCATION("vendorContactLastKnowLocation"),
+		VENDOR_CONATCT_CURRENT_STATUS("vendorContactCurrentstatus"),
+		VENDOR_CONTACT_SKILL("vendorContactSkill"),
+		VENDOR_CONTACT_WORK_SCHEDULE("vendorcontactworkschedule")
 
 		;
 

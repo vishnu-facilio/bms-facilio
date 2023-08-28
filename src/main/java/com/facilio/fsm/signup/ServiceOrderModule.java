@@ -1045,7 +1045,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .addWebTab("history", "HISTORY", true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("activity", null, null)
-                .addWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_60", 0, 0,  historyWidgetParam, null)
+                .addWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0,  historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
