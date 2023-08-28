@@ -69,10 +69,6 @@ public class AddOrUpdateSLABreachJobCommandV3 extends FacilioCommand {
                 if (CollectionUtils.isNotEmpty(slaEntityList)) {
                     long currentTime = System.currentTimeMillis();
 
-                    if (!addMode){
-                        deleteAllExistingSLASingleRecordJob(records, "_Breach", StringOperators.ENDS_WITH, module);
-                    }
-
                     for (ModuleBaseWithCustomFields record : records) {
                         for (SLAEntityContext entity : slaEntityList) {
                             long dueFieldId = entity.getDueFieldId();
@@ -132,9 +128,10 @@ public class AddOrUpdateSLABreachJobCommandV3 extends FacilioCommand {
 
                             }
 
-                            if (deleteExistingEscalation) {
+                            if (deleteExistingEscalation){
                                 AddOrUpdateSLABreachJobCommand.deleteAllExistingSLASingleRecordJob(Collections.singletonList(record), "SLAEntity_" + entity.getId() + "_Escalation_", StringOperators.STARTS_WITH, module);
                             }
+
                         }
                     }
                 }
