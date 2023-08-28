@@ -66,13 +66,11 @@ public class ChangeStatusBlock extends BaseBlock{
 
             StateFlowRulesAPI.updateState(record, module, status, false, new FacilioContext());
 
-        }catch (Exception e){
-            if(e instanceof FlowException){
-                throw (FlowException) e;
-            }
-            else {
-                throw new FlowException(e.getMessage());
-            }
+        }catch (Exception exception){
+            flowEngineInterFace.log(exception.getMessage());
+            FlowException flowException = exception instanceof FlowException?(FlowException)exception:new FlowException(exception.getMessage());
+            flowEngineInterFace.emitBlockError(this,memory,flowException);
+            throw flowException;
         }
 
     }

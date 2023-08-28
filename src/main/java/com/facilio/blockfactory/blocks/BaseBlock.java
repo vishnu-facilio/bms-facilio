@@ -13,7 +13,7 @@ import java.util.Objects;
 public abstract class BaseBlock {
     protected long id;
     protected Map<String, Object> config;
-    private FlowEngineInterFace flowEngineInterFace;
+    protected FlowEngineInterFace flowEngineInterFace;
 
     public FlowEngineInterFace getFlowEngineInterFace() {
         return flowEngineInterFace;

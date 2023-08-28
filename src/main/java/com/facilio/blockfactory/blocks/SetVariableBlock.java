@@ -1,6 +1,5 @@
 package com.facilio.blockfactory.blocks;
 
-import com.facilio.blockfactory.blocks.BaseBlock;
 import com.facilio.flowengine.context.Constants;
 import com.facilio.flowengine.exception.FlowException;
 import com.facilio.flowengine.executor.FlowEngineUtil;
@@ -18,19 +17,18 @@ public class SetVariableBlock extends BaseBlock {
         super(config);
     }
     @Override
-    public void execute(Map<String, Object> context) throws FlowException{
+    public void execute(Map<String, Object> memory) throws FlowException{
         try{
             init();
             if(variableValue instanceof String){
-                variableValue = FlowEngineUtil.replacePlaceHolder(variableValue,context);
+                variableValue = FlowEngineUtil.replacePlaceHolder(variableValue,memory);
             }
-            context.put(variableName,variableValue);
-        }catch (Exception ex){
-            if (ex instanceof FlowException){
-                throw (FlowException) ex;
-            }else {
-                throw new FlowException(ex.getMessage());
-            }
+            memory.put(variableName,variableValue);
+        }catch (Exception exception){
+            flowEngineInterFace.log(exception.getMessage());
+            FlowException flowException = exception instanceof FlowException?(FlowException)exception:new FlowException(exception.getMessage());
+            flowEngineInterFace.emitBlockError(this,memory,flowException);
+            throw flowException;
         }
     }
     private void init(){

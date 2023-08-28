@@ -42,6 +42,7 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
+import com.facilio.flowLog.moduleFlowLog.service.ModuleFlowLogServiceImpl;
 import com.facilio.flowengine.executor.FlowEngine;
 import com.facilio.flows.context.FlowContext;
 import com.facilio.flows.context.FlowTransitionContext;
@@ -2007,6 +2008,7 @@ public enum ActionType implements FacilioIntEnum {
 				FlowContext flow = FlowUtil.getFlow(flowId);
 				JSONObject currentRecordJSON = FieldUtil.getAsJSON(currentRecord);
 				FlowEngine flowEngine = new FlowEngine(flow,currentRecordJSON);
+				flowEngine.setFlowLogService(new ModuleFlowLogServiceImpl(flowEngine));
 				List<FlowTransitionContext> transitions = FlowUtil.getFlowTransitionListWithExtendedConfig(flowId);
 				BaseBlock startBlock = BlockFactory.buildFlowGraph(transitions);
 

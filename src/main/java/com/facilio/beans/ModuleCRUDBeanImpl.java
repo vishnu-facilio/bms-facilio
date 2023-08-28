@@ -14,6 +14,8 @@ import com.facilio.bmsconsole.jobs.DataProcessingAlertJob;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.flowLog.moduleFlowLog.context.FlowExecutionLogContext;
+import com.facilio.flowLog.moduleFlowLog.util.FlowExecutionLogUtil;
 import com.facilio.modules.*;
 import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import com.facilio.time.DateTimeUtil;
@@ -1432,6 +1434,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	@Override
 	public void addWorkflowRuleLog(WorkflowRuleLogContext workflowRuleLog, List<WorkflowRuleActionLogContext> workflowRuleActionLogContext) throws Exception{
 		WorkflowRuleLogUtil.insertWorkflowRuleLog(workflowRuleLog,workflowRuleActionLogContext);
+	}
+
+	@Override
+	public void addFlowExecutionLog(FlowExecutionLogContext flowExecutionLog) throws Exception {
+		FlowExecutionLogUtil.insertFlowExecutionLog(flowExecutionLog);
 	}
 
 	@Override

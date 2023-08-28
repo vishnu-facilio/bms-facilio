@@ -18,21 +18,20 @@ public class If_Else_Block extends DecisionBlock {
     }
 
     @Override
-    public void execute(Map<String, Object> context) throws FlowException {
+    public void execute(Map<String, Object> memory) throws FlowException {
         try {
             init();
-            boolean flag = evaluate(context, rule);
+            boolean flag = evaluate(memory, rule);
             if (flag) {
                 setExecutablePosition("2");
             } else {
                 setExecutablePosition("1");
             }
-        } catch (Exception ex) {
-            if (ex instanceof FlowException) {
-                throw (FlowException) ex;
-            } else {
-                throw new FlowException(ex.getMessage());
-            }
+        } catch (Exception exception) {
+            flowEngineInterFace.log(exception.getMessage());
+            FlowException flowException = exception instanceof FlowException?(FlowException)exception:new FlowException(exception.getMessage());
+            flowEngineInterFace.emitBlockError(this,memory,flowException);
+            throw flowException;
         }
     }
 

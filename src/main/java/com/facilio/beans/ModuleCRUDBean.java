@@ -1,7 +1,6 @@
 package com.facilio.beans;
 
 import java.io.File;
-import java.time.Duration;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -9,6 +8,7 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.*;
 import com.facilio.ims.handler.AuditLogHandler;
+import com.facilio.flowLog.moduleFlowLog.context.FlowExecutionLogContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.json.simple.JSONArray;
@@ -170,5 +170,6 @@ public interface ModuleCRUDBean {
 
 	//void extendPlanner(long plannerId, Duration duration) throws Exception;
 	void addWorkflowRuleLog(WorkflowRuleLogContext workflowRuleLog, List<WorkflowRuleActionLogContext> workflowRuleActionLogList) throws Exception;
+	void addFlowExecutionLog(FlowExecutionLogContext flowExecutionLog) throws Exception;
 
 }

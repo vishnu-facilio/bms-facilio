@@ -3504,7 +3504,10 @@ public class FacilioConstants {
 		public static final String APPROVAL_REQUESTED_BY_FIELD_NAME = "requestedBy";
 		public static final String APPROVAL_REQUESTER = "approvalRequester";
 	}
-
+	public static class Flow{
+		public static final String FLOW_EXECUTION="flowExecution";
+		public static final String FLOW_EXECUTION_LOG="flowExecutionLog";
+	}
 	public static class Workflow {
 		public static final String TEMPLATE = "template";
 		public static final String ACTION_TEMPLATE = "actionTemplate";

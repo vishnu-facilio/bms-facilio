@@ -52,12 +52,11 @@ public class DeleteRecordBlock extends BaseBlock {
             Map<String, Object> deleteObj = new HashMap<>();
             deleteObj.put(moduleName, Arrays.asList(recId));
             V3Util.deleteRecords(moduleName, deleteObj, null, null, true);
-        } catch (Exception ex) {
-            if (ex instanceof FlowException) {
-                throw (FlowException)ex;
-            } else {
-                throw new FlowException(ex.getMessage());
-            }
+        } catch (Exception exception) {
+            flowEngineInterFace.log(exception.getMessage());
+            FlowException flowException = exception instanceof FlowException?(FlowException)exception:new FlowException(exception.getMessage());
+            flowEngineInterFace.emitBlockError(this,memory,flowException);
+            throw flowException;
         }
     }
     private void init(){

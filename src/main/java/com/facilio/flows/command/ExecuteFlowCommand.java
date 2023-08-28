@@ -4,6 +4,7 @@ import com.facilio.blockfactory.BlockFactory;
 import com.facilio.blockfactory.blocks.BaseBlock;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.flowLog.moduleFlowLog.service.ModuleFlowLogServiceImpl;
 import com.facilio.flowengine.executor.FlowEngine;
 import com.facilio.flows.context.FlowContext;
 import com.facilio.flows.context.FlowTransitionContext;
@@ -40,7 +41,10 @@ public class ExecuteFlowCommand extends FacilioCommand {
 
         JSONObject currentRecord = FieldUtil.getAsJSON(record);
         HashMap<String, Object> memory = new HashMap<>();
+
         FlowEngine flowEngine = new FlowEngine(flow,currentRecord);
+        flowEngine.setFlowLogService(new ModuleFlowLogServiceImpl(flowEngine));
+
         memory.put(moduleName,currentRecord);
         flowEngine.execute(startBlock,memory);
         context.put(FacilioConstants.ContextNames.MEMORY, memory);

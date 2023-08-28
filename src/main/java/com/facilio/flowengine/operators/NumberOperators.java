@@ -15,7 +15,7 @@ public enum NumberOperators implements FlowOperator, Serializable {
             return left==null?right==null:numberEquals(left,right);
         }
     },
-    NOT_EQUALS(10,"equals",true){
+    NOT_EQUALS(10,"not equals",true){
         @Override
         public boolean evaluate(Object left, Object right) {
             return !(left==null?right==null:numberEquals(left,right));

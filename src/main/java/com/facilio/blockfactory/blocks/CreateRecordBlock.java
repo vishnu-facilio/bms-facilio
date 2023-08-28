@@ -63,11 +63,10 @@ public class CreateRecordBlock extends CRUDBaseBlock {
             }
 
         }catch (Exception exception){
-            if(exception instanceof FlowException){
-                throw (FlowException) exception;
-            }else {
-                throw new FlowException(exception.getMessage());
-            }
+            flowEngineInterFace.log(exception.getMessage());
+            FlowException flowException = exception instanceof FlowException?(FlowException)exception:new FlowException(exception.getMessage());
+            flowEngineInterFace.emitBlockError(this,memory,flowException);
+            throw flowException;
         }
     }
     private void init(){

@@ -63,6 +63,9 @@ public class SendPushNotificationBlock extends BaseBlock {
 
         } catch (Exception exception) {
             LOGGER.debug("Exception in SendPushNotificationBlock:"+exception.getMessage());
+            flowEngineInterFace.log(exception.getMessage());
+            FlowException flowException = exception instanceof FlowException?(FlowException)exception:new FlowException(exception.getMessage());
+            flowEngineInterFace.emitBlockError(this,memory,flowException);
         }
 
     }
