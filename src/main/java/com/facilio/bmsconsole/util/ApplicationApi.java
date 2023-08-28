@@ -3203,6 +3203,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Email Logs", "emaillogs", WebTabContext.Type.EMAIL_LOGS, null, appId, null, AccountUtil.FeatureLicense.EMAIL_TRACKING.getFeatureId()));
             webTabs.add(new WebTabContext("Audit Logs", "auditlogs", WebTabContext.Type.AUDIT_LOGS, null, appId, null));
             webTabs.add(new WebTabContext("Script Logs","scriptlogs", WebTabContext.Type.SCRIPT_LOGS,null,appId,null,AccountUtil.FeatureLicense.WORKFLOW_LOG.getFeatureId()));
+            webTabs.add(new WebTabContext("Workflow Logs","workflowrulelogs", WebTabContext.Type.WORKFLOW_RULE_LOGS,null,appId,null,AccountUtil.FeatureLicense.WORKFLOW_RULE_LOG.getFeatureId()));
 
             groupNameVsWebTabsMap.put("logs", webTabs);
 
@@ -3333,6 +3334,7 @@ public class ApplicationApi {
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Email Logs", "emaillogs", WebTabContext.Type.EMAIL_LOGS, null, appId, null));
             webTabs.add(new WebTabContext("Audit Logs", "auditlogs", WebTabContext.Type.AUDIT_LOGS, null, appId, null));
+            webTabs.add(new WebTabContext("Workflow Logs","workflowrulelogs", WebTabContext.Type.WORKFLOW_RULE_LOGS,null,appId,null,AccountUtil.FeatureLicense.WORKFLOW_RULE_LOG.getFeatureId()));
 
             groupNameVsWebTabsMap.put("logs", webTabs);
 

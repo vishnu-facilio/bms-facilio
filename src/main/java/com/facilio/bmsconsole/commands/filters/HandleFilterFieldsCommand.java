@@ -74,7 +74,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
 
     private List<FacilioField> filterFields (FacilioModule module, List<FacilioField> fields) throws Exception {
         fields = filterModuleFields(module, fields);
-        if (!module.getName().equals(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER)
+        if (!module.getName().equals(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER) && !module.getName().equals(ContextNames.WORKFLOW_RULE_LOGS)
                 && module.getModuleId() > 1) { // Ignoring spl modules if at all this is used for those things
             fields.add(FieldFactory.getIdField(module));
         }
