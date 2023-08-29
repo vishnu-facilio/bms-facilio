@@ -3,6 +3,7 @@ package com.facilio.multiImport.importFileReader;
 import com.facilio.multiImport.multiImportExceptions.ImportParseException;
 import com.facilio.multiImport.util.MultiImportApi;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.json.simple.JSONArray;
 
@@ -43,7 +44,14 @@ public class XLSheetReader implements AbstractImportSheetReader {
             }
             boolean isRowEmpty = true;
             for (Cell cell : row) {
-                if (cell.getCellTypeEnum() != CellType.BLANK) {
+                Object val;
+                try{
+                    CellValue cellValue = parent.evaluator.evaluate(cell);
+                    val = XLSheetReader.getValueFromCell(cell,cellValue);
+                }catch (Exception e){
+                    val = e.getMessage();
+                }
+                if (val!=null) {
                     isRowEmpty = false;
                     break;
                 }
@@ -106,7 +114,7 @@ public class XLSheetReader implements AbstractImportSheetReader {
             Object val;
             try {
                 CellValue cellValue = parent.evaluator.evaluate(cell);
-                val = MultiImportApi.getValueFromCell(cell, cellValue);
+                val = XLSheetReader.getValueFromCell(cell, cellValue);
             } catch (Exception e) {
                 ImportParseException parseException = new ImportParseException(cellName, e);
                 throw parseException;
@@ -189,6 +197,38 @@ public class XLSheetReader implements AbstractImportSheetReader {
         ++rowNumber;
 
         return this.getRowVal();
+    }
+    public static Object getValueFromCell(Cell cell, CellValue cellValue) throws Exception {
+
+        Object val = 0.0;
+
+        // Here we get CellValue after evaluating the formula So CellType FORMULA will never occur
+
+        if (cell.getCellType() == Cell.CELL_TYPE_BLANK || cellValue.getCellTypeEnum() == CellType.BLANK) {
+            val = null;
+        } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+            CellStyle style = cell.getCellStyle();
+            Date date = cell.getDateCellValue();
+            val = date.getTime();
+        } else if (cellValue.getCellTypeEnum() == CellType.STRING) {
+            if (cellValue.getStringValue().trim().length() == 0) {
+                val = null;
+            } else {
+                val = cellValue.getStringValue().trim();
+            }
+
+        } else if (cellValue.getCellTypeEnum() == CellType.NUMERIC) {
+            val = cellValue.getNumberValue();
+
+        } else if (cellValue.getCellTypeEnum() == CellType.BOOLEAN) {
+            val = cellValue.getBooleanValue();
+        } else if (cell.getCellType() == Cell.CELL_TYPE_ERROR || cellValue.getCellTypeEnum() == CellType.ERROR) {
+            throw new Exception("Error Evaluating Cell");
+        } else {
+            val = null;
+        }
+
+        return val;
     }
 
 }

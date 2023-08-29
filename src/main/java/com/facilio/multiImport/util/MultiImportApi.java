@@ -759,38 +759,6 @@ public class MultiImportApi {
         return batchRecords;
     }
 
-    public static Object getValueFromCell(Cell cell, CellValue cellValue) throws Exception {
-
-        Object val = 0.0;
-
-        // Here we get CellValue after evaluating the formula So CellType FORMULA will never occur
-
-        if (cell.getCellType() == Cell.CELL_TYPE_BLANK || cellValue.getCellTypeEnum() == CellType.BLANK) {
-            val = null;
-        } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
-            CellStyle style = cell.getCellStyle();
-            Date date = cell.getDateCellValue();
-            val = date.getTime();
-        } else if (cellValue.getCellTypeEnum() == CellType.STRING) {
-            if (cellValue.getStringValue().trim().length() == 0) {
-                val = null;
-            } else {
-                val = cellValue.getStringValue().trim();
-            }
-
-        } else if (cellValue.getCellTypeEnum() == CellType.NUMERIC) {
-            val = cellValue.getNumberValue();
-
-        } else if (cellValue.getCellTypeEnum() == CellType.BOOLEAN) {
-            val = cellValue.getBooleanValue();
-        } else if (cell.getCellType() == Cell.CELL_TYPE_ERROR || cellValue.getCellTypeEnum() == CellType.ERROR) {
-            throw new Exception("Error Evaulating Cell");
-        } else {
-            val = null;
-        }
-
-        return val;
-    }
 
     public static List<Pair<Long, Map<String, Object>>> getErrorLessRecords(List<ImportRowContext> allRows) {
         List<Pair<Long, Map<String, Object>>> errorFreeRows = new ArrayList<>();
