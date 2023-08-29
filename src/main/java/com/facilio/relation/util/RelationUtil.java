@@ -17,7 +17,9 @@ import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationDataContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.collections.CollectionUtils;
@@ -411,22 +413,34 @@ public class RelationUtil {
                 || relationMapping.getRelationType() == RelationRequestContext.RelationType.MANY_TO_ONE.getIndex());
     }
 
-    public static List<Map<String, Object>> getCustomRelationRecordWithRelId(Long relationId) throws Exception {
-        RelationContext relationContext = RelationUtil.getRelation(relationId, Boolean.FALSE);
+    public static List<Long> getAllCustomRelationsForRecId(RelationMappingContext relationMapping, long recordId) throws Exception {
+        RelationContext relationContext = RelationUtil.getRelation(relationMapping.getRelationId(), Boolean.FALSE);
+        RelationMappingContext.Position reversePosition = relationMapping.getReversePosition();
+
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(relationContext.getRelationModuleId());
+
+        V3Config v3Config = ChainUtil.getV3Config(module.getName());
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
         List<FacilioField> relationFields = moduleBean.getAllFields(module.getName());
 
-        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(module.getTableName())
+        SelectRecordsBuilder<RelationDataContext> selectRecordBuilder = new SelectRecordsBuilder()
+                .module(module)
+                .beanClass(beanClass)
                 .select(relationFields)
-                .andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(relationContext.getRelationModuleId()), NumberOperators.EQUALS));
-        List<Map<String, Object>> props = selectRecordBuilder.get();
+                .andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(relationContext.getRelationModuleId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(reversePosition.getColumnName(), reversePosition.getFieldName(), String.valueOf(recordId), NumberOperators.EQUALS));
+
+        List<RelationDataContext> props = selectRecordBuilder.get();
 
         if (CollectionUtils.isNotEmpty(props)) {
-            return props;
+            List<Long> recordIds = new ArrayList<>();
+            for (RelationDataContext record : props) {
+                ModuleBaseWithCustomFields moduleBaseWithCustomFields = reversePosition.equals(RelationMappingContext.Position.LEFT) ? record.getRight() : record.getLeft();
+                recordIds.add(moduleBaseWithCustomFields.getId());
+            }
+            return recordIds;
         }
-        return new ArrayList<>();
+        return null;
     }
-
 }

@@ -1656,12 +1656,8 @@ public class V2ReportAction extends FacilioAction {
 
     private List<Long> getRelatedResourcesWithPosition(RelationMappingContext relMapCtx, Long resourceId) throws Exception {
         RelationMappingContext.Position position = relMapCtx.getReversePosition();
-        List<Map<String, Object>> relationDataContexts = RelationUtil.getCustomRelationRecordWithRelId(relMapCtx.getRelationId());
-        if (CollectionUtils.isNotEmpty(relationDataContexts)) {
-            List<Long> relResourceIds = relationDataContexts.stream().filter(m -> m.get(position.getFieldName()) == resourceId).map(m -> (Long) m.get(relMapCtx.getPositionEnum().getFieldName())).collect(Collectors.toList());
-            return relResourceIds;
-        }
-        return new ArrayList<>();
+        List<Long> relResourceIds = RelationUtil.getAllCustomRelationsForRecId(relMapCtx, resourceId);
+        return relResourceIds;
     }
 
     private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource,
