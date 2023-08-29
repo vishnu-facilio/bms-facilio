@@ -575,7 +575,7 @@ public class ServiceAppointmentUtil {
                         for(TripContext OngoingTrip : OngoingTrips){
                             OngoingTrip.setEndTime(DateTimeUtil.getCurrenTime());
                             Long duration = OngoingTrip.getEndTime() - OngoingTrip.getStartTime();
-                            OngoingTrip.setTripDuration(duration);
+                            OngoingTrip.setTripDuration(duration/1000);
                             if(location != null){
                                 if (location != null && location.getLat() != -1 && location.getLng() != -1) {
                                     if(location.getName() == null) {
@@ -729,12 +729,12 @@ public class ServiceAppointmentUtil {
 
         Map<String,Object> updateProps = new HashMap<>();
         updateProps.put(FacilioConstants.ContextNames.ENDTIME,endTime);
-        updateProps.put(FacilioConstants.ContextNames.DURATION,(endTime - ts.getStartTime()));
+        updateProps.put(FacilioConstants.ContextNames.DURATION,(endTime - ts.getStartTime())/1000);
 
         timeSheetBuilder.updateViaMap(updateProps);
     }
 
-    private static long getAppointmentDuration(long peopleId,long appointmentId) throws Exception {
+    public static long getAppointmentDuration(long peopleId,long appointmentId) throws Exception {
         long duration = 0;
         List<TimeSheetContext> closedTimeSheets = getClosedTimeSheets(peopleId,appointmentId);
         if(CollectionUtils.isNotEmpty(closedTimeSheets)){
@@ -841,6 +841,31 @@ public class ServiceAppointmentUtil {
         }
         return -1;
 
+    }
+    public static PriorityContext getPriority(String status) throws Exception
+    {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        SelectRecordsBuilder<PriorityContext> builder = new SelectRecordsBuilder<PriorityContext>()
+                .moduleName(FacilioConstants.Priority.PRIORITY)
+                .beanClass(PriorityContext.class)
+                .select(modBean.getAllFields(FacilioConstants.Priority.PRIORITY))
+                .andCondition(CriteriaAPI.getCondition("PRIORITY","priority",status,StringOperators.IS));
+
+        PriorityContext priority = builder.fetchFirst();
+        return priority;
+    }
+
+    public static TimeSheetStatusContext getTimeSheetStatus(String status) throws Exception
+    {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        SelectRecordsBuilder<TimeSheetStatusContext> builder = new SelectRecordsBuilder<TimeSheetStatusContext>()
+                .moduleName(FacilioConstants.TimeSheet.TIME_SHEET_STATUS)
+                .beanClass(TimeSheetStatusContext.class)
+                .select(modBean.getAllFields(FacilioConstants.TimeSheet.TIME_SHEET_STATUS))
+                .andCondition(CriteriaAPI.getCondition("STATUS","status",status,StringOperators.IS));
+
+        TimeSheetStatusContext timeSheetStatus = builder.fetchFirst();
+        return timeSheetStatus;
     }
 
 }

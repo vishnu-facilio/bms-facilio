@@ -5,9 +5,8 @@ import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
-
-@Getter @Setter
-public class ServiceAppointmentTicketStatusContext extends V3Context {
+@Getter@Setter
+public class TripStatusContext extends V3Context {
     private String status;
     private String displayName;
     private String color;
@@ -66,6 +65,5 @@ public class ServiceAppointmentTicketStatusContext extends V3Context {
             return null;
         }
     }
-
 
 }

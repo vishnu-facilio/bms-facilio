@@ -42,7 +42,7 @@ public class SOAddOnCommandV3 extends FacilioCommand {
                 throw new FSMException(FSMErrorCode.SO_NAME_MANDATORY);
             }
 
-            if(order.getPriority() < 0){
+            if(order.getPriority() == null){
                 throw new FSMException(FSMErrorCode.SO_PRIORITY_MANDATORY);
             }
         }

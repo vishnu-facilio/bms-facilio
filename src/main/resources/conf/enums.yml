@@ -506,8 +506,6 @@ enums:
   - name: ServiceOrderCategory
     enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderCategory
 
-  - name: ServiceOrderPriority
-    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderPriority
 
   - name: ServiceOrderSourceType
     enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderSourceType

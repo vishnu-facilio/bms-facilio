@@ -1,9 +1,11 @@
 package com.facilio.fsm.commands;
 
+import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.ItemTransactionRemainingQuantityRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.PurchasedItemsQuantityRollUpCommandV3;
 import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.commands.actuals.GetServiceOrderItemFromReservation;
 import com.facilio.fsm.commands.actuals.UpdateServiceInvReservationCommand;
 import com.facilio.fsm.commands.plans.ReserveServiceOrderPlannedItemsCommand;
@@ -13,9 +15,7 @@ import com.facilio.fsm.commands.serviceAppointment.*;
 import com.facilio.fsm.commands.serviceOrders.*;
 import com.facilio.fsm.commands.serviceTasks.*;
 import com.facilio.fsm.commands.timeOff.GenerateTimeOffCodeCommand;
-import com.facilio.fsm.commands.timeSheet.GenerateTimeSheetCodeCommand;
-import com.facilio.fsm.commands.timeSheet.CheckForExistingTimeSheetsCommand;
-import com.facilio.fsm.commands.timeSheet.StopTimeSheetCommand;
+import com.facilio.fsm.commands.timeSheet.*;
 import com.facilio.fsm.commands.trip.CheckForExistingTripsCommand;
 import com.facilio.fsm.commands.trip.GenerateTripCodeCommand;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
@@ -108,6 +108,8 @@ public class FsmTransactionChainFactoryV3 {
 
     public static FacilioChain getServiceAppointmentBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new CheckRecordLockCommand());
+        c.addCommand(new ValidateSAUpdateCommand());
         c.addCommand(new RollUpServiceAppointmentFieldsCommand());
         c.addCommand(new ValidateSAMismatch());
         return c;
@@ -179,14 +181,38 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c= getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckForExistingTimeSheetsCommand());
+        c.addCommand(new ValidateTimeSheetCommand());
         c.addCommand(new GenerateTimeSheetCodeCommand());
+//        c.addCommand(new UpdateSAandTasksOnTimeSheetCreateCommand());
         return c;
     }
 
-    public static FacilioChain getTimeSheetAferCreateChain() {
+    public static FacilioChain getTimeSheetAfterCreateChain() {
         FacilioChain c= getDefaultChain();
+        c.addCommand(new UpdateSAandTasksOnTimeSheetCreateCommand());
         c.addCommand(new ConstructAddCustomActivityCommandV3());
+        return c;
+    }
+
+    public static FacilioChain getTimeSheetAfterUpdateChain() {
+        FacilioChain c= getDefaultChain();
+        c.addCommand(new UpdateSAandTasksOnTimeSheetCreateCommand());
+        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
+        return c;
+    }
+    public static FacilioChain getTimeSheetAfterTransactionChain(){
+        FacilioChain c = getDefaultChain();
+//         c.addCommand(new RollUpSACommand());
+//        c.addCommand(new UpdateSAandTasksOnTimeSheetCreateCommand());
+        c.addCommand(new AddActivitiesCommand(FacilioConstants.TimeSheet.TIME_SHEET));
+        return c;
+    }
+
+    public static FacilioChain getTimeSheetBeforeUpdateChain() {
+        FacilioChain c= getDefaultChain();
+        c.addCommand(new CheckRecordLockForTimeSheetCommand());
         c.addCommand(new CheckForExistingTimeSheetsCommand());
+        c.addCommand(new ValidateTimeSheetCommand());
         return c;
     }
 

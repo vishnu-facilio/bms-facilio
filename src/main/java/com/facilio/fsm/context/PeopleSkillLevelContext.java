@@ -27,22 +27,24 @@ public class PeopleSkillLevelContext extends V3Context {
 
     private Level level;
     public static enum Level implements FacilioIntEnum {
-        EXPERT,
-        PROFICIENT,
-        NOVICE,
-        TRAINEE;
+        EXPERT("Expert"),
+        PROFICIENT("Proficient"),
+        NOVICE("Novice"),
+        TRAINEE("Trainee");
 
-        private Level() {
+        String name;
+        Level(String name) {
+            this.name = name;
         }
 
         public static Level valueOf(int value) {
             return value > 0 && value <= values().length ? values()[value - 1] : null;
         }
-
+        @Override
         public Integer getIndex() {
             return this.ordinal() + 1;
         }
-
+        @Override
         public String getValue() {
             return this.name();
         }

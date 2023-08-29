@@ -32,6 +32,8 @@ public class FetchServiceAppointmentSupplementsCommand extends FacilioCommand {
             SupplementRecord fieldAgent = (SupplementRecord) fieldsAsMap.get("fieldAgent");
             SupplementRecord territory = (SupplementRecord) fieldsAsMap.get("territory");
             SupplementRecord status = (SupplementRecord) fieldsAsMap.get("status");
+            SupplementRecord priority = (SupplementRecord) fieldsAsMap.get("priority");
+
 
             MultiLookupMeta serviceTasks = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("serviceTasks"));
 
@@ -45,6 +47,7 @@ public class FetchServiceAppointmentSupplementsCommand extends FacilioCommand {
             fetchLookupsList.add(fieldAgent);
             fetchLookupsList.add(territory);
             fetchLookupsList.add(status);
+            fetchLookupsList.add(priority);
 
             context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
 

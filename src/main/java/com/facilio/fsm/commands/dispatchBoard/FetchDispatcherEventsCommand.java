@@ -123,7 +123,7 @@ public class FetchDispatcherEventsCommand extends FacilioCommand {
                         dispatcherSAEvent.setStartTime(saEvent.getScheduledStartTime());
                         dispatcherSAEvent.setEndTime(saEvent.getScheduledEndTime());
                         ServiceAppointmentTicketStatusContext saStatus = saEvent.getStatus();
-                        dispatcherSAEvent.setBackgroundColor(saStatus.getColor());
+                        dispatcherSAEvent.setBackgroundColor(saStatus.getBackgroundColor());
                         pplEvents.add(dispatcherSAEvent);
                     }
                 }

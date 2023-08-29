@@ -530,6 +530,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.FlaggedEventActionModuleConfig
 
   #FSM Modules
+  - com.facilio.fsm.signup.PriorityModule
   - com.facilio.fsm.signup.ServiceSkillModule
   - com.facilio.fsm.signup.WorkTypeModule
   - com.facilio.fsm.signup.WorkTypeLineItemsModule
@@ -546,11 +547,13 @@ classes:
   - com.facilio.fsm.signup.ServiceOrderPlannedToolsModule
   - com.facilio.fsm.signup.ServiceOrderPlannedServicesModule
   - com.facilio.fsm.signup.ServiceInventoryReservationModule
+  - com.facilio.fsm.signup.TimeSheetStatus
   - com.facilio.fsm.signup.TimeSheetModule
   - com.facilio.fsm.signup.ServiceOrderItemsModule
   - com.facilio.fsm.signup.ServiceOrderToolsModule
   - com.facilio.fsm.signup.ServiceOrderServicesModule
   - com.facilio.fsm.signup.ServiceOrderCostModule
+  - com.facilio.fsm.signup.TripStatus
 
   #Adding Location History Module
   - com.facilio.fsm.signup.LocationHistoryModule

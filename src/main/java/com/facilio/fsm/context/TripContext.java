@@ -6,6 +6,8 @@ import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.File;
+
 @Getter @Setter
 public class TripContext extends V3Context {
 
@@ -19,5 +21,8 @@ public class TripContext extends V3Context {
     private long endTime;
     private long tripDuration;
     private Double tripDistance;
+    private long estimatedDuration;
+    private Double estimatedDistance;
+    private File journey;
 
 }

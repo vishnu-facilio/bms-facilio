@@ -30,11 +30,13 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         FacilioModule serviceAppointmentTicketStatus = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS,"Service Appointment Ticket Status","ServiceAppointment_TicketStatus", FacilioModule.ModuleType.PICK_LIST,false);
         List<FacilioField> fields = new ArrayList<>();
 
-        fields.add(new StringField(serviceAppointmentTicketStatus,"status","Status",FacilioField.FieldDisplayType.TEXTBOX,"STATUS", FieldType.STRING,true,false,true,true));
+        fields.add(new StringField(serviceAppointmentTicketStatus,"status","Status",FacilioField.FieldDisplayType.TEXTBOX,"STATUS", FieldType.STRING,true,false,true,false));
 
-        fields.add(new StringField(serviceAppointmentTicketStatus,"displayName","Display Name",FacilioField.FieldDisplayType.TEXTBOX,"DISPLAY_NAME",FieldType.STRING,false,false,true,false));
+        fields.add(new StringField(serviceAppointmentTicketStatus,"displayName","Display Name",FacilioField.FieldDisplayType.TEXTBOX,"DISPLAY_NAME",FieldType.STRING,false,false,true,true));
 
-        fields.add(new StringField(serviceAppointmentTicketStatus,"color","Background Color",FacilioField.FieldDisplayType.TEXTBOX,"COLOR",FieldType.STRING,true,false,true,false));
+        fields.add(new StringField(serviceAppointmentTicketStatus,"color","Color",FacilioField.FieldDisplayType.TEXTBOX,"COLOR",FieldType.STRING,true,false,true,false));
+
+        fields.add(new StringField(serviceAppointmentTicketStatus,"backgroundColor","Background Color",FacilioField.FieldDisplayType.TEXTBOX,"BACKGROUND_COLOR",FieldType.STRING,true,false,true,false));
 
         fields.add(new StringField(serviceAppointmentTicketStatus,"textColor","Text Color",FacilioField.FieldDisplayType.TEXTBOX,"TEXT_COLOR",FieldType.STRING,false,false,true,false));
 
@@ -72,7 +74,8 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
 
         scheduledState.setStatus(FacilioConstants.ServiceAppointment.SCHEDULED);
         scheduledState.setDisplayName("Scheduled");
-        scheduledState.setColor("#51049F");
+        scheduledState.setColor("default");
+        scheduledState.setBackgroundColor("#51049F");
         scheduledState.setTextColor("#ffffff");
         scheduledState.setTypeCode(1);
         scheduledState.setRecordLocked(false);
@@ -83,7 +86,8 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
 
         dispatchedState.setStatus(FacilioConstants.ServiceAppointment.DISPATCHED);
         dispatchedState.setDisplayName("Dispatched");
-        dispatchedState.setColor("#C70566");
+        dispatchedState.setColor("default");
+        dispatchedState.setBackgroundColor("#C70566");
         dispatchedState.setTextColor("#ffffff");
         dispatchedState.setTypeCode(1);
         dispatchedState.setRecordLocked(false);
@@ -93,7 +97,8 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         ServiceAppointmentTicketStatusContext enRouteState = new ServiceAppointmentTicketStatusContext();
         enRouteState.setStatus(FacilioConstants.ServiceAppointment.EN_ROUTE);
         enRouteState.setDisplayName("En Route");
-        enRouteState.setColor("#0492AE");
+        enRouteState.setColor("warning");
+        enRouteState.setBackgroundColor("#0492AE");
         enRouteState.setTextColor("#ffffff");
         enRouteState.setTypeCode(1);
         enRouteState.setRecordLocked(false);
@@ -105,6 +110,7 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         inProgressState.setStatus(FacilioConstants.ServiceAppointment.IN_PROGRESS);
         inProgressState.setDisplayName("In Progress");
         inProgressState.setColor("#F7BA02");
+        inProgressState.setBackgroundColor("information");
         inProgressState.setTextColor("#000000");
         inProgressState.setTypeCode(2);
         inProgressState.setRecordLocked(false);
@@ -115,7 +121,8 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
 
         completedState.setStatus(FacilioConstants.ServiceAppointment.COMPLETED);
         completedState.setDisplayName("Completed");
-        completedState.setColor("#058545");
+        completedState.setColor("success");
+        completedState.setBackgroundColor("#058545");
         completedState.setTextColor("#ffffff");
         completedState.setTypeCode(3);
         completedState.setRecordLocked(true);
@@ -126,7 +133,8 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
 
         cancelledState.setStatus(FacilioConstants.ServiceAppointment.CANCELLED);
         cancelledState.setDisplayName("Cancelled");
-        cancelledState.setColor("#D12806");
+        cancelledState.setColor("danger");
+        cancelledState.setBackgroundColor("#D12806");
         cancelledState.setTextColor("#ffffff");
         cancelledState.setTypeCode(3);
         cancelledState.setRecordLocked(true);

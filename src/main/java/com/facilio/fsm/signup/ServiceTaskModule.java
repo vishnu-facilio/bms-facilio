@@ -103,7 +103,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         bean.addField(skillsMultiLookup);
     }
 
-    private static void addSystemButtons() throws Exception {
+    public static void addSystemButtons() throws Exception {
         SystemButtonRuleContext startWork = new SystemButtonRuleContext();
         startWork.setName("Start Work");
         startWork.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());

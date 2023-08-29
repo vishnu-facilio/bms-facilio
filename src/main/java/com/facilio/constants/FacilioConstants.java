@@ -4698,7 +4698,7 @@ public class FacilioConstants {
 		public static final String SCHEDULE = "schedule";
 		public static final String DISPATCH = "dispatch";
 		public static final String COMPLETE = "complete";
-		public static final String COMPLETE_OWN = "complete";
+		public static final String COMPLETE_OWN = "completeOwn";
 		public static final String CANCEL = "cancel";
 		public static final String PAUSE = "pause";
 		public static final String RESUME = "resume";
@@ -4707,7 +4707,7 @@ public class FacilioConstants {
 		public static final String SCHEDULED_END_TIME = "scheduledEndTime";
 		public static final String START_TRIP = "startTrip";
 		public static final String START_WORK = "startWork";
-		public static final String START_WORK_OWN = "startWork";
+		public static final String START_WORK_OWN = "startWorkOwn";
 		public static final String END_TRIP = "endTrip";
 		public static final String ACTUAL_START_TIME = "actualStartTime";
 		public static final String SERVICE_APPOINTMENT_STATUS_ACTIONS = "serviceAppointmentStatusActions";
@@ -4744,6 +4744,10 @@ public class FacilioConstants {
 		public static final String TIME_SHEET_NOTES="timeSheetnotes";
 		public static final String TIME_SHEET_ATTACHMENTS="timeSheetattachments";
 		public static final String STOP_TIME_SHEET="stopTimeSheet";
+		public static final String TIME_SHEET_STATUS = "timeSheetStatus";
+		public static final String IN_PROGRESS = "inProgress";
+		public static final String COMPLETED = "completed";
+
 	}
 	public static class Trip{
 		public static final String TRIP = "trip";
@@ -4753,8 +4757,14 @@ public class FacilioConstants {
 		public static final String TRIP_ATTACHMENTS = "tripattachments";
 		public static final String START_LOCATION="startLocation";
 		public static final String END_LOCATION="endLocation";
+		public static final String TRIP_STATUS = "tripStatus";
+		public static final String IN_PROGRESS = "inProgress";
+		public static final String COMPLETED = "completed";
 	}
-	public static class Code{
-		public static final String SA = "SA";
+	public static class Priority{
+		public static final String PRIORITY = "priority";
+		public static final String LOW = "low";
+		public static final String MEDIUM = "medium";
+		public static final String HIGH = "high";
 	}
 }

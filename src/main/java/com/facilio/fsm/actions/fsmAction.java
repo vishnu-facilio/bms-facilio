@@ -175,9 +175,19 @@ public class fsmAction extends V3Action {
                 startSAChain.execute(context);
                 successMsg.put("message","Service Appointment Started Successfully");
                 break;
+            case FacilioConstants.ServiceAppointment.START_WORK_OWN:
+                FacilioChain startWorkSAChain = FsmTransactionChainFactoryV3.startSAChain();
+                startWorkSAChain.execute(context);
+                successMsg.put("message","Service Appointment Started Successfully");
+                break;
             case FacilioConstants.ServiceAppointment.COMPLETE:
                 FacilioChain completeSAChain = FsmTransactionChainFactoryV3.completeSAChain();
                 completeSAChain.execute(context);
+                successMsg.put("message","Service Appointment Completed Successfully");
+                break;
+            case FacilioConstants.ServiceAppointment.COMPLETE_OWN:
+                FacilioChain completeWorkSAChain = FsmTransactionChainFactoryV3.completeSAChain();
+                completeWorkSAChain.execute(context);
                 successMsg.put("message","Service Appointment Completed Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.CANCEL:

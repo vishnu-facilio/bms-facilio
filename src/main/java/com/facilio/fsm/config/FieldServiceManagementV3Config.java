@@ -11,12 +11,14 @@ import com.facilio.fsm.commands.*;
 import com.facilio.fsm.commands.actuals.*;
 import com.facilio.fsm.commands.people.*;
 import com.facilio.fsm.commands.plans.*;
+import com.facilio.fsm.commands.serviceAppointment.CheckRecordLockCommand;
 import com.facilio.fsm.commands.serviceAppointment.FetchServiceAppointmentSupplementsCommand;
 import com.facilio.fsm.commands.serviceOrders.AddOrUpdateServiceOrderCostCommand;
 import com.facilio.fsm.commands.serviceOrders.LoadSupplementsForSOCommand;
 import com.facilio.fsm.commands.serviceOrders.SetServiceTaskCommandV3;
 import com.facilio.fsm.commands.serviceTasks.LoadTaskPlansCommandV3;
 import com.facilio.fsm.commands.timeOff.FetchTimeOffSupplementsCommand;
+import com.facilio.fsm.commands.timeSheet.CheckRecordLockForTimeSheetCommand;
 import com.facilio.fsm.commands.timeSheet.FetchTimeSheetSupplementsCommand;
 import com.facilio.fsm.commands.trip.FetchTripSupplementsCommand;
 import com.facilio.fsm.context.*;
@@ -263,6 +265,7 @@ public class FieldServiceManagementV3Config {
                 .beforeFetch(new FetchServiceAppointmentSupplementsCommand())
                 .pickList()
                 .delete()
+                .beforeDelete(new CheckRecordLockCommand())
                 .build();
     }
     @Module(FacilioConstants.PeopleSkillLevel.PEOPLE_SKILL_LEVEL)
@@ -281,17 +284,19 @@ public class FieldServiceManagementV3Config {
         return () -> new V3Config(TimeSheetContext.class,new ModuleCustomFieldCount30_BS2())
                 .create()
                 .beforeSave(FsmTransactionChainFactoryV3.getTimeSheetBeforeCreateChain())
-                .afterSave(new ConstructAddCustomActivityCommandV3())
-                .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeSheet.TIME_SHEET))
+                .afterSave(FsmTransactionChainFactoryV3.getTimeSheetAfterCreateChain())
+                .afterTransaction(FsmTransactionChainFactoryV3.getTimeSheetAfterTransactionChain())
                 .update()
-                .afterSave(new ConstructUpdateCustomActivityCommandV3())
-                .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeSheet.TIME_SHEET))
+                .beforeSave(FsmTransactionChainFactoryV3.getTimeSheetBeforeUpdateChain())
+                .afterSave(FsmTransactionChainFactoryV3.getTimeSheetAfterUpdateChain())
+                .afterTransaction(FsmTransactionChainFactoryV3.getTimeSheetAfterTransactionChain())
                 .list()
                 .beforeFetch(new FetchTimeSheetSupplementsCommand())
                 .summary()
                 .beforeFetch(new FetchTimeSheetSupplementsCommand())
                 .pickList()
                 .delete()
+                .beforeDelete(new CheckRecordLockForTimeSheetCommand())
                 .build();
     }
     @Module(FacilioConstants.Trip.TRIP)
@@ -315,6 +320,17 @@ public class FieldServiceManagementV3Config {
     @Module(FacilioConstants.Trip.TRIP_LOCATION_HISTORY)
     public static Supplier<V3Config> getTripLocationHistory(){
         return () -> new V3Config(TripContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.Priority.PRIORITY)
+    public static Supplier<V3Config> getPriority(){
+        return () -> new V3Config(PriorityContext.class,null)
                 .create()
                 .update()
                 .list()

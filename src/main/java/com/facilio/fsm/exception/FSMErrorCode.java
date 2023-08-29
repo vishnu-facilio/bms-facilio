@@ -29,10 +29,16 @@ public enum FSMErrorCode {
     SA_TRIP_ALREADY_RUNNING(Severity.ERROR, "Trip conflict", "You cannot start a trip while another is already running."),
     SA_SCHEDULED_TIME_MISMATCH(Severity.ERROR, "Scheduled time range is invalid", "The service appointment should be scheduled between valid time range."),
     SA_DETAILS_REQUIED(Severity.ERROR, "Mandatory field missing", "Please provide all the required details."),
-
+    SA_RECORD_LOCKED(Severity.ERROR, "Record Locked", "You cannot edit or delete since the record is locked."),
+    SA_FIELD_UPDATE_PREVENT(Severity.ERROR,"Not Permitted","You are not permitted to edit these details."),
 
     // Time Sheet error codes
     TIME_SHEET_NOT_ENOUGH_DETAILS(Severity.ERROR, "Mandatory field missing", "Not enough details to create a timesheet"),
+    TIME_SHEET_SA_MANDATORY(Severity.ERROR, "Service Appointment is required", "Please select Service Appointment to proceed with Time Sheet creation"),
+    TIME_SHEET_RECORD_LOCKED(Severity.ERROR, "Record Locked", "You cannot edit or delete since the record is locked."),
+    TIME_SHEET_TIME_MISMATCH(Severity.ERROR, "Time range is invalid", "Time Sheet should have valid time range."),
+    TIME_SHEET_UPDATE_PREVENT(Severity.ERROR, "Not Permitted", "You are not permitted to edit these details."),
+
 
     // Trip error codes
     TRIP_NOT_ENOUGH_DETAILS(Severity.ERROR, "Mandatory field missing", "Not enough details to create a trip"),

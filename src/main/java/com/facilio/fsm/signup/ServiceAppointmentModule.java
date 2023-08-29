@@ -6,9 +6,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -24,6 +22,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.fsm.context.PriorityContext;
 import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
 import com.facilio.fsm.context.ServiceOrderContext;
@@ -159,8 +158,9 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         FacilioField resolutionDueDuration = FieldFactory.getDefaultField("resolutionDueDuration","Resolution Due Duration","RESOLUTION_DUE_DURATION", FieldType.NUMBER);
         serviceAppointmentFields.add(resolutionDueDuration);
 
-        SystemEnumField priority = FieldFactory.getDefaultField("priority","Priority","PRIORITY",FieldType.SYSTEM_ENUM);
-        priority.setEnumName("ServiceOrderPriority");
+        LookupField priority = FieldFactory.getDefaultField("priority","Priority","PRIORITY",FieldType.LOOKUP);
+        priority.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        priority.setLookupModule(moduleBean.getModule(FacilioConstants.Priority.PRIORITY));
         serviceAppointmentFields.add(priority);
 
         LookupField territory = FieldFactory.getDefaultField("territory","Territory","TERRITORY_ID",FieldType.LOOKUP);
@@ -194,6 +194,11 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         vendor.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         vendor.setLookupModule(moduleBean.getModule("vendors"));
         serviceAppointmentFields.add(vendor);
+
+        LookupField tenant = FieldFactory.getDefaultField("tenant","Tenant","TENANT_ID",FieldType.LOOKUP);
+        tenant.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        tenant.setLookupModule(moduleBean.getModule("tenant"));
+        serviceAppointmentFields.add(tenant);
 
         LookupField space = FieldFactory.getDefaultField("space","Space","SPACE_ID",FieldType.LOOKUP);
         space.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
@@ -469,11 +474,11 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> saFields = modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         Map<String,FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
-        Integer priority =ServiceOrderContext.ServiceOrderPriority.HIGH.getIndex();
+        PriorityContext priority= ServiceAppointmentUtil.getPriority(FacilioConstants.Priority.HIGH);
 
         Criteria criteria=new Criteria();
         criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.SCHEDULED));
-        criteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.PRIORITY), String.valueOf(priority),NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.PRIORITY), String.valueOf(priority.getId()),NumberOperators.EQUALS));
 
         FacilioView allView = new FacilioView();
         allView.setName("highPriorityScheduledAppointments");
@@ -1318,6 +1323,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             Criteria startWorkCriteria = new Criteria();
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(dispatchedStatus.getId()), PickListOperators.IS));
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), CommonOperators.IS_NOT_EMPTY));
+            startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.ISN_T));
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
             startWork.setCriteria(startWorkCriteria);
@@ -1353,6 +1359,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             Criteria completeCriteria = new Criteria();
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(inProgressStatus.getId()), PickListOperators.IS));
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), CommonOperators.IS_NOT_EMPTY));
+            completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.ISN_T));
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.ACTUAL_START_TIME), CommonOperators.IS_NOT_EMPTY));

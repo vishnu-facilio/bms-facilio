@@ -26,7 +26,7 @@ public class ServiceOrderContext extends V3Context {
     private ServiceOrderMaintenanceType maintenanceType;
     private List<ServiceTaskContext> serviceTask;
     private ServiceOrderCategory category;
-    private ServiceOrderPriority priority;
+    private PriorityContext priority;
     private SpaceContext space;
     private V3AssetContext asset;
     private ServiceOrderTicketStatusContext status;
@@ -220,50 +220,6 @@ public class ServiceOrderContext extends V3Context {
         }
     }
 
-    public int getPriority() {
-        if (priority != null) {
-            return priority.getIndex();
-        }
-        return -1;
-    }
-    public void setPriority(int priority) {
-        this.priority = ServiceOrderPriority.valueOf(priority);
-    }
-    public ServiceOrderPriority getServiceOrderPriorityEnum() {
-        return priority;
-    }
-    public void setPriority(ServiceOrderPriority priorityType) {
-        this.priority = priorityType;
-    }
-
-    public static enum ServiceOrderPriority implements FacilioIntEnum {
-        LOW("Low"),
-        MEDIUM("Medium"),
-        HIGH("High");
-
-        private String name;
-
-        ServiceOrderPriority(String name) {
-            this.name = name;
-        }
-
-        public static ServiceOrderContext.ServiceOrderPriority valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
-
-        @Override
-        public Integer getIndex() {
-            return ordinal() + 1;
-        }
-
-        @Override
-        public String getValue() {
-            return name;
-        }
-    }
 
     public int getSourceType() {
         if (sourceType != null) {

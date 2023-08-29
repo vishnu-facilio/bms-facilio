@@ -241,8 +241,9 @@ public class ServiceOrderModule extends BaseModuleConfig {
         maintenanceType.setEnumName("ServiceOrderMaintenanceType");
         fields.add(maintenanceType);
 
-        SystemEnumField priority = FieldFactory.getDefaultField("priority","Priority","PRIORITY",FieldType.SYSTEM_ENUM);
-        priority.setEnumName("ServiceOrderPriority");
+        LookupField priority = FieldFactory.getDefaultField("priority","Priority","PRIORITY",FieldType.LOOKUP);
+        priority.setLookupModule(bean.getModule(FacilioConstants.Priority.PRIORITY));
+        priority.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         fields.add(priority);
 
         LookupField space = FieldFactory.getDefaultField("space","Space","SPACE_ID",FieldType.LOOKUP);

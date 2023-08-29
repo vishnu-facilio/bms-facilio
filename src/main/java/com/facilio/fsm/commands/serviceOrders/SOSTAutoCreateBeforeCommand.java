@@ -16,9 +16,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,10 +41,13 @@ public class SOSTAutoCreateBeforeCommand extends FacilioCommand {
                 ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,task.getServiceOrder().getId());
                 if(serviceOrderInfo.isAutoCreateSa()){
                     //fetching all the service appointments which are mapped to the particular service order
-                    SelectRecordsBuilder<ServiceAppointmentContext> selectAppointmentsBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>();
+                    List<LookupField> fetchSupplementsList = Arrays.asList((LookupField) fieldMap.get("status"));
+
+                            SelectRecordsBuilder<ServiceAppointmentContext> selectAppointmentsBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>();
                     selectAppointmentsBuilder.select(serviceAppointmentFields)
                             .module(serviceAppointmentModule)
                             .beanClass(ServiceAppointmentContext.class)
+                            .fetchSupplements(fetchSupplementsList)
                             .andCondition(CriteriaAPI.getCondition(fieldMap.get("serviceOrder"),String.valueOf(serviceOrderInfo.getId()), StringOperators.IS));
                     ServiceAppointmentContext selectAppointments = selectAppointmentsBuilder.fetchFirst();
                     if(selectAppointments != null){

@@ -18,4 +18,5 @@ public class TimeSheetContext extends V3Context {
     private ServiceAppointmentContext serviceAppointment;
     private List<TimeSheetTaskContext> serviceTasks;
     private ServiceOrderContext serviceOrder;
+    private TimeSheetStatusContext status;
 }

@@ -41,7 +41,7 @@ public class TripModule extends BaseModuleConfig {
             addModuleChain.execute();
             addActivityModuleForTrip();
             SignupUtil.addNotesAndAttachmentModule(trip);
-            addStateFlow();
+//            addStateFlow();
         }catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -91,6 +91,13 @@ public class TripModule extends BaseModuleConfig {
 
         fields.add(FieldFactory.getDefaultField("tripDistance","Trip Distance","TRIP_DISTANCE",FieldType.DECIMAL));
 
+        NumberField estimatedDuration = FieldFactory.getDefaultField("estimatedDuration", "Estimated Duration", "ESTIMATED_DURATION", FieldType.NUMBER);
+        fields.add(estimatedDuration);
+
+        fields.add(FieldFactory.getDefaultField("estimatedDistance","Estimated Distance","ESTIMATED_DISTANCE",FieldType.DECIMAL));
+
+        FileField journey = FieldFactory.getDefaultField("journey","Journey","JOURNEY_ID",FieldType.FILE);
+        fields.add(journey);
 
         LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER_ID",FieldType.LOOKUP);
         serviceOrder.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER));
@@ -114,6 +121,13 @@ public class TripModule extends BaseModuleConfig {
         NumberField approvalFlowIdField = FieldFactory.getDefaultField("approvalFlowId", "Approval Flow Id", "APPROVAL_FLOW_ID", FieldType.NUMBER);
         approvalFlowIdField.setDefault(true);
         fields.add(approvalFlowIdField);
+
+        LookupField status = FieldFactory.getDefaultField("status","Trip Status","STATUS",FieldType.LOOKUP);
+        status.setRequired(true);
+        status.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        status.setLookupModule(modBean.getModule(FacilioConstants.Trip.TRIP_STATUS));
+        fields.add(status);
+
 
         module.setFields(fields);
         return module;
@@ -309,70 +323,70 @@ public class TripModule extends BaseModuleConfig {
         return FieldUtil.getAsJSON(widgetGroup);
     }
 
-    private void addStateFlow() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule tripModule = modBean.getModule(FacilioConstants.Trip.TRIP);
+//    private void addStateFlow() throws Exception {
+//        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//        FacilioModule tripModule = modBean.getModule(FacilioConstants.Trip.TRIP);
+//
+//
+//        FacilioStatus inProgressStatus = new FacilioStatus();
+//        inProgressStatus.setStatus("inProgress");
+//        inProgressStatus.setDisplayName("In Progress");
+//        inProgressStatus.setTypeCode(1);
+//        TicketAPI.addStatus(inProgressStatus, tripModule);
+//
+//        FacilioStatus completedStatus = new FacilioStatus();
+//        completedStatus.setStatus("completed");
+//        completedStatus.setDisplayName("Completed");
+//        completedStatus.setTypeCode(2);
+//        completedStatus.setRecordLocked(true);
+//        TicketAPI.addStatus(completedStatus, tripModule);
+//
+//        StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
+//        stateFlowRuleContext.setName("Default Stateflow");
+//        stateFlowRuleContext.setModuleId(tripModule.getModuleId());
+//        stateFlowRuleContext.setModule(tripModule);
+//        stateFlowRuleContext.setActivityType(EventType.STATE_TRANSITION);
+//        stateFlowRuleContext.setExecutionOrder(1);
+//        stateFlowRuleContext.setStatus(true);
+//        stateFlowRuleContext.setDefaltStateFlow(true);
+//        stateFlowRuleContext.setDefaultStateId(inProgressStatus.getId());
+//        stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
+//        WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
+//
+//        Criteria completionCriteria = new Criteria();
+//        completionCriteria.addAndCondition(CriteriaAPI.getCondition("END_TIME", "endTime", null, CommonOperators.IS_NOT_EMPTY));
+//
+//        addStateflowTransitionContext(tripModule, stateFlowRuleContext, "Complete Inspection", inProgressStatus,completedStatus, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,completionCriteria,null);
+//    }
 
-
-        FacilioStatus inProgressStatus = new FacilioStatus();
-        inProgressStatus.setStatus("inProgress");
-        inProgressStatus.setDisplayName("In Progress");
-        inProgressStatus.setTypeCode(1);
-        TicketAPI.addStatus(inProgressStatus, tripModule);
-
-        FacilioStatus completedStatus = new FacilioStatus();
-        completedStatus.setStatus("completed");
-        completedStatus.setDisplayName("Completed");
-        completedStatus.setTypeCode(2);
-        completedStatus.setRecordLocked(true);
-        TicketAPI.addStatus(completedStatus, tripModule);
-
-        StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
-        stateFlowRuleContext.setName("Default Stateflow");
-        stateFlowRuleContext.setModuleId(tripModule.getModuleId());
-        stateFlowRuleContext.setModule(tripModule);
-        stateFlowRuleContext.setActivityType(EventType.STATE_TRANSITION);
-        stateFlowRuleContext.setExecutionOrder(1);
-        stateFlowRuleContext.setStatus(true);
-        stateFlowRuleContext.setDefaltStateFlow(true);
-        stateFlowRuleContext.setDefaultStateId(inProgressStatus.getId());
-        stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
-        WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
-
-        Criteria completionCriteria = new Criteria();
-        completionCriteria.addAndCondition(CriteriaAPI.getCondition("END_TIME", "endTime", null, CommonOperators.IS_NOT_EMPTY));
-
-        addStateflowTransitionContext(tripModule, stateFlowRuleContext, "Complete Inspection", inProgressStatus,completedStatus, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,completionCriteria,null);
-    }
-
-    private StateflowTransitionContext addStateflowTransitionContext(FacilioModule module, StateFlowRuleContext parentStateFlow, String name, FacilioStatus fromStatus, FacilioStatus toStatus, AbstractStateTransitionRuleContext.TransitionType transitionType, Criteria criteria, List<ActionContext> actions) throws Exception {
-
-        StateflowTransitionContext stateFlowTransitionContext = new StateflowTransitionContext();
-        stateFlowTransitionContext.setName(name);
-        stateFlowTransitionContext.setModule(module);
-        stateFlowTransitionContext.setModuleId(module.getModuleId());
-        stateFlowTransitionContext.setActivityType(EventType.STATE_TRANSITION);
-        stateFlowTransitionContext.setExecutionOrder(1);
-        stateFlowTransitionContext.setButtonType(1);
-        stateFlowTransitionContext.setFromStateId(fromStatus.getId());
-        stateFlowTransitionContext.setToStateId(toStatus.getId());
-        stateFlowTransitionContext.setRuleType(WorkflowRuleContext.RuleType.STATE_RULE);
-        stateFlowTransitionContext.setType(transitionType);
-        stateFlowTransitionContext.setStateFlowId(parentStateFlow.getId());
-        stateFlowTransitionContext.setCriteria(criteria);
-
-        WorkflowRuleAPI.addWorkflowRule(stateFlowTransitionContext);
-
-        if (actions != null && !actions.isEmpty()) {
-            actions = ActionAPI.addActions(actions, stateFlowTransitionContext);
-            if(stateFlowTransitionContext != null) {
-                ActionAPI.addWorkflowRuleActionRel(stateFlowTransitionContext.getId(), actions);
-                stateFlowTransitionContext.setActions(actions);
-            }
-        }
-
-        return stateFlowTransitionContext;
-    }
+//    private StateflowTransitionContext addStateflowTransitionContext(FacilioModule module, StateFlowRuleContext parentStateFlow, String name, FacilioStatus fromStatus, FacilioStatus toStatus, AbstractStateTransitionRuleContext.TransitionType transitionType, Criteria criteria, List<ActionContext> actions) throws Exception {
+//
+//        StateflowTransitionContext stateFlowTransitionContext = new StateflowTransitionContext();
+//        stateFlowTransitionContext.setName(name);
+//        stateFlowTransitionContext.setModule(module);
+//        stateFlowTransitionContext.setModuleId(module.getModuleId());
+//        stateFlowTransitionContext.setActivityType(EventType.STATE_TRANSITION);
+//        stateFlowTransitionContext.setExecutionOrder(1);
+//        stateFlowTransitionContext.setButtonType(1);
+//        stateFlowTransitionContext.setFromStateId(fromStatus.getId());
+//        stateFlowTransitionContext.setToStateId(toStatus.getId());
+//        stateFlowTransitionContext.setRuleType(WorkflowRuleContext.RuleType.STATE_RULE);
+//        stateFlowTransitionContext.setType(transitionType);
+//        stateFlowTransitionContext.setStateFlowId(parentStateFlow.getId());
+//        stateFlowTransitionContext.setCriteria(criteria);
+//
+//        WorkflowRuleAPI.addWorkflowRule(stateFlowTransitionContext);
+//
+//        if (actions != null && !actions.isEmpty()) {
+//            actions = ActionAPI.addActions(actions, stateFlowTransitionContext);
+//            if(stateFlowTransitionContext != null) {
+//                ActionAPI.addWorkflowRuleActionRel(stateFlowTransitionContext.getId(), actions);
+//                stateFlowTransitionContext.setActions(actions);
+//            }
+//        }
+//
+//        return stateFlowTransitionContext;
+//    }
 
     public List<FacilioForm> getModuleForms() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

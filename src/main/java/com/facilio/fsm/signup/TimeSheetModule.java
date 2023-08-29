@@ -92,6 +92,12 @@ public class TimeSheetModule extends BaseModuleConfig {
         approvalFlowIdField.setDefault(true);
         timeSheetFields.add(approvalFlowIdField);
 
+        LookupField status = FieldFactory.getDefaultField("status","Time Sheet Status","STATUS",FieldType.LOOKUP);
+        status.setRequired(true);
+        status.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        status.setLookupModule(moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET_STATUS));
+        timeSheetFields.add(status);
+
         timeSheetModule.setFields(timeSheetFields);
         modules.add(timeSheetModule);
 
@@ -105,7 +111,7 @@ public class TimeSheetModule extends BaseModuleConfig {
         addTimeSheetTasksField();
         addActivityModuleForTimeSheet();
         SignupUtil.addNotesAndAttachmentModule(timeSheetModule);
-        addStateFlow();
+//        addStateFlow();
         addSystemButtons();
 
     }

@@ -17,7 +17,6 @@ public class ServiceAppointmentContext extends V3Context {
     private String name;
     private String description;
     private ServiceOrderContext serviceOrder;
-    private ServiceOrderContext.ServiceOrderPriority priority;
     private TerritoryContext territory;
     private List<ServiceAppointmentTaskContext> serviceTasks;
     private List<ServiceAppointmentSkillContext> skills;
@@ -42,24 +41,11 @@ public class ServiceAppointmentContext extends V3Context {
     private V3SpaceContext space;
     private V3AssetContext asset;
     private V3VendorContext vendor;
+    private V3TenantContext tenant;
     private Long slaPolicy;
     private Double estimatedCost;
     private Double actualCost;
-    public int getPriority() {
-        if (priority != null) {
-            return priority.getIndex();
-        }
-        return -1;
-    }
-    public void setPriority(int priority) {
-        this.priority = ServiceOrderContext.ServiceOrderPriority.valueOf(priority);
-    }
-    public ServiceOrderContext.ServiceOrderPriority getServiceOrderPriorityEnum() {
-        return priority;
-    }
-    public void setPriority(ServiceOrderContext.ServiceOrderPriority priorityType) {
-        this.priority = priorityType;
-    }
+    private PriorityContext priority;
     private AppointmentType appointmentType;
     public int getAppointmentType() {
         if (appointmentType != null) {

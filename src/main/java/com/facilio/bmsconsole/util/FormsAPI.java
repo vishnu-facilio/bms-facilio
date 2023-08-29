@@ -1253,7 +1253,7 @@ public class FormsAPI {
 				fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
 				fields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Client", Required.OPTIONAL,6,3));
 				fields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX,"Category", Required.OPTIONAL,6,3));
-				fields.add(new FormField("priority", FacilioField.FieldDisplayType.SELECTBOX,"Priority", Required.REQUIRED,6,3));
+				fields.add(new FormField("priority",  FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Priority", Required.REQUIRED,6,3));
 				fields.add(new FormField("space", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Space", Required.OPTIONAL,6,3));
 				fields.add(new FormField("asset",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Asset", Required.OPTIONAL,7,1));
 				fields.add(new FormField("fieldAgent",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Field Agent", Required.OPTIONAL,7,1));
