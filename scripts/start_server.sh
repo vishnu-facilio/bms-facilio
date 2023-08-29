@@ -27,6 +27,10 @@ else
     echo "Sleeping 15 seconds to release the occupied ports"
     sleep 15
 fi
+if [ ! -d "$APP_HOME/temp" ]; then
+   echo "temp directory not found in $APP_HOME"
+   exit 1
+fi
 chmod 644 $APP_HOME/logs/*
 sh $APP_HOME/bin/startup.sh
 rm -rf $FACILIO_HOME/deployment-files/*
