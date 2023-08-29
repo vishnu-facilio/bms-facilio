@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.ModuleWidget;
 
 import com.facilio.bmsconsole.context.ModuleWidgets;
+import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.context.WidgetConfigContext;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.v3.annotation.Config;
@@ -25,6 +26,29 @@ public class APIModuleWidgets {
 
     }
     */
+    @WidgetsForModule("workorder")
+    public static Supplier<ModuleWidgets> getWorkorderModuleWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("workordermultiresourceWidget", "WORKORDER MULTIRESOURCE", PageWidget.WidgetType.MULTIRESOURCE)
+                .addWidgetConfig("flexibleworkordermultiresource_17","Workorder MultiResource",WidgetConfigContext.ConfigType.FLEXIBLE,19,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("workorderresponsibility", "WORKORDER RESPONSIBILITY", PageWidget.WidgetType.RESPONSIBILITY)
+                .addWidgetConfig("flexibleworkorderresponsibility_14","Workorder Responsibility",WidgetConfigContext.ConfigType.FLEXIBLE,14,-1,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("workordertimedetails","WORKORDER TIME DETAILS",PageWidget.WidgetType.TIME_DETAILS)
+                .addWidgetConfig("flexibleworkordertimedetails_26","Workorder Time Details",WidgetConfigContext.ConfigType.FLEXIBLE,31,-1,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("workorderlocationdetails","WORKORDER LOCATION DETAILS",PageWidget.WidgetType.RESOURCE)
+                .addWidgetConfig("fixedworkorderlocationdetails_13","Workorder Location Detail",WidgetConfigContext.ConfigType.FIXED,13,32,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("workordercostdetails","WORKORDER COST DETAILS",PageWidget.WidgetType.QUOTATION)
+                .addWidgetConfig("flexibleworkordercostdetails_11","Workorder Cost Detail",WidgetConfigContext.ConfigType.FLEXIBLE,19,-1,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("workordersummary","WORKORDER SUMMARY DETAILS",PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET)
+                .addWidgetConfig("flexibleworkordersummary_33","Workorder Summary Detail",WidgetConfigContext.ConfigType.FLEXIBLE,33,-1,PagesContext.PageLayoutType.WEB)
+                .done();
+
+    }
 
     /*
   Naming Conventions to be followed for Widget Config Name and Display Name

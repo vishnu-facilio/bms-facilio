@@ -529,7 +529,9 @@ public class PageWidget {
 		PEAK_DEMAND("peakDemand"),
 		VIRTUAL_METER_TEMPLATE_DETAILS("virtualMeterTemplateDetails"),
 		VIRTUAL_METER_TEMPLATE_READINGS("virtualMeterTemplateReadings"),
-		RELATED_VIRTUAL_METERS_LIST("relatedVirtualMetersList");
+		RELATED_VIRTUAL_METERS_LIST("relatedVirtualMetersList"),
+		RESPONSE_DUE_DATE("responseduedate"),
+		TIME_DETAILS("timedetails");
 
 		private String name;
 		@Getter
