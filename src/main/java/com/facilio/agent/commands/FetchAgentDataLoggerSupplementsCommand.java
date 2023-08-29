@@ -1,9 +1,14 @@
 package com.facilio.agent.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.ViewAPI;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -12,6 +17,7 @@ import org.apache.commons.chain.Context;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class FetchAgentDataLoggerSupplementsCommand extends FacilioCommand {
     @Override
@@ -28,7 +34,6 @@ public class FetchAgentDataLoggerSupplementsCommand extends FacilioCommand {
         fetchLookupsList.add((LookupField) fieldsAsMap.get("controller"));
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
-
 
         return false;
     }

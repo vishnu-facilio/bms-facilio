@@ -20,6 +20,8 @@ public class DataLogContextV3 extends V3Context {
     private int publishType;
     private String messageSource;
     private String errorStackTrace;
+    private String payload;
+    private int payloadIndex;
 
     private long agentId = -1L;
     public long getAgentId(){
@@ -70,16 +72,6 @@ public class DataLogContextV3 extends V3Context {
             this.controllerName = controller.getName();
             this.controllerId = controller.getId();
         }
-    }
-    private String payload;
-    //payload
-    public String getPayload(){return payload;}
-    public DataLogContextV3 setPayload(String payload) {
-        if (StringUtils.length(payload) > 2000) {
-            payload = payload.substring(0, 2000);
-        }
-        this.payload = payload;
-        return this;
     }
 
     public static enum Agent_Message_Status implements FacilioIntEnum {

@@ -45,11 +45,11 @@ public class PointsConfigurationCompleteCommand extends AgentV2Command{
             editChainContext.put(FacilioConstants.ContextNames.CRITERIA, criteria);
             editChainContext.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.CONFIGURED.getIndex()));
             editChain.execute();
-            if (editChainContext.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) editChainContext.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
-                return false;
-            }
             if (agent.getAgentType() == AgentType.NIAGARA.getKey()){
                 context.put(AgentConstants.POINT_NAMES,mlPointsToTag(pointNames,controller));
+            }
+            if (editChainContext.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) editChainContext.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
+                return false;
             }
         }
         return false;

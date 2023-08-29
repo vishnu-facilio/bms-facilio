@@ -4,9 +4,14 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -14,11 +19,10 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-public class AgentDataLoggerModule extends SignUpData {
+public class AgentDataLoggerModule extends BaseModuleConfig {
+    public AgentDataLoggerModule(){setModuleName(FacilioConstants.ContextNames.AGENT_DATA_LOGGER);}
     @Override
     public void addData() throws Exception {
         FacilioModule agentDataLoggerModule = agentDataLoggerModule();
@@ -99,6 +103,53 @@ public class AgentDataLoggerModule extends SignUpData {
 
         module.setFields(fields);
         return module;
+    }
+    @Override
+    public List<Map<String, Object>> getViewsAndGroups() {
+        List<Map<String, Object>> groupVsViews = new ArrayList<>();
+        Map<String, Object> groupDetails;
+
+        int order = 1;
+        ArrayList<FacilioView> views = new ArrayList<FacilioView>();
+        views.add(getAgentDataLoggerView().setOrder(order));
+
+        groupDetails = new HashMap<>();
+        groupDetails.put(AgentConstants.NAME, FacilioConstants.ContextNames.AGENT_DATA_LOGGER +"View");
+        groupDetails.put(AgentConstants.DISPLAY_NAME, "Agent Data Logger Views");
+        groupDetails.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.AGENT_DATA_LOGGER);
+        groupDetails.put("views", views);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP);
+        groupDetails.put("appLinkNames", appLinkNames);
+        groupVsViews.add(groupDetails);
+
+        return groupVsViews;
+    }
+    private FacilioView getAgentDataLoggerView(){
+
+        List<ViewField>viewFields = new ArrayList<>();
+        viewFields.add(new ViewField(AgentConstants.AGENT,"Agent"));
+        viewFields.add(new ViewField(AgentConstants.CONTROLLER,"Controller"));
+        viewFields.add(new ViewField(AgentKeys.RECORD_ID,"Record Id"));
+        viewFields.add(new ViewField(AgentConstants.PARTITION_ID,"Partition Id"));
+        viewFields.add(new ViewField(AgentConstants.MESSAGE_SOURCE,"Message Source"));
+        viewFields.add(new ViewField(AgentConstants.PUBLISH_TYPE,"Publish Type"));
+        viewFields.add(new ViewField("messageStatus","Message Status"));
+        viewFields.add(new ViewField("startTime","Start Time"));
+        viewFields.add(new ViewField("endTime","End Time"));
+        viewFields.add(new ViewField("errorStackTrace","ErrorStackTrace"));
+
+        FacilioView view = new FacilioView();
+        view.setName(FacilioConstants.ContextNames.AGENT_DATA_LOGGER);
+        view.setDisplayName("Agent Data Logger");
+        view.setModuleName(FacilioConstants.ContextNames.AGENT_DATA_LOGGER);
+        view.setFields(viewFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP);
+        view.setAppLinkNames(appLinkNames);
+
+        return view;
     }
     private long calculateAccessType(FacilioField.AccessType... accessTypes) {
         long result = 0;

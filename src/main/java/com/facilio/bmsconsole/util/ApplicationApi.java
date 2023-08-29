@@ -1208,17 +1208,11 @@ public class ApplicationApi {
             configJSON.put("type", "log");
             webTabs.add(new WebTabContext("Command Log", "log", WebTabContext.Type.CUSTOM, null,
                     layout.getApplicationId(), configJSON));
-//            configJSON = new JSONObject();
-//            configJSON.put("type", "agent_data");
-//            webTabs.add(new WebTabContext("Agent Data", "data", WebTabContext.Type.CUSTOM, null,
-//                    layout.getApplicationId(), configJSON));
 
-            AgentDataLoggerModule agentModule = new AgentDataLoggerModule();
-            agentModule.addData();
             configJSON = new JSONObject();
+
             configJSON.put("type", "logs");
-            webTabs.add(new WebTabContext("Logs", "logs", WebTabContext.Type.CUSTOM,
-                    Arrays.asList(modBean.getModule("agentDataLogger").getModuleId()), layout.getApplicationId(), configJSON));
+            webTabs.add(new WebTabContext("Logs", "logs", WebTabContext.Type.CUSTOM,null,layout.getApplicationId(), configJSON));
 
 
             groupNameVsWebTabsMap.put("agent", webTabs);

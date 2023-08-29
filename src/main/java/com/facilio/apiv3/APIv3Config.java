@@ -3212,6 +3212,7 @@ public class APIv3Config {
         return () -> new V3Config(DataLogContextV3.class, null)
                 .list()
                 .beforeFetch(new FetchAgentDataLoggerSupplementsCommand() )
+                .summary()
                 .build();
     }
     @Module(FacilioConstants.ContextNames.AGENT_DATA_PROCESSING_LOGGER)

@@ -429,8 +429,10 @@ public class DataProcessorUtil {
                     payloads.add(payload);
                 }
                 boolean processed = true;
+                int payloadIndex=1;
                 for (JSONObject jsonObject : payloads) {
-                    processed = processed && dataProcessorV2.processRecord(jsonObject, eventUtil, agent,recordId,partitionId,messageSource.getName());
+                    processed = processed && dataProcessorV2.processRecord(jsonObject, eventUtil, agent,recordId,partitionId,messageSource.getName(),payloadIndex);
+                    payloadIndex++;
                 }
                 if (processed) {
                     updateAgentMessage(recordId, partitionId, MessageStatus.PROCESSED);
