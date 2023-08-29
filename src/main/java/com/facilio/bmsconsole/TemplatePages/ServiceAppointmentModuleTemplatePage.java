@@ -41,6 +41,7 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
                 .columnDone()
                 .tabDone()
 
+
                 .addWebTab("serviceappointmentservicetasks", "Service Tasks", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmentservicetasks", null, null)
