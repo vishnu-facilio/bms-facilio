@@ -625,11 +625,17 @@ public class AccountConstants {
 	}
 
 	public static FacilioModule getFeatureLicenseModule() {
+		return getFeatureLicenseModule(false);
+	}
+	public static FacilioModule getFeatureLicenseModule(boolean skipPreProdCheck) {
 		FacilioModule license = new FacilioModule();
 		license.setName("featurelicense");
 		license.setDisplayName("Feature License");
 		license.setTableName("FeatureLicense");
-		if(FacilioProperties.isPreProd()) {
+		if(skipPreProdCheck) {
+			return license;
+		}
+		if (FacilioProperties.isPreProd()) {
 			return getPreProdFeatureLicenseModule();
 		}
 		return license;
@@ -853,7 +859,7 @@ public class AccountConstants {
 		return fields;
 	}
 
-	
+
 	public static List<FacilioField> getAppOrgUserFields() {
 		FacilioModule module = getAppOrgUserModule();
 		module.setExtendModule(ModuleFactory.getResourceModule());
@@ -910,28 +916,28 @@ public class AccountConstants {
 		portal_verified.setColumnName("PORTAL_VERIFIED");
 		portal_verified.setModule(module);
 		fields.add(portal_verified);
-		
+
 		FacilioField peopleId = new FacilioField();
 		peopleId.setName("peopleId");
 		peopleId.setDataType(FieldType.NUMBER);
 		peopleId.setColumnName("PEOPLE_ID");
 		peopleId.setModule(module);
 		fields.add(peopleId);
-		
+
 		FacilioField iamOrgUserId = new FacilioField();
 		iamOrgUserId.setName("iamOrgUserId");
 		iamOrgUserId.setDataType(FieldType.NUMBER);
 		iamOrgUserId.setColumnName("IAM_ORG_USERID");
 		iamOrgUserId.setModule(module);
 		fields.add(iamOrgUserId);
-	
+
 		FacilioField signatureFileId = new FacilioField();
 		signatureFileId.setName("signatureFileId");
 		signatureFileId.setDataType(FieldType.NUMBER);
 		signatureFileId.setColumnName("SIGNATURE_FILE_ID");
 		signatureFileId.setModule(module);
-        fields.add(signatureFileId);
-		
+		fields.add(signatureFileId);
+
 		return fields;
 	}
 
@@ -982,9 +988,11 @@ public class AccountConstants {
 
 		return fields;
 	}
-
 	public static List<FacilioField> getFeatureLicenseFields() {
-		FacilioModule module = getFeatureLicenseModule();
+		return getFeatureLicenseFields(false);
+	}
+	public static List<FacilioField> getFeatureLicenseFields(boolean skipPreProdCheck) {
+		FacilioModule module = getFeatureLicenseModule(skipPreProdCheck);
 
 		List<FacilioField> fields = new ArrayList<>();
 
@@ -1014,7 +1022,9 @@ public class AccountConstants {
 		license3.setColumnName("MODULE3");
 		license3.setModule(module);
 		fields.add(license3);
-
+		if(skipPreProdCheck) {
+			return fields;
+		}
 		if(FacilioProperties.isPreProd()) {
 			return getPreProdFeatureLicenseFields();
 		}

@@ -75,8 +75,8 @@ public class AddDefaultLicenseCommand extends FacilioCommand {
 
         Map<String,Object> preProdInsertValue = new HashMap<>(defaultLicenseVal);
         new GenericInsertRecordBuilder()
-                .table(AccountConstants.getFeatureLicenseModule().getTableName())
-                .fields(AccountConstants.getFeatureLicenseFields())
+                .table("FeatureLicense")
+                .fields(AccountConstants.getFeatureLicenseFields(true))
                 .insert(defaultLicenseVal);
 
         GenericInsertRecordBuilder preProdInsert = new GenericInsertRecordBuilder()
