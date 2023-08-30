@@ -53,10 +53,12 @@ public class AddOrUpdateScopingAndPermissionCommandV3 extends FacilioCommand {
                                 appDomainObj = ApplicationApi.getAppDomainForApp(appId);
                                 if(appDomainObj != null){
                                     User user = IdentityClient.getDefaultInstance().getUserBean().getUser(orgId, ppl.getEmail(), appDomainObj.getIdentifier());
-                                    long orgUserId = getOrgUserIdForIamOrgUserID(user.getOuid());
-                                    ScopingContext defaultScoping = ApplicationApi.getDefaultScopingForApp(appId);
-                                    if(defaultScoping != null && orgUserId > 0){
-                                        ApplicationApi.updateScopingForUser(defaultScoping.getId(), appId,orgUserId);
+                                    if(user != null){
+                                        long orgUserId = getOrgUserIdForIamOrgUserID(user.getOuid());
+                                        ScopingContext defaultScoping = ApplicationApi.getDefaultScopingForApp(appId);
+                                        if(defaultScoping != null && orgUserId > 0){
+                                            ApplicationApi.updateScopingForUser(defaultScoping.getId(), appId,orgUserId);
+                                        }
                                     }
                                 }
                             }
