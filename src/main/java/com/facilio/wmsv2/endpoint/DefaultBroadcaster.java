@@ -20,7 +20,7 @@ public abstract class DefaultBroadcaster {
             message.setTopic(redisTopic);
             broadcast(message);
         } catch (Exception ex) {
-            LOGGER.error("WMS_LOG_ERROR :: Send message failed: " + message.toString(), ex);
+            LOGGER.error("WMS_ERROR :: Send message failed: " + message.toString(), ex);
         }
     }
 

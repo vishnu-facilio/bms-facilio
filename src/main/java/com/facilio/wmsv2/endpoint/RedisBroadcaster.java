@@ -44,6 +44,8 @@ public class RedisBroadcaster extends DefaultBroadcaster {
             for(String topic : topics) {
                 subscribe(jedis, topic, topic.contains("*"));
             }
+        } catch (Exception ex) {
+             LOGGER.error("WMS_ERROR :: Failed to get connection from jedis pool", ex);
         }
     }
 
@@ -73,6 +75,8 @@ public class RedisBroadcaster extends DefaultBroadcaster {
             for (String topic : topics) {
                 unsubscribe(jedis, topic, topic.contains("*"));
             }
+        } catch (Exception ex) {
+            LOGGER.error("WMS_ERROR :: Failed to get connection from jedis pool", ex);
         }
     }
 
@@ -110,6 +114,8 @@ public class RedisBroadcaster extends DefaultBroadcaster {
             } else {
                 LOGGER.info("WMS_LOG :: No subscribers received the message.");
             }
+        } catch (Exception ex) {
+            LOGGER.error("WMS_ERROR :: Failed to get connection from jedis pool", ex);
         }
     }
 

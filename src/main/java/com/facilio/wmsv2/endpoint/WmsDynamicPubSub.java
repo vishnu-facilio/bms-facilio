@@ -35,7 +35,7 @@ public class WmsDynamicPubSub extends JedisPubSub {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("WMS_LOG_ERROR :: Exception occurred while processing message "+content+" on channel "+channel, e);
+            LOGGER.error("WMS_ERROR :: Exception occurred while processing message "+content+" on channel "+channel, e);
         }
     }
 
@@ -64,7 +64,7 @@ public class WmsDynamicPubSub extends JedisPubSub {
         try {
            sendMessage(pattern, content);
         } catch (Exception e) {
-            LOGGER.error("WMS_LOG_ERROR :: Exception occurred while processing pattern message "+content+" on channel "+channel+ " with pattern "+pattern, e);
+            LOGGER.error("WMS_ERROR :: Exception occurred while processing pattern message "+content+" on channel "+channel+ " with pattern "+pattern, e);
         }
     }
 

@@ -27,7 +27,7 @@ public class WmsRedisSubscriber implements Runnable {
                 jedis.subscribe(pubSub, this.topics);
             }
         } catch (Exception e) {
-            LOGGER.error("WMS_LOG_ERROR :: Exception during Redis subscription: ", e);
+            LOGGER.error("WMS_ERROR :: Exception during Redis subscription: ", e);
         }
     }
 }

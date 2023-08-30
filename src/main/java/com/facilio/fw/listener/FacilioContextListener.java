@@ -1,35 +1,11 @@
 package com.facilio.fw.listener;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.management.ManagementFactory;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.*;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.sql.DataSource;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import com.facilio.bmsconsole.ModuleWidget.ModuleWidgetsUtil;
-import com.facilio.bmsconsole.monitoring.MonitoringMXBeanImp;
-import com.facilio.bmsconsole.monitoring.MonitoringMXBean;
-import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
 import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.backgroundactivity.util.BackgroundActivityUtil;
+import com.facilio.bmsconsole.ModuleWidget.ModuleWidgetsUtil;
+import com.facilio.bmsconsole.monitoring.MonitoringMXBean;
+import com.facilio.bmsconsole.monitoring.MonitoringMXBeanImp;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
@@ -90,8 +66,25 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import com.facilio.bmsconsole.monitoring.MonitoringMXBeanImp;
-import com.facilio.bmsconsole.monitoring.MonitoringMXBean;
+import redis.clients.jedis.Jedis;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.sql.DataSource;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.*;
 
 
 public class FacilioContextListener implements ServletContextListener {
@@ -136,6 +129,9 @@ public class FacilioContextListener implements ServletContextListener {
 
 			if(RedisManager.getInstance() != null) {
 				RedisManager.getInstance().connect(true); // creating redis connection pool
+				try(Jedis jedis = RedisManager.getInstance().getJedis()) {
+					jedis.publish("Init Channel", "Test");
+				} 
 			}
 			LRUCache.getRoleNameCachePs();
 
