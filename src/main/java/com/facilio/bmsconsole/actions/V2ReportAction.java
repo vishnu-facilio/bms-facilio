@@ -1655,7 +1655,6 @@ public class V2ReportAction extends FacilioAction {
     }
 
     private List<Long> getRelatedResourcesWithPosition(RelationMappingContext relMapCtx, Long resourceId) throws Exception {
-        RelationMappingContext.Position position = relMapCtx.getReversePosition();
         List<Long> relResourceIds = RelationUtil.getAllCustomRelationsForRecId(relMapCtx, resourceId);
         return relResourceIds;
     }

@@ -441,6 +441,6 @@ public class RelationUtil {
             }
             return recordIds;
         }
-        return null;
+        return new ArrayList<>();
     }
 }
