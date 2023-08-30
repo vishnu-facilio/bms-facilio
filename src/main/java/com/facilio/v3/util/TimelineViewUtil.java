@@ -1,6 +1,7 @@
 package com.facilio.v3.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.timelineview.context.TimelineScheduledViewContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -11,10 +12,7 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.recordcustomization.RecordCustomizationContext;
 import com.facilio.recordcustomization.RecordCustomizationValuesContext;
@@ -26,6 +24,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TimelineViewUtil {
 
@@ -166,5 +166,33 @@ public class TimelineViewUtil {
             timelineList.add(recordContext);
         }
         return timelineList;
+    }
+
+    public static TimelineScheduledViewContext getTimelineView(long id) throws Exception {
+        Map<Long, TimelineScheduledViewContext> timelineScheduledViewMap = getAllTimelineViews(Collections.singletonList(id));
+        return timelineScheduledViewMap.get(id);
+    }
+
+    public static Map<Long, TimelineScheduledViewContext> getAllTimelineViews(List<Long> viewIds) throws Exception {
+        Map<Long, TimelineScheduledViewContext> timelineScheduledViewMap = new HashMap<>();
+
+        FacilioModule timelineViewModule = ModuleFactory.getTimelineViewModule();
+        List<FacilioField> timelineViewFields = FieldFactory.getTimelineViewFields(timelineViewModule);
+
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(timelineViewModule.getTableName())
+                .select(timelineViewFields)
+                .andCondition(CriteriaAPI.getIdCondition(viewIds, timelineViewModule));
+
+        List<Map<String, Object>> timelineViewProps = selectRecordBuilder.get();
+
+        if (CollectionUtils.isNotEmpty(timelineViewProps)) {
+            List<TimelineScheduledViewContext> timelineViewContextList = FieldUtil.getAsBeanListFromMapList(timelineViewProps, TimelineScheduledViewContext.class);
+            timelineScheduledViewMap = timelineViewContextList.stream()
+                    .collect(Collectors.toMap(TimelineScheduledViewContext::getId, Function.identity()));
+            return timelineScheduledViewMap;
+        }
+
+        return timelineScheduledViewMap;
     }
 }

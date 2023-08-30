@@ -6,11 +6,13 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.calendarview.CalendarViewContext;
 import com.facilio.bmsconsole.calendarview.CalendarViewUtil;
+import com.facilio.bmsconsole.calendarview.CommonCalendarViewContext;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.context.ViewGroups.ViewGroupType;
 import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
+import com.facilio.bmsconsole.timelineview.context.TimelineScheduledViewContext;
 import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
@@ -32,7 +34,9 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.recordcustomization.RecordCustomizationAPI;
+import com.facilio.recordcustomization.RecordCustomizationContext;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.TimelineViewUtil;
 import com.facilio.weekends.WeekendUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -227,8 +231,8 @@ public class ViewAPI {
 			}
 			builder.andCriteria(appCriteria);
 
-			boolean calendarViewEnabled = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CALENDAR_VIEW);
-			if (!calendarViewEnabled) {
+			boolean calendarViewLicenseEnabled = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CALENDAR_VIEW);
+			if (!calendarViewLicenseEnabled) {
 				Criteria calendarViewCriteria = new Criteria();
 				calendarViewCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("isListView"), Boolean.TRUE.toString(), BooleanOperators.IS));
 				calendarViewCriteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("isCalendarView"), Boolean.FALSE.toString(), BooleanOperators.IS));
@@ -312,6 +316,7 @@ public class ViewAPI {
 		if(viewPropList != null && !viewPropList.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<Long> calendarViewIds = new ArrayList<>();
+			List<Long> timelineViewIds = new ArrayList<>();
 
 			Map<ViewType, List<Long>> viewTypeMap = new HashMap<>();
 			for(Map viewDetail : viewPropList){
@@ -331,13 +336,22 @@ public class ViewAPI {
 				if (isCalendarView) {
 					calendarViewIds.add(viewId);
 				}
+				boolean isTimelineView = viewDetail.containsKey("isTimelineView") && (boolean) viewDetail.get("isTimelineView");
+				if (isTimelineView) {
+					timelineViewIds.add(viewId);
+				}
 			}
 			List<FacilioView> views = new ArrayList<>();
 
-			boolean calendarViewEnabled = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CALENDAR_VIEW);
+			boolean calendarViewLicenseEnabled = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CALENDAR_VIEW);
 			Map<Long, CalendarViewContext> calendarViewContextMap = new HashMap<>();
-			if (calendarViewEnabled && CollectionUtils.isNotEmpty(calendarViewIds)) {
+			Map<Long, TimelineScheduledViewContext> timelineScheduledViewContextMap = new HashMap<>();
+
+			if (calendarViewLicenseEnabled && CollectionUtils.isNotEmpty(calendarViewIds)) {
 				calendarViewContextMap = CalendarViewUtil.getAllCalendarViews(calendarViewIds);
+			}
+			if (calendarViewLicenseEnabled && CollectionUtils.isNotEmpty(timelineViewIds)) {
+				timelineScheduledViewContextMap = TimelineViewUtil.getAllTimelineViews(timelineViewIds);
 			}
 
 			Map<ViewType, Map<Long, Map<String, Object>>> typeBasedValues = (getOnlyBasicValues) ? null : getDependentTableValues(viewTypeMap);
@@ -370,11 +384,19 @@ public class ViewAPI {
 							}
 
 							// add calendar view context
-							if (calendarViewEnabled && view.isCalendarView()) {
+							if (calendarViewLicenseEnabled && view.isCalendarView()) {
 								if (MapUtils.isNotEmpty(calendarViewContextMap) && calendarViewContextMap.containsKey(viewId)) {
 									CalendarViewContext calendarViewContext = calendarViewContextMap.get(viewId);
-									setCalendarViewFieldObjects(calendarViewContext, modBean);
+									setCommonCalendarViewObjects(calendarViewContext);
 									view.setCalendarViewContext(calendarViewContext);
+								}
+							}
+//							timeline view
+							if (calendarViewLicenseEnabled && view.isTimelineView()) {
+								if (MapUtils.isNotEmpty(timelineScheduledViewContextMap) && timelineScheduledViewContextMap.containsKey(viewId)) {
+									TimelineScheduledViewContext timelineScheduledViewContext = timelineScheduledViewContextMap.get(viewId);
+									setTimelineScheduledView(timelineScheduledViewContext, modBean, orgId);
+									view.setTimelineScheduledViewContext(timelineScheduledViewContext);
 								}
 							}
 
@@ -396,10 +418,29 @@ public class ViewAPI {
 		return null;
 	}
 
-	public static void setCalendarViewFieldObjects(CalendarViewContext calendarView, ModuleBean moduleBean) throws Exception{
-		calendarView.setStartDateField(moduleBean.getField(calendarView.getStartDateFieldId()));
-		if (calendarView.getEndDateFieldId() > 0) {
-			calendarView.setEndDateField(moduleBean.getField(calendarView.getEndDateFieldId()));
+	public static void setTimelineScheduledView(TimelineScheduledViewContext timelineScheduledViewContext, ModuleBean moduleBean, long orgId) throws Exception{
+		setCommonCalendarViewObjects(timelineScheduledViewContext);
+		timelineScheduledViewContext.setGroupByField(moduleBean.getField(timelineScheduledViewContext.getGroupByFieldId()));
+		if (timelineScheduledViewContext.getGroupCriteriaId() > 0) {
+			Criteria criteria = CriteriaAPI.getCriteria(orgId, timelineScheduledViewContext.getGroupCriteriaId());
+			setCriteriaValue(criteria);
+			timelineScheduledViewContext.setGroupCriteria(criteria);
+		}
+	}
+
+	public static void setCommonCalendarViewObjects(CommonCalendarViewContext commonCalendarViewContext) throws Exception {
+		ModuleBean moduleBean = Constants.getModBean();
+		if (commonCalendarViewContext.getEndDateFieldId() > 0) {
+			commonCalendarViewContext.setEndDateField(moduleBean.getField(commonCalendarViewContext.getEndDateFieldId()));
+		}
+		if (commonCalendarViewContext.getStartDateFieldId() > 0) {
+			commonCalendarViewContext.setStartDateField(moduleBean.getField(commonCalendarViewContext.getStartDateFieldId()));
+		}
+		if(commonCalendarViewContext.getRecordCustomizationId() > 0) {
+			commonCalendarViewContext.setRecordCustomization(RecordCustomizationAPI.getRecordCustomization(commonCalendarViewContext.getRecordCustomizationId()));
+		}
+		if(commonCalendarViewContext.getWeekendId() > 0) {
+			commonCalendarViewContext.setWeekend(WeekendUtil.getWeekend(commonCalendarViewContext.getWeekendId()));
 		}
 	}
 
@@ -652,6 +693,49 @@ public class ViewAPI {
 						updateDependentTables(calendarModule, calendarModuleFields, calendarViewProps);
 					}
 				}
+//				timeline view props
+				else if (view.isTimelineView()) {
+					TimelineScheduledViewContext timelineScheduledViewContext = view.getTimelineScheduledViewContext();
+
+					Map<String, Object> timeLineViewProps = getTimeLineViewProps(viewProp);
+					FacilioUtil.throwIllegalArgumentException(MapUtils.isEmpty(timeLineViewProps), "Timeline View props is not defined");
+					validateTimelineScheduledView(timelineScheduledViewContext);
+
+					oldCustomizationId = TimelineViewUtil.getCustomizationIdFromViewId(view.getId());
+					if (oldCustomizationId > 0) {
+						RecordCustomizationAPI.deleteCustomization(oldCustomizationId);
+					}
+
+					if ((timelineScheduledViewContext.getRecordCustomization() != null)) {
+						long recordCustomizationId = RecordCustomizationAPI.addOrUpdateRecordCustomizationValues((timelineScheduledViewContext.getRecordCustomization()));
+						timeLineViewProps.put("recordCustomizationId", recordCustomizationId);
+					}
+
+					criteria = (timelineScheduledViewContext.getGroupCriteria());
+					if (criteria != null) {
+						long criteriaId = CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getOrgId());
+						timeLineViewProps.put("groupCriteriaId",criteriaId);
+					}
+					else {
+						timeLineViewProps.put("groupCriteriaId", -99);
+					}
+
+					FacilioModule timelineViewModule = ModuleFactory.getTimelineViewModule();
+					List<FacilioField> timelineViewFields = FieldFactory.getTimelineViewFields(timelineViewModule);
+
+					TimelineScheduledViewContext timelineView = TimelineViewUtil.getTimelineView(view.getId());
+					isNew = (timelineView == null);
+
+					if (isNew) {
+						addDependentTables(timelineViewModule, timelineViewFields, timeLineViewProps);
+					} else {
+						updateDependentTables(timelineViewModule, timelineViewFields, timeLineViewProps);
+						if (oldView != null && (timelineScheduledViewContext.getGroupCriteriaId() > 0)) {
+							CriteriaAPI.deleteCriteria(timelineScheduledViewContext.getGroupCriteriaId());
+						}
+					}
+
+				}
 
 //				if (view.isListView()){
 //					List<ViewField> columns = view.getFields();
@@ -662,12 +746,28 @@ public class ViewAPI {
 		}
 	}
 
-	public static Map<String, Object> getCalendarViewProps(Map<String, Object> viewProps) {
+	private static Map<String, Object> getTimeLineViewProps(Map<String, Object> viewProp) {
+		Map<String, Object> timelineViewContext = (Map<String, Object>) viewProp.get("timelineViewContext");
+		if (MapUtils.isNotEmpty(timelineViewContext)) {
+			Map<String, Object> timelineViewProps = new HashMap<>(timelineViewContext);
+			timelineViewProps.put("orgId", viewProp.get("orgId"));
+			timelineViewProps.put("id", viewProp.get("id"));
+			return timelineViewProps;
+		}
+		return null;
+	}
+
+	public static Map<String, Object> getCalendarViewProps(Map<String, Object> viewProps) throws Exception {
 		Map<String,Object> calendarViewContext = (Map<String, Object>) viewProps.get("calendarViewContext");
 		if (MapUtils.isNotEmpty(calendarViewContext)) {
 			Map<String, Object> calendarViewProps = new HashMap<>(calendarViewContext);
 			calendarViewProps.put("orgId", viewProps.get("orgId"));
 			calendarViewProps.put("id", viewProps.get("id"));
+			if (calendarViewContext.containsKey("recordCustomization") && (calendarViewContext.get("recordCustomization") != null)) {
+				RecordCustomizationContext recordCustomizationContext = FieldUtil.getAsBeanFromMap((Map<String, Object>) calendarViewContext.get("recordCustomization"), RecordCustomizationContext.class);
+				long recordCustomizationId = RecordCustomizationAPI.addOrUpdateRecordCustomizationValues(recordCustomizationContext);
+				calendarViewProps.put("recordCustomizationId", recordCustomizationId);
+			}
 			return calendarViewProps;
 		}
 		return null;
@@ -698,6 +798,23 @@ public class ViewAPI {
 
 		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
+        FacilioField startDateField = moduleBean.getField(view.getStartDateFieldId());
+        checkFieldType(startDateField, Arrays.asList(FieldType.DATE,FieldType.DATE_TIME));
+
+        FacilioField endDateField = moduleBean.getField(view.getEndDateFieldId());
+        checkFieldType(endDateField,Arrays.asList(FieldType.DATE,FieldType.DATE_TIME));
+
+        FacilioField groupByField = moduleBean.getField(view.getGroupByFieldId());
+        checkFieldType(groupByField,Arrays.asList(FieldType.LOOKUP,FieldType.ENUM));
+	}
+	private static void validateTimelineScheduledView(TimelineScheduledViewContext view) throws Exception
+	{
+		if(view.getStartDateFieldId() == view.getEndDateFieldId()){
+            throw new Exception("startDate field and endDate field cannot be same");
+        }
+
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
         FacilioField startDateField = moduleBean.getField(view.getStartDateFieldId());
         checkFieldType(startDateField, Arrays.asList(FieldType.DATE,FieldType.DATE_TIME));
 

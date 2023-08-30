@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.accounts.dto.IAMUser;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.timelineview.context.TimelineScheduledViewContext;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -74,6 +74,8 @@ public class FacilioView {
 		this.sysCreatedTime = view.sysCreatedTime;
 		this.sysModifiedTime = view.sysModifiedTime;
 		this.status = view.getStatus();
+		this.timelineScheduledViewContext = view.timelineScheduledViewContext;
+		this.isTimelineView = view.isTimelineView();
 	}
 
 	public FacilioView(String name, String displayName, ViewType type, String moduleName, long moduleId, long appId, boolean isDefault, long ownerId, int sequenceNumber,
@@ -531,5 +533,25 @@ public class FacilioView {
 	}
 	public void setStatus(Boolean status){
 		this.status = status;
+	}
+	private Boolean isTimelineView;
+	public boolean isTimelineView() {
+		if (isTimelineView != null) {
+			return isTimelineView;
+		}
+		return false;
+	}
+	public Boolean getIsTimelineView() {
+		return isTimelineView;
+	}
+	public void setIsTimelineView(Boolean isTimelineView) {
+		this.isTimelineView = isTimelineView;
+	}
+	private TimelineScheduledViewContext timelineScheduledViewContext;
+	public TimelineScheduledViewContext getTimelineScheduledViewContext() {
+		return timelineScheduledViewContext;
+	}
+	public void setTimelineScheduledViewContext(TimelineScheduledViewContext timelineScheduledViewContext) {
+		this.timelineScheduledViewContext = timelineScheduledViewContext;
 	}
 }

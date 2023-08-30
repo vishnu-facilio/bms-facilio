@@ -2,13 +2,12 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.calendarview.CalendarViewContext;
 import com.facilio.bmsconsole.calendarview.CalendarViewUtil;
+import com.facilio.bmsconsole.timelineview.context.TimelineScheduledViewContext;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.SingleSharingContext;
@@ -31,6 +30,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.util.SecurityUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import com.facilio.v3.util.TimelineViewUtil;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
 import org.apache.commons.chain.Context;
@@ -43,8 +43,6 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.facilio.security.SecurityUtil.sanitizeSqlOrderbyParam;
 
 public class LoadViewCommand extends FacilioCommand {
 
@@ -134,7 +132,7 @@ public class LoadViewCommand extends FacilioCommand {
 						if (view.getCalendarViewContext() == null) {
 							CalendarViewContext calendarView = CalendarViewUtil.getCalendarView(view.getId());
 							if (calendarView != null) {
-								ViewAPI.setCalendarViewFieldObjects(calendarView, modBean);
+								ViewAPI.setCommonCalendarViewObjects(calendarView);
 								view.setCalendarViewContext(calendarView);
 							}
 						}
@@ -143,6 +141,12 @@ public class LoadViewCommand extends FacilioCommand {
 						}
 						if (CollectionUtils.isEmpty(view.getSortFields())) {
 							view.setFields(ViewAPI.getViewColumns(view.getId()));
+						}
+					}
+					if (view.isTimelineView() && view.getTimelineScheduledViewContext() == null) {
+						TimelineScheduledViewContext timelineScheduledViewContext = TimelineViewUtil.getTimelineView(view.getId());
+						if (timelineScheduledViewContext != null)  {
+							view.setTimelineScheduledViewContext(timelineScheduledViewContext);
 						}
 					}
 				}

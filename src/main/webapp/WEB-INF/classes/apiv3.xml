@@ -589,6 +589,33 @@
         </action>
     </package>
 
+    <package name="timelineScheduledViewGroupPickList" namespace="/api/v3/timelineScheduledViewGroupData"
+             extends="v3Api">
+        <action name="fetch"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="fetchTimelineScheduledViewGroupData">
+            <param name="translationImpl">V3PickListTranslation</param>
+        </action>
+    </package>
+
+    <package name="timelineScheduledViewModuleV3Api" namespace="/api/v3/modules/data/timelineScheduledView" extends="v3Api">
+        <action name="get"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="timelineScheduledViewData"/>
+
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="timelineScheduledViewSelectiveList"/>
+
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="timelineScheduledViewPatch"/>
+
+        <action name="unscheduled"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="timelineScheduledViewUnScheduledList"/>
+    </package>
+
     <package name="moduleApiv3" namespace="/api/v3/modules/list" extends="v3Api">
         <action name="all" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="moduleList">
             <param name="permission">ALL</param>

@@ -870,6 +870,13 @@ public class ChainUtil {
         return chain;
     }
 
+    public static FacilioChain getTimelineScheduledViewPatchValidationChain() {
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
+        chain.addCommand(new LoadViewCommand());
+        chain.addCommand(new ValidateTimelineScheduledViewPatchData());
+        return chain;
+    }
+
     public static FacilioChain getTimelineChain() throws Exception {
         FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new GenerateCriteriaFromFilterCommand());
@@ -879,6 +886,15 @@ public class ChainUtil {
         chain.addCommand(new ConstructTimelineResponseCommand());
         return chain;
     }
+    public static FacilioChain getTimelineScheduledViewChain() throws Exception {
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
+        chain.addCommand(new GenerateCriteriaFromFilterCommand());
+        chain.addCommand(new LoadViewCommand());
+        chain.addCommand(new GetTimelineScheduledViewDataCommand());
+        chain.addCommand(new AddTimelineScheduledViewCustomizationToRecordMap());
+        chain.addCommand(new ConstructTimelineScheduledViewResponseCommand());
+        return chain;
+    }
 
     public static FacilioChain getTimelineListChain() throws Exception {
         FacilioChain chain = FacilioChain.getNonTransactionChain();
@@ -886,6 +902,15 @@ public class ChainUtil {
         chain.addCommand(new LoadViewCommand());
         chain.addCommand(new GetTimeLineListCommand());
         chain.addCommand(new AddCustomizationToRecordMap());
+        return chain;
+    }
+
+    public static FacilioChain getTimelineScheduledViewListChain() {
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
+        chain.addCommand(new GenerateCriteriaFromFilterCommand());
+        chain.addCommand(new LoadViewCommand());
+        chain.addCommand(new GetTimelineScheduledViewListCommand());
+        chain.addCommand(new AddTimelineScheduledViewCustomizationToRecordMap());
         return chain;
     }
 

@@ -4729,6 +4729,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getSystemField("sysCreatedBy", module));
         fields.add(getSystemField("sysModifiedBy", module));
         fields.add(getBooleanField("status", "STATUS", module));
+        fields.add(getBooleanField("isTimelineView", "IS_TIMELINE_VIEW", module));
 
         return fields;
 
@@ -12197,6 +12198,8 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getNumberField("startDateFieldId", "START_DATE_FIELDID", module));
         list.add(getNumberField("endDateFieldId", "END_DATE_FIELDID", module));
         list.add(getNumberField("defaultCalendarView", "DEFAULT_CALENDAR_VIEW", module));
+        list.add(getNumberField("recordCustomizationId", "RECORD_CUSTOMIZATION_ID", module));
+        list.add(getNumberField("weekendId", "WEEKENDID", module));
         return list;
     }
 
