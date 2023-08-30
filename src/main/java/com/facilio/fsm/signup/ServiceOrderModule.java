@@ -468,7 +468,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         generalInformationFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
         generalInformationFields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.REQUIRED, 3, 2));
         generalInformationFields.add(new FormField("maintenanceType", FacilioField.FieldDisplayType.SELECTBOX, "Maintenance Type", FormField.Required.OPTIONAL, 4, 2));
-        generalInformationFields.add(new FormField("priority", FacilioField.FieldDisplayType.SELECTBOX, "Priority", FormField.Required.REQUIRED, 5, 2));
+        generalInformationFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.REQUIRED, 5, 2));
         generalInformationFields.add(new FormField("autoCreateSa", FacilioField.FieldDisplayType.DECISION_BOX, "Auto Create SA", FormField.Required.OPTIONAL, 6, 2));
 
         FormSection generalInfoSection = new FormSection("General Information", 1, generalInformationFields, true);

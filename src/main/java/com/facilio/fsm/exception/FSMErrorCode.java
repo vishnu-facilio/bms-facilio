@@ -35,7 +35,6 @@ public enum FSMErrorCode {
     // Time Sheet error codes
     TIME_SHEET_NOT_ENOUGH_DETAILS(Severity.ERROR, "Mandatory field missing", "Not enough details to create a timesheet"),
     TIME_SHEET_SA_MANDATORY(Severity.ERROR, "Service Appointment is required", "Please select Service Appointment to proceed with Time Sheet creation"),
-    TIME_SHEET_RECORD_LOCKED(Severity.ERROR, "Record Locked", "You cannot edit or delete since the record is locked."),
     TIME_SHEET_TIME_MISMATCH(Severity.ERROR, "Time range is invalid", "Time Sheet should have valid time range."),
     TIME_SHEET_UPDATE_PREVENT(Severity.ERROR, "Not Permitted", "You are not permitted to edit these details."),
 
@@ -43,9 +42,12 @@ public enum FSMErrorCode {
     // Trip error codes
     TRIP_NOT_ENOUGH_DETAILS(Severity.ERROR, "Mandatory field missing", "Not enough details to create a trip"),
     TRIP_CANNOT_BE_STARTED(Severity.ERROR,"Trip cannot be started","You currently have an active trip in progress. To manage your ongoing trip, please navigate to the associated service appointment.{0}"),
+    TRIP_TIME_MISMATCH(Severity.ERROR, "Time range is invalid", "Trip should have valid time range."),
 
     //Service Task error codes
-    TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Timesheet conflict", "Cannot start or resume another service task when timesheet is running");
+    TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Timesheet conflict", "Cannot start or resume another service task when timesheet is running"),
+
+    RECORD_LOCKED(Severity.ERROR, "Record Locked", "You cannot edit or delete since the record is locked.");
 
     private final Severity severity;
     private final String title;

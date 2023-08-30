@@ -81,7 +81,7 @@ public class TripStatus extends BaseModuleConfig {
         inProgressState.setBackgroundColor("#F7BA02");
         inProgressState.setTextColor("#000000");
         inProgressState.setTypeCode(2);
-        inProgressState.setRecordLocked(false);
+        inProgressState.setRecordLocked(true);
         inProgressState.setDeleteLocked(true);
         ticketStatusContextList.add(inProgressState);
 
@@ -93,8 +93,8 @@ public class TripStatus extends BaseModuleConfig {
         completedState.setBackgroundColor("#058545");
         completedState.setTextColor("#ffffff");
         completedState.setTypeCode(3);
-        completedState.setRecordLocked(true);
-        completedState.setDeleteLocked(true);
+        completedState.setRecordLocked(false);
+        completedState.setDeleteLocked(false);
         ticketStatusContextList.add(completedState);
 
         insertRecordBuilder.addRecords(ticketStatusContextList);

@@ -307,6 +307,7 @@ public class FieldServiceManagementV3Config {
                 .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.Trip.TRIP_ACTIVITY))
                 .update()
+                .beforeSave(FsmTransactionChainFactoryV3.getTripBeforeUpdateChain())
                 .afterSave(new ConstructUpdateCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.Trip.TRIP_ACTIVITY))
                 .list()

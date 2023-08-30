@@ -27,12 +27,16 @@ public class ValidateTimeSheetCommand extends FacilioCommand {
         EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
         if (CollectionUtils.isNotEmpty(timeSheets)) {
             for (TimeSheetContext timeSheet: timeSheets) {
+
                 if (timeSheet.getStartTime() != null && timeSheet.getEndTime() != null) {
 
                     timeSheet.setStatus(ServiceAppointmentUtil.getTimeSheetStatus(FacilioConstants.TimeSheet.COMPLETED));
                     if (timeSheet.getStartTime() > timeSheet.getEndTime()) {
                         throw new FSMException(FSMErrorCode.TIME_SHEET_TIME_MISMATCH);
                     }
+                }
+                else if(timeSheet.getStartTime() != null && timeSheet.getEndTime() == null){
+                    timeSheet.setStatus(ServiceAppointmentUtil.getTimeSheetStatus(FacilioConstants.TimeSheet.IN_PROGRESS));
                 }
                 if(eventType == EventType.EDIT){
                     Map<Long,Object> oldTimeSheets = (Map<Long,Object>) oldRecordMap.get(context.get("moduleName"));

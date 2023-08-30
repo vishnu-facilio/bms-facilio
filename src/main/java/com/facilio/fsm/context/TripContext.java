@@ -24,5 +24,6 @@ public class TripContext extends V3Context {
     private long estimatedDuration;
     private Double estimatedDistance;
     private File journey;
+    private TripStatusContext status;
 
 }

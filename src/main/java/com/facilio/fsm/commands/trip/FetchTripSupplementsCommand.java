@@ -29,6 +29,7 @@ public class FetchTripSupplementsCommand extends FacilioCommand {
         SupplementRecord moduleState = (SupplementRecord) fieldsAsMap.get("moduleState");
         SupplementRecord approvalStatus = (SupplementRecord) fieldsAsMap.get("approvalStatus");
 
+
         fetchLookupsList.add(people);
         fetchLookupsList.add(serviceAppointment);
         fetchLookupsList.add(startLocation);

@@ -497,6 +497,7 @@ public class ServiceAppointmentUtil {
                         newTrip.setStartTime(DateTimeUtil.getCurrenTime());
                         newTrip.setPeople(existingAppointment.getFieldAgent());
                         newTrip.setServiceOrder(existingAppointment.getServiceOrder());
+                        newTrip.setStatus(getTripStatus(FacilioConstants.Trip.IN_PROGRESS));
                         if(location != null){
                             if (location != null && location.getLat() != -1 && location.getLng() != -1) {
                                 if(location.getName() == null) {
@@ -721,6 +722,7 @@ public class ServiceAppointmentUtil {
         List<FacilioField> updateFields = new ArrayList<>();
         updateFields.add(timeSheetFieldMap.get(FacilioConstants.ContextNames.ENDTIME));
         updateFields.add(timeSheetFieldMap.get(FacilioConstants.ContextNames.DURATION));
+//        updateFields.add(timeSheetFieldMap.get(FacilioConstants.TimeSheet.TIME_SHEET_STATUS));
 
         UpdateRecordBuilder<TimeSheetContext> timeSheetBuilder = new UpdateRecordBuilder<TimeSheetContext>()
                 .module(timeSheetModule)
@@ -866,6 +868,18 @@ public class ServiceAppointmentUtil {
 
         TimeSheetStatusContext timeSheetStatus = builder.fetchFirst();
         return timeSheetStatus;
+    }
+
+    public static TripStatusContext getTripStatus(String status) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        SelectRecordsBuilder<TripStatusContext> builder = new SelectRecordsBuilder<TripStatusContext>()
+                .moduleName(FacilioConstants.Trip.TRIP_STATUS)
+                .beanClass(TripStatusContext.class)
+                .select(modBean.getAllFields(FacilioConstants.Trip.TRIP_STATUS))
+                .andCondition(CriteriaAPI.getCondition("STATUS","status",status,StringOperators.IS));
+
+        TripStatusContext tripStatus = builder.fetchFirst();
+        return tripStatus;
     }
 
 }

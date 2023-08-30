@@ -17,7 +17,9 @@ import com.facilio.fsm.commands.serviceTasks.*;
 import com.facilio.fsm.commands.timeOff.GenerateTimeOffCodeCommand;
 import com.facilio.fsm.commands.timeSheet.*;
 import com.facilio.fsm.commands.trip.CheckForExistingTripsCommand;
+import com.facilio.fsm.commands.trip.CheckRecordLockForTripCommand;
 import com.facilio.fsm.commands.trip.GenerateTripCodeCommand;
+import com.facilio.fsm.commands.trip.ValidateAndRollUpTripCommand;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 
@@ -221,6 +223,14 @@ public class FsmTransactionChainFactoryV3 {
         c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new CheckForExistingTripsCommand());
         c.addCommand(new GenerateTripCodeCommand());
+        c.addCommand(new ValidateAndRollUpTripCommand());
+        return c;
+    }
+
+    public static FacilioChain getTripBeforeUpdateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CheckRecordLockForTripCommand());
+        c.addCommand(new ValidateAndRollUpTripCommand());
         return c;
     }
 
