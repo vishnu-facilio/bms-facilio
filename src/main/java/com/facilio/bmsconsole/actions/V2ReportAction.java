@@ -2963,6 +2963,7 @@ public class V2ReportAction extends FacilioAction {
         if (reportContext == null) {
             throw new Exception("Report not found");
         }
+        context.put("isExport", true);
         context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
         context.put(FacilioConstants.ContextNames.REPORT, reportContext);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, reportContext.getModule().getName());

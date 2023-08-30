@@ -55,6 +55,12 @@ public class ConstructTabularReportData extends FacilioCommand {
         long dateFieldId = (long) context.get(FacilioConstants.ContextNames.DATE_FIELD);
         long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
         long endTime = (long) context.get(FacilioConstants.ContextNames.END_TIME);
+
+        Boolean isExport = (Boolean) context.get("isExport");
+        if(isExport != null && isExport == true) {
+            maxLimit = AccountUtil.getCurrentOrg().getId() == 592 ? 10000 : maxLimit;
+        }
+
         globalContext = context;
         if (reportContext == null) {
             reportContext = new ReportContext();

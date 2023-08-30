@@ -92,7 +92,9 @@ public class GetExportReportFileCommand extends FacilioCommand {
 				JSONParser parser = new JSONParser();
 	    			tableState = (Map<String, Object>) parser.parse(report.getTabularState());
 			}
-			setDataMapAndGetColumnsFromChartJson();
+			if(report.getChartState() != null) {
+				setDataMapAndGetColumnsFromChartJson();
+			}
 			List<Map<String, Object>> columns = setDataMapAndGetColumns(tableState);
 			List<String> headers = getTableHeaders(columns);
 			
