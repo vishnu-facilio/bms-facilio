@@ -64,8 +64,9 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                     }
 
                     if (!pointNames.isEmpty()) {
-                        List<Point> pointsFromDb = FieldUtil.getAsBeanListFromMapList(getPointsFromDb(pointNames, controller), PointsAPI.getPointType(FacilioControllerType.valueOf(controller.getControllerType())));
-                        if (pointsFromDb.size() < pointNames.size() && agent.getAgentTypeEnum().allowAutoAddition()) {
+                        FacilioControllerType controllerType = FacilioControllerType.valueOf(controller.getControllerType());
+                        List<Point> pointsFromDb = FieldUtil.getAsBeanListFromMapList(getPointsFromDb(pointNames, controller), PointsAPI.getPointType(controllerType));
+                        if (pointsFromDb.size() < pointNames.size() && agent.getAgentTypeEnum().allowAutoAddition(controllerType)) {
                             Set<String> pointsFromDbSet = new HashSet<>();
                             Set<String> pointNamesSet = addNewPoints(controller, agent, pointNames, pointsFromDb, pointsFromDbSet);
                             //get newly added points from db with point ids

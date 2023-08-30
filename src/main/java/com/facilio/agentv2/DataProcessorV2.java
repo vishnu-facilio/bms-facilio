@@ -207,7 +207,8 @@ public class DataProcessorV2 {
     private static Controller getOrAddController(JSONObject payload, FacilioAgent agent) throws Exception {
         Controller controller = AgentConstants.getControllerBean().getController(payload, agent.getId());
         if(controller == null){
-            if (agent.getAgentTypeEnum().allowAutoAddition()) {
+            FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.CONTROLLER_TYPE)).intValue());
+            if (agent.getAgentTypeEnum().allowAutoAddition(controllerType)) {
                 LOGGER.info("Adding Controller for agent "+ agent.getDisplayName() + " of agent type " + agent.getAgentTypeEnum().getLabel());
                 MiscControllerContext miscControllerContext = new MiscControllerContext(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
                 JSONObject controllerObj = (JSONObject) payload.get(AgentConstants.CONTROLLER);
@@ -365,46 +366,6 @@ public class DataProcessorV2 {
             LOGGER.info("Exception while logging metrics for ",e);
         }
     }
-
-    private Controller getCachedControllerUsingPayload(JSONObject payload, long agentId) throws Exception {
-            if(containsCheck(AgentConstants.CONTROLLER,payload)) {
-                JSONObject controllerJSON = (JSONObject) payload.get(AgentConstants.CONTROLLER);
-                if (containsCheck(AgentConstants.CONTROLLER_TYPE, payload)) {
-                    FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.CONTROLLER_TYPE)).intValue());
-                    if(controllerType==FacilioControllerType.NIAGARA && payload.containsKey(AgentConstants.PORT_NUMBER)){
-                        controllerJSON.put(AgentConstants.PORT_NUMBER,payload.get(AgentConstants.PORT_NUMBER));
-                    }
-                    if (!controllerJSON.isEmpty()) {
-                        Controller controller = controllerUtil.getCachedController(controllerJSON, controllerType);
-                        //Controller controller = AgentConstants.getControllerBean().getControllerFromDb(controllerJSON, agentId, controllerType);
-                        if (controller != null) {
-                            return controller;
-                        } else {
-                            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
-                            FacilioAgent agent = agentBean.getAgent(agentId);
-                            if (agent.getAgentTypeEnum().allowAutoAddition()) {
-                                MiscControllerContext miscControllerContext = new MiscControllerContext(agent.getId(), AccountUtil.getCurrentOrg().getOrgId());
-                                miscControllerContext.setName(((JSONObject) (payload.get(AgentConstants.CONTROLLER))).get(AgentConstants.NAME).toString());
-                                miscControllerContext.setDataInterval(agent.getInterval() * 60 * 1000);
-                                AgentConstants.getControllerBean().addController(miscControllerContext);
-                                return miscControllerContext;
-                            } else {
-                                throw new Exception("controller not found for " + payload);
-                            }
-                        }
-                    } else {
-                        throw new Exception(" controllerJSON cant be empty " + controllerJSON);
-                    }
-                } else {
-                    Controller customController = ControllerUtilV2.makeCustomController(orgId, agentId, controllerJSON);
-                    return customController;
-                }
-            } else{
-                throw new Exception("payload is missing" + AgentConstants.CONTROLLER);
-            }
-
-    }
-
     public static boolean containsCheck(String key, Map map){
         if( (key != null) && ( ! key.isEmpty()) && ( map != null ) && ( ! map.isEmpty() ) && (map.containsKey(key)) && (map.get(key) != null) ){
             return true;

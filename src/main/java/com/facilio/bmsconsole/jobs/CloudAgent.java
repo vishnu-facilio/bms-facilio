@@ -1,13 +1,12 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.fw.BeanFactory;
+import com.facilio.util.FacilioUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -131,12 +130,18 @@ public class CloudAgent extends FacilioJob {
 					if ((boolean) result.getOrDefault("cov", false)) {
 						type = PublishType.COV;
 					}
-					payload.put("controllerType", 0);
 					payload.put("actual_timestamp", timeStamp);
-					
-					JSONObject controller = new JSONObject();
-	                controller.put("name", result.remove("controller"));
-	                payload.put("controller", controller);
+
+					int controllerType = FacilioUtil.parseInt(result.getOrDefault("controllerType", FacilioControllerType.MISC.asInt()));
+					payload.put("controllerType", controllerType);
+					Map<String, Object> controller;
+					if (controllerType == FacilioControllerType.MISC.asInt()) {
+						controller = Collections.singletonMap("name", result.remove("controller"));
+					}
+					else {
+						controller = (HashMap) result.get("controller");
+					}
+					payload.put("controller", controller);
 
 	                if (data != null) {
 	                    payload.put("data", Collections.singletonList(data));

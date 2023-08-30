@@ -1,5 +1,6 @@
 package com.facilio.agent;
 
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.modules.FacilioIntEnum;
 
 import java.util.Collections;
@@ -75,8 +76,8 @@ public enum AgentType implements FacilioIntEnum {
         return isMqttConnectionRequired;
     }
 
-    public boolean allowAutoAddition() {
-        return allowAutoAddition;
+    public boolean allowAutoAddition(FacilioControllerType controllerType) {
+        return allowAutoAddition && controllerType == FacilioControllerType.MISC;
     }
 
     @Override
