@@ -168,7 +168,7 @@ public class BeforeAuthInputFilter implements Filter {
     }
 
     private boolean isAllowed() {
-       return !(FacilioProperties.isProduction() || FacilioProperties.getEnvironment().equals("stage2") || FacilioProperties.isOnpremise());
+       return !(FacilioProperties.isProduction() || FacilioProperties.getEnvironment().equals("stage2") || FacilioProperties.isOnpremise() || FacilioProperties.isDevelopment());
     }
     @Override
     public void destroy() {

@@ -1,12 +1,14 @@
 package com.facilio.sandbox.action;
 
 import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.sandbox.command.SandboxTransactionChainFactory;
 import com.facilio.sandbox.context.SandboxConfigContext;
 import com.facilio.sandbox.utils.SandboxAPI;
@@ -70,9 +72,11 @@ public class SandboxAction extends FacilioAction {
         createSandboxChain.execute();
 
         IAMAccount sbAccount = (IAMAccount) sandboxContext.get(SandboxConstants.SANDBOX_ACCOUNT);
+        Organization productionOrg = IAMOrgUtil.getOrg(AccountUtil.getCurrentOrg().getOrgId());
 
         FacilioChain sandboxDataChain = SandboxTransactionChainFactory.getAddSandboxDefaultDataAndCreationInstallationChain();
         FacilioContext sandboxDataContext = sandboxDataChain.getContext();
+        sandboxDataContext.put(SandboxConstants.PRODUCTION_DOMAIN_NAME, productionOrg.getDomain());
         sandboxDataContext.put(SandboxConstants.SANDBOX_ORG, sbAccount.getOrg());
         sandboxDataContext.put(SandboxConstants.SANDBOX_ORG_USER, sbAccount.getUser());
         sandboxDataContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, sandboxContext.get(FacilioConstants.ContextNames.SIGNUP_INFO));

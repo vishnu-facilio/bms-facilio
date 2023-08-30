@@ -256,24 +256,12 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
     }
 
     private Map<String,Object> addAssetCategory(String xmlDataKey, V3AssetCategoryContext v3AssetCategoryContext) throws Exception {
-        V3AssetCategoryContext assetCategoryContext = new V3AssetCategoryContext();
-        assetCategoryContext.setName(v3AssetCategoryContext.getName());
-        assetCategoryContext.setDisplayName(v3AssetCategoryContext.getDisplayName());
-        assetCategoryContext.setType(v3AssetCategoryContext.getType());
-        assetCategoryContext.setParentCategoryId(v3AssetCategoryContext.getParentCategoryId());
-        Map<String, Object> assetCategoryData = FieldUtil.getAsProperties(assetCategoryContext);
+        Map<String, Object> assetCategoryData = FieldUtil.getAsProperties(v3AssetCategoryContext);
         assetCategoryData.put("xmlDataKey", xmlDataKey);
         return assetCategoryData;
     }
     public Map<String,Object> updateAssetCategory(V3AssetCategoryContext v3AssetCategoryContext) throws Exception {
-        V3AssetCategoryContext assetCategoryContext = new V3AssetCategoryContext();
-        assetCategoryContext.setId(v3AssetCategoryContext.getId());
-        assetCategoryContext.setName(v3AssetCategoryContext.getName());
-        assetCategoryContext.setDisplayName(v3AssetCategoryContext.getDisplayName());
-        assetCategoryContext.setType(v3AssetCategoryContext.getType());
-        assetCategoryContext.setParentCategoryId(v3AssetCategoryContext.getParentCategoryId());
-        assetCategoryContext.setAssetModuleID(v3AssetCategoryContext.getAssetModuleID());
-        Map<String, Object> assetCategoryData = FieldUtil.getAsProperties(assetCategoryContext);
+        Map<String, Object> assetCategoryData = FieldUtil.getAsProperties(v3AssetCategoryContext);
         return assetCategoryData;
     }
     public Map<Long, Long> getAssetCategoryIdVsModuleId(Boolean fetchSystem) throws Exception {

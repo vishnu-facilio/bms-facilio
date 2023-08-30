@@ -25,6 +25,7 @@ public class AddDefaultSignupDataAndCreationInstallationCommand extends FacilioC
         content.put(FacilioConstants.ContextNames.SIGNUP_INFO, context.get(FacilioConstants.ContextNames.SIGNUP_INFO));
         content.put(SandboxConstants.SANDBOX_ORG, context.get(SandboxConstants.SANDBOX_ORG));
         content.put(SandboxConstants.SANDBOX_ORG_USER, context.get(SandboxConstants.SANDBOX_ORG_USER));
+        content.put(SandboxConstants.PRODUCTION_DOMAIN_NAME, context.get(SandboxConstants.PRODUCTION_DOMAIN_NAME));
         content.put("methodName", "addDefaultSignupDataToSandbox");
         content.put("startTime", DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata"))+"");
         Messenger.getMessenger().sendMessage(new Message()

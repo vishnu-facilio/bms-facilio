@@ -557,9 +557,12 @@ public class PackageBeanUtil {
     }
 
     public static String pickListValueBuilder(XMLBuilder xmlBuilder) {
+        String value = null;
         String moduleName = xmlBuilder.getElement(PackageConstants.MODULENAME).getText();
-        String value = xmlBuilder.getElement(PackageConstants.CriteriaConstants.PICKLIST_VALUE).getText();
-
+        XMLBuilder pickList = xmlBuilder.getElement(PackageConstants.CriteriaConstants.PICKLIST_VALUE);
+        if(pickList!=null) {
+            value = xmlBuilder.getElement(PackageConstants.CriteriaConstants.PICKLIST_VALUE).getText();
+        }
         if (StringUtils.isEmpty(moduleName) || StringUtils.isEmpty(value)) {
             return null;
         }

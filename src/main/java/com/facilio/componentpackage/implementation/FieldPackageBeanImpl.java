@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
-    private static final List<String> SYSTEM_FIELD_NAMES_WITH_CUSTOM_CONFIGURATION = Arrays.asList("textContent", "htmlContent");
+    private static final List<String> SYSTEM_FIELD_NAMES_WITH_CUSTOM_CONFIGURATION = Arrays.asList("textContent", "htmlContent", "firstLevelApproval");
 
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {

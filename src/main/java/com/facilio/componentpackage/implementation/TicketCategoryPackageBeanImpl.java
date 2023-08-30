@@ -168,25 +168,17 @@ public class TicketCategoryPackageBeanImpl implements PackageBean<TicketCategory
 
     }
     private long addTicketCategory(TicketCategoryContext ticketCategoryContext) throws Exception {
-        TicketCategoryContext ticketCatContext = new TicketCategoryContext();
-        ticketCatContext.setName(ticketCategoryContext.getName());
-        ticketCatContext.setDisplayName(ticketCategoryContext.getDisplayName());
-        ticketCatContext.setDescription(ticketCategoryContext.getDescription());
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.RECORD, ticketCatContext);
+        context.put(FacilioConstants.ContextNames.RECORD, ticketCategoryContext);
         FacilioChain addTicketCategoryChain = FacilioChainFactory.getAddTicketCategoryChain();
         addTicketCategoryChain.execute(context);
         long ticketCategoryId = (long) context.get("recordId");
         return ticketCategoryId;
     }
     public void updateTicketCategory( TicketCategoryContext ticketCategoryContext) throws Exception {
-        TicketCategoryContext ticketCatContext = new TicketCategoryContext();
-        ticketCatContext.setName(ticketCategoryContext.getName());
-        ticketCatContext.setDisplayName(ticketCategoryContext.getDisplayName());
-        ticketCatContext.setDescription(ticketCategoryContext.getDescription());
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.RECORD, ticketCatContext);
-        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(ticketCatContext.getId()));
+        context.put(FacilioConstants.ContextNames.RECORD, ticketCategoryContext);
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(ticketCategoryContext.getId()));
         FacilioChain updateTicketCategoryChain = FacilioChainFactory.getUpdateTicketCategoryChain();
         updateTicketCategoryChain.execute(context);
     }

@@ -166,23 +166,17 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
 
     }
     private long addTicketType(TicketTypeContext ticketTypeContext) throws Exception {
-        TicketTypeContext ticketTyContext = new TicketTypeContext();
-        ticketTyContext.setName(ticketTypeContext.getName());
-        ticketTyContext.setDescription(ticketTypeContext.getDescription());
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.RECORD, ticketTyContext);
+        context.put(FacilioConstants.ContextNames.RECORD, ticketTypeContext);
         FacilioChain addTicketTypeChain = FacilioChainFactory.getAddTicketTypeChain();
         addTicketTypeChain.execute(context);
         long ticketTypeId = (long) context.get("recordId");
         return ticketTypeId;
     }
     private void updateTicketType(TicketTypeContext ticketTypeContext) throws Exception {
-        TicketTypeContext ticketTyContext = new TicketTypeContext();
-        ticketTyContext.setName(ticketTypeContext.getName());
-        ticketTyContext.setDescription(ticketTypeContext.getDescription());
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.RECORD, ticketTyContext);
-        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(ticketTyContext.getId()));
+        context.put(FacilioConstants.ContextNames.RECORD, ticketTypeContext);
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(ticketTypeContext.getId()));
         FacilioChain updateTicketTypeChain = FacilioChainFactory.getUpdateTicketTypeChain();
         updateTicketTypeChain.execute(context);
     }

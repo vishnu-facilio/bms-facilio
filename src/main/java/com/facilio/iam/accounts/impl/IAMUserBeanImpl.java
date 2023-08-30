@@ -2812,8 +2812,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN","domainName" , appDomain.getDomain(), StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE","appDomainType" , String.valueOf(appDomain.getAppDomainType()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("App_Domain.APP_GROUP_TYPE","groupType" , String.valueOf(appDomain.getGroupType()), NumberOperators.EQUALS));
-		//		.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID","orgId" , String.valueOf(appDomain.getOrgId()), NumberOperators.EQUALS));
-		
+		Organization org = IAMOrgUtil.getOrg(appDomain.getOrgId());
+		if(org.getOrgType()==Organization.OrgType.SANDBOX.getIndex()){
+			selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID","orgId" , String.valueOf(appDomain.getOrgId()), NumberOperators.EQUALS));
+		}
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(props)) {
 			Map<String, Object> map = props.get(0);

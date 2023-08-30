@@ -35,7 +35,7 @@ public class SandboxTransactionChainFactory {
     }
     public static FacilioChain getAddSandboxDefaultDataAndCreationInstallationChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new AddSandboxDomainCommand());
+//        c.addCommand(new AddSandboxDomainCommand());
         c.addCommand(new AddDefaultSignupDataAndCreationInstallationCommand());
         return c;
     }

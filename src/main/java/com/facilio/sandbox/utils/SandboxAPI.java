@@ -12,6 +12,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -172,13 +173,14 @@ public class SandboxAPI {
         return updateBuilder.update(props);
     }
 
-    public static void setSandboxDomain(SandboxConfigContext sandboxConfig) {
+    public static void setSandboxDomain(SandboxConfigContext sandboxConfig) throws Exception {
         String subDomain = sandboxConfig.getSubDomain();
+        Organization productionOrg = IAMOrgUtil.getOrg(AccountUtil.getCurrentOrg().getOrgId());
         StringBuilder builder = new StringBuilder();
         HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
         builder.append(RequestUtil.getProtocol(request))
                 .append("://")
-                .append(subDomain + "." + FacilioProperties.getBaseDomain());
+                .append(productionOrg.getDomain() + "." + FacilioProperties.getSandboxSubDomain()+"/"+subDomain);
         sandboxConfig.setFullDomain(builder.toString());
     }
 

@@ -802,38 +802,61 @@ public class ApplicationApi {
                 .fields(fields);
 
         Organization org = AccountUtil.getOrgBean(orgId).getOrg(orgId);
+
         AppDomain facilioApp = IAMAppUtil.getAppDomain(AccountUtil.getDefaultAppDomain());
         ApplicationContext facilioApplication = new ApplicationContext(orgId, "Facilio", true,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
                 ApplicationContext.AppLayoutType.DUAL.getIndex(), "Facilio Main App",
                 ApplicationContext.AppCategory.FEATURE_GROUPING.getIndex());
+        AppDomain servicePortalApp, tenantPortalApp, vendorPortalApp, clientPortalApp, employeePortalApp;
+        if(org.getOrgType() == Organization.OrgType.SANDBOX.getIndex()){
+            Organization productionOrg = AccountUtil.getOrgBean().getOrg(org.getProductionOrgId());
+            servicePortalApp = IAMAppUtil
+                    .getAppDomain(productionOrg.getDomain() + "." +FacilioConstants.ContextNames.OCCUPANTS+"."+FacilioProperties.getSandboxSubDomain());
+            tenantPortalApp = IAMAppUtil
+                    .getAppDomain(productionOrg.getDomain() + "." +FacilioConstants.ContextNames.TENANT_LIST+"."+FacilioProperties.getSandboxSubDomain());
+            vendorPortalApp = IAMAppUtil
+                    .getAppDomain(productionOrg.getDomain() + "." +FacilioConstants.ContextNames.VENDORS+"."+FacilioProperties.getSandboxSubDomain());
+            clientPortalApp = IAMAppUtil
+                    .getAppDomain(productionOrg.getDomain() + "." +FacilioConstants.ContextNames.CLIENTS+"."+FacilioProperties.getSandboxSubDomain());
+            employeePortalApp = IAMAppUtil.
+                    getAppDomain(productionOrg.getDomain() + "." +FacilioConstants.ContextNames.EMPLOYEES+"."+FacilioProperties.getSandboxSubDomain());
+        }else{
+            servicePortalApp = IAMAppUtil
+                    .getAppDomain(org.getDomain() + "." + FacilioProperties.getOccupantAppDomain());
+            tenantPortalApp = IAMAppUtil
+                    .getAppDomain(org.getDomain() + "." + FacilioProperties.getTenantAppDomain());
+            vendorPortalApp = IAMAppUtil
+                    .getAppDomain(org.getDomain() + "." + FacilioProperties.getVendorAppDomain());
+            clientPortalApp = IAMAppUtil
+                    .getAppDomain(org.getDomain() + "." + FacilioProperties.getClientAppDomain());
+            employeePortalApp = IAMAppUtil.
+                    getAppDomain(org.getDomain() + "." + FacilioProperties.getEmployeeAppDomain());
+        }
 
-        AppDomain servicePortalApp = IAMAppUtil
-                .getAppDomain(org.getDomain() + "." + FacilioProperties.getOccupantAppDomain());
         ApplicationContext servicePortalapplication = new ApplicationContext(orgId, "Occupant Portal", true,
                 servicePortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP,
                 ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Occupant Portal App",
                 ApplicationContext.AppCategory.PORTALS.getIndex());
 
-        AppDomain tenantPortalApp = IAMAppUtil
-                .getAppDomain(org.getDomain() + "." + FacilioProperties.getTenantAppDomain());
         ApplicationContext tenantPortalapplication = new ApplicationContext(orgId, "Tenant Portal", true,
                 tenantPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP,
                 ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Tenant Portal App",
                 ApplicationContext.AppCategory.PORTALS.getIndex());
 
-        AppDomain vendorPortalApp = IAMAppUtil
-                .getAppDomain(org.getDomain() + "." + FacilioProperties.getVendorAppDomain());
         ApplicationContext vendorPortalapplication = new ApplicationContext(orgId, "Vendor Portal", true,
                 vendorPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP,
                 ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Vendor Portal App",
                 ApplicationContext.AppCategory.PORTALS.getIndex());
 
-        AppDomain clientPortalApp = IAMAppUtil
-                .getAppDomain(org.getDomain() + "." + FacilioProperties.getClientAppDomain());
         ApplicationContext clientPortalapplication = new ApplicationContext(orgId, "Client Portal", true,
                 clientPortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP,
                 ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Client Portal App",
+                ApplicationContext.AppCategory.PORTALS.getIndex());
+
+        ApplicationContext employeePortalApplication = new ApplicationContext(orgId, "Employee Portal", true,
+                employeePortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,
+                ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Employee Portal App",
                 ApplicationContext.AppCategory.PORTALS.getIndex());
 
         ApplicationContext facilioAgentApplication = new ApplicationContext(orgId, "Agent", false,
@@ -856,9 +879,6 @@ public class ApplicationApi {
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.KIOSK_APP,
                 ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Kiosk App",
                 ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
-
-        AppDomain employeePortalApp = IAMAppUtil.getAppDomain(org.getDomain() + "." + FacilioProperties.getEmployeeAppDomain());
-        ApplicationContext employeePortalApplication = new ApplicationContext(orgId, "Employee Portal", true, employeePortalApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Employee Portal App", ApplicationContext.AppCategory.PORTALS.getIndex());
 
         ApplicationContext workplaceApplication = new ApplicationContext(orgId, "IWMS App", false,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.IWMS_APP,
@@ -2084,22 +2104,42 @@ public class ApplicationApi {
 
     public static void addDefaultAppDomains(long orgId) throws Exception {
         Organization org = AccountUtil.getOrgBean().getOrg(orgId);
-        AppDomain servicePortalAppDomain = new AppDomain(
-                org.getDomain() + "." + FacilioProperties.getOccupantAppDomain(),
-                AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId,
-                AppDomain.DomainType.DEFAULT.getIndex());
-        AppDomain vendorPortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getVendorAppDomain(),
-                AppDomainType.VENDOR_PORTAL.getIndex(), GroupType.VENDOR_PORTAL.getIndex(), orgId,
-                AppDomain.DomainType.DEFAULT.getIndex());
-        AppDomain tenantPortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getTenantAppDomain(),
-                AppDomainType.TENANT_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId,
-                AppDomain.DomainType.DEFAULT.getIndex());
-        AppDomain clientPortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getClientAppDomain(),
-                AppDomainType.CLIENT_PORTAL.getIndex(), GroupType.CLIENT_PORTAL.getIndex(), orgId,
-                AppDomain.DomainType.DEFAULT.getIndex());
-        AppDomain employeePortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getEmployeeAppDomain(), AppDomainType.EMPLOYEE_PORTAL.getIndex(), GroupType.EMPLOYEE_PORTAL.getIndex(), orgId, AppDomain.DomainType.DEFAULT.getIndex());
-
-
+        AppDomain servicePortalAppDomain,vendorPortalAppDomain,tenantPortalAppDomain,clientPortalAppDomain,employeePortalAppDomain;
+        if(org.getOrgType()==Organization.OrgType.SANDBOX.getIndex()){
+            Organization productionOrg = AccountUtil.getOrgBean().getOrg(org.getProductionOrgId());
+            servicePortalAppDomain = new AppDomain(
+                    productionOrg.getDomain() + "." +FacilioConstants.ContextNames.OCCUPANTS+"."+FacilioProperties.getSandboxSubDomain(),
+                    AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId,
+                    AppDomain.DomainType.DEFAULT.getIndex());
+            vendorPortalAppDomain = new AppDomain(productionOrg.getDomain() + "." +FacilioConstants.ContextNames.VENDORS+"."+FacilioProperties.getSandboxSubDomain(),
+                    AppDomainType.VENDOR_PORTAL.getIndex(), GroupType.VENDOR_PORTAL.getIndex(), orgId,
+                    AppDomain.DomainType.DEFAULT.getIndex());
+            tenantPortalAppDomain = new AppDomain(productionOrg.getDomain() + "." +FacilioConstants.ContextNames.TENANT_LIST+"."+FacilioProperties.getSandboxSubDomain(),
+                    AppDomainType.TENANT_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId,
+                    AppDomain.DomainType.DEFAULT.getIndex());
+            clientPortalAppDomain = new AppDomain(productionOrg.getDomain() + "." +FacilioConstants.ContextNames.CLIENTS+"."+FacilioProperties.getSandboxSubDomain(),
+                    AppDomainType.CLIENT_PORTAL.getIndex(), GroupType.CLIENT_PORTAL.getIndex(), orgId,
+                    AppDomain.DomainType.DEFAULT.getIndex());
+            employeePortalAppDomain = new AppDomain(productionOrg.getDomain() + "." +FacilioConstants.ContextNames.EMPLOYEES+"."+FacilioProperties.getSandboxSubDomain(),
+                    AppDomainType.EMPLOYEE_PORTAL.getIndex(), GroupType.EMPLOYEE_PORTAL.getIndex(), orgId,
+                    AppDomain.DomainType.DEFAULT.getIndex());
+        } else{
+            servicePortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getOccupantAppDomain(),
+                    AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId,
+                    AppDomain.DomainType.DEFAULT.getIndex());
+            vendorPortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getVendorAppDomain(),
+                    AppDomainType.VENDOR_PORTAL.getIndex(), GroupType.VENDOR_PORTAL.getIndex(), orgId,
+                    AppDomain.DomainType.DEFAULT.getIndex());
+            tenantPortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getTenantAppDomain(),
+                    AppDomainType.TENANT_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId,
+                    AppDomain.DomainType.DEFAULT.getIndex());
+            clientPortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getClientAppDomain(),
+                    AppDomainType.CLIENT_PORTAL.getIndex(), GroupType.CLIENT_PORTAL.getIndex(), orgId,
+                    AppDomain.DomainType.DEFAULT.getIndex());
+            employeePortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getEmployeeAppDomain(),
+                    AppDomainType.EMPLOYEE_PORTAL.getIndex(), GroupType.EMPLOYEE_PORTAL.getIndex(), orgId,
+                    AppDomain.DomainType.DEFAULT.getIndex());
+        }
         List<AppDomain> appDomains = new ArrayList<AppDomain>();
         appDomains.add(servicePortalAppDomain);
         appDomains.add(vendorPortalAppDomain);

@@ -207,29 +207,17 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
 
     }
     private long addTicketPriority(TicketPriorityContext ticketPriorityContext) throws Exception {
-        TicketPriorityContext ticketPriorContext = new TicketPriorityContext();
-        ticketPriorContext.setPriority(ticketPriorityContext.getPriority());
-        ticketPriorContext.setSequenceNumber(ticketPriorityContext.getSequenceNumber());
-        ticketPriorContext.setColour(ticketPriorityContext.getColour());
-        ticketPriorContext.setDisplayName(ticketPriorContext.getDisplayName());
-        ticketPriorContext.setDescription(ticketPriorContext.getDescription());
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.RECORD, ticketPriorContext);
+        context.put(FacilioConstants.ContextNames.RECORD, ticketPriorityContext);
         FacilioChain addTicketPriorityChain = FacilioChainFactory.getAddTicketPriorityChain();
         addTicketPriorityChain.execute(context);
         long ticketPriorityId = (long) context.get("recordId");
         return ticketPriorityId;
     }
     private void updateTicketPriority(TicketPriorityContext ticketPriorityContext) throws Exception {
-        TicketPriorityContext ticketPriorContext = new TicketPriorityContext();
-        ticketPriorContext.setPriority(ticketPriorityContext.getPriority());
-        ticketPriorContext.setSequenceNumber(ticketPriorityContext.getSequenceNumber());
-        ticketPriorContext.setColour(ticketPriorityContext.getColour());
-        ticketPriorContext.setDisplayName(ticketPriorContext.getDisplayName());
-        ticketPriorContext.setDescription(ticketPriorContext.getDescription());
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.RECORD, ticketPriorContext);
-        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(ticketPriorContext.getId()));
+        context.put(FacilioConstants.ContextNames.RECORD, ticketPriorityContext);
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(ticketPriorityContext.getId()));
         FacilioChain updateTicketPriorityChain = FacilioChainFactory.getUpdateTicketPriorityChain();
         updateTicketPriorityChain.execute(context);
     }

@@ -78,6 +78,9 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                         .text(commitment.getActivityTypeEnum() != null ? commitment.getActivityTypeEnum().name() : null);
                 commitmentBuilder.element(PackageConstants.WorkFlowRuleConstants.PARENT_RULE).text(slaRule.getName());
                 commitmentBuilder.element(PackageConstants.WorkFlowRuleConstants.RULE_TYPE).text(commitment.getRuleTypeEnum().name());
+                if (criteria!=null) {
+                    commitmentBuilder.addElement(PackageBeanUtil.constructBuilderFromCriteria(criteria, element.element(PackageConstants.CriteriaConstants.CRITERIA), commitment.getModuleName()));
+                }
                 if (criteria != null) {
                     commitmentBuilder.addElement(PackageBeanUtil.constructBuilderFromCriteria(criteria, element.element(PackageConstants.CriteriaConstants.CRITERIA), commitment.getModuleName()));
                 }

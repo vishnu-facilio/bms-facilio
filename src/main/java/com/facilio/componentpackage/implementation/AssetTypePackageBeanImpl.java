@@ -127,7 +127,7 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
     @Override
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
-        FacilioModule module = moduleBean.getModule("assetdepartment");
+        FacilioModule module = moduleBean.getModule("assettype");
         List<Long> keyList = new ArrayList<>(idVsXMLComponents.keySet());
         if(CollectionUtils.isNotEmpty(keyList)) {
             List<ModuleBaseWithCustomFields> oldRecords = (List<ModuleBaseWithCustomFields>) PackageBeanUtil.getModuleDataListsForIds(keyList, module, V3AssetTypeContext.class);

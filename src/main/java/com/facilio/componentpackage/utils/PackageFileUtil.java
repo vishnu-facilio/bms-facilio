@@ -78,15 +78,20 @@ public class PackageFileUtil {
 
         return fileId;
     }
-
     public static File getPackageZipFile(Long fileId, Long orgId) throws Exception {
 
         try (InputStream inputStream = FacilioFactory.getFileStoreFromOrg(orgId).readFile(fileId)) {
 
-            String tempFilePath = UnzipPackageFileCommand.class.getClassLoader().getResource("").getFile()
-                    + File.separator + "facilio-temp-files" + File.separator + orgId
-                    + File.separator + "packages"+File.separator+ fileId+".zip";
-            File file = new File(tempFilePath);
+
+            String dirPath = System.getProperties().getProperty("java.io.tmpdir") + File.separator + "sandbox"+ File.separator + "Unzipped-Package-Files";
+            String path = dirPath + File.separator +fileId+".zip";
+            File file = new File(path);
+            File dir = new File(dirPath);
+            boolean directoryExits = (dir.exists() && dir.isDirectory());
+            if (!directoryExits) {
+                dir.mkdirs();
+            }
+            file.createNewFile();
             try (FileOutputStream outputStream = new FileOutputStream(file, false)) {
                 int read;
                 byte[] bytes = new byte[8192];

@@ -1,10 +1,8 @@
 package com.facilio.wmsv2.bean;
 
-import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.IAMUser;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.*;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext;
@@ -15,6 +13,7 @@ import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fms.message.Message;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.ims.endpoint.Messenger;
 import com.facilio.ims.handler.LongRunningTaskHandler;
 import com.facilio.modules.FieldUtil;
@@ -117,6 +116,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 			long productionOrgId = ((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue();
 			long sandboxOrgId = ((Number)data.get(PackageConstants.TARGET_ORG_ID)).longValue();
 			long sandboxId = ((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue();
+			String productionDomainName = String.valueOf(data.get(SandboxConstants.PRODUCTION_DOMAIN_NAME));
 			Map<String, Object> sandboxOrgData = (Map<String, Object>)data.get(SandboxConstants.SANDBOX_ORG);
 			Map<String, Object> signupData = (Map<String, Object>)data.get(FacilioConstants.ContextNames.SIGNUP_INFO);
 			Map<String, Object> userData = (Map<String, Object>)data.get(SandboxConstants.SANDBOX_ORG_USER);
@@ -125,13 +125,30 @@ public class LongTasksBeanImpl implements LongTasksBean {
 			IAMUser iamUser = SandboxUtil.constructSandboxIAMUserFromMap(userData);
 			Account account = new Account(sandBoxOrg, new User(iamUser));
 			AccountUtil.setCurrentAccount(account);
+
+			LOGGER.info("####Sandbox - Initiating Sandbox Domain Creation");
+
+			AppDomain sandboxDomain = new AppDomain(
+					productionDomainName + "." + FacilioProperties.getSandboxSubDomain(),
+					AppDomain.AppDomainType.FACILIO.getIndex(), AppDomain.GroupType.FACILIO.getIndex(), sandboxOrgId,
+					AppDomain.DomainType.DEFAULT.getIndex());
+
+			List<AppDomain> appDomains = new ArrayList<>();
+			appDomains.add(sandboxDomain);
+
+			IAMAppUtil.addAppDomains(appDomains);
+
+			LOGGER.info("####Sandbox - Completed Sandbox Domain Creation");
+
 			LOGGER.info("####Sandbox - Initiating Sandbox Org Creation");
 			FacilioChain signupChain = TransactionChainFactory.getOrgSignupChain();
 			FacilioContext signupContext = signupChain.getContext();
 			signupContext.put("orgId", sandboxOrgId);
 			signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupDataJson);
 			signupChain.execute();
+
 			LOGGER.info("####Sandbox - Completed Sandbox Org creation");
+			AccountUtil.cleanCurrentAccount();
 			content.put(SandboxConstants.SANDBOX_ID, sandboxId);
 			content.put(PackageConstants.SOURCE_ORG_ID, productionOrgId);
 			content.put("methodName", "createPackageForSandboxData");
@@ -168,7 +185,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 				context.put(PackageConstants.PACKAGE_TYPE, PackageContext.PackageType.SANDBOX);
 				context.put(PackageConstants.FROM_ADMIN_TOOL, fromAdminTool);
 				createPackageChain.execute();
-				content.put(PackageConstants.FILE_ID, context.get(PackageConstants.FILE_ID));
+				content.put(PackageConstants.FILE_ID, SandboxAPI.getRecentPackageId(sandboxConfigContext.getSubDomain()));
 				LOGGER.info("####Sandbox - Completed Package creation");
 				sandboxConfigContext.setStatus(4);
 				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
@@ -179,6 +196,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
 				return;
 			}
+			AccountUtil.cleanCurrentAccount();
 			content.put("methodName", "installPackageForSandboxData");
 			content.put("startTime", DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")) + "");
 			content.put(PackageConstants.SOURCE_ORG_ID, sandboxConfigContext.getOrgId());
@@ -219,6 +237,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 				sandboxConfigContext.setStatus(1);
 				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
 				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
+				AccountUtil.cleanCurrentAccount();
 			}catch(Exception e){
 				LOGGER.error("####Sandbox - Error occurred while changing status ",e);
 			}
@@ -234,6 +253,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 				sandboxConfigContext.setStatus(6);
 				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
 				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
+				AccountUtil.cleanCurrentAccount();
 			} catch(Exception ex){
 				LOGGER.error("####Sandbox - Error occurred while changing status", ex);
 			}
