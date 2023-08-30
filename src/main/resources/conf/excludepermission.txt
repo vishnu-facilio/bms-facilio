@@ -55,6 +55,7 @@
 /admin/upgradeAgentVersion
 /admin/uploadSecretFilesPage
 /admin/pmV1Monitoring
+/admin/pmV1TasksToJobPlan
 /admin/addSecretFile
 /admin/getSecretFiles
 /admin/deleteSecretFile

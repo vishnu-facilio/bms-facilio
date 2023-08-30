@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsoleV3.context.V3TaskContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
@@ -309,6 +311,54 @@ public class TaskTemplate extends Template {
 			taskProp.put("readingRules", readingRules);
 			
 			return FieldUtil.getAsBeanFromMap(taskProp, TaskContext.class);
+		}
+		return null;
+	}
+
+	public JobPlanTasksContext getAsJobPlanTask() {
+		if (getName() != null && !getName().isEmpty()) {
+			Map<String, Object> taskProp = new HashMap<>();
+
+			taskProp.put("subject", getName());
+			taskProp.put("description", description);
+			taskProp.put("duration", duration);
+			taskProp.put("readingFieldId", readingFieldId);
+			taskProp.put("sequence", sequence);
+			taskProp.put("attachmentRequired", isAttachmentRequired());
+			taskProp.put("statusNew", getStatus());
+
+			if (priorityId != -1) {
+				taskProp.put("priority", FieldUtil.getEmptyLookedUpProp(priorityId));
+			}
+			if (categoryId != -1) {
+				taskProp.put("category", FieldUtil.getEmptyLookedUpProp(categoryId));
+			}
+			if (typeId != -1) {
+				taskProp.put("type", FieldUtil.getEmptyLookedUpProp(typeId));
+			}
+			if (assignmentGroupId != -1) {
+				taskProp.put("assignmentGroup", FieldUtil.getEmptyLookedUpProp(assignmentGroupId));
+			}
+			if (assignedToId != -1) {
+				taskProp.put("assignedTo", FieldUtil.getEmptyLookedUpProp(assignedToId));
+			}
+			if (resourceId != -1) {
+				taskProp.put("resource", FieldUtil.getEmptyLookedUpProp(resourceId));
+			}
+			if (inputType != null) {
+				taskProp.put("inputType", inputType.getVal());
+			}
+			if (siteId != -1) {
+				taskProp.put("siteId", siteId);
+			}
+
+			taskProp.put("sectionId", sectionId);
+			if (additionInfo != null) {
+				taskProp.putAll(additionInfo);
+			}
+			taskProp.put("readingRules", readingRules);
+
+			return FieldUtil.getAsBeanFromMap(taskProp, JobPlanTasksContext.class);
 		}
 		return null;
 	}

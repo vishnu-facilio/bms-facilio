@@ -3218,4 +3218,12 @@
             <property name="filters" type="string"/>
         </requestbody>
     </request>
+    <!-- PMv1 migration -->
+    <request path="/api/v3/pmv1Migration/tasks" method="POST">
+        <requestbody>
+            <property name="pmV1Ids" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+        </requestbody>
+    </request>
 </config>

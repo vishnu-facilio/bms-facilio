@@ -84,6 +84,11 @@
 				<param name="location">pmV1Monitoring</param>
 			</result>
 		</action>
+		<action name="pmV1TasksToJobPlan" class="com.facilio.bmsconsole.actions.AdminAction" method="pmMetaRefresh">
+			<result name="success" type="redirect">
+				<param name="location">pmV1TasksToJobPlan</param>
+			</result>
+		</action>
 		<action name="reloadbrowser" class="com.facilio.bmsconsole.actions.AdminAction" method="reloadBrowser">
 			<result name="success" type="redirect">
 				<param name="location">buildInfo</param>
@@ -227,6 +232,9 @@
 		</action>
 		<action name="pmV1Monitoring" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result  type="tiles">adminpage/pmV1Monitoring.jsp</result>
+		</action>
+		<action name="pmV1TasksToJobPlan" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result  type="tiles">adminpage/pmV1TasksToJobPlan.jsp</result>
 		</action>
 
 		<action name="addSecretFile" class="com.facilio.bmsconsole.actions.AdminAction" method ="addSecretFile">

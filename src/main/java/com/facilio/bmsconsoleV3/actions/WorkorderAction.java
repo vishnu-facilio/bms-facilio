@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.actions;
 
 
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -10,7 +11,9 @@ import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.pmv1ToPmv2Migration.PMv1TasksToJobPlanMigration;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.util.V3Util;
 import lombok.Getter;
@@ -21,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -205,6 +209,19 @@ public class WorkorderAction extends V3Action {
 //        HashMap<String, Boolean> featureSettingValueMap = (HashMap<String, Boolean>) chain.getContext().get(FacilioConstants.ContextNames.WORK_ORDER_FEATURE_SETTINGS_VALUES_MAP);
 //        setData("workOrderFeatureSettingValues", featureSettingValueMap);
 
+        return SUCCESS;
+    }
+
+    @Getter
+    @Setter
+    List<Long> pmV1Ids;
+    public String tasksToJobPlan() throws Exception{
+//        ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
+//        bean.migratePmv1TasksToJobPlan(pmV1Ids);
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        chain.getContext().put("pmV1Ids", this.pmV1Ids);
+        chain.addCommand(new PMv1TasksToJobPlanMigration(this.pmV1Ids));
+        chain.execute();
         return SUCCESS;
     }
 }
