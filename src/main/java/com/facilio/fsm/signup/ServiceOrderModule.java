@@ -494,7 +494,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         List<FormField> lineItemFields = new ArrayList<>();
         lineItemFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.SERVICE_TASK_ITEMS, "Tasks", FormField.Required.OPTIONAL, 1, 1));
 
-        FormSection serviceTaskSection = new FormSection("", 4, lineItemFields, true);
+        FormSection serviceTaskSection = new FormSection("", 4, lineItemFields, false);
         serviceTaskSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormField> scheduleAppointmentFields = new ArrayList<>();
@@ -503,7 +503,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         scheduleAppointmentFields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DURATION, "Response Due Duration", FormField.Required.OPTIONAL, 8, 2));
         scheduleAppointmentFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.OPTIONAL, 9, 2));
 
-        FormSection scheduleAppointmentSection = new FormSection("Schedule and Appointment", 4, scheduleAppointmentFields, true);
+        FormSection scheduleAppointmentSection = new FormSection("Schedule and Appointment", 5, scheduleAppointmentFields, true);
         scheduleAppointmentSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormSection> webWorkOrderFormSections = new ArrayList<>();
@@ -1003,7 +1003,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addWebTab("task", "SERVICE TASK", true, null)
+                .addWebTab("serviceTask", "SERVICE TASK", true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("task", null, null)
                 .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)

@@ -35,12 +35,16 @@ public class ServiceTaskModule extends BaseModuleConfig {
 
     @Override
     public void addData() throws Exception {
+        ModuleBean bean = Constants.getModBean();
+        FacilioModule serviceOrder = bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
         FacilioModule serviceTaskModule = constructServiceTaskModule();
 
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(serviceTaskModule));
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.execute();
+
+        bean.addSubModule(serviceOrder.getModuleId(), serviceTaskModule.getModuleId(),0);
 
         addTaskSkillsField();
         addSystemButtons();

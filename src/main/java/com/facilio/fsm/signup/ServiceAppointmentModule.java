@@ -1032,10 +1032,10 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceappointmentservicetasks", "Service Tasks", true, null)
+                .addWebTab("serviceappointmentservicetasks", "Service Task", true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmentservicetasks", null, null)
-                .addWidget("serviceappointmentservicetaskswidget", "Service Tasks", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "serviceappointmentservicetasks_50_12", 0, 0, null, null)
+                .addWidget("serviceappointmentservicetaskswidget", "Service Task", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "serviceappointmentservicetasks_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

@@ -5,11 +5,13 @@ import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderCostContext;
 import com.facilio.fsm.context.ServiceOrderPlannedItemsContext;
+import com.facilio.fsm.context.ServiceTaskContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -31,6 +33,12 @@ public class SetServiceOrderPlannedItemsCommand extends FacilioCommand {
         List<ServiceOrderContext> serviceOrders = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(serviceOrderPlannedItems)){
             for(ServiceOrderPlannedItemsContext serviceOrderPlannedItem : serviceOrderPlannedItems){
+                if(serviceOrderPlannedItem.getServiceTask()!=null){
+                 ServiceTaskContext serviceTask = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,serviceOrderPlannedItem.getServiceTask().getId(), ServiceTaskContext.class);
+                    if(serviceTask.getServiceOrder()!=null){
+                        serviceOrderPlannedItem.setServiceOrder(serviceTask.getServiceOrder());
+                    }
+                }
                 if(serviceOrderPlannedItem.getServiceOrder()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");
                 }

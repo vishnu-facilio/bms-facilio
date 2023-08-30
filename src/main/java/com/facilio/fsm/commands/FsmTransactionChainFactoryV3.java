@@ -43,7 +43,7 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         //update the task status before creation
         c.addCommand(new TaskStatusUpdate());
-        c.addCommand(new SetPlansCommandV3());
+        //c.addCommand(new SetPlansCommandV3());
         c.addCommand(new SOSTAutoCreateBeforeCommand());
         return c;
     }
@@ -71,7 +71,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain getTaskBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ServiceTaskStatusCheck());
-        c.addCommand(new SetPlansCommandV3());
+        //c.addCommand(new SetPlansCommandV3());
         c.addCommand(new ServiceTaskDurationUpdateCommandV3());
         return c;
     }
@@ -79,7 +79,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain afterSOCreateChain() {
         FacilioChain c = getDefaultChain();
         //for handling the activity
-        c.addCommand(new UpdatePlansAndSkillsCommandV3());
+        //c.addCommand(new UpdatePlansAndSkillsCommandV3());
         c.addCommand(new ConstructAddCustomActivityCommandV3());
         c.addCommand(new AutoCreateSA());
 
@@ -92,7 +92,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain afterSOUpdateChain() {
         FacilioChain c = getDefaultChain();
         //for handling the activity
-        c.addCommand(new UpdatePlansAndSkillsCommandV3());
+        //c.addCommand(new UpdatePlansAndSkillsCommandV3());
         c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         c.addCommand(new UpdateSAandTasks());
 //        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ACTIVITY));

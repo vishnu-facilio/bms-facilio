@@ -35,30 +35,22 @@ public class ServiceOrderPlannedToolsModule extends BaseModuleConfig {
 
         if(serviceOrder!=null && serviceOrder.getModuleId()>0 && toolType!=null && toolType.getModuleId()>0 && storeRoom!=null && storeRoom.getModuleId()>0){
 
-            FacilioModule serviceOrderPlannedToolsModule = constructServiceOrderPlannedToolsModule(serviceOrder,serviceTask,toolType,storeRoom);
+            FacilioModule serviceOrderPlannedToolsModule = constructServiceOrderPlannedToolsModule(toolType,storeRoom);
 
             FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
             addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(serviceOrderPlannedToolsModule));
             addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
-            addModuleChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE, serviceOrder.getName());
             addModuleChain.execute();
-            bean.addSubModule(serviceOrder.getModuleId(), serviceOrderPlannedToolsModule.getModuleId());
+            bean.addSubModule(serviceOrder.getModuleId(), serviceOrderPlannedToolsModule.getModuleId(),0);
+            bean.addSubModule(serviceTask.getModuleId(), serviceOrderPlannedToolsModule.getModuleId(),0);
+            createParentFields(serviceOrder,serviceTask,serviceOrderPlannedToolsModule);
         }
 
     }
-    private FacilioModule constructServiceOrderPlannedToolsModule(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule toolTypeMod, FacilioModule storeRoomMod){
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, "Service Order Planned Tools", "Service_Order_Planned_Tools", FacilioModule.ModuleType.SUB_ENTITY);
+    private FacilioModule constructServiceOrderPlannedToolsModule(FacilioModule toolTypeMod, FacilioModule storeRoomMod){
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, "Service Order Planned Tools", "Service_Order_Planned_Tools", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> fields = new ArrayList<>();
-
-        LookupField parent = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER", FieldType.LOOKUP);
-        parent.setRequired(true);
-        parent.setLookupModule(serviceOrderMod);
-        fields.add(parent);
-
-        LookupField serviceTask = FieldFactory.getDefaultField("serviceTask","Service Task","SERVICE_TASK",FieldType.LOOKUP);
-        serviceTask.setLookupModule(serviceTaskMod);
-        fields.add(serviceTask);
 
         LookupField toolType = FieldFactory.getDefaultField("toolType","Tool Type","TOOL_TYPE",FieldType.LOOKUP, true);
         toolType.setRequired(true);
@@ -86,5 +78,19 @@ public class ServiceOrderPlannedToolsModule extends BaseModuleConfig {
         module.setFields(fields);
 
         return module;
+    }
+    private void createParentFields(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule serviceOrderPlannedToolsModule)throws Exception{
+        ModuleBean bean = Constants.getModBean();
+
+        LookupField parent = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER", FieldType.LOOKUP);
+        parent.setRequired(true);
+        parent.setLookupModule(serviceOrderMod);
+        parent.setModule(serviceOrderPlannedToolsModule);
+        bean.addField(parent);
+
+        LookupField serviceTask = FieldFactory.getDefaultField("serviceTask","Service Task","SERVICE_TASK",FieldType.LOOKUP);
+        serviceTask.setLookupModule(serviceTaskMod);
+        serviceTask.setModule(serviceOrderPlannedToolsModule);
+        bean.addField(serviceTask);
     }
 }

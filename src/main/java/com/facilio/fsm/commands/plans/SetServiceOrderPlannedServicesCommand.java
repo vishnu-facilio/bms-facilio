@@ -8,6 +8,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderCostContext;
 import com.facilio.fsm.context.ServiceOrderPlannedServicesContext;
+import com.facilio.fsm.context.ServiceTaskContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -28,6 +29,12 @@ public class SetServiceOrderPlannedServicesCommand  extends FacilioCommand {
         List<ServiceOrderContext> serviceOrders = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(serviceOrderPlannedServices)){
             for(ServiceOrderPlannedServicesContext serviceOrderPlannedService : serviceOrderPlannedServices){
+                if(serviceOrderPlannedService.getServiceTask()!=null){
+                    ServiceTaskContext serviceTask = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,serviceOrderPlannedService.getServiceTask().getId(), ServiceTaskContext.class);
+                    if(serviceTask.getServiceOrder()!=null){
+                        serviceOrderPlannedService.setServiceOrder(serviceTask.getServiceOrder());
+                    }
+                }
                 V3ServiceContext service = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SERVICE,serviceOrderPlannedService.getService().getId(),V3ServiceContext.class);
                 if(serviceOrderPlannedService.getServiceOrder()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");

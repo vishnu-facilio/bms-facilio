@@ -25,12 +25,18 @@ public class ServiceInventoryReservationModule extends BaseModuleConfig {
     }
     @Override
     public void addData() throws Exception {
+        ModuleBean bean = Constants.getModBean();
+        FacilioModule plannedItems = bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS);
+
         FacilioModule serviceInventoryReservationModule = constructServiceInventoryReservationModule();
 
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(serviceInventoryReservationModule));
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.execute();
+
+        bean.addSubModule(plannedItems.getModuleId(), serviceInventoryReservationModule.getModuleId(),0);
+        createPlannedItemField(serviceInventoryReservationModule);
 
         addReservationFieldInItemTransactions();
     }
@@ -88,10 +94,6 @@ public class ServiceInventoryReservationModule extends BaseModuleConfig {
         fields.add(FieldFactory.getDefaultField("issuedQuantity","Issued Quantity","ISSUED_QUANTITY",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("balanceReservedQuantity","Balance Reserved Quantity","BALANCE_RESERVED_QUANTITY",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
 
-        LookupField serviceOrderPlannedItem = FieldFactory.getDefaultField("serviceOrderPlannedItem","Service Order Planned Item","SO_PLANNED_ITEM_ID",FieldType.LOOKUP);
-        serviceOrderPlannedItem.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS),"Service Order Planned Item module doesn't exist."));
-        fields.add(serviceOrderPlannedItem);
-
         LookupField inventoryRequestLineItem = FieldFactory.getDefaultField("inventoryRequestLineItem","Inventory Request LineItem","INV_REQ_LINE_ITEM_ID",FieldType.LOOKUP);
         inventoryRequestLineItem.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS),"Inventory Request LineItem module doesn't exist."));
         fields.add(inventoryRequestLineItem);
@@ -99,5 +101,13 @@ public class ServiceInventoryReservationModule extends BaseModuleConfig {
         module.setFields(fields);
 
         return module;
+    }
+    private void createPlannedItemField(FacilioModule serviceInventoryReservation)throws Exception{
+        ModuleBean bean = Constants.getModBean();
+
+        LookupField serviceOrderPlannedItem = FieldFactory.getDefaultField("serviceOrderPlannedItem","Service Order Planned Item","SO_PLANNED_ITEM_ID",FieldType.LOOKUP);
+        serviceOrderPlannedItem.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS),"Service Order Planned Item module doesn't exist."));
+        serviceOrderPlannedItem.setModule(serviceInventoryReservation);
+        bean.addField(serviceOrderPlannedItem);
     }
 }
