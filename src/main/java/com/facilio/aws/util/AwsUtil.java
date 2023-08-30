@@ -658,6 +658,124 @@ public class AwsUtil extends BaseAwsUtil{
 		AwsPolicyUtils.createOrUpdateIotPolicy(agentName, policyName, type, getIotClient());
 	}
 
+	public static boolean createThingGroupAndAttachToPolicy(String thingGroupName) {
+		AWSIot iotClient = getIotClient();
+		try {
+			CreateThingGroupResult thingGroup = getCreateThingGroupResult(thingGroupName, iotClient);
+			System.out.println("Thing Group created: " + thingGroupName);
+			addClientToPolicy("${iot:Connection.Thing.ThingName}", thingGroupName, "facilio");
+			attachPolicyToThingGroup(iotClient, thingGroup.getThingGroupArn(), thingGroupName);
+		} catch (ResourceAlreadyExistsException r) {
+			LOGGER.info("Thing Group Already Exist: " + thingGroupName);
+		} catch (Exception e) {
+            LOGGER.error("Exception while creating thing group", e);
+			return false;
+        }
+		return true;
+    }
+
+	private static CreateThingGroupResult getCreateThingGroupResult(String thingGroupName, AWSIot iotClient) {
+		CreateThingGroupRequest request = new CreateThingGroupRequest()
+				.withThingGroupName(thingGroupName);
+
+        return iotClient.createThingGroup(request);
+	}
+
+	private static boolean attachThingToThingGroup(String thingName, String thingGroupName) {
+		LOGGER.info("Attaching Thing " + thingName + " to Thing Group " + thingGroupName);
+		AddThingToThingGroupRequest request = new AddThingToThingGroupRequest()
+				.withThingName(thingName)
+				.withThingGroupName(thingGroupName);
+
+		AddThingToThingGroupResult addThingToThingGroupResult = getIotClient().addThingToThingGroup(request);
+		return addThingToThingGroupResult.getSdkHttpMetadata().getHttpStatusCode() == 200;
+	}
+
+	private static boolean doesThingExist(String thingName) {
+		ListThingsRequest request = new ListThingsRequest();
+		ListThingsResult result = getIotClient().listThings(request);
+		for (ThingAttribute thingAttribute : result.getThings()) {
+			if (thingAttribute.getThingName().equals(thingName)) {
+				LOGGER.info("Thing Already exist: " + thingName);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static void createThingAttachCertificateAndAddToThingGroup(String thingName, String thingGroupName) throws Exception {
+		if (doesThingExist(thingName)) {
+			LOGGER.info("Agent already exists with this name: " + thingName);
+			return;
+		}
+
+		CreateThingResult createThingResult = getCreateThingResult(thingName);
+		if (createThingResult.getSdkHttpMetadata().getHttpStatusCode() != 200) {
+			throw new Exception("Failed to create agent: " + thingName);
+		}
+
+		LOGGER.info("Thing Created: " + thingName);
+		if (!attachThingToThingGroup(thingName, thingGroupName)) {
+			LOGGER.error("Thing is not attached to Thing Group: " + thingGroupName);
+			throw new Exception("Failed to attach Thing to Thing Group");
+		}
+
+		String certificateArn = getCertificateArn(thingGroupName);
+
+		if (certificateArn == null) {
+			throw new Exception("Certificate not found under policy: " + thingGroupName);
+		}
+		if (!attachCertificateToThing(thingName, certificateArn)) {
+			LOGGER.info("Certificate is not attached to thing, Certificate ARN: " + certificateArn + ", Thing name: " + thingName);
+			throw new Exception("Failed to attach certificate to a thing");
+		}
+	}
+
+	private static CreateThingResult getCreateThingResult(String thingName) {
+		CreateThingRequest request = new CreateThingRequest()
+				.withThingName(thingName);
+        return getIotClient().createThing(request);
+	}
+
+	private static String getCertificateArn(String policyName) {
+		ListTargetsForPolicyRequest request = new ListTargetsForPolicyRequest()
+				.withPolicyName(policyName);
+
+		ListTargetsForPolicyResult result = getIotClient().listTargetsForPolicy(request);
+		for (String target : result.getTargets()) {
+			if(target.contains("cert/")){
+				LOGGER.info("Certificate ARN found: " + target);
+				return target;
+			}
+		}
+
+		return null;
+	}
+
+	private static boolean attachCertificateToThing(String thingName, String certificateArn) {
+		AttachThingPrincipalRequest request = new AttachThingPrincipalRequest()
+				.withThingName(thingName)
+				.withPrincipal(certificateArn);
+
+		AttachThingPrincipalResult attachThingPrincipalResult = getIotClient().attachThingPrincipal(request);
+		int httpStatusCode = attachThingPrincipalResult.getSdkHttpMetadata().getHttpStatusCode();
+		if(httpStatusCode == 200){
+			LOGGER.info("Certificate attached to Thing --> " + thingName);
+			return true;
+		}
+		return false;
+	}
+
+	private static void attachPolicyToThingGroup(AWSIot iotClient, String thingGroupArn, String policyName) {
+		LOGGER.info("Attaching Policy " + policyName + " to thing group " + thingGroupArn);
+		AttachPolicyRequest request = new AttachPolicyRequest()
+				.withPolicyName(policyName)
+				.withTarget(thingGroupArn);
+
+		iotClient.attachPolicy(request);
+		LOGGER.info("Policy " + policyName + " attached to Thing Group: " + thingGroupArn);
+	}
+
 	public static List<Block> detectDocText(InputStream sourceStream) {
 		TextractClient textractClient=getAmazonTextractClient();
 		List<Block> result = new ArrayList<>();

@@ -22,7 +22,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.StringField;
 
-import javax.swing.text.View;
 import java.util.*;
 
 public class AddOpcUaPointModule extends BaseModuleConfig {

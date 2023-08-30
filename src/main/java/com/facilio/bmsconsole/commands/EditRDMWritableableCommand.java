@@ -73,6 +73,7 @@ public class EditRDMWritableableCommand extends FacilioCommand {
 		}
 		else {
 			fields = moduleBean.getAllFields(AgentConstants.POINT);
+			fields.add(FieldFactory.getIdField(pointModule));
 		}
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 		builder.select(fields).table(pointModule.getTableName())

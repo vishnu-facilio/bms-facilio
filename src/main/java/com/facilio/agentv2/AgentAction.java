@@ -520,7 +520,12 @@ public class AgentAction extends AgentActionV2 {
                 .append("topic=").append(domainName).append(System.lineSeparator());
         AgentType type = AgentType.valueOf(agent.getAgentType());
         if (type == AgentType.FACILIO) {
+            String defaultAppDomain = AccountUtil.getDefaultAppDomain();
+            if(!defaultAppDomain.startsWith("https://")){
+                defaultAppDomain = "https://" + defaultAppDomain;
+            }
             builder.append(System.lineSeparator())
+                    .append("url="+ defaultAppDomain).append(System.lineSeparator())
                     .append("isBacnetIpEnabled=true").append(System.lineSeparator())
                     .append("isValidateJsonSchemaEnabled=false");
         }

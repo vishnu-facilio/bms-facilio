@@ -13,7 +13,13 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.queue.source.MessageSource;
 import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.service.FacilioService;
@@ -29,7 +35,6 @@ import org.apache.log4j.LogManager;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class CreateAgentCommand extends AgentV2Command {
 
@@ -37,78 +42,117 @@ public class CreateAgentCommand extends AgentV2Command {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        if (containsCheck(AgentConstants.AGENT, context)) {
-            FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
-            if (agent.getWorkflow() != null) {
-	            	if(agent.getWorkflow().validateWorkflow()) {
-	            		long workflowId = WorkflowUtil.addWorkflow(agent.getWorkflow());
-                        agent.setWorkflowId(workflowId);
-                    } else {
-                        throw new IllegalArgumentException(agent.getWorkflow().getErrorListener().getErrorsAsString());
-                    }
-            }
-            AgentType agentType = AgentType.valueOf(agent.getAgentType());
-            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
-            long agentId = agentBean.addAgent(agent);
-            agent.setId(agentId);
-            Organization currentOrg = AccountUtil.getCurrentOrg();
-            createMessageTopic(currentOrg);
-            if (agentType.isMqttConnectionRequired() && !FacilioProperties.isDevelopment()) {
-                createPolicy(agent, currentOrg, currentOrg.getDomain());
-            }
-            if (agentType == AgentType.CLOUD) {
-                agentBean.scheduleRestJob(agent);
-            }
-               JobContext job =  FacilioTimer.getJob(currentOrg.getOrgId(), FacilioConstants.Job.ML_BMS_POINTS_TAGGING_JOB);
-                if (job == null){
-                    AgentUtilV2.scheduleMlBmsJob(currentOrg.getOrgId());
-                }
-                JobContext jc =  FacilioTimer.getJob(currentOrg.getOrgId(),FacilioConstants.Job.DATA_LOG_DELETE_RECORDS_JOB);
-                if(jc == null){
-                    AgentUtilV2.scheduleDataLogDeleteJob(currentOrg.getOrgId());
-                }
+        if(!containsCheck(AgentConstants.AGENT, context)) throw new Exception("ADD AGENT :: Agent missing from context " + context);
 
-            if (agentType.isAgentService()) {
-                CloudAgentUtil.addCloudServiceAgent(agent);
-            }
-            if (agentType != AgentType.NIAGARA && agentType != AgentType.FACILIO) {
-                agentBean.schedulePointsDataMissingJob(agent);
-            }
-            return false;
-        } else {
-            throw new Exception(" agent missing from context " + context);
+        FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
+        checkDuplicateAgentName(agent.getName());
+        Organization currentOrg = AccountUtil.getCurrentOrg();
+        assert currentOrg != null;
+        AgentBean agentBean = AgentConstants.getAgentBean();
+        AgentType agentType = AgentType.valueOf(agent.getAgentType());
+        addAgentAndSetAgentId(agentBean, agent);
+        createMessageTopic(currentOrg);
+        if (agentType.isMqttConnectionRequired() && !FacilioProperties.isDevelopment()) {
+            createPolicy(agent, currentOrg, currentOrg.getDomain());
+        }
+        if (agentType.isAgentService()) {
+            CloudAgentUtil.addCloudServiceAgent(agent);
+        }
+        addJobs(agentType, agentBean, agent, currentOrg);
+        return false;
+    }
+
+    private static void addJobs(AgentType agentType, AgentBean agentBean, FacilioAgent agent, Organization currentOrg) throws Exception {
+        if (agentType == AgentType.CLOUD) {
+            agentBean.scheduleRestJob(agent);
+        }
+        JobContext mlJob =  FacilioTimer.getJob(currentOrg.getOrgId(), FacilioConstants.Job.ML_BMS_POINTS_TAGGING_JOB);
+        if (mlJob == null){
+            AgentUtilV2.scheduleMlBmsJob(currentOrg.getOrgId());
+        }
+        JobContext dataLogsJob =  FacilioTimer.getJob(currentOrg.getOrgId(),FacilioConstants.Job.DATA_LOG_DELETE_RECORDS_JOB);
+        if(dataLogsJob == null){
+            AgentUtilV2.scheduleDataLogDeleteJob(currentOrg.getOrgId());
+        }
+        if (agentType != AgentType.NIAGARA && agentType != AgentType.FACILIO) {
+            agentBean.schedulePointsDataMissingJob(agent);
         }
     }
-    
-    private void createPolicy( FacilioAgent agent,Organization currentOrg, String orgMessageTopic ) throws Exception {
-    	try{
-            LOGGER.debug("download certificate current org domain is :" + orgMessageTopic);
-            String certFileId = com.facilio.agent.FacilioAgent.getCertFileId("facilio");
-            long orgId = Objects.requireNonNull(currentOrg.getOrgId());
-            Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, certFileId);
-            if (orgInfo == null || orgInfo.isEmpty()) {
-                DownloadCertFile.addCertificate(orgMessageTopic, "facilio");
+
+    private static void addAgentAndSetAgentId(AgentBean agentBean, FacilioAgent agent) throws Exception {
+        long agentId = agentBean.addAgent(agent);
+        agent.setId(agentId);
+    }
+
+    /**
+     * Steps:
+     * <ol>
+     *   <li>Add Certificates</li>
+     *   <li>Create Thing Group</li>
+     *   <li>Attach Policy to Thing Group</li>
+     *   <li>Add "${iot:Connection.Thing.ThingName}" to Policy as client
+     *       <ul>
+     *           <li>[1, 2, 3, 4] -- One time actions</li>
+     *       </ul>
+     *   </li>
+     *   <li>Create Thing</li>
+     *   <li>Attach Certificate to Thing</li>
+     * </ol>
+     */
+    private void createPolicy(FacilioAgent agent, Organization currentOrg, String domainName) throws Exception {
+    	try {
+            //One Time Actions
+            boolean isCertificateAdded = addCertificate(currentOrg, domainName);
+            if(isCertificateAdded) {
+                boolean isThingGroupCreated = AwsUtil.createThingGroupAndAttachToPolicy(domainName);
+
+                if (!isThingGroupCreated) {
+                    throw new RuntimeException("ADD AGENT:: Exception while creating Thing Group");
+                }
             }
-            AwsUtil.addClientToPolicy(agent.getName(), orgMessageTopic, "facilio");
-        }catch (Exception e){
-            LOGGER.error("Exception occurred while adding Agent cert .. ",e);
+
+            //Create thing and Attaching Certificate to thing
+            AwsUtil.createThingAttachCertificateAndAddToThingGroup(agent.getName(), domainName);
+        } catch (Exception e){
+            LOGGER.error("ADD AGENT:: Exception occurred while adding Agent cert/policy ",e);
             throw e;
         }
     }
 
-    private String createMessageTopic ( Organization currentOrg) throws Exception {
+    private static boolean addCertificate(Organization currentOrg, String domainName) throws Exception {
+        String certFileId = com.facilio.agent.FacilioAgent.getCertFileId("facilio");
+        long orgId = currentOrg.getOrgId();
+        Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, certFileId);
+        boolean isCertificateAdded = orgInfo == null || orgInfo.isEmpty();
+        if (isCertificateAdded) {
+            DownloadCertFile.addCertificate(domainName, "facilio");
+        }
+        return isCertificateAdded;
+    }
+
+    private void createMessageTopic (Organization currentOrg) throws Exception {
         long orgId = currentOrg.getOrgId();
         List<Map<String, Object>> topics = MessageQueueTopic.getTopics(Collections.singletonList(orgId), MessageSourceUtil.getDefaultSource());
     	if(CollectionUtils.isEmpty(topics)) {
     		String domain = currentOrg.getDomain();
     		MessageSource source = AgentUtilV2.getMessageSource(null);
     		FacilioService.runAsService(FacilioConstants.Services.AGENT_SERVICE,()->  MessageQueueTopic.addMsgTopic(domain, orgId, source));
-    		
     		// Adding kafka topic
      		MessageQueueFactory.getMessageQueue(source).createQueue(domain);
-     		return domain;		
     	}
-    	return topics.get(0).get("topic").toString();
     }
-    
+
+    private void checkDuplicateAgentName(String name) throws Exception {
+        FacilioModule newAgentModule = ModuleFactory.getNewAgentModule();
+        Map<String, FacilioField> fieldsmap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(newAgentModule.getTableName())
+                .select(Collections.singletonList(fieldsmap.get(AgentConstants.NAME)))
+                .andCondition(CriteriaAPI.getCondition(fieldsmap.get(AgentConstants.NAME), name, StringOperators.IS));
+        List<Map<String, Object>> list = builder.get();
+        if (CollectionUtils.isNotEmpty(list)) {
+            throw new IllegalArgumentException("Agent name already taken");
+        }
+    }
 }

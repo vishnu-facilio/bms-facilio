@@ -90,6 +90,7 @@ public class UnModeledDataCommand extends FacilioCommand {
 		}
 		else {
 			fields = moduleBean.getAllFields(AgentConstants.POINT);
+			fields.add(FieldFactory.getIdField(pointModule));
 		}
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(pointModule.getTableName())

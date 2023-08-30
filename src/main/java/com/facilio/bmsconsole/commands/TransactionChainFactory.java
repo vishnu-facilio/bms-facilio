@@ -5428,6 +5428,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain createAgentV3Chain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new CreateAgentCommandV3());
+		return chain;
+	}
+
 	public static FacilioChain FlushIntentAndModelChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new DeleteChatBotIntentAndModel());

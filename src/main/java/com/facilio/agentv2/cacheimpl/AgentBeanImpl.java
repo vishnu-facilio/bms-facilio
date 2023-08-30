@@ -1,12 +1,10 @@
 package com.facilio.agentv2.cacheimpl;
 
-import bsh.StringUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.CloudAgentUtil;
 import com.facilio.agentv2.FacilioAgent;
-import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -19,7 +17,6 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.FacilioException;
 import com.facilio.modules.*;
@@ -29,9 +26,7 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
@@ -139,7 +134,13 @@ public class AgentBeanImpl implements AgentBean {
                 agent.setLastModifiedTime(currTime);
             }
         }
-
+        if (containsValueCheck(AgentConstants.SITE_ID, jsonObject)) {
+            long newSiteId = Long.parseLong(jsonObject.get(AgentConstants.SITE_ID).toString());
+            if (agent.getSiteId() == 0) {
+                agent.setSiteId(newSiteId);
+                agent.setLastModifiedTime(currTime);
+            }
+        }
         if (containsValueCheck(AgentConstants.DATA_INTERVAL, jsonObject)) {
             long currDataInterval = Long.parseLong(jsonObject.get(AgentConstants.DATA_INTERVAL).toString());
             if (agent.getInterval() != currDataInterval) {

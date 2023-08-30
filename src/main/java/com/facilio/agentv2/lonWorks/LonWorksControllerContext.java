@@ -114,7 +114,7 @@ public class LonWorksControllerContext extends Controller {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(FacilioConstants.ContextNames.LON_WORKS_CONTROLLER_MODULE_NAME);
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NEURON_ID), neuronId, StringOperators.IS));
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SUBNET_NODE),subnetNode, StringOperators.IS));
+        //conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SUBNET_NODE),subnetNode, StringOperators.IS));
         return conditions;
     }
 

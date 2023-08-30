@@ -3,6 +3,7 @@ package com.facilio.agentv2;
 import com.facilio.agent.AgentKeys;
 import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 
@@ -15,7 +16,7 @@ public class AgentConstants
     //general JSON constants
     public static final String CONTROLLERS = "controllers";
     public static final String ID = "id";
-    public static final String AGENT_TYPE = "type";
+    public static final String AGENT_TYPE = "agentType";
 
     public static final String TYPE = "type";
     public static final String SEARCH_KEY = "searchKey";
@@ -83,7 +84,6 @@ public class AgentConstants
 
     //opc-xmlda
     public static final String USER_NAME = "userName";
-    public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String PATH = "path";
 
@@ -332,6 +332,7 @@ public class AgentConstants
     public static final String CONTROLLERIDS = "controllerIds";
     public static final String COMMISSIONINGLOG_CONTROLLER = "commissioninglogcontroller";
     public static final String ERROR_MESSAGE = "errorMessage";
+    public static final String AGENT_SOURCE_TYPE = "agentSourceType";
 
 
     public static AgentBean getAgentBean() throws Exception {
@@ -366,5 +367,43 @@ public class AgentConstants
     public static List<FacilioField> getPointFields() throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         return moduleBean.getAllFields(POINT);
+    }
+
+    public enum AgentSourceType implements FacilioIntEnum {
+        WEB("Web"),
+        AGENT("Agent");
+
+        private String name;
+        AgentSourceType(String name) {
+            this.name = name;
+        }
+
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return name;
+        }
+
+        public static AgentSourceType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
+
+    public static String getStringValue(Object var) {
+        return var == null ? null : var.toString();
+    }
+
+    public static Integer getIntValue(Object var) {
+        return var == null ? null : Integer.parseInt(var.toString());
+    }
+
+    public static Long getLongValue(Object var) {
+        return var == null ? null : Long.parseLong(var.toString());
     }
 }

@@ -282,7 +282,7 @@ public class AgentMessenger {
         MessengerUtil.addAndPublishNewAgentData(iotDataForControllerContext);
     }
 
-    private static boolean sendControllerConfig(Controller controllerContext) throws Exception {
+    public static boolean sendControllerConfig(Controller controllerContext) throws Exception {
         IotData iotDataforControllerContext = getIotDataForControllerContext(controllerContext);
         MessengerUtil.addAndPublishNewAgentData(iotDataforControllerContext);
         return true;

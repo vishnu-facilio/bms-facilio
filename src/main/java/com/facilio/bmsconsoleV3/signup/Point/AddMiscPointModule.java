@@ -1,6 +1,5 @@
 package com.facilio.bmsconsoleV3.signup.Point;
 
-import com.drew.metadata.Age;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.beans.ModuleBean;

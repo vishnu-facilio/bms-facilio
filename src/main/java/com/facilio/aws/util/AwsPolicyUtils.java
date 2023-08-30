@@ -72,13 +72,12 @@ public class AwsPolicyUtils {
     }
 
     private static String updatePolicy(AWSIot client, String policyName, IotPolicy rule) throws Exception {
-        LOGGER.info(" updating policy " + policyName);
-        JSONObject policy = new JSONObject();
-        policy = getPolicyDocumentJson(getPolicy(policyName, client));
-        LOGGER.info("existing policy document " + policy);
+        LOGGER.info("Updating policy " + policyName);
+        JSONObject policy = getPolicyDocumentJson(getPolicy(policyName, client));
+        LOGGER.info("Existing policy document " + policy);
         List<String> connectTopics = rule.getArnClientIds();
         addClientToPolicy(policy, connectTopics);
-        LOGGER.info(" updated policy document " + policy);
+        LOGGER.info("Updated policy document " + policy);
         updateClientPolicyVersion(client, policyName, policy);
         return policy.toString();
     }
@@ -100,86 +99,68 @@ public class AwsPolicyUtils {
         return policy;
     }
 
-/*
-    public static void main(String[] args) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        IotPolicy iotRule = AwsPolicyUtils.getIotRule("topic", "facilio");
-        System.out.println(iotRule.getClientIds());
-        System.out.println(iotRule.getArnClientIds());
-        System.out.println(iotRule.getPublishtopics());
-        System.out.println(iotRule.getArnPublishtopics());
-        System.out.println(iotRule.getSubscribeTopics());
-        System.out.println(iotRule.getArnSubscribeTopics());
-        System.out.println(iotRule.getReceiveTopics());
-        System.out.println(iotRule.getArnReceiveTopics());
-        //System.out.println(iotRule.getPolicyDocument());
-    }
-*/
-
     public static IotPolicy createOrUpdateIotPolicy(String clientName, String policyName, String type, AWSIot iotClient) throws Exception {
         if (iotClient != null) {
             if (type != null) {
                 if (policyName != null) {
                     LOGGER.info(" creating iot policy " + policyName);
-                    IotPolicy policy = new IotPolicy();
-                    policy = AwsPolicyUtils.getIotPolicyWithTopics(policyName, type);
+                    new IotPolicy();
+                    IotPolicy policy = AwsPolicyUtils.getIotPolicyWithTopics(policyName, type);
                     if (clientName != null) {
                         policy.getClientIds().add(clientName);
                         policy.getArnClientIds().add(getIotArnClientId(clientName));
                     }
                     policy.setName(policyName);
-                    LOGGER.info("p topics " + policy.getPublishtopics());
-                    LOGGER.info("s topics " + policy.getSubscribeTopics());
-                    LOGGER.info("r topics " + policy.getReceiveTopics());
+                    LOGGER.info("Publish topics " + policy.getPublishtopics());
+                    LOGGER.info("Subscribe topics " + policy.getSubscribeTopics());
+                    LOGGER.info("Receive topics " + policy.getReceiveTopics());
                     createIotPolicyAtAws(iotClient, policy); // check topic or policy name
-                    LOGGER.info(" created iot policy at AWS ");
+                    LOGGER.info("Created iot policy at AWS");
                     return policy;
                 } else {
-                    throw new Exception("policy name can't be null");
+                    throw new Exception("Policy name can't be null");
                 }
             } else {
-                throw new Exception("type cant be null");
+                throw new Exception("Type cant be null");
             }
         } else {
-            throw new Exception(" iot client cant be null");
+            throw new Exception("Iot client cant be null");
         }
     }
 
-
     private static void createIotPolicyAtAws(AWSIot iotClient, IotPolicy rule) throws Exception {
-        LOGGER.info(" creating Iot policy for " + rule.getName());
+        LOGGER.info("Creating Iot policy for " + rule.getName());
         if (iotClient != null) {
-            if (rule != null) {
+            try {
+                long orgId = AccountUtil.getCurrentOrg().getOrgId();
+                JSONObject policyDocumentJSON = getPolicyDoc(rule.getArnClientIds(), rule.getArnPublishtopics(), rule.getArnSubscribeTopics(), rule.getArnReceiveTopics());
+                LOGGER.info("Policy document " + policyDocumentJSON);
+                rule.setPolicyDocument(policyDocumentJSON);
+                if (FacilioProperties.isProduction() || (!FacilioProperties.isDevelopment() && (orgId == 152 || orgId == 660))) {
+                    CreatePolicyRequest createPolicyRequest = new CreatePolicyRequest()
+                            .withPolicyName(rule.getName())
+                            .withPolicyDocument(rule.getPolicyDocument().toString());
+                    CreatePolicyResult createPolicyResult = iotClient.createPolicy(createPolicyRequest);
+                    String policyVersionId = createPolicyResult.getPolicyVersionId();
+                    LOGGER.info("Policy created!Version is " + policyVersionId);
+                } else {
+                    LOGGER.info("Not production so can't create policy ");
+                }
+            } catch (ResourceAlreadyExistsException resourceExists) {
+                LOGGER.info("Policy already exists for name : " + rule.getName());
                 try {
-                    JSONObject policyDocumentJSON = getPolicyDoc(rule.getArnClientIds(), rule.getArnPublishtopics(), rule.getArnSubscribeTopics(), rule.getArnReceiveTopics());
-                    LOGGER.info(" policy document " + policyDocumentJSON);
-                    rule.setPolicyDocument(policyDocumentJSON);
-                    if (FacilioProperties.isProduction()) {
-                        CreatePolicyRequest createPolicyRequest = new CreatePolicyRequest()
-                                .withPolicyName(rule.getName())
-                                .withPolicyDocument(rule.getPolicyDocument().toString());
-                        CreatePolicyResult createPolicyResult = iotClient.createPolicy(createPolicyRequest);
-                        String policyVersionId = createPolicyResult.getPolicyVersionId();
-                        LOGGER.info("policy created anf version is " + policyVersionId);
-                    } else {
-                        LOGGER.info(" not production so can't create policy ");
-                    }
-                } catch (ResourceAlreadyExistsException resourceExists) {
-                    LOGGER.info("Policy already exists for name : " + rule.getName());
-                    try {
-                        updatePolicy(iotClient, rule.getName(), rule);
-                    } catch (Exception e) {
-                        LOGGER.info(" Exception while updating policy ", e);
-                        throw e;
-                    }
+                    updatePolicy(iotClient, rule.getName(), rule);
                 } catch (Exception e) {
-                    LOGGER.info("Exception while creating iot policy ", e);
+                    LOGGER.info("Exception while updating policy ", e);
                     throw e;
                 }
+            } catch (Exception e) {
+                LOGGER.info("Exception while creating iot policy ", e);
+                throw e;
             }
         } else {
-            throw new Exception(" iot client cant be null");
+            throw new Exception("Iot client can't be null");
         }
-
     }
 
     private static void addResourceToPolicyIfNotPresent(JSONObject policyStatement, List<String> topics) {
@@ -196,7 +177,6 @@ public class AwsPolicyUtils {
         if ((policyStatement != null) && (resourcesToAdd != null)) {
             if (policyStatement.containsKey("Resource")) {
                 JSONArray resourceJSONArray;
-                JSONParser parser = new JSONParser();
                 resourceJSONArray = (JSONArray) policyStatement.get("Resource");
                 resourceJSONArray.addAll(resourcesToAdd);
             }
@@ -258,12 +238,12 @@ public class AwsPolicyUtils {
         statements.add(getPolicyInJson("iot:Subscribe", subscribe));
         statements.add(getPolicyInJson("iot:Receive", receive));
         JSONObject policyDocument = new JSONObject();
-        policyDocument.put("Version", "2012-10-17"); //Refer the versions available in AWS policy document before changing.
+        //Refer the versions available in AWS policy document before changing : aws3-demo.link/woBkoC
+        policyDocument.put("Version", "2012-10-17");
         LOGGER.info(" policy doc statement " + statements.toString());
         policyDocument.put("Statement", statements);
         return policyDocument;
     }
-
 
     public static String getIotArnClientId(String clientId) {
         return getIotArnClientString() + clientId;
@@ -355,24 +335,6 @@ public class AwsPolicyUtils {
             return false;
         }
     }
-/*    private static JSONObject addClientToPolicyDoc(String policyName, String clientId, JSONObject object) {
-        JSONArray array = (JSONArray) object.get("Statement");
-        List<String> clients = new ArrayList<>();
-        for (int i = 0; i < array.size(); i++) {
-            JSONObject stat = (JSONObject) array.get(i);
-            JSONArray action = (JSONArray) stat.get("Action");
-            if (action.contains("iot:Connect")) {
-                JSONArray resourceArray = (JSONArray) stat.get("Resource");
-                for (int j = 0; j < resourceArray.size(); j++) {
-                    clients.add((String) resourceArray.get(j));
-                }
-                break;
-            }
-        }
-        System.out.println(clients);
-        clients.add(getIotArnClientId(clientId));
-        return getPolicyDoc(new ArrayList<>(Arrays.asList(getIotArnClientId(policyName))), new ArrayList<>(Arrays.asList(getIotArnTopic(policyName))), new ArrayList<>(Arrays.asList(getIotArnTopicFilter(policyName) + "/msgs")), new ArrayList<>(Arrays.asList(getIotArnTopic(policyName) + "/msgs")));
-    }*/
 
     private static List<String> getResourcesList(JSONObject policyStatement) throws Exception {
         if ((policyStatement != null) && (policyStatement.containsKey("Resource"))) {
@@ -413,34 +375,6 @@ public class AwsPolicyUtils {
             throw new Exception(" topic is not in having " + arnString);
         }
     }
-   /* private static List<String> getTopicsFromArns(List<String> asList) {
-        List<String> topics = new ArrayList<>();
-
-        int indexOf = str.indexOf("client/")+"client/".length();
-
-
-        String iotArnClientString = getIotArnClientString();
-        String iotArnTopicFilterString = getIotArnTopicFilterString();
-        String iotArnTopicString = getIotArnTopicString();
-        System.out.println(iotArnClientString+" - "+iotArnTopicFilterString+" - "+iotArnTopicString);
-        for (String s : asList) {
-            if (s.contains(iotArnClientString)) {
-                s.replaceFirst(iotArnClientString,"");
-            }
-            else if (s.contains(iotArnTopicFilterString)) {
-                s.replaceFirst(iotArnTopicFilterString,"");
-            }
-            else if(s.contains(iotArnTopicString)){
-                s.replaceFirst(iotArnTopicString,"");
-            }
-            else {
-                LOGGER.info("Exception occurred no ARN string matches "+s);
-                continue;
-            }
-            topics.add(s);
-        }
-        return topics;
-    }*/
 
     private static List<String> getAsList(JSONArray resourceJSONArray) {
         List<String> resources = new ArrayList<>();

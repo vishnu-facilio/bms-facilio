@@ -58,7 +58,9 @@ public class PointsDataMissingAlarmJob extends FacilioJob {
             fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
         }
         else {
-            fieldMap = FieldFactory.getAsMap(moduleBean.getAllFields(AgentConstants.POINT));
+            List<FacilioField> fields = new ArrayList<>(moduleBean.getAllFields(AgentConstants.POINT));
+            fields.add(FieldFactory.getIdField(pointModule));
+            fieldMap = FieldFactory.getAsMap(fields);
         }
         /*GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getPointModule().getTableName())

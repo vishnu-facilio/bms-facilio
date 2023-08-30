@@ -6,7 +6,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;

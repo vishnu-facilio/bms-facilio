@@ -516,7 +516,14 @@ public class PointsAPI {
     public static long getPointsCount(long controllerId, long deviceId) throws Exception{
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule pointModule = moduleBean.getModule(AgentConstants.POINT);
-        List<FacilioField>fields = pointModule == null ? FieldFactory.getPointFields() : moduleBean.getAllFields(AgentConstants.POINT);
+        List<FacilioField>fields = new ArrayList<>();
+        if (pointModule == null){
+            fields = FieldFactory.getPointsFields();
+        }
+        else {
+            fields = moduleBean.getAllFields(AgentConstants.POINT);
+            fields.add(FieldFactory.getIdField(pointModule));
+        }
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         try {
             Criteria criteria = new Criteria();
@@ -546,7 +553,9 @@ public class PointsAPI {
             fieldMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
         }
         else {
-            fieldMap = FieldFactory.getAsMap(moduleBean.getAllFields(AgentConstants.POINT));
+            List<FacilioField>fields = moduleBean.getAllFields(AgentConstants.POINT);
+            fields.add(FieldFactory.getIdField());
+            fieldMap = FieldFactory.getAsMap(fields);
         }
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(pointModule.getTableName())
@@ -585,6 +594,8 @@ public class PointsAPI {
                 return RdmPointContext.class;
             case E2:
                 return E2PointContext.class;
+            case LON_WORKS:
+                return LonWorksPointContext.class;
             case BACNET_MSTP:
             default:
                 throw new Exception(" No implementation for " + type.asString() + " point");
@@ -765,6 +776,7 @@ public class PointsAPI {
         }
         else {
             fields = moduleBean.getAllFields(AgentConstants.POINT);
+            fields.add(FieldFactory.getIdField(pointModule));
         }
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(pointModule.getTableName())
@@ -901,7 +913,10 @@ public class PointsAPI {
 
         }
         else {
-            fieldMap = FieldFactory.getAsMap(moduleBean.getAllFields(AgentConstants.POINT));
+            List<FacilioField>fields = new ArrayList<>();
+            fields.addAll(moduleBean.getAllFields(AgentConstants.POINT));
+            fields.add(FieldFactory.getIdField(pointModule));
+            fieldMap = FieldFactory.getAsMap(fields);
         }
         List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
 

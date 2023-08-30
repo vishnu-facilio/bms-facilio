@@ -227,6 +227,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		}
 		else {
 			fields = moduleBean.getAllFields(AgentConstants.POINT);
+			fields.add(FieldFactory.getIdField(pointModule));
 		}
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		List<Long> ids = (List<Long>) log.getPoints().stream().map(point -> (long) ((Map<String, Object>)point).get("id"))

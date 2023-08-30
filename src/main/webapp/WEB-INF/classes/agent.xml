@@ -493,6 +493,11 @@
         </action>
     </package>
 
+    <package name="bacnet" namespace="/api/v2/bacnet" extends="agent">
+        <action name="addController" class="com.facilio.agentv2.actions.BacnetIpControllerAction" method="addController">
+        </action>
+    </package>
+
     <package name="rdm" namespace="/api/v2/rdm" extends="agent">
         <action name="addController" class="com.facilio.agentv2.actions.RdmControllerAction" method="addController">
         </action>

@@ -32,9 +32,7 @@
         </action>
     </package>
     
-    
     <package name="agentV3Api" namespace="/api/v3/agent" extends="v3Api">
-    
    		<action name="*" class="com.facilio.agentv2.AgentV3Action" method="fetchAgent">
    		 	<param name="id">{1}</param>
         </action>
@@ -46,8 +44,10 @@
         </action>
         <action name="toggleJob" class="com.facilio.agentv2.AgentV3Action" method="toggleJob">
         </action>
-        
+        <action name="create" class="com.facilio.agentv2.AgentV3Action" method="createAgent">
+        </action>
     </package>
+
     <package name="PointV3Api" namespace="/api/v3/point" extends="v3Api">
         <action name="list" class="com.facilio.agentv2.actions.GetPointsActionV3" method="getPoints">
         </action>
@@ -58,4 +58,5 @@
         <action name="exportV2" class="com.facilio.agentv2.actions.GetPointsActionV3" method="exportPointsV2">
         </action>
     </package>
+
 </struts>

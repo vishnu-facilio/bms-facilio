@@ -120,6 +120,8 @@ public class ControllerMessenger {
 	            		break;
 	            		//
 	            	case SET:
+                        if(!agent.getWritable()) throw new Exception("Agent is not writable");
+
 	            		JSONArray pointsData = MessengerUtil.getPointsData(points);
 	            		for (Object pointsDatumObject : pointsData) {
 	            			JSONObject pointdatum = (JSONObject) pointsDatumObject;

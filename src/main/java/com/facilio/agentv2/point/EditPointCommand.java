@@ -50,6 +50,7 @@ public class EditPointCommand extends FacilioCommand {
             }
             else {
                 fields = moduleBean.getAllFields("Point");
+                fields.add(FieldFactory.getIdField(pointModule));
             }
             GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                     .table(pointModule.getTableName())

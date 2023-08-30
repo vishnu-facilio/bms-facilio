@@ -929,7 +929,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDefaultField(AgentConstants.CONNECTED, "Connected", "CONNECTED", module, FieldType.BOOLEAN));
         fields.add(getDefaultField(AgentKeys.NAME, "Link Name", "NAME", module, FieldType.STRING));
         fields.add(getDefaultField(AgentConstants.DATA_INTERVAL, "Data Interval", "DATA_INTERVAL", module, FieldType.NUMBER));
-        fields.add(getDefaultField(AgentConstants.AGENT_TYPE, "Type", "TYPE", module, FieldType.STRING));
+        fields.add(getDefaultField(AgentConstants.TYPE, "Type", "TYPE", module, FieldType.STRING));
         fields.add(getDefaultField(AgentConstants.VERSION, "Version", "VERSION", module, FieldType.STRING));
         fields.add(getDefaultField(AgentConstants.LAST_MODIFIED_TIME, "Last Modified Time", "LAST_MODIFIED_TIME", module, FieldType.DATE_TIME));
         fields.add(getDefaultField(AgentConstants.CREATED_TIME, "Created Time", "CREATED_TIME", module, FieldType.DATE_TIME));
@@ -981,7 +981,7 @@ public class FieldFactory extends BaseFieldFactory {
     }
 
     public static FacilioField getNewAgentTypeField(FacilioModule module) {
-        return getField(AgentConstants.AGENT_TYPE, "TYPE", module, FieldType.STRING);
+        return getField(AgentConstants.TYPE, "TYPE", module, FieldType.STRING);
     }
 
     public static FacilioField getSubscribedPointCountConditionField() {

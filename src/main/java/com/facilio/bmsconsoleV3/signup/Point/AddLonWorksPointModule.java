@@ -21,7 +21,6 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.StringField;
 
-import javax.swing.text.View;
 import java.util.*;
 
 public class AddLonWorksPointModule extends BaseModuleConfig {

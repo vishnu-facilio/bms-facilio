@@ -8,10 +8,6 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
-import org.json.simple.JSONObject;
-
-import java.util.List;
-import java.util.Map;
 
 @Getter @Setter
 public class AgentV3Action extends V3Action {
@@ -71,5 +67,15 @@ public class AgentV3Action extends V3Action {
 		chain.execute();
 		return SUCCESS;
 	}
-	
+
+	private FacilioAgent agent;
+
+	public String createAgent() throws Exception {
+		FacilioChain chain = TransactionChainFactory.createAgentV3Chain();
+		FacilioContext context = chain.getContext();
+		context.put("agent", agent);
+		chain.execute();
+		return SUCCESS;
+	}
+
 }
