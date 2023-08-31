@@ -21,6 +21,9 @@ public class RedisBroadcaster extends DefaultBroadcaster {
     private Set<String> subscribedTopics = new HashSet<>();
     private Set<String> subscribedPatterns = new HashSet<>();
 
+    private int publishedMessage = 0;
+    private int totalMessage = 0;
+
     public static DefaultBroadcaster getBroadcaster() {
         WmsProcessor.getInstance();
         return broadcaster;
@@ -109,10 +112,14 @@ public class RedisBroadcaster extends DefaultBroadcaster {
         String content = message.toJson().toJSONString();
         try(Jedis jedis = RedisManager.getInstance().getJedis()) {
             long numSubscribers = jedis.publish(topic, content);
+            totalMessage++;
             if (numSubscribers > 0) {
-                LOGGER.info("WMS_LOG :: Message published successfully to " + numSubscribers + " subscribers.");
-            } else {
-                LOGGER.info("WMS_LOG :: No subscribers received the message.");
+                publishedMessage++;
+                LOGGER.info("WMS_LOG :: Message published successfully to " + numSubscribers + " subscribers. " +
+                        "Total published message since restart of the server "+publishedMessage);
+            }
+            if(totalMessage % 100 == 0) {
+                LOGGER.info("WMS_LOG :: Total "+totalMessage+" messages. Published "+publishedMessage+" messages");
             }
         } catch (Exception ex) {
             LOGGER.error("WMS_ERROR :: Failed to get connection from jedis pool", ex);

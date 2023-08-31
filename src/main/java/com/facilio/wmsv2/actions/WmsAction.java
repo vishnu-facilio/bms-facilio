@@ -27,6 +27,7 @@ public class WmsAction extends V3Action {
         }
         setData("liveSessions", liveSessions);
         setData("subscribedTopics", topics);
+
         return V3Action.SUCCESS;
     }
 
