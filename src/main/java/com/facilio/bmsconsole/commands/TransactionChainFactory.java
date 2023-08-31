@@ -928,6 +928,11 @@ public class TransactionChainFactory {
 			return chain;
 		}
 
+		public static FacilioChain getImpactFieldsForRuleChain() {
+		 FacilioChain chain = getDefaultChain();
+		 chain.addCommand(new FetchImpactFieldsForRuleCommand());
+		 return chain;
+		}
 
 		public static FacilioChain updateControlGroupChain() {
 			FacilioChain c = getDefaultChain();

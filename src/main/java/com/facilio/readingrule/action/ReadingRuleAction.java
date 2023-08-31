@@ -98,6 +98,19 @@ public class ReadingRuleAction extends V3Action {
         return SUCCESS;
     }
 
+    public String fetchImpactFieldIds() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getImpactFieldsForRuleChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.RULE_ID, getRuleId());
+        chain.execute();
+        Map<String, Long> impactFieldIds = (Map<String, Long>) context.get(FacilioConstants.ContextNames.RECORD);
+        JSONObject result = new JSONObject();
+        result.put(FacilioConstants.ReadingRules.COST_IMPACT_ID, impactFieldIds.get(FacilioConstants.ReadingRules.COST_IMPACT_ID));
+        result.put(FacilioConstants.ReadingRules.ENERGY_IMPACT_ID, impactFieldIds.get(FacilioConstants.ReadingRules.ENERGY_IMPACT_ID));
+        setData(FacilioConstants.ContextNames.RESULT, result);
+        return SUCCESS;
+    }
+
     private Long parentId;
     Boolean isCostImpact;
 

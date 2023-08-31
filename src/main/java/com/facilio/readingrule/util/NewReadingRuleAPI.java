@@ -298,4 +298,18 @@ public class NewReadingRuleAPI {
         WorkflowRuleLoggerAPI.addWorkflowRuleLogger(ruleLogger);
         return ruleLogger.getId();
     }
+
+    public static Map<String, Long> getImpactFieldIdsForRule(Long ruleId) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        Map<String, Long> resultMap = new HashMap<>();
+        List<NewReadingRuleContext> rules = getReadingRules(Collections.singletonList(ruleId));
+        for(NewReadingRuleContext rule : rules) {
+            FacilioModule module = modBean.getModule(rule.getReadingModuleId());
+            List<FacilioField> fields = modBean.getAllFields(module.getName());
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+            resultMap.put(FacilioConstants.ReadingRules.COST_IMPACT_ID, fieldMap.get("costImpact").getFieldId());
+            resultMap.put(FacilioConstants.ReadingRules.ENERGY_IMPACT_ID, fieldMap.get("energyImpact").getFieldId());
+        }
+        return resultMap;
+    }
 }

@@ -4235,6 +4235,8 @@ public class FacilioConstants {
 		public static final String RULE_SCRIPT_LOGS_MODULE = "rulescriptlogs";
 
 		public static final String SCRIPT_LOGS = "scriptLogs";
+		public static final String COST_IMPACT_ID = "costImpactId";
+		public static final String ENERGY_IMPACT_ID = "energyImpactId";
 
 		public static class RCA {
 			public static final String RCA_MODULE = "readingrulerca";

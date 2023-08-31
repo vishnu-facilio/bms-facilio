@@ -3388,4 +3388,10 @@
         </requestbody>
     </request>
 
+    <request path="/api/v3/readingrule/fetchImpactFieldIds" method="GET">
+        <requestbody type="object">
+            <property name="ruleId" type="number"/>
+        </requestbody>
+    </request>
+
 </config>

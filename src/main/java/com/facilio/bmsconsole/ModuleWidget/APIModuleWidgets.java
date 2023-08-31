@@ -258,6 +258,35 @@ public class APIModuleWidgets {
                 .done()
                 ;
     }
+
+    @WidgetsForModule("newreadingalarm")
+    public static Supplier<ModuleWidgets> getReadingAlarmWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("occurrenceHistory", "Occurrence History", PageWidget.WidgetType.OCCURRENCE_HISTORY)
+                .addFixedWidgetConfig("webOccurrenceHistory-58*12", "Occurrence History - 58*12", 58, 12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("mtba", "Mean time between occurrence", PageWidget.WidgetType.MTBA_CARD)
+                .addFixedWidgetConfig("webMtba-14*6", "Mtba - 14*6", 14, 6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("mttc", "Mean time to clear", PageWidget.WidgetType.MTTC_CARD)
+                .addFixedWidgetConfig("webMttc-14*6", "Mttc - 14*6", 14, 6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("alarmDuration", "No. of occurrences", PageWidget.WidgetType.ALARM_DURATION)
+                .addFixedWidgetConfig("webAlarmDuration-12*6", "Alarm Duration - 12*6", 12, 6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("impactInfo", "Impact Template", PageWidget.WidgetType.IMPACT_INFO)
+                .addFixedWidgetConfig("webImpactInfo-12*6", "Impact Info - 12*6", 12, 6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("costImpact", "Cost Impact", PageWidget.WidgetType.COST_IMPACT)
+                .addFixedWidgetConfig("webCostImpact-14*6", "Cost Impact - 14*6", 14, 6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("energyImpact", "Energy Impact", PageWidget.WidgetType.ENERGY_IMPACT)
+                .addFixedWidgetConfig("webEnergyImpact-14*6", "Energy Impact - 14*6", 14, 6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("impactReport", "Impact Report", PageWidget.WidgetType.IMPACT_REPORT)
+                .addFlexibleWidgetConfig("webImpactReport-51", "Impact Report - 51", 51, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
     @WidgetsForModule("bmsalarm")
     public static Supplier<ModuleWidgets> getBmsAlarmWidgets() {
         return () -> new ModuleWidgets()

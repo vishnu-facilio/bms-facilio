@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BmsAlarmTemplatePage implements TemplatePageFactory {
+public class ReadingAlarmTemplatePage implements TemplatePageFactory{
     @Override
     public String getModuleName() {
-        return FacilioConstants.ContextNames.BMS_ALARM;
+        return FacilioConstants.ContextNames.NEW_READING_ALARM;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class BmsAlarmTemplatePage implements TemplatePageFactory {
                 .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("alarmDetails", null, null)
-                .addWidget("bmsAlarmDetails", "BMS Alarm Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.BMS_ALARM))
+                .addWidget("bmsAlarmDetails", "Faults Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.NEW_READING_ALARM))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -37,10 +37,32 @@ public class BmsAlarmTemplatePage implements TemplatePageFactory {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
+                .addTab("insight", "INSIGHT", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("impactDetails", null, null)
+                .addWidget("mtba","Mean time between occurrences", PageWidget.WidgetType.MTBA_CARD, "webMtba-14*6",0,0, null, null)
+                .widgetDone()
+                .addWidget("mttc", "Mean time to clear", PageWidget.WidgetType.MTTC_CARD, "webMttc-14*6", 6, 0, null, null)
+                .widgetDone()
+                .addWidget("alarmDuration", "No. of occurrences", PageWidget.WidgetType.ALARM_DURATION, "webAlarmDuration-12*6", 0, 14, null, null)
+                .widgetDone()
+                .addWidget("impactInfo", "Impact template", PageWidget.WidgetType.IMPACT_INFO, "webImpactInfo-12*6", 6, 14, null, null)
+                .widgetDone()
+                .addWidget("costImpact", "Cost impact", PageWidget.WidgetType.COST_IMPACT, "webCostImpact-14*6", 0,26, null, null)
+                .widgetDone()
+                .addWidget("energyImpact", "Energy impact (KWH)", PageWidget.WidgetType.ENERGY_IMPACT, "webEnergyImpact-14*6", 6,26, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("impactChart", null, null)
+                .addWidget("impactReport", "Impact report", PageWidget.WidgetType.IMPACT_REPORT, "webImpactReport-51", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
                 .addTab("history", "HISTORY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("occurrenceHistory", null, null)
-                .addWidget("bmsOccurrenceHistory", "BMS Alarm", PageWidget.WidgetType.OCCURRENCE_HISTORY, "webOccurrenceHistory-58*12", 0, 0, null, null)
+                .addWidget("readingAlarmOccurrenceHistory", "Faults", PageWidget.WidgetType.OCCURRENCE_HISTORY, "webOccurrenceHistory-58*12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -53,18 +75,14 @@ public class BmsAlarmTemplatePage implements TemplatePageFactory {
 
         FacilioField lastOccurredTime = moduleBean.getField("lastOccurredTime", moduleName);
         FacilioField lastCreatedTime = moduleBean.getField("lastCreatedTime", moduleName);
-        FacilioField condition = moduleBean.getField("condition", moduleName);
-        FacilioField source = moduleBean.getField("source", moduleName);
-        FacilioField controller = moduleBean.getField("controller", moduleName);
+        FacilioField rule = moduleBean.getField("rule", moduleName);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup primaryDetailsWidgetGroup = new SummaryWidgetGroup();
 
         addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 1, 1);
         addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, condition, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, source, 2, 1, 1);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, controller, 2, 2, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, rule, 1, 3, 1);
 
         primaryDetailsWidgetGroup.setName("primaryDetails");
         primaryDetailsWidgetGroup.setDisplayName("Primary Details");
