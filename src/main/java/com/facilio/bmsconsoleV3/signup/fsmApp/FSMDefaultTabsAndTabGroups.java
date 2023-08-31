@@ -32,7 +32,7 @@ public class FSMDefaultTabsAndTabGroups {
         Map<String, WebTabContext> tabsMap = new HashMap<String, WebTabContext>();
 
         List<WebTabContext> tabs = Arrays.asList(
-                new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, null, null,null,appId),
+                new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.NEW_DASHBOARD, null, null, null,null,appId),
                 new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"portfolio\" }", 1,null,appId),
                 new WebTabContext("Territory","territory",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.Territory.TERRITORY)), null, null,null,appId),
                 new WebTabContext("Assets", "assets", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.ASSET)), null, 4,null,appId),

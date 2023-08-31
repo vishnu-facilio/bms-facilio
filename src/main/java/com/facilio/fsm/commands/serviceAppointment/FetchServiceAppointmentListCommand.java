@@ -8,9 +8,13 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fsm.context.DispatcherSettingsContext;
 import com.facilio.fsm.context.ServiceAppointmentContext;
+import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
+import com.facilio.fsm.exception.FSMErrorCode;
+import com.facilio.fsm.exception.FSMException;
+import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -56,9 +60,15 @@ public class FetchServiceAppointmentListCommand extends FacilioCommand {
         List<LookupField>lookUpfields = new ArrayList<>();
         lookUpfields.add((LookupField) serviceAppointmentFieldsMap.get("location"));
         lookUpfields.add((LookupField) serviceAppointmentFieldsMap.get("site"));
+        lookUpfields.add((LookupField) serviceAppointmentFieldsMap.get("priority"));
 
+        ServiceAppointmentTicketStatusContext scheduledStatus = ServiceAppointmentUtil.getStatus(FacilioConstants.ServiceAppointment.SCHEDULED);
         Criteria serverCriteria = new Criteria();
-        serverCriteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID","fieldAgent",null, CommonOperators.IS_EMPTY));
+        if(scheduledStatus != null) {
+            serverCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(scheduledStatus.getId()), NumberOperators.EQUALS));
+        } else {
+            throw new FSMException(FSMErrorCode.UNKOWN_ERROR);
+        }
 
         if(criteriaId != null && criteriaId>0) {
             Criteria viewCriteria = CriteriaAPI.getCriteria(orgId, criteriaId);
