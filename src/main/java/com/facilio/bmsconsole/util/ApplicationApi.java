@@ -118,19 +118,9 @@ public class ApplicationApi {
         //development check need to be changed to preproduction and removed after testing
         boolean isPreProdSetup = false;
         if(SignupUtil.maintenanceAppSignup()) {
-            if (FacilioProperties.isPreProd()) {
-                isPreProdSetup = true;
-                if (appLinkName.equals(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)) {
-                    if (checkApplicationExisitsInDB(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) > 0) {
-                        appLinkName = FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP;
-                    }
-                }
-            }
-            else {
-                if (appLinkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
-                    if (checkApplicationExisitsInDB(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP) > 0) {
-                        appLinkName = FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP;
-                    }
+            if (appLinkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
+                if (checkApplicationExisitsInDB(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP) > 0) {
+                    appLinkName = FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP;
                 }
             }
         }
