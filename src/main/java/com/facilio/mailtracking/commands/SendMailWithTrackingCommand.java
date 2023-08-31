@@ -22,7 +22,7 @@ public class SendMailWithTrackingCommand extends FacilioCommand {
         EmailClient emailClient = EmailFactory.getEmailClient();
         String logMeta = OutgoingMailAPI.getLogMeta(mailJson);
         try {
-            String messageId = emailClient.sendEmailFromWMS(mailJson, files);
+            String messageId = emailClient.sendEmailFromIms(mailJson, files);
             context.put(MailConstants.Params.MESSAGE_ID, messageId);
             context.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.SENT);
             context.put(MailConstants.Params.RECIPIENT_STATUS, RecipientStatus.SENT);

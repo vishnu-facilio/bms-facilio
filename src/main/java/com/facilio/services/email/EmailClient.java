@@ -103,7 +103,7 @@ public abstract class EmailClient extends BaseEmailClient {
                         .setKey(OutgoingPreprocessHandler.KEY + "/" + topicIdentifier)
                         .setOrgId(orgId)
                         .setContent(mailJson));
-                LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail content preprocess queue/wms for topic ::" + topicIdentifier);
+                LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail content preprocess queue/ims for topic ::" + topicIdentifier);
             } else {
                 prepareAndPushOutgoingMail(mailJson, files, handleUserDelegation, isActive);
             }
@@ -273,7 +273,7 @@ public abstract class EmailClient extends BaseEmailClient {
      * Used to log outgoing mail tracking info. Don't use this method directly.
      * Use {@link #sendEmailWithActiveUserCheck(JSONObject, Map)} instead.
      */
-    public String sendEmailFromWMS(JSONObject mailJson, Map<String, String> files) throws Exception {
+    public String sendEmailFromIms(JSONObject mailJson, Map<String, String> files) throws Exception {
         if(files == null || files.isEmpty()) {
             return sendEmailImpl(mailJson);
         }

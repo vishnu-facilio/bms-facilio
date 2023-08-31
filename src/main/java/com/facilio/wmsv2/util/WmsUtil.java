@@ -1,6 +1,7 @@
 package com.facilio.wmsv2.util;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.server.ServerInfo;
 import com.facilio.wmsv2.endpoint.LiveSession;
 import com.facilio.wmsv2.handler.WmsHandler;
 import com.facilio.wmsv2.handler.WmsProcessor;
@@ -15,13 +16,15 @@ import java.text.MessageFormat;
 @Log4j
 public class WmsUtil {
 
-
-    public static final String WMS_SUBSCRIBE_CHANNEL = FacilioProperties.getEnvironment() + "__wms__subscribe__channel";
-    public static final String WMS_UNSUBSCRIBE_CHANNEL = FacilioProperties.getEnvironment() + "__wms__unsubscribe__channel";
-
+    public static final String WMS_SUBSCRIBE_CHANNEL = createWmsTopic("wms__subscribe__channel");
+    public static final String WMS_UNSUBSCRIBE_CHANNEL = createWmsTopic("wms__unsubscribe__channel");
     public static final String WMS_ORG_TOPIC = FacilioProperties.getEnvironment() + "/wms/org/{0}/{1}";
     public static final String WMS_APP_TOPIC = FacilioProperties.getEnvironment() + "/wms/org/{0}/app/{1}/{2}";
     public static final String WMS_USER_TOPIC = FacilioProperties.getEnvironment() + "/wms/org/{0}/app/{1}/user/{2}/{3}";
+
+    private static String createWmsTopic(String topic) {
+        return MessageFormat.format("{0}__{1}__{2}", FacilioProperties.getEnvironment(), ServerInfo.getHostname(), topic);
+    }
 
     public static String convertToRedisTopic(LiveSession ls, String topic) {
         WmsHandler handler = WmsProcessor.getInstance().getHandler(topic);

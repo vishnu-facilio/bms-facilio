@@ -56,7 +56,7 @@ public class PushOutgoingMailToQueueCommand extends FacilioCommand implements Po
                 .setKey(OutgoingMailHandler.KEY+"/"+topicIdentifier)
                 .setOrgId(orgId)
                 .setContent(mailJson));
-        LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail to queue/wms for LOGGER_ID ::"+mailJson.get(MailConstants.Params.ID));
+        LOGGER.info("OG_MAIL_LOG :: Pushing outgoing mail to queue/ims for LOGGER_ID ::"+mailJson.get(MailConstants.Params.ID));
 
         return false;
     }

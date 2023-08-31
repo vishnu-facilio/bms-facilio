@@ -26,7 +26,7 @@ public class SendMailWithoutTrackingCommand extends FacilioCommand {
         Map<String, String> files = (Map<String, String>) context.get(MailConstants.Params.FILES);
         EmailClient emailClient = EmailFactory.getEmailClient();
         try {
-            String messageId = emailClient.sendEmailFromWMS(mailJson, files);
+            String messageId = emailClient.sendEmailFromIms(mailJson, files);
             context.put(MailConstants.Params.MESSAGE_ID, messageId);
             context.put(MailConstants.Params.MAIL_STATUS, MailEnums.MailStatus.SENT_WITHOUT_TRACKING);
         } catch (Exception e) {
