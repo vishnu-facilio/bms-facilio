@@ -559,9 +559,7 @@ public class OrgBeanImpl implements OrgBean {
 		Role superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
 		long applicationId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
 		if(SignupUtil.maintenanceAppSignup()) {
-			if(!(superAdminRole != null && superAdminRole.getId() > 0 && FacilioProperties.isPreProd())){
-				superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, FacilioConstants.DefaultRoleNames.MAINTENANCE_SUPER_ADMIN, false);
-			}
+			superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, FacilioConstants.DefaultRoleNames.MAINTENANCE_SUPER_ADMIN, false);
 			applicationId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 		}
 		if(superAdminRole == null) {
