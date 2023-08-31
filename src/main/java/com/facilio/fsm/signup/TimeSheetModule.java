@@ -52,7 +52,7 @@ public class TimeSheetModule extends BaseModuleConfig {
         timeSheetFields.add(localId);
         ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.TimeSheet.TIME_SHEET);
 
-        timeSheetFields.add(new StringField(timeSheetModule,"code","Code",FacilioField.FieldDisplayType.TEXTBOX,"CODE", FieldType.STRING,true,false,true,false));
+        timeSheetFields.add(new StringField(timeSheetModule,"code","Code",FacilioField.FieldDisplayType.TEXTBOX,"CODE", FieldType.STRING,true,false,true,true));
 
         DateField startTime = new DateField(timeSheetModule,"startTime","Start Time", FacilioField.FieldDisplayType.DATETIME,"START_TIME", FieldType.DATE_TIME,true,false,true,false);
         timeSheetFields.add(startTime);
@@ -64,7 +64,7 @@ public class TimeSheetModule extends BaseModuleConfig {
         actualDuration.setDisplayType(FacilioField.FieldDisplayType.DURATION);
         timeSheetFields.add(actualDuration);
 
-        LookupField fieldAgent = new LookupField(timeSheetModule,"fieldAgent","Field Agent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"PEOPLE_ID",FieldType.LOOKUP,true,false,true,true,"Field Agent", Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE));
+        LookupField fieldAgent = new LookupField(timeSheetModule,"fieldAgent","Field Agent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"PEOPLE_ID",FieldType.LOOKUP,true,false,true,false,"Field Agent", Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE));
         timeSheetFields.add(fieldAgent);
 
         LookupField serviceAppointment = new LookupField(timeSheetModule,"serviceAppointment","Service Appointment", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_APPOINTMENT_ID",FieldType.LOOKUP,true,false,true,false,"Service Appointment", Constants.getModBean().getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));

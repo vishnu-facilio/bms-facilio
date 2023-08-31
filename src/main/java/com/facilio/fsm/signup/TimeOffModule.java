@@ -47,9 +47,9 @@ public class TimeOffModule extends BaseModuleConfig {
         FacilioModule timeOffTypeModule = new FacilioModule(FacilioConstants.TimeOff.TIME_OFF_TYPE,"Time Off Type","TIME_OFF_TYPE", FacilioModule.ModuleType.PICK_LIST);
         List<FacilioField> timeOffTypeFields = new ArrayList<>();
 
-        StringField name = new StringField(timeOffTypeModule,"name","Name", FacilioField.FieldDisplayType.TEXTBOX,"NAME",FieldType.STRING,true,false,true,true);
+        StringField name = new StringField(timeOffTypeModule,"name","Name", FacilioField.FieldDisplayType.TEXTBOX,"NAME",FieldType.STRING,true,false,true,false);
         timeOffTypeFields.add(name);
-        StringField displayName = new StringField(timeOffTypeModule,"displayName","Display Name", FacilioField.FieldDisplayType.TEXTBOX,"DISPLAY_NAME",FieldType.STRING,true,false,true,false);
+        StringField displayName = new StringField(timeOffTypeModule,"displayName","Display Name", FacilioField.FieldDisplayType.TEXTBOX,"DISPLAY_NAME",FieldType.STRING,true,false,true,true);
         timeOffTypeFields.add(displayName);
         StringField description = new StringField(timeOffTypeModule,"description","Description", FacilioField.FieldDisplayType.TEXTAREA,"DESCRIPTION",FieldType.STRING,false,false,true,false);
         timeOffTypeFields.add(description);

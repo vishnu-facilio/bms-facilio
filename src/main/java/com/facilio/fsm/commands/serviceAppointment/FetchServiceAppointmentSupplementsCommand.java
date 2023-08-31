@@ -25,6 +25,11 @@ public class FetchServiceAppointmentSupplementsCommand extends FacilioCommand {
             Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
             List<SupplementRecord> fetchLookupsList = new ArrayList<>();
             SupplementRecord site = (SupplementRecord) fieldsAsMap.get("site");
+            SupplementRecord space = (SupplementRecord) fieldsAsMap.get("space");
+            SupplementRecord asset = (SupplementRecord) fieldsAsMap.get("asset");
+            SupplementRecord tenant = (SupplementRecord) fieldsAsMap.get("tenant");
+            SupplementRecord vendor = (SupplementRecord) fieldsAsMap.get("vendor");
+            SupplementRecord client = (SupplementRecord) fieldsAsMap.get("client");
             SupplementRecord location = (SupplementRecord) fieldsAsMap.get("location");
             SupplementRecord serviceWorkorder = (SupplementRecord) fieldsAsMap.get("serviceOrder");
             SupplementRecord workorder = (SupplementRecord) fieldsAsMap.get("workorder");
@@ -48,6 +53,11 @@ public class FetchServiceAppointmentSupplementsCommand extends FacilioCommand {
             fetchLookupsList.add(territory);
             fetchLookupsList.add(status);
             fetchLookupsList.add(priority);
+            fetchLookupsList.add(space);
+            fetchLookupsList.add(asset);
+            fetchLookupsList.add(tenant);
+            fetchLookupsList.add(vendor);
+            fetchLookupsList.add(client);
 
             context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
 

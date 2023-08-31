@@ -577,6 +577,7 @@ public class ServiceAppointmentUtil {
                             OngoingTrip.setEndTime(DateTimeUtil.getCurrenTime());
                             Long duration = OngoingTrip.getEndTime() - OngoingTrip.getStartTime();
                             OngoingTrip.setTripDuration(duration/1000);
+                            OngoingTrip.setStatus(getTripStatus(FacilioConstants.Trip.COMPLETED));
                             if(location != null){
                                 if (location != null && location.getLat() != -1 && location.getLng() != -1) {
                                     if(location.getName() == null) {

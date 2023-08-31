@@ -42,13 +42,13 @@ public class ValidateTimeSheetCommand extends FacilioCommand {
                     Map<Long,Object> oldTimeSheets = (Map<Long,Object>) oldRecordMap.get(context.get("moduleName"));
                     TimeSheetContext oldTimeSheet = (TimeSheetContext) oldTimeSheets.get(timeSheet.getId());
                     if(timeSheet.getFieldAgent()!=oldTimeSheet.getFieldAgent()) {
-                        throw new FSMException(FSMErrorCode.TIME_SHEET_UPDATE_PREVENT);
+                        throw new FSMException(FSMErrorCode.UPDATE_PREVENT);
                     }
                     else if(timeSheet.getServiceAppointment()!=oldTimeSheet.getServiceAppointment()) {
-                        throw new FSMException(FSMErrorCode.TIME_SHEET_UPDATE_PREVENT);
+                        throw new FSMException(FSMErrorCode.UPDATE_PREVENT);
                     }
                     else if(timeSheet.getServiceTasks()!=oldTimeSheet.getServiceTasks()) {
-                        throw new FSMException(FSMErrorCode.TIME_SHEET_UPDATE_PREVENT);
+                        throw new FSMException(FSMErrorCode.UPDATE_PREVENT);
                     }
 
 

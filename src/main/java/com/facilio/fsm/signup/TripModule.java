@@ -61,13 +61,13 @@ public class TripModule extends BaseModuleConfig {
         fields.add(localId);
         ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.Trip.TRIP);
 
-        fields.add(new StringField(module,"code","Code",FacilioField.FieldDisplayType.TEXTBOX,"CODE", FieldType.STRING,true,false,true,false));
+        fields.add(new StringField(module,"code","Code",FacilioField.FieldDisplayType.TEXTBOX,"CODE", FieldType.STRING,true,false,true,true));
 
-        LookupField peopleId = FieldFactory.getDefaultField("people", "Field Agent", "PEOPLE_ID", FieldType.LOOKUP,true);
+        LookupField peopleId = FieldFactory.getDefaultField("people", "Field Agent", "PEOPLE_ID", FieldType.LOOKUP,false);
         peopleId.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(peopleId);
 
-        LookupField serviceAppointmentId = new LookupField(module,"serviceAppointment","Service Appointment",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_APPOINTMENT_ID", FieldType.LOOKUP,true,false,true,true,null,modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
+        LookupField serviceAppointmentId = new LookupField(module,"serviceAppointment","Service Appointment",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_APPOINTMENT_ID", FieldType.LOOKUP,true,false,true,false,null,modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
         fields.add(serviceAppointmentId);
 
         LookupField startLocation = FieldFactory.getDefaultField("startLocation","Start Location","START_LOCATION",FieldType.LOOKUP);

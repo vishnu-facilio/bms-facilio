@@ -1,5 +1,6 @@
 package com.facilio.fsm.context;
 
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inspection.InspectionResponseContext;
@@ -38,7 +39,7 @@ public class ServiceAppointmentContext extends V3Context {
     private Long responseDueDuration;
     private Long resolutionDueDuration;
     private V3ClientContext client;
-    private V3SpaceContext space;
+    private SpaceContext space;
     private V3AssetContext asset;
     private V3VendorContext vendor;
     private V3TenantContext tenant;

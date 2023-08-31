@@ -28,6 +28,7 @@ public class FetchTripSupplementsCommand extends FacilioCommand {
         SupplementRecord serviceOrder = (SupplementRecord) fieldsAsMap.get("serviceOrder");
         SupplementRecord moduleState = (SupplementRecord) fieldsAsMap.get("moduleState");
         SupplementRecord approvalStatus = (SupplementRecord) fieldsAsMap.get("approvalStatus");
+        SupplementRecord status = (SupplementRecord) fieldsAsMap.get("status");
 
 
         fetchLookupsList.add(people);
@@ -37,6 +38,7 @@ public class FetchTripSupplementsCommand extends FacilioCommand {
         fetchLookupsList.add(serviceOrder);
         fetchLookupsList.add(moduleState);
         fetchLookupsList.add(approvalStatus);
+        fetchLookupsList.add(status);
 
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);

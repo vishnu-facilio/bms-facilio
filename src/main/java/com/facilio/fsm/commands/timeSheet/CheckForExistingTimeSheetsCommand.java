@@ -27,7 +27,7 @@ public class CheckForExistingTimeSheetsCommand extends FacilioCommand {
                 if(timeSheet.getFieldAgent() != null && timeSheet.getStartTime() != null){
                     List<TimeSheetContext> records = ServiceAppointmentUtil.getTimeSheetsForTimeRange(timeSheet.getFieldAgent().getId(), timeSheet.getStartTime(), timeSheet.getEndTime());
                     if(CollectionUtils.isNotEmpty(records)){
-                        throw new FSMException(FSMErrorCode.SA_TIMESHEET_ALREADY_RUNNING);
+                        throw new FSMException(FSMErrorCode.TIMESHEET_ALREADY_RUNNING);
                     }
                 } else {
                         throw new FSMException(FSMErrorCode.TIME_SHEET_NOT_ENOUGH_DETAILS);

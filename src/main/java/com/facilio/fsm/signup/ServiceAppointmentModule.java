@@ -61,9 +61,9 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         serviceAppointmentFields.add(localId);
         ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
 
-        serviceAppointmentFields.add(new StringField(serviceAppointmentModule,"code","Code",FacilioField.FieldDisplayType.TEXTBOX,"CODE", FieldType.STRING,true,false,true,false));
+        serviceAppointmentFields.add(new StringField(serviceAppointmentModule,"code","Code",FacilioField.FieldDisplayType.TEXTBOX,"CODE", FieldType.STRING,true,false,true,true));
 
-        serviceAppointmentFields.add(new StringField(serviceAppointmentModule,"name","Name",FacilioField.FieldDisplayType.TEXTBOX,"NAME", FieldType.STRING,true,false,true,true));
+        serviceAppointmentFields.add(new StringField(serviceAppointmentModule,"name","Name",FacilioField.FieldDisplayType.TEXTBOX,"NAME", FieldType.STRING,true,false,true,false));
 
         serviceAppointmentFields.add(new StringField(serviceAppointmentModule,"description","Description",FacilioField.FieldDisplayType.TEXTAREA,"DESCRIPTION",FieldType.STRING,false,false,true,false));
 

@@ -530,3 +530,6 @@ enums:
 
   - name: InventorySource
     enumClassName: com.facilio.fsm.context.ServiceOrderCostContext$InventorySource
+
+  - name: Level
+    enumClassName: com.facilio.fsm.context.PeopleSkillLevelContext$Level

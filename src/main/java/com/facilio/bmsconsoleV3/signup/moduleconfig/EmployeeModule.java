@@ -148,7 +148,7 @@ public class EmployeeModule extends BaseModuleConfig{
         employeeFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.TEXTBOX, "Rate per Hour", FormField.Required.OPTIONAL, 6, 2));
         employeeFormFields.add(new FormField("dispatchable", FacilioField.FieldDisplayType.DECISION_BOX, "Dispatchable", FormField.Required.OPTIONAL, 7, 2));
         employeeFormFields.add(new FormField("trackGeoLocation", FacilioField.FieldDisplayType.DECISION_BOX, "Track Geolocation", FormField.Required.OPTIONAL, 8, 2));
-
+        employeeFormFields.add(new FormField("territories",FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Territories",FormField.Required.OPTIONAL,9,1));
         FormSection employeeSection = new FormSection("Employee Details", 1, employeeFormFields, true);
         employeeSection.setSectionType(FormSection.SectionType.FIELDS);
         employeeForm.setSections(Collections.singletonList(employeeSection));

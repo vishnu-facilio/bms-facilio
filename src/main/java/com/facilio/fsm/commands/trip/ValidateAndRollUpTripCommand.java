@@ -3,7 +3,6 @@ package com.facilio.fsm.commands.trip;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fsm.context.TimeSheetContext;
 import com.facilio.fsm.context.TripContext;
 import com.facilio.fsm.exception.FSMErrorCode;
 import com.facilio.fsm.exception.FSMException;
@@ -26,26 +25,22 @@ public class ValidateAndRollUpTripCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(trips)) {
             for (TripContext trip : trips) {
                 if (trip.getStartTime()>0 && trip.getEndTime() >0) {
-
-                    trip.setStatus(ServiceAppointmentUtil.getTripStatus(FacilioConstants.Trip.COMPLETED));
                     if (trip.getStartTime() > trip.getEndTime()) {
                         throw new FSMException(FSMErrorCode.TRIP_TIME_MISMATCH);
                     }
+                    trip.setStatus(ServiceAppointmentUtil.getTripStatus(FacilioConstants.Trip.COMPLETED));
+                    Long duration = trip.getEndTime() - trip.getStartTime();
+                    trip.setTripDuration(duration/1000);
                 }
                 if(eventType == EventType.EDIT){
-//                    Map<Long,Object> oldTrips = (Map<Long,Object>) oldRecordMap.get(context.get("moduleName"));
-//                    TripContext oldTrip = (TimeSheetContext) oldTimeSheets.get(timeSheet.getId());
-//                    if(timeSheet.getFieldAgent()!=oldTimeSheet.getFieldAgent()) {
-//                        throw new FSMException(FSMErrorCode.TIME_SHEET_UPDATE_PREVENT);
-//                    }
-//                    else if(timeSheet.getServiceAppointment()!=oldTrip.getServiceAppointment()) {
-//                        throw new FSMException(FSMErrorCode.TIME_SHEET_UPDATE_PREVENT);
-//                    }
-//                    else if(timeSheet.getServiceTasks()!=oldTrip.getServiceTasks()) {
-//                        throw new FSMException(FSMErrorCode.TIME_SHEET_UPDATE_PREVENT);
-//                    }
-
-
+                    Map<Long,Object> oldTrips = (Map<Long,Object>) oldRecordMap.get(context.get("moduleName"));
+                    TripContext oldTrip = (TripContext) oldTrips.get(trip.getId());
+                    if(trip.getPeople()!=oldTrip.getPeople()) {
+                        throw new FSMException(FSMErrorCode.UPDATE_PREVENT);
+                    }
+                    else if(trip.getServiceAppointment()!=oldTrip.getServiceAppointment()) {
+                        throw new FSMException(FSMErrorCode.UPDATE_PREVENT);
+                    }
                 }
 
             }

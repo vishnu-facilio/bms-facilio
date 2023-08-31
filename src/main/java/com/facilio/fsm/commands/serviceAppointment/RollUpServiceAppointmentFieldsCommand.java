@@ -2,8 +2,10 @@ package com.facilio.fsm.commands.serviceAppointment;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
@@ -19,6 +21,7 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,6 +59,23 @@ public class RollUpServiceAppointmentFieldsCommand extends FacilioCommand {
                             }
                             serviceAppointment.setTerritory(site.getTerritory());
                         }
+                        if(serviceOrder.getSpace() != null){
+                            serviceAppointment.setSpace(serviceOrder.getSpace());
+                        }
+                        if(serviceOrder.getAsset() != null){
+                            serviceAppointment.setAsset(serviceOrder.getAsset());
+                        }
+                        if(serviceOrder.getVendor() != null){
+                            serviceAppointment.setVendor(serviceAppointment.getVendor());
+                        }
+                        if(serviceOrder.getClient() != null){
+                            serviceAppointment.setClient(serviceOrder.getClient());
+                        }
+                        if(serviceAppointment.getTenant() != null){
+                            serviceAppointment.setTenant(serviceOrder.getTenant());
+                        }
+                        serviceAppointment.setEstimatedDuration((serviceAppointment.getScheduledStartTime() - serviceAppointment.getScheduledEndTime())/1000);
+
                     }
                 }
 

@@ -25,7 +25,6 @@ public enum FSMErrorCode {
     SA_TERRITORY_MISMATCH(Severity.WARNING,"Dispatch Alert: Mismatched Assignment","The selected Field Agent is not associated to the same territory as the service appointment"),
     SA_TIME_MISMATCH(Severity.WARNING,"Dispatch Alert: Mismatched Assignment","The selected Field Agent is not available for the scheduled service appointment time."),
     SA_SKILL_MISMATCH(Severity.WARNING,"Dispatch Alert: Mismatched Assignment","Skills of the selected Field Agent do not match with the required skill for this service appointment"),
-    SA_TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Timesheet conflict", "You cannot start this service appointment while a timesheet is in progress or exists for the given time range."),
     SA_TRIP_ALREADY_RUNNING(Severity.ERROR, "Trip conflict", "You cannot start a trip while another is already running."),
     SA_SCHEDULED_TIME_MISMATCH(Severity.ERROR, "Scheduled time range is invalid", "The service appointment should be scheduled between valid time range."),
     SA_DETAILS_REQUIED(Severity.ERROR, "Mandatory field missing", "Please provide all the required details."),
@@ -36,7 +35,7 @@ public enum FSMErrorCode {
     TIME_SHEET_NOT_ENOUGH_DETAILS(Severity.ERROR, "Mandatory field missing", "Not enough details to create a timesheet"),
     TIME_SHEET_SA_MANDATORY(Severity.ERROR, "Service Appointment is required", "Please select Service Appointment to proceed with Time Sheet creation"),
     TIME_SHEET_TIME_MISMATCH(Severity.ERROR, "Time range is invalid", "Time Sheet should have valid time range."),
-    TIME_SHEET_UPDATE_PREVENT(Severity.ERROR, "Not Permitted", "You are not permitted to edit these details."),
+    TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Conflict in Time Sheet", "An ongoing time sheet exists. Please complete the existing time sheet before creating a new one"),
 
 
     // Trip error codes
@@ -45,9 +44,9 @@ public enum FSMErrorCode {
     TRIP_TIME_MISMATCH(Severity.ERROR, "Time range is invalid", "Trip should have valid time range."),
 
     //Service Task error codes
-    TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Timesheet conflict", "Cannot start or resume another service task when timesheet is running"),
 
-    RECORD_LOCKED(Severity.ERROR, "Record Locked", "You cannot edit or delete since the record is locked.");
+    RECORD_LOCKED(Severity.ERROR, "Record Locked", "You cannot edit or delete since the record is locked."),
+    UPDATE_PREVENT(Severity.ERROR, "Not Permitted", "You are not permitted to edit these details.");
 
     private final Severity severity;
     private final String title;
