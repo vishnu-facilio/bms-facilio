@@ -348,8 +348,8 @@ public class TerritoryModule extends BaseModuleConfig {
         ArrayList<FacilioView> all = new ArrayList<FacilioView>();
         all.add(getAllTerritories().setOrder(order++));
         groupDetails = new HashMap<>();
-        groupDetails.put("name", "systemviews");
-        groupDetails.put("displayName", "System Views");
+        groupDetails.put("name", "default");
+        groupDetails.put("displayName", "Default");
         groupDetails.put("views", all);
         groupVsViews.add(groupDetails);
 

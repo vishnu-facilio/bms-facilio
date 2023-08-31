@@ -399,8 +399,8 @@ public class TimeOffModule extends BaseModuleConfig {
         timeOffViews.add(getAllTimeOffViews().setOrder(order++));
 
         groupDetails = new HashMap<>();
-        groupDetails.put("name", "systemviews");
-        groupDetails.put("displayName", "System Views");
+        groupDetails.put("name", "default");
+        groupDetails.put("displayName", "Default");
         groupDetails.put("moduleName", FacilioConstants.TimeOff.TIME_OFF);
         groupDetails.put("views", timeOffViews);
         groupVsViews.add(groupDetails);

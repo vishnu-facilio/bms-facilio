@@ -335,6 +335,7 @@ public class BuildingModule extends BaseModuleConfig {
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -349,7 +350,7 @@ public class BuildingModule extends BaseModuleConfig {
         defaultBuildingForm.setName("default_building_web");
         defaultBuildingForm.setModule(buildingModule);
         defaultBuildingForm.setDisplayName("Building");
-        defaultBuildingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP, FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        defaultBuildingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP, FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,FacilioConstants.ApplicationLinkNames.FSM_APP));
         defaultBuildingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultBuildingForm.setShowInWeb(true);
 

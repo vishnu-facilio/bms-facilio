@@ -429,8 +429,8 @@ public class TripModule extends BaseModuleConfig {
         tripViews.add(getAllTripViews().setOrder(order++));
 
         groupDetails = new HashMap<>();
-        groupDetails.put("name", "systemviews");
-        groupDetails.put("displayName", "System Views");
+        groupDetails.put("name", "default");
+        groupDetails.put("displayName", "Default");
         groupDetails.put("moduleName", FacilioConstants.Trip.TRIP);
         groupDetails.put("views", tripViews);
         groupVsViews.add(groupDetails);

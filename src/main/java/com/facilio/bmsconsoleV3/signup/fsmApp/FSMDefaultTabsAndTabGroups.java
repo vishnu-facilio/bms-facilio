@@ -34,6 +34,7 @@ public class FSMDefaultTabsAndTabGroups {
         List<WebTabContext> tabs = Arrays.asList(
                 new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, null, null,null,appId),
                 new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"portfolio\" }", 1,null,appId),
+                new WebTabContext("Territory","territory",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.Territory.TERRITORY)), null, null,null,appId),
                 new WebTabContext("Assets", "assets", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.ASSET)), null, 4,null,appId),
                 new WebTabContext("Reports", "assetreport", WebTabContext.Type.REPORT, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.ASSET,FacilioConstants.TimeOff.TIME_OFF,FacilioConstants.TimeSheet.TIME_SHEET,FacilioConstants.Territory.TERRITORY,FacilioConstants.Trip.TRIP,FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,FacilioConstants.ContextNames.EMPLOYEE,FacilioConstants.ContextNames.VENDOR_CONTACT)), "{\"type\": \"module_reports\"}", 4,null,appId),
                 new WebTabContext("Tenants", "tenants", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.TENANT)), null, 16,null,appId),
@@ -91,7 +92,6 @@ public class FSMDefaultTabsAndTabGroups {
                 new WebTabContext("Visitor","visitor",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.VISITOR)), null, 29,null,appId),
                 new WebTabContext("Visits","visits",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.VISITOR_LOG)), null, 29,null,appId),
                 new WebTabContext("Invites","invites",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.INVITE_VISITOR)), null, 29,null,appId),
-
                 new WebTabContext("Reports","visitorreport",WebTabContext.Type.REPORT,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.VISITOR,FacilioConstants.ContextNames.VISITOR_LOG,FacilioConstants.ContextNames.INVITE_VISITOR)), "{\"type\": \"module_reports\"}", 29,null,appId),
                 new WebTabContext("Budget","budget",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.Budget.BUDGET)), null, 49,null,appId),
                 new WebTabContext("Chart Of Accounts","chartofaccounts",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.Budget.CHART_OF_ACCOUNT)), null, 49,null,appId),
@@ -115,7 +115,7 @@ public class FSMDefaultTabsAndTabGroups {
                 new WebTabContext("Break","break",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.BREAK)), null, 120,null,appId),
                 new WebTabContext("Attendance","attendance",WebTabContext.Type.ATTENDANCE,null, null, 120,null,appId),
                 new WebTabContext("Service Order","serviceOrder",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.SERVICE_ORDER)), null, null,null,appId),
-                new WebTabContext("Service Appointments","serviceAppointment",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)), null, null,null,appId),
+                new WebTabContext("Service Appointment","serviceAppointment",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)), null, null,null,appId),
                 new WebTabContext("Employees","employees",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.EMPLOYEE)), null, null,null,appId),
                 new WebTabContext("Trips","trip",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.Trip.TRIP)), null, null,null,appId),
                 new WebTabContext("Time Sheets","timeSheet",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.TimeSheet.TIME_SHEET)), null, null,null,appId),
@@ -132,7 +132,7 @@ public class FSMDefaultTabsAndTabGroups {
     public List<WebTabGroupContext> getWebTabGroups(long appId, long layoutId) throws Exception {
         Map<String,WebTabContext> tabsMap = getWebTabs(appId);
         List<WebTabGroupContext> webTabGroups = Arrays.asList(
-                new WebTabGroupContext(Arrays.asList(tabsMap.get("dashboard"), tabsMap.get("portfolio"), tabsMap.get("approval"),tabsMap.get("workorder-survey")), "Home", "home", 1, 1, null, layoutId, IconType.home),
+                new WebTabGroupContext(Arrays.asList(tabsMap.get("dashboard"), tabsMap.get("portfolio"),tabsMap.get("territory"),tabsMap.get("approval"),tabsMap.get("workorder-survey")), "Home", "home", 1, 1, null, layoutId, IconType.home),
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("assets")), "Assets", "assets", 6, 2, null,layoutId,IconType.asset),
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("serviceOrder"),tabsMap.get("serviceAppointment"),tabsMap.get("servicerequest"),tabsMap.get("preventive-maintenance")), "Service", "service", 6, 3, null,layoutId,IconType.service_request),
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("dispatch")), "Dispatch", "dispatch", 6, 4, null,layoutId,IconType.automation),

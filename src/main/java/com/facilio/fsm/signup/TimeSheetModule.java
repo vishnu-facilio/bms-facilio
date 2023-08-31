@@ -449,8 +449,8 @@ public class TimeSheetModule extends BaseModuleConfig {
         timeSheetViews.add(getAllTimeSheetViews().setOrder(order++));
 
         groupDetails = new HashMap<>();
-        groupDetails.put("name", "systemviews");
-        groupDetails.put("displayName", "System Views");
+        groupDetails.put("name", "default");
+        groupDetails.put("displayName", "Default");
         groupDetails.put("moduleName", FacilioConstants.TimeSheet.TIME_SHEET);
         groupDetails.put("views", timeSheetViews);
         groupVsViews.add(groupDetails);

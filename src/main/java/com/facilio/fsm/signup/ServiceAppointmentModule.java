@@ -341,8 +341,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
 
         groupDetails = new HashMap<>();
-        groupDetails.put("name", "systemviews");
-        groupDetails.put("displayName", "System Views");
+        groupDetails.put("name", "default");
+        groupDetails.put("displayName", "Default");
         groupDetails.put("moduleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         groupDetails.put("views", serviceAppointmentViews);
         groupVsViews.add(groupDetails);
