@@ -656,16 +656,9 @@ public class TransactionChainFactoryV3 {
                 WorkflowRuleContext.RuleType.REQUEST_REJECT_RULE));
 
         if (sendNotification) {
-            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {
-                c.addCommand(
+            c.addCommand(
                         new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE,
                                 WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE));
-            } else {
-                c.addCommand(new ForkChainToInstantJobCommand()
-                        .addCommand(new ExecuteAllWorkflowsCommand(
-                                WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE,
-                                WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE)));
-            }
         }
         return c;
     }
@@ -738,10 +731,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_RULE,
                 WorkflowRuleContext.RuleType.CHILD_APPROVAL_RULE, WorkflowRuleContext.RuleType.REQUEST_APPROVAL_RULE,
                 WorkflowRuleContext.RuleType.REQUEST_REJECT_RULE));
-        c.addCommand(new ForkChainToInstantJobCommand()
-                .addCommand(
-                        new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE))
-                .addCommand(new ClearAlarmOnWOClosureCommand()));
+        c.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, WorkflowRuleContext.RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE));
         c.addCommand(new V3ExecuteTaskFailureActionCommand());
         c.addCommand(new ConstructTicketNotesCommand());
         c.addCommand(TransactionChainFactory.getAddNotesChain());
