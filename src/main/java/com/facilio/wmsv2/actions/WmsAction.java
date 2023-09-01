@@ -1,6 +1,7 @@
 package com.facilio.wmsv2.actions;
 
 import com.facilio.fw.cache.RedisManager;
+import com.facilio.server.ServerInfo;
 import com.facilio.v3.V3Action;
 import com.facilio.wmsv2.endpoint.LiveSession;
 import com.facilio.wmsv2.endpoint.SessionManager;
@@ -9,6 +10,7 @@ import org.json.simple.JSONObject;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 public class WmsAction extends V3Action {
@@ -26,7 +28,15 @@ public class WmsAction extends V3Action {
             }
         }
         setData("liveSessions", liveSessions);
-        setData("subscribedTopics", topics);
+        setData(ServerInfo.getHostname()+"-Topics", topics);
+
+        try(Jedis jedis = RedisManager.getInstance().getJedis()) {
+            List<String> channels = jedis.pubsubChannels("*subscribe__channel");
+            List<String> allSubscribedTopics = jedis.pubsubChannels("*wms*").stream()
+                    .filter(r -> !channels.contains(r)).collect(Collectors.toList());
+            setData("channels", channels);
+            setData("allActiveTopics", allSubscribedTopics);
+        }
 
         return V3Action.SUCCESS;
     }
