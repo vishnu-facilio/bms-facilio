@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3FloorContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -26,8 +27,10 @@ import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.mv.context.MVProjectContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -1773,15 +1776,7 @@ public static long getSitesCount() throws Exception {
 
 	
 	public static long getAssetsCount(long spaceId) throws Exception {
-		
-		FacilioField countFld = new FacilioField();
-		countFld.setName("count");
-		countFld.setColumnName("COUNT(*)");
-		countFld.setDataType(FieldType.NUMBER);
 
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(countFld);
-		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
@@ -1792,28 +1787,25 @@ public static long getSitesCount() throws Exception {
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond.setValue(spaceId+"");
 
-		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-				.table(assetModule.getTableName())
+		List<FacilioField> fields = new ArrayList<>(FieldFactory.getCountField());
+
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> select = new SelectRecordsBuilder<>()
 				.select(fields)
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
+				.module(assetModule)
+				.beanClass(ModuleBaseWithCustomFields.class)
 				.andCondition(spaceCond)
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIsDeletedField(assetModule.getParentModule()), String.valueOf(false), BooleanOperators.IS));
-		
-		FacilioModule prevModule = assetModule;
-		FacilioModule extendedModule = assetModule.getExtendModule();
-		while(extendedModule != null) {
-			select.innerJoin(extendedModule.getTableName())
-					.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
-			prevModule = extendedModule;
-			extendedModule = extendedModule.getExtendModule();
-		}
-				
-		List<Map<String, Object>> rs = select.get();
-		if (rs == null || rs.isEmpty()) {
+				.groupBy("SPACE_ID");
+
+		ModuleBaseWithCustomFields rs  = select.fetchFirst();
+		if (rs == null) {
 			return 0;
 		}
 		else {
-			return ((Number) rs.get(0).get("count")).longValue();
+			Map<String, Object> assetCount = rs.getData();
+			if(MapUtils.isNotEmpty(assetCount) && assetCount.containsKey("count")){
+				return ((Number) assetCount.get("count")).longValue();
+			}
+			return 0;
 		}
 	}
 	
