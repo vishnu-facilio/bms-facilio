@@ -472,6 +472,7 @@ public class TimeSheetModule extends BaseModuleConfig {
 
         List<ViewField> timeSheetViewFields = new ArrayList<>();
 
+        timeSheetViewFields.add(new ViewField("code","Code"));
         timeSheetViewFields.add(new ViewField("fieldAgent","Field Agent"));
         timeSheetViewFields.add(new ViewField("startTime","Start Time"));
         timeSheetViewFields.add(new ViewField("endTime","End Time"));
