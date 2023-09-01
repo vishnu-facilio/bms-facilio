@@ -25,6 +25,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,7 +42,7 @@ public class ServiceTaskUtil {
         if (serviceAppointmentContext != null) {
 
             //create Timesheet entry
-            List<Map<String, Object>> existingTimeSheets = getExistingTimeSheet(serviceAppointmentContext.getId());
+            List<Map<String, Object>> existingTimeSheets = getExistingTimeSheet(serviceAppointmentContext.getFieldAgent().getId());
             if (CollectionUtils.isEmpty(existingTimeSheets)) {
                 TimeSheetTaskContext timeSheetTask = new TimeSheetTaskContext();
                 timeSheetTask.setId(taskId);
@@ -61,7 +62,9 @@ public class ServiceTaskUtil {
 
             } else {
                 if (!isTimeSheetExistsForTask(existingTimeSheets,taskId)) {
-                    throw new FSMException(FSMErrorCode.TIMESHEET_ALREADY_RUNNING);
+                    JSONObject errorData = new JSONObject();
+                    errorData.put(FacilioConstants.TimeSheet.TIME_SHEET,existingTimeSheets);
+                    throw new FSMException(FSMErrorCode.TIMESHEET_ALREADY_RUNNING).setRelatedData(errorData);
                 }
                 else {
                     //updating service task status
@@ -118,14 +121,14 @@ public class ServiceTaskUtil {
 
     }
 
-    public static List<Map<String, Object>> getExistingTimeSheet(long appointmentId) throws Exception {
+    public static List<Map<String, Object>> getExistingTimeSheet(long fieldAgentId) throws Exception {
 
-        ModuleBean moduleBean = Constants.getModBean();
+        List<FacilioField> selectFields = Constants.getModBean().getAllFields(FacilioConstants.TimeSheet.TIME_SHEET);
         FacilioField taskField = Constants.getModBean().getField("right",FacilioConstants.TimeSheet.TIME_SHEET_TASK);
+        selectFields.addAll(Collections.singletonList(taskField));
         Criteria timeSheetCriteria = new Criteria();
-        timeSheetCriteria.addAndCondition(CriteriaAPI.getCondition("SERVICE_APPOINTMENT_ID", "serviceAppointment", String.valueOf(appointmentId), NumberOperators.EQUALS));
+        timeSheetCriteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID", "fieldAgent", String.valueOf(fieldAgentId), NumberOperators.EQUALS));
         timeSheetCriteria.addAndCondition(CriteriaAPI.getCondition( Constants.getModBean().getField("endTime",FacilioConstants.TimeSheet.TIME_SHEET),  CommonOperators.IS_EMPTY));
-
 
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(Collections.singleton(taskField))
