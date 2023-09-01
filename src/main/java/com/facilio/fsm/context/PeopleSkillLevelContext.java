@@ -10,6 +10,7 @@ import lombok.Setter;
 public class PeopleSkillLevelContext extends V3Context {
     private ServiceSkillsContext skill;
     private V3PeopleContext people;
+    private String successMsg;
 
     public  int getLevel() {
         return this.level != null ? this.level.getIndex() : -1;

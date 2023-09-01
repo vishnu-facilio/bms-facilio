@@ -284,6 +284,7 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getPeopleSkillLevel() {
         return () -> new V3Config(PeopleSkillLevelContext.class, null)
                 .create()
+                .beforeSave(FsmTransactionChainFactoryV3.getPeopleSkillLevelBeforeSaveCommand())
                 .list()
                 .beforeFetch(new FetchPeopleSkillLevelSupplementsCommand())
                 .summary()

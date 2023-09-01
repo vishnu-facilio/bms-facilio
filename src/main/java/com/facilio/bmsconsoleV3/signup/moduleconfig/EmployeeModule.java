@@ -294,7 +294,7 @@ public class EmployeeModule extends BaseModuleConfig{
         FacilioField nameField = moduleBean.getField("name", moduleName);
         FacilioField phoneField = moduleBean.getField("phone", moduleName);
         FacilioField emailField = moduleBean.getField("email", moduleName);
-        FacilioField roleField = moduleBean.getField("roleId", moduleName);
+        FacilioField designationField = moduleBean.getField("designation", moduleName);
         FacilioField dispatchableField = moduleBean.getField("dispatchable", moduleName);
         FacilioField trackGeoLocationField = moduleBean.getField("trackGeoLocation", moduleName);
 
@@ -304,7 +304,7 @@ public class EmployeeModule extends BaseModuleConfig{
         addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, phoneField, 1, 2, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, emailField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, roleField, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, designationField, 1, 4, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, dispatchableField, 2, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, trackGeoLocationField, 2, 2, 1);
 

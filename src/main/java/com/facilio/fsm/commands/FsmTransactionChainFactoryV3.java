@@ -8,6 +8,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.commands.actuals.GetServiceOrderItemFromReservation;
 import com.facilio.fsm.commands.actuals.UpdateServiceInvReservationCommand;
+import com.facilio.fsm.commands.people.PeopleSkillLevelBeforeSaveCommand;
 import com.facilio.fsm.commands.plans.ReserveServiceOrderPlannedItemsCommand;
 import com.facilio.fsm.commands.plans.SetServiceOrderPlannedItemsCommand;
 import com.facilio.fsm.commands.plans.ValidateServiceOrderPlannedItemsCommand;
@@ -315,6 +316,11 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain getServiceOrderItemFromReservation(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetServiceOrderItemFromReservation());
+        return c;
+    }
+    public static FacilioChain getPeopleSkillLevelBeforeSaveCommand(){
+        FacilioChain c=getDefaultChain();
+        c.addCommand(new PeopleSkillLevelBeforeSaveCommand());
         return c;
     }
 }
