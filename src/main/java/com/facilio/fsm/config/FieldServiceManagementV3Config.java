@@ -353,4 +353,25 @@ public class FieldServiceManagementV3Config {
                 .build();
     }
 
+    @Module(FacilioConstants.Trip.TRIP_STATUS)
+    public static Supplier<V3Config> getTripStatus(){
+        return () -> new V3Config(TripStatusContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.TimeSheet.TIME_SHEET_STATUS)
+    public static Supplier<V3Config> getTimeSheetStatus(){
+        return () -> new V3Config(TimeSheetStatusContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
 }
