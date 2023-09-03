@@ -47,7 +47,7 @@ public class SOStatusChangeCommandV3 extends FacilioCommand {
                         throw new FSMException(FSMErrorCode.SO_AUTOCREATE_SCHEDULEDEND_TIME);
                     }
 
-                    if(CollectionUtils.isEmpty(order.getServiceTask())){
+                    if(order.getRelations().get("serviceTask").get(0) == null){
                         throw new FSMException(FSMErrorCode.SO_AUTOCREATE_TASKS_AVAILABILIY);
                     }
 

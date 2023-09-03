@@ -19,6 +19,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,40 +39,43 @@ public class SOSTAutoCreateAfterCommand extends FacilioCommand {
         List<FacilioField> serviceTaskFields = modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
         Map<String, FacilioField> serviceTasksFieldMap = FieldFactory.getAsMap(serviceTaskFields);
 
-        for(ServiceTaskContext task : serviceTasks) {
-        if(task.getServiceOrder() != null && task.getServiceOrder().getId() > 0)
-        {
-            ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,task.getServiceOrder().getId());
-            if(serviceOrderInfo.isAutoCreateSa()){
-                //fetching all the service appointments which are mapped to the particular service order
-                SelectRecordsBuilder<ServiceAppointmentContext> selectAppointmentsBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>();
-                selectAppointmentsBuilder.select(serviceAppointmentFields)
-                        .module(serviceAppointmentModule)
-                        .beanClass(ServiceAppointmentContext.class)
-                        .andCondition(CriteriaAPI.getCondition(fieldMap.get("serviceOrder"),String.valueOf(serviceOrderInfo.getId()), StringOperators.IS));
-                ServiceAppointmentContext selectAppointments = selectAppointmentsBuilder.fetchFirst();
-                task.setServiceAppointment(selectAppointments);
+        for (ServiceTaskContext task : serviceTasks) {
+                    if (task.getServiceOrder() != null && task.getServiceOrder().getId() > 0) {
+                        ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, task.getServiceOrder().getId());
+                        if (serviceOrderInfo.isAutoCreateSa()) {
+                            //fetching all the service appointments which are mapped to the particular service order
+                            SelectRecordsBuilder<ServiceAppointmentContext> selectAppointmentsBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>();
+                            selectAppointmentsBuilder.select(serviceAppointmentFields)
+                                    .module(serviceAppointmentModule)
+                                    .beanClass(ServiceAppointmentContext.class)
+                                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("serviceOrder"), String.valueOf(serviceOrderInfo.getId()), StringOperators.IS));
+                            ServiceAppointmentContext selectAppointments = selectAppointmentsBuilder.fetchFirst();
 
-                SelectRecordsBuilder<ServiceTaskContext> selectTasksBuilder = new SelectRecordsBuilder<ServiceTaskContext>();
-                selectTasksBuilder.select(serviceTaskFields)
-                        .module(serviceTaskModule)
-                        .beanClass(ServiceTaskContext.class)
-                        .andCondition(CriteriaAPI.getCondition(serviceTasksFieldMap.get("serviceOrder"),String.valueOf(serviceOrderInfo.getId()), StringOperators.IS));
-                List<ServiceTaskContext> selectTasks = selectTasksBuilder.get();
-                selectTasks.add(task);
+                            task.setServiceAppointment(selectAppointments);
 
-                List<ServiceAppointmentTaskContext> data = new ArrayList<>();
-                for(ServiceTaskContext taskItems : serviceTasks) {
-                    ServiceAppointmentTaskContext appointmentTasks = new ServiceAppointmentTaskContext();
-                    appointmentTasks.setLeft(selectAppointments);
-                    appointmentTasks.setRight(taskItems);
-                }
-                selectAppointments.setServiceTasks(data);
+                            SelectRecordsBuilder<ServiceTaskContext> selectTasksBuilder = new SelectRecordsBuilder<ServiceTaskContext>();
+                            selectTasksBuilder.select(serviceTaskFields)
+                                    .module(serviceTaskModule)
+                                    .beanClass(ServiceTaskContext.class)
+                                    .andCondition(CriteriaAPI.getCondition(serviceTasksFieldMap.get("serviceOrder"), String.valueOf(serviceOrderInfo.getId()), StringOperators.IS));
+                            List<ServiceTaskContext> selectTasks = selectTasksBuilder.get();
+                            selectTasks.add(task);
+                            if (selectAppointments != null) {
+                                List<ServiceAppointmentTaskContext> data = new ArrayList<>();
+                                for (ServiceTaskContext taskItems : serviceTasks) {
+                                    ServiceAppointmentTaskContext appointmentTasks = new ServiceAppointmentTaskContext();
+                                    appointmentTasks.setLeft(selectAppointments);
+                                    appointmentTasks.setRight(taskItems);
+                                }
+                                selectAppointments.setServiceTasks(data);
 
-                V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, selectAppointments.getId(), FieldUtil.getAsJSON(selectAppointments), null, null, null, null, null,null, null, null);
-            }
-        }
-        }
+                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, selectAppointments.getId(), FieldUtil.getAsJSON(selectAppointments), null, null, null, null, null, null, null, null);
+                            }
+                        }
+                        }
+                    }
+
+
 
         return false;
     }

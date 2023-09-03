@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.*;
@@ -14,13 +15,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class AutoCreateSA extends FacilioCommand {
     @Override
@@ -29,13 +29,13 @@ public class AutoCreateSA extends FacilioCommand {
         List<ServiceOrderContext> serviceOrders = (List<ServiceOrderContext>) recordMap.get(context.get("moduleName"));
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule serviceAppointmentModule = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
-        List<ServiceTaskContext> serviceTaskList = (List<ServiceTaskContext>) recordMap.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
-
         List<ModuleBaseWithCustomFields> recordList = new ArrayList<>();
         List<ServiceAppointmentContext> serviceAppointmentList = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(serviceOrders)){
         for(ServiceOrderContext order : serviceOrders) {
+
             if(order.isAutoCreateSa()){
+                List<ServiceTaskContext> serviceTaskList = (List<ServiceTaskContext>) order.getRelations().get("serviceTask").get(0).getData();
                 ServiceAppointmentContext sa = new ServiceAppointmentContext();
                 sa.setAppointmentType(ServiceAppointmentContext.AppointmentType.SERVICE_WORK_ORDER);
                 sa.setName(order.getName());
@@ -58,17 +58,22 @@ public class AutoCreateSA extends FacilioCommand {
 //                List<ServiceTaskContext> serviceTaskList= order.getServiceTask();
                 //fetch the list of all tasks against the service order
 
+                FacilioContext socontext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, Collections.singletonList(order.getId()));
+                ServiceOrderContext so = (ServiceOrderContext) Constants.getRecordList(socontext).get(0);
 
-                List<ServiceAppointmentTaskContext> serviceAppointmentTaskContextList = new ArrayList<>();
+                List<ServiceAppointmentTaskContext> serviceAppointmentTaskList=new ArrayList<>();
+                if(CollectionUtils.isNotEmpty(so.getServiceTask())) {
 
-                if(CollectionUtils.isNotEmpty(serviceTaskList)) {
-                    for (ServiceTaskContext serviceTask : serviceTaskList) {
-                        ServiceAppointmentTaskContext task = new ServiceAppointmentTaskContext();
-                        task.setId(serviceTask.getId());
-                        serviceAppointmentTaskContextList.add(task);
+                    for ( ServiceTaskContext serviceTask : so.getServiceTask()) {
+//                        Map<String, Object> data = (Map<String,Object>)serviceTask.getData().get("status");
+                        ServiceAppointmentTaskContext satask = new ServiceAppointmentTaskContext();
+//                        satask.setId((Long) data.get("id"));
+                        satask.setId(serviceTask.getId());
+
+                        serviceAppointmentTaskList.add(satask);
                     }
                 }
-                sa.setServiceTasks(serviceAppointmentTaskContextList);
+                sa.setServiceTasks(serviceAppointmentTaskList);
                 serviceAppointmentList.add(sa);
 
 

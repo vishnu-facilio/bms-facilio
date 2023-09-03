@@ -42,7 +42,7 @@ public class ServiceTaskUtil {
         if (serviceAppointmentContext != null) {
 
             //create Timesheet entry
-            List<Map<String, Object>> existingTimeSheets = getExistingTimeSheet(serviceAppointmentContext.getFieldAgent().getId());
+            List<TimeSheetContext> existingTimeSheets = getExistingTimeSheet(serviceAppointmentContext.getFieldAgent().getId());
             if (CollectionUtils.isEmpty(existingTimeSheets)) {
                 TimeSheetTaskContext timeSheetTask = new TimeSheetTaskContext();
                 timeSheetTask.setId(taskId);
@@ -121,34 +121,53 @@ public class ServiceTaskUtil {
 
     }
 
-    public static List<Map<String, Object>> getExistingTimeSheet(long fieldAgentId) throws Exception {
-
+    public static List<TimeSheetContext> getExistingTimeSheet(long fieldAgentId) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
         List<FacilioField> selectFields = Constants.getModBean().getAllFields(FacilioConstants.TimeSheet.TIME_SHEET);
-        FacilioField taskField = Constants.getModBean().getField("right",FacilioConstants.TimeSheet.TIME_SHEET_TASK);
-        selectFields.addAll(Collections.singletonList(taskField));
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(selectFields);
+
+//        FacilioField taskField = Constants.getModBean().getField("right",FacilioConstants.TimeSheet.TIME_SHEET_TASK);
+//        selectFields.addAll(Collections.singletonList(taskField));
         Criteria timeSheetCriteria = new Criteria();
         timeSheetCriteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID", "fieldAgent", String.valueOf(fieldAgentId), NumberOperators.EQUALS));
         timeSheetCriteria.addAndCondition(CriteriaAPI.getCondition( Constants.getModBean().getField("endTime",FacilioConstants.TimeSheet.TIME_SHEET),  CommonOperators.IS_EMPTY));
 
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .select(Collections.singleton(taskField))
-                .table("TIME_SHEET")
-                .innerJoin("TIME_SHEET_TASK_REL")
-                .on("TIME_SHEET.ID =TIME_SHEET_TASK_REL.TIME_SHEET_ID")
-                .andCriteria(timeSheetCriteria);
-        List<Map<String, Object>> maps = selectBuilder.get();
-        if (CollectionUtils.isNotEmpty(maps)) {
-            return maps;
-        }
+        List<MultiLookupField> lookUpfields = new ArrayList<>();
+        lookUpfields.add((MultiLookupField) fieldMap.get("serviceTasks"));
 
+//        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//                .select(selectFields)
+//                .table("TIME_SHEET")
+//                .innerJoin("TIME_SHEET_TASK_REL")
+//                .on("TIME_SHEET.ID =TIME_SHEET_TASK_REL.TIME_SHEET_ID")
+//                .andCriteria(timeSheetCriteria);
+//        List<Map<String, Object>> maps = selectBuilder.get();
+//        if (CollectionUtils.isNotEmpty(maps)) {
+//            return maps;
+//        }
+
+
+
+        SelectRecordsBuilder<TimeSheetContext> selectRecordsBuilder = new SelectRecordsBuilder<TimeSheetContext>()
+                .module(module)
+                .select(selectFields)
+                .beanClass(TimeSheetContext.class)
+                .fetchSupplements(lookUpfields)
+                .andCriteria(timeSheetCriteria);
+        List<TimeSheetContext> props = selectRecordsBuilder.get();
+        if (CollectionUtils.isNotEmpty(props)) {
+            return props;
+
+        }
         return null;
 
     }
 
-    public static boolean isTimeSheetExistsForTask(List<Map<String,Object>> timeSheets, Long taskId)throws Exception{
+    public static boolean isTimeSheetExistsForTask(List<TimeSheetContext> timeSheets, Long taskId)throws Exception{
 
-        List<Long>taskIds = new ArrayList<>();
-        taskIds = timeSheets.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
+
+        List<Long> taskIds = timeSheets.stream().map(TimeSheetContext::getId).collect(Collectors.toList());
         if(taskIds.contains(taskId)){
             return true;
         }
