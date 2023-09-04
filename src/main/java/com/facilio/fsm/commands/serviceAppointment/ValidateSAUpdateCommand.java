@@ -7,15 +7,19 @@ import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
 import com.facilio.fsm.exception.FSMErrorCode;
 import com.facilio.fsm.exception.FSMException;
+import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ValidateSAUpdateCommand extends FacilioCommand {
+    private static final Logger LOGGER = Logger.getLogger(ValidateSAUpdateCommand.class.getName());
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         HashMap<String, Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
@@ -28,6 +32,8 @@ public class ValidateSAUpdateCommand extends FacilioCommand {
                 if (serviceAppointment.getServiceOrder().getId() != oldSA.getServiceOrder().getId()) {
                     throw new FSMException(FSMErrorCode.SA_FIELD_UPDATE_PREVENT);
                 }
+                LOGGER.info("serviceAppointment" + FieldUtil.getAsProperties(serviceAppointment));
+                LOGGER.info("serviceAppointment status" + FieldUtil.getAsProperties(serviceAppointment.getStatus()));
                 if (serviceAppointment.getStatus() != null) {
                     ServiceAppointmentTicketStatusContext status = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS, serviceAppointment.getStatus().getId());
                     if (status.getTypeCode() != 1) {
