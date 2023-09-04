@@ -109,7 +109,7 @@ public class TerritoryModule extends BaseModuleConfig {
         territoryForm.setName("default_asset_web");
         territoryForm.setModule(territoryModule);
         territoryForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        territoryForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        territoryForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> territoryGeneralInfoFormFields = new ArrayList<>();
         territoryGeneralInfoFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

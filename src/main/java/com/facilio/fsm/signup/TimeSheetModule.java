@@ -446,6 +446,7 @@ public class TimeSheetModule extends BaseModuleConfig {
 
         int order = 1;
         ArrayList<FacilioView> timeSheetViews = new ArrayList<FacilioView>();
+        timeSheetViews.add(getHiddenAllTimeSheetViews().setOrder(order++));
         timeSheetViews.add(getAllTimeSheetViews().setOrder(order++));
 
         groupDetails = new HashMap<>();
@@ -456,6 +457,32 @@ public class TimeSheetModule extends BaseModuleConfig {
         groupVsViews.add(groupDetails);
 
         return groupVsViews;
+    }
+
+    private FacilioView getHiddenAllTimeSheetViews() throws Exception {
+        FacilioModule timeSheetModule = Constants.getModBean().getModule(FacilioConstants.TimeSheet.TIME_SHEET);
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(timeSheetModule), true));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("hidden-all");
+        allView.setDisplayName("All Time Sheets");
+        allView.setModuleName(FacilioConstants.TimeSheet.TIME_SHEET);
+        allView.setSortFields(sortFields);
+        allView.setAppLinkNames(TimeSheetModule.timeSheetSupportedApps);
+        allView.setHidden(true);
+
+        List<ViewField> timeSheetViewFields = new ArrayList<>();
+
+        timeSheetViewFields.add(new ViewField("code","Code"));
+        timeSheetViewFields.add(new ViewField("fieldAgent","Field Agent"));
+        timeSheetViewFields.add(new ViewField("startTime","Start Time"));
+        timeSheetViewFields.add(new ViewField("endTime","End Time"));
+        timeSheetViewFields.add(new ViewField("serviceTasks","Tasks"));
+        timeSheetViewFields.add(new ViewField("duration","Duration"));
+
+        allView.setFields(timeSheetViewFields);
+
+        return allView;
     }
 
     private FacilioView getAllTimeSheetViews() throws Exception {

@@ -3,7 +3,10 @@ package com.facilio.fsm.signup;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.SystemButtonApi;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
@@ -105,6 +108,69 @@ public class ServiceTaskModule extends BaseModuleConfig {
         skillsMultiLookup.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
         skillsMultiLookup.setLookupModule(skillsMod);
         bean.addField(skillsMultiLookup);
+    }
+
+    public List<Map<String, Object>> getViewsAndGroups() {
+        List<Map<String, Object>> groupVsViews = new ArrayList<>();
+        Map<String, Object> groupDetails;
+
+        int order = 1;
+        ArrayList<FacilioView> views = new ArrayList<FacilioView>();
+        views.add(getServiceTasksAllViews().setOrder(order++));
+        views.add(getServiceTasksHiddenAllViews().setOrder(order++));
+
+        groupDetails = new HashMap<>();
+        groupDetails.put("name", "default");
+        groupDetails.put("displayName", "Default");
+        groupDetails.put("moduleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+        groupDetails.put("views", views);
+        groupVsViews.add(groupDetails);
+
+        return groupVsViews;
+    }
+
+    private FacilioView getServiceTasksAllViews() {
+
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "Labour.ID", FieldType.NUMBER), true));
+
+        FacilioView taskView = new FacilioView();
+        taskView.setName("all");
+        taskView.setDisplayName("All Service Tasks");
+
+        taskView.setModuleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+        taskView.setSortFields(sortFields);
+
+        List<ViewField> taskViewFields = new ArrayList<>();
+        taskViewFields.add(new ViewField("taskCode","Code"));
+        taskViewFields.add(new ViewField("name","Task Name"));
+        taskViewFields.add(new ViewField("status","Status"));
+        taskViewFields.add(new ViewField("workType","Work Type"));
+        taskViewFields.add(new ViewField("skills","Skill"));
+        taskView.setFields(taskViewFields);
+
+        return taskView;
+    }
+
+    private FacilioView getServiceTasksHiddenAllViews(){
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "Labour.ID", FieldType.NUMBER), true));
+
+        FacilioView taskView = new FacilioView();
+        taskView.setName("hidden-all");
+        taskView.setDisplayName("All Service Tasks");
+
+        taskView.setModuleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+        taskView.setSortFields(sortFields);
+        taskView.setHidden(true);
+
+        List<ViewField> taskViewFields = new ArrayList<>();
+        taskViewFields.add(new ViewField("taskCode","Code"));
+        taskViewFields.add(new ViewField("name","Task Name"));
+        taskViewFields.add(new ViewField("status","Status"));
+        taskViewFields.add(new ViewField("workType","Work Type"));
+        taskViewFields.add(new ViewField("skills","Skill"));
+        taskView.setFields(taskViewFields);
+
+        return taskView;
     }
 
     public static void addSystemButtons() throws Exception {

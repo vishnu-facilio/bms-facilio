@@ -18,7 +18,10 @@ import com.facilio.fsm.context.*;
 import com.facilio.fsm.exception.FSMErrorCode;
 import com.facilio.fsm.exception.FSMException;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
+import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.fsm.util.ServiceTaskUtil;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
@@ -30,6 +33,7 @@ import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -53,6 +57,8 @@ public class fsmAction extends V3Action {
     private LocationContext startLocation;
     private LocationContext endLocation;
     private long peopleId;
+
+    private JSONArray serviceTasks;
 
     public String getViewName() {
         return viewName;
@@ -290,7 +296,7 @@ public class fsmAction extends V3Action {
 
                 break;
         }
-        setData(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_STATUS_ACTIONS,successMsg);
+        setData(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_STATUS_ACTIONS,successMsg);
 
         return SUCCESS;
     }
@@ -315,6 +321,26 @@ public class fsmAction extends V3Action {
         fetchListChain.execute(context);
         setData(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,context.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
         return SUCCESS;
+    }
+
+    public String associateTask() throws Exception{
+        if(CollectionUtils.isNotEmpty(serviceTasks) && (appointmentId != null && appointmentId > 0)){
+            FacilioContext context = V3Util.getSummary(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, Collections.singletonList(appointmentId));
+            if (Constants.getRecordList(context) != null) {
+                ServiceAppointmentContext existingAppointment = (ServiceAppointmentContext) Constants.getRecordList(context).get(0);
+                List<Map<String,Object>> tasks = FieldUtil.getAsMapList(existingAppointment.getServiceTasks(), ServiceAppointmentContext.class);
+                List<ModuleBaseWithCustomFields> oldRecords = new ArrayList<>();
+                List<Map<String,Object>> updateRecordList = new ArrayList<>();
+                oldRecords.add(existingAppointment);
+                Map<String,Object> updateProps = FieldUtil.getAsProperties(existingAppointment);
+                tasks.addAll(serviceTasks);
+                updateProps.put("serviceTasks",tasks);
+                updateRecordList.add(updateProps);
+                V3Util.processAndUpdateBulkRecords(Constants.getModBean().getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT), oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
+            }
+            return SUCCESS;
+        }
+        return ERROR;
     }
 
 }

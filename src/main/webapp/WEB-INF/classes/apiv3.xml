@@ -2030,6 +2030,13 @@
                 method="serviceOrderItemFromReservation">
         </action>
     </package>
+    <package name="serviceAppointment" namespace="/api/v3/serviceAppointment"
+             extends="v3Api">
+        <action name="associateTask"
+                class="com.facilio.fsm.actions.fsmAction"
+                method="associateTask">
+        </action>
+    </package>
     <package name="employeeWorkschedule" namespace="/api/v3/employee"
              extends="v3Api">
         <action name="workschedule"

@@ -41,7 +41,6 @@ public class TripModule extends BaseModuleConfig {
             addModuleChain.execute();
             addActivityModuleForTrip();
             SignupUtil.addNotesAndAttachmentModule(trip);
-//            addStateFlow();
         }catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -323,71 +322,6 @@ public class TripModule extends BaseModuleConfig {
         return FieldUtil.getAsJSON(widgetGroup);
     }
 
-//    private void addStateFlow() throws Exception {
-//        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//        FacilioModule tripModule = modBean.getModule(FacilioConstants.Trip.TRIP);
-//
-//
-//        FacilioStatus inProgressStatus = new FacilioStatus();
-//        inProgressStatus.setStatus("inProgress");
-//        inProgressStatus.setDisplayName("In Progress");
-//        inProgressStatus.setTypeCode(1);
-//        TicketAPI.addStatus(inProgressStatus, tripModule);
-//
-//        FacilioStatus completedStatus = new FacilioStatus();
-//        completedStatus.setStatus("completed");
-//        completedStatus.setDisplayName("Completed");
-//        completedStatus.setTypeCode(2);
-//        completedStatus.setRecordLocked(true);
-//        TicketAPI.addStatus(completedStatus, tripModule);
-//
-//        StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
-//        stateFlowRuleContext.setName("Default Stateflow");
-//        stateFlowRuleContext.setModuleId(tripModule.getModuleId());
-//        stateFlowRuleContext.setModule(tripModule);
-//        stateFlowRuleContext.setActivityType(EventType.STATE_TRANSITION);
-//        stateFlowRuleContext.setExecutionOrder(1);
-//        stateFlowRuleContext.setStatus(true);
-//        stateFlowRuleContext.setDefaltStateFlow(true);
-//        stateFlowRuleContext.setDefaultStateId(inProgressStatus.getId());
-//        stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
-//        WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
-//
-//        Criteria completionCriteria = new Criteria();
-//        completionCriteria.addAndCondition(CriteriaAPI.getCondition("END_TIME", "endTime", null, CommonOperators.IS_NOT_EMPTY));
-//
-//        addStateflowTransitionContext(tripModule, stateFlowRuleContext, "Complete Inspection", inProgressStatus,completedStatus, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,completionCriteria,null);
-//    }
-
-//    private StateflowTransitionContext addStateflowTransitionContext(FacilioModule module, StateFlowRuleContext parentStateFlow, String name, FacilioStatus fromStatus, FacilioStatus toStatus, AbstractStateTransitionRuleContext.TransitionType transitionType, Criteria criteria, List<ActionContext> actions) throws Exception {
-//
-//        StateflowTransitionContext stateFlowTransitionContext = new StateflowTransitionContext();
-//        stateFlowTransitionContext.setName(name);
-//        stateFlowTransitionContext.setModule(module);
-//        stateFlowTransitionContext.setModuleId(module.getModuleId());
-//        stateFlowTransitionContext.setActivityType(EventType.STATE_TRANSITION);
-//        stateFlowTransitionContext.setExecutionOrder(1);
-//        stateFlowTransitionContext.setButtonType(1);
-//        stateFlowTransitionContext.setFromStateId(fromStatus.getId());
-//        stateFlowTransitionContext.setToStateId(toStatus.getId());
-//        stateFlowTransitionContext.setRuleType(WorkflowRuleContext.RuleType.STATE_RULE);
-//        stateFlowTransitionContext.setType(transitionType);
-//        stateFlowTransitionContext.setStateFlowId(parentStateFlow.getId());
-//        stateFlowTransitionContext.setCriteria(criteria);
-//
-//        WorkflowRuleAPI.addWorkflowRule(stateFlowTransitionContext);
-//
-//        if (actions != null && !actions.isEmpty()) {
-//            actions = ActionAPI.addActions(actions, stateFlowTransitionContext);
-//            if(stateFlowTransitionContext != null) {
-//                ActionAPI.addWorkflowRuleActionRel(stateFlowTransitionContext.getId(), actions);
-//                stateFlowTransitionContext.setActions(actions);
-//            }
-//        }
-//
-//        return stateFlowTransitionContext;
-//    }
-
     public List<FacilioForm> getModuleForms() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule tripModule = modBean.getModule(FacilioConstants.Trip.TRIP);
@@ -427,6 +361,7 @@ public class TripModule extends BaseModuleConfig {
         int order = 1;
         ArrayList<FacilioView> tripViews = new ArrayList<FacilioView>();
         tripViews.add(getAllTripViews().setOrder(order++));
+        tripViews.add(getHiddenAllTripViews().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "default");
@@ -436,6 +371,33 @@ public class TripModule extends BaseModuleConfig {
         groupVsViews.add(groupDetails);
 
         return groupVsViews;
+    }
+
+    private FacilioView getHiddenAllTripViews() throws Exception {
+
+        FacilioModule tripModule = Constants.getModBean().getModule(FacilioConstants.Trip.TRIP);
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(tripModule), true));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("hidden-all");
+        allView.setDisplayName("All Trips");
+        allView.setModuleName(FacilioConstants.Trip.TRIP);
+        allView.setSortFields(sortFields);
+        allView.setAppLinkNames(TripModule.tripSupportedApps);
+        allView.setHidden(true);
+
+
+        List<ViewField> tripViewFields = new ArrayList<>();
+        tripViewFields.add(new ViewField("code","Code"));
+        tripViewFields.add(new ViewField("people","Field Agent"));
+        tripViewFields.add(new ViewField("startTime","Start Time"));
+        tripViewFields.add(new ViewField("endTime","End Time"));
+        tripViewFields.add(new ViewField("tripDuration","Duration"));
+        tripViewFields.add(new ViewField("tripDistance","Distance"));
+
+        allView.setFields(tripViewFields);
+
+        return allView;
     }
 
     private FacilioView getAllTripViews() throws Exception {
@@ -452,7 +414,7 @@ public class TripModule extends BaseModuleConfig {
 
 
         List<ViewField> tripViewFields = new ArrayList<>();
-
+        tripViewFields.add(new ViewField("code","Code"));
         tripViewFields.add(new ViewField("people","Field Agent"));
         tripViewFields.add(new ViewField("startTime","Start Time"));
         tripViewFields.add(new ViewField("endTime","End Time"));
