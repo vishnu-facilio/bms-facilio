@@ -1,12 +1,14 @@
 package com.facilio.readingkpi;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -25,6 +27,7 @@ import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.ScriptUtil;
+import com.facilio.storm.InstructionType;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -49,6 +52,8 @@ import java.time.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.facilio.bmsconsole.util.BmsJobUtil.scheduleOneTimeJobWithProps;
 
 @Log4j
 public class ReadingKpiAPI {
@@ -1011,5 +1016,72 @@ public class ReadingKpiAPI {
             }
         }
         return kpis;
+    }
+
+
+    public static void beginLiveKpiHistorical(ReadingKPIContext kpi, Long startTime, Long endTime, List<Long> assetIds) throws Exception {
+        FacilioChain runStormHistorical = TransactionChainFactory.initiateStormInstructionExecChain();
+        FacilioContext context = runStormHistorical.getContext();
+        context.put("type", InstructionType.LIVE_KPI_HISTORICAL.getIndex());
+
+        JSONObject instructionData = new JSONObject();
+        instructionData.put("recordId", kpi.getId());
+        instructionData.put("startTime", startTime);
+        instructionData.put("endTime", endTime);
+        instructionData.put("assetIds", assetIds);
+
+        Long parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), kpi.getKpiType(), startTime, endTime, false, CollectionUtils.isNotEmpty(assetIds) ? assetIds.size() : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getAssetCategory().getId()).size());
+        instructionData.put("parentLoggerId", parentLoggerId);
+
+        context.put("data", instructionData);
+        runStormHistorical.execute();
+    }
+
+    public static void beginSchKpiHistorical(ReadingKPIContext kpi, Long startTime ,Long endTime, List<Long> assetIds) throws Exception {
+        JSONObject props = new JSONObject();
+        props.put(FacilioConstants.ContextNames.START_TIME, startTime);
+        props.put(FacilioConstants.ContextNames.END_TIME, endTime);
+        props.put(FacilioConstants.ReadingKpi.IS_HISTORICAL, true);
+        props.put(FacilioConstants.ContextNames.RESOURCE_LIST, assetIds);
+        props.put(FacilioConstants.ReadingKpi.READING_KPI, kpi.getId());
+
+        Long parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), startTime, endTime, false, CollectionUtils.isNotEmpty(assetIds) ? assetIds.size() : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getAssetCategory().getId()).size());
+        props.put(FacilioConstants.ReadingKpi.PARENT_LOGGER_ID, parentLoggerId);
+
+        scheduleOneTimeJobWithProps(ReadingKpiLoggerAPI.getNextJobId(), FacilioConstants.ReadingKpi.READING_KPI_HISTORICAL_JOB, 1, "facilio", props);
+    }
+
+    public Boolean logsInProgress(Long kpiId) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule loggerModule = modBean.getModule(FacilioConstants.ReadingKpi.KPI_LOGGER_MODULE);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ReadingKpi.KPI_LOGGER_MODULE));
+        SelectRecordsBuilder<KpiLoggerContext> builder = new SelectRecordsBuilder<KpiLoggerContext>()
+                .select(Collections.singleton(FieldFactory.getIdField(loggerModule)))
+                .module(loggerModule)
+                .beanClass(KpiLoggerContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(KpiResourceLoggerContext.KpiLoggerStatus.IN_PROGRESS.getIndex()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("kpi"), Collections.singleton(kpiId), NumberOperators.EQUALS));
+
+        List<KpiLoggerContext> loggersInProgress = builder.get();
+        return CollectionUtils.isNotEmpty(loggersInProgress);
+    }
+
+    public static List<KpiResourceLoggerContext> logsInProgressForResource(Long kpiId, List<Long> resourceIds) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule resourceLoggerModule = modBean.getModule(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE));
+        SelectRecordsBuilder<KpiResourceLoggerContext> builder = new SelectRecordsBuilder<KpiResourceLoggerContext>()
+                .select(Arrays.asList(fieldsMap.get("resourceId"), fieldsMap.get("startTime"), fieldsMap.get("endTime")))
+                .module(resourceLoggerModule)
+                .beanClass(KpiResourceLoggerContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(KpiResourceLoggerContext.KpiLoggerStatus.IN_PROGRESS.getIndex()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("kpiId"), Collections.singleton(kpiId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("resourceId"), resourceIds, NumberOperators.EQUALS));
+
+        List<KpiResourceLoggerContext> resLogInProgress = builder.get();
+        if (CollectionUtils.isNotEmpty(resLogInProgress)) {
+            return resLogInProgress;
+        }
+        return new ArrayList<>();
     }
 }

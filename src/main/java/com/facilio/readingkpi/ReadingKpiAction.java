@@ -1,33 +1,27 @@
 package com.facilio.readingkpi;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.readingkpi.context.*;
-import com.facilio.storm.InstructionType;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.readingkpi.context.KPIType;
+import com.facilio.readingkpi.context.KpiContextWrapper;
+import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.time.DateRange;
 import com.facilio.v3.V3Action;
-import com.facilio.v3.context.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.facilio.bmsconsole.util.BmsJobUtil.scheduleOneTimeJobWithProps;
 import static com.facilio.readingkpi.ReadingKpiAPI.*;
 
 @Getter
@@ -166,10 +160,10 @@ public class ReadingKpiAction extends V3Action {
         try {
             switch (Objects.requireNonNull(KPIType.valueOf(kpi.getKpiType()))) {
                 case SCHEDULED:
-                    beginSchKpiHistorical(kpi);
+                    ReadingKpiAPI.beginSchKpiHistorical(kpi, getStartTime(), getEndTime(), getAssets());
                     break;
                 case LIVE:
-                    beginLiveKpiHistorical(kpi);
+                    ReadingKpiAPI.beginLiveKpiHistorical(kpi, getStartTime(), getEndTime(), getAssets());
                     break;
             }
             setData(SUCCESS, "Historical KPI Calculation has started");
@@ -181,57 +175,11 @@ public class ReadingKpiAction extends V3Action {
         }
     }
 
-    private void beginLiveKpiHistorical(ReadingKPIContext kpi) throws Exception {
-        FacilioChain runStormHistorical = TransactionChainFactory.initiateStormInstructionExecChain();
-        FacilioContext context = runStormHistorical.getContext();
-        context.put("type", InstructionType.LIVE_KPI_HISTORICAL.getIndex());
-
-        JSONObject instructionData = new JSONObject();
-        instructionData.put("recordId", getRecordId());
-        instructionData.put("startTime", getStartTime());
-        instructionData.put("endTime", getEndTime());
-        instructionData.put("assetIds", getAssets());
-
-        Long parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), kpi.getKpiType(), startTime, endTime, false, CollectionUtils.isNotEmpty(getAssets()) ? getAssets().size() : kpi.getMatchedResourcesIds().size());
-        instructionData.put("parentLoggerId", parentLoggerId);
-
-        context.put("data", instructionData);
-        runStormHistorical.execute();
-    }
-
-    private void beginSchKpiHistorical(ReadingKPIContext kpi) throws Exception {
-        JSONObject props = new JSONObject();
-        props.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
-        props.put(FacilioConstants.ContextNames.END_TIME, getEndTime());
-        props.put(FacilioConstants.ReadingKpi.IS_HISTORICAL, true);
-        props.put(FacilioConstants.ContextNames.RESOURCE_LIST, getAssets());
-        props.put(FacilioConstants.ReadingKpi.READING_KPI, getRecordId());
-
-        parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), startTime, endTime, false, CollectionUtils.isNotEmpty(getAssets()) ? getAssets().size() : kpi.getMatchedResourcesIds().size());
-        props.put(FacilioConstants.ReadingKpi.PARENT_LOGGER_ID, parentLoggerId);
-
-        scheduleOneTimeJobWithProps(ReadingKpiLoggerAPI.getNextJobId(), FacilioConstants.ReadingKpi.READING_KPI_HISTORICAL_JOB, 1, "facilio", props);
-    }
-
-
     public ReadingKPIContext validatePayload() throws Exception {
         if (getId() == -1 || getStartTime() == -1 || getEndTime() == -1) {
             throw new IllegalArgumentException("Insufficient parameters for Historical Kpi calculation");
         }
         return ReadingKpiAPI.getReadingKpi(getRecordId());
-    }
-
-    public Boolean LogsInProgress() throws Exception {
-        ModuleBean modBean = Constants.getModBean();
-        FacilioModule loggerModule = modBean.getModule(FacilioConstants.ReadingKpi.KPI_LOGGER_MODULE);
-        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ReadingKpi.KPI_LOGGER_MODULE));
-        SelectRecordsBuilder<KpiLoggerContext> builder = new SelectRecordsBuilder<KpiLoggerContext>()
-                .select(Collections.singleton(FieldFactory.getIdField(loggerModule)))
-                .module(loggerModule)
-                .beanClass(KpiLoggerContext.class)
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(KpiResourceLoggerContext.KpiLoggerStatus.IN_PROGRESS.getIndex()), NumberOperators.EQUALS));
-        List<KpiLoggerContext> loggersInProgress = builder.get();
-        return CollectionUtils.isNotEmpty(loggersInProgress);
     }
 
     public String fetchAssetDetails() throws Exception {
