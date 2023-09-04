@@ -29,7 +29,7 @@ public class RollUpServiceTaskCommand extends FacilioCommand {
         HashMap<String,Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
         EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
         List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName"));
-        Boolean isTaskAdd = (Boolean) context.get(FacilioConstants.ServiceAppointment.IS_TASK_ADD);
+//        Boolean isTaskAdd = (Boolean) context.get(FacilioConstants.ServiceAppointment.IS_TASK_ADD);
         ServiceTaskStatusContext scheduled = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.SCHEDULED);
         ServiceTaskStatusContext newStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.NEW);
         ServiceTaskStatusContext dispatched = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.DISPATCHED);
