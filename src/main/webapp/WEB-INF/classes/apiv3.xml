@@ -2044,4 +2044,12 @@
                 method="workScheduleList">
         </action>
     </package>
+    <package name="serviceAppointment" namespace="/api/v3/serviceAppointment"
+             extends="v3Api">
+        <action name="dispatch"
+                class="com.facilio.fsm.actions.fsmAction"
+                method="dispatchServiceAppointment">
+        </action>
+    </package>
+
 </struts>

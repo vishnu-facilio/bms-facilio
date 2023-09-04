@@ -16,6 +16,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
@@ -43,11 +44,14 @@ public class SOSTAutoCreateAfterCommand extends FacilioCommand {
                     if (task.getServiceOrder() != null && task.getServiceOrder().getId() > 0) {
                         ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, task.getServiceOrder().getId());
                         if (serviceOrderInfo.isAutoCreateSa()) {
+                            List<MultiLookupField> lookUpfields = new ArrayList<>();
+                            lookUpfields.add((MultiLookupField) fieldMap.get("serviceTasks"));
                             //fetching all the service appointments which are mapped to the particular service order
                             SelectRecordsBuilder<ServiceAppointmentContext> selectAppointmentsBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>();
                             selectAppointmentsBuilder.select(serviceAppointmentFields)
                                     .module(serviceAppointmentModule)
                                     .beanClass(ServiceAppointmentContext.class)
+                                    .fetchSupplements(lookUpfields)
                                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("serviceOrder"), String.valueOf(serviceOrderInfo.getId()), StringOperators.IS));
                             ServiceAppointmentContext selectAppointments = selectAppointmentsBuilder.fetchFirst();
 
@@ -61,11 +65,12 @@ public class SOSTAutoCreateAfterCommand extends FacilioCommand {
                             List<ServiceTaskContext> selectTasks = selectTasksBuilder.get();
                             selectTasks.add(task);
                             if (selectAppointments != null) {
-                                List<ServiceAppointmentTaskContext> data = new ArrayList<>();
+                                List<ServiceAppointmentTaskContext> data = selectAppointments.getServiceTasks();
                                 for (ServiceTaskContext taskItems : serviceTasks) {
                                     ServiceAppointmentTaskContext appointmentTasks = new ServiceAppointmentTaskContext();
-                                    appointmentTasks.setLeft(selectAppointments);
-                                    appointmentTasks.setRight(taskItems);
+                                    appointmentTasks.setId(taskItems.getId());
+                                    data.add(appointmentTasks);
+
                                 }
                                 selectAppointments.setServiceTasks(data);
 
