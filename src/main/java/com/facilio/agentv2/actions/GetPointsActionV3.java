@@ -56,7 +56,12 @@ public class GetPointsActionV3 extends V3Action {
         context.put("status",status);
         context.put("controllerIds",controllerIds);
         context.put("controllerType",controllerType);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        if (moduleName != null) {
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        }
+        else {
+            context.put(FacilioConstants.ContextNames.MODULE_NAME,AgentConstants.POINTS);
+        }
         context.put("agentId",agentId);
         chain.execute();
         setData("count",context.get("pointsCount"));
@@ -76,7 +81,12 @@ public class GetPointsActionV3 extends V3Action {
         context.put("status",status);
         context.put("controllerIds",controllerIds);
         context.put("controllerType",controllerType);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        if (moduleName != null) {
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        }
+        else {
+            context.put(FacilioConstants.ContextNames.MODULE_NAME,AgentConstants.POINTS);
+        }
         context.put("agentId",agentId);
         chain.execute();
         setData("data",context.get("data"));
