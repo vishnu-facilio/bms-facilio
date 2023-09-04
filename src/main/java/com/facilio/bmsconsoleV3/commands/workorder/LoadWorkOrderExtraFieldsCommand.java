@@ -32,7 +32,9 @@ public class LoadWorkOrderExtraFieldsCommand extends FacilioCommand {
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
             Map<String, FacilioField> allFieldsAsMap = FieldFactory.getAsMap(allFields);
 
-            String[] extraFieldNames = new String[]{"serialNumber","moduleState"};
+            List<String> extraFieldNames = new ArrayList<>();
+            extraFieldNames.add("serialNumber");
+            extraFieldNames.add("moduleState");
 
             if(CollectionUtils.isNotEmpty(view.getFields())){
                 viewFileds=view.getFields().stream().map(ViewField::getField).filter(viewFiled->viewFiled!=null).collect(Collectors.toList());
@@ -42,6 +44,10 @@ public class LoadWorkOrderExtraFieldsCommand extends FacilioCommand {
                     if(assignmentGroupField!=null){
                         extraWorkOrderFields.add(assignmentGroupField);
                     }
+                }
+                if(viewFieldsMap.containsKey("noOfTasks")){
+                    // Adding noOfClosedTasks, only if noOfTasks column is added on view
+                    extraFieldNames.add("noOfClosedTasks");
                 }
                 for (String fieldName :extraFieldNames) {
                     if(!viewFieldsMap.containsKey(fieldName)){
