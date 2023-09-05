@@ -66,7 +66,7 @@ public class RollUpServiceAppointmentFieldsCommand extends FacilioCommand {
                             serviceAppointment.setAsset(serviceOrder.getAsset());
                         }
                         if(serviceOrder.getVendor() != null){
-                            serviceAppointment.setVendor(serviceAppointment.getVendor());
+                            serviceAppointment.setVendor(serviceOrder.getVendor());
                         }
                         if(serviceOrder.getClient() != null){
                             serviceAppointment.setClient(serviceOrder.getClient());
