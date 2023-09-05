@@ -33,19 +33,18 @@ public class WorkflowHistoryUtil {
                      WorkflowVersionHistoryContext version = new WorkflowVersionHistoryContext(newWorkflow.getId(), newWorkflow.getWorkflowV2String(), oldWorkflow.getSysModifiedTime(), newWorkflow.getSysModifiedTime());
                      UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", AccountUtil.getCurrentOrg().getId());
 
-                     Long createdByPeopleId = userBean.getUser(oldWorkflow.getSysModifiedBy(), true).getPeopleId();
+                     if(oldWorkflow.getSysModifiedBy() > 0){
+                         Long createdByPeopleId = userBean.getUser(oldWorkflow.getSysModifiedBy(), true).getPeopleId();
+                         V3PeopleContext createdByPeopleContext = new V3PeopleContext();
+                         createdByPeopleContext.setId(createdByPeopleId);
+                         version.setCreatedByPeople(createdByPeopleContext);
+                     }
                      Long modifiedByPeopleId = userBean.getUser(newWorkflow.getSysModifiedBy(), true).getPeopleId();
-
-                     V3PeopleContext createdByPeopleContext = new V3PeopleContext();
-                     createdByPeopleContext.setId(createdByPeopleId);
-
                      V3PeopleContext modifiedByPeopleContext = new V3PeopleContext();
                      modifiedByPeopleContext.setId(modifiedByPeopleId);
-
-                     version.setCreatedByPeople(createdByPeopleContext);
                      version.setModifiedByPeople(modifiedByPeopleContext);
 
-                     if (createdByPeopleId > 0 && modifiedByPeopleId > 0) {
+                     if (modifiedByPeopleId > 0) {
                          V3Util.createRecord(Constants.getModBean().getModule(FacilioConstants.Workflow.WORKFLOW_VERSION_HISTORY), FieldUtil.getAsProperties(version));
                      }
                  }
