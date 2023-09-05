@@ -57,7 +57,10 @@ public interface ActivityType {
 		for(ActivityType type: MultiCurrencyActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Last number = 122
+		for(ActivityType type : CalendarActivityType.values()){
+			activityMap.put(type.getValue(),type);
+		}
+		// Last number = 124
 
 		return activityMap;
 	}

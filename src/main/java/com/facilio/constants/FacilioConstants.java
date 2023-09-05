@@ -3203,6 +3203,11 @@ public class FacilioConstants {
 			classMap.put(Meter.HEAT_METER, V3HeatUtilityMeterContext.class);
 			classMap.put(Meter.BTU_METER, V3BTUUtilityMeterContext.class);
 
+			classMap.put(Calendar.CALENDAR_ACTIVITY_MODULE,ActivityContext.class);
+			classMap.put(Calendar.EVENT_ACTIVITY_MODULE,ActivityContext.class);
+			classMap.put(Control_Action.CONTROL_ACTION_ACTIVITY_MODULE_NAME, ActivityContext.class);
+			classMap.put(Control_Action.CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME, ActivityContext.class);
+
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());
@@ -4330,5 +4335,34 @@ public class FacilioConstants {
 	public static class SensorRule{
 		public  static final String SENSOR_RULE_TABLE_NAME = "Sensor_Readings";
 
+	}
+	public static class Calendar{
+		public static final String CALENDAR_MODULE_NAME = "calendar";
+		public static final String EVENT_MODULE_NAME = "calendarEvent";
+		public static final String CALENDAR_SLOTS_MODULE_NAME = "calendarSlots";
+		public static final String CALENDAR_ID = "calendarId";
+		public static final String CALENDAR_ID_LIST = "calendarIds";
+		public static final String CALENDAR_EVENT_ID = "eventId";
+		public static final String CALENDAR_EVENT_ID_LIST = "eventIds";
+		public static final String IS_EVENT_EDITED = "eventEdited";
+		public static final String EVENT_TIME_SLOT_MODULE_NAME = "eventTimeSlot";
+		public static final String CALENDAR_TIME_SLOT_MODULE_NAME = "calendarTimeSlot";
+		public static final String CALENDAR_EVENT_MAPPING_MODULE_NAME = "calendarEventMapping";
+		public static final String CALENDAR_ACTIVITY_MODULE = "calendarActivity";
+		public static final String EVENT_ACTIVITY_MODULE = "eventActivity";
+		public static final String SAVE_CALENDAR_ID_LIST = "saveCalendarIds";
+	}
+	public static class Control_Action {
+		public static final String CONTROL_ACTION_MODULE_NAME = "controlAction";
+		public static final String ACTION_MODULE_NAME = "action";
+		public static final String COMMAND_MODULE_NAME = "command";
+		public static final String CONTROL_ACTION_FIRST_LEVEL_APPROVAL_MODULE_NAME = "controlActionFirstLevelApproval";
+		public static final String CONTROL_ACTION_SECOND_LEVEL_APPROVAL_MODULE_NAME = "controlActionSecondLevelApproval";
+		public static final String CONTROL_ACTION_ID = "controlActionId";
+		public static final String CONTROL_ACTION_TEMPLATE_MODULE_NAME = "controlActionTemplate";
+		public static final String CONTROL_ACTION_TEMPLATE_ID = "controlActionTemplateId";
+		public static final String CONTROL_ACTION_ACTIVITY_MODULE_NAME = "controlActionActivity";
+		public static final String CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME = "controlActionTemplateActivity";
+		public static final String CONTROL_ACTION_NOTES_MODULE_NAME = "controlActionNotes";
 	}
 }

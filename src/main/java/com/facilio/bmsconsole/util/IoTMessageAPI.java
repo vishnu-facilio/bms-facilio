@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.controlActions.V3CommandsContext;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -623,6 +626,33 @@ public class IoTMessageAPI {
 			ControllerMessenger.setValue(entry.getValue());
 		}
 
+	}
+	public static void setReadingValueForV3CommandContext(List<V3CommandsContext> commandsContextList) throws Exception{
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Set<Pair<Long, Long>> pairs = new HashSet<>();
+		Map<String, V3CommandsContext> commandMap = new HashMap<>();
+		for (V3CommandsContext command: commandsContextList) {
+			pairs.add(Pair.of(command.getAsset().getId(), command.getFieldId()));
+			commandMap.put(ReadingsAPI.getRDMKey(command.getAsset().getId(),moduleBean.getField(command.getFieldId())), command);
+		}
+		List<Point> pointData = PointsAPI.getPointData(pairs);
+		Map<Long, List<Point>> pointControllerMap = new HashMap<>();
+		for (Point point: pointData) {
+			List<Point> pointList = pointControllerMap.get(point.getControllerId());
+			if (pointList == null) {
+				pointList = new ArrayList<>();
+				pointControllerMap.put(point.getControllerId(), pointList);
+			}
+			V3CommandsContext command = commandMap.get(ReadingsAPI.getRDMKey(point.getResourceId(), point.getFieldId()));
+			point.setActionName(AgentConstants.EMERGENCY_OVERRIDE);
+			point.setValue(command.getSetValue());
+			point.setControlActionId(command.getId());
+			pointList.add(point);
+		}
+
+		for(Map.Entry<Long, List<Point>> entry: pointControllerMap.entrySet()) {
+			ControllerMessenger.setValue(entry.getValue());
+		}
 	}
 
 

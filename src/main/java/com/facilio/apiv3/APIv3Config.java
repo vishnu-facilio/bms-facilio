@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.LookUpPrimaryFieldHandlingCommandV3;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.Audience.ValidateAudienceSharingCommandV3;
+import com.facilio.bmsconsoleV3.commands.Calendar.CalendarSlotCreateCommand;
 import com.facilio.bmsconsoleV3.commands.asset.*;
 import com.facilio.bmsconsoleV3.commands.assetCategory.SetAssetCategoryModuleCommandV3;
 import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.CheckAssetDepreciationExistingCommand;
@@ -58,6 +59,8 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.neighbourhood.Neighbo
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsAndInformationDetailsCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsRelatedModuleDataInListCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
+import com.facilio.bmsconsoleV3.commands.controlActions.CallToCommandGenerationCommand;
+import com.facilio.bmsconsoleV3.commands.controlActions.CallToControlActionGenerationCommand;
 import com.facilio.bmsconsoleV3.commands.decommission.DecommissionLogLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.decommission.DecommissionPicklistCheckCommand;
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
@@ -139,9 +142,14 @@ import com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.budget.ChartOfAccountContext;
+import com.facilio.bmsconsoleV3.context.calendar.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.*;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.AnnouncementContext;
 import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ActionContext;
+import com.facilio.bmsconsoleV3.context.controlActions.V3CommandsContext;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3ExternalAttendeeContext;
 import com.facilio.bmsconsoleV3.context.failurecode.*;
@@ -3208,6 +3216,78 @@ public class APIv3Config {
                 .afterFetch(new AgentLoggerSummaryAfterFetchCommand())
                 .build();
     }
+    @Module(FacilioConstants.Calendar.CALENDAR_MODULE_NAME)
+    public static Supplier<V3Config> getCalendar(){
+        return () -> new V3Config(V3CalendarContext.class,null)
+                .create()
+                .afterSave(TransactionChainFactoryV3.getCalendarAfterCreateChain())
+                .afterTransaction(new CalendarSlotCreateCommand())
+                .update()
+                .afterSave(TransactionChainFactoryV3.getCalendarAfterUpdateChain())
+                .afterTransaction(new CalendarSlotCreateCommand())
+                .delete().markAsDeleteByPeople()
+                .summary()
+                .beforeFetch(TransactionChainFactoryV3.getCalendarBeforeListChain())
+                .afterFetch(TransactionChainFactoryV3.getCalendarAfterFetchChain())
+                .list()
+                .beforeFetch(TransactionChainFactoryV3.getCalendarBeforeListChain())
+                .build();
+    }
+    @Module(FacilioConstants.Calendar.EVENT_MODULE_NAME)
+    public static Supplier<V3Config> getCalendarEvent(){
+        return () -> new V3Config(V3EventContext.class,null)
+                .create()
+                .afterSave(TransactionChainFactoryV3.getEventAfterCreateChain())
+                .update()
+                .afterSave(TransactionChainFactoryV3.getEventAfterUpdateChain())
+                .afterTransaction(new CalendarSlotCreateCommand())
+                .delete().markAsDeleteByPeople()
+                .summary()
+                .afterFetch(TransactionChainFactoryV3.getEventAfterFetchChain())
+                .list()
+                .afterFetch(TransactionChainFactoryV3.getEventAfterFetchChain())
+                .build();
+    }
+    @Module(FacilioConstants.Calendar.EVENT_TIME_SLOT_MODULE_NAME)
+    public static Supplier<V3Config> getEventTimeSlot(){
+        return () -> new V3Config(V3EventTimeSlotContext.class,null)
+                .create()
+                .update()
+                .summary()
+                .list()
+                .delete().markAsDeleteByPeople()
+                .build();
+    }
+    @Module(FacilioConstants.Calendar.CALENDAR_SLOTS_MODULE_NAME)
+    public static Supplier<V3Config> getCalendarSlots(){
+        return () -> new V3Config(V3CalendarSlotsContext.class,null)
+                .create()
+                .update()
+                .delete().markAsDeleteByPeople()
+                .summary()
+                .list()
+                .build();
+    }
+    @Module(FacilioConstants.Calendar.CALENDAR_EVENT_MAPPING_MODULE_NAME)
+    public static Supplier<V3Config> getCalendarEventMapping(){
+        return () -> new V3Config(V3CalendarEventMappingContext.class,null)
+                .create()
+                .update()
+                .delete().markAsDeleteByPeople()
+                .summary()
+                .list()
+                .build();
+    }
+    @Module(FacilioConstants.Calendar.CALENDAR_TIME_SLOT_MODULE_NAME)
+    public static Supplier<V3Config> getCalendarTimeSlot(){
+        return () -> new V3Config(V3CalendarTimeSlotContext.class,null)
+                .create()
+                .update()
+                .delete().markAsDeleteByPeople()
+                .summary()
+                .list()
+                .build();
+    }
 
     @Module("meter")
     public static Supplier<V3Config> getMeter() {
@@ -3278,4 +3358,65 @@ public class APIv3Config {
                 .afterFetch(new GetWorkflowRuleActionLogs())
                 .build();
     }
+    @Module(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME)
+    public static Supplier<V3Config> getControlAction(){
+        return () -> new V3Config(V3ControlActionContext.class,null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getControlActionBeforeSaveChain())
+                .afterSave(TransactionChainFactoryV3.getControlActionAfterSaveChain())
+                .afterTransaction(new CallToCommandGenerationCommand())
+                .update()
+                .afterSave(TransactionChainFactoryV3.getControlActionBeforeUpdateChain())
+                .afterTransaction(new CallToCommandGenerationCommand())
+                .delete().markAsDeleteByPeople()
+                .beforeDelete(TransactionChainFactoryV3.getControlActionBeforeDeleteChain())
+                .summary()
+                .afterFetch(TransactionChainFactoryV3.getControlActionAfterFetchChain())
+                .list()
+                .build();
+    }
+    @Module(FacilioConstants.Control_Action.ACTION_MODULE_NAME)
+    public static Supplier<V3Config> getAction(){
+        return () -> new V3Config(V3ActionContext.class,null)
+                .create()
+                .update()
+                .delete().markAsDeleteByPeople()
+                .summary()
+                .afterFetch(TransactionChainFactoryV3.getActionAfterSummaryCommand())
+                .list()
+                .afterFetch(TransactionChainFactoryV3.getActionAfterSummaryCommand())
+                .build();
+    }
+    @Module(FacilioConstants.Control_Action.COMMAND_MODULE_NAME)
+    public static Supplier<V3Config> getCommand(){
+        return () -> new V3Config(V3CommandsContext.class,null)
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getCommandsBeforeCreateChain())
+                .update()
+                .delete().markAsDeleteByPeople()
+                .summary()
+                .afterFetch(TransactionChainFactoryV3.getCommandsAfterSummaryChain())
+                .list()
+                .beforeFetch(TransactionChainFactoryV3.getCommandsBeforeListChain())
+                .afterFetch(TransactionChainFactoryV3.getCommandsAfterListChain())
+                .build();
+    }
+    @Module(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME)
+    public static Supplier<V3Config> getControlActionTemplate(){
+        return () -> new V3Config(V3ControlActionTemplateContext.class,null)
+                .create()
+                .afterSave(TransactionChainFactoryV3.getControlActionTemplateAfterSaveChain())
+                .afterTransaction(new CallToControlActionGenerationCommand())
+                .update()
+                .afterSave(TransactionChainFactoryV3.getControlActionTemplateAfterSaveChain())
+                .afterTransaction(new CallToControlActionGenerationCommand())
+                .delete().markAsDeleteByPeople()
+                .beforeDelete(TransactionChainFactoryV3.getControlActionTemplateBeforeDeleteChain())
+                .summary()
+                .list()
+                .build();
+    }
+
+
+
 }

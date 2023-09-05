@@ -390,3 +390,34 @@ enums:
 
   - name: SecurityPolicy
     enumClassName: com.facilio.agentv2.opcua.OpcUaControllerContext$SecurityPolicy
+
+  - name: CalendarTypeEnum
+    enumClassName: com.facilio.bmsconsoleV3.context.calendar.V3CalendarContext$CalendarTypeEnum
+
+  - name: EventTypeEnum
+    enumClassName: com.facilio.bmsconsoleV3.enums.EventTypeEnum
+
+  - name: EventFrequencyEnum
+    enumClassName: com.facilio.bmsconsoleV3.context.calendar.V3EventContext$EventFrequencyEnum
+
+  - name: ControlActionSourceTypeEnum
+    enumClassName: com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext$ControlActionSourceTypeEnum
+
+  - name: ControlActionTypeEnum
+    enumClassName: com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext$ControlActionTypeEnum
+
+  - name: ControlActionStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext$ControlActionStatus
+
+  - name: ActionVariableTypeEnum
+    enumClassName: com.facilio.bmsconsoleV3.context.controlActions.V3ActionContext$ActionVariableTypeEnum
+
+  - name: ActionOperatorTypeEnum
+    enumClassName: com.facilio.bmsconsoleV3.context.controlActions.V3ActionContext$ActionOperatorTypeEnum
+
+  - name: ControlActionCommandStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.controlActions.V3CommandsContext$ControlActionCommandStatus
+
+  - name: CommandActionType
+    enumClassName: com.facilio.bmsconsoleV3.context.controlActions.V3CommandsContext$CommandActionType
+

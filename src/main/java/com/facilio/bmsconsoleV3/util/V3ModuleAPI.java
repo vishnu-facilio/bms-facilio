@@ -109,7 +109,11 @@ public class V3ModuleAPI {
         VENDOR_DOCUMENTS(ContextNames.VENDOR_DOCUMENTS, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         SENSOR_ROLLUP_ALARM(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         METER(FacilioConstants.Meter.METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        VIRTUAL_METER_TEMPLATE(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        VIRTUAL_METER_TEMPLATE(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        CALENDAR(FacilioConstants.Calendar.CALENDAR_MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        EVENT(FacilioConstants.Calendar.EVENT_MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        CONTROL_ACTION(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        CONTROL_ACTION_TEMPLATE(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         private String moduleName;
         private List<String> applicationLinkNames;

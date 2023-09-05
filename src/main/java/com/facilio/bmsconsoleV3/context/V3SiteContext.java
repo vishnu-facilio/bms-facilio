@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsoleV3.context.calendar.V3CalendarContext;
 import com.facilio.modules.FacilioEnum;
 
 import java.util.Collections;
@@ -23,6 +24,7 @@ public class V3SiteContext extends V3BaseSpaceContext {
 	private Double wddBaseTemperature;
 	private Integer boundaryRadius;
 	private V3ClientContext client;
+	private V3CalendarContext calendar;
 
 	public LocationContext getLocation() {
 		return location;
@@ -185,5 +187,11 @@ public class V3SiteContext extends V3BaseSpaceContext {
 
 	public void setBoundaryRadius(Integer boundaryRadius) {
 		this.boundaryRadius = boundaryRadius;
+	}
+	public void setCalendar(V3CalendarContext calendar){
+		this.calendar = calendar;
+	}
+	public V3CalendarContext getCalendar(){
+		return calendar;
 	}
 }

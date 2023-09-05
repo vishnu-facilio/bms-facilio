@@ -94,7 +94,11 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.NEW_READING_ALARM,
 			ContextNames.BMS_ALARM,
 			ContextNames.SPACE_BOOKING,
-			ContextNames.ROOMS
+			ContextNames.ROOMS,
+			FacilioConstants.Calendar.CALENDAR_MODULE_NAME,
+			FacilioConstants.Calendar.EVENT_MODULE_NAME,
+			FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,
+			FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME
 
 	});
 

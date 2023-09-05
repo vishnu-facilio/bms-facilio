@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.calendar.V3CalendarContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
@@ -62,6 +63,7 @@ public class V3AssetContext extends V3ResourceContext {
     private V3ItemTypesContext rotatingItemType;
     private V3StoreRoomContext storeRoom;
     private Boolean canUpdateRotatingAsset;
+    private V3CalendarContext calendar;
 
     public Boolean getDowntimeStatus() {
         return downtimeStatus;
@@ -492,5 +494,11 @@ public class V3AssetContext extends V3ResourceContext {
 
     public void setCanUpdateRotatingAsset(Boolean canUpdateRotatingAsset) {
         this.canUpdateRotatingAsset = canUpdateRotatingAsset;
+    }
+    public void setCalendar(V3CalendarContext calendar){
+        this.calendar = calendar;
+    }
+    public V3CalendarContext getCalendar(){
+        return calendar;
     }
 }

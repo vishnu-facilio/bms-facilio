@@ -16,7 +16,9 @@ topics:
       - { key: __dashboard_update__, handler: com.facilio.ims.handler.DashboardUpdateHandler }
       - { key: __one_time_job_for_scheduled_rule__/#/#, handler: com.facilio.ims.handler.AddOneTimeJobForScheduledRuleHandler, recordTimeout: 60 }
       - { key: task_deviation_createWorkOrder/#, handler: com.facilio.ims.handler.workorder.TaskDeviationWorkOrderHandler, recordTimeout: 60 }
-
+      - { key: calendar/+, handler: com.facilio.wmsv2.handler.CalendarHandler, recordTimeout: 600 }
+      - { key: controlAction/+, handler: com.facilio.wmsv2.handler.CommandGenerationHandler, recordTimeout: 600 }
+      - { key: controlActionTemplate/+, handler: com.facilio.wmsv2.handler.ControlActionGenerationHandler, recordTimeout: 600 }
   - topic: receive-mail
     keys:
       - { key: email-process/#, handler: com.facilio.ims.handler.EmailProcessHandler, recordTimeout: 60 }

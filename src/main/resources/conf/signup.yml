@@ -438,4 +438,18 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.HeatDataReadingModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.BTUDataReadingModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VMTemplateModule
-  
+
+  #calendarModule
+  - com.facilio.bmsconsoleV3.signup.calendar.AddCalendarModule
+  #eventModule
+  - com.facilio.bmsconsoleV3.signup.event.AddEventModule
+  #calendarSlotsModule
+  - com.facilio.bmsconsoleV3.signup.calendarSlots.AddCalendarSlotModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.CalendarEventModule
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.CalendarModule
+
+  #ControlActionModule
+  - com.facilio.bmsconsoleV3.signup.controlAction.AddControlActionModule
+  - com.facilio.bmsconsoleV3.signup.controlAction.AddControlActionModulePostAction
+  - com.facilio.bmsconsoleV3.signup.controlAction.AddControlActionTemplateModule
+  - com.facilio.bmsconsoleV3.signup.controlAction.ControlActionModule

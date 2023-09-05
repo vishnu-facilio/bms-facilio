@@ -1832,6 +1832,11 @@
             <param name="moduleName">{1}</param>
         </action>
     </package>
+    <package name="getCalendarSlots" extends="v3Api" namespace="/api/v3/calendar">
+        <action name="getCalendarSlots"
+                class="com.facilio.bmsconsoleV3.actions.CalendarAction"
+                method="getCalendarSlots"></action>
+    </package>
 
     <package name="serviceRequestSiteApi" extends="v3Api" namespace="/api/v3/serviceRequest">
         <action name="*/site"

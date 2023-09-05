@@ -259,5 +259,10 @@
 	<job name="DeleteDataLogsRecordsJob" classname="com.facilio.bmsconsole.jobs.DeleteDataLogsRecordsJob" transactionTimeout="7200000"/>
 
 	<job name="DeleteWorkflowRuleLogsRecordsJob" classname="com.facilio.bmsconsole.jobs.DeleteWorkflowRuleLogsRecordsJob" transactionTimeout="600000"/>
+	<job name="calendarNightlyJob" classname="com.facilio.bmsconsole.jobs.CalendarNightlyJob" transactionTimeout="600000"/>
 
+	<!--Control Action Related Job-->
+	<job name="PickCommandsToBeExecutedScheduledAction" classname="com.facilio.bmsconsole.jobs.PickCommandsToBeExecutedJob" transactionTimeout="900000"/>
+	<job name="PickCommandsToBeExecutedRevertAction" classname="com.facilio.bmsconsole.jobs.PickCommandsToBeExecutedJob" transactionTimeout="900000"/>
+	<job name="controlActionTemplateNightlyJob" classname="com.facilio.bmsconsole.jobs.ControlActionTemplateNightlyJob" transactionTimeout="900000"/>
 </scheduler>

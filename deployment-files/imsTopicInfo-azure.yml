@@ -58,3 +58,15 @@ topics:
   - topic: default-single
     keys:
       - { key: __workflow_rule_logs__/#/#/#, handler: com.facilio.ims.handler.WorkFlowRuleLogHandler }
+
+  - topic: default-single
+    keys:
+      - { key: calendar/+, handler: com.facilio.wmsv2.handler.CalendarHandler, recordTimeout: 600 }
+
+  - topic: default-single
+    keys:
+      - { key: controlAction/+, handler: com.facilio.wmsv2.handler.CommandGenerationHandler, recordTimeout: 600 }
+
+  - topic: default-single
+    keys:
+      - { key: controlActionTemplate/+, handler: com.facilio.wmsv2.handler.ControlActionGenerationHandler, recordTimeout: 600 }

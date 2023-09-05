@@ -3226,4 +3226,11 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v3/calendar/getCalendarSlots" method="GET">
+        <requestbody type="object">
+            <property name="calendarId" type="number"></property>
+            <property name="startTime" type="number"></property>
+            <property name="endTime" type="number"></property>
+        </requestbody>
+    </request>
 </config>
