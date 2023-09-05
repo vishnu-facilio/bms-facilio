@@ -35,6 +35,13 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 
+/**
+ * This command converts the PMv1 Tasks to a JobPlan/JobPlan Task Section/JobPlan Task
+ *
+ * Yet to handle:
+ * - Task level resource mapping.
+ * - Prerequisites
+ */
 @Log4j
 public class PMv1TasksToJobPlanMigration extends FacilioCommand {
 
@@ -139,23 +146,6 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                         jobPlanTaskSectionContext.setSequenceNumber(sectionSequenceNumber++);
                         jobPlanTaskSectionContext.setName(sectionTemplate.getName());
                         jobPlanTaskSectionContext.setJobPlanSectionCategory(sectionTemplate.getAssignmentType());
-                        if (sectionTemplate.getInputTypeEnum() == null) {
-                            jobPlanTaskSectionContext.setInputType(V3TaskContext.InputType.NONE.getVal());
-                        } else {
-                            // null the readingField ID
-                            switch (sectionTemplate.getInputTypeEnum()) {
-                                case TEXT:
-                                case NUMBER:
-                                case RADIO:
-                                    JSONObject json = jobPlanTaskSectionContext.getAdditionInfo();
-                                    json.put("enableInput", true);
-                                    jobPlanTaskSectionContext.setAdditionalInfoJsonStr(json.toJSONString());
-
-                                    jobPlanTaskSectionContext.setEnableInput(true);
-                                    jobPlanTaskSectionContext.setInputType(sectionTemplate.getInputType());
-                                    break;
-                            }
-                        }
 
                         // Sanitize jobPlanTaskSectionAdditionalInfo
                         JSONObject jobPlanTaskSectionAdditionalInfo = sectionTemplate.getAdditionInfo();
@@ -171,6 +161,47 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
 
                         jobPlanTaskSectionContext.setAdditionInfo(jobPlanTaskSectionAdditionalInfo);
                         jobPlanTaskSectionContext.setAdditionalInfoJsonStr(jobPlanTaskSectionAdditionalInfo.toJSONString());
+
+                        // Set inputType to additionalInfo
+                        if (sectionTemplate.getInputTypeEnum() == null) {
+                            jobPlanTaskSectionContext.setInputType(V3TaskContext.InputType.NONE.getVal());
+                        } else {
+                            jobPlanTaskSectionContext.setInputType(sectionTemplate.getInputType());
+                            // enabling the enableInput field
+                            switch (sectionTemplate.getInputTypeEnum()) {
+                                case TEXT:
+                                case NUMBER:
+                                case RADIO:
+                                    JSONObject json = jobPlanTaskSectionContext.getAdditionInfo();
+                                    json.put("enableInput", true);
+                                    jobPlanTaskSectionContext.setAdditionalInfoJsonStr(json.toJSONString());
+                                    jobPlanTaskSectionContext.setEnableInput(true);
+                                    break;
+                            }
+
+                            // Handle options input type for section - no reading in JobPlan-section
+                            switch (sectionTemplate.getInputTypeEnum()) {
+                                case RADIO:
+                                    List<String> optionValues = new ArrayList<>();
+                                    for (Map.Entry<String, Object> entry : additionalInfoMap.entrySet()) {
+                                        if (Objects.equals(entry.getKey(), "options")) {
+                                            optionValues = (List<String>) entry.getValue();
+                                        }
+                                    }
+                                    if(CollectionUtils.isNotEmpty(optionValues)){
+                                        List<Map<String, Object>> inputOptions = new ArrayList<>();
+                                        int sequence = 1;
+                                        for (String optionStr : optionValues) {
+                                            LinkedHashMap<String, Object> option = new LinkedHashMap<>();
+                                            option.put("sequence", sequence++);
+                                            option.put("value", optionStr);
+                                            inputOptions.add(option);
+                                        }
+                                        jobPlanTaskSectionContext.setInputOptions(inputOptions);
+                                    }
+                                    break;
+                            }
+                        }
 
                         PreventiveMaintenance.PMAssignmentType sectionAssignmentType = PreventiveMaintenance.PMAssignmentType.valueOf(sectionTemplate.getAssignmentType());
                         switch (jobPlanContext.getJobPlanCategoryEnum()) {
@@ -292,18 +323,23 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                                 // null the readingField ID
                                 switch (taskTemplate.getInputTypeEnum()) {
                                     case NONE:
-                                        jobPlanTasksContext.setReadingFieldId(null);
-                                        jobPlanTasksContext.setReadingField(null);
-                                        break;
                                     case TEXT:
                                     case NUMBER:
                                     case RADIO:
+                                        jobPlanTasksContext.setReadingFieldId(null);
+                                        jobPlanTasksContext.setReadingField(null);
+                                        break;
+                                }
+
+                                // enabling the enableInput field
+                                switch (taskTemplate.getInputTypeEnum()) {
+                                    case TEXT:
+                                    case NUMBER:
+                                    case RADIO:
+                                    case READING:
                                         JSONObject json = jobPlanTasksContext.getAdditionInfo();
                                         json.put("enableInput", true);
                                         jobPlanTasksContext.setAdditionalInfoJsonStr(json.toJSONString());
-
-                                        jobPlanTasksContext.setReadingFieldId(null);
-                                        jobPlanTasksContext.setReadingField(null);
                                         jobPlanTasksContext.setEnableInput(true);
                                         break;
                                 }
@@ -323,7 +359,7 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                                         jobPlanTasksContext.setInputOptions(inputOptions);
                                         break;
                                     case READING:
-                                        //TODO: Input type - Handling for ReadingField and Options isn't done yet
+                                        //TODO: Special Handling for ReadingField can be done here
                                         break;
                                 }
                             }
