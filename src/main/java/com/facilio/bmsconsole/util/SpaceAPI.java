@@ -1794,7 +1794,7 @@ public static long getSitesCount() throws Exception {
 				.module(assetModule)
 				.beanClass(ModuleBaseWithCustomFields.class)
 				.andCondition(spaceCond)
-				.groupBy("SPACE_ID");
+				.groupBy("Resources.SITE_ID");
 
 		ModuleBaseWithCustomFields rs  = select.fetchFirst();
 		if (rs == null) {
