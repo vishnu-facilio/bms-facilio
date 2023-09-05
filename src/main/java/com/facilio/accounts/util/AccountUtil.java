@@ -930,6 +930,7 @@ public class AccountUtil {
 					brandingJson.put("logo", brand.getLogo());
 					brandingJson.put("logoLight", brand.getLogoLight());
 					brandingJson.put("poweredByLogo", brand.getPoweredByLogo());
+					brandingJson.put("showLogoInPDF", brand.isShowLogoInPDF());
 					brandingJson.put("favicon", brand.getFavicon());
 					brandingJson.put("website", brand.getWebsite());
 					brandingJson.put("copyright", brand.getCopyright());
@@ -945,6 +946,7 @@ public class AccountUtil {
 		brandingJson.put("logo", FacilioProperties.getConfig("rebrand.logo", "https://static.facilio.com/common/facilio-dark-logo.svg"));
 		brandingJson.put("logoLight", FacilioProperties.getConfig("rebrand.logoLight", "https://static.facilio.com/common/facilio-light-logo.svg"));
 		brandingJson.put("poweredByLogo", null);
+		brandingJson.put("showLogoInPDF", true);
 		brandingJson.put("favicon", FacilioProperties.getConfig("rebrand.favicon", "https://static.facilio.com/common/favicon.png"));
 		brandingJson.put("website", FacilioProperties.getConfig("rebrand.website", "www.facilio.com"));
 		brandingJson.put("copyright", FacilioProperties.getConfig("rebrand.copyright.name", "Facilio Inc") + " &copy; " + java.time.Year.now().getValue());
