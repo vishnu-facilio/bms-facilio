@@ -2,9 +2,13 @@ package com.facilio.fsm.signup;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -87,5 +91,35 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
         serviceTask.setLookupModule(serviceTaskMod);
         serviceTask.setModule(serviceOrderPlannedServicesModule);
         bean.addField(serviceTask);
+    }
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule plannedServicesModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES);
+
+        FacilioForm plannedServicesForm = new FacilioForm();
+        plannedServicesForm.setDisplayName("SERVICE ORDER PLANNED SERVICES");
+        plannedServicesForm.setName("default_serviceOrderPlannedServices_web");
+        plannedServicesForm.setModule(plannedServicesModule);
+        plannedServicesForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        plannedServicesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> plannedServicesFormFields = new ArrayList<>();
+
+        plannedServicesFormFields.add(new FormField("service", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service", FormField.Required.REQUIRED,"service", 1, 1,true));
+        plannedServicesFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, 2, 1));
+        plannedServicesFormFields.add(new FormField("unitPrice", FacilioField.FieldDisplayType.DECIMAL, "Unit Price", FormField.Required.OPTIONAL, 3, 1));
+        plannedServicesFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, 4, 1));
+
+        plannedServicesForm.setFields(plannedServicesFormFields);
+
+        FormSection section = new FormSection("Default", 1, plannedServicesFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        plannedServicesForm.setSections(Collections.singletonList(section));
+        plannedServicesForm.setIsSystemForm(true);
+        plannedServicesForm.setType(FacilioForm.Type.FORM);
+
+        return Collections.singletonList(plannedServicesForm);
+
     }
 }

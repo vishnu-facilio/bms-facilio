@@ -2,9 +2,13 @@ package com.facilio.fsm.signup;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -13,6 +17,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -75,5 +80,35 @@ public class ServiceOrderServicesModule  extends BaseModuleConfig {
         serviceTask.setLookupModule(serviceTaskMod);
         serviceTask.setModule(serviceOrderServicesModule);
         bean.addField(serviceTask);
+    }
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule serviceOrderServiceModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES);
+
+        FacilioForm serviceOrderServiceModuleForm = new FacilioForm();
+        serviceOrderServiceModuleForm.setDisplayName("New Service Order Service");
+        serviceOrderServiceModuleForm.setName("default_serviceOrderService_web");
+        serviceOrderServiceModuleForm.setModule(serviceOrderServiceModule);
+        serviceOrderServiceModuleForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        serviceOrderServiceModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        int seqNum = 0;
+        List<FormField> serviceOrderServiceModuleFormFields = new ArrayList<>();
+        serviceOrderServiceModuleFormFields.add(new FormField("service", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service", FormField.Required.REQUIRED, "Service", ++seqNum, 1,true));
+        serviceOrderServiceModuleFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
+        serviceOrderServiceModuleFormFields.add(new FormField("startTime", FacilioField.FieldDisplayType.DATETIME,"Start Time", FormField.Required.OPTIONAL, ++seqNum,1));
+        serviceOrderServiceModuleFormFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME,"End Time", FormField.Required.OPTIONAL, ++seqNum,1));
+        serviceOrderServiceModuleFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION,"Duration", FormField.Required.OPTIONAL,"duration", ++seqNum,1));
+
+        FormSection serviceOrderServiceModuleFormSection = new FormSection("Default", 1, serviceOrderServiceModuleFormFields, false);
+        serviceOrderServiceModuleFormSection.setSectionType(FormSection.SectionType.FIELDS);
+        serviceOrderServiceModuleForm.setSections(Collections.singletonList(serviceOrderServiceModuleFormSection));
+        serviceOrderServiceModuleForm.setIsSystemForm(true);
+        serviceOrderServiceModuleForm.setType(FacilioForm.Type.FORM);
+
+        return Collections.singletonList(serviceOrderServiceModuleForm);
+
     }
 }

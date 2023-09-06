@@ -2,9 +2,13 @@ package com.facilio.fsm.signup;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -93,5 +97,32 @@ public class ServiceOrderPlannedItemsModule extends BaseModuleConfig {
         serviceTask.setLookupModule(serviceTaskMod);
         serviceTask.setModule(serviceOrderPlannedItemsModule);
         bean.addField(serviceTask);
+    }
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule plannedItemsModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS);
+
+        FacilioForm plannedItemsForm = new FacilioForm();
+        plannedItemsForm.setDisplayName("SERVICE ORDER PLANNED ITEMS");
+        plannedItemsForm.setName("default_serviceOrderPlannedItems_web");
+        plannedItemsForm.setModule(plannedItemsModule);
+        plannedItemsForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        plannedItemsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
+
+        List<FormField> plannedItemsFormFields = new ArrayList<>();
+        plannedItemsFormFields.add(new FormField("itemType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item type", FormField.Required.REQUIRED,"itemTypes", 1, 1,true));
+        plannedItemsFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, 2, 1));
+        plannedItemsFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", 3, 1));
+        plannedItemsFormFields.add(new FormField("unitPrice", FacilioField.FieldDisplayType.DECIMAL, "Unit Price", FormField.Required.OPTIONAL, 5, 1));
+
+        plannedItemsForm.setFields(plannedItemsFormFields);
+        FormSection section = new FormSection("Default", 1, plannedItemsFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        plannedItemsForm.setSections(Collections.singletonList(section));
+        plannedItemsForm.setIsSystemForm(true);
+        plannedItemsForm.setType(FacilioForm.Type.FORM);
+
+        return Collections.singletonList(plannedItemsForm);
     }
 }

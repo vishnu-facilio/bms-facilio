@@ -2,9 +2,13 @@ package com.facilio.fsm.signup;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -13,10 +17,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class ServiceOrderItemsModule extends BaseModuleConfig {
     public ServiceOrderItemsModule(){
@@ -100,5 +101,31 @@ public class ServiceOrderItemsModule extends BaseModuleConfig {
         serviceTask.setLookupModule(serviceTaskMod);
         serviceTask.setModule(serviceOrderItemsModule);
         bean.addField(serviceTask);
+    }
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule serviceOrderItemsModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS);
+
+        FacilioForm serviceOrderItemForm = new FacilioForm();
+        serviceOrderItemForm.setDisplayName("New Service Order Item");
+        serviceOrderItemForm.setName("default_serviceOrderItem_web");
+        serviceOrderItemForm.setModule(serviceOrderItemsModule);
+        serviceOrderItemForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        serviceOrderItemForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        int seqNum = 0;
+        List<FormField> serviceOrderItemFormFields = new ArrayList<>();
+        serviceOrderItemFormFields.add(new FormField("item", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item", FormField.Required.REQUIRED, "item", ++seqNum, 1,true));
+        serviceOrderItemFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", ++seqNum, 1,true));
+        serviceOrderItemFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
+
+        FormSection section = new FormSection("Default", 1, serviceOrderItemFormFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        serviceOrderItemForm.setSections(Collections.singletonList(section));
+        serviceOrderItemForm.setIsSystemForm(true);
+        serviceOrderItemForm.setType(FacilioForm.Type.FORM);
+
+        return Collections.singletonList(serviceOrderItemForm);
     }
 }
