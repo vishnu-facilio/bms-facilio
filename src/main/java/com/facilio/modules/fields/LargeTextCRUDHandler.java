@@ -63,6 +63,8 @@ public class LargeTextCRUDHandler extends BaseSingleRelRecordCRUDHandler<String>
         return StringUtils.isBlank(value);
     }
 
+	private static long lastLoggedTime = 0;
+	private static int BUFFER_INTERVAL = 1800000;
     protected Map<String, Object> createRelRecord(long parentId, String fileContent) throws Exception {
 		if(!(((LargeTextField)getField()).getSkipSizeCheck()) && fileContent.length() > LARGE_TEXT_MAX_SIZE) {
 			throw new Exception("large text content is greater that max size "+LARGE_TEXT_MAX_SIZE);
@@ -76,6 +78,20 @@ public class LargeTextCRUDHandler extends BaseSingleRelRecordCRUDHandler<String>
 		}
 		FileStore fs = FacilioFactory.getFileStore();
 		long fileID = fs.addFile(fileName, newFile, "text");
+
+		try {
+			long startTime = System.currentTimeMillis();
+			newFile.delete();
+			long currentTime = System.currentTimeMillis();
+			long timeTakenToDeleteTempFile = currentTime - startTime;
+			if ( (currentTime - lastLoggedTime) > BUFFER_INTERVAL ) { // Printing this log only at specified intervals to understand how costly is this
+				lastLoggedTime = currentTime;
+				LOGGER.info("Time taken to delete temp file "+fileName+" is "+timeTakenToDeleteTempFile);
+			}
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred while deleting temp file. But this is not critical", e);
+		}
 
         relRecord.put(PARENT_ID_FIELD_NAME, parentId);
         relRecord.put(FILE_ID_FIELD_NAME, fileID);
