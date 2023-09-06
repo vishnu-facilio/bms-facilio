@@ -681,6 +681,11 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
+    public boolean isNewVersion() {
+        return FacilioProperties.isNewVersion();
+    }
+
+    @Override
 	public Account getCurrentAccount() throws Exception {
 		return AccountUtil.getCurrentAccount();
 	}

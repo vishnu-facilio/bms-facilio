@@ -171,8 +171,12 @@ public class FacilioProperties {
     private static String cloudAgentUrl;
     private static int maxProcessorThreads;
 
-    @Getter
     private static String isNewVersion;
+
+    public static boolean isNewVersion() {
+        return Boolean.parseBoolean(isNewVersion);
+    }
+
     @Getter
     private static String developerAppDomain;
 
