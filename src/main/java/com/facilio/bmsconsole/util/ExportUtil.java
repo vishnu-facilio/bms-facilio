@@ -857,7 +857,10 @@ public class ExportUtil {
 			viewFields.add(serialNumber);
 		} else if (!moduleName.equals("asset") &&
 				   !moduleName.equals("tenant") &&
-					!moduleName.equals("item") &&
+					!moduleName.equals(ContextNames.ITEM) &&
+					!moduleName.equals(ContextNames.ITEM_TYPES) &&
+					!moduleName.equals(ContextNames.TOOL) &&
+					!moduleName.equals(ContextNames.TOOL_TYPES) &&
 				   !moduleName.equals("serviceRequest") &&  // Asset module has local Id
 				   fieldsMap.containsKey("localId")) {
 
