@@ -114,13 +114,17 @@ public class GetAllModulesCommand extends FacilioCommand {
 		for(String moduleName: V3ModuleAPI.getSystemModuleNames()) {
 			if (AccountUtil.isModuleLicenseEnabled(moduleName)) {
 				FacilioModule module = modBean.getModule(moduleName);
-				systemModules.add(getModuleJson(module));
+				if(module != null) {
+					systemModules.add(getModuleJson(module));
+				}
 			}
 		}
 		
 		List<FacilioModule> modules = modBean.getModuleList(ModuleType.BASE_ENTITY, true);
 		for(FacilioModule module: modules) {
-			customModules.add(getModuleJson(module));
+			if(module != null) {
+				customModules.add(getModuleJson(module));
+			}
 		}
 		
 		context.put("systemModules", systemModules);
