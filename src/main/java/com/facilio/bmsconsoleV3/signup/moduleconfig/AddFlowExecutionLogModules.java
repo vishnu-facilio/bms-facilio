@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddFlowExecutionLogModules extends BaseModuleConfig{
+    public AddFlowExecutionLogModules(){
+        setModuleName(FacilioConstants.Flow.FLOW_EXECUTION);
+    }
     @Override
     public void addData() throws Exception {
         FacilioModule flowExecutionModule = constructFlowExecutionModule();
