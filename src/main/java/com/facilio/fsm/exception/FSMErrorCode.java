@@ -30,6 +30,7 @@ public enum FSMErrorCode {
     SA_DETAILS_REQUIED(Severity.ERROR, "Mandatory field missing", "Please provide all the required details."),
     SA_RECORD_LOCKED(Severity.ERROR, "Record Locked", "You cannot edit or delete since the record is locked."),
     SA_FIELD_UPDATE_PREVENT(Severity.ERROR,"Not Permitted","You are not permitted to edit these details."),
+    INVALID_SA(Severity.ERROR, "Invalid Service Appointment", "Please provide valid service appointment id"),
 
     // Time Sheet error codes
     TIME_SHEET_NOT_ENOUGH_DETAILS(Severity.ERROR, "Mandatory field missing", "Not enough details to create a timesheet"),
