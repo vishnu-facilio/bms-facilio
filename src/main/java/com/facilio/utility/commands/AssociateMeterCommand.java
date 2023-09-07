@@ -50,10 +50,8 @@ public class AssociateMeterCommand extends FacilioCommand {
             if (utilityIntegrationMeterContexts.getMeter() == null) {
                 for (Long meterId : meterIds) {
                     V3MeterContext meterContext = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(V3RecordAPI.getRecord(FacilioConstants.Meter.METER,meterId)),V3MeterContext.class);
-
-                    //V3MeterContext meterContext = (V3MeterContext) V3Util.getRecord(FacilioConstants.Meter.METER, meterId, null);
                     utilityIntegrationMeterContexts.setMeter(meterContext);
-                    //utilityIntegrationMeterContexts.setMeterState(UtilityIntegrationMeterContext.MeterState.MAPPED.getIntVal());
+
                     V3Util.processAndUpdateSingleRecord(FacilioConstants.UTILITY_INTEGRATION_METER, utilityIntegrationMeterContexts.getId(), FieldUtil.getAsJSON(utilityIntegrationMeterContexts), null, null, null, null, null,null,null, null,null);
                     //V3RecordAPI.updateRecord(utilityIntegrationMeterContexts, module, fields);
                 }

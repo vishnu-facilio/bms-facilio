@@ -117,7 +117,9 @@ public class UtilityDisputeModule extends BaseModuleConfig {
         DateField resolvedTime =  FieldFactory.getDefaultField("resolvedTime", "Resolved Time ", "RESOLVED_TIME", FieldType.DATE_TIME,FacilioField.FieldDisplayType.DATETIME);
         fields.add(resolvedTime);
 
-        NumberField resolvedBy = FieldFactory.getDefaultField("resolvedBy","Resolved By","RESOLVED_BY", FieldType.NUMBER);
+        LookupField resolvedBy = FieldFactory.getDefaultField("resolvedBy","Resolved By","RESOLVED_BY", FieldType.LOOKUP);
+        resolvedBy.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
+
         fields.add(resolvedBy);
 
         NumberField actualMeterConsumption = FieldFactory.getDefaultField("actualMeterConsumption","Actual Meter Consumption","ACTUAL_METER_CONSUMPTION", FieldType.DECIMAL);
@@ -558,7 +560,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
         FacilioField createdByField = moduleBean.getField("sysCreatedBy",moduleName);
         FacilioField modifiedField = moduleBean.getField("sysModifiedBy",moduleName);
         FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime",moduleName);
-        //FacilioField resolvedBy = moduleBean.getField("resolvedBy",moduleName);
+
 
         SummaryWidget pageWidget = new SummaryWidget();
 
@@ -579,7 +581,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
         addSummaryFieldInWidgetGroup(widgetGroup1, createdByField, 1, 2, 1);
         addSummaryFieldInWidgetGroup(widgetGroup1, modifiedField, 1, 3, 1);
         addSummaryFieldInWidgetGroup(widgetGroup1, sysModifiedTimeField, 1, 4, 1);
-        //addSummaryFieldInWidgetGroup(widgetGroup1, resolvedBy, 2, 1, 1);
+
 
 
         widgetGroup1.setName("moduleSystemDetails");
@@ -611,7 +613,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
         FacilioField createdByField = moduleBean.getField("sysCreatedBy",moduleName);
         FacilioField modifiedField = moduleBean.getField("sysModifiedBy",moduleName);
         FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime",moduleName);
-        //FacilioField resolvedBy = moduleBean.getField("resolvedBy",moduleName);
+
 
         SummaryWidget pageWidget = new SummaryWidget();
 
@@ -632,7 +634,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
         addSummaryFieldInWidgetGroup(widgetGroup1, createdByField, 1, 2, 1);
         addSummaryFieldInWidgetGroup(widgetGroup1, modifiedField, 1, 3, 1);
         addSummaryFieldInWidgetGroup(widgetGroup1, sysModifiedTimeField, 1, 4, 1);
-        //addSummaryFieldInWidgetGroup(widgetGroup1, resolvedBy, 2, 1, 1);
+        
 
 
         widgetGroup1.setName("moduleSystemDetails");
@@ -830,6 +832,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
         widgetGroup.setColumns(4);
 
 
+
         SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
         addSummaryFieldInWidgetGroup(widgetGroup1, createdField, 1, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup1, createdByField, 1, 2, 1);
@@ -870,6 +873,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
     }
     private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan) {
         if (field != null) {
+
             SummaryWidgetGroupFields summaryField = new SummaryWidgetGroupFields();
             summaryField.setName(field.getName());
             summaryField.setDisplayName(field.getDisplayName());

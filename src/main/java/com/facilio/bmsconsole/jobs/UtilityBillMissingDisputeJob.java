@@ -75,27 +75,28 @@ public class UtilityBillMissingDisputeJob extends FacilioJob {
 
                                 if (billModule != null) {
 
-
+                                    //start and date date
                                     long billDate = DateTimeUtil.addMonths(DateTimeUtil.getMonthStartTime(), -1);
                                     Calendar cal = Calendar.getInstance();
                                     cal.add(Calendar.MONTH, -1);
                                     cal.set(Calendar.DATE, 1);
                                     Date firstDateOfPreviousMonth = cal.getTime();
                                     long startTime = firstDateOfPreviousMonth.getTime();
-
                                     cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
 
                                     Date lastDateOfPreviousMonth = cal.getTime();
                                     long endTime = lastDateOfPreviousMonth.getTime();
 
+                                    long startMillis = UtilitySDK.convertStartDateToMilliseconds(firstDateOfPreviousMonth);
+                                    long endMillis = UtilitySDK.convertEndDateToMilliseconds(lastDateOfPreviousMonth);
 
                                     SelectRecordsBuilder<UtilityIntegrationBillContext> billContext = new SelectRecordsBuilder<UtilityIntegrationBillContext>()
                                             .moduleName(billModulename)
                                             .select(fields1)
                                             .beanClass(UtilityIntegrationBillContext.class)
-//                                            .andCondition(CriteriaAPI.getCondition("UTILITY_INTEGRATION_METER_ID", "utilityIntegrationMeter", String.valueOf(list.getId()), NumberOperators.EQUALS))
-                                            .andCondition(CriteriaAPI.getCondition("BILL_START_DATE", "billStartDate", String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
-                                            .orCondition(CriteriaAPI.getCondition("BILL_END_DATE", "billEndDate", String.valueOf(endTime), NumberOperators.GREATER_THAN_EQUAL));
+                                            .andCondition(CriteriaAPI.getCondition("UTILITY_INTEGRATION_METER_ID", "utilityIntegrationMeter", String.valueOf(list.getId()), NumberOperators.EQUALS))
+                                            .andCondition(CriteriaAPI.getCondition("BILL_START_DATE", "billStartDate", String.valueOf(startMillis), NumberOperators.GREATER_THAN_EQUAL))
+                                            .orCondition(CriteriaAPI.getCondition("BILL_END_DATE", "billEndDate", String.valueOf(endMillis), NumberOperators.LESS_THAN_EQUAL));
 
                                     List<UtilityIntegrationBillContext> billContextList = billContext.get();
 

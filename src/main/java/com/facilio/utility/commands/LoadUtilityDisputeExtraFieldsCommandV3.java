@@ -26,7 +26,7 @@ public class LoadUtilityDisputeExtraFieldsCommandV3 extends FacilioCommand {
 
             String[] extraFieldNames = new String[]{"type","utilityType","expires","supplier","accountNumber","billTotal","terminatedOn","billStatus",
                     "tariffToBeApplied","tariffApplied",
-                    "sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"};
+                    "sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","resolvedBy"};
 
             for (String fieldName : extraFieldNames) {
                 if (allFieldsAsMap.containsKey(fieldName)) {

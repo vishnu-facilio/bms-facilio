@@ -105,7 +105,6 @@ public class GetAllModulesCommand extends FacilioCommand {
 			FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,
 			FacilioConstants.UTILITY_INTEGRATION_BILLS,
 			FacilioConstants.UTILITY_INTEGRATION_TARIFF,
-			FacilioConstants.UTILITY_INTEGRATION_TARIFF_SLAB,
 			FacilioConstants.UTILITY_DISPUTE
 
 	});

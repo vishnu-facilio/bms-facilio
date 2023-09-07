@@ -400,16 +400,6 @@ public class UtilitySDK {
         }
     }
 
-//    public static String convertToCustomISO8601(long milliseconds, String timezoneOffset) {
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX");
-//        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-//
-//        Date date = new Date(milliseconds);
-//        String iso8601String = sdf.format(date);
-//
-//        // Append the custom timezone offset
-//        return iso8601String.substring(0, iso8601String.length() - 1) + timezoneOffset;
-//    }
 
     public static String convertMillisToUTCPlusOneDay(long milliseconds) {
         // Convert milliseconds to UTC
@@ -435,27 +425,6 @@ public class UtilitySDK {
 
         String startUTC = convertMillisToUTCPlusOneDay(startTime);
         String endUTC = convertMillisToUTCPlusOneDay(endTime);
-       // SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        //formatter.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-
-//        SimpleDateFormat utcDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX");
-//        utcDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-//
-//        Date startDate = new Date(startTime);
-//        Date endDate = new Date(endTime);
-//
-//        String startUTC = utcDateFormat.format(startDate);
-//        String endUTC = utcDateFormat.format(endDate);
-
-//        String startstr = convertToCustomISO8601(startTime, "+00:00");
-//                //formatter.format(startTime);
-//        String endStr = convertToCustomISO8601(endTime, "+00:00");
-//                //formatter.format(endTime);
-
-
-
-       // String startstr = DateTimeUtil.getFormattedTime(startTime,DATE_FORMAT);
-        // String endStr = DateTimeUtil.getFormattedTime(endTime,DATE_FORMAT);
 
         Map<String, String> params = new HashMap<>();
         params.put("meters", meterUid);
@@ -1158,32 +1127,19 @@ public class UtilitySDK {
         return bill.doubleValue();
     }
 
-//    public static Double calculateBill(Double consumption,List<UtilityIntegrationTariffSlabContext> tariffSlabs) throws Exception{
-//        Double bill = 0.0;
-//        for (UtilityIntegrationTariffSlabContext slab : tariffSlabs) {
-//            double slabAmount = Math.min(consumption, slab.getTo()) - slab.getFrom();
-//            if (slabAmount <= 0) {
-//                break;
-//            }
-//            bill += slabAmount * slab.getPrice();
-//            consumption -= slabAmount;
-//        }
-//        return bill;
-//    }
     public static void checkAndRaiseDisputes(Long meterId,Long startTime,Long endTime) throws Exception{
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule meterModule = modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_METER);
         String meterModuleName = FacilioConstants.UTILITY_INTEGRATION_METER;
         List<FacilioField> meterFields = modBean.getAllFields(meterModuleName);
+
         //time calculateion
         SimpleDateFormat simple = new SimpleDateFormat(
                 "dd MMM yyyy HH:mm:ss:SSS Z");
 
         Date strt = new Date(startTime);
         Date end = new Date(endTime);
-
-
         long startMillis = convertStartDateToMilliseconds(strt);
         long endMillis = convertEndDateToMilliseconds(end);
 
@@ -1268,48 +1224,49 @@ public class UtilitySDK {
                                 //cost mismatch
                                 if(list.getServiceTariff().equals(bill.getServiceTariff()) && list.getUtilityID().equals(bill.getUtilityID())){
 
-                                    //get matching tariff
-                                    String tariffModule = FacilioConstants.UTILITY_INTEGRATION_TARIFF;
-                                    List<FacilioField> fields = modBean.getAllFields(tariffModule);
-                                    SelectRecordsBuilder<UtilityIntegrationTariffContext> builder = new SelectRecordsBuilder<UtilityIntegrationTariffContext>()
-                                            .moduleName(tariffModule)
-                                            .select(fields)
-                                            .beanClass(UtilityIntegrationTariffContext.class)
-                                            .andCondition(CriteriaAPI.getCondition("NAME","name", bill.getServiceTariff(), StringOperators.IS));
-                                            //.andCondition(CriteriaAPI.getCondition("UTILITY_PROVIDER","utilityProviders",UtilityIntegrationTariffContext.UtilityProviders.get, EnumOperators.IS));
+                                    UtilityIntegrationTariffContext.UtilityProviders utilityProvider = UtilityIntegrationTariffContext.getNameById(list.getUtilityID());
+                                    if( utilityProvider != null) {
+                                        //get matching tariff
+                                        String tariffModule = FacilioConstants.UTILITY_INTEGRATION_TARIFF;
+                                        List<FacilioField> fields = modBean.getAllFields(tariffModule);
+                                        SelectRecordsBuilder<UtilityIntegrationTariffContext> builder = new SelectRecordsBuilder<UtilityIntegrationTariffContext>()
+                                                .moduleName(tariffModule)
+                                                .select(fields)
+                                                .beanClass(UtilityIntegrationTariffContext.class)
+                                                .andCondition(CriteriaAPI.getCondition("NAME", "name", bill.getServiceTariff(), StringOperators.IS))
+                                                .andCondition(CriteriaAPI.getCondition("UTILITY_PROVIDER", "utilityProviders", String.valueOf(utilityProvider.getIndex()), EnumOperators.IS));
 
-                                    UtilityIntegrationTariffContext tariff = builder.fetchFirst();
-                                    if(tariff != null) {
-                                        //get corresponding tariff slabs
-                                        String slabModule = FacilioConstants.UTILITY_INTEGRATION_TARIFF_SLAB;
-                                        List<FacilioField> slabFields = modBean.getAllFields(slabModule);
-                                        SelectRecordsBuilder<UtilityIntegrationTariffSlabContext> slabs = new SelectRecordsBuilder<UtilityIntegrationTariffSlabContext>()
-                                                .moduleName(slabModule)
-                                                .select(slabFields)
-                                                .beanClass(UtilityIntegrationTariffSlabContext.class)
-                                                .andCondition(CriteriaAPI.getCondition("UTILITY_INTEGRATION_TARIFF", "tariff", String.valueOf(tariff.getId()), NumberOperators.EQUALS));
+                                        UtilityIntegrationTariffContext tariff = builder.fetchFirst();
+                                        if (tariff != null) {
+                                            //get corresponding tariff slabs
+                                            String slabModule = FacilioConstants.UTILITY_INTEGRATION_TARIFF_SLAB;
+                                            List<FacilioField> slabFields = modBean.getAllFields(slabModule);
+                                            SelectRecordsBuilder<UtilityIntegrationTariffSlabContext> slabs = new SelectRecordsBuilder<UtilityIntegrationTariffSlabContext>()
+                                                    .moduleName(slabModule)
+                                                    .select(slabFields)
+                                                    .beanClass(UtilityIntegrationTariffSlabContext.class)
+                                                    .andCondition(CriteriaAPI.getCondition("UTILITY_INTEGRATION_TARIFF", "tariff", String.valueOf(tariff.getId()), NumberOperators.EQUALS));
 
-                                        List<UtilityIntegrationTariffSlabContext> tariffSlabs = slabs.get();
-                                        //based on consumption calculating amount  with our tariff and slabs
-                                        Double calculatedBill = calculateBill(bill.getBillTotalVolume(), tariffSlabs);
-                                        if (bill.getBillTotalCost() != calculatedBill) {
-                                            Double diff = 0.0;
-                                            if (bill.getBillTotalCost() > calculatedBill) {
-                                                diff = bill.getBillTotalCost() - calculatedBill;
-                                            } else {
-                                                diff = calculatedBill - bill.getBillTotalCost();
+                                            List<UtilityIntegrationTariffSlabContext> tariffSlabs = slabs.get();
+                                            //based on consumption calculating amount  with our tariff and slabs
+                                            Double calculatedBill = calculateBill(bill.getBillTotalVolume(), tariffSlabs);
+                                            if (bill.getBillTotalCost() != calculatedBill) {
+                                                Double diff = 0.0;
+                                                if (bill.getBillTotalCost() > calculatedBill) {
+                                                    diff = bill.getBillTotalCost() - calculatedBill;
+                                                } else {
+                                                    diff = calculatedBill - bill.getBillTotalCost();
+                                                }
+                                                UtilityDisputeContext costDispute = UtilityDisputeType.COST_MISMATCH.validateCostMismatch(bill, calculatedBill, bill.getBillTotalCost(), diff);
+                                                FacilioModule disputeModule = modBean.getModule(FacilioConstants.UTILITY_DISPUTE);
+                                                V3Util.createRecord(disputeModule, FieldUtil.getAsJSON(costDispute));
+                                                bill.setUtilityBillStatus(UtilityIntegrationBillContext.UtilityBillStatus.DISPUTED.getIntVal());
+                                                V3Util.processAndUpdateSingleRecord(FacilioConstants.UTILITY_INTEGRATION_BILLS, bill.getId(), FieldUtil.getAsJSON(bill), null, null, null, null, null, null, null, null, null);
+                                                //V3RecordAPI.updateRecord(bill, billModule, fields1);
+
+                                                FacilioStatus disputedStatus = TicketAPI.getStatus(billModule, "underDispute");
+                                                StateFlowRulesAPI.updateState(bill, modBean.getModule(billModulename), disputedStatus, false, new FacilioContext());
                                             }
-                                            UtilityDisputeContext costDispute = UtilityDisputeType.COST_MISMATCH.validateCostMismatch(bill, calculatedBill, bill.getBillTotalCost(), diff);
-                                            FacilioModule disputeModule = modBean.getModule(FacilioConstants.UTILITY_DISPUTE);
-                                            V3Util.createRecord(disputeModule, FieldUtil.getAsJSON(costDispute));
-                                            bill.setUtilityBillStatus(UtilityIntegrationBillContext.UtilityBillStatus.DISPUTED.getIntVal());
-                                            V3Util.processAndUpdateSingleRecord(FacilioConstants.UTILITY_INTEGRATION_BILLS, bill.getId(), FieldUtil.getAsJSON(bill), null, null, null, null, null, null, null, null, null);
-                                            //V3RecordAPI.updateRecord(bill, billModule, fields1);
-
-                                            FacilioStatus disputedStatus = TicketAPI.getStatus(billModule,"underDispute");
-                                            StateFlowRulesAPI.updateState(bill, modBean.getModule(billModulename), disputedStatus, false, new FacilioContext());
-
-
                                         }
                                     }
 

@@ -1,6 +1,9 @@
 package com.facilio.utility.context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.alarms.sensor.SensorRuleType;
+import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.utility.UtilityDisputeType;
 import com.facilio.v3.context.V3Context;
@@ -145,7 +148,7 @@ public class UtilityDisputeContext extends V3Context {
 
     String tariffToBeApplied;
     String tariffApplied;
-    Long resolvedBy;
+    PeopleContext resolvedBy;
     Long resolvedTime;
 
     public UtilityDisputeContext( String subject, UtilityDisputeType type, UtilityIntegrationCustomerContext account, UtilityIntegrationBillContext utilityBill,BillStatus status,String tariffToBeApplied,String tariffApplied) {

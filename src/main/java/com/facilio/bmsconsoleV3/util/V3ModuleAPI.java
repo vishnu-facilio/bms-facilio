@@ -120,7 +120,6 @@ public class V3ModuleAPI {
         UTILITY_INTEGRATION_CUSTOMER(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         UTILITY_INTEGRATION_BILLS(FacilioConstants.UTILITY_INTEGRATION_BILLS, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         UTILITY_INTEGRATION_TARIFF(FacilioConstants.UTILITY_INTEGRATION_TARIFF, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        UTILITY_INTEGRATION_TARIFF_SLAB(FacilioConstants.UTILITY_INTEGRATION_TARIFF_SLAB, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         UTILITY_DISPUTE(FacilioConstants.UTILITY_DISPUTE, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
 

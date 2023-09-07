@@ -44,7 +44,7 @@ public class UtilityBillsCommand extends FacilioCommand {
 
         //fetch bill and raise disputes for that bill
         UtilitySDK.getBillsForMeter(meterUid,startTime,endTime);
-       // UtilitySDK.checkAndRaiseDisputes(meterId,startTime,endTime);
+
 
         return false;
     }

@@ -40,7 +40,7 @@ public class CreateUtilityAccountCommand extends FacilioCommand {
         byte[] bytes = Longs.toByteArray(System.currentTimeMillis());
         String encodingString = Base64.getEncoder().encodeToString(bytes);
         encodingString = encodingString.replaceAll("[^a-zA-Z0-9]", "");
-       // encodingString.replaceAll("\\s", "");
+
         customer.setSecretState(encodingString);
 
         FacilioContext customerContext = V3Util.createRecord(module, FacilioUtil.getAsMap(FieldUtil.getAsJSON(customer)),null,null);

@@ -1,6 +1,9 @@
 package com.facilio.utility.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -38,10 +41,12 @@ public class UtilityDisputeResolveCommand extends FacilioCommand {
         UtilityDisputeContext utilityDisputeContext = V3RecordAPI.getRecord(moduleName,recordId);
 
         utilityDisputeContext.setBillStatus(UtilityDisputeContext.BillStatus.RESOLVED.getIntVal());
+        utilityDisputeContext.setResolvedBy(PeopleAPI.getPeopleForId(AccountUtil.getCurrentUser().getPeopleId()));
+        utilityDisputeContext.setResolvedTime(System.currentTimeMillis());
         V3Util.processAndUpdateSingleRecord(FacilioConstants.UTILITY_DISPUTE, utilityDisputeContext.getId(), FieldUtil.getAsJSON(utilityDisputeContext), null, null, null, null, null,null,null, null,null);
-        //V3RecordAPI.updateRecord(utilityDisputeContext,module,fields);
 
-        FacilioStatus resolvedStatus = TicketAPI.getStatus("Resolved");
+
+        FacilioStatus resolvedStatus = TicketAPI.getStatus(module,"Resolved");
         StateFlowRulesAPI.updateState(utilityDisputeContext, modBean.getModule(moduleName), resolvedStatus, false, context);
 
 
@@ -80,7 +85,7 @@ public class UtilityDisputeResolveCommand extends FacilioCommand {
         if (!disputeLists.isEmpty()) {
             if (disputeLists.size() == 1) {
                 utilityIntegrationBillContext.setUtilityBillStatus(UtilityIntegrationBillContext.UtilityBillStatus.PARTIALLYDISPUTED.getIntVal());
-                //V3Util.processAndUpdateSingleRecord(FacilioConstants.UTILITY_INTEGRATION_BILLS, utilityIntegrationBillContext.getId(), FieldUtil.getAsJSON(utilityIntegrationBillContext), null, null, null, null, null,null,null, null,null);
+
                 V3RecordAPI.updateRecord(utilityIntegrationBillContext,module,fields);
                 FacilioStatus partialStatus = TicketAPI.getStatus(module,"partiallydisputed");
                 StateFlowRulesAPI.updateState(utilityIntegrationBillContext, modBean.getModule(moduleName), partialStatus, false, new FacilioContext());
@@ -89,7 +94,7 @@ public class UtilityDisputeResolveCommand extends FacilioCommand {
 
             } else {
                 utilityIntegrationBillContext.setUtilityBillStatus(UtilityIntegrationBillContext.UtilityBillStatus.DISPUTED.getIntVal());
-                //V3Util.processAndUpdateSingleRecord(FacilioConstants.UTILITY_INTEGRATION_BILLS, utilityIntegrationBillContext.getId(), FieldUtil.getAsJSON(utilityIntegrationBillContext), null, null, null, null, null,null,null, null,null);
+
                 V3RecordAPI.updateRecord(utilityIntegrationBillContext,module,fields);
                 FacilioStatus disputedStatus = TicketAPI.getStatus(module,"underDispute");
                 StateFlowRulesAPI.updateState(utilityIntegrationBillContext, modBean.getModule(moduleName), disputedStatus, false, new FacilioContext());
@@ -98,7 +103,7 @@ public class UtilityDisputeResolveCommand extends FacilioCommand {
             }
         } else {
             utilityIntegrationBillContext.setUtilityBillStatus(UtilityIntegrationBillContext.UtilityBillStatus.CLEAR.getIntVal());
-           // V3Util.processAndUpdateSingleRecord(FacilioConstants.UTILITY_INTEGRATION_BILLS, utilityIntegrationBillContext.getId(), FieldUtil.getAsJSON(utilityIntegrationBillContext), null, null, null, null, null,null,null, null,null);
+
             V3RecordAPI.updateRecord(utilityIntegrationBillContext,module,fields);
             FacilioStatus clearStatus = TicketAPI.getStatus(module,"undisputed");
             StateFlowRulesAPI.updateState(utilityIntegrationBillContext, modBean.getModule(moduleName), clearStatus, false, new FacilioContext());

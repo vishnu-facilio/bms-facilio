@@ -5,6 +5,8 @@ import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.util.ArithmeticUtil;
 import com.facilio.v3.context.V3Context;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -127,6 +129,14 @@ public class UtilityIntegrationTariffContext extends V3Context {
    }
     //private Integer utilityType;
 
+    public static UtilityProviders getNameById(String id) throws Exception {
+        for (UtilityProviders provider : UtilityProviders.values()) {
+            if (provider.getCode().equals(id)) {
+                return provider;
+            }
+        }
+        throw new RESTException(ErrorCode.VALIDATION_ERROR, "utility Provider not found for ID." + id);
+    }
     private UtilityType utilityType;
 
     public UtilityType getUtilityTypeEnum() {

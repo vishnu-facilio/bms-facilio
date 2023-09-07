@@ -3542,10 +3542,11 @@ public class APIv3Config {
                 .beforeFetch( new LoadUtilityDisputeExtraFieldsCommandV3())
                 .fetchSupplement(FacilioConstants.UTILITY_DISPUTE, "account")
                 .fetchSupplement(FacilioConstants.UTILITY_DISPUTE, "utilityBill")
-                .beforeFetch(new LoadUtilityDisputeExtraFieldsCommandV3())
+                .fetchSupplement(FacilioConstants.UTILITY_DISPUTE, "resolvedBy")
                 .summary()
                 .fetchSupplement(FacilioConstants.UTILITY_DISPUTE, "account")
                 .fetchSupplement(FacilioConstants.UTILITY_DISPUTE, "utilityBill")
+                .fetchSupplement(FacilioConstants.UTILITY_DISPUTE, "resolvedBy")
                 .build();
     }
 

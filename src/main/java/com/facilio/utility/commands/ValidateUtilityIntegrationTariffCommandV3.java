@@ -80,31 +80,7 @@ public class ValidateUtilityIntegrationTariffCommandV3 extends FacilioCommand {
 
         return true;
     }
-    public static boolean validateSlabs(List<UtilityIntegrationTariffSlabContext> slabs) {
 
-        slabs.sort(Comparator.comparingDouble(UtilityIntegrationTariffSlabContext::getFrom));
-
-        for (int i = 1; i < slabs.size(); i++) {
-            UtilityIntegrationTariffSlabContext previousSlab = slabs.get(i - 1);
-            UtilityIntegrationTariffSlabContext currentSlab = slabs.get(i);
-
-            if (currentSlab.getFrom() < previousSlab.getTo()) {
-                return false; // Overlapping slabs found
-            }
-
-        }
-
-        return true; // No overlaps detected
-    }
-    public static boolean isValidSlabs(List<UtilityIntegrationTariffSlabContext> slabs){
-
-        slabs.sort(Comparator.comparingDouble(UtilityIntegrationTariffSlabContext::getFrom));
-
-        for (UtilityIntegrationTariffSlabContext slab : slabs) {
-            return slab.getFrom() >=0 && slab.getTo() > slab.getFrom(); //valid range
-        }
-        return false; //invalid range
-    }
     private UtilityIntegrationTariffContext getExistingTariffById(Long id) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

@@ -73,7 +73,7 @@ public class APIModuleWidgets {
         return () -> new ModuleWidgets()
                 .addModuleWidget("meterWidget" , "Meter Connections",PageWidget.WidgetType.METER_WIDGET)
                 //.addWidgetConfig("webMeterWidget-10*12","Full Width Meter Connections  Widget - 10*12", WidgetConfigContext.ConfigType.FIXED,65,12,PagesContext.PageLayoutType.WEB)
-                .addFixedWidgetConfig("webMeterWidget-10*12", "Full Width Meter Connections  Widget - 10*12",20,12, PagesContext.PageLayoutType.WEB)
+                .addFixedWidgetConfig("webMeterWidget-10*12", "Full Width Meter Connections  Widget - 10*12",24,12, PagesContext.PageLayoutType.WEB)
                 .done();
     }
 
