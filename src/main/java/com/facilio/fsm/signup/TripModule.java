@@ -26,6 +26,8 @@ import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
@@ -94,7 +96,11 @@ public class TripModule extends BaseModuleConfig {
         NumberField tripDuration = FieldFactory.getDefaultField("tripDuration", "Trip Duration", "TRIP_DURATION", FieldType.NUMBER);
         fields.add(tripDuration);
 
-        fields.add(FieldFactory.getDefaultField("tripDistance","Trip Distance","TRIP_DISTANCE",FieldType.DECIMAL));
+        NumberField tripDistance = FieldFactory.getDefaultField("tripDistance","Trip Distance","TRIP_DISTANCE",FieldType.DECIMAL);
+        tripDistance.setMetric(Metric.LENGTH.getMetricId());
+        tripDistance.setUnit(Unit.MILE.getSymbol());
+        tripDistance.setUnitId(Unit.MILE.getUnitId());
+        fields.add(tripDistance);
 
         NumberField estimatedDuration = FieldFactory.getDefaultField("estimatedDuration", "Estimated Duration", "ESTIMATED_DURATION", FieldType.NUMBER);
         fields.add(estimatedDuration);

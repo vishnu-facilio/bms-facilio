@@ -56,13 +56,15 @@ public class UpdateSAandTasksOnTimeSheetCreateCommand extends FacilioCommand {
                                 //endtime???
                                 //Moving Task to OnHold state if EndTime is filled in Timesheet creation
                                 if (timeSheet.getEndTime() != null) {
-                                    if (!status.equals(FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED) && !status.equals(FacilioConstants.ContextNames.ServiceTaskStatus.CANCELLED) && !status.equals(FacilioConstants.ContextNames.ServiceTaskStatus.ON_HOLD)) {
+                                    if (!status.equals(FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED) && !status.equals(FacilioConstants.ContextNames.ServiceTaskStatus.CANCELLED) && !status.equals(FacilioConstants.ContextNames.ServiceTaskStatus.ON_HOLD) && !status.equals(FacilioConstants.ContextNames.ServiceTaskStatus.SCHEDULED)) {
                                         ServiceTaskStatusContext onHold = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.ON_HOLD);
                                         task.setStatus(onHold);
                                     }
                                 } else {
-                                    ServiceTaskStatusContext inProgress = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
-                                    task.setStatus(inProgress);
+                                    if (!status.equals(FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED) && !status.equals(FacilioConstants.ContextNames.ServiceTaskStatus.CANCELLED) &&  !status.equals(FacilioConstants.ContextNames.ServiceTaskStatus.SCHEDULED)) {
+                                        ServiceTaskStatusContext inProgress = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
+                                        task.setStatus(inProgress);
+                                    }
                                     //Updating SA to InProgress state
 
 //                                    FacilioContext appointmentList = V3Util.getSummary(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, Collections.singletonList(timeSheet.getServiceAppointment().getId()));

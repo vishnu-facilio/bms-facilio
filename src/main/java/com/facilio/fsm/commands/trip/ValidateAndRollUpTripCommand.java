@@ -35,10 +35,10 @@ public class ValidateAndRollUpTripCommand extends FacilioCommand {
                 if(eventType == EventType.EDIT){
                     Map<Long,Object> oldTrips = (Map<Long,Object>) oldRecordMap.get(context.get("moduleName"));
                     TripContext oldTrip = (TripContext) oldTrips.get(trip.getId());
-                    if(trip.getPeople()!=oldTrip.getPeople()) {
+                    if(trip.getPeople().getId()!=oldTrip.getPeople().getId()) {
                         throw new FSMException(FSMErrorCode.UPDATE_PREVENT);
                     }
-                    else if(trip.getServiceAppointment()!=oldTrip.getServiceAppointment()) {
+                    else if(trip.getServiceAppointment().getId()!=oldTrip.getServiceAppointment().getId()) {
                         throw new FSMException(FSMErrorCode.UPDATE_PREVENT);
                     }
                 }
