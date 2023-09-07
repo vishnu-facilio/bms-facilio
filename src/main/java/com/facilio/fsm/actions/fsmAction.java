@@ -343,4 +343,13 @@ public class fsmAction extends V3Action {
         return ERROR;
     }
 
+    public String fetchTripDetails() throws Exception{
+        if(appointmentId != null && appointmentId > 0){
+
+            setData( ServiceAppointmentUtil.fetchAllTripDetails(appointmentId));
+            return SUCCESS;
+        }
+        return ERROR;
+    }
+
 }

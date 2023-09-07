@@ -26,6 +26,8 @@ import com.facilio.fsm.signup.TripModule;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
@@ -883,4 +885,53 @@ public class ServiceAppointmentUtil {
         return tripStatus;
     }
 
+    public static List<TripContext> getAssociatedTrips( Long appointmentId) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule TripModule = moduleBean.getModule(FacilioConstants.Trip.TRIP);
+        List<FacilioField> TripFields = moduleBean.getAllFields(FacilioConstants.Trip.TRIP);
+        Map<String,FacilioField> TripFieldMap = FieldFactory.getAsMap(TripFields);
+        List<LookupField> lookUpfields = new ArrayList<>();
+        lookUpfields.add((LookupField) TripFieldMap.get("status"));
+        SelectRecordsBuilder<TripContext> tripBuilder = new SelectRecordsBuilder<TripContext>()
+                .module(TripModule)
+                .beanClass(TripContext.class)
+                .select(TripFields)
+                .fetchSupplements(lookUpfields)
+//                .andCondition(CriteriaAPI.getCondition(TripFieldMap.get(FacilioConstants.ContextNames.PEOPLE),String.valueOf(peopleId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(TripFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),String.valueOf(appointmentId),NumberOperators.EQUALS));
+
+        List<TripContext> allTrips = tripBuilder.get();
+        if(CollectionUtils.isNotEmpty(allTrips)){
+            return allTrips;
+        }
+        return null;
+    }
+
+    public static JSONObject fetchAllTripDetails(Long appointmentId)throws Exception {
+        List<TripContext> allTrips = getAssociatedTrips(appointmentId);
+        if (CollectionUtils.isNotEmpty(allTrips)) {
+            long totalDuration = 0;
+            Double totalDistance = 0.0;
+            long count = 0;
+            for (TripContext trip : allTrips) {
+                count = count+1;
+                if (trip.getStatus() != null && trip.getStatus().getStatus().equals(FacilioConstants.Trip.COMPLETED)) {
+                    if(trip.getTripDuration() >0){
+                        totalDuration += trip.getTripDuration();
+                    }
+                    if(trip.getTripDistance() != null) {
+                        totalDistance += trip.getTripDistance();
+                    }
+                }
+
+            }
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(FacilioConstants.ContextNames.COUNT, count);
+            jsonObject.put(FacilioConstants.Trip.TOTAL_DURATION, (totalDuration)/1000);
+            jsonObject.put(FacilioConstants.Trip.TOTAL_DISTANCE, totalDistance);
+
+          return jsonObject;
+        }
+        return null;
+    }
 }

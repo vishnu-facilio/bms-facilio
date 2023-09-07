@@ -1,5 +1,6 @@
 package com.facilio.fsm.signup;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -18,6 +19,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
+import com.facilio.fsm.context.TripStatusContext;
+import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
@@ -41,6 +46,7 @@ public class TripModule extends BaseModuleConfig {
             addModuleChain.execute();
             addActivityModuleForTrip();
             SignupUtil.addNotesAndAttachmentModule(trip);
+            addSystemButtons();
         }catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -425,4 +431,30 @@ public class TripModule extends BaseModuleConfig {
 
         return allView;
     }
+    private static void addSystemButtons() throws Exception {
+
+        TripStatusContext status = ServiceAppointmentUtil.getTripStatus(FacilioConstants.Trip.IN_PROGRESS);
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.Trip.TRIP);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        if(status != null) {
+            SystemButtonRuleContext endTrip = new SystemButtonRuleContext();
+            endTrip.setName("End Trip");
+            endTrip.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+            endTrip.setIdentifier(FacilioConstants.ServiceAppointment.END_TRIP);
+            endTrip.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+            endTrip.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+
+            Criteria endTripCriteria = new Criteria();
+            endTripCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(status.getId()), PickListOperators.IS));
+            endTripCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.PEOPLE), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.IS));
+            endTripCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.Trip.START_TIME), CommonOperators.IS_NOT_EMPTY));
+            endTripCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT), CommonOperators.IS_NOT_EMPTY));
+            endTrip.setCriteria(endTripCriteria);
+            SystemButtonApi.addSystemButton(FacilioConstants.Trip.TRIP,endTrip);
+        }
+    }
+
 }
