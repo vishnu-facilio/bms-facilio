@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,6 +54,13 @@ public class ReplacePlaceHoldersCommand extends FacilioCommand {
 
             Map<String, Object> params = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, moduleData, WorkflowRuleAPI.getOrgPlaceHolders());
             String replacedString = StringSubstitutor.replace(formattedString, params);
+            for (Map.Entry<String, Object> entry : params.entrySet()){
+                if (entry.getValue() != null) {
+                    params.put(entry.getKey(), URLEncoder.encode(entry.getValue().toString()));
+                }
+            }
+
+            String encodedReplacedString = StringSubstitutor.replace(formattedString, params);
 
             JSONObject replacedJsonObj = new JSONObject();
             try {
@@ -66,6 +74,7 @@ public class ReplacePlaceHoldersCommand extends FacilioCommand {
 
             context.put(FacilioConstants.ContextNames.REPLACED_STRING, replacedString);
             context.put(FacilioConstants.ContextNames.REPLACED_JSON,replacedJsonObj);
+            context.put(FacilioConstants.ContextNames.ENCODED_REPLACED_STRING,encodedReplacedString);
             context.put(FacilioConstants.ContextNames.WORK_FLOW_PARAMS, params);
             context.put(FacilioConstants.ContextNames.MODULE_DATA, moduleData);
         }

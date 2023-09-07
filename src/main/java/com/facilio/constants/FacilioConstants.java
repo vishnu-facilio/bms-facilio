@@ -933,6 +933,8 @@ public class FacilioConstants {
 		public static final String MODULE = "module";
 
 		public static final String REPLACED_JSON = "replacedJson";
+
+		public static final String ENCODED_REPLACED_STRING = "encodedReplacedString";
 		public static final String IS_NEW_MODULES = "isNewModule";
 		public static final String IS_SKIP_COUNTER_FIELD_ADD = "skipCounterFieldAdd";
 		public static final String MODULE_LIST = "modules";
