@@ -7,9 +7,12 @@ import com.facilio.bmsconsoleV3.commands.inventoryrequest.PurchasedItemsQuantity
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.commands.actuals.GetServiceOrderItemFromReservation;
+import com.facilio.fsm.commands.actuals.SAItemCostAfterCreateCommand;
+import com.facilio.fsm.commands.actuals.SAToolCostAfterCreateCommand;
 import com.facilio.fsm.commands.actuals.UpdateServiceInvReservationCommand;
 import com.facilio.fsm.commands.people.PeopleSkillLevelBeforeSaveCommand;
 import com.facilio.fsm.commands.plans.ReserveServiceOrderPlannedItemsCommand;
+import com.facilio.fsm.commands.plans.SAEstimatedItemCostAfterUpdateCommand;
 import com.facilio.fsm.commands.plans.SetServiceOrderPlannedItemsCommand;
 import com.facilio.fsm.commands.plans.ValidateServiceOrderPlannedItemsCommand;
 import com.facilio.fsm.commands.serviceAppointment.*;
@@ -153,6 +156,7 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ReserveServiceOrderPlannedItemsCommand());
         c.addCommand(new AddOrUpdateServiceOrderCostCommand());
+        c.addCommand(new SAEstimatedItemCostAfterUpdateCommand());
         return c;
     }
     public static FacilioChain getServiceOrderItemsAfterSaveChain() {
@@ -162,12 +166,14 @@ public class FsmTransactionChainFactoryV3 {
         c.addCommand(getUpdateItemQuantityRollupChain());
         c.addCommand(new ItemTransactionRemainingQuantityRollupCommandV3());
         c.addCommand(new AddOrUpdateServiceOrderCostCommand());
+        c.addCommand(new SAItemCostAfterCreateCommand());
         return c;
     }
     public static FacilioChain getServiceOrderToolsAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(getUpdatetoolQuantityRollupChain());
         c.addCommand(new AddOrUpdateServiceOrderCostCommand());
+        c.addCommand(new SAToolCostAfterCreateCommand());
         return c;
     }
 

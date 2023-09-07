@@ -34,9 +34,10 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
 
         FacilioModule serviceOrder = bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
         FacilioModule serviceTask = bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+        FacilioModule serviceAppointment = bean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         FacilioModule service = bean.getModule(FacilioConstants.ContextNames.SERVICE);
 
-        if(serviceOrder!=null && serviceOrder.getModuleId()>0 && service!=null && service.getModuleId()>0){
+        if(serviceOrder!=null && serviceOrder.getModuleId()>0 && service!=null && service.getModuleId()>0 && serviceAppointment!=null && serviceAppointment.getModuleId()>0 && serviceTask!=null && serviceTask.getModuleId()>0){
 
             FacilioModule serviceOrderPlannedServicesModule = constructServiceOrderPlannedServicesModule(service);
 
@@ -46,7 +47,8 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
             addModuleChain.execute();
             bean.addSubModule(serviceOrder.getModuleId(), serviceOrderPlannedServicesModule.getModuleId(),0);
             bean.addSubModule(serviceTask.getModuleId(), serviceOrderPlannedServicesModule.getModuleId(),0);
-            createParentFields(serviceOrder,serviceTask,serviceOrderPlannedServicesModule);
+            bean.addSubModule(serviceAppointment.getModuleId(), serviceOrderPlannedServicesModule.getModuleId(),0);
+            createParentFields(serviceOrder,serviceTask,serviceAppointment,serviceOrderPlannedServicesModule);
         }
 
     }
@@ -78,7 +80,7 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
 
         return module;
     }
-    private void createParentFields(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule serviceOrderPlannedServicesModule)throws Exception{
+    private void createParentFields(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule serviceAppointmentMod,FacilioModule serviceOrderPlannedServicesModule)throws Exception{
         ModuleBean bean = Constants.getModBean();
 
         LookupField parent = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER", FieldType.LOOKUP);
@@ -91,6 +93,11 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
         serviceTask.setLookupModule(serviceTaskMod);
         serviceTask.setModule(serviceOrderPlannedServicesModule);
         bean.addField(serviceTask);
+
+        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Service Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
+        serviceAppointment.setLookupModule(serviceAppointmentMod);
+        serviceAppointment.setModule(serviceOrderPlannedServicesModule);
+        bean.addField(serviceAppointment);
     }
     @Override
     public List<FacilioForm> getModuleForms() throws Exception {

@@ -5,6 +5,7 @@ import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderCostContext;
 import com.facilio.fsm.context.ServiceOrderServiceContext;

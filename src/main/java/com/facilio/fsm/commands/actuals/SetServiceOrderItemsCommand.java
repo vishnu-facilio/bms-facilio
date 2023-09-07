@@ -17,6 +17,7 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderCostContext;
 import com.facilio.fsm.context.ServiceOrderItemsContext;
@@ -68,6 +69,7 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item cannot be empty");
                 }
                 serviceOrders.add(serviceOrderItem.getServiceOrder());
+
                 ServiceOrderContext serviceOrderRecord = getServiceOrder(serviceOrderItem.getServiceOrder().getId());
                 if(!isStoreroomServingServiceOderSite(serviceOrderItem.getItem(),serviceOrderRecord)){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storeroom does not serve the selected Service Order's site");

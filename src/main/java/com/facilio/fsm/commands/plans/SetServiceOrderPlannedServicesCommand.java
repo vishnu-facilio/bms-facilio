@@ -1,14 +1,10 @@
 package com.facilio.fsm.commands.plans;
 
 import com.facilio.bmsconsoleV3.context.V3ServiceContext;
-import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedServicesContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fsm.context.ServiceOrderContext;
-import com.facilio.fsm.context.ServiceOrderCostContext;
-import com.facilio.fsm.context.ServiceOrderPlannedServicesContext;
-import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.fsm.context.*;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -33,13 +29,16 @@ public class SetServiceOrderPlannedServicesCommand  extends FacilioCommand {
                     ServiceTaskContext serviceTask = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,serviceOrderPlannedService.getServiceTask().getId(), ServiceTaskContext.class);
                     if(serviceTask.getServiceOrder()!=null){
                         serviceOrderPlannedService.setServiceOrder(serviceTask.getServiceOrder());
+                        serviceOrders.add(serviceTask.getServiceOrder());
+                    }
+                    if(serviceTask.getServiceAppointment()!=null){
+                        serviceOrderPlannedService.setServiceAppointment(serviceTask.getServiceAppointment());
                     }
                 }
                 V3ServiceContext service = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SERVICE,serviceOrderPlannedService.getService().getId(),V3ServiceContext.class);
                 if(serviceOrderPlannedService.getServiceOrder()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");
                 }
-                serviceOrders.add(serviceOrderPlannedService.getServiceOrder());
                 if(serviceOrderPlannedService.getQuantity()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
                 }

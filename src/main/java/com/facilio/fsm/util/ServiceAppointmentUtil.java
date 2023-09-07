@@ -1,12 +1,12 @@
 package com.facilio.fsm.util;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.attendance.Attendance;
-import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.bmsconsoleV3.util.AttendanceAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
@@ -22,14 +22,12 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fsm.context.*;
 import com.facilio.fsm.exception.FSMErrorCode;
 import com.facilio.fsm.exception.FSMException;
-import com.facilio.fsm.signup.TripModule;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -884,7 +882,141 @@ public class ServiceAppointmentUtil {
         TripStatusContext tripStatus = builder.fetchFirst();
         return tripStatus;
     }
-
+    public static void updateEstimatedCost(Map<Long,Double> appointmentCostMap, EventType eventType)throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule serviceAppointmentModule = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+       List<Long> appointmentIds= appointmentCostMap.keySet().stream().collect(Collectors.toList());
+        FacilioContext serviceAppointmentContext =V3Util.getSummary(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,appointmentIds);
+        List<ModuleBaseWithCustomFields> oldServiceAppointmentList = Constants.getRecordList(serviceAppointmentContext);
+        List<ServiceAppointmentContext> serviceAppointmentList = Constants.getRecordList(serviceAppointmentContext);
+        List<ServiceAppointmentContext> updatedServiceAppointmentList = new ArrayList<>();
+        for(ServiceAppointmentContext serviceAppointment : serviceAppointmentList){
+            ServiceAppointmentContext updatedServiceAppointment =FieldUtil.cloneBean(serviceAppointment,ServiceAppointmentContext.class);
+            Double estimatedCost = updatedServiceAppointment.getEstimatedCost()!=null ? updatedServiceAppointment.getEstimatedCost() : 0;
+            Double newEstimatedCost = eventType == EventType.DELETE ? estimatedCost - appointmentCostMap.get(serviceAppointment.getId()) : estimatedCost + appointmentCostMap.get(serviceAppointment.getId()) ;
+            updatedServiceAppointment.setEstimatedCost(newEstimatedCost);
+            updatedServiceAppointmentList.add(updatedServiceAppointment);
+        }
+        V3Util.processAndUpdateBulkRecords(serviceAppointmentModule,oldServiceAppointmentList,FieldUtil.getAsMapList(updatedServiceAppointmentList,ServiceAppointmentContext.class),null, null, null, null, null, null, null, null, true,false);
+    }
+    public static void updateActualCost(Map<Long,Double> appointmentCostMap, EventType eventType)throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule serviceAppointmentModule = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        List<Long> appointmentIds= appointmentCostMap.keySet().stream().collect(Collectors.toList());
+        FacilioContext serviceAppointmentContext =V3Util.getSummary(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,appointmentIds);
+        List<ModuleBaseWithCustomFields> oldServiceAppointmentList = Constants.getRecordList(serviceAppointmentContext);
+        List<ServiceAppointmentContext> serviceAppointmentList = Constants.getRecordList(serviceAppointmentContext);
+        List<ServiceAppointmentContext> updatedServiceAppointmentList = new ArrayList<>();
+        for(ServiceAppointmentContext serviceAppointment : serviceAppointmentList){
+            ServiceAppointmentContext updatedServiceAppointment =FieldUtil.cloneBean(serviceAppointment,ServiceAppointmentContext.class);
+            Double actualCost = updatedServiceAppointment.getActualCost()!=null ? updatedServiceAppointment.getActualCost() : 0;
+            Double newActualCost = eventType == EventType.DELETE ? actualCost - appointmentCostMap.get(serviceAppointment.getId()) : actualCost + appointmentCostMap.get(serviceAppointment.getId()) ;
+            updatedServiceAppointment.setActualCost(newActualCost);
+            updatedServiceAppointmentList.add(updatedServiceAppointment);
+        }
+        V3Util.processAndUpdateBulkRecords(serviceAppointmentModule,oldServiceAppointmentList,FieldUtil.getAsMapList(updatedServiceAppointmentList,ServiceAppointmentContext.class),null, null, null, null, null, null, null, null, true,false);
+    }
+    public static void updateEstimatedCostDuringUpdate( List<UpdateChangeSet> changes,ServiceAppointmentContext serviceAppointment,String moduleName)throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes,"totalCost", moduleName)){
+            FacilioField totalCost = modBean.getField("totalCost",moduleName);
+            List<UpdateChangeSet> totalCostChange = changes.stream().filter(change-> change.getFieldId() == totalCost.getFieldId()).collect(Collectors.toList());
+            Double oldTotalCost = (Double) totalCostChange.get(0).getOldValue();
+            Double newTotalCost = (Double) totalCostChange.get(0).getNewValue();
+            Double estimatedCost = serviceAppointment.getEstimatedCost()!=null ? serviceAppointment.getEstimatedCost() : 0;
+            Double newEstimatedCost = estimatedCost - oldTotalCost + newTotalCost;
+            serviceAppointment.setEstimatedCost(newEstimatedCost);
+            V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,serviceAppointment.getId(), FieldUtil.getAsJSON(serviceAppointment),null, null, null, null, null, null, null, null);
+        }
+    }
+    public static void updateActualCostDuringUpdate( List<UpdateChangeSet> changes,ServiceAppointmentContext serviceAppointment,String moduleName)throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes,"totalCost", moduleName)){
+            FacilioField totalCost = modBean.getField("totalCost",moduleName);
+            List<UpdateChangeSet> totalCostChange = changes.stream().filter(change-> change.getFieldId() == totalCost.getFieldId()).collect(Collectors.toList());
+            Double oldTotalCost = (Double) totalCostChange.get(0).getOldValue();
+            Double newTotalCost = (Double) totalCostChange.get(0).getNewValue();
+            Double actualCost = serviceAppointment.getActualCost()!=null ? serviceAppointment.getActualCost() : 0;
+            Double newActualCost = actualCost - oldTotalCost + newTotalCost;
+            serviceAppointment.setActualCost(newActualCost);
+            V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,serviceAppointment.getId(), FieldUtil.getAsJSON(serviceAppointment),null, null, null, null, null, null, null, null);
+        }
+    }
+    public static Map<Long,Double> getAppointmentEstimatedCostMapForItems(List<ServiceOrderPlannedItemsContext> serviceOrderPlannedItems){
+        Map<Long,Double> appointmentCostMap = new HashMap<>();
+        for(ServiceOrderPlannedItemsContext serviceOrderPlannedItem : serviceOrderPlannedItems){
+            if(serviceOrderPlannedItem.getServiceAppointment()!=null && serviceOrderPlannedItem.getTotalCost()!=null && serviceOrderPlannedItem.getTotalCost()>0){
+                Long serviceAppointmentId = serviceOrderPlannedItem.getServiceAppointment().getId();
+                if(appointmentCostMap.containsKey(serviceAppointmentId)){
+                    Double totalCost = appointmentCostMap.get(serviceAppointmentId);
+                    appointmentCostMap.put(serviceAppointmentId,totalCost+serviceOrderPlannedItem.getTotalCost());
+                }else{
+                    appointmentCostMap.put(serviceOrderPlannedItem.getServiceAppointment().getId(),serviceOrderPlannedItem.getTotalCost());
+                }
+            }
+        }
+        return appointmentCostMap;
+    }
+    public static Map<Long,Double> getAppointmentCostMapForItems(List<ServiceOrderItemsContext> serviceOrderItems){
+        Map<Long,Double> appointmentCostMap = new HashMap<>();
+        for(ServiceOrderItemsContext serviceOrderItem : serviceOrderItems){
+            if(serviceOrderItem.getServiceAppointment()!=null && serviceOrderItem.getTotalCost()!=null && serviceOrderItem.getTotalCost()>0){
+                Long serviceAppointmentId = serviceOrderItem.getServiceAppointment().getId();
+                if(appointmentCostMap.containsKey(serviceAppointmentId)){
+                    Double totalCost = appointmentCostMap.get(serviceAppointmentId);
+                    appointmentCostMap.put(serviceAppointmentId,totalCost+serviceOrderItem.getTotalCost());
+                }else{
+                    appointmentCostMap.put(serviceOrderItem.getServiceAppointment().getId(),serviceOrderItem.getTotalCost());
+                }
+            }
+        }
+        return appointmentCostMap;
+    }
+    public static Map<Long,Double> getAppointmentEstimatedCostMapForTools(List<ServiceOrderPlannedToolsContext> serviceOrderPlannedTools){
+        Map<Long,Double> appointmentCostMap = new HashMap<>();
+        for(ServiceOrderPlannedToolsContext serviceOrderPlannedTool : serviceOrderPlannedTools){
+            if(serviceOrderPlannedTool.getServiceAppointment()!=null && serviceOrderPlannedTool.getTotalCost()!=null && serviceOrderPlannedTool.getTotalCost()>0){
+                Long serviceAppointmentId = serviceOrderPlannedTool.getServiceAppointment().getId();
+                if(appointmentCostMap.containsKey(serviceAppointmentId)){
+                    Double totalCost = appointmentCostMap.get(serviceAppointmentId);
+                    appointmentCostMap.put(serviceAppointmentId,totalCost+serviceOrderPlannedTool.getTotalCost());
+                }else{
+                    appointmentCostMap.put(serviceOrderPlannedTool.getServiceAppointment().getId(),serviceOrderPlannedTool.getTotalCost());
+                }
+            }
+        }
+        return appointmentCostMap;
+    }
+    public static Map<Long,Double> getAppointmentCostMapForTools(List<ServiceOrderToolsContext> serviceOrderTools){
+        Map<Long,Double> appointmentCostMap = new HashMap<>();
+        for(ServiceOrderToolsContext serviceOrderTool : serviceOrderTools){
+            if(serviceOrderTool.getServiceAppointment()!=null && serviceOrderTool.getTotalCost()!=null && serviceOrderTool.getTotalCost()>0){
+                Long serviceAppointmentId = serviceOrderTool.getServiceAppointment().getId();
+                if(appointmentCostMap.containsKey(serviceAppointmentId)){
+                    Double totalCost = appointmentCostMap.get(serviceAppointmentId);
+                    appointmentCostMap.put(serviceAppointmentId,totalCost+serviceOrderTool.getTotalCost());
+                }else{
+                    appointmentCostMap.put(serviceOrderTool.getServiceAppointment().getId(),serviceOrderTool.getTotalCost());
+                }
+            }
+        }
+        return appointmentCostMap;
+    }
+    public static Map<Long,Double> getAppointmentEstimatedCostMapForServices(List<ServiceOrderPlannedServicesContext> serviceOrderPlannedServices){
+        Map<Long,Double> appointmentCostMap = new HashMap<>();
+        for(ServiceOrderPlannedServicesContext serviceOrderPlannedService : serviceOrderPlannedServices){
+            if(serviceOrderPlannedService.getServiceAppointment()!=null && serviceOrderPlannedService.getTotalCost()!=null && serviceOrderPlannedService.getTotalCost()>0){
+                Long serviceAppointmentId = serviceOrderPlannedService.getServiceAppointment().getId();
+                if(appointmentCostMap.containsKey(serviceAppointmentId)){
+                    Double totalCost = appointmentCostMap.get(serviceAppointmentId);
+                    appointmentCostMap.put(serviceAppointmentId,totalCost+serviceOrderPlannedService.getTotalCost());
+                }else{
+                    appointmentCostMap.put(serviceOrderPlannedService.getServiceAppointment().getId(),serviceOrderPlannedService.getTotalCost());
+                }
+            }
+        }
+        return appointmentCostMap;
+    }
     public static List<TripContext> getAssociatedTrips( Long appointmentId) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule TripModule = moduleBean.getModule(FacilioConstants.Trip.TRIP);
@@ -933,5 +1065,21 @@ public class ServiceAppointmentUtil {
           return jsonObject;
         }
         return null;
+    }
+    public static Map<Long,Double> getAppointmentCostMapForServices(List<ServiceOrderServiceContext> serviceOrderServices){
+        Map<Long,Double> appointmentCostMap = new HashMap<>();
+        for(ServiceOrderServiceContext serviceOrderService : serviceOrderServices){
+            if(serviceOrderService.getServiceAppointment()!=null && serviceOrderService.getTotalCost()!=null && serviceOrderService.getTotalCost()>0){
+                Long serviceAppointmentId = serviceOrderService.getServiceAppointment().getId();
+                if(appointmentCostMap.containsKey(serviceAppointmentId)){
+                    Double totalCost = appointmentCostMap.get(serviceAppointmentId);
+                    appointmentCostMap.put(serviceAppointmentId,totalCost+serviceOrderService.getTotalCost());
+                }else{
+                    appointmentCostMap.put(serviceOrderService.getServiceAppointment().getId(),serviceOrderService.getTotalCost());
+                }
+            }
+        }
+        return appointmentCostMap;
+
     }
 }

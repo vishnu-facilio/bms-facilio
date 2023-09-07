@@ -7,6 +7,7 @@ import com.facilio.v3.context.V3Context;
 public class ServiceOrderPlannedToolsContext extends V3Context {
     private ServiceOrderContext serviceOrder;
     private ServiceTaskContext serviceTask;
+    private ServiceAppointmentContext serviceAppointment;
     private Long unitOfMeasure;
     private V3ToolTypesContext toolType;
     private Double rate;
@@ -29,6 +30,14 @@ public class ServiceOrderPlannedToolsContext extends V3Context {
 
     public void setServiceTask(ServiceTaskContext serviceTask) {
         this.serviceTask = serviceTask;
+    }
+
+    public ServiceAppointmentContext getServiceAppointment() {
+        return serviceAppointment;
+    }
+
+    public void setServiceAppointment(ServiceAppointmentContext serviceAppointment) {
+        this.serviceAppointment = serviceAppointment;
     }
 
     public V3ToolTypesContext getToolType() {

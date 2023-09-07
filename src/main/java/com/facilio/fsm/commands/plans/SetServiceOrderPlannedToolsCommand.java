@@ -4,10 +4,7 @@ package com.facilio.fsm.commands.plans;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fsm.context.ServiceOrderContext;
-import com.facilio.fsm.context.ServiceOrderCostContext;
-import com.facilio.fsm.context.ServiceOrderPlannedToolsContext;
-import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.fsm.context.*;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -32,12 +29,16 @@ public class SetServiceOrderPlannedToolsCommand extends FacilioCommand {
                     ServiceTaskContext serviceTask = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,serviceOrderPlannedTool.getServiceTask().getId(), ServiceTaskContext.class);
                     if(serviceTask.getServiceOrder()!=null){
                         serviceOrderPlannedTool.setServiceOrder(serviceTask.getServiceOrder());
+                        serviceOrders.add(serviceTask.getServiceOrder());
+
+                    }
+                    if(serviceTask.getServiceAppointment()!=null){
+                        serviceOrderPlannedTool.setServiceAppointment(serviceTask.getServiceAppointment());
                     }
                 }
                 if(serviceOrderPlannedTool.getServiceOrder()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");
                 }
-                serviceOrders.add(serviceOrderPlannedTool.getServiceOrder());
                 if(serviceOrderPlannedTool.getQuantity()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
                 }

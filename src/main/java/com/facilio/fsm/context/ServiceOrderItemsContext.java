@@ -18,6 +18,7 @@ public class ServiceOrderItemsContext extends V3Context {
     private Double unitPrice;
     private ServiceOrderContext serviceOrder;
     private ServiceTaskContext serviceTask;
+    private ServiceAppointmentContext serviceAppointment;
     private ServiceInventoryReservationContext serviceInventoryReservation;
 
     public V3ItemContext getItem() {
@@ -97,5 +98,13 @@ public class ServiceOrderItemsContext extends V3Context {
 
     public void setServiceInventoryReservation(ServiceInventoryReservationContext serviceInventoryReservation) {
         this.serviceInventoryReservation = serviceInventoryReservation;
+    }
+
+    public ServiceAppointmentContext getServiceAppointment() {
+        return serviceAppointment;
+    }
+
+    public void setServiceAppointment(ServiceAppointmentContext serviceAppointment) {
+        this.serviceAppointment = serviceAppointment;
     }
 }

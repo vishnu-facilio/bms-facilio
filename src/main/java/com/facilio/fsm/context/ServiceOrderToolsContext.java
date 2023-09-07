@@ -9,6 +9,7 @@ public class ServiceOrderToolsContext extends V3Context {
 
     private ServiceOrderContext serviceOrder;
     private ServiceTaskContext serviceTask;
+    private ServiceAppointmentContext serviceAppointment;
     private Double totalCost;
     private Long issueTime;
     private Long returnTime;
@@ -33,6 +34,14 @@ public class ServiceOrderToolsContext extends V3Context {
 
     public void setServiceTask(ServiceTaskContext serviceTask) {
         this.serviceTask = serviceTask;
+    }
+
+    public ServiceAppointmentContext getServiceAppointment() {
+        return serviceAppointment;
+    }
+
+    public void setServiceAppointment(ServiceAppointmentContext serviceAppointment) {
+        this.serviceAppointment = serviceAppointment;
     }
 
     public Double getTotalCost() {

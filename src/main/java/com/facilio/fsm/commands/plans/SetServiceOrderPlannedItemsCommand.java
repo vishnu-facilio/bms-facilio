@@ -8,10 +8,7 @@ import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fsm.context.ServiceOrderContext;
-import com.facilio.fsm.context.ServiceOrderCostContext;
-import com.facilio.fsm.context.ServiceOrderPlannedItemsContext;
-import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.fsm.context.*;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -37,6 +34,10 @@ public class SetServiceOrderPlannedItemsCommand extends FacilioCommand {
                  ServiceTaskContext serviceTask = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,serviceOrderPlannedItem.getServiceTask().getId(), ServiceTaskContext.class);
                     if(serviceTask.getServiceOrder()!=null){
                         serviceOrderPlannedItem.setServiceOrder(serviceTask.getServiceOrder());
+                        serviceOrders.add(serviceTask.getServiceOrder());
+                    }
+                    if(serviceTask.getServiceAppointment()!=null){
+                        serviceOrderPlannedItem.setServiceAppointment(serviceTask.getServiceAppointment());
                     }
                 }
                 if(serviceOrderPlannedItem.getServiceOrder()==null){
@@ -48,7 +49,6 @@ public class SetServiceOrderPlannedItemsCommand extends FacilioCommand {
                 if(serviceOrderPlannedItem.getItemType()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item Type cannot be empty");
                 }
-                serviceOrders.add(serviceOrderPlannedItem.getServiceOrder());
                 serviceOrderPlannedItem.setReservationType(ReservationType.SOFT.getIndex());
 
                 if(MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("reserve") && (boolean) bodyParams.get("reserve")){
