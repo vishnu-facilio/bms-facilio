@@ -70,7 +70,9 @@ public class AddCommonModuleWidgetsCommand extends FacilioCommand {
                      .addModuleWidget("relatedlistwidget", "Related List", PageWidget.WidgetType.RELATED_LIST)
                         .addFixedWidgetConfig("relatedlistwidgetViewWidget-65*12", "Related List View Widget - 65*12",65,12, PagesContext.PageLayoutType.WEB)
                         .addFixedWidgetConfig("relatedListwidgetViewWidget-28*12", "Full Width Control Action Command View Widget - 28*12",28,12, PagesContext.PageLayoutType.WEB)
-                     .done()
+                     .addFlexibleWidgetConfig("flexiblewebrelatedlist_29","Related List - 29",29, PagesContext.PageLayoutType.WEB)
+                     .addFlexibleWidgetConfig("flexiblemobilerelatedlist_8","Related List - 8",8, PagesContext.PageLayoutType.MOBILE)
+                    .done()
                 .getWidgets();
     }
 }

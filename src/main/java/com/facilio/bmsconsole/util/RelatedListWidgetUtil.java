@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.RelatedListWidgetContext;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.factory.PageFactory;
 import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -205,6 +206,9 @@ public class RelatedListWidgetUtil {
      **/
     public static void addOrRemoveModulesFromRelatedLists(FacilioModule module, List<String> modulesToAdd, List<String> modulesToRemove) {
         switch (module.getName()) {
+            case FacilioConstants.ContextNames.VENDORS:
+                modulesToRemove.add(FacilioConstants.ContextNames.VENDOR_CONTACT);
+                break;
             case "utilityIntegrationCustomer":
                 modulesToRemove.add("utilityIntegrationMeter");
                 modulesToRemove.add("utilityDispute");
