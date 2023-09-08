@@ -70,6 +70,7 @@ public class FieldServiceManagementV3Config {
                 .beforeFetch(new LoadServiceTaskLookupCommandV3())
                 .afterFetch(new LoadTaskPlansCommandV3())
                 .delete()
+                .afterDelete(FsmTransactionChainFactoryV3.getTaskAfterDeleteChain())
                 .build();
     }
     @Module("serviceOrder")
@@ -78,7 +79,7 @@ public class FieldServiceManagementV3Config {
                 .create()
                 .beforeSave(FsmTransactionChainFactoryV3.getSOBeforeSaveCreateChain())
                 .afterSave(FsmTransactionChainFactoryV3.afterSOCreateChain())
-                .afterTransaction(new AddActivitiesCommandV3())
+                .afterTransaction(new AddActivitiesCommandV3(FacilioConstants.ContextNames.SERVICE_ORDER_ACTIVITY))
                 .update()
                 .beforeSave(FsmTransactionChainFactoryV3.getSOBeforeUpdateChain())
                 .afterSave(FsmTransactionChainFactoryV3.afterSOUpdateChain())
@@ -278,6 +279,7 @@ public class FieldServiceManagementV3Config {
                 .pickList()
                 .delete()
                 .beforeDelete(new CheckRecordLockCommand())
+                .afterDelete(FsmTransactionChainFactoryV3.getServiceAppointmentAfterDeleteChain())
                 .build();
     }
     @Module(FacilioConstants.PeopleSkillLevel.PEOPLE_SKILL_LEVEL)

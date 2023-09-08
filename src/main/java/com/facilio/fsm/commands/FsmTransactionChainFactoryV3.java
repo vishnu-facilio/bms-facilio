@@ -23,6 +23,7 @@ import com.facilio.fsm.commands.timeSheet.*;
 import com.facilio.fsm.commands.trip.*;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
+import org.apache.commons.chain.Command;
 
 import static com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3.getUpdateItemQuantityRollupChain;
 import static com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3.getUpdatetoolQuantityRollupChain;
@@ -53,6 +54,7 @@ public class FsmTransactionChainFactoryV3 {
         //update the task status before creation
         c.addCommand(new SOStatusChangeViaSTCommandV3());
         c.addCommand(new SOSTAutoCreateAfterCommand());
+        c.addCommand(new AddServiceOrderActivityForAddServiceTaskAction_ServiceTask_Command());
         return c;
     }
     public static FacilioChain getTaskAfterUpdateChain() {
@@ -77,12 +79,19 @@ public class FsmTransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getTaskAfterDeleteChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddServiceOrderActivityForAddServiceTaskAction_ServiceTask_Command());
+        return c;
+    }
+
     public static FacilioChain afterSOCreateChain() {
         FacilioChain c = getDefaultChain();
         //for handling the activity
         //c.addCommand(new UpdatePlansAndSkillsCommandV3());
         c.addCommand(new ConstructAddCustomActivityCommandV3());
         c.addCommand(new AutoCreateSA());
+        //c.addCommand(new AddServiceOrderActivityForAddServiceTaskAction_ServiceOrder_Command());
 
 //        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ACTIVITY));
         //for auto creating the Service appointment
@@ -143,7 +152,14 @@ public class FsmTransactionChainFactoryV3 {
         c.addCommand(new RollUpServiceTaskCommand());
         c.addCommand(new ScheduleServiceOrderCommand());
         c.addCommand(new ConstructAddCustomActivityCommandV3());
+        c.addCommand(new AddServiceOrderActivityForAddServiceAppointmentAction_ServiceAppointment_Command());
         return c;
+    }
+
+    public static Command getServiceAppointmentAfterDeleteChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new AddServiceOrderActivityForAddServiceAppointmentAction_ServiceAppointment_Command());
+        return chain;
     }
 
     public static FacilioChain getSoPlannedItemsBeforeUpdateChain() {

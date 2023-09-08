@@ -19,7 +19,7 @@ public class CheckRecordLockCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         HashMap<String, Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
-        List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName"));
+        List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName")); //TODO(NPE-check): Required for recordMap
         EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 
         if (CollectionUtils.isNotEmpty(serviceAppointments)) {
