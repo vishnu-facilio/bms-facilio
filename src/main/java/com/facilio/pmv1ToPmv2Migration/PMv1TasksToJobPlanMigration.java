@@ -46,6 +46,7 @@ import java.util.*;
 public class PMv1TasksToJobPlanMigration extends FacilioCommand {
 
     List<Long> pmV1Ids;
+    public static final int JOB_PLAN_NAME_LENGTH = 100;
 
     public PMv1TasksToJobPlanMigration(List<Long> pmV1Ids) {
         this.pmV1Ids = pmV1Ids;
@@ -89,6 +90,9 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                     // Create JobPlan
                     JobPlanContext jobPlanContext = new JobPlanContext();
                     jobPlanContext.setName("JP - " + pmv1.getName());
+                    if(jobPlanContext.getName().length() > 100){
+                        jobPlanContext.setName(jobPlanContext.getName().substring(0, JOB_PLAN_NAME_LENGTH));
+                    }
                     jobPlanContext.setJpStatusEnum(JobPlanContext.JPStatus.IN_ACTIVE);
                     switch (pmv1.getAssignmentTypeEnum()) {
                         case ASSET_CATEGORY:
