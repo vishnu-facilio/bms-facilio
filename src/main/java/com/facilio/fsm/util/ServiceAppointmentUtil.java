@@ -921,8 +921,8 @@ public class ServiceAppointmentUtil {
         if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes,"totalCost", moduleName)){
             FacilioField totalCost = modBean.getField("totalCost",moduleName);
             List<UpdateChangeSet> totalCostChange = changes.stream().filter(change-> change.getFieldId() == totalCost.getFieldId()).collect(Collectors.toList());
-            Double oldTotalCost = (Double) totalCostChange.get(0).getOldValue();
-            Double newTotalCost = (Double) totalCostChange.get(0).getNewValue();
+            Double oldTotalCost = totalCostChange.get(0).getOldValue()!=null ? (Double) totalCostChange.get(0).getOldValue() : 0 ;
+            Double newTotalCost =  totalCostChange.get(0).getNewValue()!=null ? (Double) totalCostChange.get(0).getNewValue() : 0;
             Double estimatedCost = serviceAppointment.getEstimatedCost()!=null ? serviceAppointment.getEstimatedCost() : 0;
             Double newEstimatedCost = estimatedCost - oldTotalCost + newTotalCost;
             serviceAppointment.setEstimatedCost(newEstimatedCost);
@@ -934,8 +934,8 @@ public class ServiceAppointmentUtil {
         if(CollectionUtils.isNotEmpty(changes) && RecordAPI.checkChangeSet(changes,"totalCost", moduleName)){
             FacilioField totalCost = modBean.getField("totalCost",moduleName);
             List<UpdateChangeSet> totalCostChange = changes.stream().filter(change-> change.getFieldId() == totalCost.getFieldId()).collect(Collectors.toList());
-            Double oldTotalCost = (Double) totalCostChange.get(0).getOldValue();
-            Double newTotalCost = (Double) totalCostChange.get(0).getNewValue();
+            Double oldTotalCost =  totalCostChange.get(0).getOldValue()!=null ? (Double) totalCostChange.get(0).getOldValue() : 0;
+            Double newTotalCost =  totalCostChange.get(0).getNewValue() !=null ? (Double) totalCostChange.get(0).getNewValue() : 0;
             Double actualCost = serviceAppointment.getActualCost()!=null ? serviceAppointment.getActualCost() : 0;
             Double newActualCost = actualCost - oldTotalCost + newTotalCost;
             serviceAppointment.setActualCost(newActualCost);

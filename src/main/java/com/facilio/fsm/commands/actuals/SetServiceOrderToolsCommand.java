@@ -9,10 +9,7 @@ import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fsm.context.ServiceAppointmentContext;
-import com.facilio.fsm.context.ServiceOrderContext;
-import com.facilio.fsm.context.ServiceOrderCostContext;
-import com.facilio.fsm.context.ServiceOrderToolsContext;
+import com.facilio.fsm.context.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.Constants;
@@ -47,6 +44,12 @@ public class SetServiceOrderToolsCommand extends FacilioCommand {
                 }
                 if(serviceOrderTool.getQuantity() <= 0) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
+                }
+                if(serviceOrderTool.getServiceTask()!=null){
+                    ServiceTaskContext serviceTask = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,serviceOrderTool.getServiceTask().getId(), ServiceTaskContext.class);
+                    if(serviceTask.getServiceAppointment()!=null){
+                        serviceOrderTool.setServiceAppointment(serviceTask.getServiceAppointment());
+                    }
                 }
                 serviceOrders.add(serviceOrderTool.getServiceOrder());
                 V3ToolContext tool = V3RecordAPI.getRecord(FacilioConstants.ContextNames.TOOL,serviceOrderTool.getTool().getId(),V3ToolContext.class);

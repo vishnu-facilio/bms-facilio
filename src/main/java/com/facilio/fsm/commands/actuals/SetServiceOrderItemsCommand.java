@@ -17,10 +17,7 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fsm.context.ServiceAppointmentContext;
-import com.facilio.fsm.context.ServiceOrderContext;
-import com.facilio.fsm.context.ServiceOrderCostContext;
-import com.facilio.fsm.context.ServiceOrderItemsContext;
+import com.facilio.fsm.context.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -67,6 +64,12 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
                 }
                 if(serviceOrderItem.getItem()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item cannot be empty");
+                }
+                if(serviceOrderItem.getServiceTask()!=null){
+                    ServiceTaskContext serviceTask = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,serviceOrderItem.getServiceTask().getId(), ServiceTaskContext.class);
+                    if(serviceTask.getServiceAppointment()!=null){
+                        serviceOrderItem.setServiceAppointment(serviceTask.getServiceAppointment());
+                    }
                 }
                 serviceOrders.add(serviceOrderItem.getServiceOrder());
 
