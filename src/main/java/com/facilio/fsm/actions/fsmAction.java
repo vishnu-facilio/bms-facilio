@@ -349,16 +349,10 @@ public class fsmAction extends V3Action {
     public String fetchTripDetails() throws Exception{
         if(appointmentId != null && appointmentId > 0){
             JSONObject data = ServiceAppointmentUtil.fetchAllTripDetails(appointmentId);
-            LOGGER.info("Trip data" + data);
-            if(data != null){
-                setData( data);
-                return SUCCESS;
-            }
-            else {
-                throw new FSMException(FSMErrorCode.INVALID_SA);
-            }
+            setData( data);
+
         }
-        return ERROR;
+        return SUCCESS;
     }
 
 }
