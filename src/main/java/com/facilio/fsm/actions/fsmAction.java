@@ -33,6 +33,7 @@ import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -42,6 +43,8 @@ import java.util.stream.Collectors;
 
 @Getter @Setter
 public class fsmAction extends V3Action {
+    private static final Logger LOGGER = Logger.getLogger(fsmAction.class.getName());
+
     private long recordId;
     private String identifier;
     private String resourceIds;
@@ -346,6 +349,7 @@ public class fsmAction extends V3Action {
     public String fetchTripDetails() throws Exception{
         if(appointmentId != null && appointmentId > 0){
             JSONObject data = ServiceAppointmentUtil.fetchAllTripDetails(appointmentId);
+            LOGGER.info("Trip data" + data);
             if(data != null){
                 setData( data);
                 return SUCCESS;

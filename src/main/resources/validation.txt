@@ -2793,3 +2793,4 @@
 /api/fsm/serviceappointment/list
 /api/fsm/board/list
 /api/v3/serviceAppointment/dispatch
+/api/v3/serviceAppointment/tripDetails
