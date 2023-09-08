@@ -36,6 +36,8 @@ import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
+import com.facilio.workflows.command.SchedulerAPI;
+import com.facilio.workflows.context.ScheduledWorkflowContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
@@ -1776,5 +1778,41 @@ public class WorkflowRuleAPI {
 
 		RuleType[] ruleTypesList = new RuleType[ruleTypes.size()];
 		return ruleTypes.toArray(ruleTypesList);
+	}
+
+	public static ScheduledWorkflowContext getScheduledWorkflowContext(long scheduledWorkflowId,Boolean isActive) throws Exception {
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getScheduledWorkflowFields())
+				.table(ModuleFactory.getScheduledWorkflowModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(scheduledWorkflowId, ModuleFactory.getScheduledWorkflowModule()))
+				.andCondition(CriteriaAPI.getCondition("IS_DELETED", "deleted", Boolean.FALSE.toString(), BooleanOperators.IS));
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getScheduledWorkflowFields());
+		if(isActive != null) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("isActive"), isActive.toString(), BooleanOperators.IS));
+		}
+
+		List<Map<String, Object>> props = select.get();
+
+		ScheduledWorkflowContext scheduledWorkflowContext = null;
+		if(props != null && !props.isEmpty()) {
+			scheduledWorkflowContext = FieldUtil.getAsBeanFromMap(props.get(0), ScheduledWorkflowContext.class);
+
+			SchedulerAPI.getSchedulerActions(Collections.singletonList(scheduledWorkflowContext));
+		}
+		return scheduledWorkflowContext;
+	}
+
+	public static void updateScheduledWorkflowStatus(ScheduledWorkflowContext scheduledWorkflowContext) throws Exception {
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
+		update.table(ModuleFactory.getScheduledWorkflowModule().getTableName());
+		update.fields(FieldFactory.getScheduledWorkflowFields())
+				.andCondition(CriteriaAPI.getIdCondition(scheduledWorkflowContext.getId(), ModuleFactory.getScheduledWorkflowModule()));
+
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("id",scheduledWorkflowContext.getId());
+		prop.put("isActive",scheduledWorkflowContext.getIsActive());
+
+		update.update(prop);
 	}
 }

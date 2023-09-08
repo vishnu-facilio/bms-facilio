@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.bmsconsoleV3.util.LicensingInfoUtil;
+import com.facilio.constants.FacilioConstants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Priority;
 
@@ -359,6 +360,18 @@ public class WorkflowAction extends FacilioAction {
 		FacilioChain getNameSpaceChain =  ReadOnlyChainFactory.getAllScheduledWorkflowChain();
 		getNameSpaceChain.execute(context);
 		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT_LIST, context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT_LIST));
+		return SUCCESS;
+	}
+
+	public String updateScheduledWorkflowStatus() throws Exception{
+		FacilioChain chain = TransactionChainFactory.updateScheduledWorkflowStatus();
+
+		FacilioContext context = chain.getContext();
+		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT,scheduledWorkflow);
+
+		chain.execute();
+		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT,context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT));
+
 		return SUCCESS;
 	}
 }

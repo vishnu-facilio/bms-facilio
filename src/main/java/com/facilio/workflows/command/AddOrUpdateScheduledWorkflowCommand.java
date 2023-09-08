@@ -37,18 +37,22 @@ public class AddOrUpdateScheduledWorkflowCommand extends FacilioCommand {
 		if (scheduledWorkflowContext.getStartTime() < DateTimeUtil.getCurrenTime()) {
 			scheduledWorkflowContext.setStartTime(DateTimeUtil.getCurrenTime());
 		}
-		
-		scheduledWorkflowContext.setLinkName(scheduledWorkflowContext.getName());
-		
+
 //		scheduledWorkflowContext.setWorkflowId(workflow.getId());
-		scheduledWorkflowContext.setIsActive(true);
 		scheduledWorkflowContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 		scheduledWorkflowContext.setTimeZone(AccountUtil.getCurrentAccount().getTimeZone());
 		
 		scheduledWorkflowContext.setModifiedTime(DateTimeUtil.getCurrenTime());
 
+		Boolean isActive =  scheduledWorkflowContext.getIsActive();
+		if(isActive == null){
+			isActive = true;
+		}
+		scheduledWorkflowContext.setIsActive(isActive);
+
 		if (scheduledWorkflowContext.getId() < 0) {
 			scheduledWorkflowContext.setCreatedTime(DateTimeUtil.getCurrenTime());
+			scheduledWorkflowContext.setLinkName(scheduledWorkflowContext.getName());
 			addScheduledWorkflow(scheduledWorkflowContext);
 		} else {
 			FacilioTimer.deleteJob(scheduledWorkflowContext.getId(), WorkflowV2Util.SCHEDULED_WORKFLOW_JOB_NAME);
@@ -56,7 +60,10 @@ public class AddOrUpdateScheduledWorkflowCommand extends FacilioCommand {
 			// update
 			updateScheduledWorkflow(scheduledWorkflowContext);
 		}
-		FacilioTimer.scheduleCalendarJob(scheduledWorkflowContext.getId(), WorkflowV2Util.SCHEDULED_WORKFLOW_JOB_NAME, scheduledWorkflowContext.getStartTime(), scheduledWorkflowContext.getSchedule(), "facilio");
+
+		if(isActive) {
+			FacilioTimer.scheduleCalendarJob(scheduledWorkflowContext.getId(), WorkflowV2Util.SCHEDULED_WORKFLOW_JOB_NAME, scheduledWorkflowContext.getStartTime(), scheduledWorkflowContext.getSchedule(), "facilio");
+		}
 
 		if (scheduledWorkflowContext.getWorkflowContext() != null) {	// temp handling till client moves
 			ActionContext executeAction = new ActionContext();

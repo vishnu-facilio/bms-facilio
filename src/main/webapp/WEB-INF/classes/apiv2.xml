@@ -3707,6 +3707,10 @@
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="addOrUpdateScheduledWorkflow"></action>
 
+		<action name="updateScheduledWorkflowStatus"
+				class="com.facilio.workflows.action.WorkflowAction"
+				method="updateScheduledWorkflowStatus"></action>
+
 		<action name="deleteScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="deleteScheduledWorkflow">

@@ -2893,6 +2893,14 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v2/workflow/updateScheduledWorkflowStatus" method="POST">
+        <requestbody type="object">
+            <property name="scheduledWorkflow" type="object" mandatory="true">
+                <property name="id" type="number" mandatory="true"/>
+                <property name="isActive" type="boolean" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
     <request path="/api/v1/setup/odatasettings/addodatareadings" method="POST">
         <requestbody type="object">
             <property name="readingView" type="object">

@@ -3798,6 +3798,12 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateScheduledWorkflowCommand());
 			return c;
 		}
+
+		public static FacilioChain updateScheduledWorkflowStatus() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new UpdateScheduledWorkflowStatus());
+			return c;
+		}
 //		public static FacilioChain getUpdateScheduledWorkflowChain() {
 //			FacilioChain c = getDefaultChain();
 //			c.addCommand(getUpdateWorkflowChain());
