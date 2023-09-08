@@ -5,6 +5,7 @@ import com.facilio.flows.blockconfigcommand.*;
 import com.facilio.flows.config.FlowConfig;
 import com.facilio.flows.config.annotations.Block;
 import com.facilio.flows.context.BaseCreateAndUpdateRecordFlowTransitionContext;
+import com.facilio.flows.context.EmailFlowTransitionContext;
 import com.facilio.flows.context.NotificationFlowTransitionContext;
 import com.facilio.flows.context.ScriptFlowTransitionContext;
 
@@ -81,5 +82,24 @@ public class FlowConfiguration {
                 .afterFetchCommand(new LoadCreateAndUpdateRecordBlockConfigCommand(true))
                 .done().build();
 
+    }
+    @Block(BlockType.send_mail)
+    public static Supplier<FlowConfig> getSentEmailBlockConfiguration(){
+        return () -> new FlowConfig.FlowConfigBuilder(EmailFlowTransitionContext.class)
+                .create()
+                .beforeSaveCommand(new BeforeSaveEmailBlockCommand())
+                .afterSaveCommand(new AddEmailBlockConfigData())
+                .done()
+                .update()
+                .beforeUpdateCommand(new BeforeSaveEmailBlockCommand())
+                .afterUpdateCommand(new UpdateEmailBlockConfigData())
+                .done()
+                .summary()
+                .afterFetchCommand(new LoadEmailBlockCommand())
+                .done()
+                .list()
+                .afterFetchCommand(new LoadEmailBlockCommand(true))
+                .done()
+                .build();
     }
 }

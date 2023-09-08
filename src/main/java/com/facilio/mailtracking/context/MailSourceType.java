@@ -12,7 +12,8 @@ public enum MailSourceType implements FacilioStringEnum {
     SERVICE_REQUEST("Service Request"),
     REPORT("Report"),
     SCHEDULED_VIEW("Scheduled View"),
-    COMMENTS("Notes")
+    COMMENTS("Notes"),
+    FLOW("Flow")
 
     ;
 

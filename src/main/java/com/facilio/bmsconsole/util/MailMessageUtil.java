@@ -24,11 +24,10 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LargeTextField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
-import com.facilio.services.email.EmailClient;
-import com.facilio.v3.context.Constants;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -44,7 +43,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.logging.Level;
 
 public class MailMessageUtil {
 
@@ -550,5 +548,15 @@ public class MailMessageUtil {
 			LOGGER.error( "Error While Updating Status in Base Mail Message ", e);
 		}
 	}
+	public static EmailFromAddress getEmailFromAddress(Long fromEmailId,EmailFromAddress.SourceType sourceType,Boolean verificationStatus) throws Exception {
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(com.facilio.v3.context.Constants.getModBean().getAllFields(FacilioConstants.Email.EMAIL_FROM_ADDRESS_MODULE_NAME));
 
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("verificationStatus"), verificationStatus.toString(), BooleanOperators.IS));
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), sourceType.getIndex().toString(), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(fromEmailId), StringOperators.IS));
+
+		List<EmailFromAddress> emailFromAddress = MailMessageUtil.getEmailFromAddress(criteria);
+		return CollectionUtils.isNotEmpty(emailFromAddress) ? emailFromAddress.get(0) : null;
+	}
 }

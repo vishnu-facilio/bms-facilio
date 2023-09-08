@@ -3068,7 +3068,7 @@
         </urlparams>
     </request>
 
-    <request path="/api/v1/setup/flowTransition/view" method="GET">
+    <request path="/api/v2/flowTransition/view" method="GET">
         <urlparams>
             <property name="id" type="number"/>
         </urlparams>

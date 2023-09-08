@@ -19,7 +19,7 @@ public enum BlockType implements FacilioStringEnum {
     change_status(Group.ACTION,"Change Status",ChangeStatusBlock.class,FlowType.GENERIC,FlowType.MODULE),
     script(Group.ACTION,"Script", ScriptBlock.class),
     send_notification(Group.ACTION,"Send Notification", SendPushNotificationBlock.class,FlowType.GENERIC,FlowType.MODULE),
-    send_mail(Group.ACTION,"Send Mail", BaseBlock.class,FlowType.GENERIC,FlowType.MODULE);
+    send_mail(Group.ACTION,"Send Mail", SendEmailBlock.class,FlowType.GENERIC,FlowType.MODULE);
 
     private Class clazz;
     @Getter

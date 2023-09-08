@@ -776,6 +776,14 @@ public class ModuleFactory {
 		flowTransitionModule.setTableName("RawRecordData");
 		return flowTransitionModule;
 	}
+	public static FacilioModule getEmailBlockConfigDataModule(){
+		FacilioModule flowTransitionModule = new FacilioModule();
+		flowTransitionModule.setName("emailBlockConfigData");
+		flowTransitionModule.setDisplayName("Email Block Config Data");
+		flowTransitionModule.setTableName("EmailBlockConfigData");
+		flowTransitionModule.setExtendModule(getFlowTransitionModule());
+		return flowTransitionModule;
+	}
 	public static FacilioModule getReadingRuleMetricModule() {
 		FacilioModule readingRuleModule = new FacilioModule();
 		readingRuleModule.setName("readingruleMetrics");

@@ -3727,6 +3727,20 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField("valueStr","VALUE",module));
         return fields;
     }
+    public static List<FacilioField> getEmailBlockConfigDataFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getEmailBlockConfigDataModule();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("fromMailId","FROM_MAIL_ID",module));
+        fields.add(getStringField("to","TO_MAIL",module));
+        fields.add(getStringField("cc","CC",module));
+        fields.add(getStringField("bcc","BCC",module));
+        fields.add(getBooleanField("sendAsSeparateMail","SEND_AS_SEPARATE_MAIL",module));
+        fields.add(getNumberField("templateId","TEMPLATE_ID",module));
+
+        return fields;
+    }
 
     public static List<FacilioField> getImportDataDetailsFields() {
         FacilioModule module = ModuleFactory.getImportDataDetailsModule();
