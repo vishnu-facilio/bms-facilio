@@ -72,6 +72,8 @@ import com.facilio.bmsconsoleV3.context.spacebooking.*;
 import com.facilio.bmsconsoleV3.plannedmaintenance.ValidatePmResourcePlannerResource;
 import com.facilio.assetcatergoryfeature.commands.FetchAssetCategoryLevelStatusCommand;
 import com.facilio.assetcatergoryfeature.commands.UpdateAssetCategoryLevelStatusCommand;
+import com.facilio.faults.LoadOccurrenceForAlarmCommand;
+import com.facilio.faults.newreadingalarm.HandleV3AlarmListLookupCommand;
 import com.facilio.plannedmaintenance.FetchPlannerDetails;
 import com.facilio.plannedmaintenance.PreCreateWorkOrderRecord;
 import com.facilio.permission.commands.AddOrUpdatePermissionSet;
@@ -3099,6 +3101,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateRCAMappingCommand());
         c.addCommand(new UpdateRCAGroupCommand());
         c.addCommand(new UpdateRCAScoreConditionCommand());
+        return c;
+    }
+
+    public static FacilioChain getReadingAlarmAfterFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new LoadOccurrenceForAlarmCommand());
+        c.addCommand(new HandleV3AlarmListLookupCommand());
         return c;
     }
 

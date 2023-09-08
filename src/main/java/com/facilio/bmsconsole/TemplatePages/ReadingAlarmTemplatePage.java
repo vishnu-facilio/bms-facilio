@@ -28,7 +28,13 @@ public class ReadingAlarmTemplatePage implements TemplatePageFactory{
                 .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("alarmDetails", null, null)
-                .addWidget("bmsAlarmDetails", "Faults Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.NEW_READING_ALARM))
+                .addWidget("readingAlarmDetails", "Faults Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.NEW_READING_ALARM))
+                .widgetDone()
+                .sectionDone()
+                .addSection("secondaryDetails",null,null)
+                .addWidget("readingAlarmLocationDetails", "Location details",PageWidget.WidgetType.LOCATION_DETAILS,"webLocationDetails_14_6",0,0,null,null)
+                .widgetDone()
+                .addWidget("readingAlarmDuration", "Time details", PageWidget.WidgetType.ALARM_DURATION, "webAlarmDuration_14_6", 6,0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -40,21 +46,21 @@ public class ReadingAlarmTemplatePage implements TemplatePageFactory{
                 .addTab("insight", "INSIGHT", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("impactDetails", null, null)
-                .addWidget("mtba","Mean time between occurrences", PageWidget.WidgetType.MTBA_CARD, "webMtba-14*6",0,0, null, null)
+                .addWidget("mtba","Mean time between occurrences", PageWidget.WidgetType.MTBA_CARD, "webMtba_14_6",0,0, null, null)
                 .widgetDone()
-                .addWidget("mttc", "Mean time to clear", PageWidget.WidgetType.MTTC_CARD, "webMttc-14*6", 6, 0, null, null)
+                .addWidget("mttc", "Mean time to clear", PageWidget.WidgetType.MTTC_CARD, "webMttc_14_6", 6, 0, null, null)
                 .widgetDone()
-                .addWidget("alarmDuration", "No. of occurrences", PageWidget.WidgetType.ALARM_DURATION, "webAlarmDuration-12*6", 0, 14, null, null)
+                .addWidget("noOfOccurrences", "No. of occurrences", PageWidget.WidgetType.NO_OF_OCCURRENCES, "webNoOfOccurrences_12_6", 0, 14, null, null)
                 .widgetDone()
-                .addWidget("impactInfo", "Impact template", PageWidget.WidgetType.IMPACT_INFO, "webImpactInfo-12*6", 6, 14, null, null)
+                .addWidget("impactInfo", "Impact template", PageWidget.WidgetType.IMPACT_INFO, "webImpactInfo_12_6", 6, 14, null, null)
                 .widgetDone()
-                .addWidget("costImpact", "Cost impact", PageWidget.WidgetType.COST_IMPACT, "webCostImpact-14*6", 0,26, null, null)
+                .addWidget("costImpact", "Cost impact", PageWidget.WidgetType.COST_IMPACT, "webCostImpact_14_6", 0,26, null, null)
                 .widgetDone()
-                .addWidget("energyImpact", "Energy impact (KWH)", PageWidget.WidgetType.ENERGY_IMPACT, "webEnergyImpact-14*6", 6,26, null, null)
+                .addWidget("energyImpact", "Energy impact (KWH)", PageWidget.WidgetType.ENERGY_IMPACT, "webEnergyImpact_14_6", 6,26, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("impactChart", null, null)
-                .addWidget("impactReport", "Impact report", PageWidget.WidgetType.IMPACT_REPORT, "webImpactReport-51", 0, 0, null, null)
+                .addWidget("impactReport", "Impact report", PageWidget.WidgetType.IMPACT_REPORT, "webImpactReport_51", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -62,7 +68,7 @@ public class ReadingAlarmTemplatePage implements TemplatePageFactory{
                 .addTab("history", "HISTORY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("occurrenceHistory", null, null)
-                .addWidget("readingAlarmOccurrenceHistory", "Faults", PageWidget.WidgetType.OCCURRENCE_HISTORY, "webOccurrenceHistory-58*12", 0, 0, null, null)
+                .addWidget("readingAlarmOccurrenceHistory", "Faults", PageWidget.WidgetType.OCCURRENCE_HISTORY, "webOccurrenceHistory_58_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -76,48 +82,40 @@ public class ReadingAlarmTemplatePage implements TemplatePageFactory{
         FacilioField lastOccurredTime = moduleBean.getField("lastOccurredTime", moduleName);
         FacilioField lastCreatedTime = moduleBean.getField("lastCreatedTime", moduleName);
         FacilioField rule = moduleBean.getField("rule", moduleName);
+        FacilioField resource = moduleBean.getField("resource", moduleName);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup primaryDetailsWidgetGroup = new SummaryWidgetGroup();
 
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, rule, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 1, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 2, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, rule, 1, 3, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 1, 4, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 2, 1, 1, true);
 
         primaryDetailsWidgetGroup.setName("primaryDetails");
         primaryDetailsWidgetGroup.setDisplayName("Primary Details");
-        primaryDetailsWidgetGroup.setColumns(3);
-
-        SummaryWidgetGroup otherDetailsWidgetGroup = new SummaryWidgetGroup();
-
-        FacilioField resource = moduleBean.getField("resource", moduleName);
-
-        addSummaryFieldInWidgetGroup(otherDetailsWidgetGroup, resource, 1, 1, 1);
-
-        otherDetailsWidgetGroup.setName("otherDetails");
-        otherDetailsWidgetGroup.setDisplayName("Other Details");
-        otherDetailsWidgetGroup.setColumns(1);
+        primaryDetailsWidgetGroup.setColumns(4);
 
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
         int columnNo = 1, rowNo = 1;
         for (FacilioField field : fields) {
-            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1);
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1, false);
             columnNo++;
-            if(columnNo > 3) {
+            if(columnNo > 4) {
                 columnNo = 1;
                 rowNo ++;
             }
         }
 
-        allFieldsWidgetGroup.setName("fields");
-        allFieldsWidgetGroup.setDisplayName("Fields");
-        allFieldsWidgetGroup.setColumns(3);
+        allFieldsWidgetGroup.setName("otherDetails");
+        allFieldsWidgetGroup.setDisplayName("otherDetails");
+        allFieldsWidgetGroup.setColumns(4);
 
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(primaryDetailsWidgetGroup);
-        widgetGroupList.add(otherDetailsWidgetGroup);
         widgetGroupList.add(allFieldsWidgetGroup);
 
         pageWidget.setDisplayName("");
@@ -129,7 +127,7 @@ public class ReadingAlarmTemplatePage implements TemplatePageFactory{
 
     }
 
-    private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan) throws Exception {
+    private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan, Boolean isOneLevelField) throws Exception {
         if (field != null) {
             SummaryWidgetGroupFields summaryField = new SummaryWidgetGroupFields();
             summaryField.setName(field.getName());
@@ -138,12 +136,14 @@ public class ReadingAlarmTemplatePage implements TemplatePageFactory{
             summaryField.setRowIndex(rowIndex);
             summaryField.setColIndex(colIndex);
             summaryField.setColSpan(colSpan);
-//            if(field.getName().equals("resource")) {
-//                summaryField.setParentLookupFieldId(field.getFieldId());
-//                ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//                FacilioField fieldToDisplay = moduleBean.getField("description", FacilioConstants.ContextNames.RESOURCE);
-//                summaryField.setFieldId(fieldToDisplay.getFieldId());
-//            }
+            if(isOneLevelField){
+                summaryField.setName("category");
+                summaryField.setDisplayName("Category");
+                summaryField.setParentLookupFieldId(field.getFieldId());
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioField assetCategory = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
+                summaryField.setFieldId(assetCategory.getFieldId());
+            }
             if (widgetGroup.getFields() == null) {
                 widgetGroup.setFields(new ArrayList<>(Arrays.asList(summaryField)));
             } else {

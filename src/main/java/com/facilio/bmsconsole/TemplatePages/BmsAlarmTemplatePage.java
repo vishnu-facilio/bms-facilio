@@ -31,6 +31,12 @@ public class BmsAlarmTemplatePage implements TemplatePageFactory {
                 .addWidget("bmsAlarmDetails", "BMS Alarm Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.BMS_ALARM))
                 .widgetDone()
                 .sectionDone()
+                .addSection("secondaryDetails",null,null)
+                .addWidget("bmsAlarmLocationDetails", "Location details",PageWidget.WidgetType.LOCATION_DETAILS,"webLocationDetails_14_6",0,0,null,null)
+                .widgetDone()
+                .addWidget("bmsAlarmDuration", "Time details", PageWidget.WidgetType.ALARM_DURATION, "webAlarmDuration_14_6", 6,0, null, null)
+                .widgetDone()
+                .sectionDone()
                 .addSection("widgetGroup", null, null)
                 .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getSummaryWidgetGroup(false))
                 .widgetDone()
@@ -40,7 +46,7 @@ public class BmsAlarmTemplatePage implements TemplatePageFactory {
                 .addTab("history", "HISTORY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("occurrenceHistory", null, null)
-                .addWidget("bmsOccurrenceHistory", "BMS Alarm", PageWidget.WidgetType.OCCURRENCE_HISTORY, "webOccurrenceHistory-58*12", 0, 0, null, null)
+                .addWidget("bmsOccurrenceHistory", "BMS Alarm", PageWidget.WidgetType.OCCURRENCE_HISTORY, "webOccurrenceHistory_58_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -56,50 +62,43 @@ public class BmsAlarmTemplatePage implements TemplatePageFactory {
         FacilioField condition = moduleBean.getField("condition", moduleName);
         FacilioField source = moduleBean.getField("source", moduleName);
         FacilioField controller = moduleBean.getField("controller", moduleName);
+        FacilioField resource = moduleBean.getField("resource", moduleName);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup primaryDetailsWidgetGroup = new SummaryWidgetGroup();
 
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, condition, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, source, 2, 1, 1);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, controller, 2, 2, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 1, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 2, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, condition, 1, 3, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, source, 1, 4, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, controller, 2, 1, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 2, 2, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 2, 3, 1, true);
+
 
         primaryDetailsWidgetGroup.setName("primaryDetails");
         primaryDetailsWidgetGroup.setDisplayName("Primary Details");
-        primaryDetailsWidgetGroup.setColumns(3);
-
-        SummaryWidgetGroup otherDetailsWidgetGroup = new SummaryWidgetGroup();
-
-        FacilioField resource = moduleBean.getField("resource", moduleName);
-
-        addSummaryFieldInWidgetGroup(otherDetailsWidgetGroup, resource, 1, 1, 1);
-
-        otherDetailsWidgetGroup.setName("otherDetails");
-        otherDetailsWidgetGroup.setDisplayName("Other Details");
-        otherDetailsWidgetGroup.setColumns(1);
+        primaryDetailsWidgetGroup.setColumns(4);
 
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
         int columnNo = 1, rowNo = 1;
         for (FacilioField field : fields) {
-            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1);
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1, false);
             columnNo++;
-            if(columnNo > 3) {
+            if(columnNo > 4) {
                 columnNo = 1;
                 rowNo ++;
             }
         }
 
-        allFieldsWidgetGroup.setName("fields");
-        allFieldsWidgetGroup.setDisplayName("Fields");
-        allFieldsWidgetGroup.setColumns(3);
+        allFieldsWidgetGroup.setName("otherDetails");
+        allFieldsWidgetGroup.setDisplayName("Other Details");
+        allFieldsWidgetGroup.setColumns(4);
 
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(primaryDetailsWidgetGroup);
-        widgetGroupList.add(otherDetailsWidgetGroup);
         widgetGroupList.add(allFieldsWidgetGroup);
 
         pageWidget.setDisplayName("");
@@ -111,7 +110,7 @@ public class BmsAlarmTemplatePage implements TemplatePageFactory {
 
     }
 
-    private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan) throws Exception {
+    private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan, Boolean isOneLevelField) throws Exception {
         if (field != null) {
             SummaryWidgetGroupFields summaryField = new SummaryWidgetGroupFields();
             summaryField.setName(field.getName());
@@ -120,12 +119,14 @@ public class BmsAlarmTemplatePage implements TemplatePageFactory {
             summaryField.setRowIndex(rowIndex);
             summaryField.setColIndex(colIndex);
             summaryField.setColSpan(colSpan);
-//            if(field.getName().equals("resource")) {
-//                summaryField.setParentLookupFieldId(field.getFieldId());
-//                ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//                FacilioField fieldToDisplay = moduleBean.getField("description", FacilioConstants.ContextNames.RESOURCE);
-//                summaryField.setFieldId(fieldToDisplay.getFieldId());
-//            }
+            if(isOneLevelField){
+                summaryField.setName("category");
+                summaryField.setDisplayName("Category");
+                summaryField.setParentLookupFieldId(field.getFieldId());
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioField assetCategory = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
+                summaryField.setFieldId(assetCategory.getFieldId());
+            }
             if (widgetGroup.getFields() == null) {
                 widgetGroup.setFields(new ArrayList<>(Arrays.asList(summaryField)));
             } else {

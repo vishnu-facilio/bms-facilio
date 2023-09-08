@@ -23,7 +23,7 @@ public class LoadSupplementsForBMSAlarmCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<SupplementRecord> fetchLookupsList = GenericLoadSupplementsV3.getLookupList(
                 FacilioConstants.ContextNames.BMS_ALARM,
-                Arrays.asList("resource", "severity")
+                Arrays.asList("resource", "severity", "acknowledgedBy")
         );
         fetchAdditionalFields(context);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);

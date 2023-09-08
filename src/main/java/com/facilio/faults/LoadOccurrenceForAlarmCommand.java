@@ -14,7 +14,8 @@ public class LoadOccurrenceForAlarmCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String, Object> recordMap = (Map<String, Object>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
-        List<BaseAlarmContext> alarmContexts = (List<BaseAlarmContext>) recordMap.get(FacilioConstants.ContextNames.BMS_ALARM);
+        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        List<BaseAlarmContext> alarmContexts = (List<BaseAlarmContext>) recordMap.get(moduleName);
         for (BaseAlarmContext alarmContext : alarmContexts) {
             long lastOccurrenceId = alarmContext.getLastOccurrenceId();
             AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(lastOccurrenceId);

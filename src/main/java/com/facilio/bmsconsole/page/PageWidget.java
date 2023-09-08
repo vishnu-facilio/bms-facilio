@@ -571,7 +571,9 @@ public class PageWidget {
 		WORK_ORDER_PLAN_SERVICE("workorderplanservice"),
 		WORK_ORDER_PLAN_LABOUR("workorderplanlabour"),
 		COST_DETAILS("costDetails"),
-		FAILURE_HIERARCHY("failureHierarchy");
+		FAILURE_HIERARCHY("failureHierarchy"),
+		LOCATION_DETAILS("locationDetails"),
+		NO_OF_OCCURRENCES("noOfOccurrences");
 
 
 		private String name;

@@ -23,7 +23,7 @@ public class LoadSupplementsForFaultsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<SupplementRecord> fetchLookupsList = GenericLoadSupplementsV3.getLookupList(
                 FacilioConstants.ContextNames.NEW_READING_ALARM,
-                Arrays.asList("rule", "resource", "severity", "readingAlarmCategory", "readingAlarmAssetCategory")
+                Arrays.asList("rule", "resource", "severity", "readingAlarmCategory", "readingAlarmAssetCategory", "acknowledgedBy")
         );
         fetchAdditionalFields(context);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);

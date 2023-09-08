@@ -3394,4 +3394,7 @@
         </requestbody>
     </request>
 
+    <request path="/api/v1/setup/modules/resource/setting/glimpse" method="GET">
+        <requestbody type="object" />
+    </request>
 </config>
