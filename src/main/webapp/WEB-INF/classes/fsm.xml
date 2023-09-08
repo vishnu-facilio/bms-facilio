@@ -145,7 +145,5 @@
     <package name="service" extends="fsmApi" namespace="/api/fsm/serviceappointment">
         <action name="list" class="com.facilio.fsm.actions.fsmAction" method="serviceAppointmentList">
         </action>
-        <action name="tripDetails" class="com.facilio.fsm.actions.fsmAction" method="fetchTripDetails">
-        </action>
     </package>
 </struts>
