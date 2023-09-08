@@ -1010,7 +1010,7 @@ public class ExportUtil {
 		if (path == null) {
 			path = getTempFolder(null).getPath();
 		}
-		return path + File.separator + fileName ;
+		return path + File.separator + fileName+"_"+DateTimeUtil.getCurrenTime() ;
 	}
 	
 	public static String getZipFileUrl(File rootFolder) throws Exception {
