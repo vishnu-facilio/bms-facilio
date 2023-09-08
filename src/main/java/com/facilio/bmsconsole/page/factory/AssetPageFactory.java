@@ -111,9 +111,7 @@ public class AssetPageFactory extends PageFactory {
 		
 		
 		Tab tab2 = page.new Tab("maintenance");
-		if (!isEmicoolOrg) {
-			page.addTab(tab2);
-		}
+		page.addTab(tab2);
 		Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
 		
