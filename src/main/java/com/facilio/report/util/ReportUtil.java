@@ -355,14 +355,11 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 				}
 				else
 				{
-					List<WebTabContext> webtabs = ApplicationApi.getWebTabsForApplication(appId);
-					for (WebTabContext webtab : webtabs) {
-						if (webtab.getTypeEnum() == WebTabContext.Type.MODULE) {
-							moduleIds.addAll(ApplicationApi.getModuleIdsForTab(webtab.getId()));
-						} else if (!isPivot && webtab.getTypeEnum() == WebTabContext.Type.REPORT && (webtab.getConfigJSON() != null &&
-								webtab.getConfigJSON().containsKey("type") && webtab.getConfigJSON().get("type").equals("analytics_reports"))) {
-							isAnalyticsReport = true;
-						}
+					FacilioModule module = modBean.getModule(moduleName);
+					moduleIds.add(module.getModuleId());
+					Set<FacilioModule> subModulesList = ReportFactoryFields.getSubModulesList(moduleName);
+					if(subModulesList != null){
+						moduleIds.addAll(subModulesList.stream().map(m -> m.getModuleId()).collect(Collectors.toList()));
 					}
 				}
 			}
