@@ -423,7 +423,7 @@ classes:
 #  - com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataLoggerModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataProcessingLoggerModule
 
-  
+
   #Adding Meter Modules
   - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityTypeModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddVirtualMeterTemplateModules
@@ -464,7 +464,7 @@ classes:
 
 
   #Adding Flow log modules
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.AddFlowExecutionLogModules
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AddFlowLogModules
 
     #Adding Utility Integration Modules
   - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationCustomerModule

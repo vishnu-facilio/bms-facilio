@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.flowLog.FlowLogLevel;
 import com.facilio.flowengine.context.Constants;
 import com.facilio.flowengine.enums.FlowVariableDataType;
 import com.facilio.flowengine.exception.FlowException;
@@ -23,6 +24,7 @@ import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -59,11 +61,10 @@ public class ScriptBlock extends BaseBlock{
             List<ParameterContext> functionParameters = userFunction.getParameters();
 
             if(CollectionUtils.isNotEmpty(functionParameters)){
-                Map<String,ParameterContext> functionParamMap = functionParameters.stream().collect(Collectors.toMap(ParameterContext::getName, Function.identity()));
-                Map<String,ScriptFlowParameter> scriptFlowParameterMap = parameters.stream().collect(Collectors.toMap(ScriptFlowParameter::getParameterName,Function.identity()));
+                Map<String,ScriptFlowParameter> scriptFlowParameterMap = parameters.stream().collect(Collectors.toMap(ScriptFlowParameter::getParameterName,Function.identity(),(a,b)->a));
                 List<Object> paramsList = new ArrayList<>();
-                for (String functionParamName:functionParamMap.keySet()){
-                    ScriptFlowParameter scriptFlowParam = scriptFlowParameterMap.get(functionParamName);
+                for (ParameterContext functionParameter:functionParameters){
+                    ScriptFlowParameter scriptFlowParam = scriptFlowParameterMap.get(functionParameter.getName());
                     Object paramValue = FlowEngineUtil.replacePlaceHolder(scriptFlowParam.getParameterValue(),memory);
                     paramsList.add(paramValue);
                 }
@@ -88,7 +89,7 @@ public class ScriptBlock extends BaseBlock{
             }
 
         }catch (Exception exception) {
-            flowEngineInterFace.log(exception.getMessage());
+            flowEngineInterFace.log(FlowLogLevel.SEVERE,exception.getMessage());
             FlowException flowException = exception instanceof FlowException?(FlowException)exception:new FlowException(exception.getMessage());
             flowEngineInterFace.emitBlockError(this,memory,flowException);
             throw flowException;
@@ -109,7 +110,7 @@ public class ScriptBlock extends BaseBlock{
     public void validateBlockConfiguration() throws FlowException {
         Object functionId = config.get(Constants.FUNCTION_ID);
         Object variableName = config.get(Constants.VARIABLE_NAME);
-        Object dataTypeStr = config.get(Constants.DATA_TYPE);
+        Object returnDataTypeStr = config.get(Constants.DATA_TYPE);
         Object parametersJSONArray = config.get(Constants.PARAMETERS);
         if(functionId == null){
             throw new FlowException("functionId is can not be null");
@@ -121,12 +122,12 @@ public class ScriptBlock extends BaseBlock{
         if(variableName!=null && !(variableName instanceof String)){
             throw new FlowException("variableName:'"+variableName+"' not a string for ScriptBlock");
         }
-        if(dataTypeStr!=null){
-            if(!(dataTypeStr instanceof String)){
+        if(returnDataTypeStr!=null){
+            if(!(returnDataTypeStr instanceof String)){
                 throw new FlowException("dataType:'"+variableName+"' is not a string for ScriptBlock");
             }
-            if(FlowVariableDataType.getDataType(dataTypeStr.toString())==null){
-                throw new FlowException("Unsupported data type "+dataType);
+            if(FlowVariableDataType.getDataType(returnDataTypeStr.toString())==null){
+                throw new FlowException("Unsupported data type "+returnDataTypeStr);
             }
         }
         if(parametersJSONArray!=null){
@@ -145,6 +146,7 @@ public class ScriptBlock extends BaseBlock{
         public ScriptFlowParameter(){
         }
         private String parameterName;
-        private String parameterValue;
+        private Object parameterValue;
+        private FlowVariableDataType dataType;
     }
 }

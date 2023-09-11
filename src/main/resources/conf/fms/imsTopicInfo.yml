@@ -18,7 +18,7 @@ topics:
       - { key: calendar/+, handler: com.facilio.wmsv2.handler.CalendarHandler, recordTimeout: 600 }
       - { key: controlAction/+, handler: com.facilio.wmsv2.handler.CommandGenerationHandler, recordTimeout: 600 }
       - { key: controlActionTemplate/+, handler: com.facilio.wmsv2.handler.ControlActionGenerationHandler, recordTimeout: 600 }
-      - { key: __flow_logs__/#, handler: com.facilio.ims.handler.FlowLogHandler, isLiveMessage: false }
+      - { key: __flow_logs__/#, handler: com.facilio.ims.handler.FlowLogHandler, recordTimeout: 60 }
 
   - topic: receive-mail
     keys:

@@ -1,11 +1,13 @@
 package com.facilio.flowengine.executor;
 
 import com.facilio.blockfactory.blocks.BaseBlock;
+import com.facilio.flowLog.FlowLogLevel;
 import com.facilio.flowLog.FlowLogService;
 import com.facilio.flowengine.exception.FlowException;
 import com.facilio.flowengine.observers.Observer;
 import com.facilio.flows.context.FlowContext;
 import com.facilio.modules.FieldUtil;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 
 import java.text.MessageFormat;
@@ -21,12 +23,15 @@ public class FlowEngine implements FlowEngineInterFace {
     private FlowContext flow;
     private FlowLogService flowLogService;
     private JSONObject currentRecord;
-    private Long uniqueExecutionId;
     private BaseBlock currentBlock;
 
     private int blocksExecuted = 0;
     private List<Observer> observers = new LinkedList<>();
-    public FlowEngine(FlowContext flow,JSONObject currentRecord){
+    private StringBuilder logString = new StringBuilder();
+
+    @Setter
+    private FlowLogLevel level;
+    public FlowEngine(FlowContext flow, JSONObject currentRecord){
         this.flow = Objects.requireNonNull(flow);
         this.currentRecord = Objects.requireNonNull(currentRecord);
     }
@@ -44,11 +49,6 @@ public class FlowEngine implements FlowEngineInterFace {
         long currentMillis = System.currentTimeMillis();
 
         try{
-            if (flowLogService == null) {
-                throw new IllegalArgumentException("Log service cannot be null");
-            }
-            uniqueExecutionId = flowLogService.createUniqueIdentifier();
-
             emitFlowStart(cloneMemory(memory));
             currentBlock = startBlock;
             while (currentBlock != null) {
@@ -80,6 +80,11 @@ public class FlowEngine implements FlowEngineInterFace {
     }
 
     private void emitFlowStart(Map<String, Object> memory) {
+        try{
+            flowLogService.onFlowStart();
+        }catch (Exception e){
+            log.debug(e.getMessage());
+        }
         for (Observer observer : observers) {
             try {
                 observer.onFlowStart(this,memory);
@@ -92,6 +97,7 @@ public class FlowEngine implements FlowEngineInterFace {
     private void emitFlowEnd(Map<String, Object> memory) {
         try{
             flowLogService.onFlowEnd();
+            flowLogService.log(logString.toString());
         }catch (Exception e){
             log.debug(e.getMessage());
         }
@@ -135,6 +141,7 @@ public class FlowEngine implements FlowEngineInterFace {
     private void emitFlowError(Map<String, Object> memory, FlowException exception){
         try{
             flowLogService.onFlowError();
+            flowLogService.log(logString.toString());
         }catch (Exception e){
             log.debug(e.getMessage());
         }
@@ -153,11 +160,6 @@ public class FlowEngine implements FlowEngineInterFace {
     }
 
     @Override
-    public Long getUniqueExecutionId() {
-        return uniqueExecutionId;
-    }
-
-    @Override
     public JSONObject getCurrentRecord() {
         return currentRecord;
     }
@@ -168,12 +170,22 @@ public class FlowEngine implements FlowEngineInterFace {
     }
 
     @Override
-    public void log(String message) {
-        try{
-            flowLogService.log(message);
-        }catch (Exception e){
-            log.debug("Exception in sending flow log:"+e.getMessage());
+    public void log(FlowLogLevel logLevel, String logs) {
+        if(isLoggable(logLevel)){
+            logString.append(logs+"\n");
         }
+    }
+    private boolean isLoggable(FlowLogLevel logLevel){
+        switch (logLevel){
+            case INFO:
+            case SEVERE:
+                return true;
+            case DEBUG:
+                if(level==FlowLogLevel.DEBUG){
+                    return true;
+                }
+        }
+        return false;
     }
 
     @Override

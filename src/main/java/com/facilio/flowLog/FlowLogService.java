@@ -10,10 +10,9 @@ public abstract class FlowLogService {
     public FlowLogService(@NonNull FlowEngineInterFace flowEngineInterFace) {
         this.flowEngineInterFace = flowEngineInterFace;
     }
-
     abstract public void log(String message);
-    abstract public Long createUniqueIdentifier() throws Exception;
     abstract public void onFlowError() throws Exception;
+    abstract public void onFlowStart() throws Exception;
     abstract public void onFlowEnd() throws Exception;
 }
 

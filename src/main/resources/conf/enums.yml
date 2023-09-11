@@ -426,9 +426,6 @@ enums:
   - name: FlowStatus
     enumClassName: com.facilio.flowLog.moduleFlowLog.enums.FlowStatus
 
-  - name: FlowLogType
-    enumClassName: com.facilio.flowLog.moduleFlowLog.enums.FlowLogType
-
   - name: UtilityProviders
     enumClassName: com.facilio.utility.context.UtilityIntegrationTariffContext$UtilityProviders
 

@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.flowLog.FlowLogLevel;
 import com.facilio.flowengine.exception.FlowException;
 import com.facilio.flowengine.executor.FlowEngineUtil;
 import com.facilio.fw.BeanFactory;
@@ -11,7 +12,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.util.V3Util;
-import org.apache.commons.lang.math.NumberUtils;
 
 import java.util.Map;
 
@@ -67,7 +67,7 @@ public class ChangeStatusBlock extends BaseBlock{
             StateFlowRulesAPI.updateState(record, module, status, false, new FacilioContext());
 
         }catch (Exception exception){
-            flowEngineInterFace.log(exception.getMessage());
+            flowEngineInterFace.log(FlowLogLevel.SEVERE,exception.getMessage());
             FlowException flowException = exception instanceof FlowException?(FlowException)exception:new FlowException(exception.getMessage());
             flowEngineInterFace.emitBlockError(this,memory,flowException);
             throw flowException;

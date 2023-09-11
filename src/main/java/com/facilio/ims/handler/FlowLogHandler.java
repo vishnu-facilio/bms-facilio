@@ -1,7 +1,7 @@
 package com.facilio.ims.handler;
 
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.flowLog.moduleFlowLog.context.FlowExecutionLogContext;
+import com.facilio.flowLog.moduleFlowLog.context.FlowLogContext;
 import com.facilio.fms.message.Message;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.modules.FieldUtil;
@@ -13,19 +13,14 @@ public class FlowLogHandler extends ImsHandler {
     private static final Logger LOGGER = LogManager.getLogger(FlowLogHandler.class.getName());
     @Override
     public void processMessage(Message message) {
-        FlowExecutionLogContext flowExecutionLog = null;
+        FlowLogContext flowLogContext = null;
         try {
             JSONObject content = message.getContent();
-            flowExecutionLog = FieldUtil.getAsBeanFromJson(content, FlowExecutionLogContext.class);
+            flowLogContext = FieldUtil.getAsBeanFromJson(content, FlowLogContext.class);
             ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", message.getOrgId());
-            moduleCRUD.addFlowExecutionLog(flowExecutionLog);
+            moduleCRUD.addFlowLog(flowLogContext);
         } catch (Exception e) {
-            LOGGER.error("Error in inserting flow log", e );
-            if(flowExecutionLog!=null){
-                LOGGER.info("Inserting Flow Execution log failed for flowExecutionId:"
-                        +flowExecutionLog.getFlowExecutionId()
-                        +"::content:"+message.getContent());
-            }
+            LOGGER.info("ERROR IN ADDING FLOW LOGS", e);
         }
     }
 }

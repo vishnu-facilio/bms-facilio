@@ -1,6 +1,7 @@
 package com.facilio.blockfactory.blocks;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.flowLog.FlowLogLevel;
 import com.facilio.flowengine.context.Constants;
 import com.facilio.flowengine.exception.FlowException;
 import com.facilio.flowengine.executor.FlowEngineUtil;
@@ -50,7 +51,7 @@ public class SummaryRecordBlock extends BaseBlock {
             Object record = V3Util.getRecord(moduleName,recId,null);
             memory.put(variableName, FieldUtil.getAsProperties(record));
         }catch (Exception exception){
-            flowEngineInterFace.log(exception.getMessage());
+            flowEngineInterFace.log(FlowLogLevel.SEVERE,exception.getMessage());
             FlowException flowException = exception instanceof FlowException?(FlowException)exception:new FlowException(exception.getMessage());
             flowEngineInterFace.emitBlockError(this,memory,flowException);
             throw flowException;
