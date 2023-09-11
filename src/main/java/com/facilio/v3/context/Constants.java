@@ -45,6 +45,7 @@ public class Constants {
     public static final String CUSTOM_BUTTONS = "customButtons";
     public static final String CUSTOM_BUTTONS_RECORDS = "customButtonsforRecords";
     public static final String SYSTEM_BUTTONS = "systemButtons";
+    public static final String SYSTEM_BUTTONS_RECORDS = "systemButtonsForRecords";
     public static final String FETCH_CLASSIFICATION = "fetchClassification";
     public static final String FOR_EXPORT = "forExport";
 

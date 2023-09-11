@@ -2,10 +2,16 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.v3.context.Constants;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 public class SystemButtonAction extends FacilioAction{
 
@@ -92,4 +98,23 @@ public class SystemButtonAction extends FacilioAction{
 
         return SUCCESS;
     }
+
+    @Getter
+    @Setter
+    private List<Long> recordIds;
+
+    public String getAvailableButtonsForList() throws Exception{
+        FacilioChain chain = ReadOnlyChainFactory.getAvailableButtonsForListChain();
+        FacilioContext context = chain.getContext();
+
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,recordIds);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        context.put(FacilioConstants.ContextNames.POSITION_TYPE,positionType);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.SYSTEM_BUTTONS,context.get(FacilioConstants.ContextNames.SYSTEM_BUTTONS));
+        setResult(Constants.SYSTEM_BUTTONS_RECORDS,context.get(Constants.SYSTEM_BUTTONS_RECORDS));
+        return SUCCESS;
+    }
+
 }

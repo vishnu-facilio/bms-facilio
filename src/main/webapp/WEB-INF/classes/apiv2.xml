@@ -558,7 +558,9 @@
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getSystemButton"/>
 		<action name="getAvailableButtons"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableSystemButton"/>
-	</package>
+		<action name="getAvailableButtonsForList"
+				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableButtonsForList"/>
+		</package>
 
 	<package name="fieldRelation" namespace="/api/v2/fieldRelation" extends="v2Api">
 		<action name="runDependency"

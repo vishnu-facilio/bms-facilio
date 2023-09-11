@@ -2195,6 +2195,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAvailableSystemButtonsCommand());
 		return chain;
 	}
+	public static FacilioChain getAvailableButtonsForListChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new FetchRecordMapCommand());
+		chain.addCommand(new GetAvailableSystemButtonsForListCommand());
+		return chain;
+	}
 	public static FacilioChain getAllServiceCatalogGroupChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllServiceCatalogGroupCommand());

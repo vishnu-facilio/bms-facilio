@@ -3238,4 +3238,13 @@
             <property name="endTime" type="number"></property>
         </requestbody>
     </request>
+    <request path="/api/v2/systemButton/getAvailableButtonsForList" method="GET">
+       <requestbody type="object">
+        <property name="recordIds" type="array">
+            <items type="number"/>
+        </property>
+         <property name="moduleName" type="string"/>
+         <property name="positionType" type="number"/>
+       </requestbody>
+    </request>
 </config>

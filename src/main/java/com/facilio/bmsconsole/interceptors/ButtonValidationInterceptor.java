@@ -15,7 +15,7 @@ public class ButtonValidationInterceptor extends AbstractInterceptor {
         try{
 
             Parameter parameter = ActionContext.getContext().getParameters().get("buttonPermission");
-            if (parameter != null && parameter.getValue().equals("true")) {
+            if (parameter != null &&  parameter.getValue() != null && parameter.getValue().equals("true")) {
                 Parameter moduleParam = ActionContext.getContext().getParameters().get("moduleName");
                 Parameter recordIdParam = ActionContext.getContext().getParameters().get("recordId");
                 Parameter actions = ActionContext.getContext().getParameters().get("buttonAction");
