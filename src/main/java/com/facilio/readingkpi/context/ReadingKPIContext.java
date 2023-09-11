@@ -9,15 +9,24 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NamespaceFrequency;
+import com.facilio.readingkpi.ReadingKpiLoggerAPI;
 import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.V3Context;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 
 @Data
-public class ReadingKPIContext extends V3Context {
+@NoArgsConstructor
+public class ReadingKPIContext extends V3Context implements IConnectedRule {
+
+    public ReadingKPIContext(Long id, Long readingFieldId, NameSpaceContext ns) {
+        this.setId(id);
+        this.setReadingFieldId(readingFieldId);
+        this.setNs(ns);
+    }
 
     private String name;
     private String description;
@@ -45,9 +54,6 @@ public class ReadingKPIContext extends V3Context {
 
     private List<Long> matchedResourcesIds;
 
-    public ReadingKPIContext(){
-
-    }
 
     public ReadingKPIContext(String name, Long readingFieldId, KPIType kpiType) {
         this.name = name;
@@ -104,6 +110,11 @@ public class ReadingKPIContext extends V3Context {
             inputUnit = FormulaFieldAPI.getOrgDisplayUnit(numberfield);
         }
         return inputUnit;
+    }
+
+    @Override
+    public long insertLog(Long startTime, Long endTime, Integer resourceCount, boolean isSysCreated) throws Exception {
+        return ReadingKpiLoggerAPI.insertLog(getId(), getKpiType(), startTime, endTime, isSysCreated, resourceCount == null ? getMatchedResourcesIds().size() : resourceCount);
     }
 
     public String getUnitLabel(){

@@ -1,32 +1,36 @@
 package com.facilio.readingrule.util;
 
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
+import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import org.apache.commons.chain.Context;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
+import com.facilio.ns.context.NameSpaceCacheContext;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
+import com.facilio.readingkpi.context.IConnectedRule;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.context.RuleAlarmDetails;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.*;
@@ -131,7 +135,10 @@ public class NewReadingRuleAPI {
         ModuleBean modBean = Constants.getModBean();
         List<NewReadingRuleContext> rules = getRules(new Condition[]{
                 CriteriaAPI.getIdCondition(ruleId,modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE))});
-        return CollectionUtils.isNotEmpty(rules) ? rules.get(0) : null;
+        if (CollectionUtils.isNotEmpty(rules)) {
+             return rules.get(0);
+        }
+        throw new IllegalArgumentException("Invalid Rule Id");
     }
 
     public static List<NewReadingRuleContext> getAllRules(Map<String, Object> paramsMap) throws Exception {
@@ -159,8 +166,24 @@ public class NewReadingRuleAPI {
         String moduleName = FacilioConstants.ReadingRules.NEW_READING_RULE;
         FacilioContext summary = V3Util.getSummary(moduleName, recordId);
         List<NewReadingRuleContext> readingRules = Constants.getRecordListFromContext(summary, moduleName);
-        return readingRules;
+        if (CollectionUtils.isNotEmpty(readingRules)) {
+            return readingRules;
+        }
+        throw new IllegalArgumentException("No such rules");
     }
+
+    // only id, fieldId and ns will be set in the context, this is used in storm exec, to form dependency graph
+    public static List<IConnectedRule> getReadingRules(Map<Long, Long> ruleIdVsNsId) throws Exception {
+        Map<Long, Long> ruleIdVsFieldId = getRuleIdVsReadingFieldId(new ArrayList<>(ruleIdVsNsId.keySet()));
+        List<IConnectedRule> rules = new ArrayList<>();
+        for (Map.Entry<Long, Long> entry : ruleIdVsNsId.entrySet()) {
+            NameSpaceCacheContext ns = Constants.getNsBean().getNamespace(entry.getValue());
+            Long readingFieldId = ruleIdVsFieldId.get(entry.getValue());
+            rules.add(new NewReadingRuleContext(entry.getKey(), readingFieldId, ns));
+        }
+        return rules;
+    }
+
 
     public static Map<String, Object> getMatchedResourcesWithCount(NewReadingRuleContext readingRule) throws Exception {
         Map<String, Object> resourcesWithCount = new HashMap<>();
@@ -237,5 +260,42 @@ public class NewReadingRuleAPI {
             }
         }
         return nameMap;
+    }
+
+
+    public static Map<Long, Long> getRuleIdVsReadingFieldId(List<Long> ruleIds) throws Exception {
+        return getReadingFieldIdVsRuleId(ruleIds).entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+    }
+
+    public static Map<Long, Long> getReadingFieldIdVsRuleId(List<Long> ruleIds) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule ruleModule = modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE);
+        FacilioField fieldIdField = FieldFactory.getNumberField("readingFieldId", "READING_FIELD_ID", ruleModule);
+
+        SelectRecordsBuilder<NewReadingRuleContext> selectRecordsBuilder = new SelectRecordsBuilder<NewReadingRuleContext>()
+                .module(ruleModule)
+                .beanClass(NewReadingRuleContext.class)
+                .select(Collections.singletonList(fieldIdField));
+
+        if (CollectionUtils.isNotEmpty(ruleIds)) {
+            selectRecordsBuilder.andCondition(CriteriaAPI.getIdCondition(ruleIds, ruleModule));
+        }
+        return selectRecordsBuilder.get().stream().collect(Collectors.toMap(NewReadingRuleContext::getReadingFieldId, NewReadingRuleContext::getId));
+    }
+
+    public static long insertLog(Long ruleId, Long intervalStartTime, Long intervalEndTime, Integer resourceCount) throws Exception {
+        WorkflowRuleLoggerContext ruleLogger = new WorkflowRuleLoggerContext();
+        ruleLogger.setRuleId(ruleId);
+        ruleLogger.setNoOfResources(resourceCount);
+        ruleLogger.setResolvedResourcesCount(0L);
+        ruleLogger.setStatus(WorkflowRuleLoggerContext.Status.IN_PROGRESS.getIndex());
+        ruleLogger.setRuleJobType(RuleJobType.READING_ALARM.getIndex());
+        ruleLogger.setStartTime(intervalStartTime);
+        ruleLogger.setEndTime(intervalEndTime);
+        ruleLogger.setCreatedBy(AccountUtil.getCurrentUser().getId());
+        ruleLogger.setCreatedTime(DateTimeUtil.getCurrenTime(new Boolean[0]));
+        ruleLogger.setCalculationStartTime(DateTimeUtil.getCurrenTime(new Boolean[0]));
+        WorkflowRuleLoggerAPI.addWorkflowRuleLogger(ruleLogger);
+        return ruleLogger.getId();
     }
 }

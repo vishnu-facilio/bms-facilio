@@ -6,20 +6,22 @@ import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.ns.context.NameSpaceCacheContext;
 import com.facilio.ns.context.NameSpaceContext;
+import com.facilio.readingkpi.context.IConnectedRule;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.rca.context.ReadingRuleRCAContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Setter
 @Getter
-public class  NewReadingRuleContext extends V3Context implements ReadingRuleInterface, Cloneable {
+public class  NewReadingRuleContext extends V3Context implements ReadingRuleInterface, IConnectedRule, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
@@ -54,6 +56,15 @@ public class  NewReadingRuleContext extends V3Context implements ReadingRuleInte
     private SpaceCategoryContext spaceCategory;
 
     private AssetCategoryContext assetCategory;
+
+    public NewReadingRuleContext() {
+    }
+
+    public NewReadingRuleContext(Long id, Long readingFieldId, NameSpaceCacheContext ns) {
+        this.setId(id);
+        this.setReadingFieldId(readingFieldId);
+        this.setNs(ns);
+    }
 
     public void setStatus(Boolean status) {
         this.status = status;
@@ -90,6 +101,12 @@ public class  NewReadingRuleContext extends V3Context implements ReadingRuleInte
         if (alarmDetails != null) {
             alarmDetails.setNullForResponse();
         }
+    }
+
+
+    @Override
+    public long insertLog(Long startTime, Long endTime, Integer resourceCount, boolean isSysCreated) throws Exception {
+        return NewReadingRuleAPI.insertLog(getId(), startTime, endTime, resourceCount == null ? assets.size() : resourceCount);
     }
 
     public enum ResourceType {

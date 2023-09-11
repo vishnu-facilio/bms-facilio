@@ -10,6 +10,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.context.NameSpaceContext;
+import com.facilio.readingkpi.context.IConnectedRule;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +25,7 @@ import java.util.Objects;
 @Setter
 @Getter
 @Log4j
-public class SensorRuleContext extends V3Context {
+public class SensorRuleContext extends V3Context implements IConnectedRule {
 
     private static final long serialVersionUID = 1L;
     private static final SensorRuleType[] SENSOR_RULE_TYPES = SensorRuleType.values();
@@ -65,6 +66,11 @@ public class SensorRuleContext extends V3Context {
 
     SensorAlarmDetailsContext sensorAlarmDetails;
 
+    @Override
+    public String getName() {
+        return getSubject();
+    }
+
     public static void processNewSensorAlarmMeta(SensorRuleContext sensorRule, ResourceContext resource, SensorRuleType sensorRuleType, SensorEventContext sensorEvent) throws Exception {
         HashMap<String, SensorRuleAlarmMeta> metaMap = sensorRule.getAlarmMetaMap();
         String metaKey = SensorRuleUtil.getSensorAlarmMetaKey(resource.getId(), sensorRuleType.getIndex());
@@ -95,8 +101,18 @@ public class SensorRuleContext extends V3Context {
         this.sensorField = sensorField;
     }
 
+    @Override
+    public Long getReadingFieldId() {
+        return getRecordFieldId();
+    }
+
     public NameSpaceContext getNs() {
         return ns;
+    }
+
+    @Override
+    public long insertLog(Long startTime, Long endTime, Integer resourceCount, boolean isSysCreated) throws Exception {
+        return 0;
     }
 
     public SensorRuleType getSensorRuleTypeEnum() {

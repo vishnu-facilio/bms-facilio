@@ -37,10 +37,8 @@ public class ReadingKpiLoggerAPI {
                 System.currentTimeMillis(),
                 resourceCount
         );
-        if (!isSysCreated) {
-            kpiLoggerContext.setStartTime(intervalStartTime);
-            kpiLoggerContext.setEndTime(intervalEndTime);
-        }
+        kpiLoggerContext.setStartTime(intervalStartTime);
+        kpiLoggerContext.setEndTime(intervalEndTime);
 
         kpiLoggerContext.setSysCreatedBy(AccountUtil.getCurrentUser());
         kpiLoggerContext.setSysCreatedTime(System.currentTimeMillis());

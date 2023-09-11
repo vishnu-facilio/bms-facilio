@@ -1,5 +1,6 @@
 package com.facilio.workflows.functions;
 
+import com.facilio.connected.CommonConnectedUtil;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NamespaceFrequency;
@@ -14,13 +15,14 @@ import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.time.DateRange;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.facilio.readingkpi.ReadingKpiAPI.getReadingKpi;
-import static com.facilio.readingkpi.ReadingKpiAPI.logsInProgressForResource;
+import static com.facilio.readingkpi.ReadingKpiAPI.*;
 
 @Log4j
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.READING_KPI)
@@ -50,12 +52,28 @@ public class FacilioKpiFunctions {
         return cardValue;
     }
 
+    public String getDependentKpis(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
+        validateParameterDataTypes(objects, 2, Arrays.asList(
+                Long.class,
+                ArrayList.class
+
+        ));
+        Long kpiId = (Long) objects[0];
+        ReadingKPIContext kpi = getReadingKpi(kpiId);
+
+        List<Long> assetIds = CollectionUtils.isNotEmpty((List<Long>) objects[1]) ? (List<Long>) objects[1] : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getAssetCategory().getId());
+
+        DirectedAcyclicGraph<Long, DefaultEdge> graph = CommonConnectedUtil.fetchConRuleFamilyUpwardGraph(kpiId, NSType.KPI_RULE, assetIds);
+        return "Dependent kpis : " + graph.vertexSet() + "\n Graph: " + graph.edgeSet();
+    }
+
     public String runHistory(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
-        validateParameterDataTypes(objects, 4, Arrays.asList(
+        validateParameterDataTypes(objects, 5, Arrays.asList(
                         Long.class,
                         ArrayList.class,
                         Long.class,
-                        Long.class
+                        Long.class,
+                        Boolean.class
                 )
         );
 
@@ -64,19 +82,22 @@ public class FacilioKpiFunctions {
         List<Long> assetIds = CollectionUtils.isNotEmpty((List<Long>) objects[1]) ? (List<Long>) objects[1] : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getAssetCategory().getId());
         Long startTime = (Long) objects[2];
         Long endTime = (Long) objects[3];
+        boolean executeDependencies = (Boolean) objects[4];
 
         sanitizeAndValidatePayload(kpi, startTime, endTime, assetIds);
 
+
         if (CollectionUtils.isNotEmpty(assetIds)) {
-            switch (Objects.requireNonNull(kpi.getKpiTypeEnum())) {
-                case SCHEDULED:
-                    ReadingKpiAPI.beginSchKpiHistorical(kpi, startTime, endTime, assetIds);
-                    break;
-                case LIVE:
-                    ReadingKpiAPI.beginLiveKpiHistorical(kpi, startTime, endTime, assetIds);
-                    break;
+            StringBuilder s = new StringBuilder("Historical KPI Calculation will be executed for KPIS: ");
+
+            if (Objects.requireNonNull(kpi.getKpiTypeEnum()) == KPIType.LIVE) {
+                if (executeDependencies) {
+                    DirectedAcyclicGraph<Long, DefaultEdge> graph = CommonConnectedUtil.fetchConRuleFamilyUpwardGraph(kpiId, NSType.KPI_RULE, assetIds);
+                    s.append(graph.vertexSet()).append(" for Assets ").append(assetIds).append("\n Graph: ").append(graph.edgeSet());
+                }
+                beginLiveKpiHistorical(Collections.singletonList(kpi), startTime, endTime, assetIds, executeDependencies);
             }
-            return "Historical KPI Calculation has started for assets: " + assetIds;
+            return s.toString();
         }
         return "All chosen assets have histories, in progress, with overlapping intervals";
     }

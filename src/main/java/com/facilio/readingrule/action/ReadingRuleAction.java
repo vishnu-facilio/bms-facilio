@@ -1,6 +1,5 @@
 package com.facilio.readingrule.action;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
@@ -8,6 +7,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.rca.context.RCAScoreReadingContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.storm.InstructionType;
 import com.facilio.v3.V3Action;
 import lombok.Getter;
@@ -16,8 +16,11 @@ import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static com.facilio.connected.CommonConnectedUtil.postConRuleHistoryInstructionToStorm;
 
 
 @Log4j
@@ -71,19 +74,8 @@ public class ReadingRuleAction extends V3Action {
     private List<Long> assetIds;
 
     public String runHistorical() throws Exception {
-        FacilioChain runStormHistorical = TransactionChainFactory.initiateStormInstructionExecChain();
-        FacilioContext context = runStormHistorical.getContext();
-        context.put("type", InstructionType.READING_RULE_HISTORICAL.getIndex());
-
-        JSONObject instructionData = new JSONObject();
-        instructionData.put("recordId", getRecordId());
-        instructionData.put("startTime", getStartTime());
-        instructionData.put("endTime", getEndTime());
-        instructionData.put("createdBy", AccountUtil.getCurrentUser().getId());
-        instructionData.put("assetIds", getAssetIds());
-        context.put("data", instructionData);
-        runStormHistorical.execute();
-
+        NewReadingRuleContext rule = NewReadingRuleAPI.getReadingRules(Collections.singletonList(getRecordId())).get(0);
+        postConRuleHistoryInstructionToStorm(Collections.singletonList(rule), startTime, endTime, rule.getNs().getIncludedAssetIds(), false, InstructionType.READING_RULE_HISTORICAL);
         setData("success", "Instruction Processing has begun");
 
         return SUCCESS;

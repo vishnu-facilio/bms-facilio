@@ -91,6 +91,7 @@ public class NamespaceAPI {
                 field.setRelatedInfo(relatedInfo);
             }
             ns.addField(field);
+            LOGGER.debug("Namespace ID : " + ns.getId() + " NameSpace Category Id => "+ ns.getCategoryId());
             ns.setAssetCategoryContext(AssetCategoryFeatureStatusUtil.validateCategoryWithNSType(ns.getCategoryId()));
             FacilioField readingField = modBean.getField(field.getFieldId());
             field.setVarDataType(getScriptDataType(readingField));
@@ -297,6 +298,16 @@ public class NamespaceAPI {
         return fieldIds;
     }
 
+    public static Optional<Long> getNsIdForRuleId(Long parentRuleId, NSType nsType) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
+                .select(Collections.singleton(FieldFactory.getIdField("id", "ID", NamespaceModuleAndFieldFactory.getNamespaceModule())))
+                .andCondition(CriteriaAPI.getCondition("PARENT_RULE_ID", "parentRuleId", parentRuleId.toString(), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getConditionFromList("TYPE", "type", Collections.singletonList(Long.valueOf(nsType.getIndex())), NumberOperators.EQUALS));
+        List<Map<String, Object>> props = builder.get();
+
+        return props.stream().map(prop -> (Long) prop.get("id")).findFirst();
+    }
     public static List<Long> getNsIdForRuleId(Long parentRuleId, List<NSType> nsTypeList) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())

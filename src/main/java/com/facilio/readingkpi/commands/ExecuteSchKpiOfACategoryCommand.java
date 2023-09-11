@@ -35,7 +35,7 @@ public class ExecuteSchKpiOfACategoryCommand extends FacilioCommand implements P
     public boolean executeCommand(Context context) throws Exception {
         // note while executing kpis of a freq type, it's assumed that all the dependent lower order kpis
         // are calculated during the previous iteration, so only the current freq type is fetched
-        KpiListContainer kpisMap = ReadingKpiAPI.getActiveScheduledKpisOfFrequencyType(this.scheduleType);
+        KpiListContainer kpisMap = ReadingKpiAPI.getActiveScheduledKpisOfFrequencyTypeWithGraph(this.scheduleType);
         List<ReadingKPIContext> orderedReadingKpis = ReadingKpiAPI.getFlattenedListOfKpis(kpisMap);
 
         if (CollectionUtils.isEmpty(orderedReadingKpis)) {

@@ -1907,6 +1907,11 @@
     <request path="/api/v3/readingKpi/historical/fetchAssetDetails">
         <requestbody type="object"/>
     </request>
+    <request path="/api/v3/readingKpi/historical/getGraphDetailsForKpi">
+        <requestbody type="object">
+        <property name="recordId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
 
     <request path="/api/v2/fields/advancedFilter/drilldown/:moduleName">
         <urlparams>

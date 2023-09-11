@@ -5,9 +5,11 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.ns.context.NSType;
 import com.facilio.readingkpi.context.KPIType;
 import com.facilio.readingkpi.context.KpiContextWrapper;
 import com.facilio.readingkpi.context.ReadingKPIContext;
@@ -18,10 +20,13 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.facilio.bmsconsole.util.BmsJobUtil.scheduleOneTimeJobWithProps;
+import static com.facilio.connected.CommonConnectedUtil.fetchConRuleFamilyNodesAndEdges;
 import static com.facilio.readingkpi.ReadingKpiAPI.*;
 
 @Getter
@@ -33,6 +38,12 @@ public class ReadingKpiAction extends V3Action {
     private Long endTime; // used both for history and analytics
     private List<Long> assets;
     private Long parentLoggerId;
+    private KPIType kpiType;
+    private Boolean executeDependencies;
+
+    private List<Long> recordIds; //dev purpose
+    private Map<Long, Long> kpiIdVsParentLoggerId; //dev purpose
+
 
     // analytics
     private Long categoryId;
@@ -154,16 +165,18 @@ public class ReadingKpiAction extends V3Action {
     }
 
     public String runHistorical() throws Exception {
-        ReadingKPIContext kpi = validatePayload();
-        ReadingKpiAPI.setNamespaceAndMatchedResources(Collections.singletonList(kpi));
+        List<ReadingKPIContext> kpis = validatePayload();
+        ReadingKpiAPI.setNamespaceAndMatchedResources(kpis);
 
         try {
-            switch (Objects.requireNonNull(KPIType.valueOf(kpi.getKpiType()))) {
+            switch (Objects.requireNonNull(getKpiType() == null ?
+                    KPIType.valueOf(kpis.get(0).getKpiType()) :
+                    getKpiType())) {
                 case SCHEDULED:
-                    ReadingKpiAPI.beginSchKpiHistorical(kpi, getStartTime(), getEndTime(), getAssets());
+                    ReadingKpiAPI.beginSchKpiHistorical(kpis.get(0), getStartTime(), getEndTime(), getAssets());
                     break;
                 case LIVE:
-                    ReadingKpiAPI.beginLiveKpiHistorical(kpi, getStartTime(), getEndTime(), getAssets());
+                    beginLiveKpiHistorical(kpis);
                     break;
             }
             setData(SUCCESS, "Historical KPI Calculation has started");
@@ -175,11 +188,40 @@ public class ReadingKpiAction extends V3Action {
         }
     }
 
-    public ReadingKPIContext validatePayload() throws Exception {
+    private void beginLiveKpiHistorical(List<ReadingKPIContext> kpis) throws Exception {
+        ReadingKpiAPI.beginLiveKpiHistorical(kpis, startTime, endTime, assets, false);
+    }
+
+    private void beginSchKpiHistorical(List<ReadingKPIContext> kpis) throws Exception {
+        ReadingKPIContext kpi = kpis.get(0);
+        JSONObject props = new JSONObject();
+        props.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
+        props.put(FacilioConstants.ContextNames.END_TIME, getEndTime());
+        props.put(FacilioConstants.ReadingKpi.IS_HISTORICAL, true);
+        props.put(FacilioConstants.ContextNames.RESOURCE_LIST, getAssets());
+        props.put(FacilioConstants.ReadingKpi.READING_KPI, getRecordId());
+
+        parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), startTime, endTime, false, CollectionUtils.isNotEmpty(getAssets()) ? getAssets().size() : kpi.getMatchedResourcesIds().size());
+        props.put(FacilioConstants.ReadingKpi.PARENT_LOGGER_ID, parentLoggerId);
+
+        scheduleOneTimeJobWithProps(ReadingKpiLoggerAPI.getNextJobId(), FacilioConstants.ReadingKpi.READING_KPI_HISTORICAL_JOB, 1, "facilio", props);
+    }
+
+
+    public List<ReadingKPIContext> validatePayload() throws Exception {
         if (getId() == -1 || getStartTime() == -1 || getEndTime() == -1) {
             throw new IllegalArgumentException("Insufficient parameters for Historical Kpi calculation");
         }
-        return ReadingKpiAPI.getReadingKpi(getRecordId());
+        List<ReadingKPIContext> kpis = new ArrayList<>();
+        for (Long kpiId : getRecordIds() == null ? Collections.singletonList(getRecordId()) : getRecordIds()) {
+
+            ReadingKPIContext kpi = ReadingKpiAPI.getReadingKpi(kpiId);
+            if (kpi == null) {
+                throw new IllegalArgumentException("Invalid kpi ID for historical kpi calculation");
+            }
+            kpis.add(kpi);
+        }
+        return kpis;
     }
 
     public String fetchAssetDetails() throws Exception {
@@ -188,6 +230,12 @@ public class ReadingKpiAction extends V3Action {
         context.put("parentLoggerId", getParentLoggerId());
         runStormHistorical.execute();
         setData("assetList", context.get("assetList"));
+        return SUCCESS;
+    }
+
+    public String getGraphDetailsForKpi() throws Exception {
+        Map<String, Object> stringObjectMap = fetchConRuleFamilyNodesAndEdges(recordId, NSType.KPI_RULE, assets);
+        setData(FieldUtil.getAsJSON(stringObjectMap));
         return SUCCESS;
     }
 }

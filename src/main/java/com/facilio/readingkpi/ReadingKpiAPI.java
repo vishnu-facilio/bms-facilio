@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.connected.CommonConnectedUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -25,6 +26,7 @@ import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingkpi.context.*;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
+import com.facilio.readingkpi.context.*;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.storm.InstructionType;
@@ -54,6 +56,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.facilio.bmsconsole.util.BmsJobUtil.scheduleOneTimeJobWithProps;
+
+import static com.facilio.connected.CommonConnectedUtil.getDependencyMapForConnectedRules;
+import static com.facilio.connected.CommonConnectedUtil.postConRuleHistoryInstructionToStorm;
 
 @Log4j
 public class ReadingKpiAPI {
@@ -142,6 +147,18 @@ public class ReadingKpiAPI {
         return DateTimeUtil.getMillis(zdt, true);
     }
 
+    // only id, fieldId and ns will be set in the context, this is used in storm exec, to form dependency graph
+    public static List<IConnectedRule> getReadingKpis(Map<Long, Long> kpiIdVsNsId) throws Exception {
+        Map<Long, Long> kpiIdVsFieldId = getKpiIdVsReadingFieldId(new ArrayList<>(kpiIdVsNsId.keySet()));
+        List<IConnectedRule> kpis = new ArrayList<>();
+        for (Map.Entry<Long, Long> entry : kpiIdVsNsId.entrySet()) {
+            NameSpaceCacheContext ns = Constants.getNsBean().getNamespace(entry.getValue());
+            Long readingFieldId = kpiIdVsFieldId.get(entry.getKey());
+            kpis.add(new ReadingKPIContext(entry.getKey(), readingFieldId, ns));
+        }
+        return kpis;
+    }
+
     public static Double getCurrentValueOfKpi(Long kpiId, Long resourceId) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         FacilioModule kpiModule = modBean.getModule(FacilioConstants.ReadingKpi.READING_KPI);
@@ -168,14 +185,11 @@ public class ReadingKpiAPI {
 
     // Scheduled KPI Util
 
-    /**
-     * @return return List of independent Kpis, dependent Kpis and DirectedGraph(s) of the dependent kpis
-     */
-    public static KpiListContainer getActiveScheduledKpisOfFrequencyType(Integer scheduleType) throws Exception {
+    public static List<ReadingKPIContext> getActiveScheduledKpisOfFrequencyType(Integer scheduleType) throws Exception {
         return getActiveScheduledKpisOfFrequencyType(Collections.singletonList(scheduleType));
     }
 
-    public static KpiListContainer getActiveScheduledKpisOfFrequencyType(List<Integer> scheduleTypes) throws Exception {
+    public static List<ReadingKPIContext> getActiveScheduledKpisOfFrequencyType(List<Integer> scheduleTypes) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ReadingKpi.READING_KPI);
         List<FacilioField> fields = modBean.getModuleFields(FacilioConstants.ReadingKpi.READING_KPI);
@@ -192,22 +206,32 @@ public class ReadingKpiAPI {
 
         List<ReadingKPIContext> kpis = setNamespaceAndMatchedResources(selectRecordsBuilder.get());
         if (CollectionUtils.isEmpty(kpis)) {
-            return null;
+            return new ArrayList<>();
         }
-        LOGGER.info("Active KPI Ids: " + kpis.stream().map(x -> x.getId()).collect(Collectors.toList()));
-
-        return getIndepAndDepKpisWithGraph(kpis);
-
+        return kpis;
     }
 
+    /**
+     * @return return List of independent Kpis, dependent Kpis and DirectedGraph(s) of the dependent kpis
+     */
+    public static KpiListContainer getActiveScheduledKpisOfFrequencyTypeWithGraph(Integer scheduleType) throws Exception {
+        return getActiveScheduledKpisOfFrequencyTypeWithGraph(Collections.singletonList(scheduleType));
+    }
+
+    public static KpiListContainer getActiveScheduledKpisOfFrequencyTypeWithGraph(List<Integer> scheduleTypes) throws Exception {
+        List<ReadingKPIContext> kpis = getActiveScheduledKpisOfFrequencyType(scheduleTypes);
+        return getIndepAndDepKpisWithGraph(kpis);
+    }
+
+
     public static KpiListContainer getIndepAndDepKpisWithGraph(List<ReadingKPIContext> kpis) {
-        Map<Long, List<Long>> dependentKpiIdFieldIdsMap = segregateDependentKpis(kpis);
+        Map<Long, List<Long>> kpiIdVsDepKpiIds = getDependencyMapForConnectedRules(kpis);
 
         List<ReadingKPIContext> independentKpis = new ArrayList<>();
         List<ReadingKPIContext> dependentKpis = new ArrayList<>();
 
         for (ReadingKPIContext kpi : kpis) {
-            if (!dependentKpiIdFieldIdsMap.containsKey(kpi.getId())) {
+            if (!kpiIdVsDepKpiIds.containsKey(kpi.getId())) {
                 independentKpis.add(kpi);
             } else {
                 dependentKpis.add(kpi);
@@ -216,81 +240,28 @@ public class ReadingKpiAPI {
 
         List<Graph<Long, DefaultEdge>> dependencyGraphs = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(dependentKpis)) {
-            dependencyGraphs = getGraphsOfDependentKpis(dependentKpiIdFieldIdsMap);
+            dependencyGraphs = getGraphsOfDependentKpis(kpiIdVsDepKpiIds);
         }
         return new KpiListContainer(independentKpis, dependentKpis, dependencyGraphs);
     }
 
-    /**
-     * @return returns a map of kpi ID vs dependent kpi IDs
-     * @implNote A dependent kpi is identified by checking for its reading field id in the namespace fields of other given kpis
-     */
-    public static Map<Long, List<Long>> segregateDependentKpis(@NonNull List<ReadingKPIContext> kpis) { //returns dependent kpis map
-
-        Map<Long, Long> readingFieldIdKpiIdMap = kpis.stream().collect(Collectors.toMap(x -> x.getReadingFieldId(), x -> x.getId()));
-
-        // the following map gives the dependent kpiIds(value) for a given kpi(key)
-        Map<Long, List<Long>> kpiIdDepKpiIdsMap = kpis.stream()
-                .collect(
-                        Collectors.toMap(
-                                x -> x.getId(),
-                                x -> getParentKpiIds(
-                                        x.getNs().getFields().stream().map(y -> y.getFieldId()).collect(Collectors.toList()),//nsFieldIds
-                                        readingFieldIdKpiIdMap
-                                )
-                        )
-                );
-
-
-        kpiIdDepKpiIdsMap.entrySet().removeIf(x -> isIndependentKpi(x.getKey(), kpiIdDepKpiIdsMap));
-        return kpiIdDepKpiIdsMap;
-    }
-
-    /**
-     * @return returns the readingFieldIds of kpis alone from ns fields of given kpi (filters out normal readings, like active power b for example)
-     */
-    private static List<Long> getParentKpiIds(List<Long> nsFieldIds, Map<Long, Long> readingFieldIdKpiIdMap) {
-        List<Long> fieldIdsOfKpis = new ArrayList<>(readingFieldIdKpiIdMap.keySet());
-        return nsFieldIds.stream().filter(x -> fieldIdsOfKpis.contains(x)).map(x -> readingFieldIdKpiIdMap.get(x)).collect(Collectors.toList());
-    }
-
-    /**
-     * @implNote Single degree source KPIs and Independent KPIs do not have any dependent KPIs in the final kpiIdVsDepKpiIdsMap.
-     * This function differentiates these two by iterating through each kpi in the map and checks if its field id exists
-     * in other kpi's dependent kpi id list.
-     */
-    private static boolean isIndependentKpi(Long kpiId, Map<Long, List<Long>> kpiIdDepKpiIdsMap) {
-        // to differentiate independent and single degree kpis
-        List<Long> depIdList = kpiIdDepKpiIdsMap.get(kpiId).stream().filter(Objects::nonNull).collect(Collectors.toList()); // removes null-only lists
-        if (CollectionUtils.isEmpty(depIdList)) {
-            for (Map.Entry<Long, List<Long>> entry : kpiIdDepKpiIdsMap.entrySet()) {
-                if (!Objects.equals(entry.getKey(), kpiId)) {
-                    if (entry.getValue().contains(kpiId)) {
-                        return false;
-                    }
-                }
-            }
-        } else {
-            return false;
-        }
-        return true;
-    }
-
-    public static List<Graph<Long, DefaultEdge>> getGraphsOfDependentKpis(Map<Long, List<Long>> kpis) {
+    public static List<Graph<Long, DefaultEdge>> getGraphsOfDependentKpis(Map<Long, List<Long>> dependencyMap) {
         Graph<Long, DefaultEdge> directedGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
-        List<Long> nonSingleDegreeKpis = new ArrayList<>();
+        List<Long> dependentKpis = new ArrayList<>(); // kpis that aren't sources
 
-        for (Map.Entry<Long, List<Long>> entry : kpis.entrySet()) {
+        // first add vertices for each kpi and list all dep kpis
+        for (Map.Entry<Long, List<Long>> entry : dependencyMap.entrySet()) {
             Long id = entry.getKey();
             directedGraph.addVertex(id);
-            List<Long> depIdList = entry.getValue().stream().filter(x -> x != null).collect(Collectors.toList()); // removes null-only entries
+            List<Long> depIdList = entry.getValue().stream().filter(Objects::nonNull).collect(Collectors.toList()); // removes null-only entries
             if (CollectionUtils.isNotEmpty(depIdList)) {
-                nonSingleDegreeKpis.add(id);
+                dependentKpis.add(id);
             }
         }
-        for (Long id : nonSingleDegreeKpis) {
-            for (Long sourceId : kpis.get(id)) {
+        // for every dep kpi add an edge with its dependency
+        for (Long id : dependentKpis) {
+            for (Long sourceId : dependencyMap.get(id)) {
                 if (sourceId != null) {
                     directedGraph.addEdge(sourceId, id);
                 }
@@ -335,10 +306,10 @@ public class ReadingKpiAPI {
         List<Set<Long>> orderOfExecution = new ArrayList<>();
         orderOfExecution.add(independentKpis.stream().map(x -> x.getId()).collect(Collectors.toSet()));
         for (Graph<Long, DefaultEdge> graph : dependencyGraphs) {
-            orderOfExecution.addAll(ReadingKpiAPI.getOrderOfExecution(graph));
+            orderOfExecution.addAll(CommonConnectedUtil.getOrderOfExecution(graph));
         }
         List<Long> flattenedOrder = new ArrayList<>();
-        orderOfExecution.forEach(x -> flattenedOrder.addAll(x));
+        orderOfExecution.forEach(flattenedOrder::addAll);
 
         List<ReadingKPIContext> orderedReadingKpis = new ArrayList<>(independentKpis);
         Map<Long, ReadingKPIContext> dependentKpisMap = dependentKpis.stream().collect(Collectors.toMap(x -> x.getId(), Function.identity()));
@@ -348,36 +319,6 @@ public class ReadingKpiAPI {
         orderedReadingKpis.stream().filter(readingKPIContext -> readingKPIContext != null);
 
         return orderedReadingKpis;
-    }
-
-    public static List<Set<Long>> getOrderOfExecution(Graph<Long, DefaultEdge> graph) {
-        // list of sets and not a flat list to implement parallel exec of a single set, later
-        List<Set<Long>> orderOfExecution = new ArrayList<>();
-
-        Set<Long> sourceVertices = new HashSet<>();
-        for (Long vertex : graph.vertexSet()) {
-            if (graph.inDegreeOf(vertex) == 0) {
-                sourceVertices.add(vertex);
-            }
-        }
-        orderOfExecution.add(sourceVertices);
-        Set<Long> nMinusOnethIteration = new HashSet<>(sourceVertices);
-        while (CollectionUtils.isNotEmpty(nMinusOnethIteration)) {
-            Set<Long> possibleNextSet = new HashSet<>();
-            for (Long vertex : nMinusOnethIteration) {
-                for (DefaultEdge edge : graph.outgoingEdgesOf(vertex)) {
-                    possibleNextSet.add(graph.getEdgeTarget(edge));
-                }
-            }
-            if (CollectionUtils.isEmpty(possibleNextSet)) {
-                break;
-            }
-            nMinusOnethIteration = possibleNextSet;
-            orderOfExecution.add(nMinusOnethIteration);
-
-        }
-
-        return orderOfExecution;
     }
 
 
@@ -957,98 +898,28 @@ public class ReadingKpiAPI {
         return types;
     }
 
-    public static Map<Long, Long> getReadingFieldIdVsKpiId() throws Exception {
+    public static Map<Long, Long> getKpiIdVsReadingFieldId(List<Long> kpiIds) throws Exception {
+        return getReadingFieldIdVsKpiId(kpiIds).entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+    }
+
+    public static Map<Long, Long> getReadingFieldIdVsKpiId(List<Long> kpiIds) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule readingKpiModule = modBean.getModule(FacilioConstants.ReadingKpi.READING_KPI);
         FacilioField fieldIdField = FieldFactory.getNumberField("readingFieldId", "READING_FIELD_ID", readingKpiModule);
-        FacilioField kpiTypeField = FieldFactory.getNumberField("kpiTYpe", "KPI_TYPE", readingKpiModule);
-
+        FacilioField kpiTypeField = FieldFactory.getNumberField("kpiType", "KPI_TYPE", readingKpiModule);
         SelectRecordsBuilder<ReadingKPIContext> selectRecordsBuilder = new SelectRecordsBuilder<ReadingKPIContext>()
                 .module(readingKpiModule)
                 .beanClass(ReadingKPIContext.class)
-                .select(Arrays.asList(fieldIdField))
-                .andCondition(CriteriaAPI.getCondition(kpiTypeField, String.valueOf(KPIType.SCHEDULED.getIndex()), NumberOperators.EQUALS));
-
-        return selectRecordsBuilder.get().stream().collect(Collectors.toMap(ReadingKPIContext::getReadingFieldId, ReadingKPIContext::getId));
-    }
-
-    public static List<Long> getFirstCircleRelation(Long key, Map<Long, Long> readingKpiIdVsFieldIds) throws Exception {
-        FacilioModule namespaceModule = NamespaceModuleAndFieldFactory.getNamespaceModule();
-        Map<String, FacilioField> namespaceFieldMap = FieldFactory.getAsMap(NamespaceModuleAndFieldFactory.getNamespaceFields());
-
-        Map<String, FacilioField> namespaceFieldsFieldMap = FieldFactory.getAsMap(NamespaceModuleAndFieldFactory.getNamespaceFieldFields());
-
-        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(namespaceModule.getTableName())
-                .select(Collections.singletonList(namespaceFieldsFieldMap.get("fieldId")))
-                .innerJoin("Namespace_Fields")
-                .on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
-                .andCondition(CriteriaAPI.getCondition(namespaceFieldMap.get("parentRuleId"), Collections.singletonList(key), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(namespaceFieldMap.get("type"), String.valueOf(NSType.KPI_RULE.getIndex()), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(namespaceFieldsFieldMap.get("fieldId"), readingKpiIdVsFieldIds.keySet(), NumberOperators.EQUALS));
-
-
-        List<Map<String, Object>> props = selectRecordBuilder.get();
-        List<Long> firstCircle = new ArrayList<>();
-        for (Map<String, Object> prop : props) {
-            firstCircle.add(readingKpiIdVsFieldIds.get((Long) prop.get("fieldId")));
+                .select(Collections.singletonList(fieldIdField))
+                .andCondition(CriteriaAPI.getCondition(kpiTypeField, String.valueOf(3), NumberOperators.NOT_EQUALS));
+        if (CollectionUtils.isNotEmpty(kpiIds)) {
+            selectRecordsBuilder.andCondition(CriteriaAPI.getIdCondition(kpiIds, readingKpiModule));
         }
-        return firstCircle;
-    }
 
-    public static List<Long> fetchKpiFamily(Long kpiId) throws Exception {
-        List<List<Long>> list = new ArrayList<>();
-        List<Long> innerList = new ArrayList<>();
-        innerList.add(kpiId);
-        list.add(innerList);
-        List<List<Long>> kpiIds = ReadingKpiAPI.fetchKpiFamily(kpiId, list, ReadingKpiAPI.getReadingFieldIdVsKpiId());
-        List<Long> flatList = new ArrayList<>();
-        kpiIds.forEach(flatList::addAll);
-        return flatList;
-    }
-
-    public static List<List<Long>> fetchKpiFamily(Long key, List<List<Long>> kpis, Map<Long, Long> readingKpiIdVsFieldIds) throws Exception {
-        List<Long> firstCircle = getFirstCircleRelation(key, readingKpiIdVsFieldIds);
-        if (CollectionUtils.isNotEmpty(firstCircle)) {
-            kpis.add(firstCircle);
-            for (Long nextKey : firstCircle) {
-                fetchKpiFamily(nextKey, kpis, readingKpiIdVsFieldIds);
-            }
-        }
-        return kpis;
-    }
-
-
-    public static void beginLiveKpiHistorical(ReadingKPIContext kpi, Long startTime, Long endTime, List<Long> assetIds) throws Exception {
-        FacilioChain runStormHistorical = TransactionChainFactory.initiateStormInstructionExecChain();
-        FacilioContext context = runStormHistorical.getContext();
-        context.put("type", InstructionType.LIVE_KPI_HISTORICAL.getIndex());
-
-        JSONObject instructionData = new JSONObject();
-        instructionData.put("recordId", kpi.getId());
-        instructionData.put("startTime", startTime);
-        instructionData.put("endTime", endTime);
-        instructionData.put("assetIds", assetIds);
-
-        Long parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), kpi.getKpiType(), startTime, endTime, false, CollectionUtils.isNotEmpty(assetIds) ? assetIds.size() : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getAssetCategory().getId()).size());
-        instructionData.put("parentLoggerId", parentLoggerId);
-
-        context.put("data", instructionData);
-        runStormHistorical.execute();
-    }
-
-    public static void beginSchKpiHistorical(ReadingKPIContext kpi, Long startTime ,Long endTime, List<Long> assetIds) throws Exception {
-        JSONObject props = new JSONObject();
-        props.put(FacilioConstants.ContextNames.START_TIME, startTime);
-        props.put(FacilioConstants.ContextNames.END_TIME, endTime);
-        props.put(FacilioConstants.ReadingKpi.IS_HISTORICAL, true);
-        props.put(FacilioConstants.ContextNames.RESOURCE_LIST, assetIds);
-        props.put(FacilioConstants.ReadingKpi.READING_KPI, kpi.getId());
-
-        Long parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), startTime, endTime, false, CollectionUtils.isNotEmpty(assetIds) ? assetIds.size() : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getAssetCategory().getId()).size());
-        props.put(FacilioConstants.ReadingKpi.PARENT_LOGGER_ID, parentLoggerId);
-
-        scheduleOneTimeJobWithProps(ReadingKpiLoggerAPI.getNextJobId(), FacilioConstants.ReadingKpi.READING_KPI_HISTORICAL_JOB, 1, "facilio", props);
+        return Optional.ofNullable(selectRecordsBuilder.get())
+                .orElseGet(ArrayList::new)
+                .stream()
+                .collect(Collectors.toMap(ReadingKPIContext::getReadingFieldId, ReadingKPIContext::getId));
     }
 
     public Boolean logsInProgress(Long kpiId) throws Exception {
@@ -1084,4 +955,24 @@ public class ReadingKpiAPI {
         }
         return new ArrayList<>();
     }
+
+
+    public static void beginLiveKpiHistorical(List<ReadingKPIContext> kpis, Long startTime, Long endTime, List<Long> assetIds, boolean executeDependencies) throws Exception {
+        postConRuleHistoryInstructionToStorm(kpis, startTime, endTime, assetIds, executeDependencies, InstructionType.LIVE_KPI_HISTORICAL);
+    }
+
+    public static void beginSchKpiHistorical(ReadingKPIContext kpi, Long startTime, Long endTime, List<Long> assetIds) throws Exception {
+        JSONObject props = new JSONObject();
+        props.put(FacilioConstants.ContextNames.START_TIME, startTime);
+        props.put(FacilioConstants.ContextNames.END_TIME, endTime);
+        props.put(FacilioConstants.ReadingKpi.IS_HISTORICAL, true);
+        props.put(FacilioConstants.ContextNames.RESOURCE_LIST, assetIds);
+        props.put(FacilioConstants.ReadingKpi.READING_KPI, kpi.getId());
+
+        Long parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), startTime, endTime, false, CollectionUtils.isNotEmpty(assetIds) ? assetIds.size() : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getAssetCategory().getId()).size());
+        props.put(FacilioConstants.ReadingKpi.PARENT_LOGGER_ID, parentLoggerId);
+
+        scheduleOneTimeJobWithProps(ReadingKpiLoggerAPI.getNextJobId(), FacilioConstants.ReadingKpi.READING_KPI_HISTORICAL_JOB, 1, "facilio", props);
+    }
+
 }
