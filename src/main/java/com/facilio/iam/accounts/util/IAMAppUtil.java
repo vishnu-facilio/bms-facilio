@@ -30,6 +30,10 @@ public class IAMAppUtil {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getAppDomain(appDomain));
 	}
 
+	public static AppDomain getAppDomain(String appDomain, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getAppDomain(appDomain, orgId));
+	}
+
 	public static boolean isSSoEnabled(String serverName, long orgId) throws Exception {
 	   AppDomain appDomain = getAppDomain(serverName);
 	   boolean isCustomDomain = AppDomain.DomainType.valueOf(appDomain.getDomainType()) == AppDomain.DomainType.CUSTOM;

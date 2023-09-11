@@ -13,6 +13,7 @@
 <%@ page import="com.facilio.client.app.pojo.ClientAppInfo" %>
 <%@ page import="com.facilio.client.app.util.ClientAppUtil" %>
 <%@ page import="com.facilio.aws.util.FacilioProperties" %>
+<%@ page import="com.facilio.sandbox.utils.SandboxAPI" %>
 <%@page contentType="text/html; charset=UTF-8" %>
 
 <%! static Map<String, String> indexHtmls = new ConcurrentHashMap<>(); %> <%-- Maybe change this to LRU Cache later --%>
@@ -143,6 +144,11 @@
         placeHolderParams.put("dataDogClientId", datadogClientID);
         placeHolderParams.put("identityServerURL", identityServerURL);
         placeHolderParams.put("isGoogleAnalytics", Boolean.toString(isGoogleAnalytics));
+        if(SandboxAPI.isSandboxSubDomain(request.getServerName())) {
+            placeHolderParams.put("addOrgDomainInRootPath", Boolean.toString(true));
+        } else {
+            placeHolderParams.put("addOrgDomainInRootPath", Boolean.toString(false));
+        }
 
         String isExport = request.getHeader("X-Is-Export");
 

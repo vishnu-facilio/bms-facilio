@@ -125,6 +125,7 @@ public class FacilioProperties {
     private static String clientVersion;
 
     private static String baseDomain;
+    private static String sandboxSubDomain;
     private static String mainAppDomain;
     private static String tenantAppDomain;
     private static String clientAppDomain;
@@ -366,6 +367,7 @@ public class FacilioProperties {
             facilioResponse = "true".equals(PROPERTIES.get("response.size"));
 
             baseDomain = PROPERTIES.getProperty("base.domain");
+            sandboxSubDomain = PROPERTIES.getProperty("sandbox.subdomain");
             mainAppDomain = PROPERTIES.getProperty("mainapp.domain");
             tenantAppDomain = PROPERTIES.getProperty("tenantportal.domain");
             clientAppDomain = PROPERTIES.getProperty("clientportal.domain");
@@ -1073,4 +1075,8 @@ public class FacilioProperties {
         }
         return false;
    }
+
+    public static String getSandboxSubDomain() {
+        return sandboxSubDomain;
+    }
 }

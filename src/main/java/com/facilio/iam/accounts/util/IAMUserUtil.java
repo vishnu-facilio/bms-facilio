@@ -258,6 +258,10 @@ public class IAMUserUtil {
 	//	return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getDefaultOrgv2(uId));
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getDefaultOrgv3(uId));
 	}
+
+	public static Organization getDefaultOrg(long uId, Organization.OrgType orgType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getDefaultOrgv3(uId, orgType));
+	}
 	
 	public static void clearUserSessions(long uid) throws Exception {
 		FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().clearAllUserSessionsv2(uid));
@@ -298,9 +302,17 @@ public class IAMUserUtil {
 	public static Organization getOrg(String currentOrgDomain, long uId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getOrgv2(currentOrgDomain, uId));
 	}
-	
+
+	public static Organization getOrg(String currentOrgDomain, long uId, Organization.OrgType orgType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getOrgv2(currentOrgDomain, uId, orgType));
+	}
+
 	public static List<Organization> getOrgsForUser(long uId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getOrgsv2(uId));
+	}
+
+	public static List<Organization> getOrgsForUser(long uId, Organization.OrgType orgType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().getOrgsv2(uId, orgType));
 	}
 	
 	public static Object getPermalinkDetails(String token) throws Exception {

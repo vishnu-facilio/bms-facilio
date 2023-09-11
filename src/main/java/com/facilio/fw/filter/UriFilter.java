@@ -2,8 +2,8 @@ package com.facilio.fw.filter;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.filters.FacilioHttpRequest;
+import com.facilio.sandbox.utils.SandboxAPI;
 import com.facilio.util.RequestUtil;
-import com.facilio.wms.message.Message;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -12,11 +12,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class UriFilter implements Filter {
     private static final String URL_PATTERN = "/api/";
@@ -134,19 +130,45 @@ public class UriFilter implements Filter {
 //                request.getRequestDispatcher("/api/v4"+StringUtils.removeStart(reqUri, prefix)).forward(request, response);
 //            }
             } else {
-                int idx = reqUri.indexOf(URL_PATTERN);
-                if (idx == 0) { //Doing this to make APIs called without app name to go through the usual security/ validation filters since we have struts2 configured to handle index.jsp globally
-                    req.getRequestDispatcher(reqUri).forward(request, response); //Doing this to restrict direct hitting of struts2 urls
-                } else if (idx > 0) {
-                    String appName = reqUri.substring(1, idx);
-                    String newUri = reqUri.substring(idx);
-//                    System.out.println("Facilio filter called : " + newUri);
-                    request.setAttribute(RequestUtil.REQUEST_APP_NAME, appName);
-                    req.getRequestDispatcher(newUri).forward(request, response);
-//                    System.out.println("Req completed");
+                String domainName = request.getServerName();
+
+                // {orgdomain}.faciliosandbox.com/{sandbox}/{appname}/api
+                if (SandboxAPI.isSandboxSubDomain(domainName)) {
+                    List<String> reqUriSplit = Arrays.asList(reqUri.split("/"));
+                    int idx = reqUriSplit.indexOf("api");
+                    if (idx == 1) {                                                     // "/api/"
+                        req.getRequestDispatcher(reqUri).forward(request, response);
+                    } else if (idx == 2) {                                              // "/sandboxName/api/"
+                        String sandboxName = reqUriSplit.get(1);
+                        request.setAttribute(RequestUtil.ORG_SUBDOMAIN, sandboxName);
+                        req.getRequestDispatcher(getNewURI(reqUri)).forward(request, response);
+                    } else if (idx == 3){                                               // "/sandboxName/appName/api/"
+                        String appName = reqUriSplit.get(2);
+                        String sandboxName = reqUriSplit.get(1);
+                        request.setAttribute(RequestUtil.ORG_SUBDOMAIN, sandboxName);
+                        request.setAttribute(RequestUtil.REQUEST_APP_NAME, appName);
+                        req.getRequestDispatcher(getNewURI(reqUri)).forward(request, response);
+                    } else {                                                            // "/sandboxName/"
+                        String sandboxName = reqUriSplit.get(1);
+                        request.setAttribute(RequestUtil.ORG_SUBDOMAIN, sandboxName);
+
+                        chain.doFilter(request, response);
+                    }
                 } else {
-                    chain.doFilter(request, response);
+                    int idx = reqUri.indexOf(URL_PATTERN);
+                    if (idx == 0) { //Doing this to make APIs called without app name to go through the usual security/ validation filters since we have struts2 configured to handle index.jsp globally
+                        req.getRequestDispatcher(reqUri).forward(request, response); //Doing this to restrict direct hitting of struts2 urls
+                    } else if (idx > 0) {
+                        String newUri = reqUri.substring(idx);
+                        String appName = reqUri.substring(1, idx);
+                        System.out.println("Facilio filter called : " + newUri);
+                        request.setAttribute(RequestUtil.REQUEST_APP_NAME, appName);
+                        req.getRequestDispatcher(newUri).forward(request, response);
+                    } else {
+                        chain.doFilter(request, response);
+                    }
                 }
+
             }
 //        }
 //        else {
@@ -164,5 +186,10 @@ public class UriFilter implements Filter {
     @Override
     public void destroy() {
 
+    }
+
+    private String getNewURI(String oldURI) {
+        int idx = oldURI.indexOf(URL_PATTERN);
+        return oldURI.substring(idx);
     }
 }

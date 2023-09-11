@@ -1,11 +1,14 @@
 package com.facilio.sandbox.utils;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -35,24 +38,67 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class SandboxAPI {
+    public static boolean isSandboxSubDomain(String domain) {
+        return StringUtils.isNotEmpty(domain) && domain.endsWith(FacilioProperties.getSandboxSubDomain());
+    }
+
+    public static Organization getAccessibleSandboxOrg(long userId) throws Exception {
+        List<Organization> accessibleSandboxOrgs = AccountUtil.getUserBean().getOrgs(userId, Organization.OrgType.SANDBOX);
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(accessibleSandboxOrgs)) {
+            return accessibleSandboxOrgs.get(0);
+        }
+        return null;
+    }
 
     public static SandboxConfigContext getSandboxById(long sandboxId) throws Exception {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getIdCondition(sandboxId, ModuleFactory.getFacilioSandboxModule()));
+
+        SandboxConfigContext sandboxConfig = getSandboxByCriteria(criteria);
+        if(sandboxConfig != null) {
+            setSandboxDomain(sandboxConfig);
+
+            FacilioModule sandboxSharingModule = ModuleFactory.getSandboxSharingModule();
+            List<FacilioField> sandboxSharingFields = FieldFactory.getSandboxSharingFields();
+            SharingContext<SingleSharingContext> sharingMap = SharingAPI.getSharing(sandboxId, sandboxSharingModule,
+                    SingleSharingContext.class, sandboxSharingFields);
+
+            sandboxConfig.setSandboxSharing(sharingMap);
+        }
+        return sandboxConfig;
+    }
+
+    public static SandboxConfigContext getSandboxByDomainName(String domainName) throws Exception {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("DOMAIN_NAME", "subDomain", domainName, StringOperators.IS));
+
+        SandboxConfigContext sandboxConfig = getSandboxByCriteria(criteria);
+        if(sandboxConfig != null) {
+            setSandboxDomain(sandboxConfig);
+
+            FacilioModule sandboxSharingModule = ModuleFactory.getSandboxSharingModule();
+            List<FacilioField> sandboxSharingFields = FieldFactory.getSandboxSharingFields();
+            SharingContext<SingleSharingContext> sharingMap = SharingAPI.getSharing(sandboxConfig.getId(), sandboxSharingModule,
+                    SingleSharingContext.class, sandboxSharingFields);
+
+            sandboxConfig.setSandboxSharing(sharingMap);
+        }
+        return sandboxConfig;
+    }
+
+    public static SandboxConfigContext getSandboxByCriteria(Criteria criteria) throws Exception {
         FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
+        List<FacilioField> sandboxFields = FieldFactory.getFacilioSandboxFields();
+
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .select(FieldFactory.getFacilioSandboxFields())
                 .table(sandboxModule.getTableName())
-                .andCondition(CriteriaAPI.getIdCondition(sandboxId, sandboxModule));
+                .select(sandboxFields)
+                .andCriteria(criteria);
+
         Map<String, Object> props = selectBuilder.fetchFirst();
 
-        FacilioModule sandboxSharingModule = ModuleFactory.getSandboxSharingModule();
-        List<FacilioField> sandboxSharingFields = FieldFactory.getSandboxSharingFields();
-        SharingContext<SingleSharingContext> sharingMap = SharingAPI.getSharing(sandboxId, sandboxSharingModule,
-                SingleSharingContext.class, sandboxSharingFields);
-        if(!MapUtils.isEmpty(props)) {
-            SandboxConfigContext sandboxConfig = FieldUtil.getAsBeanFromMap(props, SandboxConfigContext.class);
-            setSandboxDomain(sandboxConfig);
-            sandboxConfig.setSandboxSharing(sharingMap);
-            return sandboxConfig;
+        if (MapUtils.isNotEmpty(props)) {
+            return FieldUtil.getAsBeanFromMap(props, SandboxConfigContext.class);
         }
         return null;
     }

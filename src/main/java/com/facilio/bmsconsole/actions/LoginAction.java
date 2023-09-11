@@ -27,6 +27,7 @@ import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.sandbox.utils.SandboxAPI;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.util.ScreenUtil;
@@ -1070,8 +1071,10 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String getOrgs() throws Exception {
-		HttpServletRequest request = ServletActionContext.getRequest(); 
-		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
+		HttpServletRequest request = ServletActionContext.getRequest();
+		Organization.OrgType orgType = SandboxAPI.isSandboxSubDomain(request.getServerName()) ? Organization.OrgType.SANDBOX : Organization.OrgType.PRODUCTION;
+
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid(), orgType);
 		setResult("Orgs", orgs);
 		return SUCCESS;
 	}

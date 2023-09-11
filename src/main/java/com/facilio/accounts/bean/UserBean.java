@@ -64,6 +64,8 @@ public interface UserBean {
 	public Map<Long, User> getUsersAsMap(Criteria criteria, Collection<Long>... ouids) throws Exception;
 
 	public List<Organization> getOrgs(long uid) throws Exception;
+
+	public List<Organization> getOrgs(long uid, Organization.OrgType orgType) throws Exception;
 	
 	public Organization getDefaultOrg(long uid) throws Exception;
 	

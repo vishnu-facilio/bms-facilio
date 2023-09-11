@@ -5,9 +5,15 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.sandbox.context.SandboxConfigContext;
+import com.facilio.sandbox.utils.SandboxAPI;
+import com.facilio.util.FacilioUtil;
+import com.facilio.util.RequestUtil;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.extension.annotations.WithSpan;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -47,8 +53,36 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 			return invocation.invoke();
 		}
 		IAMAccount iamAccount = (IAMAccount) request.getAttribute("iamAccount");
+
+		//sandbox handling
+		if (SandboxAPI.isSandboxSubDomain(request.getServerName())) {
+			Organization organization = null;
+			if (iamAccount != null) {
+				String sandboxName = (String) request.getAttribute(RequestUtil.ORG_SUBDOMAIN);
+				String reqUri = FilenameUtils.normalize(request.getRequestURI(), true);
+
+				if (StringUtils.isNotEmpty(sandboxName)) {
+					organization = IAMUserUtil.getOrg(sandboxName, iamAccount.getUser().getUid(), Organization.OrgType.SANDBOX);
+				} else if (reqUri.equals("/api/v2/application/fetchDetails")) {
+					organization = SandboxAPI.getAccessibleSandboxOrg(iamAccount.getUser().getUid());
+				}
+
+				FacilioUtil.throwIllegalArgumentException(organization == null, "Invalid Sandbox details passed");
+
+				//validate sandbox status
+				AccountUtil.setCurrentAccount(organization.getProductionOrgId());
+				SandboxConfigContext sandboxConfig = SandboxAPI.getSandboxByDomainName(sandboxName);
+				AccountUtil.cleanCurrentAccount();
+
+				FacilioUtil.throwIllegalArgumentException(sandboxConfig == null, "Invalid Sandbox details passed");
+				FacilioUtil.throwIllegalArgumentException(!sandboxConfig.getStatusEnum().equals(SandboxConfigContext.SandboxStatus.ACTIVE), "Sandbox creation in process");
+
+				iamAccount.setOrg(organization);
+				AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting IAM account org in normal auth => {0}", iamAccount.getOrg() == null ? -1 : iamAccount.getOrg().getId()), request);
+			}
+		}
 		//remote screen handling
-		if(request.getAttribute("remoteScreen") != null && request.getAttribute("remoteScreen") instanceof RemoteScreenContext) {
+		else if(request.getAttribute("remoteScreen") != null && request.getAttribute("remoteScreen") instanceof RemoteScreenContext) {
 			RemoteScreenContext remoteScreen = (RemoteScreenContext) request.getAttribute("remoteScreen");
 			Organization org = IAMOrgUtil.getOrg(remoteScreen.getOrgId());
 			if(org != null) {
@@ -71,7 +105,7 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 		}
 		else {
 			Organization organization = null;
-			
+
 			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
 			AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("App name => {0}", appDomain == null ? "null app domain" : appDomain.getDomain() ), request);
 			if (iamAccount != null) {
@@ -108,7 +142,7 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 			Span.current().setAttribute("enduser.orgid", String.valueOf(iamAccount.getOrg().getOrgId()));
 			AppDomain appdomainObj = null;
 			try {
-				appdomainObj = IAMAppUtil.getAppDomain(request.getServerName());
+				appdomainObj = IAMAppUtil.getAppDomain(request.getServerName(), iamAccount.getOrg().getOrgId());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -130,6 +164,5 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 		AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), "DateSource interceptor done", request);
 		return invocation.invoke();
 	}
-	
 	
 }

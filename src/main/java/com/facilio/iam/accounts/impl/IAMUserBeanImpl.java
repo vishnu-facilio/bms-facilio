@@ -652,7 +652,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public List<Organization> getOrgsv2(long uid) throws Exception {
+		return getOrgsv2(uid, Organization.OrgType.PRODUCTION);
+	}
 
+	@Override
+	public List<Organization> getOrgsv2(long uid, Organization.OrgType orgType) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getOrgFields())
 				.table("Organizations")
@@ -663,10 +667,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
-		Criteria orgTypeCriteria = new Criteria();
-		orgTypeCriteria.addAndCondition(CriteriaAPI.getCondition("Organizations.ORG_TYPE", "orgType", String.valueOf(Organization.OrgType.PRODUCTION.getIndex()), NumberOperators.EQUALS));
-		orgTypeCriteria.addOrCondition(CriteriaAPI.getCondition("Organizations.ORG_TYPE", "orgType", null, CommonOperators.IS_EMPTY));
-		selectBuilder.andCriteria(orgTypeCriteria);
+		selectBuilder.andCriteria(getOrgTypeCriteria(orgType));
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -1734,21 +1735,25 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public Organization getOrgv2(String currentOrgDomain, long uid) throws Exception {
-		// TODO Auto-generated method stub
-		
+		return getOrgv2(currentOrgDomain, uid, Organization.OrgType.PRODUCTION);
+	}
+
+	@Override
+	public Organization getOrgv2(String currentOrgDomain, long uid, Organization.OrgType orgType) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getOrgFields())
 				.table("Organizations")
 				.innerJoin("Account_ORG_Users")
 				.on("Organizations.ORGID = Account_ORG_Users.ORGID")
 				;
-		
+
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("FACILIODOMAINNAME", "domainName", currentOrgDomain, StringOperators.IS));
-		
+		selectBuilder.andCriteria(getOrgTypeCriteria(orgType));
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			return IAMOrgUtil.createOrgFromProps(props.get(0));
@@ -2470,19 +2475,24 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	@Override
 	public Organization getDefaultOrgv3(long uid) throws Exception {
-		
+		return getDefaultOrgv3(uid, Organization.OrgType.PRODUCTION);
+	}
+
+	@Override
+	public Organization getDefaultOrgv3(long uid, Organization.OrgType orgType) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getOrgFields())
 				.table("Organizations")
 				.innerJoin("Account_ORG_Users")
 				.on("Organizations.ORGID = Account_ORG_Users.ORGID")
 				;
-		
+
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
+		selectBuilder.andCriteria(getOrgTypeCriteria(orgType));
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -2490,7 +2500,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public List<IAMUser> getUserDataForUidsv3(String userIds, long orgId, boolean shouldFetchDeleted) throws Exception {
 		// TODO Auto-generated method stub
@@ -2955,7 +2965,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	@Override
 	public AppDomain getAppDomain(String domain) throws Exception {
-		// TODO Auto-generated method stub
+		return getAppDomain(domain, -1);
+	}
+
+	@Override
+	public AppDomain getAppDomain(String domain, long orgId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getAppDomainFields())
 				.table("App_Domain");
@@ -2969,10 +2983,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					domain = AccountUtil.getDefaultAppDomain();
 				}
 			}
-			
+
 		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN", "domain", domain, StringOperators.IS));
-		
+		if (orgId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		}
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(props)) {
 			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
@@ -3356,6 +3373,16 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return true;
 		}
 		return false;
+	}
+
+	public static Criteria getOrgTypeCriteria(Organization.OrgType orgType) {
+		Criteria orgTypeCriteria = new Criteria();
+		orgTypeCriteria.addAndCondition(CriteriaAPI.getCondition("Organizations.ORG_TYPE", "orgType", String.valueOf(orgType.getIndex()), NumberOperators.EQUALS));
+		if (orgType.equals(Organization.OrgType.PRODUCTION)) {
+			orgTypeCriteria.addOrCondition(CriteriaAPI.getCondition("Organizations.ORG_TYPE", "orgType", "NULL", CommonOperators.IS_EMPTY));
+		}
+
+		return orgTypeCriteria;
 	}
 
 //	private Map<String, String> getDomainForIdentifiers(List<String> identifiers) throws Exception {

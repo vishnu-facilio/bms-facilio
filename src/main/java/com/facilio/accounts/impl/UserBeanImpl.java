@@ -880,6 +880,11 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
+	public List<Organization> getOrgs(long uid, Organization.OrgType orgType) throws Exception {
+		return IAMUserUtil.getOrgsForUser(uid, orgType);
+	}
+
+	@Override
 	public Organization getDefaultOrg(long uid) throws Exception {
 		return IAMUserUtil.getDefaultOrg(uid);
 	}

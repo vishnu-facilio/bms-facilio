@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -9,17 +10,20 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.ApplicationLayoutContext;
-import com.facilio.bmsconsole.context.ApplicationRelatedAppsContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.sandbox.utils.SandboxAPI;
+import com.facilio.util.RequestUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -324,8 +328,9 @@ public class ApplicationAction extends FacilioAction {
 		}
 		chain.execute();
 		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));
-		if(AccountUtil.getCurrentUser() != null){
-			Role currentUserRole = AccountUtil.getCurrentUser().getRole();
+		User currentUser = AccountUtil.getCurrentUser();
+		if(currentUser != null){
+			Role currentUserRole = currentUser.getRole();
 			if(currentUserRole == null) {
 				return "unauthorized";
 			}
@@ -339,6 +344,23 @@ public class ApplicationAction extends FacilioAction {
 					}
 				}
 				setResult("currentUserRole", currentUserRole);
+			}
+
+			if (SandboxAPI.isSandboxSubDomain(request.getServerName())) {
+				Organization organization = null;
+				String sandboxName = (String) request.getAttribute(RequestUtil.ORG_SUBDOMAIN);
+				String reqUri = FilenameUtils.normalize(request.getRequestURI(), true);
+
+				if (StringUtils.isNotEmpty(sandboxName)) {
+					organization = IAMUserUtil.getOrg(sandboxName, currentUser.getUid(), Organization.OrgType.SANDBOX);
+				} else if (reqUri.equals("/api/v2/application/fetchDetails")) {
+					organization = SandboxAPI.getAccessibleSandboxOrg(currentUser.getUid());
+				}
+
+				if (organization != null) {
+					setResult("isSandboxDomain", true);
+					setResult("orgSubDomain", organization.getDomain());
+				}
 			}
 		}
 		boolean isWebTabEnabled = AccountUtil.isFeatureEnabled(FeatureLicense.WEB_TAB);

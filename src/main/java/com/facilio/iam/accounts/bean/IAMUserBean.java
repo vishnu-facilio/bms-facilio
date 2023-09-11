@@ -45,8 +45,12 @@ public interface IAMUserBean {
 	public boolean setDefaultOrgv2(long uid, long orgId) throws Exception;
 	
 	public List<Organization> getOrgsv2(long uid) throws Exception;
+
+	public List<Organization> getOrgsv2(long uid, Organization.OrgType orgType) throws Exception;
 	
 	public Organization getOrgv2(String currentOrgDomain, long uid) throws Exception;
+
+	public Organization getOrgv2(String currentOrgDomain, long uid, Organization.OrgType orgType) throws Exception;
 	
 	public String updateUserPhoto(long uid, User user) throws Exception;
 
@@ -135,6 +139,8 @@ public interface IAMUserBean {
     public IAMAccount getAccountv3(long userId) throws Exception;
     
     public Organization getDefaultOrgv3(long uid) throws Exception;
+
+	public Organization getDefaultOrgv3(long uid, Organization.OrgType orgType) throws Exception;
 	
     public List<IAMUser> getUserDataForUidsv3(String userIds, long orgId, boolean shouldFetchDeleted) throws Exception;
 	    	
@@ -163,6 +169,8 @@ public interface IAMUserBean {
     public List<AppDomain> getAppDomain(AppDomainType type, long orgId) throws Exception;
     
     public AppDomain getAppDomain(String domain) throws Exception;
+
+	public AppDomain getAppDomain(String domain, long orgId) throws Exception;
 
 	public List<AppDomain> getAppDomainForType(Integer domainType, Long orgId) throws Exception;
 
