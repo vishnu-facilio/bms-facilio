@@ -601,6 +601,7 @@ public class ServiceAppointmentUtil {
                                     OngoingTrip.setEndLocation(null);
                                 }
                             }
+                            TripUtil.ConstructLocationHistoryImage(OngoingTrip);
                             V3RecordAPI.updateRecord(OngoingTrip,tripModule,Constants.getModBean().getAllFields(FacilioConstants.Trip.TRIP));
                         }
                     }
