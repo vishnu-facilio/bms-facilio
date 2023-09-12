@@ -2223,8 +2223,13 @@ public class FormsAPI {
 		for(FacilioForm subForm : subFormList){
 
 			FacilioModule subFormModule = subForm.getModule();
+			if(!subModulesName.contains(subFormModule.getName())){
+				continue;
+			}
 
-			if(!subModulesName.contains(subFormModule.getName()) || !Objects.equals(defaultForm.getAppLinkName(), subForm.getAppLinkName())){
+			if(CollectionUtils.isNotEmpty(subForm.getAppLinkNamesForForm())){
+				subForm.setAppLinkNamesForForm(Arrays.asList(defaultForm.getAppLinkName()));
+			}else if (!subForm.getAppLinkNamesForForm().contains(defaultForm.getAppLinkName())){
 				continue;
 			}
 
