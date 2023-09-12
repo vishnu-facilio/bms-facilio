@@ -159,7 +159,12 @@ public class HomePageWidget {
         GROUPED_ACTION_CARD("groupedactioncard"),
         RESERVED_SPACES("recentreservedspacecard"),
         SPACE_FINDER("spacefinder"),
-        TINY_LIST_VIEW("listview");
+        TINY_LIST_VIEW("listview"),
+        PERSON_SUMMARY("personSummary"),
+        ONGOING_WORK("ongoingWork"),
+        ONGOING_TRIP("ongoingTrip"),
+        OVERDUE_APPOINTMENTS("overdueAppointments"),
+        TODAYS_APPOINTMENTS("todaysAppointments");
 
         private String name;
 

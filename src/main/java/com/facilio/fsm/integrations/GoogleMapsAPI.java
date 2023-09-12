@@ -133,6 +133,7 @@ public class GoogleMapsAPI {
             }
             requestJson.put("intermediates", intermediates);
             requestJson.put("travelMode", "DRIVE");
+            requestJson.put("routingPreference","TRAFFIC_AWARE");
             if (estimatedStartTime> 0) {
                 requestJson.put("departureTime", Instant.ofEpochMilli(estimatedStartTime).toString());
             }

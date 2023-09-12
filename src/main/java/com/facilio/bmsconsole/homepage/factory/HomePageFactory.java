@@ -10,9 +10,10 @@ public class HomePageFactory {
 
         switch(applicationLinkName) {
             case FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP:
-                return EmplpoyeePortalHome.getDefaultPage(applicationLinkName);
             case FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP:
                 return EmplpoyeePortalHome.getDefaultPage(applicationLinkName);
+            case FacilioConstants.ApplicationLinkNames.FSM_APP:
+                return FieldServiceHome.getDefaultPage();
             default:
                 return null;
         }

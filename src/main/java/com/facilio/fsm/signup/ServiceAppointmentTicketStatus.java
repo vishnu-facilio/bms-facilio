@@ -109,8 +109,8 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
 
         inProgressState.setStatus(FacilioConstants.ServiceAppointment.IN_PROGRESS);
         inProgressState.setDisplayName("In Progress");
-        inProgressState.setColor("#F7BA02");
-        inProgressState.setBackgroundColor("information");
+        inProgressState.setBackgroundColor("#F7BA02");
+        inProgressState.setColor("information");
         inProgressState.setTextColor("#000000");
         inProgressState.setTypeCode(2);
         inProgressState.setRecordLocked(false);

@@ -27,6 +27,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -651,7 +652,8 @@ public class ServiceAppointmentUtil {
                 .beanClass(TripContext.class)
                 .select(TripFields)
                 .andCondition(CriteriaAPI.getCondition(TripFieldMap.get(FacilioConstants.ContextNames.PEOPLE),String.valueOf(peopleId),NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(TripFieldMap.get(FacilioConstants.ContextNames.ENDTIME), CommonOperators.IS_EMPTY));
+                .andCondition(CriteriaAPI.getCondition(TripFieldMap.get(FacilioConstants.ContextNames.ENDTIME), CommonOperators.IS_EMPTY))
+                .fetchSupplement((SupplementRecord) TripFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
         if(appointmentId != null && appointmentId > 0){
             tripBuilder.andCondition(CriteriaAPI.getCondition(TripFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),String.valueOf(appointmentId), NumberOperators.EQUALS));
         }
@@ -671,7 +673,8 @@ public class ServiceAppointmentUtil {
                 .module(timeSheetModule)
                 .beanClass(TimeSheetContext.class)
                 .select(timeSheetFields)
-                .andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ContextNames.ENDTIME),CommonOperators.IS_EMPTY));
+                .andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get(FacilioConstants.ContextNames.ENDTIME),CommonOperators.IS_EMPTY))
+                .fetchSupplement((SupplementRecord) timeSheetFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));;
         if(peopleId != null && peopleId >0){
             timeSheetBuilder.andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get("fieldAgent"),String.valueOf(peopleId),NumberOperators.EQUALS));
         }
