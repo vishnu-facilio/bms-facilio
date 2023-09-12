@@ -47,6 +47,9 @@ public class AddReadingRuleModules extends SignUpData {
 
         fields.add(FieldFactory.getDefaultField("description", "Description", "DESCRIPTION", FieldType.STRING));
 
+        FacilioField linkNameField = FieldFactory.getDefaultField("linkName", "Link Name", "LINK_NAME", FieldType.STRING);
+        fields.add(linkNameField);
+
         LookupField assetCategory = FieldFactory.getDefaultField("assetCategory", "Asset Category", "ASSET_CATEGORY_ID", FieldType.LOOKUP);
         assetCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY));
         fields.add(assetCategory);

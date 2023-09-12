@@ -48,6 +48,9 @@ public class AddKPIModules extends SignUpData {
 
         fields.add(FieldFactory.getDefaultField("description", "Description", "DESCRIPTION", FieldType.STRING));
 
+        FacilioField linkNameField = FieldFactory.getDefaultField("linkName", "Link Name", "LINK_NAME", FieldType.STRING);
+        fields.add(linkNameField);
+
         SystemEnumField kpiType = FieldFactory.getDefaultField("kpiType", "KPI Type", "KPI_TYPE", FieldType.SYSTEM_ENUM);
         kpiType.setEnumName("KPIType");
         fields.add(kpiType);
