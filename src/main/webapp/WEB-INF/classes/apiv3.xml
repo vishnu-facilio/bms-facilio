@@ -2029,6 +2029,7 @@
             <param name="moduleName">serviceOrder</param>
             <param name="status">{1}</param>
         </action>
+        <action name="homePage/mobile" class="com.facilio.fsm.actions.fsmAction" method="getMobileHomePage"/>
     </package>
     <package name="serviceOrderItem" namespace="/api/v3/serviceOrderItem"
              extends="v3Api">

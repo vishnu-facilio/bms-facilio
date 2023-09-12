@@ -4,6 +4,7 @@ package com.facilio.fsm.actions;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
@@ -17,6 +18,7 @@ import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
 import com.facilio.fsm.context.*;
 import com.facilio.fsm.exception.FSMErrorCode;
 import com.facilio.fsm.exception.FSMException;
+import com.facilio.fsm.util.HomePageUtil;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.fsm.util.ServiceTaskUtil;
@@ -352,6 +354,12 @@ public class fsmAction extends V3Action {
             setData( data);
 
         }
+        return SUCCESS;
+    }
+
+    public String getMobileHomePage() throws Exception{
+        PagesContext homePage = HomePageUtil.getMobileFSMHomePage();
+        setData("home",homePage);
         return SUCCESS;
     }
 

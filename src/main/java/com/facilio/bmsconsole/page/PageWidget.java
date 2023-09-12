@@ -610,8 +610,13 @@ public class PageWidget {
 		VENDOR_CONTACT_LAST_KNOW_LOCATION("vendorContactLastKnowLocation"),
 		VENDOR_CONATCT_CURRENT_STATUS("vendorContactCurrentstatus"),
 		VENDOR_CONTACT_SKILL("vendorContactSkill"),
-		VENDOR_CONTACT_WORK_SCHEDULE("vendorcontactworkschedule")
-
+		VENDOR_CONTACT_WORK_SCHEDULE("vendorcontactworkschedule"),
+		PEOPLE_STATUS_WIDGET("peopleStatusWidget"),
+		ONGOING_TRIP_WIDGET("ongoingTripWidget"),
+		ONGOING_TIMESHEET_WIDGET("ongoingTimeSheetWidget"),
+		OVERDUE_SERVICE_APPOINTMENTS_WIDGET("overdueServiceAppointmentsWidget"),
+		TODAY_SERVICE_APPOINTMENTS_WIDGET("todayServiceAppointmentsWidget"),
+		OPEN_SERVICE_APPOINTMENTS_WIDGET("openServiceAppointmentsWidget")
 		;
 
 		private String name;
