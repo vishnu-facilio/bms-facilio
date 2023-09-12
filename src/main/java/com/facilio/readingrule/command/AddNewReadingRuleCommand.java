@@ -27,8 +27,11 @@ public class AddNewReadingRuleCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(list)) {
             for (NewReadingRuleContext readingRule : list) {
 
-                readingRule.setReadingModuleId((Long) context.get(FacilioConstants.ContextNames.MODULE_ID));
+                FacilioModule readingModule = Constants.getModBean().getModule((Long) context.get(FacilioConstants.ContextNames.MODULE_ID));
+                readingRule.setReadingModuleId(readingModule.getModuleId());
                 readingRule.setReadingFieldId(getReadingFieldId(context));
+
+                readingRule.setLinkName(readingModule.getName());
 
                 if (readingRule.getImpact() != null) {
                     readingRule.setImpactId(readingRule.getImpact().getId());

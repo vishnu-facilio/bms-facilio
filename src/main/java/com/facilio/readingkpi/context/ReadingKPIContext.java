@@ -54,6 +54,8 @@ public class ReadingKPIContext extends V3Context implements IConnectedRule {
 
     private List<Long> matchedResourcesIds;
 
+    String linkName;
+
 
     public ReadingKPIContext(String name, Long readingFieldId, KPIType kpiType) {
         this.name = name;

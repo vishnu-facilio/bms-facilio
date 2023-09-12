@@ -57,6 +57,8 @@ public class  NewReadingRuleContext extends V3Context implements ReadingRuleInte
 
     private AssetCategoryContext assetCategory;
 
+    String linkName;
+
     public NewReadingRuleContext() {
     }
 

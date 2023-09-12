@@ -8,6 +8,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.readingkpi.context.KPIType;
 import com.facilio.readingkpi.context.ReadingKPIContext;
+import com.facilio.util.DisplayNameToLinkNameUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,6 +33,7 @@ public class SetFieldAndModuleIdCommand extends FacilioCommand {
                     List moduleFieldIds = (List) context.get(FacilioConstants.ContextNames.MODULE_FIELD_IDS);
                     kpi.setReadingFieldId((Long) moduleFieldIds.get(0));
                 }
+                setKPILinkName(kpi);
                 kpi.setReadingField(null);
                 kpi.setStatus(true);
             }
@@ -39,4 +41,8 @@ public class SetFieldAndModuleIdCommand extends FacilioCommand {
         return false;
     }
 
+    private void setKPILinkName(ReadingKPIContext readingKPI) throws Exception {
+        String linkName = DisplayNameToLinkNameUtil.getLinkName(readingKPI.getName(), FacilioConstants.ReadingKpi.READING_KPI, FacilioConstants.ContextNames.LINK_NAME);
+        readingKPI.setLinkName(linkName);
+    }
 }
