@@ -12035,6 +12035,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.DECIMAL));
         fields.add(getNumberField("widgetId","WIDGETID",module));
         fields.add(getNumberField("widgetGroupWidgetId", "WIDGETGROUP_WIDGET_ID", module));
+        fields.add(getNumberField("connectedAppWidgetId","CONNECTED_APP_WIDGET_ID", module));
         fields.add(getNumberField("subModuleId","SUB_MODULE_ID",module));
         fields.add(getStringField("subModuleName", "SUB_MODULE_NAME", module));
         fields.add(getBooleanField("status","STATUS",module));

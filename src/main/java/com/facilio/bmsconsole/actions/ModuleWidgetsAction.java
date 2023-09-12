@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.context.PageTabContext;
 import com.facilio.bmsconsole.context.WidgetConfigContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -18,9 +19,11 @@ public class ModuleWidgetsAction extends FacilioAction{
 
     private String moduleName;
     private long id;
+    private PageTabContext.TabType tabType = PageTabContext.TabType.SIMPLE;
     public String getWidgetsForModule() throws Exception{
         FacilioChain chain = ReadOnlyChainFactory.getWidgetsForModuleChain();
         FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.CustomPage.TAB_TYPE, tabType);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         chain.execute();
         List<Map<String, Object>> widgets = (List<Map<String, Object>>) context.get(FacilioConstants.Widget.WIDGETS);

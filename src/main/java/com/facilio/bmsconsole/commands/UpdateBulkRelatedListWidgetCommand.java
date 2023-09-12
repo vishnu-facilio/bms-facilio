@@ -45,13 +45,14 @@ public class UpdateBulkRelatedListWidgetCommand extends FacilioCommand {
                     RelatedListWidgetUtil.setWidgetIdForRelList(widgetId, relList, widgetWrapperType);
 
                     if (!(relList.getId() > 0)) {
-                        if (relList.getSubModuleId() == null) {
-                            FacilioModule subModule = modBean.getModule(relList.getSubModuleName());
-                            Objects.requireNonNull(subModule, "Invalid module name");
-                            relList.setSubModuleId(subModule.getModuleId());
+                        if(relList.getConnectedAppWidgetId() == null || relList.getConnectedAppWidgetId() <= 0) {
+                            if (relList.getSubModuleId() == null) {
+                                FacilioModule subModule = modBean.getModule(relList.getSubModuleName());
+                                Objects.requireNonNull(subModule, "Invalid module name");
+                                relList.setSubModuleId(subModule.getModuleId());
+                            }
+                            Objects.requireNonNull(relList.getFieldId(), "FieldId can't be null");
                         }
-
-                        Objects.requireNonNull(relList.getFieldId(), "FieldId can't be null");
                         newRelList.add(relList);
                     } else {
                         existingRelListIds.remove(relList.getId());

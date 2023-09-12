@@ -30,6 +30,7 @@ public class RelatedListWidgetsAction extends FacilioAction {
         chain.execute();
 
         setResult("modules", context.get(FacilioConstants.ContextNames.MODULE_LIST));
+        setResult(FacilioConstants.ContextNames.CONNECTED_APP_RELATED_LISTS, context.get(FacilioConstants.ContextNames.CONNECTED_APP_RELATED_LISTS));
         return SUCCESS;
     }
 

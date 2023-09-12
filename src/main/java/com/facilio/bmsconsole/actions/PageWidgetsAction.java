@@ -31,6 +31,7 @@ public class PageWidgetsAction extends FacilioAction{
     private long id;
     private long sectionId;
     private long widgetId;
+    private long recordId;
     private PageSectionWidgetContext widget;
     private boolean onlyDetails;
     private PagesContext.PageLayoutType layoutType;
@@ -54,7 +55,7 @@ public class PageWidgetsAction extends FacilioAction{
         return SUCCESS;
     }
     public String fetchWidget() throws Exception {
-        FacilioContext context = WidgetConfigUtil.fetchWidget(appId, moduleName, id);
+        FacilioContext context = WidgetConfigUtil.fetchWidget(recordId, appId, moduleName, id);
 
         if(onlyDetails) {
             PageSectionWidgetContext widgetDetail = (PageSectionWidgetContext) context.get(FacilioConstants.CustomPage.WIDGET_DETAIL);

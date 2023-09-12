@@ -40,13 +40,14 @@ public class AddBulkRelatedListWidgetCommand extends FacilioCommand {
                 relList.setStatus(true);
                 relList.setSequenceNumber(sequenceNumber += 10);
                 RelatedListWidgetUtil.setWidgetIdForRelList(widgetId, relList, widgetWrapperType);
-                if (relList.getSubModuleId() == null) {
-                    FacilioModule subModule = modBean.getModule(relList.getSubModuleName());
-                    Objects.requireNonNull(subModule, "Invalid module name");
-                    relList.setSubModuleId(subModule.getModuleId());
+                if(relList.getConnectedAppWidgetId() == null || relList.getConnectedAppWidgetId() <= 0) {
+                    if (relList.getSubModuleId() == null) {
+                        FacilioModule subModule = modBean.getModule(relList.getSubModuleName());
+                        Objects.requireNonNull(subModule, "Invalid module name");
+                        relList.setSubModuleId(subModule.getModuleId());
+                    }
+                    Objects.requireNonNull(relList.getFieldId(), "FieldId can't be null");
                 }
-
-                Objects.requireNonNull(relList.getFieldId(), "FieldId can't be null");
                 relLists.add(relList);
             }
 

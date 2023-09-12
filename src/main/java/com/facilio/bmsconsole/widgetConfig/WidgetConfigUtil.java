@@ -54,7 +54,7 @@ public class WidgetConfigUtil {
         return updateChain.getContext();
     }
 
-    public static FacilioContext fetchWidget(Long appId, String moduleName, long pageWidgetId) throws Exception {
+    public static FacilioContext fetchWidget(Long recordId, Long appId, String moduleName, long pageWidgetId) throws Exception {
             PageSectionWidgetContext pageWidget = CustomPageAPI.getPageSectionWidget(pageWidgetId);
             Objects.requireNonNull(pageWidget, "Widget does not exists");
 
@@ -63,6 +63,7 @@ public class WidgetConfigUtil {
             FacilioContext context = fetchWidgetDetailChain.getContext();
 
             context.put(FacilioConstants.ContextNames.APP_ID, appId);
+            context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
             context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
             context.put(FacilioConstants.CustomPage.WIDGETID, pageWidgetId);
             context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET, pageWidget);
@@ -76,7 +77,7 @@ public class WidgetConfigUtil {
             return context;
     }
 
-    public static void setWidgetDetailForWidgets(long appId, String moduleName, Map<Long, PageSectionWidgetContext> pageWidgetIdMap, WidgetWrapperType widgetWrapperType)throws Exception {
+    public static void setWidgetDetailForWidgets(Long recordId, long appId, String moduleName, Map<Long, PageSectionWidgetContext> pageWidgetIdMap, WidgetWrapperType widgetWrapperType, boolean isFetchForClone)throws Exception {
         if (MapUtils.isNotEmpty(pageWidgetIdMap)) {
 
             for (Map.Entry<Long, PageSectionWidgetContext> entry : pageWidgetIdMap.entrySet()) {
@@ -86,6 +87,7 @@ public class WidgetConfigUtil {
                 FacilioContext context = fetchWidgetDetailChain.getContext();
 
                 context.put(FacilioConstants.ContextNames.APP_ID, appId);
+                context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
                 context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
                 context.put(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE, widgetWrapperType);
                 context.put(FacilioConstants.CustomPage.WIDGETID, entry.getValue().getId());

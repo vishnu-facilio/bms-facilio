@@ -5,6 +5,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.ModuleSettingConfigUtil;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -507,6 +508,30 @@ public class CustomPageAPI {
         return null;
     }
 
+
+    public static boolean validateConnectedAppWidgetCriteria(Long recordId, String moduleName, Long connectedWidgetId) throws Exception {
+        if (connectedWidgetId != null && connectedWidgetId > 0) {
+            ConnectedAppWidgetContext summaryWidget = ConnectedAppAPI.getConnectedAppWidget(connectedWidgetId);
+            if (summaryWidget != null && recordId !=null && recordId > 0) {
+                if (summaryWidget.getCriteria() != null) {
+                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                    FacilioModule module = modBean.getModule(moduleName);
+                    List<FacilioField> selectFields = new ArrayList<>();
+                    selectFields.add(FieldFactory.getIdField(module));
+
+                    GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                            .select(selectFields)
+                            .table(module.getTableName())
+                            .andCondition(CriteriaAPI.getIdCondition(recordId, module))
+                            .andCriteria(summaryWidget.getCriteria());
+
+                    List<Map<String, Object>> props = selectBuilder.get();
+                    return CollectionUtils.isNotEmpty(props);
+                }
+            }
+        }
+        return true;
+}
     public static PageSectionWidgetContext getPageSectionWidget(long id) throws Exception {
         FacilioModule module = ModuleFactory.getPageSectionWidgetsModule();
 

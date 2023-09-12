@@ -1383,7 +1383,8 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getUnusedRelatedModulesChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetRelatedModulesForBuilder());
-		c.addCommand(new RemoveBuilderUsedRelatedModules());
+		c.addCommand(new GetConnectedAppRelatedListCommand());
+		c.addCommand(new RemoveBuilderUsedRelatedLists());
 		return c;
 	}
 
@@ -3412,6 +3413,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchPageSectionsCommand());
 		c.addCommand(new FetchPageSectionWidgetsCommand());
 		c.addCommand(new OrderPageComponents());
+		c.addCommand(new RemoveEmptyConnectedAppTab());
 		return c;
 	}
 	public static FacilioChain getCustomPageChain(){

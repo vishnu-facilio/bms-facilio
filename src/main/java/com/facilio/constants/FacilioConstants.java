@@ -2043,6 +2043,7 @@ public class FacilioConstants {
 		public static final String CONNECTED_APP_ID = "connectedAppId";
 		public static final String CONNECTED_APP_WIDGET = "connectedAppWidget";
 		public static final String CONNECTED_APP_WIDGETS = "connectedAppWidgets";
+		public static final String CONNECTED_APP_RELATED_LISTS = "connectedAppRelatedLists";
 		public static final String CONNECTED_APP_VIEW_URL = "connectedAppViewURL";
 		public static final String CONNECTED_APP_CONNECTOR = "connectedAppConnector";
 		public static final String CONNECTED_APP_REQUEST = "connectedAppRequest";
@@ -4245,6 +4246,7 @@ public class FacilioConstants {
 		public static final String LAYOUT_ID = "layoutId";
 		public static final String LAYOUT_IDS = "layoutIds";
 		public static final String TAB = "tab";
+		public static final String TAB_TYPE="tabType";
 		public static final String PAGE_TABS = "tabs";
 		public static final String TAB_ID = "tabId";
 		public static final String TAB_IDS = "tabIds";

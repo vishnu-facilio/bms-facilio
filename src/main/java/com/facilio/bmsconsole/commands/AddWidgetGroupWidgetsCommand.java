@@ -55,7 +55,8 @@ public class AddWidgetGroupWidgetsCommand extends FacilioCommand {
                 }
 
                 FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == null, "widgetType can't be null");
-                FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == PageWidget.WidgetType.WIDGET_GROUP, "widegtGroup's widgetType can't be 'WIDGET_GROUP'");
+                FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == PageWidget.WidgetType.WIDGET_GROUP, "WidgetGroup's widgetType can't have 'WIDGET_GROUP'");
+                FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == PageWidget.WidgetType.CONNNECTED_APP, "WidgetGroup's widgetType can't have 'CONNNECTED_APP'");
 
                 WidgetConfigContext config = WidgetAPI.getWidgetConfiguration(widget.getWidgetType(), widget.getWidgetConfigId(),  widget.getWidgetConfigName(), layoutType);
                 Objects.requireNonNull(config, "widgetGroup's  widget configuration does not exists for configId -- " +widget.getWidgetConfigId() +" or configName -- " +widget.getWidgetConfigName()

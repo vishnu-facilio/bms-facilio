@@ -86,7 +86,7 @@ public class RelatedListWidgetUtil {
 
     /**This is used to add RelatedList in the pageCreation**/
     public static JSONObject fetchAllRelatedListForModule(FacilioModule module) throws Exception {
-        return fetchAllRelatedListForModule(module,true);
+        return fetchAllRelatedListForModule(module,false);
     }
 
     public static JSONObject fetchAllRelatedListForModule(FacilioModule module, boolean checkPermission) throws Exception {
@@ -104,8 +104,8 @@ public class RelatedListWidgetUtil {
         return null;
     }
 
-    public static JSONObject getSingleRelatedListForModule(FacilioModule module, boolean checkPermission, String subModuleName, String fieldName) throws Exception {
-        List<RelatedListWidgetContext> relatedLists = fetchAllRelatedList(module, checkPermission, null, null);
+    public static JSONObject getSingleRelatedListForModule(FacilioModule module, String subModuleName, String fieldName) throws Exception {
+        List<RelatedListWidgetContext> relatedLists = fetchAllRelatedList(module, false, null, null);
         if(CollectionUtils.isNotEmpty(relatedLists)) {
             relatedLists.removeIf(relList -> !(subModuleName.equalsIgnoreCase(relList.getSubModuleName()) && fieldName.equalsIgnoreCase(relList.getFieldName())));
             RelatedListWidgetContext relList = CollectionUtils.isNotEmpty(relatedLists) ? relatedLists.get(0) : null;
@@ -294,8 +294,12 @@ public class RelatedListWidgetUtil {
 
         if(CollectionUtils.isNotEmpty(props)) {
             List<RelatedListWidgetContext> relLists =  FieldUtil.getAsBeanListFromMapList(props, RelatedListWidgetContext.class);
-            List<Long> relListFieldIds = relLists.stream().map(RelatedListWidgetContext::getFieldId).collect(Collectors.toList());
-            List<Long> relListModuleIds = relLists.stream().map(RelatedListWidgetContext::getSubModuleId).collect(Collectors.toList());
+            List<Long> relListFieldIds = relLists.stream().filter(f->f.getFieldId() != null && f.getFieldId() > 0)
+                    .map(RelatedListWidgetContext::getFieldId)
+                    .collect(Collectors.toList());
+            List<Long> relListModuleIds = relLists.stream().filter(f->f.getSubModuleId() != null && f.getSubModuleId() > 0)
+                    .map(RelatedListWidgetContext::getSubModuleId)
+                    .collect(Collectors.toList());
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioField> allModBeanFields = modBean.getFields(relListFieldIds);
@@ -311,15 +315,16 @@ public class RelatedListWidgetUtil {
 
             return relLists.stream()
                     .peek(f-> {
-                        FacilioField field = allModBeanFieldsMap.get(f.getFieldId());
-                        f.setFieldName(field.getName());
-                        f.setField(field);
-                        f.setModule(field.getModule());
-                        if(StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
-                            f.setDisplayName(((LookupField) field).getRelatedListDisplayName());
-                        }
-                        else {
-                            f.setDisplayName(relListSubModules.get(f.getSubModuleId()));
+                        if(f.getFieldId() != null && f.getFieldId() > 0) {
+                            FacilioField field = allModBeanFieldsMap.get(f.getFieldId());
+                            f.setFieldName(field.getName());
+                            f.setField(field);
+                            f.setModule(field.getModule());
+                            if (StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
+                                f.setDisplayName(((LookupField) field).getRelatedListDisplayName());
+                            } else {
+                                f.setDisplayName(relListSubModules.get(f.getSubModuleId()));
+                            }
                         }
                     }).collect(Collectors.toList());
         }

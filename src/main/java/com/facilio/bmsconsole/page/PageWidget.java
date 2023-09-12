@@ -311,7 +311,7 @@ public class PageWidget {
 
 
 
-		CONNNECTED_APP("connectedApp"),
+		CONNNECTED_APP("connectedApp", AccountUtil.FeatureLicense.CONNECTEDAPPS.getFeatureId()),
 
 		VISITS_PRIMARY_FIELDS("visitsPrimaryFields"),
 		INVITES_PRIMARY_FIELDS("invitesPrimaryFields"),

@@ -121,7 +121,7 @@ public class WidgetGroupUtil {
         return null;
     }
 
-    public static Map<Long,List<WidgetGroupWidgetContext>> fetchWidgetGroupWidgets(Long appId, String moduleName, List<Long> sectionIds) throws Exception{
+    public static Map<Long,List<WidgetGroupWidgetContext>> fetchWidgetGroupWidgets(Long recordId, Long appId, String moduleName, List<Long> sectionIds, boolean isFetchForClone) throws Exception{
         FacilioModule module = ModuleFactory.getWidgetGroupWidgetsModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getWidgetGroupWidgetsFields())
@@ -135,7 +135,7 @@ public class WidgetGroupUtil {
                     .peek(f->f.setWidgetWrapperType(WidgetWrapperType.WIDGET_GROUP))
                     .collect(Collectors.toMap(PageSectionWidgetContext::getId, Function.identity()));
 
-            WidgetConfigUtil.setWidgetDetailForWidgets(appId, moduleName, widgetIdMap, WidgetWrapperType.WIDGET_GROUP);
+            WidgetConfigUtil.setWidgetDetailForWidgets(recordId, appId, moduleName, widgetIdMap, WidgetWrapperType.WIDGET_GROUP, isFetchForClone);
         }
         return widgets.stream()
                 .collect(Collectors.groupingBy(WidgetGroupWidgetContext::getSectionId));
