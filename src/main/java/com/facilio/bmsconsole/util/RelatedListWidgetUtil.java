@@ -86,63 +86,96 @@ public class RelatedListWidgetUtil {
 
     /**This is used to add RelatedList in the pageCreation**/
     public static JSONObject fetchAllRelatedListForModule(FacilioModule module) throws Exception {
-        BulkRelatedListContext bulkRelatedListWidget = new BulkRelatedListContext();
+        return fetchAllRelatedListForModule(module,true);
+    }
+
+    public static JSONObject fetchAllRelatedListForModule(FacilioModule module, boolean checkPermission) throws Exception {
+        return fetchAllRelatedListForModule(module, checkPermission, null, null);
+    }
+
+    public static JSONObject fetchAllRelatedListForModule(FacilioModule module, boolean checkPermission, List<String> modulesToAdd, List<String> modulesToRemove) throws Exception {
+        List<RelatedListWidgetContext> relatedLists = fetchAllRelatedList(module, checkPermission, modulesToAdd, modulesToRemove);
+        if (CollectionUtils.isNotEmpty(relatedLists)) {
+            BulkRelatedListContext bulkRelatedListWidget = new BulkRelatedListContext();
+            bulkRelatedListWidget.setRelatedList(relatedLists);
+            return FieldUtil.getAsJSON(bulkRelatedListWidget);
+        }
+
+        return null;
+    }
+
+    public static JSONObject getSingleRelatedListForModule(FacilioModule module, boolean checkPermission, String subModuleName, String fieldName) throws Exception {
+        List<RelatedListWidgetContext> relatedLists = fetchAllRelatedList(module, checkPermission, null, null);
+        if(CollectionUtils.isNotEmpty(relatedLists)) {
+            relatedLists.removeIf(relList -> !(subModuleName.equalsIgnoreCase(relList.getSubModuleName()) && fieldName.equalsIgnoreCase(relList.getFieldName())));
+            RelatedListWidgetContext relList = CollectionUtils.isNotEmpty(relatedLists) ? relatedLists.get(0) : null;
+            FieldUtil.getAsJSON(relList);
+        }
+        return null;
+    }
+    public static List<RelatedListWidgetContext> fetchAllRelatedList(FacilioModule module, boolean checkPermission, List<String> modulesToAdd, List<String> modulesToRemove) throws Exception {
         List<RelatedListWidgetContext> relLists = new ArrayList<>();
         if(module != null) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioModule.ModuleType> subModuleTypesToFetch = getSubModuleTypesToFetchForRelatedList(module);
 
-            List<String> modulesToAdd = new ArrayList<>();
-            List<String> modulesToRemove = new ArrayList<>();
-            addOrRemoveModulesFromRelatedLists(module, modulesToAdd, modulesToRemove);
+            modulesToAdd = CollectionUtils.isNotEmpty(modulesToAdd) ? modulesToAdd : new ArrayList<>();
+            modulesToRemove = CollectionUtils.isNotEmpty(modulesToRemove) ? modulesToRemove : new ArrayList<>();
+            if(CollectionUtils.isEmpty(modulesToRemove) && CollectionUtils.isEmpty(modulesToAdd)) {
+                addOrRemoveModulesFromRelatedLists(module, modulesToAdd, modulesToRemove);
+            }
 
             List<FacilioModule> subModules = modBean.getSubModules(module.getName(), subModuleTypesToFetch.toArray(new FacilioModule.ModuleType[]{}));
-            if(CollectionUtils.isNotEmpty(modulesToAdd)) {
+            subModules = subModules != null ? subModules : new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(modulesToAdd)) {
                 List<String> existingSubModuleNames = subModules
                         .stream()
                         .map(FacilioModule::getName)
                         .collect(Collectors.toList());
-                List<String> modulesToAddInSubModules =  new ArrayList<>(modulesToAdd);
-                modulesToAddInSubModules.removeAll(existingSubModuleNames);
-                subModules.addAll(modBean.getModuleList(modulesToAddInSubModules));
-            }
-
-            if(CollectionUtils.isNotEmpty(modulesToRemove)) {
-                subModules.removeIf(mod->modulesToRemove.contains(mod.getName()));
-            }
-            for(FacilioModule subModule : subModules ) {
-                if (subModule.isModuleHidden()) {
-                    continue;
+                modulesToAdd.removeAll(existingSubModuleNames);
+                if (CollectionUtils.isNotEmpty(modulesToAdd)) {
+                    subModules.addAll(modBean.getModuleList(modulesToAdd));
                 }
+            }
 
-                List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
-                List<FacilioField> fields = allFields.stream()
-                        .filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == module.getModuleId()))
-                        .collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(modulesToRemove)) {
+                List<String> finalModulesToRemove = modulesToRemove;
+                subModules.removeIf(mod -> mod == null || finalModulesToRemove.contains(mod.getName()));
+            }
+            if (CollectionUtils.isNotEmpty(subModules)) {
+                for (FacilioModule subModule : subModules) {
+                    if (subModule.isModuleHidden()) {
+                        continue;
+                    }
 
-                long moduleId = module.getModuleId();
-                if (CollectionUtils.isNotEmpty(fields)) {
+                    List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
+                    List<FacilioField> fields = allFields.stream()
+                            .filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == module.getModuleId()))
+                            .collect(Collectors.toList());
 
-                    for(FacilioField field : fields ) {
-                        if (PageFactory.relatedListHasPermission(moduleId, subModule, field)) {
-                            RelatedListWidgetContext relList = new RelatedListWidgetContext();
-                            if (StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
-                                relList.setDisplayName(((LookupField) field).getRelatedListDisplayName());
-                            } else {
-                                relList.setDisplayName(field.getDisplayName());
+                    long moduleId = module.getModuleId();
+                    if (CollectionUtils.isNotEmpty(fields)) {
+
+                        for (FacilioField field : fields) {
+                            if (!checkPermission || PageFactory.relatedListHasPermission(moduleId, subModule, field)) {
+                                RelatedListWidgetContext relList = new RelatedListWidgetContext();
+                                if (StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
+                                    relList.setDisplayName(((LookupField) field).getRelatedListDisplayName());
+                                } else {
+                                    relList.setDisplayName(field.getDisplayName());
+                                }
+                                relList.setSubModuleName(subModule.getName());
+                                relList.setSubModuleId(subModule.getModuleId());
+                                relList.setFieldName(field.getName());
+                                relList.setFieldId(field.getFieldId());
+                                relLists.add(relList);
                             }
-                            relList.setSubModuleName(subModule.getName());
-                            relList.setSubModuleId(subModule.getModuleId());
-                            relList.setFieldName(field.getName());
-                            relList.setFieldId(field.getFieldId());
-                            relLists.add(relList);
                         }
                     }
                 }
             }
         }
-        bulkRelatedListWidget.setRelatedList(relLists);
-        return FieldUtil.getAsJSON(bulkRelatedListWidget);
+        return relLists;
     };
 
     /**

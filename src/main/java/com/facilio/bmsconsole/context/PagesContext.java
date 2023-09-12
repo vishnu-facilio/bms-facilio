@@ -56,7 +56,7 @@ public class PagesContext implements Serializable {
     private String description;
     private Boolean isTemplate;
     private Boolean isDefaultPage;
-    private Boolean isSystemPage = false;
+    private Boolean isSystemPage;
     private Boolean status;
     private Long sysCreatedBy;
     private Long sysCreatedTime;

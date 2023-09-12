@@ -38,8 +38,8 @@ public class GetCustomPageCommand extends FacilioCommand {
             customPage.setCriteria(criteria);
         }
 
-        if(!customPage.getName().contains("__c")) {
-            customPage.setIsSystemPage(true);
+        if(customPage.getIsSystemPage() == null) {
+            customPage.setIsSystemPage(!customPage.getName().contains("__c"));
         }
 
         boolean excludeTabs = (boolean) context.getOrDefault(FacilioConstants.CustomPage.EXCLUDE_TABS, false);

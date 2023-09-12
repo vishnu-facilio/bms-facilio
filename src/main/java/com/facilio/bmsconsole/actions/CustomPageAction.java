@@ -50,6 +50,7 @@ public class CustomPageAction extends FacilioAction {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
         context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        context.put(FacilioConstants.CustomPage.IS_SYSTEM, false);
         context.put(FacilioConstants.CustomPage.IS_DEFAULT_PAGE,false);
         context.put(FacilioConstants.ContextNames.APP_ID,appId);
         chain.execute();

@@ -25,9 +25,10 @@ public class GetRelatedModulesForBuilder extends FacilioCommand {
 
         if(currModule != null) {
             JSONObject bulkRelatedList = RelatedListWidgetUtil.fetchAllRelatedListForModule(currModule);
-            List<RelatedListWidgetContext> relatedLists = (List<RelatedListWidgetContext>) bulkRelatedList.get("relatedList");
-
-            context.put(FacilioConstants.ContextNames.MODULE_LIST, relatedLists);
+            if(bulkRelatedList != null) {
+                List<RelatedListWidgetContext> relatedLists = (List<RelatedListWidgetContext>) bulkRelatedList.get("relatedList");
+                context.put(FacilioConstants.ContextNames.MODULE_LIST, relatedLists);
+            }
         }
         return false;
 

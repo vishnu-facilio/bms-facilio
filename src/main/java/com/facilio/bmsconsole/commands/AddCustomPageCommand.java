@@ -130,6 +130,7 @@ public class AddCustomPageCommand extends FacilioCommand {
             throw new IllegalArgumentException("linkName "+ customPage.getName()+" already exists, given linkName for customPage is invalid");
         }
 
+        customPage.setIsSystemPage((isSystem != null && isSystem));
         customPage.setName(name);
         customPage.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
         customPage.setSysCreatedTime(System.currentTimeMillis());

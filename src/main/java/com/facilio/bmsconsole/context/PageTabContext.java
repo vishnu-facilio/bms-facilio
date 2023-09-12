@@ -34,7 +34,8 @@ public class PageTabContext {
 
     public enum TabType implements FacilioStringEnum {
         SIMPLE,
-        CONNECTED_TAB
+        CONNECTED_TAB,
+        SINGLE_WIDGET_TAB
     }
     public PageTabContext(String name, String displayName, Double sequenceNumber, TabType tabType, Boolean status, int featureLicense) {
         this.name = name;

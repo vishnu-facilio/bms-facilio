@@ -14,24 +14,21 @@ public class ChangePageStatusCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Long id = (Long) context.get(FacilioConstants.ContextNames.ID);
         if (id <= 0) {
-            LOGGER.error("Invalid Id");
-            throw new IllegalArgumentException("Invalid Id");
+            throw new IllegalArgumentException("Invalid Id to update page's status");
         }
 
         Boolean status = (Boolean) context.get(FacilioConstants.ContextNames.STATUS);
         if(status == null){
-            LOGGER.error("Invalid status");
-            throw new IllegalArgumentException("Invalid status");
+            throw new IllegalArgumentException("status can't be null");
         }
 
         PagesContext page = CustomPageAPI.getCustomPage(id);
         if(page == null){
-            LOGGER.error("Page does not exists");
             throw new IllegalArgumentException("Page does not exists");
         }
 
-        if(page.getIsDefaultPage()){
-             LOGGER.info("Default Page status can't be changed");
+        if((page.getIsDefaultPage() || (page.getIsSystemPage()!=null && page.getIsSystemPage())) && !status){
+            throw new IllegalArgumentException("System or Default page can't be disabled");
         }
         else {
             page.setStatus(status);

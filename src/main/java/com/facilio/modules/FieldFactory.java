@@ -11875,6 +11875,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getBooleanField("isTemplate","IS_TEMPLATE",module));
         fields.add(getBooleanField("isDefaultPage","IS_DEFAULT_PAGE",module));
         fields.add(getBooleanField("status","STATUS",module));
+        fields.add(getBooleanField("isSystemPage", "IS_SYSTEM", module));
         fields.add(getSystemField("sysCreatedBy",module));
         fields.add(getSystemField("sysCreatedTime",module));
         fields.add(getSystemField("sysModifiedBy",module));

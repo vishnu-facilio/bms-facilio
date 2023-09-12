@@ -26,18 +26,20 @@ public class PageBuilderConfigUtil {
             moduleList.add(modBean.getModule("workorder"));
 
             if (CollectionUtils.isNotEmpty(moduleList)) {
-                List<Long> moduleIds = moduleList.stream().map(FacilioModule::getModuleId).collect(Collectors.toList());
+                List<Long> moduleIds = moduleList.stream().filter(Objects::nonNull).map(FacilioModule::getModuleId).collect(Collectors.toList());
                 Map<Long, ModuleSettingContext> settingContextsMap = ModuleSettingConfigUtil.getModuleListConfigDetailsForConfigName(moduleIds, FacilioConstants.SettingConfigurationContextNames.PAGE_BUILDER);
 
                 for (FacilioModule module : moduleList) {
-                    long moduleId = module.getModuleId();
-                    boolean status = false;
+                    if (module != null) {
+                        long moduleId = module.getModuleId();
+                        boolean status = false;
 
-                    if (settingContextsMap != null && settingContextsMap.containsKey(moduleId)) {
-                        status = settingContextsMap.get(moduleId) != null && settingContextsMap.get(moduleId).isStatus();
+                        if (settingContextsMap != null && settingContextsMap.containsKey(moduleId)) {
+                            status = settingContextsMap.get(moduleId) != null && settingContextsMap.get(moduleId).isStatus();
+                        }
+
+                        modulesVsStatus.put(module.getName(), status);
                     }
-
-                    modulesVsStatus.put(module.getName(), status);
                 }
             }
         }
