@@ -178,7 +178,8 @@ public class ExportUtil {
 			autoSizeColumns(sheet);
 			
 			String fileName = facilioModule.getDisplayName() + ".xls";
-			String filePath = getFilePath(fileName);
+			String localFileName = facilioModule.getDisplayName()+"_"+DateTimeUtil.getCurrenTime()+".xls";
+			String filePath = getFilePath(localFileName);
 	
 			try(FileOutputStream fileOut = new FileOutputStream(filePath);) {
 				workbook.write(fileOut);
@@ -366,7 +367,8 @@ public class ExportUtil {
 	
 	public static long exportDataAsCSVFileId(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, FileStore fs) throws Exception {
 		String fileName = facilioModule.getDisplayName() + ".csv";
-		String filePath = getFilePath(fileName);
+		String localFileName = facilioModule.getDisplayName()+"_"+DateTimeUtil.getCurrenTime()+".xls";
+		String filePath = getFilePath(localFileName);
         	try(FileWriter writer = new FileWriter(filePath, false);) {
         	
 	        	StringBuilder str = new StringBuilder();
@@ -1010,7 +1012,7 @@ public class ExportUtil {
 		if (path == null) {
 			path = getTempFolder(null).getPath();
 		}
-		return path + File.separator + fileName+"_"+DateTimeUtil.getCurrenTime() ;
+		return path + File.separator + fileName;
 	}
 	
 	public static String getZipFileUrl(File rootFolder) throws Exception {
