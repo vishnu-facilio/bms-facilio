@@ -189,7 +189,7 @@ public class AssetDepartmentPackageBeanImpl implements PackageBean<V3AssetDepart
         Map<Long, Long> AssetDepartmentIdVsModuleId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule assetDepartmentModule = moduleBean.getModule("assetdepartment");
-        List<V3AssetDepartmentContext> props = (List<V3AssetDepartmentContext>) PackageBeanUtil.getModuleDataIdVsModuleId(null, assetDepartmentModule, V3AssetDepartmentContext.class);
+        List<V3AssetDepartmentContext> props = (List<V3AssetDepartmentContext>) PackageBeanUtil.getModuleData(null, assetDepartmentModule, V3AssetDepartmentContext.class, false);
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3AssetDepartmentContext prop : props) {
                 AssetDepartmentIdVsModuleId.put(prop.getId(), prop.getModuleId());

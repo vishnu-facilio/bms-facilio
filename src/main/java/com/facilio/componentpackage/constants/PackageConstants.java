@@ -230,6 +230,10 @@ public class PackageConstants {
         public static final String CONDITIONS_LIST = "Conditions_List";
         public static final String IS_EXPRESSION_VALUE = "Is_Expression_Value";
         public static final String PICKLIST_VALUE = "PickList_Value";
+        public static final String USER_ELEMENT = "User_Element";
+        public static final String PEOPLE_ELEMENT = "People_Element";
+        public static final String USER_ELEMENT_LIST = "User_Element_List";
+        public static final String PEOPLE_ELEMENT_LIST = "People_Element_List";
         public static final String PICKLIST_ELEMENT = "PickList_Element";
         public static final String PARENT_MODULE_NAME = "Parent_Module_Name";
 
@@ -565,6 +569,35 @@ public class PackageConstants {
         public static final String FILTER_CRITERIA = "Filter_Criteria";
         public static final String FORM_FIELD_DISPLAY_NAME = "Form_Field_Display_Name";
     }
+
+    public static class UserConstants {
+        public static final String ROLE = "Role";
+        public static final String EMAIL = "Email";
+        public static final String USERID = "userId";
+        public static final String MOBILE = "Mobile";
+        public static final String PHONE = "Phone";
+        public static final String NAME = "Name";
+        public static final String USER_NAME = "UserName";
+        public static final String TIMEZONE = "TimeZone";
+        public static final String LANGUAGE = "Language";
+        public static final String IS_USER = "Is_User";
+        public static final String PEOPLE_TYPE = "People_Type";
+        public static final String APP_LINK_NAME = "App_Link_Name";
+        public static final String IDENTIFIER = "Identifier";
+        public static final String DELETED_TIME = "Deleted_Time";
+        public static final String IS_SUPER_USER = "Is_Super_User";
+        public static final String OCCUPANT_PORTAL_ACCESS = "Occupant_Portal_Access";
+        public static final String EMPLOYEE_PORTAL_ACCESS = "Employee_Portal_Access";
+        public static final String ROLE_APP_SCOPING = "Role_App_Scoping";
+        public static final String ROLE_APP_SCOPING_LIST = "Role_App_Scoping_List";
+        public static final String ADDITIONAL_PROPS = "Additional_Props";
+        public static final String IS_PRIMARY_CONTACT = "Is_Primary_Contact";
+        public static final String PRIMARY_CONTACT_NAME = "Primary_Contact_Name";
+        public static final String PRIMARY_CONTACT_EMAIL = "Primary_Contact_EMail";
+        public static final String PRIMARY_CONTACT_PHONE = "Primary_Contact_Phone";
+
+    }
+
     public class GlobalVariableConstants{
         public static final String VARIABLE_NAME = "Variable_Name";
         public static final String LINK_NAME = "Link_Name";

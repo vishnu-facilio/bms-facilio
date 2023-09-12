@@ -34,6 +34,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.WorkflowFieldType;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import com.facilio.workflows.context.WorkflowContext;
@@ -68,6 +69,11 @@ public class PackageBeanUtil {
         add(FacilioConstants.ContextNames.ASSET_DEPARTMENT);
     }};
 
+    public static final List<String> DYNAMIC_CONDITION_VALUES = new ArrayList<String>() {{
+        add(FacilioConstants.Criteria.LOGGED_IN_USER);
+        add(FacilioConstants.Criteria.LOGGED_IN_PEOPLE);
+    }};
+
 //    public static final Map<String, FacilioField> getFieldsForFieldName(String moduleName, List<String> fieldNames) throws Exception {
 //
 //    }
@@ -85,6 +91,13 @@ public class PackageBeanUtil {
         }
 
         return appNameVsAppId;
+    }
+
+    public static void bulkDeleteV3Records(String moduleName, List<Long> ids) throws Exception {
+        Map<String, Object> data = new HashMap<>();
+        data.put(moduleName, ids);
+
+        V3Util.deleteRecords(moduleName, data,null,null,false);
     }
 
     public static void addPickListConfForXML(String moduleName, String nameFieldName, List<? extends ModuleBaseWithCustomFields> records, Class<?> clazz, boolean isTicketStatus) throws Exception {
@@ -110,7 +123,7 @@ public class PackageBeanUtil {
     public static void addPickListConfForContext(String moduleName, String nameFieldName, Class<?> clazz) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(moduleName);
-        List<?> records = PackageBeanUtil.getModuleDataIdVsModuleId(null, module, clazz);
+        List<?> records = PackageBeanUtil.getModuleData(null, module, clazz, false);
 
         List<Map<String, Object>> recordsMap = FieldUtil.getAsMapList(records, clazz);
         addPickListRecordsToThreadLocal(moduleName, nameFieldName, recordsMap, false);
@@ -119,7 +132,7 @@ public class PackageBeanUtil {
     public static void addTicketStatusConfForContext(String moduleName, String nameFieldName, Class<?> clazz) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(moduleName);
-        List<FacilioStatus> records = (List<FacilioStatus>) PackageBeanUtil.getModuleDataIdVsModuleId(null, module, clazz);
+        List<FacilioStatus> records = (List<FacilioStatus>) PackageBeanUtil.getModuleData(null, module, clazz, false);
 
         List<Map<String, Object>> recordsMap = FieldUtil.getAsMapList(records, clazz);
         Map<String, List<Map<String, Object>>> moduleNameVsRecordsMap = new HashMap<>();
@@ -455,8 +468,10 @@ public class PackageBeanUtil {
                             .addElement(constructBuilderFromCriteria(condition.getCriteriaValue(), conditionElement.element(PackageConstants.CriteriaConstants.CRITERIA), moduleName));
                 }
 
-                if (condition.getOperatorId() == 36 || condition.getOperatorId() == 37) {
-                    // TODO - Handle User Picklist
+                if (StringUtils.isNotEmpty(condition.getValue()) && !DYNAMIC_CONDITION_VALUES.contains(condition.getValue())
+                                                && (condition.getOperatorId() == 36 || condition.getOperatorId() == 37)) {
+                    String[] valueArr = condition.getValue().trim().split(FacilioUtil.COMMA_SPLIT_REGEX);
+
                     String fieldName = condition.getFieldName();
                     moduleName = fieldName.contains(".") ? fieldName.split("\\.")[0] : moduleName;
 
@@ -466,11 +481,19 @@ public class PackageBeanUtil {
                     if (field instanceof LookupField) {
                         FacilioModule lookupModule = ((LookupField) field).getLookupModule();
                         if (lookupModule.getName().equals(FacilioConstants.ContextNames.TICKET_STATUS)) {
-                            conditionElement.addElement(pickListXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT), facilioModule.getName(), condition.getValue(), true));
+                            conditionElement.addElement(pickListXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT), facilioModule.getName(), valueArr, true));
                         } else if (SUPPORTED_PICKLIST_MODULES.contains(lookupModule.getName())){
-                            conditionElement.addElement(pickListXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT), lookupModule.getName(), condition.getValue(), false));
+                            conditionElement.addElement(pickListXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT), lookupModule.getName(), valueArr, false));
                         } else if (FacilioConstants.ContextNames.USERS.equals(lookupModule.getName())){
-                            LOGGER.info("####Sandbox Tracking - Condition contains User Record - " + moduleName + " FieldName - " + fieldName + " ConditionId - " + condition.getConditionId());
+                            XMLBuilder userElementList = conditionElement.element(PackageConstants.CriteriaConstants.USER_ELEMENT_LIST);
+                            for (String val : valueArr) {
+                                userElementList.addElement(userXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.USER_ELEMENT), Long.parseLong(val)));
+                            }
+                        } else if (FacilioConstants.ContextNames.PEOPLE.equals(lookupModule.getName())){
+                            XMLBuilder peopleElementList = conditionElement.element(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT_LIST);
+                            for (String val : valueArr) {
+                                peopleElementList.addElement(peopleXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT), Long.parseLong(val)));
+                            }
                         } else {
                             LOGGER.info("####Sandbox Tracking - Condition contains Module Record - " + moduleName + " FieldName - " + fieldName + " ConditionId - " + condition.getConditionId());
                         }
@@ -502,14 +525,41 @@ public class PackageBeanUtil {
                 String jsonValue = conditionElement.getElement(PackageConstants.CriteriaConstants.JSON_VALUE).getText();
                 int operatorId = Integer.parseInt(conditionElement.getElement(PackageConstants.CriteriaConstants.OPERATOR).getText());
                 boolean isExpressionValue = Boolean.parseBoolean(conditionElement.getElement(PackageConstants.CriteriaConstants.IS_EXPRESSION_VALUE).getText());
-                XMLBuilder pickListElement = conditionElement.getElement(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT);
 
-                // PickList values
-                if (pickListElement != null && (operatorId == 36 || operatorId == 37)) {
-                    String moduleName = pickListElement.getElement(PackageConstants.MODULENAME).getText();
+                // User (or) PickList values
+                if (!DYNAMIC_CONDITION_VALUES.contains(value) && (operatorId == 36 || operatorId == 37)) {
+                    XMLBuilder userElement = conditionElement.getElement(PackageConstants.CriteriaConstants.USER_ELEMENT_LIST);
+                    XMLBuilder peopleElement = conditionElement.getElement(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT_LIST);
+                    XMLBuilder pickListElement = conditionElement.getElement(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT);
 
-                    if (StringUtils.isNotEmpty(moduleName) && (SUPPORTED_PICKLIST_MODULES.contains(moduleName) || moduleName.equals(FacilioConstants.ContextNames.TICKET_STATUS))) {
-                        value = pickListValueBuilder(pickListElement);
+                    if (pickListElement != null) {
+                        String moduleName = pickListElement.getElement(PackageConstants.MODULENAME).getText();
+
+                        if (StringUtils.isNotEmpty(moduleName) && (SUPPORTED_PICKLIST_MODULES.contains(moduleName) || moduleName.equals(FacilioConstants.ContextNames.TICKET_STATUS))) {
+                            value = pickListValueBuilder(pickListElement);
+                        }
+                    } else if (userElement != null) {
+                        List<XMLBuilder> userElementList = conditionElement.getElementList(PackageConstants.CriteriaConstants.USER_ELEMENT);
+
+                        List<String> valueArr = new ArrayList<>();
+                        for (XMLBuilder valueElement : userElementList) {
+                            long orgUserId = userValueBuilder(valueElement);
+                            if (orgUserId > 0) {
+                                valueArr.add(String.valueOf(orgUserId));
+                            }
+                        }
+                        value = StringUtils.join(valueArr, ",");
+                    } else if (peopleElement != null) {
+                        List<XMLBuilder> peopleElementList = conditionElement.getElementList(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT);
+
+                        List<String> valueArr = new ArrayList<>();
+                        for (XMLBuilder valueElement : peopleElementList) {
+                            long peopleId = peopleValueBuilder(valueElement);
+                            if (peopleId > 0) {
+                                valueArr.add(String.valueOf(peopleId));
+                            }
+                        }
+                        value = StringUtils.join(valueArr, ",");
                     }
                 }
 
@@ -534,7 +584,7 @@ public class PackageBeanUtil {
         return newCriteria;
     }
 
-    public static XMLBuilder pickListXMLBuilder(XMLBuilder xmlBuilder, String moduleName, String value, boolean isTicketStatus) throws Exception {
+    public static XMLBuilder pickListXMLBuilder(XMLBuilder xmlBuilder, String moduleName, String[] valueArr, boolean isTicketStatus) throws Exception {
         if (StringUtils.isEmpty(moduleName)) {
             return xmlBuilder;
         }
@@ -549,8 +599,12 @@ public class PackageBeanUtil {
             recordIdVsNameForModule = PackageUtil.getRecordIdVsNameForPicklistModule(moduleName);
         }
 
-        if (MapUtils.isNotEmpty(recordIdVsNameForModule) && recordIdVsNameForModule.containsKey(value)) {
-            xmlBuilder.element(PackageConstants.CriteriaConstants.PICKLIST_VALUE).text(recordIdVsNameForModule.get(value));
+        if (MapUtils.isNotEmpty(recordIdVsNameForModule)) {
+            for (String val : valueArr) {
+                if (recordIdVsNameForModule.containsKey(val)) {
+                    xmlBuilder.element(PackageConstants.CriteriaConstants.PICKLIST_VALUE).text(recordIdVsNameForModule.get(val));
+                }
+            }
         }
 
         return xmlBuilder;
@@ -559,14 +613,13 @@ public class PackageBeanUtil {
     public static String pickListValueBuilder(XMLBuilder xmlBuilder) {
         String value = null;
         String moduleName = xmlBuilder.getElement(PackageConstants.MODULENAME).getText();
-        XMLBuilder pickList = xmlBuilder.getElement(PackageConstants.CriteriaConstants.PICKLIST_VALUE);
-        if(pickList!=null) {
-            value = xmlBuilder.getElement(PackageConstants.CriteriaConstants.PICKLIST_VALUE).getText();
-        }
-        if (StringUtils.isEmpty(moduleName) || StringUtils.isEmpty(value)) {
+        List<XMLBuilder> valueElementList = xmlBuilder.getElementList(PackageConstants.CriteriaConstants.PICKLIST_VALUE);
+
+        if (StringUtils.isEmpty(moduleName) || CollectionUtils.isEmpty(valueElementList)) {
             return null;
         }
 
+        List<String> valueArr = new ArrayList<>();
         Map<String, String> recordNameVsIdForModule = null;
         if (SUPPORTED_PICKLIST_MODULES.contains(moduleName)) {
             recordNameVsIdForModule = PackageUtil.getNameVsRecordIdForPicklistModule(moduleName);
@@ -575,11 +628,64 @@ public class PackageBeanUtil {
             recordNameVsIdForModule = PackageUtil.getTicketStatusNameVsIdForModule(parentModuleName);
         }
 
-        if (MapUtils.isNotEmpty(recordNameVsIdForModule) && recordNameVsIdForModule.containsKey(value)) {
-            return recordNameVsIdForModule.get(value);
+        if (MapUtils.isNotEmpty(recordNameVsIdForModule)) {
+            for (XMLBuilder valueElement : valueElementList) {
+                String val = valueElement.getText();
+                if (StringUtils.isNotEmpty(val) && recordNameVsIdForModule.containsKey(val)) {
+                    valueArr.add(recordNameVsIdForModule.get(val));
+                }
+            }
+            return StringUtils.join(valueArr, ",");
         }
 
         return null;
+    }
+
+    public static XMLBuilder userXMLBuilder(XMLBuilder userElement, long orgUserId) throws Exception {
+        UserInfo userInfo = PackageUtil.getUserInfo(orgUserId);
+        if (userInfo != null) {
+            userElement.element(PackageConstants.UserConstants.USER_NAME).text(userInfo.getUserName());
+            userElement.element(PackageConstants.UserConstants.IDENTIFIER).text(userInfo.getIdentifier());
+        } else {
+            LOGGER.info("####Sandbox Tracking - User details not found for OrgUserId - " + orgUserId);
+        }
+        return userElement;
+    }
+
+    public static long userValueBuilder(XMLBuilder userElement) {
+        if (userElement.getElement(PackageConstants.UserConstants.USER_NAME) == null ||
+                userElement.getElement(PackageConstants.UserConstants.IDENTIFIER) == null) {
+            return -1;
+        }
+
+        String userName = userElement.getElement(PackageConstants.UserConstants.USER_NAME).getText();
+        String identifier = userElement.getElement(PackageConstants.UserConstants.IDENTIFIER).getText();
+
+        long orgUserId = (StringUtils.isNotEmpty(userName) && StringUtils.isNotEmpty(identifier))
+                            ? PackageUtil.getOrgUserId(userName, identifier) : -1;
+
+        return orgUserId;
+    }
+
+    public static XMLBuilder peopleXMLBuilder(XMLBuilder peopleElement, long peopleId) throws Exception {
+        String peopleMail = PackageUtil.getPeopleMail(peopleId);
+        if (StringUtils.isNotEmpty(peopleMail)) {
+            peopleElement.element(PackageConstants.UserConstants.EMAIL).text(peopleMail);
+        } else {
+            LOGGER.info("####Sandbox Tracking - People details not found for PeopleId - " + peopleId);
+        }
+
+        return peopleElement;
+    }
+
+    public static long peopleValueBuilder(XMLBuilder peopleElement) {
+        if (peopleElement.getElement(PackageConstants.UserConstants.EMAIL) == null) {
+            return -1;
+        }
+
+        String peopleMail = peopleElement.getElement(PackageConstants.UserConstants.EMAIL).getText();
+        long peopleMailId = StringUtils.isNotEmpty(peopleMail) ? PackageUtil.getPeopleId(peopleMail) : -1;
+        return peopleMailId;
     }
 
     public static XMLBuilder constructBuilderFromWorkFlowContext(WorkflowContext workflowContext, XMLBuilder workFlowBuilder) throws Exception {
@@ -637,7 +743,7 @@ public class PackageBeanUtil {
             singleSharingElement.element(PackageConstants.SharingContextConstants.SHARING_TYPE).text(singleSharingContext.getTypeEnum().name());
             switch (singleSharingContext.getTypeEnum()) {
                 case USER:
-
+                    singleSharingElement.addElement(userXMLBuilder(singleSharingElement.element(PackageConstants.CriteriaConstants.USER_ELEMENT), singleSharingContext.getUserId()));
                     break;
 
                 case ROLE:
@@ -679,7 +785,9 @@ public class PackageBeanUtil {
 
             switch (sharingType) {
                 case USER:
-
+                    XMLBuilder userElement = singleSharingElement.getElement(PackageConstants.CriteriaConstants.USER_ELEMENT);
+                    long orgUserId = userValueBuilder(userElement);
+                    singleSharingContext.setUserId(orgUserId);
                     break;
 
                 case ROLE:
@@ -1152,13 +1260,17 @@ public class PackageBeanUtil {
         return builder.get();
     }
 
-    public static List<?> getModuleDataIdVsModuleId(Criteria criteria, FacilioModule module, Class<?> clazz) throws Exception {
+    public static List<?> getModuleData(Criteria criteria, FacilioModule module, Class<?> clazz, boolean fetchDeleted) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordBuilder = new SelectRecordsBuilder<>()
                 .table(module.getTableName())
                 .module(module)
                 .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
                 .select(moduleBean.getAllFields(module.getName()));
+
+        if (fetchDeleted) {
+            selectRecordBuilder.fetchDeleted();
+        }
 
         if (criteria != null && !criteria.isEmpty()) {
             selectRecordBuilder.andCriteria(criteria);

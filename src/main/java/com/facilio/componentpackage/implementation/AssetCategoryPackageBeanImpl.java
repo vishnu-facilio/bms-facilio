@@ -271,7 +271,7 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(fetchSystem), BooleanOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", String.valueOf(false), BooleanOperators.IS));
-        List<V3AssetCategoryContext> props = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleDataIdVsModuleId(criteria, assetCategoryModule, V3AssetCategoryContext.class);
+        List<V3AssetCategoryContext> props = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleData(criteria, assetCategoryModule, V3AssetCategoryContext.class, false);
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3AssetCategoryContext prop : props) {
                 assetCategoryIdVsModuleId.put( prop.getId(), prop.getModuleId());

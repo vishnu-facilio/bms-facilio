@@ -136,18 +136,18 @@ public class UriFilter implements Filter {
                 if (SandboxAPI.isSandboxSubDomain(domainName)) {
                     List<String> reqUriSplit = Arrays.asList(reqUri.split("/"));
                     int idx = reqUriSplit.indexOf("api");
-                    if (idx == 1) {                                                     // "/api/"
+                    if (idx == 1 && reqUri.equals("/api/v2/application/fetchDetails")) {    // "/api/"
                         req.getRequestDispatcher(reqUri).forward(request, response);
                     } else if (idx == 2) {                                              // "/sandboxName/api/"
                         String sandboxName = reqUriSplit.get(1);
                         request.setAttribute(RequestUtil.ORG_SUBDOMAIN, sandboxName);
-                        req.getRequestDispatcher(getNewURI(reqUri)).forward(request, response);
+                        req.getRequestDispatcher(getApiURI(reqUri)).forward(request, response);
                     } else if (idx == 3){                                               // "/sandboxName/appName/api/"
                         String appName = reqUriSplit.get(2);
                         String sandboxName = reqUriSplit.get(1);
                         request.setAttribute(RequestUtil.ORG_SUBDOMAIN, sandboxName);
                         request.setAttribute(RequestUtil.REQUEST_APP_NAME, appName);
-                        req.getRequestDispatcher(getNewURI(reqUri)).forward(request, response);
+                        req.getRequestDispatcher(getApiURI(reqUri)).forward(request, response);
                     } else {                                                            // "/sandboxName/"
                         String sandboxName = reqUriSplit.get(1);
                         request.setAttribute(RequestUtil.ORG_SUBDOMAIN, sandboxName);
@@ -188,7 +188,7 @@ public class UriFilter implements Filter {
 
     }
 
-    private String getNewURI(String oldURI) {
+    private String getApiURI(String oldURI) {
         int idx = oldURI.indexOf(URL_PATTERN);
         return oldURI.substring(idx);
     }

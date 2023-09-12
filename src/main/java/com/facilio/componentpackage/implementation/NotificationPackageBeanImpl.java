@@ -142,6 +142,10 @@ public class NotificationPackageBeanImpl implements PackageBean<WorkflowRuleCont
 
             FacilioModule module = moduleBean.getModule(workflowRuleContext.getModuleId());
 
+            if (CollectionUtils.isEmpty(workflowRuleContext.getActions())){
+                continue;
+            }
+
             WorkflowRuleContext existingNotificationRule = WorkflowRuleAPI.getWorkflowRule(workflowRuleContext.getName(),module, WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION,true);
             long ruleId;
 

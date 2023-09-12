@@ -360,6 +360,8 @@ public class ApplicationAction extends FacilioAction {
 				if (organization != null) {
 					setResult("isSandboxDomain", true);
 					setResult("orgSubDomain", organization.getDomain());
+				} else {
+					return "unauthorized";
 				}
 			}
 		}

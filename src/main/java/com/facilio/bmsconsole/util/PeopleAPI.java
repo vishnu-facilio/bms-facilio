@@ -112,6 +112,55 @@ public class PeopleAPI {
 		return records;
 	}
 
+	public static Map<String, PeopleContext> getPeopleForEmails(Collection<String> emailIds, boolean skipScoping) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+
+		SelectRecordsBuilder<PeopleContext> builder = new SelectRecordsBuilder<PeopleContext>()
+				.beanClass(PeopleContext.class)
+				.module(module)
+				.select(fields);
+
+		if (skipScoping) {
+			builder.skipScopeCriteria();
+		}
+
+		if (CollectionUtils.isNotEmpty(emailIds)) {
+			builder.andCondition(CriteriaAPI.getCondition("EMAIL", "email", StringUtils.join(emailIds, ","), StringOperators.IS));
+		}
+
+		List<PeopleContext> peopleContexts = builder.get();
+		if (CollectionUtils.isNotEmpty(peopleContexts)) {
+			Map<String, PeopleContext> emailVsPeople = peopleContexts.stream().collect(Collectors.toMap(PeopleContext::getEmail, people -> people, (a, b) -> b));
+			return emailVsPeople;
+		}
+		return null;
+	}
+
+	public static Map<Long, PeopleContext> getPeopleForIds(Collection<Long> ids, boolean skipScoping) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+
+		SelectRecordsBuilder<PeopleContext> builder = new SelectRecordsBuilder<PeopleContext>()
+				.beanClass(PeopleContext.class)
+				.module(module)
+				.select(fields);
+
+		if (skipScoping) {
+			builder.skipScopeCriteria();
+		}
+
+		builder.andCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(ids, ","), NumberOperators.EQUALS));
+
+		List<PeopleContext> peopleContexts = builder.get();
+		if (CollectionUtils.isNotEmpty(peopleContexts)) {
+			Map<Long, PeopleContext> idVsPeople = peopleContexts.stream().collect(Collectors.toMap(PeopleContext::getId, people -> people, (a, b) -> b));
+			return idVsPeople;
+		}
+		return null;
+	}
 
 	public static void addPeopleForUser(User user, boolean isSignup) throws Exception {
 

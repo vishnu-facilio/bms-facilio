@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -229,7 +230,8 @@ public class V3PeopleAPI {
             }
         }
         else {
-            FacilioForm defaultform = FormsAPI.getFormFromDB("default_" + module.getName() + "_web_" + AccountUtil.getCurrentApp().getLinkName(),module);
+            String appLinkName = AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getLinkName() : SignupUtil.getSignupApplicationLinkName();
+            FacilioForm defaultform = FormsAPI.getFormFromDB("default_" + module.getName() + "_web_" + appLinkName, module);
             if(defaultform != null){
                 tc.setFormId(defaultform.getId());
             }

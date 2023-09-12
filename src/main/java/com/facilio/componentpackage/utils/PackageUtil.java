@@ -2,6 +2,7 @@ package com.facilio.componentpackage.utils;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.UserInfo;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
 import com.facilio.componentpackage.context.PackageContext;
@@ -33,6 +34,10 @@ public class PackageUtil {
     private static ThreadLocal<Map<String, Map<String, String>>> TICKET_STATUS_CONF_FOR_XML = ThreadLocal.withInitial(HashMap::new);     // ParentModuleName Vs Id vs Status
     private static ThreadLocal<Map<String, Map<String, String>>> TICKET_STATUS_CONF_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new); // ParentModuleName Vs Status vs Id
     private static ThreadLocal<Map<ComponentType, Map<String, Long>>> COMPONENTS_UID_VS_COMPONENT_ID = ThreadLocal.withInitial(HashMap::new);
+    private static ThreadLocal<Map<String, Map<String, Long>>> USER_CONFIG_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new);     // UserName vs Identifier vs OrgUserId
+    private static ThreadLocal<Map<Long, UserInfo>> USER_CONFIG_FOR_XML = ThreadLocal.withInitial(HashMap::new);                    // OrgUserId vs UserInfo (UserName & Identifier)
+    private static ThreadLocal<Map<String, Long>> PEOPLE_CONFIG_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new);                // PeopleEmail vs PeopleId
+    private static ThreadLocal<Map<Long, String>> PEOPLE_CONFIG_FOR_XML = ThreadLocal.withInitial(HashMap::new);                    // PeopleId vs PeopleEmail
 
     public static void setInstallThread() throws Exception {
         isInstallThread.set(true);
@@ -105,11 +110,57 @@ public class PackageUtil {
         ticketStatusNameVsIdForModule.putAll(records);
     }
 
+    public static long getPeopleId(String peopleMail) {
+        Map<String, Long> peopleMailVsPeopleId = PEOPLE_CONFIG_FOR_CONTEXT.get();
+        return peopleMailVsPeopleId.getOrDefault(peopleMail, -1L);
+    }
+
+    public static void addPeopleConfigForContext(Map<String, Long> peopleMailVsPeopleIdToAdd) {
+        Map<String, Long> peopleMailVsPeopleId = PEOPLE_CONFIG_FOR_CONTEXT.get();
+        peopleMailVsPeopleId.putAll(peopleMailVsPeopleIdToAdd);
+    }
+
+    public static String getPeopleMail(long peopleId) {
+        Map<Long, String> peopleIdVsPeopleMail = PEOPLE_CONFIG_FOR_XML.get();
+        return peopleIdVsPeopleMail.get(peopleId);
+    }
+
+    public static void addPeopleConfigForXML(Map<Long, String> peopleIdVsPeopleMailtoAdd) {
+        Map<Long, String> peopleIdVsPeopleMail = PEOPLE_CONFIG_FOR_XML.get();
+        peopleIdVsPeopleMail.putAll(peopleIdVsPeopleMailtoAdd);
+    }
+
+    public static UserInfo getUserInfo(long orgUserId) {
+        Map<Long, UserInfo> userInfoMap = USER_CONFIG_FOR_XML.get();
+        return userInfoMap.get(orgUserId);
+    }
+
+    public static void addUserInfoForXML(Map<Long, UserInfo> userInfoMapToAdd) {
+        Map<Long, UserInfo> userInfoMap = USER_CONFIG_FOR_XML.get();
+        userInfoMap.putAll(userInfoMapToAdd);
+    }
+
+    public static long getOrgUserId(String userName, String identifier) {
+        Map<String, Map<String, Long>> userConfigMap = USER_CONFIG_FOR_CONTEXT.get();
+        return (userConfigMap.containsKey(userName) && userConfigMap.get(userName).containsKey(identifier)) ? userConfigMap.get(userName).get(identifier) : -1L;
+    }
+
+    public static void addUserInfoForContext(String userName, String identifier, long orgUserId) {
+        Map<String, Map<String, Long>> userConfigMap = USER_CONFIG_FOR_CONTEXT.get();
+        userConfigMap.computeIfAbsent(userName, k -> new HashMap<>());
+        userConfigMap.get(userName).put(identifier, orgUserId);
+    }
+
     public static void clearPickListConf() throws Exception {
         PICKLIST_CONF_FOR_XML.remove();
         PICKLIST_CONF_FOR_CONTEXT.remove();
         TICKET_STATUS_CONF_FOR_XML.remove();
         TICKET_STATUS_CONF_FOR_CONTEXT.remove();
+
+        USER_CONFIG_FOR_XML.remove();
+        USER_CONFIG_FOR_CONTEXT.remove();
+        PEOPLE_CONFIG_FOR_XML.remove();
+        PEOPLE_CONFIG_FOR_CONTEXT.remove();
     }
 
     public static PackageContext getPackage(Organization organization) throws Exception {

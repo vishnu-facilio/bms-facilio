@@ -34,8 +34,8 @@ public enum ComponentType implements FacilioIntEnum {
     TICKET_TYPE(TicketTypePackageBeanImpl.class, MODULE, false),
     TICKET_PRIORITY(TicketPriorityPackageBeanImpl.class, MODULE, false),
     SPACE_CATEGORY(SpaceCategoryPackageBeanImpl.class, MODULE, false),
-
-    USER(null, APP, false),
+    PEOPLE(PeoplePackageBeanImpl.class, APP, false),
+    USER(UserPackageBeanImpl.class, APP, true),
     TEAM(null, APP, false),
     SITE(null, null, false),
     TICKET_STATUS(TicketStatePackageBeanImpl.class, MODULE, false),
@@ -70,6 +70,7 @@ public enum ComponentType implements FacilioIntEnum {
             add(ORG_INFO);
             add(APP);
             add(ROLE);
+            add(PEOPLE);
             add(USER);
             add(TEAM);
             add(MODULE);

@@ -1,6 +1,5 @@
 package com.facilio.accounts.util;
 
-import com.facilio.accounts.dto.Organization;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.PeopleAPI;
@@ -18,6 +17,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.identity.client.IdentityClient;
+import com.facilio.identity.client.bean.SandboxBean;
+import com.facilio.identity.client.bean.UserBean;
 import com.facilio.identity.client.dto.User;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -126,7 +127,7 @@ public class ApplicationUserUtil {
 
 
 
-    private static void addOrgUserApps(PeopleUserContext user) throws Exception {
+    public static void addOrgUserApps(PeopleUserContext user) throws Exception {
         List<FacilioField> fields = AccountConstants.getOrgUserAppsFields();
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                 .table(AccountConstants.getOrgUserAppsModule().getTableName()).fields(fields);
@@ -310,6 +311,19 @@ public class ApplicationUserUtil {
                 cc.setIsClientPortalAccess(false);
                 V3RecordAPI.updateRecord(cc, modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT), Collections.singletonList(isClientPortalAccess));
                 break;
+        }
+    }
+
+    public static void addSandboxUser(long orgId, boolean isPortal, boolean addAppAccess, PeopleUserContext peopleUser) throws Exception{
+        SandboxBean sandboxBean = IdentityClient.getDefaultInstance().getSandboxBean();
+        User iamUser = sandboxBean.addSandboxUser(orgId, peopleUser.getUser());
+        peopleUser.setIamOrgUserId(iamUser.getOuid());
+        peopleUser.setUid(iamUser.getUid());
+
+        addOrgUser(peopleUser, isPortal);
+
+        if (addAppAccess) {
+            addOrgUserApps(peopleUser);
         }
     }
 

@@ -139,7 +139,7 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
         Map<Long, Long> ticketTypeIdVsModuleId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule ticketTypeModule = moduleBean.getModule("tickettype");
-        List<TicketTypeContext> props = (List<TicketTypeContext>)PackageBeanUtil.getModuleDataIdVsModuleId(null,ticketTypeModule, TicketTypeContext.class);
+        List<TicketTypeContext> props = (List<TicketTypeContext>)PackageBeanUtil.getModuleData(null,ticketTypeModule, TicketTypeContext.class, false);
         if (CollectionUtils.isNotEmpty(props)) {
             for (TicketTypeContext prop : props) {
                 ticketTypeIdVsModuleId.put( prop.getId(), prop.getModuleId());

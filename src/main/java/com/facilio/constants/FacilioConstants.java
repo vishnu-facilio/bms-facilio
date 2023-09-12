@@ -643,6 +643,10 @@ public class FacilioConstants {
 		public static final String TENANT_STATUS = "tenantStatus";
 		public static final String USER_ID = "userId";
 		public static final String USER = "user";
+		public static final String IS_PORTAL_USER = "isPortalUser";
+		public static final String ADD_APP_ACCESS = "addAppAccess";
+		public static final String IS_DELETED_USER = "isDeletedUser";
+
 		public static final String USER_OPERATION = "userOperation";
 		public static final String USER_STATUS = "userStatus";
 		public static final String USER_MOBILE_SETTING = "userMobileSetting";

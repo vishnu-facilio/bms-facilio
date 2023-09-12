@@ -2635,4 +2635,11 @@ public class FacilioChainFactory {
 		c.addCommand(new GetMeterPhotoCommand());
 		return c;
 	}
+
+	public static FacilioChain addSandboxUserChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new AddOrgUserCommand());
+		c.addCommand(new AddPeopleRelatedDataCommand());
+		return c;
+	}
 }

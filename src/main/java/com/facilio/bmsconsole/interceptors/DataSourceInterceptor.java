@@ -142,7 +142,11 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 			Span.current().setAttribute("enduser.orgid", String.valueOf(iamAccount.getOrg().getOrgId()));
 			AppDomain appdomainObj = null;
 			try {
-				appdomainObj = IAMAppUtil.getAppDomain(request.getServerName(), iamAccount.getOrg().getOrgId());
+				if (SandboxAPI.isSandboxSubDomain(request.getServerName())) {
+					appdomainObj = IAMAppUtil.getAppDomain(request.getServerName(), iamAccount.getOrg().getOrgId());
+				} else {
+					appdomainObj = IAMAppUtil.getAppDomain(request.getServerName());
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

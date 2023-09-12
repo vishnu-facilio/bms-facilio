@@ -209,7 +209,7 @@ public class SpaceCategoryPackageBeanImpl implements PackageBean<V3SpaceCategory
         Map<Long, Long> spaceIdVsModuleId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule spaceCategoryModule = moduleBean.getModule("spacecategory");
-        List<V3SpaceCategoryContext> props = (List<V3SpaceCategoryContext>) PackageBeanUtil.getModuleDataIdVsModuleId(null, spaceCategoryModule,V3SpaceCategoryContext.class);
+        List<V3SpaceCategoryContext> props = (List<V3SpaceCategoryContext>) PackageBeanUtil.getModuleData(null, spaceCategoryModule,V3SpaceCategoryContext.class, false);
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3SpaceCategoryContext prop : props) {
                 spaceIdVsModuleId.put(prop.getId(), prop.getModuleId());

@@ -98,14 +98,9 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
 
     @Override
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
-        IAMOrgBean orgBean = IAMUtil.getOrgBean();
         for (Map.Entry<Long, XMLBuilder> uniqueIdentifierVsComponent : idVsXMLComponents.entrySet()) {
             Long orgId = uniqueIdentifierVsComponent.getKey();
             XMLBuilder element = uniqueIdentifierVsComponent.getValue();
-            Organization organization = constructOrgFromBuilder(element);
-
-            // Update Org
-            orgBean.updateOrgv2(orgId, organization);
 
             // Update FeatureLicense
             XMLBuilder featureLicenseList = element.getElement(PackageConstants.OrgConstants.FEATURE_LICENSE_LIST);
@@ -125,14 +120,22 @@ public class OrgInfoPackageBeanImpl implements PackageBean<Organization> {
                     }
                 }
 
-                AccountUtil.getTransactionalOrgBean(AccountUtil.getCurrentOrg().getOrgId()).addLicence(licenseMap);
+                AccountUtil.getTransactionalOrgBean(orgId).addLicence(licenseMap);
             }
         }
     }
 
     @Override
     public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+        IAMOrgBean orgBean = IAMUtil.getOrgBean();
+        for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
+            Long orgId = idVsData.getKey();
+            XMLBuilder element = idVsData.getValue();
+            Organization organization = constructOrgFromBuilder(element);
 
+            // Update Org
+            orgBean.updateOrgv2(orgId, organization);
+        }
     }
 
     @Override

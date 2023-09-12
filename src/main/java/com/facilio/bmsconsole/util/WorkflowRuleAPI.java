@@ -104,7 +104,7 @@ public class WorkflowRuleAPI {
 	}
 	public static long  addWorkflowRule(WorkflowRuleContext rule) throws Exception {
 		rule.setOrgId(AccountUtil.getCurrentOrg().getId());
-		rule.setStatus(true);
+		rule.setStatus(rule.getStatus() != null ? rule.getStatus() : true);
 		rule.setLatestVersion(true);
 		rule.setCreatedTime(DateTimeUtil.getCurrenTime());
 		rule.setModifiedTime(rule.getCreatedTime());

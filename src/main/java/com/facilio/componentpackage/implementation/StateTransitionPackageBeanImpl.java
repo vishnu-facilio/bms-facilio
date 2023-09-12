@@ -23,6 +23,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -37,7 +38,13 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
 
     @Override
     public Map<Long, Long> fetchCustomComponentIdsToPackage() throws Exception {
-        return WorkflowRuleAPI.getAllRuleIdVsModuleId(WorkflowRuleContext.RuleType.STATE_RULE);
+        Map<Long, Long> allRuleIdVsModuleId = WorkflowRuleAPI.getAllRuleIdVsModuleId(WorkflowRuleContext.RuleType.STATE_RULE);
+        // TODO - To be removed after proper field migration done in "visitorinviterel" module
+        if (MapUtils.isNotEmpty(allRuleIdVsModuleId)) {
+            FacilioModule module = Constants.getModBean().getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
+            allRuleIdVsModuleId.entrySet().removeIf(entry -> entry.getValue().equals(module.getModuleId()));
+        }
+        return allRuleIdVsModuleId;
     }
 
     @Override
@@ -48,11 +55,6 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
     @Override
     public void convertToXMLComponent(WorkflowRuleContext stateflowTransition, XMLBuilder element) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
-
-        if (stateflowTransition.getModuleName().equals(FacilioConstants.ContextNames.VISITOR_INVITE_REL)){
-            return;
-        }
-
         element.element(PackageConstants.MODULENAME).text(stateflowTransition.getModuleName());
         long formStateId = ((AbstractStateTransitionRuleContext) stateflowTransition).getFromStateId();
         FacilioStatus fromState = TicketAPI.getStatus(formStateId);
@@ -267,7 +269,6 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
     }
 
     private StateflowTransitionContext constructStateTransitionFromBuilder(XMLBuilder builder, ModuleBean moduleBean) throws Exception{
-
         String name = builder.getElement(PackageConstants.NAME).getText();
         String moduleName = builder.getElement(PackageConstants.MODULENAME).getText();
         FacilioModule module = moduleBean.getModule(moduleName);

@@ -187,11 +187,11 @@ public class LongTasksBeanImpl implements LongTasksBean {
 				createPackageChain.execute();
 				content.put(PackageConstants.FILE_ID, SandboxAPI.getRecentPackageId(sandboxConfigContext.getSubDomain()));
 				LOGGER.info("####Sandbox - Completed Package creation");
-				sandboxConfigContext.setStatus(4);
+				sandboxConfigContext.setStatus(SandboxConfigContext.SandboxStatus.UPGRADE_IN_PROGRESS);
 				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
 				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
 			} catch (Exception e) {
-				sandboxConfigContext.setStatus(5);
+				sandboxConfigContext.setStatus(SandboxConfigContext.SandboxStatus.PACKAGE_FAILED);
 				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
 				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
 				return;
@@ -234,7 +234,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 					LOGGER.error("####Sandbox - Error occurred while changing status to Success");
 					return;
 				}
-				sandboxConfigContext.setStatus(1);
+				sandboxConfigContext.setStatus(SandboxConfigContext.SandboxStatus.ACTIVE);
 				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
 				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
 				AccountUtil.cleanCurrentAccount();
@@ -250,7 +250,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 					LOGGER.error("####Sandbox - Error occurred while changing status to Failed");
 					return;
 				}
-				sandboxConfigContext.setStatus(6);
+				sandboxConfigContext.setStatus(SandboxConfigContext.SandboxStatus.INSTALL_FAILED);
 				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
 				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
 				AccountUtil.cleanCurrentAccount();

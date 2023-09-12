@@ -172,7 +172,7 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
 
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("ISDEFAULT", "isDefault", String.valueOf(fetchSystem), BooleanOperators.IS));
-        List<TicketPriorityContext> props = (List<TicketPriorityContext>) PackageBeanUtil.getModuleDataIdVsModuleId(criteria, ticketPriorityModule, TicketPriorityContext.class );
+        List<TicketPriorityContext> props = (List<TicketPriorityContext>) PackageBeanUtil.getModuleData(criteria, ticketPriorityModule, TicketPriorityContext.class, false);
         if (CollectionUtils.isNotEmpty(props)) {
             for (TicketPriorityContext prop : props) {
                 ticketPriorityIdVsModuleId.put(prop.getId(), prop.getModuleId());

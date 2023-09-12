@@ -2,10 +2,15 @@ package com.facilio.sandbox.utils;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.util.SharingAPI;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -270,5 +275,20 @@ public class SandboxAPI {
                 .table(sandboxModule.getTableName())
                 .andCondition(CriteriaAPI.getCondition("DOMAIN_NAME", "subDomain", domainName,   StringOperators.IS));
         updateBuilder.update(fileIdMap);
+    }
+
+    public static AppDomain getProductionAppDomain(Organization sandboxOrg, long appId) throws Exception {
+        long productionOrgId = sandboxOrg.getProductionOrgId();
+        ApplicationContext currApplication = ApplicationApi.getApplicationForId(appId);
+
+        if (productionOrgId > 0 && currApplication != null) {
+            AccountUtil.setCurrentAccount(productionOrgId);
+            ApplicationContext applicationFromProd = ApplicationApi.getApplicationForLinkName(currApplication.getLinkName());
+            AppDomain appDomainObj = applicationFromProd != null ? ApplicationApi.getAppDomainForApplication(applicationFromProd.getId()) : null;
+
+            AccountUtil.setCurrentAccount(sandboxOrg.getOrgId());
+            return appDomainObj;
+        }
+        return null;
     }
 }

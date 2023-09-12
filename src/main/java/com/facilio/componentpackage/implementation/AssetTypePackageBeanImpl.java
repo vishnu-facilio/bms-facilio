@@ -168,7 +168,7 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
         Map<Long, Long> assetTypeIdVsModuleId = new HashMap<>();
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule assetTypeModule = moduleBean.getModule("assettype");
-        List<V3AssetTypeContext> props = (List<V3AssetTypeContext>) PackageBeanUtil.getModuleDataIdVsModuleId(null, assetTypeModule,V3AssetTypeContext.class);
+        List<V3AssetTypeContext> props = (List<V3AssetTypeContext>) PackageBeanUtil.getModuleData(null, assetTypeModule,V3AssetTypeContext.class, false);
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3AssetTypeContext prop : props) {
                 assetTypeIdVsModuleId.put(prop.getId(), prop.getModuleId());

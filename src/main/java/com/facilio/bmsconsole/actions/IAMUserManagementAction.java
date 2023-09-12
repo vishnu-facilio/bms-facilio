@@ -21,13 +21,16 @@ import com.facilio.identity.client.IdentityClient;
 import com.facilio.identity.client.dto.User;
 import com.facilio.identity.client.dto.UserMFA;
 import com.facilio.modules.FieldUtil;
+import com.facilio.sandbox.utils.SandboxAPI;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -164,10 +167,16 @@ public class IAMUserManagementAction extends FacilioAction{
     }
 
     public String getUserList() throws Exception{
+        HttpServletRequest request = ServletActionContext.getRequest();
         Organization org = AccountUtil.getCurrentOrg();
         long orgId = org.getOrgId();
 
-        AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
+        AppDomain appDomainObj = null;
+        if (SandboxAPI.isSandboxSubDomain(request.getServerName())) {
+            appDomainObj = SandboxAPI.getProductionAppDomain(org, appId);
+        } else {
+            appDomainObj = ApplicationApi.getAppDomainForApplication(appId);;
+        }
         if(appDomainObj == null) {
             throw new IllegalArgumentException("Invalid App Domain");
         }
