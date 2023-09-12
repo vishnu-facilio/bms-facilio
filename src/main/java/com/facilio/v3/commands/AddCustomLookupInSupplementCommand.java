@@ -28,6 +28,7 @@ public class AddCustomLookupInSupplementCommand extends FacilioCommand {
             return false;
         }
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        Boolean isSubFormRecord = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_SUB_FORM_RECORD,false);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         List<FacilioField> allFields = modBean.getAllFields(moduleName);
@@ -38,7 +39,7 @@ public class AddCustomLookupInSupplementCommand extends FacilioCommand {
                     (!f.isDefault() &&
                         (f.getDataTypeEnum() == FieldType.LOOKUP || f.getDataTypeEnum() == FieldType.MULTI_LOOKUP || f.getDataTypeEnum() == FieldType.MULTI_ENUM)
                     )
-                    || (isSummary && f.getDataTypeEnum().isRelRecordField()) // Adding multi record fields for summary alone. Custom or otherwise
+                    || ((isSubFormRecord || isSummary) && f.getDataTypeEnum().isRelRecordField()) // Adding multi record fields for summary alone. Custom or otherwise
                 ) {
                 customLookupFields.add((SupplementRecord) f);
             }

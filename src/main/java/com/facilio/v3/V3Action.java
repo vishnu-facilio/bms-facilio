@@ -58,6 +58,17 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 	private Boolean isVisible;
 	private String message;
 
+
+	public Boolean getSubFormRecord() {
+		return subFormRecord;
+	}
+
+	public void setSubFormRecord(Boolean subFormRecord) {
+		this.subFormRecord = subFormRecord;
+	}
+
+	private Boolean subFormRecord = false;
+
 	public JSONObject getData() {
 		return this.data;
 	}

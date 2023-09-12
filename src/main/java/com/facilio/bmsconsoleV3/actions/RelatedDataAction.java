@@ -106,6 +106,7 @@ public class RelatedDataAction extends RESTAPIHandler {
         context.put(FacilioConstants.ContextNames.FETCH_ONLY_VIEW_GROUP_COLUMN,this.getFetchOnlyViewGroupColumn());
         context.put(FacilioConstants.ContextNames.QUERY_PARAMS, this.getQueryParameters());
         context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA, this.getClientCriteria());
+        context.put(FacilioConstants.ContextNames.IS_SUB_FORM_RECORD,this.getSubFormRecord());
     }
 
     public void addDataAlterChainContext(FacilioContext context) {

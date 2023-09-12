@@ -31,6 +31,7 @@ public class GetRelatedDataListCommand extends FacilioCommand {
         String quickFilter = (String) context.get(FacilioConstants.ContextNames.QUICK_FILTER);
         String orderBy = (String) context.get(FacilioConstants.ContextNames.ORDER_BY);
         String orderType = (String) context.get(FacilioConstants.ContextNames.ORDER_TYPE);
+        boolean isSubFormRecord = (boolean) context.get(FacilioConstants.ContextNames.IS_SUB_FORM_RECORD);
         boolean withCount = (boolean) context.get(Constants.WITH_COUNT);
         int page = (int) context.get(FacilioConstants.ContextNames.PAGE);
         int perPage = (int) context.get(FacilioConstants.ContextNames.PER_PAGE);
@@ -80,6 +81,7 @@ public class GetRelatedDataListCommand extends FacilioCommand {
         } else {
             ConfigParams configParams = new ConfigParams();
             configParams.setSelectableFieldNames(selectableFieldNames);
+            configParams.setIsSubFormRecord(isSubFormRecord);
             listContext = V3Util.fetchList(moduleName, true, viewName, filters, excludeParentFilter, clientCriteria,
                     orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields,quickFilter,configParams);
 
