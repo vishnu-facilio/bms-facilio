@@ -275,6 +275,9 @@ public class ExportUtil {
 		    				}
 					}
 				}
+				if(header != null && header.contains("___")){
+					header = header.split("___")[0];
+				}
 				rowhead.createCell((short) i).setCellValue(header);
 			}
 			
@@ -492,6 +495,9 @@ public class ExportUtil {
 	        				}
 	    				}
 	    			}
+					if(header != null && header.contains("___")){
+						header = header.split("___")[0];
+					}
 	    			str.append(escapeCsv(header));
 	    			str.append(',');
 	    		}

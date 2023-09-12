@@ -5,6 +5,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -39,9 +40,13 @@ public class ExportPivotReport extends FacilioCommand {
         LinkedHashMap<String, String> aliasVsDisplayName = new LinkedHashMap<>();
 
         List<String> headers = new ArrayList<>();
-        Map<String, Object> pivotTable = (Map<String, Object>) context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA);
+        Map<String, Object> pivotTable = null;
+        try {
+            pivotTable = ReportUtil.sortPivotTableData(context);
+        }catch (Exception e){
+            pivotTable = (Map<String, Object>) context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA);
+        }
         List<Map<String, Object>> pivotRecords = (List<Map<String, Object>>) pivotTable.get("records");
-
         List<Map<String, Object>> records = new ArrayList<>();
         if(!templateJson.containsKey("theme") || templateJson.get("theme") == null)
         {
@@ -62,19 +67,22 @@ public class ExportPivotReport extends FacilioCommand {
 
         for (String key : rowHeaders) {
             Map<String, Object> data = (Map<String, Object>) JsonTable.get(key);
-            headers.add((String) data.get("label"));
-            aliasVsDisplayName.put(key, (String) data.get("label"));
+            String label = new StringBuilder((String)data.get("label")).append("___").append(key).toString();
+            headers.add(label);
+            aliasVsDisplayName.put(key, label);
         }
         for (String key : columnHeaders) {
             Map<String, Object> data = (Map<String, Object>) JsonTable.get(key);
-            headers.add((String) data.get("label"));
-            aliasVsDisplayName.put(key, (String) data.get("label"));
+            String label = new StringBuilder((String)data.get("label")).append("___").append(key).toString();
+            headers.add(label);
+            aliasVsDisplayName.put(key, label);
         }
 
         for (String key : formulaHeaders) {
             Map<String, Object> data = (Map<String, Object>) JsonTable.get(key);
-            headers.add((String) data.get("label"));
-            aliasVsDisplayName.put(key, (String) data.get("label"));
+            String label = new StringBuilder((String)data.get("label")).append("___").append(key).toString();
+            headers.add(label);
+            aliasVsDisplayName.put(key, label);
         }
 
         for (Map<String, Object> record : pivotRecords) {

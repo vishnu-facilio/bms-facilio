@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.report.V3ScheduledReportRelContext;
+import com.facilio.bmsconsoleV3.util.HashMapValueComparator;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.db.criteria.operators.*;
@@ -1873,5 +1874,48 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 
 			}
 		}
+	}
+
+	public static HashMap<String, Object> sortPivotTableData(Context context)throws Exception
+	{
+		HashMap<String, Object> dataresult = (HashMap<String, Object>) context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA);
+		JSONObject sortBy = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
+		if (sortBy != null && sortBy.containsKey("limit") && dataresult != null && dataresult.containsKey("records"))
+		{
+			Long limit = sortBy.get("limit") instanceof Integer ? Long.valueOf((Integer) sortBy.get("limit")) : (Long) sortBy.get("limit");
+			String sort_alias = (String) sortBy.get("alias");
+			Long order = sortBy.get("order") instanceof Integer ? Long.valueOf((Integer) sortBy.get("order")) : (Long) sortBy.get("order");
+			List<LinkedHashMap<String, HashMap>> records_list = (ArrayList<LinkedHashMap<String, HashMap>>) dataresult.get("records");
+			if (sort_alias != null && order != null) {
+				HashMap<String, FacilioField> pivotVs_Alias = (HashMap<String, FacilioField>) context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD);
+				if (pivotVs_Alias != null && pivotVs_Alias.containsKey(sort_alias)) {
+					if (pivotVs_Alias.get(sort_alias) != null && (pivotVs_Alias.get(sort_alias) instanceof LookupField)) {
+						Collections.sort(records_list, new HashMapValueComparator(sort_alias, true, order));
+					} else {
+						Collections.sort(records_list, new HashMapValueComparator(sort_alias, false, order));
+					}
+					if(records_list != null && records_list.size() > 0){
+						int counter=1;
+						for(LinkedHashMap<String, HashMap> record : records_list)
+						{
+							if(record != null && record.containsKey("number"))
+							{
+								JSONObject formatted_val = new JSONObject();
+								formatted_val.put("formattedValue", counter++);
+								record.put("number", formatted_val);
+							}
+						}
+					}
+				}
+			}
+			if (records_list != null) {
+				List<LinkedHashMap> firstNElementsList = records_list.stream().limit(limit).collect(Collectors.toList());
+				dataresult.put("records", firstNElementsList);
+				return dataresult;
+			} else {
+				return dataresult;
+			}
+		}
+		return dataresult;
 	}
 }

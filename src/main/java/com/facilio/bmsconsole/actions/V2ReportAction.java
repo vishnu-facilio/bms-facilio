@@ -2784,42 +2784,14 @@ public class V2ReportAction extends FacilioAction {
         {
             HashMap<String, Object> dataresult = (HashMap<String, Object>) context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA);
             JSONObject sortBy = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
-            if (sortBy != null && sortBy.containsKey("limit") && dataresult != null && dataresult.containsKey("records")) {
-                Long limit = sortBy.get("limit") instanceof Integer ? Long.valueOf((Integer) sortBy.get("limit")) : (Long) sortBy.get("limit");
-                String sort_alias = (String) sortBy.get("alias");
-                Long order = sortBy.get("order") instanceof Integer ? Long.valueOf((Integer) sortBy.get("order")) : (Long) sortBy.get("order");
-                List<LinkedHashMap<String, HashMap>> records_list = (ArrayList<LinkedHashMap<String, HashMap>>) dataresult.get("records");
-                if (sort_alias != null && order != null) {
-                    HashMap<String, FacilioField> pivotVs_Alias = (HashMap<String, FacilioField>) context.get(FacilioConstants.ContextNames.PIVOT_ALIAS_VS_FIELD);
-                    if (pivotVs_Alias != null && pivotVs_Alias.containsKey(sort_alias)) {
-                        if (pivotVs_Alias.get(sort_alias) != null && (pivotVs_Alias.get(sort_alias) instanceof LookupField)) {
-                            Collections.sort(records_list, new HashMapValueComparator(sort_alias, true, order));
-                        } else {
-                            Collections.sort(records_list, new HashMapValueComparator(sort_alias, false, order));
-                        }
-                        if(records_list != null && records_list.size() > 0){
-                            int counter=1;
-                           for(LinkedHashMap<String, HashMap> record : records_list)
-                           {
-                               if(record != null && record.containsKey("number"))
-                               {
-                                   JSONObject formatted_val = new JSONObject();
-                                   formatted_val.put("formattedValue", counter++);
-                                   record.put("number", formatted_val);
-                               }
-                           }
-                        }
-                    }
-                }
-                if (records_list != null && records_list.size() > limit) {
-                    setResult("showLimitBubble", Boolean.TRUE);
-                    List<LinkedHashMap> firstNElementsList = records_list.stream().limit(limit).collect(Collectors.toList());
-                    dataresult.put("records", firstNElementsList);
-                    setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, dataresult);
-                } else {
-                    setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA,
-                            context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
-                }
+            Long limit = sortBy.get("limit") instanceof Integer ? Long.valueOf((Integer) sortBy.get("limit")) : (Long) sortBy.get("limit");
+            List<LinkedHashMap<String, HashMap>> records_list = (ArrayList<LinkedHashMap<String, HashMap>>) dataresult.get("records");
+            if(records_list != null && limit != null && records_list.size() > limit){
+                setResult("showLimitBubble", Boolean.TRUE);
+            }
+            if (sortBy != null && sortBy.containsKey("limit") && dataresult != null && dataresult.containsKey("records"))
+            {
+                setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA, ReportUtil.sortPivotTableData(context));
             } else {
                 setResult(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA,
                         context.get(FacilioConstants.ContextNames.PIVOT_RECONSTRUCTED_DATA));
@@ -3188,56 +3160,5 @@ public class V2ReportAction extends FacilioAction {
 
     public void setDateValue(String dateValue) {
         this.dateValue = dateValue;
-    }
-}
-class HashMapValueComparator implements Comparator<LinkedHashMap<String, HashMap>> {
-    String alias;
-    boolean isLookupField;
-    Long sortOrder;
-
-
-    public HashMapValueComparator(String alias, boolean isLookupField, Long sortOrder)
-    {
-        this.alias = alias;
-        this.isLookupField = isLookupField;
-        this.sortOrder = sortOrder;
-    }
-
-    @Override
-    public int compare(LinkedHashMap<String, HashMap> map1, LinkedHashMap<String, HashMap> map2) {
-
-        HashMap  alias_object1 = map1.get(alias);
-        HashMap  alias_object2 = map2.get(alias);
-
-        Object value1, value2;
-        if(isLookupField )
-        {
-            value1 = alias_object1.get("formattedValue");
-            value2 = alias_object2.get("formattedValue");
-        }else{
-            value1 = alias_object1.get("value");
-            value2 = alias_object2.get("value");
-        }
-        Comparator<String> ascComparator = Comparator.naturalOrder();
-        Comparator<String> descComparator = Comparator.naturalOrder();
-        if (value1 == null && value2 == null) {
-            return 0;
-        } else if (value1 == null) {
-            return -1; // obj1 is considered less than obj2
-        } else if (value2 == null) {
-            return 1; // obj1 is considered greater than obj2
-        } else {
-            try {
-                Double number1 = Double.parseDouble(value1.toString());
-                Double number2 = Double.parseDouble(value2.toString());
-                Comparator<Double> doubleAscComparator = Comparator.naturalOrder();
-                Comparator<Double> doubleDescComparator = Comparator.naturalOrder();
-                return sortOrder == 3 ? doubleAscComparator.compare(number1, number2) : doubleDescComparator.compare(number2, number1);
-            } catch (Exception e) {
-                String str1 = value1.toString();
-                String str2 = value2.toString();
-                return sortOrder == 3 ? ascComparator.compare(str1, str2) : descComparator.compare(str2, str1);
-            }
-        }
     }
 }
