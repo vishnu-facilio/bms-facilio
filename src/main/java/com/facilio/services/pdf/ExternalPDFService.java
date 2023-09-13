@@ -59,6 +59,19 @@ public class ExternalPDFService extends PDFService {
     }
 
     @Override
+    public long exportURL(String fileName, String pageURL, ExportType exportType, ExportOptions exportOptions) throws Exception {
+        pageURL = getAppBaseURL() + pageURL;
+        String apiURL = getApiURL(exportType, "page");
+        JSONObject options = (exportOptions != null) ? FieldUtil.getAsJSON(exportOptions) : new JSONObject();
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("url", pageURL);
+        params.put("options", options.toJSONString());
+
+        return FacilioHttpUtils.doHttpPostWithFileResponse(apiURL, getAuthHeaders(), params, null, null, fileName, null);
+    }
+
+    @Override
     public long exportWidget(String fileName, String widgetLinkName, ExportType exportType, ExportOptions exportOptions, JSONObject context) throws Exception {
         String apiURL = getApiURL(exportType, "widget");
         JSONObject options = (exportOptions != null) ? FieldUtil.getAsJSON(exportOptions) : new JSONObject();

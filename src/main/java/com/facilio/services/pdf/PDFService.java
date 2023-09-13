@@ -102,6 +102,13 @@ public abstract class PDFService {
     public abstract long exportPage(String fileName, String appLinkName, String pageName, JSONObject pageParams, ExportType exportType, ExportOptions exportOptions) throws Exception;
 
     /**
+     * Export any facilio app page url (only facilio app page url)
+     *
+     * @return fileId
+     */
+    public abstract long exportURL(String fileName, String pageURL, ExportType exportType, ExportOptions exportOptions) throws Exception;
+
+    /**
      * Export connected app widget as PDF/Screenshot
      *
      * @return fileId

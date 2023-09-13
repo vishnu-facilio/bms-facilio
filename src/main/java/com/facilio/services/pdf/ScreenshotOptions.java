@@ -11,4 +11,6 @@ public class ScreenshotOptions extends ExportOptions {
     private String format;
     private boolean omitBackground;
     private int quality;
+    private int vw = 800; // viewport width
+    private int vh = 768; // viewport height
 }
