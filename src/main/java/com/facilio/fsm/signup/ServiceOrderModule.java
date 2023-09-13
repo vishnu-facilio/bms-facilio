@@ -874,7 +874,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ACTIVITY);
         return Collections.singletonList(new PagesContext(null, null,"", null, true, false, false)
-                .addWebTab("summary", "SUMMARY", true, null)
+                        .addWebLayout()
+                .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
                 .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(serviceOrderModule.getName()))
@@ -886,7 +887,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addWebTab("serviceTask", "SERVICE TASK", true, null)
+                .addTab("serviceTask", "SERVICE TASK", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("task", null, null)
                 .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
@@ -894,7 +895,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addWebTab("appointment", "SERVICE APPOINTMENT", true, null)
+                .addTab("appointment", "SERVICE APPOINTMENT", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("appointments", null, null)
                 .addWidget("appointments", "Appointments", PageWidget.WidgetType.SERVICE_ORDER_APPOINTMENTS, "appointments_50_12", 0, 0,  null, null)
@@ -902,7 +903,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addWebTab("plans", "PLANS", true, AccountUtil.FeatureLicense.INVENTORY)
+                .addTab("plans", "PLANS", PageTabContext.TabType.SINGLE_WIDGET_TAB,  true, AccountUtil.FeatureLicense.INVENTORY)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("plans", null, null)
                 .addWidget("plans", "Plans", PageWidget.WidgetType.SERVICE_ORDER_PLANS, "plans_50_12", 0, 0,  null, null)
@@ -910,7 +911,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addWebTab("actuals", "ACTUALS", true, AccountUtil.FeatureLicense.INVENTORY)
+                .addTab("actuals", "ACTUALS", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("actuals", null, null)
                 .addWidget("actuals", "Actuals", PageWidget.WidgetType.SERVICE_ORDER_ACTUALS, "actuals_50_12", 0, 0,  null, null)
@@ -918,7 +919,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-//                .addWebTab("related", "RELATED", true, null)
+//                .addTab("related", "RELATED", true, null)
 //                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
 //                .addSection("relatedlist", null, null)
 //                .addWidget("bulkRelatedList", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(FacilioConstants.ContextNames.QUOTE))
@@ -926,7 +927,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
 //                .sectionDone()
 //                .columnDone()
 //                .tabDone()
-                .addWebTab("history", "HISTORY", true, null)
+                .addTab("history", "HISTORY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("activity", null, null)
                 .addWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0,  historyWidgetParam, null)
@@ -934,7 +935,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-        );
+                        .layoutDone())
+        ;
     }
 
     private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {

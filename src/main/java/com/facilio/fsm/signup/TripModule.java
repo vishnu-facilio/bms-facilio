@@ -214,7 +214,8 @@ public class TripModule extends BaseModuleConfig {
 
         return new ModulePages()
                 .addPage("trip", "Trip", "", null, isTemplate, isDefault, false)
-                .addWebTab("tripsummary", "Summary", true, null)
+                .addWebLayout()
+                .addTab("tripsummary", "Summary",PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("tripsummaryfields", null, null)
                 .addWidget("tripsummaryfieldswidget", "Trip Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Trip.TRIP))
@@ -227,7 +228,7 @@ public class TripModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("triphistory", "History", true, null)
+                .addTab("triphistory", "History",PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
@@ -235,6 +236,7 @@ public class TripModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
+                .layoutDone()
                 .pageDone().getCustomPages();
 
 

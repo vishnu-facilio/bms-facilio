@@ -224,10 +224,11 @@ public class EmployeeModule extends BaseModuleConfig{
 
     }
     private static List<PagesContext> createEmployeePage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
-
+        ModuleBean bean = Constants.getModBean();
         return new ModulePages()
                 .addPage("employee", "Employee","", null, isTemplate, isDefault, false)
-                .addWebTab("employeesummary", "SUMMARY", true, null)
+                .addWebLayout()
+                .addTab("employeesummary", "SUMMARY",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeesummaryfields", null, null)
                 .addWidget("employeesummaryfieldswidget", "Employee Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfiledswidget_22", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.EMPLOYEE))
@@ -246,7 +247,7 @@ public class EmployeeModule extends BaseModuleConfig{
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("employeeskill", "SKILL", true, null)
+                .addTab("employeeskill", "SKILL",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeeskill", null, null)
                 .addWidget("employeeskillwidget", "Skill", PageWidget.WidgetType.SKILL, "flexiblewebskill_48", 0, 0, null, null)
@@ -255,7 +256,7 @@ public class EmployeeModule extends BaseModuleConfig{
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("employeeworkschedule", "WORK SCHEDULE", true, null)
+                .addTab("employeeworkschedule", "WORK SCHEDULE",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeeworkschedule", null, null)
                 .addWidget("employeeworkschedulewidget", "Work Schedule", PageWidget.WidgetType.WORK_SCHEDULE, "flexiblewebworkschedule_50", 0, 0, null, null)
@@ -264,20 +265,20 @@ public class EmployeeModule extends BaseModuleConfig{
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("employeerelated", "RELATED", true, null)
+                .addTab("employeerelated", "RELATED",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeerelationships", "Relationships", "List of relationships and types between records across modules")
                 .addWidget("employeebulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("employeerelatedlist", "Related List", "List of related records across modules")
-                .addWidget("employeebulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(FacilioConstants.ContextNames.EMPLOYEE))
+                .addWidget("employeebulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(bean.getModule(FacilioConstants.ContextNames.EMPLOYEE)))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("employeehistory", "HISTORY", true, null)
+                .addTab("employeehistory", "HISTORY",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_50", 0, 0, null, getHistoryWidgetGroup(false))
@@ -285,6 +286,7 @@ public class EmployeeModule extends BaseModuleConfig{
                 .sectionDone()
                 .columnDone()
                 .tabDone()
+                .layoutDone()
                 .pageDone().getCustomPages();
     }
     private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {

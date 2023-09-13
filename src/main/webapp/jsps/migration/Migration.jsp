@@ -51,11 +51,6 @@
 <%@ page import="com.facilio.modules.fields.FacilioField" %>
 <%@ page import="com.facilio.modules.FieldType" %>
 <%@ page import="com.facilio.bmsconsole.commands.FacilioChainFactory" %>
-<%@ page import="java.util.*" %>
-<%@ page import="com.facilio.v3.context.Constants" %>
-<%@ page import="com.facilio.fsm.signup.ServiceTaskStatusModule" %>
-<%@ page import="com.facilio.fsm.context.ServiceOrderCostContext" %>
-<%@ page import="com.facilio.fsm.signup.ServiceOrderCostModule" %>
 
 
 <%--
@@ -82,8 +77,6 @@
             long orgId = AccountUtil.getCurrentOrg().getId();
             printMsg("Started For -- "+AccountUtil.getCurrentOrg().getId());
             // write code here
-            ServiceOrderCostModule cost = new ServiceOrderCostModule();
-            cost.addData();
 
 
 
@@ -107,7 +100,7 @@
         response.getWriter().println("orgs count ::"+orgs.size()+"<br>");
         if (CollectionUtils.isNotEmpty(orgs)) {
             for (Organization org : orgs) {
-                if (org.getOrgId() == 82) {
+                if (org.getOrgId() > 0) {
 
                     AccountUtil.setCurrentAccount(org.getOrgId());
                     FacilioChain c = FacilioChain.getTransactionChain();

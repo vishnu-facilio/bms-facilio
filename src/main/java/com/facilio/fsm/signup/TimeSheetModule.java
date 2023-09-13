@@ -218,7 +218,8 @@ public class TimeSheetModule extends BaseModuleConfig {
 
         return new ModulePages()
                 .addPage("timeSheet", "Time Sheet", "", null, isTemplate, isDefault, false)
-                .addWebTab("timesheetsummary", "Summary", true, null)
+                .addWebLayout()
+                .addTab("timesheetsummary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("timesheetsummaryfields", null, null)
                 .addWidget("timesheetysummaryfieldswidget", "Time Sheet Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.TimeSheet.TIME_SHEET))
@@ -231,7 +232,7 @@ public class TimeSheetModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("timesheethistory", "History", true, null)
+                .addTab("timesheethistory", "History",PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
@@ -239,6 +240,7 @@ public class TimeSheetModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
+                .layoutDone()
                 .pageDone().getCustomPages();
 
 

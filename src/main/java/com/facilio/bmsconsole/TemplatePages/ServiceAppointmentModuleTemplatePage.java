@@ -28,7 +28,8 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
         historyWidgetParam.put("activityModuleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY);
 
         return new PagesContext(null, null, "", null, true, false, false)
-                .addWebTab("serviceappointmentsummary", "Summary", true, null)
+                .addWebLayout()
+                .addTab("serviceappointmentsummary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmentsummaryfields", null, null)
                 .addWidget("serviceappointmentsummaryfieldswidget", "Service Appointment Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT))
@@ -42,7 +43,7 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
                 .tabDone()
 
 
-                .addWebTab("serviceappointmentservicetasks", "Service Tasks", true, null)
+                .addTab("serviceappointmentservicetasks", "Service Tasks",  PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmentservicetasks", null, null)
                 .addWidget("serviceappointmentservicetaskswidget", "Service Tasks", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "serviceappointmentservicetasks_50_12", 0, 0, null, null)
@@ -51,7 +52,7 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceappointmentplans", "Plans", true, null)
+                .addTab("serviceappointmentplans", "Plans", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmentplans", null, null)
                 .addWidget("serviceappointmentplanswidget", "Plans", PageWidget.WidgetType.SERVICE_APPOINTMENT_PLANS, "serviceappointmentplans_50_12", 0, 0, null, null)
@@ -60,7 +61,7 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceappointmentactuals", "Actuals", true, null)
+                .addTab("serviceappointmentactuals", "Actuals", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmentactuals", null, null)
                 .addWidget("serviceappointmentactualswidget", "Actuals", PageWidget.WidgetType.SERVICE_APPOINTMENT_ACTUALS, "serviceappointmentactuals_50_12", 0, 0, null, null)
@@ -69,7 +70,7 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceappointmenttimesheet", "Time Sheet", true, null)
+                .addTab("serviceappointmenttimesheet", "Time Sheet", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmenttimesheet", null, null)
                 .addWidget("serviceappointmenttimesheetwidget", "Time Sheet", PageWidget.WidgetType.SERVICE_APPOINTMENT_TIMESHEET, "serviceappointmenttimesheet_50_12", 0, 0, null, null)
@@ -78,7 +79,7 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("serviceappointmenttrip", "Trip", true, null)
+                .addTab("serviceappointmenttrip", "Trip", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceappointmenttrip", null, null)
                 .addWidget("serviceappointmenttripwidget", "Trip", PageWidget.WidgetType.SERVICE_APPOINTMENT_TRIP, "serviceappointmenttrip_50_12", 0, 0, null, null)
@@ -88,7 +89,7 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
                 .tabDone()
 
 
-//                .addWebTab("serviceappointmentrelated", "Related", true, null)
+//                .addTab("serviceappointmentrelated", "Related", true, null)
 //                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
 //                .addSection("serviceappointmentrelationships", "Relationships", "List of relationships and types between records across modules")
 //                .addWidget("serviceappointmentbulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
@@ -101,7 +102,7 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
 //                .columnDone()
 //                .tabDone()
 
-                .addWebTab("serviceappointmenthistory", "History", true, null)
+                .addTab("serviceappointmenthistory", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
@@ -109,7 +110,7 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-
+                .layoutDone()
                 ;
 
 

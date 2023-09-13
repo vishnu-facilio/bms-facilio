@@ -25,7 +25,8 @@ public class VendorContactModuleTemplatePage implements TemplatePageFactory {
     @Override
     public PagesContext getTemplatePage(ApplicationContext app, FacilioModule module) throws Exception {
         return new PagesContext(null, null, "", null, true, false, false)
-                .addWebTab("vendorsummary", "SUMMARY", true, null)
+                .addWebLayout()
+                .addTab("vendorsummary", "SUMMARY",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("vendorsummaryfields", null, null)
                 .addWidget("vendorsummaryfieldswidget", "Vendor Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfiledswidget_22", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
@@ -44,7 +45,7 @@ public class VendorContactModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("vendorskill", "SKILL", true, null)
+                .addTab("vendorskill", "SKILL",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("vendorskill", null, null)
                 .addWidget("vendorskillwidget", "Skill", PageWidget.WidgetType.VENDOR_CONTACT_SKILL, "flexiblewebvendorcontactskill_48", 0, 0, null, null)
@@ -53,7 +54,7 @@ public class VendorContactModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("vendorworkschedule", "WORK SCHEDULE", true, null)
+                .addTab("vendorworkschedule", "WORK SCHEDULE",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("vendorworkschedule", null, null)
                 .addWidget("vendorworkschedulewidget", "Work Schedule", PageWidget.WidgetType.VENDOR_CONTACT_WORK_SCHEDULE, "flexiblewebvendorcontactworkschedule_50", 0, 0, null,null)
@@ -62,7 +63,7 @@ public class VendorContactModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-//                .addWebTab("vendorrelated", "RELATED", true, null)
+//                .addTab("vendorrelated", "RELATED", true, null)
 //                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
 //                .addSection("vendorrelationships", "Relationships", "List of relationships and types between records across modules")
 //                .addWidget("vendorbulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
@@ -75,7 +76,7 @@ public class VendorContactModuleTemplatePage implements TemplatePageFactory {
 //                .columnDone()
 //                .tabDone()
 
-                .addWebTab("vendorhistory", "HISTORY", true, null)
+                .addTab("vendorhistory", "HISTORY",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_50", 0, 0, null, getHistoryWidgetGroup(false))
@@ -83,7 +84,7 @@ public class VendorContactModuleTemplatePage implements TemplatePageFactory {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-
+                .layoutDone()
                 ;
 
     }

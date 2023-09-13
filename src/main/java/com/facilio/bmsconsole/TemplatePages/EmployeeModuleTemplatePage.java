@@ -12,6 +12,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -26,10 +27,11 @@ public class EmployeeModuleTemplatePage implements TemplatePageFactory {
 
     @Override
     public PagesContext getTemplatePage(ApplicationContext app, FacilioModule module) throws Exception {
-
+        ModuleBean bean = Constants.getModBean();
 
         return new PagesContext(null, null, "", null, true, false, false)
-                .addWebTab("employeesummary", "SUMMARY", true, null)
+                .addWebLayout()
+                .addTab("employeesummary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeesummaryfields", null, null)
                 .addWidget("employeesummaryfieldswidget", "Employee Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfiledswidget_22", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.EMPLOYEE))
@@ -48,7 +50,7 @@ public class EmployeeModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("employeeskill", "SKILL", true, null)
+                .addTab("employeeskill", "SKILL", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeeskill", null, null)
                 .addWidget("employeeskillwidget", "Skill", PageWidget.WidgetType.SKILL, "flexiblewebskill_48", 0, 0, null, null)
@@ -57,7 +59,7 @@ public class EmployeeModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("employeeworkschedule", "WORK SCHEDULE", true, null)
+                .addTab("employeeworkschedule", "WORK SCHEDULE", PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeeworkschedule", null, null)
                 .addWidget("employeeworkschedulewidget", "Work Schedule", PageWidget.WidgetType.WORK_SCHEDULE, "flexiblewebworkschedule_50", 0, 0, null, null)
@@ -66,20 +68,20 @@ public class EmployeeModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("employeerelated", "RELATED", true, null)
+                .addTab("employeerelated", "RELATED", PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeerelationships", "Relationships", "List of relationships and types between records across modules")
                 .addWidget("employeebulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("employeerelatedlist", "Related List", "List of related records across modules")
-                .addWidget("employeebulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(getModuleName()))
+                .addWidget("employeebulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(bean.getModule(getModuleName())))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("employeehistory", "HISTORY", true, null)
+                .addTab("employeehistory", "HISTORY", PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_50", 0, 0, null, getHistoryWidgetGroup(false))
@@ -87,7 +89,7 @@ public class EmployeeModuleTemplatePage implements TemplatePageFactory {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-
+                .layoutDone()
                 ;
 
     }

@@ -28,7 +28,8 @@ public class TimeOffModuleTemplatePage implements TemplatePageFactory {
         historyWidgetParam.put("activityModuleName", FacilioConstants.TimeOff.TIME_OFF_ACTIVITY);
 
         return new PagesContext(null, null, "", null, true, false, false)
-                .addWebTab("timeoffsummary", "Summary", true, null)
+                .addWebLayout()
+                .addTab("timeoffsummary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("timeoffsummaryfields", null, null)
                 .addWidget("timeoffsummaryfieldswidget", "Time Off Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.TimeOff.TIME_OFF))
@@ -37,7 +38,7 @@ public class TimeOffModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("timeoffhistory", "History", true, null)
+                .addTab("timeoffhistory", "History",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
@@ -45,7 +46,7 @@ public class TimeOffModuleTemplatePage implements TemplatePageFactory {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-
+                .layoutDone()
                 ;
 
 

@@ -29,7 +29,8 @@ public class TripModuleTemplatePage implements TemplatePageFactory {
         historyWidgetParam.put("activityModuleName", FacilioConstants.Trip.TRIP_ACTIVITY);
 
         return new PagesContext(null, null, "", null, true, false, false)
-                .addWebTab("tripsummary", "Summary", true, null)
+                .addWebLayout()
+                .addTab("tripsummary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("tripsummaryfields", null, null)
                 .addWidget("tripsummaryfieldswidget", "Trip Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Trip.TRIP))
@@ -42,7 +43,7 @@ public class TripModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("triphistory", "History", true, null)
+                .addTab("triphistory", "History",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
@@ -50,7 +51,7 @@ public class TripModuleTemplatePage implements TemplatePageFactory {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-
+                .layoutDone()
                 ;
 
 

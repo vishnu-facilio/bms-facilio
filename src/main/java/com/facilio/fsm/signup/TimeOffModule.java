@@ -276,7 +276,8 @@ public class TimeOffModule extends BaseModuleConfig {
 
         return new ModulePages()
                 .addPage("timeOff", "Time Off", "", null, isTemplate, isDefault, false)
-                .addWebTab("timeoffsummary", "Summary", true, null)
+                .addWebLayout()
+                .addTab("timeoffsummary", "Summary",PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("timeoffsummaryfields", null, null)
                 .addWidget("timeoffsummaryfieldswidget", "Time Off Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.TimeOff.TIME_OFF))
@@ -286,7 +287,7 @@ public class TimeOffModule extends BaseModuleConfig {
                 .tabDone()
 
 
-                .addWebTab("timeoffhistory", "History", true, null)
+                .addTab("timeoffhistory", "History",PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
@@ -294,6 +295,7 @@ public class TimeOffModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
+                .layoutDone()
                 .pageDone().getCustomPages();
 
 

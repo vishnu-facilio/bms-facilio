@@ -30,7 +30,8 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
         historyWidgetParam.put("activityModuleName", FacilioConstants.Territory.TERRITORY_ACTIVITY);
 
         return new PagesContext(null, null, "", null, true, false, false)
-                .addWebTab("territorysummary", "Summary", true, null)
+                .addWebLayout()
+                .addTab("territorysummary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("territorysummaryfields", null, null)
                 .addWidget("territorysummaryfieldswidget", "Territory", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Territory.TERRITORY))
@@ -43,7 +44,7 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("territorysites","Sites",true,null)
+                .addTab("territorysites","Sites",PageTabContext.TabType.SIMPLE,true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("sites", null, null)
                 .addWidget("sites", "Sites", PageWidget.WidgetType.TERRITORY_SITES, "flexiblewebterritorysites_50", 0, 0, null, null)
@@ -52,7 +53,7 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("territoryfieldagent","Field Agents",true,null)
+                .addTab("territoryfieldagent","Field Agents",PageTabContext.TabType.SIMPLE,true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("fieldagents", null, null)
                 .addWidget("fieldagents", "Field Agents", PageWidget.WidgetType.FIELD_AGENTS, "flexibleterritoryfieldagents_50", 0, 0, null, null)
@@ -61,7 +62,7 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addWebTab("territoryhistory", "History", true, null)
+                .addTab("territoryhistory", "History",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
@@ -69,6 +70,7 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
+                .layoutDone()
 
                 ;
 

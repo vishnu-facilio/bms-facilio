@@ -67,7 +67,8 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
         if(app.getDomainType() == AppDomain.AppDomainType.FACILIO.getIndex()) {
             return   new ModulePages()
                     .addPage(pageName, pageDisplayName,"", null, isTemplate, isDefault, false)
-                    .addWebTab("summary", "SUMMARY", true, null)
+                    .addWebLayout()
+                    .addTab("summary", "SUMMARY",PageTabContext.TabType.SIMPLE,  true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("summaryfields", null, null)
                     .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(module.getName()))
@@ -79,7 +80,7 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addWebTab("task", "TASK", true, null)
+                    .addTab("task", "TASK",PageTabContext.TabType.SIMPLE,  true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("task", "Tasks", "List of Tasks created for this Service Order")
                     .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0,  null, null)
@@ -87,6 +88,7 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
+                    .layoutDone()
                     .pageDone()
                     .getCustomPages();
 
@@ -94,7 +96,8 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
         else {
             return    new ModulePages()
                     .addPage(pageName, pageDisplayName,"", null, isTemplate, isDefault, false)
-                    .addWebTab("summary", "SUMMARY", true, null)
+                    .addWebLayout()
+                    .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("summaryfields", null, null)
                     .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(module.getName()))
@@ -106,7 +109,7 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addWebTab("task", "TASK", true, null)
+                    .addTab("task", "TASK",PageTabContext.TabType.SIMPLE,  true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("task", "Tasks", "List of Tasks created for this Service Order")
                     .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0,  null, null)
@@ -114,6 +117,7 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
+                    .layoutDone()
                     .pageDone()
                     .getCustomPages();
         }
