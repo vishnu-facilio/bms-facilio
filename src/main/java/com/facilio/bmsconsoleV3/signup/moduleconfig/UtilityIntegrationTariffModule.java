@@ -22,7 +22,7 @@ import java.util.*;
 
 
 public class UtilityIntegrationTariffModule extends BaseModuleConfig {
-    public static List<String> supportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.IWMS_APP);
+    public static List<String> supportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 
     public UtilityIntegrationTariffModule(){
         setModuleName(FacilioConstants.UTILITY_INTEGRATION_TARIFF);
@@ -228,6 +228,7 @@ public class UtilityIntegrationTariffModule extends BaseModuleConfig {
 
         utilityIntegrationTariffSlabForm.setSections(webWorkOrderFormSections);
         utilityIntegrationTariffSlabForm.setIsSystemForm(true);
+        utilityIntegrationTariffSlabForm.setName("Slab");
         utilityIntegrationTariffSlabForm.setType(FacilioForm.Type.SUB_FORM);
 
         utilityIntegrationTariffModuleForm.setSubFormList(Arrays.asList(utilityIntegrationTariffSlabForm));

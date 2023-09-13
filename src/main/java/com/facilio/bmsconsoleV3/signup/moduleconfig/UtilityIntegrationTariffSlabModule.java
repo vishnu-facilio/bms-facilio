@@ -20,7 +20,7 @@ import com.facilio.modules.fields.*;
 import java.util.*;
 
 public class UtilityIntegrationTariffSlabModule extends BaseModuleConfig {
-    public static List<String> supportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.IWMS_APP);
+    public static List<String> supportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 
     public UtilityIntegrationTariffSlabModule(){
         setModuleName(FacilioConstants.UTILITY_INTEGRATION_TARIFF_SLAB);
