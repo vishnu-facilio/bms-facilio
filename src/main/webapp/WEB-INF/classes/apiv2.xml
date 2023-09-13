@@ -7671,4 +7671,8 @@
 			<param name="permission">ADD_READING</param>
 		</action>
 	</package>
+	<package name="ruleCriteria" namespace="/api/v2/criteria" extends="v2Api">
+		<action name="getConditions" class="com.facilio.bmsconsole.actions.RuleCriteriaAction" method="getCondition"></action>
+		<action name="getRecordValue" class="com.facilio.bmsconsole.actions.RuleCriteriaAction" method="getRecordValue"></action>
+	</package>
 </struts>

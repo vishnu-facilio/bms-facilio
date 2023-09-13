@@ -141,5 +141,18 @@
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
     </request>
-
+    <request path="/api/v2/criteria/getConditions" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="criteriaId" type="number" mandatory="true"/>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/criteria/getRecordValue" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="recordIds" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
 </config>
