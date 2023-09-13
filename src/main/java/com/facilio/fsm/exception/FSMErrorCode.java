@@ -47,7 +47,8 @@ public enum FSMErrorCode {
     //Service Task error codes
 
     RECORD_LOCKED(Severity.ERROR, "Record Locked", "You cannot edit or delete since the record is locked."),
-    UPDATE_PREVENT(Severity.ERROR, "Not Permitted", "You are not permitted to edit these details.");
+    UPDATE_PREVENT(Severity.ERROR, "Not Permitted", "You are not permitted to edit these details."),
+    NOT_ENOUGH_TASK_IN_SA(Severity.ERROR, "Not Enough Task", "Not Enough Tasks in Service Appointment");
 
     private final Severity severity;
     private final String title;

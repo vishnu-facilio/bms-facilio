@@ -471,14 +471,17 @@ public class ServiceTaskUtil {
 
     public static FacilioContext getTaskList(Long timeSheetId,int page, int perPage)throws Exception{
         List<Long> taskIds = getTaskListFromTimeSheet(timeSheetId);
-        ModuleBean moduleBean = Constants.getModBean();
-        FacilioModule serviceTask = moduleBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getIdCondition(taskIds, serviceTask));
-         FacilioContext taskList = V3Util.fetchList(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, true, "hidden-all", null,
-                true, null, null, null,
-                null, page, perPage, false, null, criteria);
-        return taskList;
+        if(CollectionUtils.isNotEmpty(taskIds)) {
+            ModuleBean moduleBean = Constants.getModBean();
+            FacilioModule serviceTask = moduleBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getIdCondition(taskIds, serviceTask));
+            FacilioContext taskList = V3Util.fetchList(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, true, "hidden-all", null,
+                    true, null, null, null,
+                    null, page, perPage, false, null, criteria);
+            return taskList;
+        }
+        return null;
     }
     public static List<Long> getTaskListFromTimeSheet(Long timeSheetId)throws Exception {
 
@@ -490,14 +493,25 @@ public class ServiceTaskUtil {
                 .table("TIME_SHEET_TASK_REL")
                 .andCondition((CriteriaAPI.getCondition("TIME_SHEET_ID", "left", String.valueOf(timeSheetId), NumberOperators.EQUALS)));
         List<Map<String, Object>> maps = selectBuilder.get();
+        List<Long> taskIds = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(maps)) {
-            List<Long> tasks = new ArrayList<>();
-            for(Map<String,Object> map:maps){
-                tasks.add((Long) map.get("right"));
-            }
-            return tasks;
+            taskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
         }
-        return null;
+        return taskIds;
     }
+    public static List<Long> getTasksFromServiceAppointment(Long appointmentId)throws Exception {
+        List<FacilioField> taskFields =
+                Constants.getModBean().getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(taskFields)
+                .table("SERVICE_APPOINTMENT_TASK_REL")
+                .andCondition((CriteriaAPI.getCondition("SERVICE_APPOINTMENT_ID", "left", String.valueOf(appointmentId), NumberOperators.EQUALS)));
+        List<Map<String, Object>> maps = selectBuilder.get();
+        List<Long> taskIds = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(maps)) {
+            taskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
 
+        }
+        return taskIds;
+    }
 }

@@ -365,10 +365,15 @@ public class fsmAction extends V3Action {
     }
 
     public String fetchTaskList() throws Exception{
-        if(timeSheetId != null && timeSheetId > 0){
-            Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(ServiceTaskUtil.getTaskList(timeSheetId,getPage(),getPerPage()));
-            List<ModuleBaseWithCustomFields> serviceTasks = recordMap.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
-            setData(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,FieldUtil.getAsMapList(serviceTasks,ServiceTaskContext.class));
+        if(timeSheetId != null && timeSheetId > 0) {
+            FacilioContext serviceTaskContext = ServiceTaskUtil.getTaskList(timeSheetId, getPage(), getPerPage());
+            List<Map<String, Object>> serviceTaskList = new ArrayList<>();
+            if (serviceTaskContext != null) {
+                Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(serviceTaskContext);
+                List<ModuleBaseWithCustomFields> serviceTasks = recordMap.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+                serviceTaskList = FieldUtil.getAsMapList(serviceTasks, ServiceTaskContext.class);
+            }
+            setData(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, serviceTaskList);
         }
         return SUCCESS;
     }
