@@ -112,16 +112,17 @@ public class ServiceOrderToolsModule  extends BaseModuleConfig {
         serviceOrderToolsModuleForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         serviceOrderToolsModuleForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
-        List<FormField> workOrderToolsModuleFormFields = new ArrayList<>();
+        List<FormField> serviceOrderToolsModuleFormFields = new ArrayList<>();
         int seqNum = 0;
-        workOrderToolsModuleFormFields.add(new FormField("tool", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tool", FormField.Required.REQUIRED, "tool", ++seqNum, 1,true));
-        workOrderToolsModuleFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", ++seqNum,1,true));
-        workOrderToolsModuleFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
-        workOrderToolsModuleFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION,"Duration", FormField.Required.OPTIONAL,++seqNum,1));
-        workOrderToolsModuleFormFields.add(new FormField("issueTime", FacilioField.FieldDisplayType.DATETIME,"Issue Time", FormField.Required.OPTIONAL,++seqNum,1));
-        workOrderToolsModuleFormFields.add(new FormField("returnTime", FacilioField.FieldDisplayType.DATETIME,"Return Time", FormField.Required.OPTIONAL,++seqNum,1));
+        serviceOrderToolsModuleFormFields.add(new FormField("tool", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tool", FormField.Required.REQUIRED, "tool", ++seqNum, 1,true));
+        serviceOrderToolsModuleFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", ++seqNum,1,true));
+        serviceOrderToolsModuleFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
+        serviceOrderToolsModuleFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION,"Duration", FormField.Required.OPTIONAL,++seqNum,1));
+        serviceOrderToolsModuleFormFields.add(new FormField("issueTime", FacilioField.FieldDisplayType.DATETIME,"Issue Time", FormField.Required.OPTIONAL,++seqNum,1));
+        serviceOrderToolsModuleFormFields.add(new FormField("returnTime", FacilioField.FieldDisplayType.DATETIME,"Return Time", FormField.Required.OPTIONAL,++seqNum,1));
+        serviceOrderToolsModuleFormFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service Task", FormField.Required.OPTIONAL,"serviceTask", ++seqNum, 1,false));
 
-        FormSection workOrderToolsModuleFormSection = new FormSection("Default", 1, workOrderToolsModuleFormFields, false);
+        FormSection workOrderToolsModuleFormSection = new FormSection("Default", 1, serviceOrderToolsModuleFormFields, false);
         workOrderToolsModuleFormSection.setSectionType(FormSection.SectionType.FIELDS);
         serviceOrderToolsModuleForm.setSections(Collections.singletonList(workOrderToolsModuleFormSection));
         serviceOrderToolsModuleForm.setIsSystemForm(true);

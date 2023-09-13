@@ -156,6 +156,25 @@ public class FieldServiceManagementV3Config {
                 .afterDelete(new AddOrUpdateServiceOrderCostCommand(), new SAEstimatedServiceCostAfterDeleteCommand())
                 .build();
     }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION)
+    public static Supplier<V3Config> getServiceInventoryReservation() {
+        return () -> new V3Config(ServiceInventoryReservationContext.class, null)
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "serviceOrder")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "inventoryRequest")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "requestedBy")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "serviceOrderPlannedItem")
+                .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "serviceOrder")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "inventoryRequest")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "requestedBy")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "serviceOrderPlannedItem")
+                .build();
+    }
     @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS)
     public static Supplier<V3Config> getServiceOrderItems() {
         return () -> new V3Config(ServiceOrderItemsContext.class, null)

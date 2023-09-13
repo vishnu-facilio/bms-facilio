@@ -109,6 +109,7 @@ public class ServiceOrderServicesModule  extends BaseModuleConfig {
         serviceOrderServiceModuleFormFields.add(new FormField("startTime", FacilioField.FieldDisplayType.DATETIME,"Start Time", FormField.Required.OPTIONAL, ++seqNum,1));
         serviceOrderServiceModuleFormFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME,"End Time", FormField.Required.OPTIONAL, ++seqNum,1));
         serviceOrderServiceModuleFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION,"Duration", FormField.Required.OPTIONAL,"duration", ++seqNum,1));
+        serviceOrderServiceModuleFormFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service Task", FormField.Required.OPTIONAL,"serviceTask", ++seqNum, 1,false));
 
         FormSection serviceOrderServiceModuleFormSection = new FormSection("Default", 1, serviceOrderServiceModuleFormFields, false);
         serviceOrderServiceModuleFormSection.setSectionType(FormSection.SectionType.FIELDS);

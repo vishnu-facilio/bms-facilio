@@ -127,6 +127,7 @@ public class ServiceOrderItemsModule extends BaseModuleConfig {
         serviceOrderItemFormFields.add(new FormField("item", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item", FormField.Required.REQUIRED, "item", ++seqNum, 1,true));
         serviceOrderItemFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", ++seqNum, 1,true));
         serviceOrderItemFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
+        serviceOrderItemFormFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service Task", FormField.Required.OPTIONAL,"serviceTask", ++seqNum, 1,false));
 
         FormSection section = new FormSection("Default", 1, serviceOrderItemFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);

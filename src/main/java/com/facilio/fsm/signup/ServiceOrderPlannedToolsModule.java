@@ -122,6 +122,8 @@ public class ServiceOrderPlannedToolsModule extends BaseModuleConfig {
         plannedToolsFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", 3, 1));
         plannedToolsFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.DECIMAL, "Rate", FormField.Required.OPTIONAL, 4, 1));
         plannedToolsFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, 5, 1));
+        plannedToolsFormFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service Task", FormField.Required.OPTIONAL,"serviceTask", 6, 1,false));
+
         plannedToolsForm.setFields(plannedToolsFormFields);
 
         FormSection section = new FormSection("Default", 1, plannedToolsFormFields, false);
