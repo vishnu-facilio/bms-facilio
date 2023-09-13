@@ -321,7 +321,7 @@
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="updateWidget">
         </action>
         <action name="rearrange"
-                class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="">
+                class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="rearrangeWidgets">
         </action>
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="deleteWidget">

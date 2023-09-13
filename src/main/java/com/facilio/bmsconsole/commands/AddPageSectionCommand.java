@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.PageColumnContext;
 import com.facilio.bmsconsole.context.PageSectionContext;
+import com.facilio.bmsconsole.context.PageSectionWidgetContext;
+import com.facilio.bmsconsole.context.PageTabContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -11,53 +14,71 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class AddPageSectionCommand extends FacilioCommand {
-    private static final Logger LOGGER = Logger.getLogger(AddPageSectionCommand.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        long columnId = (long) context.get(FacilioConstants.CustomPage.COLUMN_ID);
-        if(columnId<=0){
-            LOGGER.error("Invalid Column Id For Creating Section");
-            throw new IllegalArgumentException("Invalid Column Id For Creating Section");
-        }
+        Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
+        Map<Long, List<PageSectionContext>> columnSectionsMap = (Map<Long, List<PageSectionContext>>) context.get(FacilioConstants.CustomPage.COLUMN_SECTIONS_MAP);
 
-        PageSectionContext section = (PageSectionContext) context.get(FacilioConstants.CustomPage.SECTION);
         FacilioModule sectionsModule = ModuleFactory.getPageSectionsModule();
+        List<PageSectionContext> sections = new ArrayList<>();
 
-        if(section != null) {
-
+        if(MapUtils.isNotEmpty(columnSectionsMap)) {
+            long currentUser = AccountUtil.getCurrentUser().getId();
+            long currentTime = System.currentTimeMillis();
             FacilioField columnIdField = FieldFactory.getNumberField("columnId", "COLUMN_ID", sectionsModule);
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getEqualsCondition(columnIdField, String.valueOf(columnId)));
 
-            section.setColumnId(columnId);
+            Criteria fetchExistingNamesCriteria = new Criteria();
+            fetchExistingNamesCriteria.addAndCondition(CriteriaAPI.getEqualsCondition(columnIdField, columnSectionsMap.keySet().stream().map(String::valueOf).collect(Collectors.joining(", "))));
+            Map<Long, List<String>> existingNamesMap = CustomPageAPI.getExistingNameListAsMap(sectionsModule, fetchExistingNamesCriteria, columnIdField);
 
-            if (section.getSequenceNumber() <= 0) {
-                double sequenceNumber = CustomPageAPI.getMaxSequenceNumber(sectionsModule, criteria);
-                section.setSequenceNumber(sequenceNumber + 10);
+            for(Map.Entry<Long, List<PageSectionContext>> entry : columnSectionsMap.entrySet()) {
+                long columnId = entry.getKey();
+                List<PageSectionContext> columnSections = entry.getValue();
+
+                if(CollectionUtils.isNotEmpty(columnSections)) {
+                    Criteria columnIdCriteria = new Criteria();
+                    columnIdCriteria.addAndCondition(CriteriaAPI.getEqualsCondition(columnIdField, String.valueOf(columnId)));
+                    double sequenceNumber = CustomPageAPI.getMaxSequenceNumber(sectionsModule, columnIdCriteria);
+
+                    for(PageSectionContext section : columnSections) {
+                        section.setColumnId(columnId);
+
+                        String name = CustomPageAPI.getLinkNameFromObjectOrDefault(section, "section");
+                        name = CustomPageAPI.generateUniqueName(name, existingNamesMap.get(columnId), isSystem);
+                        if ((isSystem != null && isSystem) && StringUtils.isNotEmpty(section.getName()) && !section.getName().equalsIgnoreCase(name)) {
+                            throw new IllegalArgumentException("linkName already exists, given linkName for section is invalid");
+                        }
+                        CustomPageAPI.addNameToMap(name, columnId, existingNamesMap);
+
+                        section.setName(name);
+                        if (section.getSequenceNumber() <= 0) {
+                            section.setSequenceNumber(sequenceNumber+=10);
+                        }
+                        section.setSysCreatedBy(currentUser);
+                        section.setSysCreatedTime(currentTime);
+
+                        sections.add(section);
+                    }
+                }
+
             }
+            CustomPageAPI.insertPageSectionsToDB(sections);
 
-
-            Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
-            String name = StringUtils.isNotEmpty(section.getName()) ? section.getName() :
-                    StringUtils.isNotEmpty(section.getDisplayName())? section.getDisplayName(): "section";
-            name = CustomPageAPI.getUniqueName(sectionsModule, criteria, columnIdField, columnId, name, isSystem);
-            if((isSystem != null && isSystem) && StringUtils.isNotEmpty(section.getName()) && !section.getName().equalsIgnoreCase(name)) {
-                throw new IllegalArgumentException("linkName already exists, given linkName for section is invalid");
-            }
-
-            section.setName(name);
-
-            section.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
-            section.setSysCreatedTime(System.currentTimeMillis());
-
-            CustomPageAPI.insertPageSectionToDB(section);
-            context.put(FacilioConstants.CustomPage.SECTION_ID, section.getId());
+            //below codes update sysModifiedTime in parent tables
+            Map<String, Object> sysModifiedProps = new HashMap<>();
+            sysModifiedProps.put("sysModifiedBy", currentUser);
+            sysModifiedProps.put("sysModifiedTime", currentTime);
+            CustomPageAPI.updateSysModifiedFields(sections.get(0).getColumnId(), sysModifiedProps, CustomPageAPI.PageComponent.COLUMN);
         }
-
         return false;
     }
 

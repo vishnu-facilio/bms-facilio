@@ -13,6 +13,8 @@ import com.facilio.modules.ModuleFactory;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.*;
+
 @Getter
 @Setter
 public class PageTabsAction extends FacilioAction{
@@ -33,12 +35,15 @@ public class PageTabsAction extends FacilioAction{
     public String addPageTabs() throws Exception{
         FacilioChain chain = TransactionChainFactory.getAddPageTabsChain();
         FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.CustomPage.TAB, tab);
-        context.put(FacilioConstants.CustomPage.PAGE_ID, pageId);
-        context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
+        Map<Long, List<PageTabContext>>  layoutTabsMap = new HashMap<>();
+        if (layoutId <= 0) {
+            throw new IllegalArgumentException("Invalid layout id to create tab");
+        }
+        layoutTabsMap.put(layoutId, new ArrayList<>(Arrays.asList(tab)));
+        context.put(FacilioConstants.CustomPage.LAYOUT_TABS_MAP, layoutTabsMap);
         chain.execute();
-        tabId = (long) context.get(FacilioConstants.CustomPage.TAB_ID);
-        setResult(FacilioConstants.CustomPage.TAB_ID,tabId);
+
+        setResult(FacilioConstants.CustomPage.TAB_ID, tab.getId());
         return SUCCESS;
     }
 

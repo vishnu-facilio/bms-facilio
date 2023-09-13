@@ -7623,6 +7623,18 @@
 		</action>
 	</package>
 
+	<package name="widgetDetail" namespace="/api/v2/customPage/widget/widgetDetail" extends="v2Api">
+		<action name="get"
+				class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="fetchWidgetDetail">
+		</action>
+	</package>
+
+	<package name="relationSummaryWidget" namespace="/api/v2/customPage/relation/summaryWidget" extends="v2Api">
+		<action name="get"
+				class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction" method="fetchSummaryWidgetForRelation">
+		</action>
+	</package>
+
 	<package name="moduleSetting" namespace="/api/v2/moduleSetting/status" extends="v2Api">
 		<action name="pageBuilder/*"
 				class="com.facilio.bmsconsole.actions.CustomPageAction" method="checkPageBuilderEnabled">

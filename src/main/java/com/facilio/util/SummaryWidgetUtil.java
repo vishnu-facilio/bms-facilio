@@ -289,6 +289,35 @@ public class SummaryWidgetUtil {
         }
     }
 
+    public static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan) throws Exception {
+        addSummaryFieldInWidgetGroup(widgetGroup, null, field, rowIndex, colIndex, colSpan);
+    }
+    public static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, String fieldDisplayName, FacilioField field, int rowIndex, int colIndex, int colSpan) throws Exception {
+        addSummaryFieldInWidgetGroup(widgetGroup, fieldDisplayName, field, rowIndex, colIndex, colSpan, null);
+    }
+    public static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, String fieldDisplayName, FacilioField field, int rowIndex, int colIndex, int colSpan, FacilioField parentLookupField) {
+        if(field != null) {
+            SummaryWidgetGroupFields summaryField = new SummaryWidgetGroupFields();
+            summaryField.setName(field.getName());
+            summaryField.setDisplayName(StringUtils.isBlank(fieldDisplayName) ? field.getDisplayName() : fieldDisplayName);
+            summaryField.setFieldId(field.getFieldId());
+            summaryField.setField(field);
+            summaryField.setRowIndex(rowIndex);
+            summaryField.setColIndex(colIndex);
+            summaryField.setColSpan(colSpan);
+            if(parentLookupField != null) {
+                summaryField.setParentLookupField(parentLookupField);
+                summaryField.setParentLookupFieldId(parentLookupField.getFieldId());
+            }
+
+            if(widgetGroup.getFields() == null) {
+                widgetGroup.setFields(new ArrayList<>(Arrays.asList(summaryField)));
+            }
+            else {
+                widgetGroup.getFields().add(summaryField);
+            }
+        }
+    }
     public static void deleteSummaryWidgetGroupFiedls(List<Long> ids) throws Exception {
         if (CollectionUtils.isNotEmpty(ids)) {
             FacilioModule module = ModuleFactory.getSummaryWidgetGroupFieldsModule();

@@ -22,6 +22,8 @@ import com.facilio.modules.*;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import lombok.NonNull;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,9 +37,9 @@ public class CustomPageAPI {
     private static final Logger LOGGER = Logger.getLogger(CustomPageAPI.class.getName());
 
     public static List<String> getPageBuilderEnabledModules() throws Exception {
-        List<FacilioModule> modules = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PAGE_BUILDER)?
-                ModuleSettingConfigUtil.getConfigEnabledModules(FacilioConstants.SettingConfigurationContextNames.PAGE_BUILDER) : null                ;
-        return CollectionUtils.isNotEmpty(modules)? modules.stream().map(FacilioModule::getName).collect(Collectors.toList()) : null;
+        List<FacilioModule> modules = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PAGE_BUILDER) ?
+                ModuleSettingConfigUtil.getConfigEnabledModules(FacilioConstants.SettingConfigurationContextNames.PAGE_BUILDER) : null;
+        return CollectionUtils.isNotEmpty(modules) ? modules.stream().map(FacilioModule::getName).collect(Collectors.toList()) : null;
     }
 
     public static double getMaxSequenceNumber(FacilioModule module, Criteria criteria) throws Exception {
@@ -55,8 +57,8 @@ public class CustomPageAPI {
         return 0D;
     }
 
-    public static double getSequenceNumberForNewPage(PagesContext defaultPage,long appId, long moduleId)throws Exception{
-        if(defaultPage == null || defaultPage.getId() == -1){
+    public static double getSequenceNumberForNewPage(PagesContext defaultPage, long appId, long moduleId) throws Exception{
+        if(defaultPage == null || defaultPage.getId() == -1) {
             defaultPage = getDefaultPage(appId, moduleId);
         }
         if(defaultPage != null) {
@@ -67,6 +69,20 @@ public class CustomPageAPI {
         }
         return 10;
     }
+
+    public static String getLinkNameFromObjectOrDefault(Object obj, @NonNull String defaultName) {
+        String linkName = null;
+        try {
+            String name = (String) obj.getClass().getMethod("getName").invoke(obj);
+            String displayName = (String) obj.getClass().getMethod("getDisplayName").invoke(obj);
+
+            linkName = !StringUtils.isBlank(name) ? name : !StringUtils.isBlank(displayName) ? displayName : defaultName;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return linkName.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
+    }
+
     public static Map<Long, List<String>> getExistingNameListAsMap(FacilioModule module, Criteria criteria, FacilioField parentField) throws Exception {
         List<FacilioField> fields = new ArrayList<>();
         FacilioField nameField = FieldFactory.getField("name", "NAME", module, FieldType.STRING);
@@ -95,8 +111,18 @@ public class CustomPageAPI {
         LOGGER.info("Since parent field is null, nameMap is Empty");
         return new HashMap<>();
     }
+
+    public static void addNameToMap(String name, long parentId, Map<Long, @NonNull List<String>> existingNamesMap) {
+        if (StringUtils.isNotEmpty(name)) {
+            if (existingNamesMap.get(parentId) == null) {
+                existingNamesMap.put(parentId, new ArrayList<>());
+            }
+            existingNamesMap.get(parentId).add(name);
+        }
+    }
+
     public static String generateUniqueName(String name, List<String> nameList, Boolean isSystem) {
-        while (nameList != null && (nameList.contains(name) || nameList.contains(name+"__c"))) {
+        while (nameList != null && (nameList.contains(name) || nameList.contains(name + "__c"))) {
             if (name.contains("_")) {
                 name = name.split("_", 1)[0];
             }
@@ -105,13 +131,13 @@ public class CustomPageAPI {
             name = name + "_" + (noToAppend);
         }
 
-        if(isSystem == null || !isSystem){
+        if (isSystem == null || !isSystem) {
             name = name + "__c";
         }
         return name;
     }
     public static void insertCustomPageToDB(PagesContext customPage) throws Exception {
-        if(customPage!=null) {
+        if (customPage != null) {
             Map<String, Object> prop = FieldUtil.getAsProperties(customPage);
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getPagesModule().getTableName())
@@ -123,12 +149,12 @@ public class CustomPageAPI {
     }
 
     public static void insertTemplatePageAppDomains(long templatePageId, List<Long> domainTypes) throws Exception {
-        if(templatePageId > 0 && CollectionUtils.isNotEmpty(domainTypes)) {
+        if (templatePageId > 0 && CollectionUtils.isNotEmpty(domainTypes)) {
             FacilioModule module = ModuleFactory.getTemplatePageAppDomainModule();
             List<FacilioField> fields = FieldFactory.getTemplatePageAppDomainFields();
             List<Map<String, Object>> props = new ArrayList<>();
 
-            for(Long domainType : domainTypes) {
+            for (Long domainType : domainTypes) {
                 Map<String, Object> prop = new HashMap<>();
                 prop.put("pageId", templatePageId);
                 prop.put("appDomainType", domainType);
@@ -143,8 +169,9 @@ public class CustomPageAPI {
             builder.save();
         }
     }
+
     public static void insertPageTabToDB(PageTabContext tab) throws Exception {
-        if(tab != null) {
+        if (tab != null) {
             Map<String, Object> prop = FieldUtil.getAsProperties(tab);
 
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
@@ -154,15 +181,32 @@ public class CustomPageAPI {
             builder.save();
 
             Map<String, Object> sysModifiedProps = new HashMap<>();
-            sysModifiedProps.put("sysModifiedBy",tab.getSysCreatedBy());
-            sysModifiedProps.put("sysModifiedTime",tab.getSysCreatedTime());
+            sysModifiedProps.put("sysModifiedBy", tab.getSysCreatedBy());
+            sysModifiedProps.put("sysModifiedTime", tab.getSysCreatedTime());
             updateSysModifiedFields(tab.getLayoutId(), sysModifiedProps, PageComponent.PAGE);
 
-            tab.setId((long)prop.get("id"));
+            tab.setId((long) prop.get("id"));
         }
     }
-    public static List<PageColumnContext> insertPageColumnsToDB(List<PageColumnContext> columns) throws Exception {
-        if(CollectionUtils.isNotEmpty(columns)) {
+
+    public static void insertPageTabsToDB(List<PageTabContext> tabs) throws Exception {
+        if (CollectionUtils.isNotEmpty(tabs)) {
+            List<Map<String, Object>> props = FieldUtil.getAsMapList(tabs, PageTabContext.class);
+
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getPageTabsModule().getTableName())
+                    .fields(FieldFactory.getPageTabsFields())
+                    .addRecords(props);
+            builder.save();
+
+            for (PageTabContext tab : tabs) {
+                tab.setId(props.stream().filter(f ->  (long)f.get("layoutId") == tab.getLayoutId() && f.get("name").equals(tab.getName())).mapToLong(f -> (Long) f.get("id")).findFirst().getAsLong());
+            }
+        }
+    }
+
+    public static void insertPageColumnsToDB(List<PageColumnContext> columns) throws Exception {
+        if (CollectionUtils.isNotEmpty(columns)) {
             List<Map<String, Object>> props = FieldUtil.getAsMapList(columns, PageColumnContext.class);
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getPageColumnsModule().getTableName())
@@ -170,17 +214,14 @@ public class CustomPageAPI {
                     .addRecords(props);
             builder.save();
 
-            Map<String, Object> sysModifiedProps = new HashMap<>();
-            sysModifiedProps.put("sysModifiedBy",columns.get(0).getSysCreatedBy());
-            sysModifiedProps.put("sysModifiedTime",columns.get(0).getSysCreatedTime());
-            updateSysModifiedFields(columns.get(0).getTabId(), sysModifiedProps, PageComponent.TAB);
-
-            return FieldUtil.getAsBeanListFromMapList(props, PageColumnContext.class);
+            for (PageColumnContext column : columns) {
+                column.setId(props.stream().filter(f -> (long)f.get("tabId") == column.getTabId() && f.get("name").equals(column.getName())).mapToLong(f -> (Long) f.get("id")).findFirst().getAsLong());
+            }
         }
-        return null;
     }
+
     public static void insertPageSectionToDB(PageSectionContext section) throws Exception {
-        if(section != null) {
+        if (section != null) {
             Map<String, Object> prop = FieldUtil.getAsProperties(section);
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getPageSectionsModule().getTableName())
@@ -189,16 +230,32 @@ public class CustomPageAPI {
             builder.save();
 
             Map<String, Object> sysModifiedProps = new HashMap<>();
-            sysModifiedProps.put("sysModifiedBy",section.getSysCreatedBy());
-            sysModifiedProps.put("sysModifiedTime",section.getSysCreatedTime());
+            sysModifiedProps.put("sysModifiedBy", section.getSysCreatedBy());
+            sysModifiedProps.put("sysModifiedTime", section.getSysCreatedTime());
             updateSysModifiedFields(section.getColumnId(), sysModifiedProps, PageComponent.COLUMN);
 
-            section.setId((long)prop.get("id"));
+            section.setId((long) prop.get("id"));
+        }
+    }
+
+    public static void insertPageSectionsToDB(List<PageSectionContext> sections) throws Exception {
+        if (CollectionUtils.isNotEmpty(sections)) {
+            List<Map<String, Object>> props = FieldUtil.getAsMapList(sections, PageSectionContext.class);
+
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getPageSectionsModule().getTableName())
+                    .fields(FieldFactory.getPageSectionsFields())
+                    .addRecords(props);
+            builder.save();
+
+            for (PageSectionContext section : sections) {
+                section.setId(props.stream().filter(f -> (long)f.get("columnId") == section.getColumnId() && f.get("name").equals(section.getName())).mapToLong(f -> (Long) f.get("id")).findFirst().getAsLong());
+            }
         }
     }
 
     public static void insertPageSectionWidgettoDB(PageSectionWidgetContext widget) throws Exception {
-        if(widget != null) {
+        if (widget != null) {
             Map<String, Object> prop = FieldUtil.getAsProperties(widget);
             prop.replace("widgetParams", widget.getWidgetParamsAsString());
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
@@ -209,24 +266,69 @@ public class CustomPageAPI {
 
             widget.setId((Long) prop.get("id"));
         }
+    }
 
+    public static <T extends PageSectionWidgetContext> void validatePageWidget(T widget, WidgetWrapperType widgetWrapperType) throws Exception {
+        FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == null, "widgetType can't be null");
+        if (widgetWrapperType == WidgetWrapperType.WIDGET_GROUP) {
+            FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == PageWidget.WidgetType.WIDGET_GROUP, "WidgetGroup's widgetType can't have 'WIDGET_GROUP'");
+            FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == PageWidget.WidgetType.CONNNECTED_APP, "WidgetGroup's widgetType can't have 'CONNNECTED_APP'");
+        }
+    }
+    public static <T extends PageSectionWidgetContext> void insertPageWidget(List<T> widgets, WidgetWrapperType widgetWrapperType) throws Exception {
+        FacilioModule module = widgetWrapperType == WidgetWrapperType.WIDGET_GROUP ? ModuleFactory.getWidgetGroupWidgetsModule() : ModuleFactory.getPageSectionWidgetsModule();
+        List<FacilioField> fields = widgetWrapperType == WidgetWrapperType.WIDGET_GROUP ? FieldFactory.getWidgetGroupWidgetsFields() : FieldFactory.getPageSectionWidgetsFields();
+        if (CollectionUtils.isNotEmpty(widgets)) {
+            List<Map<String, Object>> props = FieldUtil.getAsMapList(widgets, PageSectionWidgetContext.class);
+            for (PageSectionWidgetContext widget : widgets) {
+                props.forEach(f -> {
+                    if ((long) f.get("sectionId") == widget.getSectionId() && f.get("name").equals(widget.getName())) {
+                        f.replace("widgetParams", widget.getWidgetParamsAsString());
+                    }
+                });
+            }
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                    .table(module.getTableName())
+                    .fields(fields)
+                    .addRecords(props);
+            builder.save();
+
+            for (PageSectionWidgetContext widget : widgets) {
+                widget.setId(props.stream().filter(f -> (long) f.get("sectionId") == widget.getSectionId() && f.get("name").equals(widget.getName())).mapToLong(f -> (Long) f.get("id")).findFirst().getAsLong());
+            }
+        }
+    }
+    public static void insertPageSectionWidgetsToDB(List<PageSectionWidgetContext> widgets) throws Exception {
+        if(CollectionUtils.isNotEmpty(widgets)) {
+            insertPageWidget(widgets, WidgetWrapperType.DEFAULT);
+        }
+    }
+
+    @SneakyThrows
+    public static boolean hasLicenseEnabled(int featureId) {
+        AccountUtil.FeatureLicense license = AccountUtil.FeatureLicense.getFeatureLicense(featureId);
+        boolean isEnabled = true;
+        if (license != null) {
+            isEnabled = AccountUtil.isFeatureEnabled(license);
+        }
+        return isEnabled;
     }
 
     public static List<Map<String, Object>> getAllCustomPageForBuilder(long appId, long moduleId, PagesContext.PageLayoutType layoutType) throws Exception {
-        if(layoutType == null) {
+        if (layoutType == null) {
             layoutType = PagesContext.PageLayoutType.WEB;
         }
         GenericSelectRecordBuilder builder = getCustomPageBuilder(appId, moduleId, layoutType);
         List<Map<String, Object>> props = builder.get();
-        if(CollectionUtils.isNotEmpty(props)) {
-            List<Long> pageIds = props.stream().filter(f->(Long)f.get("id") != null).map(f->(Long)f.get("id")).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(props)) {
+            List<Long> pageIds = props.stream().filter(f -> (Long) f.get("id") != null).map(f -> (Long) f.get("id")).collect(Collectors.toList());
             Map<Long, SharingContext<SingleSharingContext>> pageSharingMap = SharingAPI.getSharing(pageIds, ModuleFactory.getPageSharingModule(), SingleSharingContext.class, FieldFactory.getPageSharingFields());
 
-            props.forEach(f->{ if((Long)f.get("id") != null && pageSharingMap.get((Long)f.get("id")) != null)
-                                                    {
-                                                        f.put("pageSharing", pageSharingMap.get((Long)f.get("id")));
-                                                    }
-                               });
+            props.forEach(f -> {
+                if ((Long) f.get("id") != null && pageSharingMap.get((Long) f.get("id")) != null) {
+                    f.put("pageSharing", pageSharingMap.get((Long) f.get("id")));
+                }
+            });
         }
         return props;
     }
@@ -236,8 +338,8 @@ public class CustomPageAPI {
         FacilioModule pageLayoutsModule = ModuleFactory.getPageLayoutsModule();
 
         List<FacilioField> fields = FieldFactory.getPagesFields();
-        fields.add(FieldFactory.getNumberField("layoutId","ID",pageLayoutsModule));
-        fields.add(FieldFactory.getStringField("layoutType","LAYOUT_TYPE",pageLayoutsModule));
+        fields.add(FieldFactory.getNumberField("layoutId", "ID", pageLayoutsModule));
+        fields.add(FieldFactory.getStringField("layoutType", "LAYOUT_TYPE", pageLayoutsModule));
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 
         return new GenericSelectRecordBuilder()
@@ -245,11 +347,11 @@ public class CustomPageAPI {
                 .select(fields)
                 .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("appId"), String.valueOf(appId)))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("isTemplate"),String.valueOf(false)))
+                .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("isTemplate"), String.valueOf(false)))
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(pagesModule), CommonOperators.IS_EMPTY))
                 .innerJoin(pageLayoutsModule.getTableName())
                 .on("Page_Layouts.PAGE_ID = Pages.ID")
-                .andCondition(CriteriaAPI.getCondition("LAYOUT_TYPE","layoutType", String.valueOf(layoutType), StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition("LAYOUT_TYPE", "layoutType", String.valueOf(layoutType), StringOperators.IS))
                 .orderBy("SEQUENCE_NUMBER, ID");
     }
 
@@ -267,7 +369,7 @@ public class CustomPageAPI {
 
         GenericSelectRecordBuilder builder = getCustomPageBuilder(appId, moduleId, layoutType);
         builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS))
-               .leftJoin(ModuleFactory.getPageSharingModule().getTableName())
+                .leftJoin(ModuleFactory.getPageSharingModule().getTableName())
                 .on("Pages.ID =Page_Sharing.PARENT_ID")
                 .andCriteria(pageSharingCriteria);
 
@@ -278,6 +380,7 @@ public class CustomPageAPI {
 
         return null;
     }
+
     public static PagesContext getCustomPage(Long id) throws Exception {
         FacilioModule module = ModuleFactory.getPagesModule();
 
@@ -294,10 +397,11 @@ public class CustomPageAPI {
         }
         return null;
     }
-    public static List<PagesContext> getAllRelatedPagesToOrder(long id) throws Exception{
+
+    public static List<PagesContext> getAllRelatedPagesToOrder(long id) throws Exception {
         PagesContext page = getCustomPage(id);
 
-        if(page != null) {
+        if (page != null) {
             FacilioModule module = ModuleFactory.getPagesModule();
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getPagesFields());
 
@@ -313,7 +417,7 @@ public class CustomPageAPI {
                     .select(fields)
                     .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("moduleId"), String.valueOf(page.getModuleId())))
                     .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("appId"), String.valueOf(page.getAppId())))
-                    .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("isTemplate"),String.valueOf(false)))
+                    .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("isTemplate"), String.valueOf(false)))
                     .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(module), CommonOperators.IS_EMPTY));
 
             List<Map<String, Object>> props = builder.get();
@@ -323,18 +427,18 @@ public class CustomPageAPI {
         }
         return null;
     }
+
     public static PageTabContext getTab(Long id, Long layoutId, String tabName) throws Exception {
         FacilioModule module = ModuleFactory.getPageTabsModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getPageTabsFields())
                 .table(module.getTableName());
 
-        if(id != null && id > 0){
+        if (id != null && id > 0) {
             builder.andCondition(CriteriaAPI.getIdCondition(id, module));
-        }
-        else if(layoutId != null && layoutId > 0 && StringUtils.isNotEmpty(tabName)){
+        } else if (layoutId != null && layoutId > 0 && StringUtils.isNotEmpty(tabName)) {
             builder.andCondition(CriteriaAPI.getNameCondition(tabName, module))
-                    .andCondition(CriteriaAPI.getCondition("LAYOUT_ID","layoutId", String.valueOf(layoutId), NumberOperators.EQUALS));
+                    .andCondition(CriteriaAPI.getCondition("LAYOUT_ID", "layoutId", String.valueOf(layoutId), NumberOperators.EQUALS));
         }
 
         List<Map<String, Object>> props = builder.get();
@@ -373,7 +477,8 @@ public class CustomPageAPI {
         }
         return null;
     }
-    public static PagesContext getDefaultPage(long appId, long moduleId) throws Exception{
+
+    public static PagesContext getDefaultPage(long appId, long moduleId) throws Exception {
         FacilioModule module = ModuleFactory.getPagesModule();
         List<FacilioField> fields = FieldFactory.getPagesFields();
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
@@ -390,9 +495,10 @@ public class CustomPageAPI {
         }
         return null;
     }
-    public static void updateFetchedPage(PagesContext page) throws Exception{
+
+    public static void updateFetchedPage(PagesContext page) throws Exception {
         FacilioModule module = ModuleFactory.getPagesModule();
-        if(page.getId()!=   -1) {
+        if (page.getId() != -1) {
             page.setSysModifiedBy(AccountUtil.getCurrentUser().getId());
             page.setSysModifiedTime(System.currentTimeMillis());
 
@@ -451,7 +557,7 @@ public class CustomPageAPI {
         return new ArrayList<>();
     }
 
-    public static Map<Long,List<PageColumnContext>> fetchColumns(List<Long> tabIds) throws Exception {
+    public static Map<Long, List<PageColumnContext>> fetchColumns(List<Long> tabIds) throws Exception {
         FacilioModule module = ModuleFactory.getPageColumnsModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getPageColumnsFields())
@@ -489,6 +595,7 @@ public class CustomPageAPI {
         }
         return null;
     }
+
     public static Map<Long, List<PageSectionWidgetContext>> fetchPageSectionWidgets(List<Long> sectionIds) throws Exception {
         FacilioModule module = ModuleFactory.getPageSectionWidgetsModule();
 
@@ -502,7 +609,7 @@ public class CustomPageAPI {
         if (CollectionUtils.isNotEmpty(props)) {
             List<PageSectionWidgetContext> widgets = FieldUtil.getAsBeanListFromMapList(props, PageSectionWidgetContext.class);
 
-            return widgets.stream().peek(f->f.setWidgetWrapperType(WidgetWrapperType.DEFAULT))
+            return widgets.stream().peek(f -> f.setWidgetWrapperType(WidgetWrapperType.DEFAULT))
                     .collect(Collectors.groupingBy(PageSectionWidgetContext::getSectionId));
         }
         return null;
@@ -541,13 +648,14 @@ public class CustomPageAPI {
                 .andCondition(CriteriaAPI.getIdCondition(id, module));
         List<Map<String, Object>> props = builder.get();
 
-        if(CollectionUtils.isNotEmpty(props)) {
+        if (CollectionUtils.isNotEmpty(props)) {
             return FieldUtil.getAsBeanFromMap(props.get(0), PageSectionWidgetContext.class);
         }
 
         return null;
     }
-    public static List<PageTabContext> getAllRelatedTabsToOrder(long id) throws Exception{
+
+    public static List<PageTabContext> getAllRelatedTabsToOrder(long id) throws Exception {
         FacilioModule module = ModuleFactory.getPageTabsModule();
         PageTabContext tab = getTab(id, null, null);
 
@@ -570,7 +678,7 @@ public class CustomPageAPI {
         return null;
     }
 
-    public static List<PageSectionContext> getAllRelatedSectionsToOrder(long id) throws Exception{
+    public static List<PageSectionContext> getAllRelatedSectionsToOrder(long id) throws Exception {
         FacilioModule module = ModuleFactory.getPageSectionsModule();
         PageSectionContext section = getSection(id);
 
@@ -592,8 +700,9 @@ public class CustomPageAPI {
 
         return null;
     }
+
     public static void patchCustomPage(PagesContext customPage) throws Exception {
-        if(customPage != null) {
+        if (customPage != null) {
             PagesContext existingPage = getCustomPage(customPage.getId());
             FacilioUtil.throwIllegalArgumentException(existingPage == null, "Page does not exists");
 
@@ -629,8 +738,9 @@ public class CustomPageAPI {
             }
         }
     }
+
     public static void patchPageTab(PageTabContext tab) throws Exception {
-        if(tab != null) {
+        if (tab != null) {
             PageTabContext existingTab = getTab(tab.getId(), null, null);
             FacilioUtil.throwIllegalArgumentException(existingTab == null, "Tab does not exists");
             Map<String, Object> prop = new HashMap<>();
@@ -673,7 +783,7 @@ public class CustomPageAPI {
     }
 
     public static void patchPageColumn(PageColumnContext column) throws Exception {
-        if(column != null) {
+        if (column != null) {
             PageColumnContext existingColumn = getColumn(column.getId());
             FacilioUtil.throwIllegalArgumentException(existingColumn == null, "Column does not exists");
 
@@ -695,6 +805,7 @@ public class CustomPageAPI {
             }
         }
     }
+
     public static void patchPageSection(PageSectionContext section) throws Exception {
         if (section != null) {
             PageSectionContext existingSection = getSection(section.getId());
@@ -721,30 +832,35 @@ public class CustomPageAPI {
             }
         }
     }
+
     public static List<FacilioField> getSysModifiedFields(FacilioModule module) {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getSystemField("sysModifiedTime", module));
         fields.add(FieldFactory.getSystemField("sysModifiedBy", module));
         return fields;
     }
+
     public static Map<String, Object> getSysModifiedProps() {
         Map<String, Object> props = new HashMap<>();
         props.put("sysModifiedBy", AccountUtil.getCurrentUser() != null ? AccountUtil.getCurrentUser().getId() : -1);
         props.put("sysModifiedTime", System.currentTimeMillis());
         return props;
     }
+
     public static List<FacilioField> getSysDeletedFields(FacilioModule module) {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getSysDeletedByField(module));
         fields.add(FieldFactory.getSysDeletedTimeField(module));
         return fields;
     }
+
     public static Map<String, Object> getSysDeletedProps() {
         Map<String, Object> props = new HashMap<>();
         props.put("sysDeletedBy", AccountUtil.getCurrentUser() != null ? AccountUtil.getCurrentUser().getId() : -1);
         props.put("sysDeletedTime", System.currentTimeMillis());
         return props;
     }
+
     public static void deletePage(List<Long> ids, FacilioModule module) throws Exception {
         List<FacilioField> fields = getSysDeletedFields(module);
         fields.add(FieldFactory.getIdField(module));
@@ -756,8 +872,9 @@ public class CustomPageAPI {
         builder.update(props);
 
     }
-    public static void deletePageComponent(long id, FacilioModule module) throws Exception{
-        if(id > 0 && module != null) {
+
+    public static void deletePageComponent(long id, FacilioModule module) throws Exception {
+        if (id > 0 && module != null) {
             GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
                     .table(module.getTableName())
                     .andCondition(CriteriaAPI.getIdCondition(id, module));
@@ -768,14 +885,18 @@ public class CustomPageAPI {
     public static void updateSysModifiedFields(long id, Map<String, Object> props, PageComponent type) throws Exception {
 
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                .table(type.getModule().getTableName())
-                .andCondition(CriteriaAPI.getIdCondition(id, type.getModule()));
+                .table(type.getModule().getTableName());
+        if (type == PageComponent.PAGE) {
+            builder.andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getPageLayoutsModule()));
+        } else {
+            builder.andCondition(CriteriaAPI.getIdCondition(id, type.getModule()));
+        }
         List<FacilioField> patchFields = new ArrayList<>();
         getSysModifiedBuilderForCustomPage(builder, type, patchFields);
         builder.update(props);
     }
 
-    public static void getSysModifiedBuilderForCustomPage(GenericUpdateRecordBuilder builder, PageComponent type, List<FacilioField> patchFields ){
+    public static void getSysModifiedBuilderForCustomPage(GenericUpdateRecordBuilder builder, PageComponent type, List<FacilioField> patchFields) {
         FacilioModule module;
         switch (type) {
             /*case WIDGETGROUP_WIDGETS:
@@ -818,6 +939,10 @@ public class CustomPageAPI {
                 break;
             case PAGE:
                 module = PageComponent.PAGE.getModule();
+                if (CollectionUtils.isEmpty(patchFields)) {
+                    builder.innerJoin(ModuleFactory.getPageLayoutsModule().getTableName())
+                            .on("Pages.ID = Page_Layouts.PAGE_ID");
+                }
                 patchFields.addAll(getSysModifiedFields(module));
                 builder.fields(patchFields);
                 break;
@@ -827,71 +952,87 @@ public class CustomPageAPI {
         }
     }
 
-    public static void updateWidgetPositions(List<Map<String, Object>> props) throws Exception {
+    public static void updateWidgetPositions(List<Map<String, Object>> props, WidgetWrapperType widgetWrapperType) throws Exception {
         if (CollectionUtils.isNotEmpty(props)) {
-            FacilioModule module = ModuleFactory.getPageSectionWidgetsModule();
-            List<FacilioField> fields = FieldFactory.getPageSectionWidgetsFields();
-            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+            FacilioModule module = getModuleForWidgetWrapperType(widgetWrapperType);
+            if(module != null) {
+                List<FacilioField> fields = FieldFactory.getPageSectionWidgetsFields();
+                Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 
-            List<GenericUpdateRecordBuilder.BatchUpdateContext> updateBatch = new ArrayList<>();
-            for (Map<String, Object> prop : props) {
+                List<GenericUpdateRecordBuilder.BatchUpdateContext> updateBatch = new ArrayList<>();
+                for (Map<String, Object> prop : props) {
 
-                GenericUpdateRecordBuilder.BatchUpdateContext updateContext = new GenericUpdateRecordBuilder.BatchUpdateContext();
-                updateContext.addUpdateValue("positionX", prop.get("positionX"));
-                updateContext.addUpdateValue("positionY", prop.get("positionY"));
+                    GenericUpdateRecordBuilder.BatchUpdateContext updateContext = new GenericUpdateRecordBuilder.BatchUpdateContext();
+                    updateContext.addUpdateValue("positionX", prop.get("positionX"));
+                    updateContext.addUpdateValue("positionY", prop.get("positionY"));
 
-                updateContext.addWhereValue(fieldsMap.get("id").getName(), prop.get("id"));
-                updateBatch.add(updateContext);
+                    updateContext.addWhereValue(fieldsMap.get("id").getName(), prop.get("id"));
+                    updateBatch.add(updateContext);
+                }
+
+                List<FacilioField> whereFields = new ArrayList<>();
+                whereFields.add(fieldsMap.get("id"));
+
+                List<FacilioField> updateField = new ArrayList<>();
+                updateField.add(fieldsMap.get("positionX"));
+                updateField.add(fieldsMap.get("positionY"));
+
+                updateField.add(fieldsMap.get("sysModifiedBy"));
+                updateField.add(fieldsMap.get("sysModifiedTime"));
+                GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                        .fields(updateField)
+                        .table(module.getTableName());
+                builder.batchUpdate(whereFields, updateBatch);
             }
-
-            List<FacilioField> whereFields = new ArrayList<>();
-            whereFields.add(fieldsMap.get("id"));
-
-            List<FacilioField> updateField = new ArrayList<>();
-            updateField.add(fieldsMap.get("positionX"));
-            updateField.add(fieldsMap.get("positionY"));
-
-            updateField.add(fieldsMap.get("sysModifiedBy"));
-            updateField.add(fieldsMap.get("sysModifiedTime"));
-            GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                    .fields(updateField)
-                    .table(module.getTableName());
-            builder.batchUpdate(whereFields, updateBatch);
         }
     }
 
-    public static void updatePageSectionWidgets(PageSectionWidgetContext widget) throws Exception {
+    public static FacilioModule getModuleForWidgetWrapperType(@NonNull WidgetWrapperType widgetWrapperType) {
+        if(widgetWrapperType == WidgetWrapperType.DEFAULT) {
+            return ModuleFactory.getPageSectionWidgetsModule();
+        } else if(widgetWrapperType == WidgetWrapperType.WIDGET_GROUP) {
+            return ModuleFactory.getWidgetGroupWidgetsModule();
+        }
+        return null;
+    }
+    public static void updatePageWidgets(PageSectionWidgetContext widget, WidgetWrapperType widgetWrapperType) throws Exception {
         if(widget != null) {
-            FacilioModule module = ModuleFactory.getPageSectionWidgetsModule();
-            List<FacilioField> fields = new ArrayList<>();
-            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getPageSectionWidgetsFields());
-            fields.add(fieldsMap.get("displayName"));
-            fields.add(fieldsMap.get("positionX"));
-            fields.add(fieldsMap.get("positionY"));
-            fields.add(fieldsMap.get("width"));
-            fields.add(fieldsMap.get("height"));
-            fields.add(fieldsMap.get("sysModifiedBy"));
-            fields.add(fieldsMap.get("sysModifiedTime"));
+            FacilioModule module = getModuleForWidgetWrapperType(widgetWrapperType);
+            if(module != null) {
+                List<FacilioField> fields = new ArrayList<>();
+                Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getPageSectionWidgetsFields());
+                fields.add(fieldsMap.get("displayName"));
+                fields.add(fieldsMap.get("positionX"));
+                fields.add(fieldsMap.get("positionY"));
+                fields.add(fieldsMap.get("width"));
+                fields.add(fieldsMap.get("height"));
+                fields.add(fieldsMap.get("sysModifiedBy"));
+                fields.add(fieldsMap.get("sysModifiedTime"));
 
-            widget.setSysModifiedBy(AccountUtil.getCurrentUser().getId());
-            widget.setSysModifiedTime(System.currentTimeMillis());
+                widget.setSysModifiedBy(AccountUtil.getCurrentUser().getId());
+                widget.setSysModifiedTime(System.currentTimeMillis());
 
-            Map<String, Object> prop = FieldUtil.getAsProperties(widget);
-            GenericUpdateRecordBuilder updateWidget = new GenericUpdateRecordBuilder()
-                    .table(module.getTableName())
-                    .fields(fields)
-                    .andCondition(CriteriaAPI.getIdCondition(widget.getId(), module));
-            updateWidget.update(prop);
+                Map<String, Object> prop = FieldUtil.getAsProperties(widget);
+                GenericUpdateRecordBuilder updateWidget = new GenericUpdateRecordBuilder()
+                        .table(module.getTableName())
+                        .fields(fields)
+                        .andCondition(CriteriaAPI.getIdCondition(widget.getId(), module));
+                updateWidget.update(prop);
+            }
         }
     }
 
-    public static Map<String, Long> createLayoutsForPage(Long id) throws Exception{
-        if(id != null && id > 0) {
+    public static Map<String, Long> createLayoutsForPage(Long id) throws Exception {
+        if (id != null && id > 0) {
             List<Map<String, Object>> props = new ArrayList<>();
-            props.add(new HashMap<String, Object>(){{put("pageId", id);
-                                                     put("layoutType", PagesContext.PageLayoutType.WEB.name());}});
-            props.add(new HashMap<String, Object>(){{put("pageId", id);
-                                                     put("layoutType", PagesContext.PageLayoutType.MOBILE.name());}});
+            props.add(new HashMap<String, Object>() {{
+                put("pageId", id);
+                put("layoutType", PagesContext.PageLayoutType.WEB.name());
+            }});
+            props.add(new HashMap<String, Object>() {{
+                put("pageId", id);
+                put("layoutType", PagesContext.PageLayoutType.MOBILE.name());
+            }});
 
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getPageLayoutsModule().getTableName())
@@ -899,17 +1040,17 @@ public class CustomPageAPI {
                     .addRecords(props);
             builder.save();
 
-            Map<String,Long> layoutMap = new HashMap<>();
-            for(Map<String, Object> prop : props) {
-                layoutMap.put((String) prop.get("layoutType"), (Long)prop.get("id"));
+            Map<String, Long> layoutMap = new HashMap<>();
+            for (Map<String, Object> prop : props) {
+                layoutMap.put((String) prop.get("layoutType"), (Long) prop.get("id"));
             }
             return layoutMap;
         }
         return null;
     }
 
-    public static Long getLayoutIdForPageId(Long pageId, PagesContext.PageLayoutType layoutType) throws Exception{
-        if(layoutType == null) {
+    public static Long getLayoutIdForPageId(Long pageId, PagesContext.PageLayoutType layoutType) throws Exception {
+        if (layoutType == null) {
             layoutType = PagesContext.PageLayoutType.WEB;
         }
 
@@ -921,10 +1062,9 @@ public class CustomPageAPI {
                 .andCondition(CriteriaAPI.getEqualsCondition(fieldsMap.get("layoutType"), layoutType.name()));
         Map<String, Object> prop = builder.fetchFirst();
 
-        if(MapUtils.isNotEmpty(prop)) {
+        if (MapUtils.isNotEmpty(prop)) {
             return (Long) prop.get("id");
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Layout doesn't not exists for page");
         }
     }
@@ -949,7 +1089,7 @@ public class CustomPageAPI {
         appIdOrDomainCriteria.addAndCondition(CriteriaAPI.getEqualsCondition(pagesFieldsMap.get("appId"), String.valueOf(app.getId())));
         appIdOrDomainCriteria.addOrCondition(CriteriaAPI.getEqualsCondition(templatePageAppDomainFieldsMap.get("appDomainType"), String.valueOf(app.getDomainType())));
 
-        if(AppDomain.AppDomainType.valueOf(app.getDomainType()) == AppDomain.AppDomainType.FACILIO) {
+        if (AppDomain.AppDomainType.valueOf(app.getDomainType()) == AppDomain.AppDomainType.FACILIO) {
             appIdOrDomainCriteria.addOrCondition(CriteriaAPI.getEqualsCondition(templatePageAppDomainFieldsMap.get("appDomainType"), String.valueOf(app.getId())));
         } else {
             appIdOrDomainCriteria.addOrCondition(CriteriaAPI.getEqualsCondition(templatePageAppDomainFieldsMap.get("appDomainType"), String.valueOf(-1)));
@@ -961,7 +1101,7 @@ public class CustomPageAPI {
                 .andCriteria(moduleAndTemplateCriteria)
                 .andCriteria(appIdOrDomainCriteria)
                 .innerJoin(templatePageAppDomainModule.getTableName())
-                .on(pagesFieldsMap.get("id").getCompleteColumnName()+"="+templatePageAppDomainFieldsMap.get("pageId").getCompleteColumnName())
+                .on(pagesFieldsMap.get("id").getCompleteColumnName() + "=" + templatePageAppDomainFieldsMap.get("pageId").getCompleteColumnName())
                 .orderBy("APP_ID desc, APP_DOMAIN desc");
 
         if (layoutType != null) {
@@ -1005,35 +1145,40 @@ public class CustomPageAPI {
         TAB(ModuleFactory.getPageTabsModule(), FieldFactory.getPageTabsFields()),
         COLUMN(ModuleFactory.getPageColumnsModule(), FieldFactory.getPageColumnsFields()),
         SECTION(ModuleFactory.getPageSectionsModule(), FieldFactory.getPageSectionsFields());
-//        WIDGET(ModuleFactory.getPageSectionWidgetsModule(), FieldFactory.getPageSectionWidgetsFields()),
+        //        WIDGET(ModuleFactory.getPageSectionWidgetsModule(), FieldFactory.getPageSectionWidgetsFields()),
 //        WIDGETGROUP_SECTION(ModuleFactory.getWidgetGroupSectionsModule(), FieldFactory.getWidgetGroupSectionsFields()),
 //        WIDGETGROUP_WIDGETS(ModuleFactory.getWidgetGroupSectionWidgetsModule(), FieldFactory.getWidgetGroupSectionWidgetsFields());
         FacilioModule module;
         List<FacilioField> fields;
+
         PageComponent(FacilioModule module, List<FacilioField> fields) {
             this.module = module;
             this.fields = fields;
         }
+
         public FacilioModule getModule() {
             return this.module;
         }
+
         public List<FacilioField> getFields() {
             return this.fields;
         }
     }
-    public static double updateAndGetSequenceNumber(long previousId, long id, long nextId, String orderFieldName, FacilioModule module, Criteria criteria, List<FacilioField> fieldsToQuery)throws Exception{
+
+    public static double updateAndGetSequenceNumber(long previousId, long id, long nextId, String orderFieldName, FacilioModule module, Criteria criteria, List<FacilioField> fieldsToQuery) throws Exception {
         double sequenceNumber = generateSequenceNumber(previousId, id, nextId, orderFieldName, module, criteria, fieldsToQuery);
 
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fieldsToQuery);
-        updateSequenceNumber(id, sequenceNumber,  module, fieldsMap.get(orderFieldName));
+        updateSequenceNumber(id, sequenceNumber, module, fieldsMap.get(orderFieldName));
         return sequenceNumber;
     }
-    public static double generateSequenceNumber(long previousId, long id, long nextId, String orderFieldName, FacilioModule module, Criteria criteria, List<FacilioField> fieldsToQuery)throws Exception{
+
+    public static double generateSequenceNumber(long previousId, long id, long nextId, String orderFieldName, FacilioModule module, Criteria criteria, List<FacilioField> fieldsToQuery) throws Exception {
         double sequenceNumber = 0;
         double previousSequenceNumber = 0;
         double nextSequenceNumber = 0;
 
-        if(!(CollectionUtils.isNotEmpty(fieldsToQuery))){
+        if (!(CollectionUtils.isNotEmpty(fieldsToQuery))) {
             LOGGER.error("To update sequence number, queryable fields can't be empty");
             throw new IllegalArgumentException("Error occured while generating new sequence number");
         }
@@ -1060,23 +1205,20 @@ public class CustomPageAPI {
         for (Map<String, Object> prop : props) {
             if (previousId == (long) prop.get("id")) {
                 previousSequenceNumber = (double) prop.get(orderFieldName);
-            }
-            else if (nextId == (long) prop.get("id")) {
+            } else if (nextId == (long) prop.get("id")) {
                 nextSequenceNumber = (double) prop.get(orderFieldName);
             }
         }
 
         if (previousSequenceNumber <= 0 && nextSequenceNumber <= 0) {
             return sequenceNumber + 10;
-        }
-        else if (previousSequenceNumber > 0 && nextSequenceNumber <= 0) {
+        } else if (previousSequenceNumber > 0 && nextSequenceNumber <= 0) {
             return previousSequenceNumber + 10;
-        }
-        else {
+        } else {
             sequenceNumber = (previousSequenceNumber + nextSequenceNumber) / 2;
 
-            if (sequenceNumber < 0.000009d || (sequenceNumber-previousSequenceNumber < 0.000009d)
-                    || ((nextSequenceNumber!=0) && (nextSequenceNumber-sequenceNumber < 0.000009d))){
+            if (sequenceNumber < 0.000009d || (sequenceNumber - previousSequenceNumber < 0.000009d)
+                    || ((nextSequenceNumber != 0) && (nextSequenceNumber - sequenceNumber < 0.000009d))) {
 
                 return recomputeSequenceNumber(id, nextId, orderFieldName, module, criteria, fieldsToQuery);
             }
@@ -1085,12 +1227,12 @@ public class CustomPageAPI {
     }
 
     public static double recomputeSequenceNumber(long id, long nextId, String orderFieldName, FacilioModule module, Criteria criteria, List<FacilioField> fieldsToQuery) throws Exception {
-        double sequenceNumber =0;
-        double newSequenceNumber =0;
+        double sequenceNumber = 0;
+        double newSequenceNumber = 0;
 
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fieldsToQuery);
 
-        if(criteria != null) {
+        if (criteria != null) {
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                     .select(fieldsToQuery)
                     .table(module.getTableName())
@@ -1102,7 +1244,7 @@ public class CustomPageAPI {
             for (Map<String, Object> record : selectRecordBuilder.get()) {
 
                 if ((long) record.get("id") == nextId) {
-                    sequenceNumber+=10;
+                    sequenceNumber += 10;
                     newSequenceNumber = sequenceNumber;
                 }
 
@@ -1129,10 +1271,10 @@ public class CustomPageAPI {
         return newSequenceNumber;
     }
 
-    public static void updateSequenceNumber(long id, double sequenceNumber, FacilioModule module, FacilioField orderField)throws Exception{
+    public static void updateSequenceNumber(long id, double sequenceNumber, FacilioModule module, FacilioField orderField) throws Exception {
 
         Map<String, Object> prop = new HashMap<>();
-        prop.put(orderField.getName(),sequenceNumber);
+        prop.put(orderField.getName(), sequenceNumber);
 
         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
                 .table(module.getTableName())

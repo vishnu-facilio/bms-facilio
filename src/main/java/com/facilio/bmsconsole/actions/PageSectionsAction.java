@@ -11,6 +11,8 @@ import com.facilio.modules.ModuleFactory;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.*;
+
 @Getter
 @Setter
 public class PageSectionsAction extends FacilioAction{
@@ -24,11 +26,14 @@ public class PageSectionsAction extends FacilioAction{
     public String addPageSection() throws Exception{
         FacilioChain chain = TransactionChainFactory.getAddPageSectionChain();
         FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.CustomPage.SECTION,section);
-        context.put(FacilioConstants.CustomPage.COLUMN_ID, columnId);
+        if(columnId<=0){
+            throw new IllegalArgumentException("Invalid column id for creating section");
+        }
+        Map<Long, List<PageSectionContext>>  columnSectionsMap = new HashMap<>();
+        columnSectionsMap.put(columnId, new ArrayList<>(Arrays.asList(section)));
+        context.put(FacilioConstants.CustomPage.COLUMN_SECTIONS_MAP, columnSectionsMap);
         chain.execute();
-        sectionId = (Long) context.getOrDefault(FacilioConstants.CustomPage.SECTION_ID, null);
-        setResult(FacilioConstants.CustomPage.SECTION_ID, sectionId);
+        setResult(FacilioConstants.CustomPage.SECTION_ID, columnSectionsMap.get(columnId).get(0).getId());
         return SUCCESS;
     }
 

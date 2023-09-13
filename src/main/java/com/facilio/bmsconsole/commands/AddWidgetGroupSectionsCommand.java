@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.PageSectionContext;
+import com.facilio.bmsconsole.context.PageSectionWidgetContext;
 import com.facilio.bmsconsole.context.WidgetGroupSectionContext;
 import com.facilio.bmsconsole.context.WidgetGroupWidgetContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
@@ -15,64 +17,70 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class    AddWidgetGroupSectionsCommand extends FacilioCommand {
+public class   AddWidgetGroupSectionsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        List<WidgetGroupSectionContext> sections = (List<WidgetGroupSectionContext>) context.get(FacilioConstants.WidgetGroup.WIDGETGROUP_SECTIONS);
-        Long widgetId = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
+        Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
+        Map<Long, List<WidgetGroupSectionContext>> widgetGroupSectionsMap = (Map<Long, List<WidgetGroupSectionContext>>) context.get(FacilioConstants.WidgetGroup.WIDGETGROUP_SECTIONS_MAP);
 
-        FacilioModule module = ModuleFactory.getWidgetGroupSectionsModule();
+        FacilioModule widgetGroupSectionModule = ModuleFactory.getWidgetGroupSectionsModule();
+        List<WidgetGroupSectionContext> sections = new ArrayList<>();
 
-        if(CollectionUtils.isNotEmpty(sections)) {
-            FacilioField widgetGroupIdField = FieldFactory.getNumberField("widgetId", "WIDGET_ID", module);
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getEqualsCondition(widgetGroupIdField, String.valueOf(widgetId)));
-            Map<Long, List<String>> existingSectionName = CustomPageAPI.getExistingNameListAsMap(module,criteria,widgetGroupIdField);
-            double sequenceNumber = 0;
+        if (MapUtils.isNotEmpty(widgetGroupSectionsMap)) {
+            long currentUser = AccountUtil.getCurrentUser().getId();
+            long currentTime = System.currentTimeMillis();
+            FacilioField widgetIdField = FieldFactory.getNumberField("widgetId", "WIDGET_ID", widgetGroupSectionModule);
 
-            for(WidgetGroupSectionContext section : sections){
-                if(section.getSequenceNumber() <= 0){
-                    section.setSequenceNumber(sequenceNumber+=10);
-                }
-                section.setWidgetId(widgetId);
-                section.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
-                section.setSysCreatedTime(System.currentTimeMillis());
+            Criteria fetchExistingNamesCriteria = new Criteria();
+            fetchExistingNamesCriteria.addAndCondition(CriteriaAPI.getEqualsCondition(widgetIdField, widgetGroupSectionsMap.keySet().stream().map(String::valueOf).collect(Collectors.joining(", "))));
+            Map<Long, List<String>> existingNamesMap = CustomPageAPI.getExistingNameListAsMap(widgetGroupSectionModule, fetchExistingNamesCriteria, widgetIdField);
 
-                Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
-                String name = StringUtils.isNotEmpty(section.getName()) ? section.getName() :
-                        StringUtils.isNotEmpty(section.getDisplayName())? section.getDisplayName(): "widgetGroupSection";;
-                name = name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
-                name = CustomPageAPI.generateUniqueName(name,existingSectionName.get(section.getWidgetId()),isSystem);
-                if((isSystem != null && isSystem) && StringUtils.isNotEmpty(section.getName()) && !section.getName().equalsIgnoreCase(name)) {
-                    throw new IllegalArgumentException("linkName already exists, given linkName for section is invalid");
-                }
-                section.setName(name);
+            for (Map.Entry<Long, List<WidgetGroupSectionContext>> entry : widgetGroupSectionsMap.entrySet()) {
+                long widgetId = entry.getKey();
+                List<WidgetGroupSectionContext> widgetGroupSections = entry.getValue();
 
-                if(existingSectionName.containsKey(section.getWidgetId())){
-                    existingSectionName.get(section.getWidgetId()).add(name);
-                }
-                else {
-                    List<String> nameslist = new ArrayList<>();
-                    nameslist.add(name);
-                    existingSectionName.put(section.getWidgetId(), nameslist);
+                if (CollectionUtils.isNotEmpty(widgetGroupSections)) {
+                    Criteria widgetIdCriteria = new Criteria();
+                    widgetIdCriteria.addAndCondition(CriteriaAPI.getEqualsCondition(widgetIdField, String.valueOf(widgetId)));
+                    double sequenceNumber = CustomPageAPI.getMaxSequenceNumber(widgetGroupSectionModule, widgetIdCriteria);
+
+                    for (WidgetGroupSectionContext widgetGroupSection : widgetGroupSections) {
+                        widgetGroupSection.setWidgetId(widgetId);
+
+                        String name = CustomPageAPI.getLinkNameFromObjectOrDefault(widgetGroupSection, "widgetGroupSection");
+                        name = CustomPageAPI.generateUniqueName(name, existingNamesMap.get(widgetId), isSystem);
+                        if ((isSystem != null && isSystem) && StringUtils.isNotEmpty(widgetGroupSection.getName()) && !widgetGroupSection.getName().equalsIgnoreCase(name)) {
+                            throw new IllegalArgumentException("linkName already exists, given linkName for widgetGroupSection is invalid");
+                        }
+                        CustomPageAPI.addNameToMap(name, widgetId, existingNamesMap);
+
+                        widgetGroupSection.setName(name);
+                        if (widgetGroupSection.getSequenceNumber() <= 0) {
+                            widgetGroupSection.setSequenceNumber(sequenceNumber += 10);
+                        }
+                        widgetGroupSection.setSysCreatedBy(currentUser);
+                        widgetGroupSection.setSysCreatedTime(currentTime);
+
+                        sections.add(widgetGroupSection);
+                    }
                 }
             }
-
-            sections = WidgetGroupUtil.insertWGSectionsToDB(sections);
-            List<Long> sectionIds = sections.stream()
-                    .map(WidgetGroupSectionContext::getId)
-                    .collect(Collectors.toList());
-            List<WidgetGroupWidgetContext> widgets = WidgetGroupUtil.setWGSectionIdAndGetWidgets(sections);
-            context.put(FacilioConstants.WidgetGroup.WIDGETGROUP_WIDGETS, widgets);
-            context.put(FacilioConstants.WidgetGroup.WIDGETGROUP_SECTION_IDS,sectionIds);
         }
+        WidgetGroupUtil.insertWidgetGroupSectionsToDB(sections);
+
+        Map<Long, List<WidgetGroupWidgetContext>> widgetGroupSectionWidgetsMap = new HashMap<>();
+        for (WidgetGroupSectionContext section : widgetGroupSectionsMap.values().stream().flatMap(List::stream).collect(Collectors.toList())) {
+            widgetGroupSectionWidgetsMap.put(section.getId(), section.getWidgets());
+        }
+
+        context.put(FacilioConstants.CustomPage.SECTION_WIDGETS_MAP, widgetGroupSectionWidgetsMap);
+
         return false;
     }
 }

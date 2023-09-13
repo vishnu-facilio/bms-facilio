@@ -8,9 +8,12 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
+@Log4j
 @Getter
 @Setter
 public class PageColumnsAction extends FacilioAction{
@@ -24,11 +27,23 @@ public class PageColumnsAction extends FacilioAction{
     public String addPageColumns() throws Exception{
         FacilioChain chain = TransactionChainFactory.getAddPageColumnsChain();
         FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.CustomPage.COLUMN_WIDTHS,widths);
-        context.put(FacilioConstants.CustomPage.TAB_ID, tabId);
+        List<PageColumnContext> columns = new ArrayList<>();
+        for(long width : widths) {
+            PageColumnContext column = new PageColumnContext();
+            column.setWidth(width);
+            columns.add(column);
+        }
+
+        Map<Long, List<PageColumnContext>> tabColumnsMap = new HashMap<>();
+        long tabId = (long) context.get(FacilioConstants.CustomPage.TAB_ID);
+        if (tabId <= 0) {
+            throw new IllegalArgumentException("Invalid tab id for creating column");
+        }
+        tabColumnsMap.put(tabId, columns);
+        context.put(FacilioConstants.CustomPage.TAB_COLUMNS_MAP,tabColumnsMap);
         chain.execute();
-        columnIds = (List<Long>) context.getOrDefault(FacilioConstants.CustomPage.COLUMN_IDS, null);
-        setResult(FacilioConstants.CustomPage.COLUMN_IDS, columnIds);
+
+        setResult(FacilioConstants.CustomPage.COLUMN_IDS, columns.stream().map(PageColumnContext::getId).collect(Collectors.toList()));
         return SUCCESS;
     }
 

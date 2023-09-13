@@ -2890,6 +2890,13 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getSummaryWidgetForRelationWidget() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSummaryWidgetCommand());
+		chain.addCommand(new ConstructSummaryWidgetForRelationCommand());
+		return chain;
+	}
+
 	public static FacilioChain getApprovalModules() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetApprovalModulesCommand());
@@ -3415,8 +3422,9 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getWidgetGroupChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetWidgetGroupConfigCommand());
-		chain.addCommand(new GetWidgetGroupSectionCommand());
-		chain.addCommand(new GetWidgetGroupWidgetsCommand());
+		chain.addCommand(new FetchWidgetGroupSectionCommand());
+		chain.addCommand(new FetchWidgetGroupWidgetsCommand());
+		chain.addCommand(new OrderWidgetGroupComponentsCommand());
 		return chain;
 	}
 	public static FacilioChain getPageForRecordChain(){

@@ -18,6 +18,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -263,5 +264,17 @@ public class WidgetAPI {
                 return null;
 
         }
+    }
+
+    public static void setConfigDetailsForWidgets(PagesContext.PageLayoutType layoutType, PageSectionWidgetContext widget) throws Exception {
+        FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == null, "widgetType can't be null");
+        WidgetConfigContext config = WidgetAPI.getWidgetConfiguration(widget.getWidgetType(), widget.getWidgetConfigId(), widget.getWidgetConfigName(), layoutType);
+        Objects.requireNonNull(config, "widget configuration does not exists for configId -- " + widget.getWidgetConfigId() + " or configName -- " + widget.getWidgetConfigName()
+                + " for layoutType -- " + layoutType);
+
+        widget.setWidgetConfigId(config.getId());
+        widget.setConfigType(config.getConfigType());
+        widget.setWidth(config.getMinWidth());
+        widget.setHeight(config.getMinHeight());
     }
 }

@@ -92,13 +92,12 @@ public class WidgetConfigChain {
             }
         }
 
-        transactionChain.addCommand(new AddPageSectionWidgetCommand());
+        transactionChain.addCommand(new AddPageWidgetCommand());
         addIfNotNull(transactionChain, saveCommand);
         transactionChain.addCommand(new UpdatePageWidgetPositionsCommand());
 
         return transactionChain;
     }
-
     public static FacilioChain addWidgetDetailChain(String widgetType) throws Exception {
         WidgetConfig widgetConfig = getWidgetConfig(widgetType);
 
@@ -118,7 +117,7 @@ public class WidgetConfigChain {
 
         return transactionChain;
     }
-    public static FacilioChain getUpdateChain(String widgetType) throws Exception{
+    public static FacilioChain getUpdateChain(WidgetWrapperType widgetWrapperType, String widgetType) throws Exception{
         WidgetConfig widgetConfig = getWidgetConfig(widgetType);
 
         Command updateCommand = null;
@@ -161,7 +160,7 @@ public class WidgetConfigChain {
 
         return transactionChain;
     }
-    public static FacilioChain fetchWidgetDetailChain(String widgetType, Boolean isFetchForSection) throws Exception {
+    public static FacilioChain fetchWidgetDetailChain(String widgetType) throws Exception {
         WidgetConfig widgetConfig = getWidgetConfig(widgetType);
 
         Command fetchCommand = null;
@@ -175,9 +174,6 @@ public class WidgetConfigChain {
         }
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
-        if(!isFetchForSection) {
-            nonTransactionChain.addCommand(new GetPageSectionWidgetCommand());
-        }
         addIfNotNull(nonTransactionChain, fetchCommand);
 
         return nonTransactionChain;

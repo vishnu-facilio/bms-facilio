@@ -12,11 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GetWidgetGroupSectionCommand extends FacilioCommand {
+public class FetchWidgetGroupSectionCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long widgetId = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
-        WidgetGroupContext widgetGroup = (WidgetGroupContext) context.get(FacilioConstants.WidgetGroup.WIDGETGROUP);
         List<Long> widgetGroupSectionIds = new ArrayList<>();
 
         if (widgetId != null) {
@@ -25,8 +24,8 @@ public class GetWidgetGroupSectionCommand extends FacilioCommand {
                 widgetGroupSectionIds = sections.stream()
                         .map(WidgetGroupSectionContext::getId)
                         .collect(Collectors.toList());
-                widgetGroup.setSections(sections);
             }
+            context.put(FacilioConstants.WidgetGroup.WIDGETGROUP_SECTIONS, sections);
             context.put(FacilioConstants.WidgetGroup.WIDGETGROUP_SECTION_IDS, widgetGroupSectionIds);
         }
         return false;

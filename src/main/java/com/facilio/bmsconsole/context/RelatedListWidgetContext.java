@@ -21,5 +21,11 @@ public class RelatedListWidgetContext extends PageSectionWidgetContext {
     private Long fieldId = -1L;
     private String fieldName;
     private Double sequenceNumber;
+    private RelatedListEnum relatedListEnum;
     private Boolean status = false;
+
+    public enum RelatedListEnum {
+        COMMON_REL_LIST,
+        CUSTOM_LINE_ITEM_REL_LIST
+    }
 }

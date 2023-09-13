@@ -10,8 +10,10 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 
+@Log4j
 public class CloneCustomPageCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {

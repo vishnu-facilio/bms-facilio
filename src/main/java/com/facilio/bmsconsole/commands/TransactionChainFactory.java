@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
@@ -69,10 +68,7 @@ import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
-import com.facilio.ns.command.AddNamespaceCommand;
-import com.facilio.ns.command.AddNamespaceFieldsCommand;
 import com.facilio.ns.command.DeleteRuleNamespacesCommand;
-import com.facilio.ns.command.SetParentIdForNamespaceCommand;
 import com.facilio.permission.commands.AddOrUpdatePermissionSetsForPeopleCommand;
 import com.facilio.permission.commands.DefaultPermissionSetCommand;
 import com.facilio.readingkpi.commands.ExecuteSchKpiOfACategoryCommand;
@@ -6983,9 +6979,14 @@ public class TransactionChainFactory {
 		c.addCommand(new AddPageSectionCommand());
 		return c;
 	}
-	public static FacilioChain getCreatePageSectionWidgetsChain(){
+	public static FacilioChain getAddPageSectionWidgetsChain(){
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new AddPageSectionWidgetCommand());
+		c.addCommand(new AddPageSectionWidgetsCommand());
+		return c;
+	}
+	public static FacilioChain getCreatePageWidgetChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddPageWidgetCommand());
 		return c;
 	}
 	public static FacilioChain getPatchCustomPageChain(){

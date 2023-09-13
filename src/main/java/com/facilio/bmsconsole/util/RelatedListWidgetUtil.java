@@ -21,6 +21,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -45,6 +46,20 @@ public class RelatedListWidgetUtil {
                     .fields(FieldFactory.getPageRelatedListWidgetsFields())
                     .addRecords(props);
             insertBuilder.save();
+        }
+    }
+
+    @SneakyThrows
+    public static void setRelatedListEnum(RelatedListWidgetContext relList){
+        if(relList != null) {
+            long subModuleId = relList.getSubModuleId();
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule subModule = modBean.getModule(subModuleId);
+            if (subModule.getTypeEnum() == FacilioModule.ModuleType.CUSTOM_LINE_ITEM) {
+                relList.setRelatedListEnum(RelatedListWidgetContext.RelatedListEnum.CUSTOM_LINE_ITEM_REL_LIST);
+            } else {
+                relList.setRelatedListEnum(RelatedListWidgetContext.RelatedListEnum.COMMON_REL_LIST);
+            }
         }
     }
 
@@ -106,11 +121,22 @@ public class RelatedListWidgetUtil {
     }
 
     public static JSONObject getSingleRelatedListForModule(FacilioModule module, String subModuleName, String fieldName) throws Exception {
-        List<RelatedListWidgetContext> relatedLists = fetchAllRelatedList(module, false, null, null);
-        if(CollectionUtils.isNotEmpty(relatedLists)) {
-            relatedLists.removeIf(relList -> !(subModuleName.equalsIgnoreCase(relList.getSubModuleName()) && fieldName.equalsIgnoreCase(relList.getFieldName())));
-            RelatedListWidgetContext relList = CollectionUtils.isNotEmpty(relatedLists) ? relatedLists.get(0) : null;
-            FieldUtil.getAsJSON(relList);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        RelatedListWidgetContext relList = new RelatedListWidgetContext();
+        FacilioModule subModule = modBean.getModule(subModuleName);
+        FacilioField field = modBean.getField(fieldName, subModuleName);
+
+        if((field instanceof LookupField && ((LookupField) field).getLookupModuleId() == module.getModuleId())) {
+            if (StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
+                relList.setDisplayName(((LookupField) field).getRelatedListDisplayName());
+            } else {
+                relList.setDisplayName(field.getDisplayName());
+            }
+            relList.setSubModuleName(subModule.getName());
+            relList.setSubModuleId(subModule.getModuleId());
+            relList.setFieldName(field.getName());
+            relList.setFieldId(field.getFieldId());
+            return FieldUtil.getAsJSON(relList);
         }
         return null;
     }
@@ -328,6 +354,7 @@ public class RelatedListWidgetUtil {
                             FacilioField field = allModBeanFieldsMap.get(f.getFieldId());
                             f.setFieldName(field.getName());
                             f.setField(field);
+                            setRelatedListEnum(f);
                             f.setModule(field.getModule());
                             if (StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
                                 f.setDisplayName(((LookupField) field).getRelatedListDisplayName());

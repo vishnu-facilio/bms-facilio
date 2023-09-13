@@ -17,6 +17,7 @@ public class RelationshipWidgetsAction extends FacilioAction {
 
     private String moduleName;
     private long pageWidgetId;
+    private long id;
     private WidgetWrapperType widgetWrapperType = WidgetWrapperType.DEFAULT;
     private BulkRelationshipWidget bulkRelationShipWidget;
 
@@ -58,6 +59,15 @@ public class RelationshipWidgetsAction extends FacilioAction {
         return SUCCESS;
     }
 
+    public String fetchSummaryWidgetForRelation() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getSummaryWidgetForRelationWidget();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, id);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        chain.execute();
+        setResult(FacilioConstants.CustomPage.WIDGET_DETAIL, context.get(FacilioConstants.CustomPage.WIDGET_DETAIL));
+        return SUCCESS;
+    }
     public String fetchBulkRelationshipWidget() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getBulkRelationShipWidgetChain();
         FacilioContext context = chain.getContext();

@@ -24,6 +24,7 @@ public class FetchPageSectionWidgetsCommand extends FacilioCommand {
         boolean isFetchForClone = (boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_FETCH_FOR_CLONE, false);
         Long appId = (Long) context.get(FacilioConstants.ContextNames.APP_ID);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        Boolean isBuilderRequest = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, false);
 
         if (CollectionUtils.isNotEmpty(sectionIds)) {
 
@@ -38,7 +39,7 @@ public class FetchPageSectionWidgetsCommand extends FacilioCommand {
 
                     if (CollectionUtils.isNotEmpty(pageSectionWidgetContextList)) {
                         for (PageSectionWidgetContext wid : pageSectionWidgetContextList) {
-                            if (!isFetchForClone && wid.getWidgetType().getFeatureId() != -1 && !hasLicenseEnabled(wid.getWidgetType().getFeatureId())) {
+                            if (!isFetchForClone && wid.getWidgetType().getFeatureId() != -1 && !CustomPageAPI.hasLicenseEnabled(wid.getWidgetType().getFeatureId())) {
                                 wid.setHasLicenseEnabled(false);
                             } else {
                                 if (wid.getWidgetType().getFeatureId() != -1) wid.setHasLicenseEnabled(true);
@@ -58,20 +59,11 @@ public class FetchPageSectionWidgetsCommand extends FacilioCommand {
                     }
                 }
 
-                WidgetConfigUtil.setWidgetDetailForWidgets(recordId, appId, moduleName, widgetIdMap, WidgetWrapperType.DEFAULT, isFetchForClone);
+                WidgetConfigUtil.setWidgetDetailForWidgets(recordId, appId, moduleName, widgetIdMap, WidgetWrapperType.DEFAULT, isFetchForClone, isBuilderRequest);
             }
             context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGETS, widgets);
         }
         return false;
     }
 
-    @SneakyThrows
-    private boolean hasLicenseEnabled(int featureId) {
-        AccountUtil.FeatureLicense license = AccountUtil.FeatureLicense.getFeatureLicense(featureId);
-        boolean isEnabled = true;
-        if (license != null) {
-            isEnabled = AccountUtil.isFeatureEnabled(license);
-        }
-        return isEnabled;
-    }
 }

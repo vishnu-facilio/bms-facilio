@@ -13,8 +13,8 @@ import java.util.Objects;
 public class GetPageSectionWidgetCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Long id = (Long) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET_ID);
-        PageSectionWidgetContext widget = (PageSectionWidgetContext) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET);
+        Long id = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
+        PageSectionWidgetContext widget = (PageSectionWidgetContext) context.get(FacilioConstants.CustomPage.WIDGET);
 
         if(widget == null) {
             FacilioUtil.throwIllegalArgumentException(id <= 0, "Invalid id to get widget");
@@ -23,7 +23,7 @@ public class GetPageSectionWidgetCommand extends FacilioCommand {
 
             Objects.requireNonNull(widget, "Widget does not exists");
 
-            context.put(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET, widget);
+            context.put(FacilioConstants.CustomPage.WIDGET, widget);
         }
         return false;
     }
