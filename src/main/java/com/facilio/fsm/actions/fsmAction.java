@@ -62,6 +62,7 @@ public class fsmAction extends V3Action {
     private LocationContext startLocation;
     private LocationContext endLocation;
     private long peopleId;
+    private Long timeSheetId;
 
     private JSONArray serviceTasks;
 
@@ -360,6 +361,15 @@ public class fsmAction extends V3Action {
     public String getMobileHomePage() throws Exception{
         PagesContext homePage = HomePageUtil.getMobileFSMHomePage();
         setData("home",homePage);
+        return SUCCESS;
+    }
+
+    public String fetchTaskList() throws Exception{
+        if(timeSheetId != null && timeSheetId > 0){
+            Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(ServiceTaskUtil.getTaskList(timeSheetId,getPage(),getPerPage()));
+            List<ModuleBaseWithCustomFields> serviceTasks = recordMap.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+            setData(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,FieldUtil.getAsMapList(serviceTasks,ServiceTaskContext.class));
+        }
         return SUCCESS;
     }
 

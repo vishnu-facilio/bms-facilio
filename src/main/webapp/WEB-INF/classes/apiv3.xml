@@ -2050,6 +2050,9 @@
         </action>
         <action name="tripDetails" class="com.facilio.fsm.actions.fsmAction" method="fetchTripDetails">
         </action>
+        <action name="fetchTaskList" class="com.facilio.fsm.actions.fsmAction" method="fetchTaskList">
+        </action>
+
     </package>
     <package name="employeeWorkschedule" namespace="/api/v3/employee"
              extends="v3Api">
