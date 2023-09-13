@@ -360,7 +360,7 @@ public class fsmAction extends V3Action {
 
     public String getMobileHomePage() throws Exception{
         PagesContext homePage = HomePageUtil.getMobileFSMHomePage();
-        setData("home",homePage);
+        setData("homePage",homePage);
         return SUCCESS;
     }
 
