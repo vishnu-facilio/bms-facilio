@@ -24,6 +24,7 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 
 	private boolean skipDefaultWidgetDeletion;
 	private Boolean locked;
+	private String description;
 
 	public Boolean getLocked() {
 		return locked;
@@ -32,6 +33,8 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	public void setLocked(Boolean locked) {
 		this.locked = locked;
 	}
+	public String getDescription() { return description; }
+	public void setDescription(String description) { this.description = description; }
 	private Long fileId;
 	public Long getFileId() {
 		return fileId;

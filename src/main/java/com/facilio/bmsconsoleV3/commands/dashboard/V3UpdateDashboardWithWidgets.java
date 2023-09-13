@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.dashboard;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -87,6 +88,7 @@ public class V3UpdateDashboardWithWidgets extends FacilioCommand
             updateWidgetChain.execute(context);
 
             List<Long> removedWidgets = new ArrayList<Long>();
+            List<Long> removedFilters = new ArrayList<Long>();
             for (int i = 0; i < existingWidgets.size(); i++) {
                 DashboardWidgetContext dashboardWidget = existingWidgets.get(i);
                 if(dashboard.isSkipDefaultWidgetDeletion() && existingWidgets.get(i).getDashboardId() != null)
@@ -96,6 +98,9 @@ public class V3UpdateDashboardWithWidgets extends FacilioCommand
                 if (!widgetMapping.containsKey(existingWidgets.get(i)
                         .getId())) {
                     removedWidgets.add(existingWidgets.get(i).getId());
+                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && existingWidgets.get(i).getWidgetType() == DashboardWidgetContext.WidgetType.FILTER){
+                        removedFilters.add(existingWidgets.get(i).getId());
+                    }
                 }
             }
             Boolean isFromReport = (Boolean) context.get(FacilioConstants.ContextNames.IS_FROM_REPORT);
@@ -103,6 +108,13 @@ public class V3UpdateDashboardWithWidgets extends FacilioCommand
                 GenericDeleteRecordBuilder genericDeleteRecordBuilder = new GenericDeleteRecordBuilder();
                 genericDeleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
                         .andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "ID", StringUtils.join(removedWidgets, ","), StringOperators.IS));
+
+                genericDeleteRecordBuilder.delete();
+            }
+            if(removedFilters.size() > 0){
+                GenericDeleteRecordBuilder genericDeleteRecordBuilder = new GenericDeleteRecordBuilder();
+                genericDeleteRecordBuilder.table(ModuleFactory.getDashboardUserFilterModule().getTableName())
+                        .andCondition(CriteriaAPI.getCondition(ModuleFactory.getDashboardUserFilterModule().getTableName()+".WIDGET_ID ", "widget_id", StringUtils.join(removedWidgets, ","), StringOperators.IS));
 
                 genericDeleteRecordBuilder.delete();
             }

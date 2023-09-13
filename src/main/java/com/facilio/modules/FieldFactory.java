@@ -5683,6 +5683,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
         fields.add(getField("locked","LOCKED",module,FieldType.BOOLEAN));
         fields.add(getField("fileId","FILE_ID",module,FieldType.NUMBER));
+        fields.add(getField("description","DESCRIPTION",module,FieldType.STRING));
         return fields;
     }
 
@@ -10989,6 +10990,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
         fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
         fields.add(getField("widget_id", "WIDGET_ID", module, FieldType.NUMBER));
+        fields.add(getField("commonFieldId", "COMMON_FIELD_ID", module, FieldType.NUMBER));
 
 
 		 

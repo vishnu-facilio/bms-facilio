@@ -1253,6 +1253,10 @@
         <action name="update"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="updateTab"/>
+        <action name="clone"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="clone_tab">
+        </action>
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="dashboardTabData">

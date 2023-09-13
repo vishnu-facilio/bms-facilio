@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.dashboard;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardTabContext;
@@ -90,9 +91,13 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
 
 
             List<Long> removedWidgets = new ArrayList<Long>();
+            List<Long> removedFilters = new ArrayList<Long>();
             for (int i = 0; i < existingWidgets.size(); i++) {
                 if (!widgetMapping.containsKey(existingWidgets.get(i).getId())) {
                     removedWidgets.add(existingWidgets.get(i).getId());
+                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && existingWidgets.get(i).getWidgetType() == DashboardWidgetContext.WidgetType.FILTER){
+                        removedFilters.add(existingWidgets.get(i).getId());
+                    }
                 }
             }
             Boolean isFromReport = (Boolean) context.get(FacilioConstants.ContextNames.IS_FROM_REPORT);
@@ -103,6 +108,13 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
 
                 genericDeleteRecordBuilder.delete();
             }
+            if(removedFilters.size() > 0){
+                GenericDeleteRecordBuilder genericDeleteRecordBuilder = new GenericDeleteRecordBuilder();
+                genericDeleteRecordBuilder.table(ModuleFactory.getDashboardUserFilterModule().getTableName())
+                        .andCondition(CriteriaAPI.getCondition(ModuleFactory.getDashboardUserFilterModule().getTableName()+".WIDGET_ID ", "widget_id", StringUtils.join(removedWidgets, ","), StringOperators.IS));
+
+                genericDeleteRecordBuilder.delete();
+            }
         }
 
         return false;
@@ -110,8 +122,10 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
 
     public void createOrUpdateWidgetInSection(Context context, DashboardTabContext dashboardTabContext, DashboardWidgetContext widget, JSONObject widgetMapping)throws Exception
     {
+        Long parentId = null;
         List<DashboardWidgetContext> update_widget_list = new ArrayList<DashboardWidgetContext>();
         List<DashboardWidgetContext> widget_list = ((WidgetSectionContext) widget).getWidgets_in_section();
+        V3DashboardAPIHandler.checkAndGenerateWidgetLinkName(widget_list, null, dashboardTabContext.getId());
         for(DashboardWidgetContext dashboard_widget: widget_list)
         {
             if( dashboard_widget.getId() <=0) {
@@ -120,7 +134,16 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
                 dashboard_widget.setDashboardTabId(dashboardTabContext.getId());
                 context.put(FacilioConstants.ContextNames.WIDGET, dashboard_widget);
                 context.put(FacilioConstants.ContextNames.WIDGET_TYPE, dashboard_widget.getWidgetType());
+                if(dashboard_widget.getChild()) {
+                    context.put(FacilioConstants.ContextNames.PARENT_ID,parentId);
+                }
+                else {
+                    context.put(FacilioConstants.ContextNames.PARENT_ID,null);
+                }
                 addWidgetChain.execute(context);
+                if(dashboard_widget.getCombo()){
+                    parentId = dashboard_widget.getId();
+                }
             }
             else
             {

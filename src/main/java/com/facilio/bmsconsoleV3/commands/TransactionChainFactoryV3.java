@@ -2317,7 +2317,11 @@ public class TransactionChainFactoryV3 {
         chain.addCommand(new UpdateServiceVendorPriceCommand());
         return chain;
     }
-
+    public static FacilioChain getCloneDashboardTabChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CloneDashboardTabCommand());
+        return c;
+    }
     public static FacilioChain getAddLicensingInfoChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddLicensingInfoCommand());
@@ -2350,7 +2354,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CloneDashboardCommand());
         return c;
     }
-
+    public static FacilioChain getNewCloneDashboardChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CloneDashboardNewCommand());
+        return c;
+    }
     public static FacilioChain getDashboardListChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetDashboardFolderCommand());

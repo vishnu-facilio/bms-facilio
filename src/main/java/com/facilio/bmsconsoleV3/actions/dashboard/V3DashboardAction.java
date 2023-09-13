@@ -67,7 +67,13 @@ public class V3DashboardAction extends V3Action {
                 if(cloned_json.get("dashboard_link_name") == null || cloned_json.get("dashboard_link_name").equals("")){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Dashboard Link Name can not be empty");
                 }
-                FacilioChain chain = TransactionChainFactoryV3.getCloneDashboardChain();
+                FacilioChain chain = null;
+                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
+                    chain = TransactionChainFactoryV3.getNewCloneDashboardChain();
+                }
+                else{
+                    chain = TransactionChainFactoryV3.getCloneDashboardChain();
+                }
                 FacilioContext context = chain.getContext();
                 updateContextToClone(context, cloned_json);
                 chain.execute();
@@ -92,7 +98,48 @@ public class V3DashboardAction extends V3Action {
         }
         return V3Action.SUCCESS;
     }
-
+    public String clone_tab() throws Exception
+    {
+        try{
+            JSONObject cloned_json = this.getData();
+            if(cloned_json != null)
+            {
+                if(cloned_json.get("cloned_dashboard_name") == null || "".equals(cloned_json.get("cloned_dashboard_name"))){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Dashboard Name can not be empty");
+                }
+                if(cloned_json.get("tab_id") == null || (Long) cloned_json.get("tab_id") < 0){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tab id can not be empty");
+                }
+                FacilioChain chain = TransactionChainFactoryV3.getCloneDashboardTabChain();
+                FacilioContext context = chain.getContext();
+                updateTabContextToClone(context, cloned_json);
+                chain.execute();
+                DashboardContext dashboard = (DashboardContext)  context.get("cloned_dashboard");
+                if(dashboard != null)
+                {
+                    setData("link_name", dashboard.getLinkName());
+                    setData("dashboard_name", dashboard.getDashboardName());
+                    setData("dashboard_id", dashboard.getId());
+                }
+                DashboardTabContext dashboardTab = (DashboardTabContext) context.get("cloned_tab");
+                if(dashboardTab != null)
+                {
+                    setData("dashboard_id", dashboardTab.getDashboardId());
+                    setData("tab_name", dashboardTab.getName());
+                    setData("tab_id", dashboardTab.getId());
+                }
+            }
+        }
+        catch (RESTException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while cloning tab");
+        }
+        return V3Action.SUCCESS;
+    }
     private void updateContextToClone(Context context, JSONObject cloned_json) throws Exception{
         context.put("dashboard_link_name", cloned_json.get("dashboard_link_name"));
         context.put("cloned_dashboard_name", cloned_json.get("cloned_dashboard_name"));
@@ -101,6 +148,20 @@ public class V3DashboardAction extends V3Action {
         if(cloned_json.get("folder_id") != null && (Long) cloned_json.get("folder_id") >0 ){
             context.put("folder_id", (Long) cloned_json.get("folder_id"));
         }
+        context.put("isFilterCloneNeeded",Boolean.TRUE);
+    }
+    private void updateTabContextToClone(Context context, JSONObject cloned_json) throws Exception{
+        context.put("tab_id", cloned_json.get("tab_id"));
+        context.put("cloned_dashboard_name", cloned_json.get("cloned_dashboard_name"));
+        context.put("target_app_id", cloned_json.get("target_app_id"));
+        context.put("cloned_app_id", cloned_json.get("cloned_app_id"));
+        if(cloned_json.get("folder_id") != null && (Long) cloned_json.get("folder_id") >0 ){
+            context.put("folder_id", (Long) cloned_json.get("folder_id"));
+        }
+        if(cloned_json.get("dashboard_id") != null && (Long)cloned_json.get("dashboard_id") > 0){
+            context.put("dashboard_id", (Long)cloned_json.get("dashboard_id"));
+        }
+        context.put("clone_dashboard",cloned_json.get("clone_dashboard") != null ? cloned_json.get("clone_dashboard") : false);
         context.put("isFilterCloneNeeded",Boolean.TRUE);
     }
 

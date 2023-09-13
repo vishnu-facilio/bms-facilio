@@ -258,6 +258,7 @@ public Map<Long, FacilioField> getCascadingFilters() {
 	ComponentType componentType;
 	FilterDisplayType filterDisplayType;
 	long fieldId=-1;
+	long commonFieldId=-1;
 	
 	Boolean isOthersOptionEnabled;
 	String label;
@@ -340,6 +341,9 @@ public Map<Long, FacilioField> getCascadingFilters() {
 
 	public long getFieldId() {
 		return this.fieldId;
+	}
+	public long getCommonFieldId() {
+		return this.commonFieldId;
 	}
 
 	public int getFilterOrder() {
@@ -452,7 +456,9 @@ public Map<Long, FacilioField> getCascadingFilters() {
 	public void setFieldId(long fieldId) {
 		this.fieldId = fieldId;
 	}
-
+	public void setCommonFieldId(long commonFieldId) {
+		this.commonFieldId = commonFieldId;
+	}
 
 	
 

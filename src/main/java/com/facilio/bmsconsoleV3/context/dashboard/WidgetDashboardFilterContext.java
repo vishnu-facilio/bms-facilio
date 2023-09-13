@@ -7,6 +7,7 @@ import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -177,6 +178,7 @@ public class WidgetDashboardFilterContext extends DashboardWidgetContext
     public String label;
     public FacilioField field;
     public Long fieldId=-1l;
+    public long commonFieldId=-1;
     public FacilioModule module;
     public Long dashboardFilterId;
     public Integer filterOrder;
@@ -224,6 +226,13 @@ public class WidgetDashboardFilterContext extends DashboardWidgetContext
             return FieldUtil.getAsJSON(this.filterPojo).toJSONString();
         } else {
             return null;
+        }
+    }
+    public void setDashboardUserFilterJson(String dashboardUserFilterJson) throws Exception {
+        if (dashboardUserFilterJson != null) {
+            JSONObject jsonObject= FacilioUtil.parseJson(dashboardUserFilterJson);
+            this.filterPojo = FieldUtil.getAsBeanFromJson(jsonObject,
+                    WidgetDashboardFilter.class);
         }
     }
     public void setDefaultValues(String[] defaultValues) {

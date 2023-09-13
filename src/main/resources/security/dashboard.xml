@@ -9,6 +9,17 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v3/dashboard/tab/clone">
+        <requestbody type="object">
+            <property name="data" type="object">
+                <property name="tab_id" type="number"></property>
+                <property name="cloned_dashboard_name" type="string" mandatory="true"></property>
+                <property name="folder_id" type="number" mandatory="true"></property>
+                <property name="dashboard_id" type="number"></property>
+                <property name="clone_dashboard" type="boolean"></property>
+            </property>
+        </requestbody>
+    </request>
     <request path="/api/v3/dashboard/rule/execute" method="POST">
         <requestbody type="object"></requestbody>
     </request>
