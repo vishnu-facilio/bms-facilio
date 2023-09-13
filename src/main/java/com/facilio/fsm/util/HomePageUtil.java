@@ -58,7 +58,7 @@ public class HomePageUtil {
                 PageSectionWidgetContext peopleSummaryWidget = new PageSectionWidgetContext("peopleStatusWidget","Summary", PageWidget.WidgetType.PEOPLE_STATUS_WIDGET,10D,0,0,null,summaryWidgetParams);
                 peopleSummaryWidget.setHeight(9L);
                 peopleSummaryWidget.setWidth(12L);
-                peopleSummaryWidget.setConfigType(WidgetConfigContext.ConfigType.FIXED);
+                peopleSummaryWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
                 person.setWidgets(new ArrayList<>(Arrays.asList(peopleSummaryWidget)));
                 peopleSummaryWidget.setParentContext(person);
             }
@@ -75,7 +75,7 @@ public class HomePageUtil {
                 PageSectionWidgetContext ongoingWorkWidget = new PageSectionWidgetContext("ongoingTimeSheetWidget","Ongoing Work", PageWidget.WidgetType.ONGOING_TIMESHEET_WIDGET,CollectionUtils.isNotEmpty(Ongoing.getWidgets()) ? ((Ongoing.getWidgets().size()+1) * 10D ) : 10,0,0,null,workWidgetParams);
                 ongoingWorkWidget.setHeight(6L);
                 ongoingWorkWidget.setWidth(12L);
-                ongoingWorkWidget.setConfigType(WidgetConfigContext.ConfigType.FIXED);
+                ongoingWorkWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
                 Ongoing.setWidgets(new ArrayList<>(Arrays.asList(ongoingWorkWidget)));
                 ongoingWorkWidget.setParentContext(Ongoing);
             }
@@ -87,7 +87,7 @@ public class HomePageUtil {
                 PageSectionWidgetContext ongoingTripWidget = new PageSectionWidgetContext("ongoingTripWidget","Ongoing Trip", PageWidget.WidgetType.ONGOING_TRIP_WIDGET,CollectionUtils.isNotEmpty(Ongoing.getWidgets()) ? ((Ongoing.getWidgets().size()+1) * 10D ) : 10,0,0,null,tripWidgetParams);
                 ongoingTripWidget.setHeight(6L);
                 ongoingTripWidget.setWidth(12L);
-                ongoingTripWidget.setConfigType(WidgetConfigContext.ConfigType.FIXED);
+                ongoingTripWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
                 if(Ongoing.getWidgets() == null) {
                     Ongoing.setWidgets(new ArrayList<>(Arrays.asList(ongoingTripWidget)));
                 }
@@ -124,7 +124,7 @@ public class HomePageUtil {
                 PageSectionWidgetContext overdueWidget = new PageSectionWidgetContext("overdueServiceAppointmentsWidget","Overdue Appointments", PageWidget.WidgetType.OVERDUE_SERVICE_APPOINTMENTS_WIDGET,CollectionUtils.isNotEmpty(appointments.getWidgets()) ? ((appointments.getWidgets().size()+1) * 10D ) : 10,0,0,null,overdueWidgetParams);
                 overdueWidget.setHeight(21L);
                 overdueWidget.setWidth(12L);
-                overdueWidget.setConfigType(WidgetConfigContext.ConfigType.FIXED);
+                overdueWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
                 if(appointments.getWidgets() == null) {
                     appointments.setWidgets(new ArrayList<>(Arrays.asList(overdueWidget)));
                 }
@@ -154,7 +154,7 @@ public class HomePageUtil {
                 PageSectionWidgetContext todayWidget = new PageSectionWidgetContext("todayServiceAppointmentsWidget","Today Appointments", PageWidget.WidgetType.TODAY_SERVICE_APPOINTMENTS_WIDGET,CollectionUtils.isNotEmpty(appointments.getWidgets()) ? ((appointments.getWidgets().size()+1) * 10D ) : 10,0,0,null,todayWidgetParams);
                 todayWidget.setHeight(21L);
                 todayWidget.setWidth(12L);
-                todayWidget.setConfigType(WidgetConfigContext.ConfigType.FIXED);
+                todayWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
                 if(appointments.getWidgets() == null) {
                     appointments.setWidgets(new ArrayList<>(Arrays.asList(todayWidget)));
                 }
@@ -179,7 +179,7 @@ public class HomePageUtil {
                 PageSectionWidgetContext openWidget = new PageSectionWidgetContext("openServiceAppointmentsWidget","Open Appointments", PageWidget.WidgetType.OPEN_SERVICE_APPOINTMENTS_WIDGET,CollectionUtils.isNotEmpty(appointments.getWidgets()) ? ((appointments.getWidgets().size()+1) * 10D ) : 10,0,0,null,openWidgetParams);
                 openWidget.setHeight(21L);
                 openWidget.setWidth(12L);
-                openWidget.setConfigType(WidgetConfigContext.ConfigType.FIXED);
+                openWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
                 if(appointments.getWidgets() == null) {
                     appointments.setWidgets(new ArrayList<>(Arrays.asList(openWidget)));
                 }

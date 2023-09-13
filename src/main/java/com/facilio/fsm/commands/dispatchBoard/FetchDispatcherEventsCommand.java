@@ -71,10 +71,19 @@ public class FetchDispatcherEventsCommand extends FacilioCommand {
                     .beanClass(TimeOffContext.class)
                     .andCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.PEOPLE), StringUtils.join(peopleIds, ","), NumberOperators.EQUALS))
                     .fetchSupplement((LookupField) timeOffFieldMap.get("type"));
-            Criteria timeCrit = new Criteria();
-            timeCrit.addAndCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.START_TIME), startTime+","+endTime, DateOperators.BETWEEN));
-            timeCrit.addOrCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.END_TIME), startTime+","+endTime, DateOperators.BETWEEN));
-            timeOffBuilder.andCriteria(timeCrit);
+            Criteria timeCriteria = new Criteria();
+
+            Criteria eventsStartEndWithinRange = new Criteria();
+            eventsStartEndWithinRange.addAndCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.START_TIME), startTime+","+endTime, DateOperators.BETWEEN));
+            eventsStartEndWithinRange.addOrCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.END_TIME), startTime+","+endTime, DateOperators.BETWEEN));
+            timeCriteria.andCriteria(eventsStartEndWithinRange);
+
+            Criteria eventsStartEndBeyondTimeRange = new Criteria();
+            eventsStartEndBeyondTimeRange.addAndCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.START_TIME), Collections.singleton(startTime), DateOperators.IS_BEFORE));
+            eventsStartEndBeyondTimeRange.addAndCondition(CriteriaAPI.getCondition(timeOffFieldMap.get(FacilioConstants.ContextNames.END_TIME), Collections.singleton(endTime), DateOperators.IS_AFTER));
+            timeCriteria.orCriteria(eventsStartEndBeyondTimeRange);
+
+            timeOffBuilder.andCriteria(timeCriteria);
             timeOffData = timeOffBuilder.get();
             if(CollectionUtils.isNotEmpty(timeOffData)){
                 timeOffMap = timeOffData.stream().collect(Collectors.groupingBy(data -> data.getPeople().getId()));
@@ -90,10 +99,19 @@ public class FetchDispatcherEventsCommand extends FacilioCommand {
                     .beanClass(ServiceAppointmentContext.class)
                     .andCondition(CriteriaAPI.getCondition(saFieldMap.get("fieldAgent"), StringUtils.join(peopleIds, ","), NumberOperators.EQUALS))
                     .fetchSupplements(saSupplements);
-            Criteria saTimeCrit = new Criteria();
-            saTimeCrit.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get("scheduledStartTime"), startTime+","+endTime, DateOperators.BETWEEN));
-            saTimeCrit.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get("scheduledEndTime"), startTime+","+endTime, DateOperators.BETWEEN));
-            serviceAppointmentBuilder.andCriteria(saTimeCrit);
+            Criteria saTimeCriteria = new Criteria();
+
+            Criteria saEventsStartEndWithinRange = new Criteria();
+            saEventsStartEndWithinRange.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), startTime+","+endTime, DateOperators.BETWEEN));
+            saEventsStartEndWithinRange.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), startTime+","+endTime, DateOperators.BETWEEN));
+            saTimeCriteria.andCriteria(saEventsStartEndWithinRange);
+
+            Criteria saEventsStartEndBeyondTimeRange = new Criteria();
+            saEventsStartEndBeyondTimeRange.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), Collections.singleton(startTime), DateOperators.IS_BEFORE));
+            saEventsStartEndBeyondTimeRange.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), Collections.singleton(endTime), DateOperators.IS_AFTER));
+            saTimeCriteria.orCriteria(saEventsStartEndBeyondTimeRange);
+
+            serviceAppointmentBuilder.andCriteria(saTimeCriteria);
             saData = serviceAppointmentBuilder.get();
             if(CollectionUtils.isNotEmpty(saData)){
                 saMap = saData.stream().collect(Collectors.groupingBy(data -> data.getFieldAgent().getId()));
