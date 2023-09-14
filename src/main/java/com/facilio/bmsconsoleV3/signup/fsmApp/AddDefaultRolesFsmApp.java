@@ -132,7 +132,7 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
             storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("tooltypes"),storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.TOOL_TYPES)));
             storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("transferrequests"),storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.TRANSFER_REQUEST)));
 
-            addDefaultTabPermissionForRoles(assistantFieldAgent, storeRoomManagerPermissions, Collections.singletonList(roleApp));
+            addDefaultTabPermissionForRoles(storeRoomManager, storeRoomManagerPermissions, Collections.singletonList(roleApp));
 
         }
 

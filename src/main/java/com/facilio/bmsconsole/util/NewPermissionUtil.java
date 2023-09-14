@@ -1095,6 +1095,20 @@ public class NewPermissionUtil {
                 }
                 return maps;
             }
+            case 84: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : myAttendanceTabType.keySet()) {
+                    maps.put(key, Long.valueOf(myAttendanceTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 85: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : attendanceTabType.keySet()) {
+                    maps.put(key, Long.valueOf(attendanceTabType.get(key).toString()));
+                }
+                return maps;
+            }
             case 87: {
                 Map<String, Long> maps = new HashMap<>();
                 for (String key : newKpiTabType.keySet()) {
