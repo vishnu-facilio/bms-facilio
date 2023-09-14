@@ -2,6 +2,7 @@ package com.facilio.fsm.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -19,6 +20,7 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fsm.activity.ServiceAppointmentActivityType;
 import com.facilio.fsm.context.*;
 import com.facilio.fsm.exception.FSMErrorCode;
 import com.facilio.fsm.exception.FSMException;
@@ -108,7 +110,12 @@ public class ServiceAppointmentUtil {
         return null;
     }
 
-    public static void dispatchServiceAppointment(long appointmentId,long peopleId,Long scheduledStartTime, Long scheduledEndTime, Boolean skipValidation) throws Exception {
+    public static void dispatchServiceAppointment(Context dispatchContext) throws Exception {
+        Long appointmentId = (Long) dispatchContext.get(FacilioConstants.ContextNames.RECORD_ID);
+        Long peopleId = (Long) dispatchContext.get(FacilioConstants.ServiceAppointment.FIELD_AGENT_ID);
+        Long scheduledStartTime = (Long) dispatchContext.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME);
+        Long scheduledEndTime = (Long) dispatchContext.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME);
+        Boolean skipValidation = (Boolean) dispatchContext.get(FacilioConstants.ServiceAppointment.SKIP_VALIDATION);
         if(appointmentId > 0 && peopleId > 0) {
             String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
             ModuleBean moduleBean = Constants.getModBean();
@@ -149,8 +156,9 @@ public class ServiceAppointmentUtil {
                     }
                     updateSARecordList.add(updateSAProps);
                     V3Util.processAndUpdateBulkRecords(serviceAppointment, oldSARecords, updateSARecordList, bodyParams, null, null, null, null, null, null, null, true,false);
-
-
+                    JSONObject info = new JSONObject();
+                    info.put("fieldAgent",fieldAgent.getName());
+                    CommonCommandUtil.addActivityToContext(existingAppointment.getId(), -1, ServiceAppointmentActivityType.DISPATCH, info, (FacilioContext) dispatchContext);
                     FacilioField taskField = Constants.getModBean().getField("right", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
 
                     GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

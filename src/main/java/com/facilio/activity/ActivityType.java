@@ -3,6 +3,7 @@ package com.facilio.activity;
 import com.facilio.bmsconsole.activity.*;
 import com.facilio.bmsconsoleV3.commands.requestForQuotation.RequestForQuotationActivityType;
 import com.facilio.collections.UniqueMap;
+import com.facilio.fsm.activity.ServiceAppointmentActivityType;
 import com.facilio.fsm.activity.ServiceOrderActivityType;
 import org.json.simple.JSONObject;
 
@@ -75,7 +76,10 @@ public interface ActivityType {
 		for (ActivityType type: ServiceOrderActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Last number = 139
+		for (ActivityType type: ServiceAppointmentActivityType.values()) {
+			activityMap.put(type.getValue(), type);
+		}
+		// Last number = 149
 
 		return activityMap;
 	}

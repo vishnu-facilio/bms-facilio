@@ -1,6 +1,7 @@
 package com.facilio.fsm.commands;
 
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.ItemTransactionRemainingQuantityRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.PurchasedItemsQuantityRollUpCommandV3;
@@ -130,7 +131,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain getServiceAppointmentAfterUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new RollUpServiceTaskCommand());
-        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
+//        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         return c;
     }
 
@@ -151,8 +152,8 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new RollUpServiceTaskCommand());
         c.addCommand(new ScheduleServiceOrderCommand());
-        c.addCommand(new ConstructAddCustomActivityCommandV3());
         c.addCommand(new AddServiceOrderActivityForAddServiceAppointmentAction_ServiceAppointment_Command());
+        c.addCommand(new ConstructAddCustomActivityCommandV3());
         return c;
     }
 
@@ -265,36 +266,42 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain startSAChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new StartSACommand());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY));
         return c;
     }
 
     public static FacilioChain completeSAChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new CompleteSACommand());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY));
         return c;
     }
 
     public static FacilioChain cancelSAChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new CancelSACommand());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY));
         return c;
     }
 
     public static FacilioChain startTripChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new StartTripCommand());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY));
         return c;
     }
 
     public static FacilioChain endTripChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new EndTripCommand());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY));
         return c;
     }
 
     public static FacilioChain dispatchChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new DispatchCommand());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY));
         return c;
     }
 
