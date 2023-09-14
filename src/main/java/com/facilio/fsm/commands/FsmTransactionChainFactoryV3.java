@@ -213,6 +213,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain getTimeSheetAfterCreateChain() {
         FacilioChain c= getDefaultChain();
         c.addCommand(new UpdateSAandTasksOnTimeSheetCreateCommand());
+        c.addCommand(new AddTimeSheetServiceAppointmentActivity());
         c.addCommand(new ConstructAddCustomActivityCommandV3());
         return c;
     }

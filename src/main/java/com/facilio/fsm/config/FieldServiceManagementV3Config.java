@@ -11,6 +11,8 @@ import com.facilio.fsm.commands.*;
 import com.facilio.fsm.commands.actuals.*;
 import com.facilio.fsm.commands.people.*;
 import com.facilio.fsm.commands.plans.*;
+import com.facilio.fsm.commands.serviceAppointment.AddTimeSheetServiceAppointmentActivity;
+import com.facilio.fsm.commands.serviceAppointment.AddTripServiceAppointmentActivity;
 import com.facilio.fsm.commands.serviceAppointment.CheckRecordLockCommand;
 import com.facilio.fsm.commands.serviceAppointment.FetchServiceAppointmentSupplementsCommand;
 import com.facilio.fsm.commands.serviceOrders.AddOrUpdateServiceOrderCostCommand;
@@ -333,6 +335,7 @@ public class FieldServiceManagementV3Config {
                 .pickList()
                 .delete()
                 .beforeDelete(new CheckRecordLockForTimeSheetCommand())
+                .afterDelete(new AddTimeSheetServiceAppointmentActivity())
                 .build();
     }
     @Module(FacilioConstants.Trip.TRIP)
@@ -351,6 +354,7 @@ public class FieldServiceManagementV3Config {
                 .summary()
                 .beforeFetch(new FetchTripSupplementsCommand())
                 .delete()
+                .afterDelete(new AddTripServiceAppointmentActivity())
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package com.facilio.fsm.commands.serviceAppointment;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
@@ -20,6 +21,7 @@ public class StartTripCommand extends FacilioCommand {
         TripContext trip = ServiceAppointmentUtil.startTripForAppointment(recordId,startLocation);
         context.put(FacilioConstants.ContextNames.DATA,trip);
         JSONObject info = new JSONObject();
+        info.put("doneBy", AccountUtil.getCurrentUser().getName());
         info.put("trip",trip.getCode());
         CommonCommandUtil.addActivityToContext(recordId, -1, ServiceAppointmentActivityType.START_TRIP, info, (FacilioContext) context);
         return false;

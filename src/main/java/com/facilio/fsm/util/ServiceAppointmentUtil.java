@@ -1,5 +1,6 @@
 package com.facilio.fsm.util;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -158,6 +159,7 @@ public class ServiceAppointmentUtil {
                     V3Util.processAndUpdateBulkRecords(serviceAppointment, oldSARecords, updateSARecordList, bodyParams, null, null, null, null, null, null, null, true,false);
                     JSONObject info = new JSONObject();
                     info.put("fieldAgent",fieldAgent.getName());
+                    info.put("doneBy", AccountUtil.getCurrentUser().getName());
                     CommonCommandUtil.addActivityToContext(existingAppointment.getId(), -1, ServiceAppointmentActivityType.DISPATCH, info, (FacilioContext) dispatchContext);
                     FacilioField taskField = Constants.getModBean().getField("right", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
 
