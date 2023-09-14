@@ -2226,6 +2226,7 @@ public class FacilioConstants {
 		public static final String DEVICE_TYPE = "deviceType";
 
 		public static final String ATTENDANCE = "attendance";
+		public static final String MY_ATTENDANCE = "myAttendance";
 		public static final String ATTENDANCE_TRANSACTIONS = "attendanceTransaction";
 		public static final String BREAK = "break";
 		public static final String BREAK_LIST = "break_list";
@@ -4771,5 +4772,8 @@ public class FacilioConstants {
 		public static final String LOW = "low";
 		public static final String MEDIUM = "medium";
 		public static final String HIGH = "high";
+	}
+	public static class Portfolio{
+		public static final String PORTFOLIO = "portfolio";
 	}
 }
