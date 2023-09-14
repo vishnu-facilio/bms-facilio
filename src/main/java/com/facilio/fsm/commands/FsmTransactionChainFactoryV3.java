@@ -36,6 +36,7 @@ public class FsmTransactionChainFactoryV3 {
 
     public static FacilioChain getSOBeforeSaveCreateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateServiceOrderRecordCreationCommandV3());
         c.addCommand(new SetTaskStatusCommandV3());
         c.addCommand(new SOStatusChangeCommandV3());
         c.addCommand(new SOAddOnCommandV3());
@@ -114,6 +115,7 @@ public class FsmTransactionChainFactoryV3 {
 
     public static FacilioChain getSOBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateServiceOrderRecordCreationCommandV3());
         c.addCommand(new VerifySOStatusUpdate());
         c.addCommand(new SetTaskStatusCommandV3());
         return c;

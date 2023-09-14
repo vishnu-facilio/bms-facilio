@@ -503,10 +503,6 @@ enums:
   - name: ServiceOrderRequestResponseStatus
     enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderRequestResponseStatus
 
-  - name: ServiceOrderCategory
-    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderCategory
-
-
   - name: ServiceOrderSourceType
     enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderSourceType
 
@@ -522,8 +518,8 @@ enums:
   - name: AppointmentDueStatus
     enumClassName: com.facilio.fsm.context.ServiceAppointmentContext$DueStatus
 
-  - name: Category
-    enumClassName: com.facilio.fsm.context.ServiceAppointmentContext$Category
+  - name: ServiceAppointmentCategory
+    enumClassName: com.facilio.fsm.context.ServiceAppointmentContext$ServiceAppointmentCategory
 
   - name: InventoryCostType
     enumClassName: com.facilio.fsm.context.ServiceOrderCostContext$InventoryCostType

@@ -40,7 +40,7 @@ public class ServiceAppointmentContext extends V3Context {
     private Long responseDueDuration;
     private Long resolutionDueDuration;
     private V3ClientContext client;
-    private SpaceContext space;
+    private V3SpaceContext space;
     private V3AssetContext asset;
     private VendorContext vendor;
     private V3TenantContext tenant;
@@ -157,7 +157,7 @@ public class ServiceAppointmentContext extends V3Context {
         }
     }
 
-    private Category category;
+    private ServiceAppointmentCategory category;
     public int getCategory() {
         if (category != null) {
             return category.getIndex();
@@ -165,16 +165,16 @@ public class ServiceAppointmentContext extends V3Context {
         return -1;
     }
     public void setCategory(int category) {
-        this.category = Category.valueOf(category);
+        this.category = ServiceAppointmentCategory.valueOf(category);
     }
-    public Category getCategoryEnum() {
+    public ServiceAppointmentCategory getCategoryEnum() {
         return category;
     }
-    public void setCategory(Category category) {
+    public void setCategory(ServiceAppointmentCategory category) {
         this.category = category;
     }
 
-    public static enum Category implements FacilioIntEnum {
+    public static enum ServiceAppointmentCategory implements FacilioIntEnum {
         INSTALLATION_AND_SETUP("Installation and Setup"),
         MAINTAIN_AND_REPAIRS ("Maintenance and Repairs"),
         FIXTURE_CHANGES_AND_RESETS("Fixture Changes and Resets"),
@@ -186,7 +186,7 @@ public class ServiceAppointmentContext extends V3Context {
 
         String name;
 
-        Category(String name) {
+        ServiceAppointmentCategory(String name) {
             this.name = name;
         }
 
@@ -200,7 +200,7 @@ public class ServiceAppointmentContext extends V3Context {
             return this.name;
         }
 
-        public static Category valueOf(int value) {
+        public static ServiceAppointmentCategory valueOf(int value) {
             if (value > 0 && value <= values().length) {
                 return values()[value - 1];
             }

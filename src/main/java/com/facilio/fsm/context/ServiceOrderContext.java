@@ -24,9 +24,9 @@ public class ServiceOrderContext extends V3Context {
     private V3TenantContext tenant;
     private ServiceOrderMaintenanceType maintenanceType;
     private List<ServiceTaskContext> serviceTask;
-    private ServiceOrderCategory category;
+    private ServiceAppointmentContext.ServiceAppointmentCategory category;
     private PriorityContext priority;
-    private SpaceContext space;
+    private V3SpaceContext space;
     private V3AssetContext asset;
     private ServiceOrderTicketStatusContext status;
     private ServiceOrderRequestResponseStatus requestDueStatus;
@@ -178,12 +178,12 @@ public class ServiceOrderContext extends V3Context {
         return -1;
     }
     public void setCategory(int category) {
-        this.category = ServiceOrderCategory.valueOf(category);
+        this.category = ServiceAppointmentContext.ServiceAppointmentCategory.valueOf(category);
     }
-    public ServiceOrderCategory getServiceOrderCategoryEnum() {
+    public ServiceAppointmentContext.ServiceAppointmentCategory getServiceOrderCategoryEnum() {
         return category;
     }
-    public void setCategory(ServiceOrderCategory categoryType) {
+    public void setCategory(ServiceAppointmentContext.ServiceAppointmentCategory categoryType) {
         this.category = categoryType;
     }
 

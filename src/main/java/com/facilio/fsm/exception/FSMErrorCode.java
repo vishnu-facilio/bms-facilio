@@ -48,7 +48,8 @@ public enum FSMErrorCode {
 
     RECORD_LOCKED(Severity.ERROR, "Record Locked", "You cannot edit or delete since the record is locked."),
     UPDATE_PREVENT(Severity.ERROR, "Not Permitted", "You are not permitted to edit these details."),
-    NOT_ENOUGH_TASK_IN_SA(Severity.ERROR, "Not Enough Task", "Not Enough Tasks in Service Appointment");
+    NOT_ENOUGH_TASK_IN_SA(Severity.ERROR, "Not Enough Task", "Not Enough Tasks in Service Appointment"),
+    SO_ASSET_SPACE_DOESNT_MATCH_SPACE_FIELD(Severity.ERROR, "Space not matched","Asset Space doesn't match the selected Space");
 
     private final Severity severity;
     private final String title;

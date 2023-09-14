@@ -72,7 +72,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         serviceAppointmentFields.add(typeField);
 
         SystemEnumField categoryField = (SystemEnumField) FieldFactory.getDefaultField("category", "Category", "CATEGORY", FieldType.SYSTEM_ENUM);
-        categoryField.setEnumName("Category");
+        categoryField.setEnumName("ServiceAppointmentCategory");
         serviceAppointmentFields.add(categoryField);
 
         LookupField serviceWorkorder = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER_ID",FieldType.LOOKUP);
@@ -202,7 +202,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         LookupField space = FieldFactory.getDefaultField("space","Space","SPACE_ID",FieldType.LOOKUP);
         space.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
-        space.setLookupModule(moduleBean.getModule("space"));
+        space.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.BASE_SPACE));
         serviceAppointmentFields.add(space);
 
         LookupField asset = FieldFactory.getDefaultField("asset","Asset","ASSET_ID",FieldType.LOOKUP);
