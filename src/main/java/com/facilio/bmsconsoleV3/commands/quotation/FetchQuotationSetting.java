@@ -13,7 +13,7 @@ public class FetchQuotationSetting extends FacilioCommand {
         QuotationSettingContext quotationSettingDATA = QuotationAPI.fetchQuotationSetting();
         if (quotationSettingDATA != null) {
             context.put(FacilioConstants.ContextNames.QUOTATIONSETTING, quotationSettingDATA);
-            quotationSettingDATA.setShowMarkupValue(QuotationAPI.showMarkupValue(context));
+            quotationSettingDATA.setShowMarkupValue(QuotationAPI.showMarkupValue(context, null));
             context.put(FacilioConstants.ContextNames.QUOTATIONSETTING, quotationSettingDATA);
         }
 

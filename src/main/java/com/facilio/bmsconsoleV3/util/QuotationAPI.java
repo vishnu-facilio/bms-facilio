@@ -125,7 +125,7 @@ public class QuotationAPI {
         return  percentageValue;
     }
 
-    public static  Boolean showMarkupValue(Context context) throws Exception {
+    public static  Boolean showMarkupValue(Context context,QuotationContext quotation) throws Exception {
         /*
         this menthod is used to control the markup value calcuation;
         */
@@ -133,8 +133,16 @@ public class QuotationAPI {
         ApplicationContext app = AccountUtil.getCurrentApp();
         QuotationSettingContext quotationSetting = (QuotationSettingContext) context.get(FacilioConstants.ContextNames.QUOTATIONSETTING);
         if( app != null && quotationSetting != null) {
-            if ( (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP) || app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) && (quotationSetting.getVendorquote() || quotationSetting.getEnduserquote())) {
-                return true;
+            if ( (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP) || app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP))) {
+                if(quotation != null && quotation.getCustomerType() == 4) {
+                    return quotationSetting.getVendorquote();
+                }
+                else if(quotation != null && (quotation.getCustomerType() == 1 || quotation.getCustomerType() == 2)) {
+                    return quotationSetting.getEnduserquote();
+                }
+                else if(quotationSetting.getVendorquote() || quotationSetting.getEnduserquote()) {
+                    return true;
+                }
             }
             else if(((app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) || (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) && quotationSetting.getAllowUserSeeMarkup()))) {
                 return true;
@@ -171,7 +179,7 @@ public class QuotationAPI {
         Double totalTaxAmount = 0.0;
         Double lineItemsSubtotal = 0.0;
         Double quotationTotalCost = 0.0;
-        Boolean showMarkup = showMarkupValue(context);
+        Boolean showMarkup = showMarkupValue(context, record);
         Long taxMode = getTaxMode();
         Long discountMode = getDiscountMode();
         Boolean isGlobalMarkup = getGlobalMarkupValue(context);

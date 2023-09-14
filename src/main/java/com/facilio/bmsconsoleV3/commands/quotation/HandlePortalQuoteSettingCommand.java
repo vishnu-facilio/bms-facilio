@@ -43,7 +43,7 @@ public class HandlePortalQuoteSettingCommand extends FacilioCommand {
            if (CollectionUtils.isNotEmpty(list)) {
                for (QuotationContext quotation : list) {
                    if(quotationSetting != null) {
-                       quotation.setShowMarkupValue(QuotationAPI.showMarkupValue(context));
+                       quotation.setShowMarkupValue(QuotationAPI.showMarkupValue(context, null));
                    }
                }
            }

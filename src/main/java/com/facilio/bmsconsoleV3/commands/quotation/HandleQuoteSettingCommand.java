@@ -35,7 +35,7 @@ public class HandleQuoteSettingCommand extends FacilioCommand {
             for (QuotationContext quotation : list) {
                 if(quotationSetting != null) {
                     quotation.setQuotationSetting((quotationSetting));
-                    quotation.setShowMarkupValue(QuotationAPI.showMarkupValue(context));
+                    quotation.setShowMarkupValue(QuotationAPI.showMarkupValue(context, quotation));
                     if(quotationSetting.getMarkupdisplayMode() == 1) {
                         if(quotationSetting.getGlobalMarkupValue() != null) {
                             quotation.setMarkup(quotationSetting.getGlobalMarkupValue());
