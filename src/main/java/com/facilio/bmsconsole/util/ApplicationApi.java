@@ -975,39 +975,6 @@ public class ApplicationApi {
             addAppRoleMapping(kioskAdmin.getRoleId(), kioskApp.getId());
         }
 
-        ApplicationContext fsm = getApplicationForLinkName(
-                FacilioConstants.ApplicationLinkNames.FSM_APP
-        );
-
-        if (fsm.getId() > 0) {
-
-            // mobile layout for FSM App
-            ApplicationLayoutContext fsmLayoutMobile = new ApplicationLayoutContext(fsm.getId(),
-                    ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.MOBILE,
-                    FacilioConstants.ApplicationLinkNames.FSM_APP);
-            addApplicationLayout(fsmLayoutMobile);
-
-            // Need to change
-            addFsmPortalWebGroupsForMobileLayout(fsmLayoutMobile);
-
-
-            Role fsmSuperAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
-                    FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
-
-            //Setup layout for FSM App
-
-            ApplicationLayoutContext fsmLayoutSetup = new ApplicationLayoutContext(fsm.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.SETUP, FacilioConstants.ApplicationLinkNames.FSM_APP);
-            addApplicationLayout(fsmLayoutSetup);
-            addSetupLayoutWebGroups(fsmLayoutSetup);
-
-
-            addAppRoleMapping(fsmSuperAdmin.getRoleId(), fsm.getId());
-
-            Role fsmAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
-                    FacilioConstants.DefaultRoleNames.FSM_ADMIN);
-            addAppRoleMapping(fsmAdmin.getRoleId(), fsm.getId());
-        }
-
         ApplicationContext maintenance = getApplicationForLinkName(
                 FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
 
@@ -1484,42 +1451,93 @@ public class ApplicationApi {
 
     public static void addFsmPortalWebGroupsForMobileLayout(ApplicationLayoutContext layout) {
         try {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             int groupOrder = 1;
 
             long appId = layout.getApplicationId();
 
-            List<WebTabGroupContext> webTabGroups = new ArrayList<>();
-            Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
-            List<WebTabContext> webTabs = new ArrayList<>();
+//            FSMDefaultTabsAndTabGroups defaultTabsAndTabGroups = new FSMDefaultTabsAndTabGroups();
+//
+//            List<WebTabGroupContext> webTabGroups = new ArrayList<>();
+//            Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
+//            List<WebTabContext> webTabs = new ArrayList<>();
+//
+//            webTabGroups.add(new WebTabGroupContext("Home", "home", layout.getId(), 200, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(new WebTabContext("Dashboard", "homepage",  WebTabContext.Type.HOMEPAGE, null, appId, null));
+//            groupNameVsWebTabsMap.put("home", webTabs);
+//
+//            webTabGroups.add(new WebTabGroupContext("Service Appointment", "serviceAppointment", layout.getId(), 201, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(new WebTabContext("Service Appointment", "serviceAppointment_mobile",  WebTabContext.Type.MODULE, null, appId, null));
+//            groupNameVsWebTabsMap.put("serviceAppointment", webTabs);
+//
+//            webTabGroups.add(new WebTabGroupContext("Time Off", "timeOff", layout.getId(), 202, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(new WebTabContext("Time Off", "timeOff_mobile",  WebTabContext.Type.MODULE, null, appId, null));
+//            groupNameVsWebTabsMap.put("timeOff", webTabs);
+//
+//            webTabGroups.add(new WebTabGroupContext("Service Order", "serviceOrder", layout.getId(), 203, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(new WebTabContext("Service Order", "serviceOrder_mobile",  WebTabContext.Type.MODULE, null, appId, null));
+//            groupNameVsWebTabsMap.put("serviceOrder", webTabs);
+//
+//            webTabGroups.add(new WebTabGroupContext("Attendance", "attendance", layout.getId(), 204, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(new WebTabContext("Attendance", "attendance_mobile",  WebTabContext.Type.ATTENDANCE, null, appId, null));
+//            groupNameVsWebTabsMap.put("attendance", webTabs);
+//
+//            webTabGroups.add(new WebTabGroupContext("Time Sheet", "timeSheet", layout.getId(), 205, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(new WebTabContext("Time Sheet", "timeSheet_mobile",  WebTabContext.Type.MODULE, null, appId, null));
+//            groupNameVsWebTabsMap.put("timeSheet", webTabs);
+//
+//            webTabGroups.add(new WebTabGroupContext("Trip", "trip", layout.getId(), 206, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(new WebTabContext("Trip", "trip_mobile",  WebTabContext.Type.MODULE, null, appId, null));
+//            groupNameVsWebTabsMap.put("trip", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Favorite", "favorite", layout.getId(), 200, groupOrder++));
-            webTabs = new ArrayList<>();
 
-            webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, appId, null));
-            WebTabContext woTab = new WebTabContext("Service Order", "serviceOrder", WebTabContext.Type.MODULE,
-                    Arrays.asList(modBean.getModule("serviceOrder").getModuleId()), appId, null);
-            woTab.setFeatureLicense(1);
-            webTabs.add(woTab);
-            groupNameVsWebTabsMap.put("favorite", webTabs);
+//            webTabGroups.add(new WebTabGroupContext("Service Appointment", "serviceAppointment", layout.getId(), 201, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(getWebTabForApplication(appId, "serviceAppointment"));
+//            groupNameVsWebTabsMap.put("serviceAppointment", webTabs);
+//
+//            webTabGroups.add(new WebTabGroupContext("Time Off", "timeOff", layout.getId(), 202, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(getWebTabForApplication(appId, "timeOff"));
+//            groupNameVsWebTabsMap.put("timeOff", webTabs);
+//
+//            webTabGroups.add(new WebTabGroupContext("Service Order", "serviceOrder", layout.getId(), 203, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(getWebTabForApplication(appId, "serviceOrder"));
+//            groupNameVsWebTabsMap.put("serviceOrder", webTabs);
+//
+//            webTabGroups.add(new WebTabGroupContext("Attendance", "attendance", layout.getId(), 204, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(getWebTabForApplication(appId, "attendance"));
+//            groupNameVsWebTabsMap.put("attendance", webTabs);
+//
+//            webTabGroups.add(new WebTabGroupContext("Time Sheet", "timeSheet", layout.getId(), 205, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(getWebTabForApplication(appId, "timeSheet"));
+//            groupNameVsWebTabsMap.put("timeSheet", webTabs);
+//
+//            webTabGroups.add(new WebTabGroupContext("Trip", "trip", layout.getId(), 206, groupOrder++));
+//            webTabs = new ArrayList<>();
+//            webTabs.add(getWebTabForApplication(appId, "trip"));
+//            groupNameVsWebTabsMap.put("trip", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Assets", "asset", layout.getId(), 202, groupOrder++));
-            webTabs = new ArrayList<>();
-            WebTabContext assetTab = new WebTabContext("Assets", "asset", WebTabContext.Type.MODULE,
-                    Arrays.asList(modBean.getModule("asset").getModuleId()), appId, null);
-            assetTab.setFeatureLicense(4);
-            webTabs.add(assetTab);
 
-            groupNameVsWebTabsMap.put("asset", webTabs);
+            FSMDefaultTabsAndTabGroups defaultTabsAndTabGroups = new FSMDefaultTabsAndTabGroups();
 
-            for (WebTabGroupContext webTabGroupContext : webTabGroups) {
+            for (WebTabGroupContext webTabGroupContext :  defaultTabsAndTabGroups.getWebTabGroupsForMobile(appId, layout.getId())) {
                 FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
                 FacilioContext chainContext = chain.getContext();
                 chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, webTabGroupContext);
                 chain.execute();
                 long webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
                 webTabGroupContext.setId(webGroupId);
-                List<WebTabContext> tabs = groupNameVsWebTabsMap.get(webTabGroupContext.getRoute());
+                List<WebTabContext> tabs = defaultTabsAndTabGroups.getGroupNameVsTabsMapForMobile(appId,layout.getId()).get(webTabGroupContext.getRoute());
                 for (WebTabContext webTabContext : tabs) {
                     chain = TransactionChainFactory.getAddOrUpdateTabChain();
                     chainContext = chain.getContext();
@@ -1609,8 +1627,44 @@ public class ApplicationApi {
         }
 
     }
+    public static void addDefaultFSMLayout(ApplicationContext fsm) throws Exception{
 
-    public static void addFsmPortalWebGroupsForWebLayout(ApplicationLayoutContext layout) {
+        //Adding Default Web Layout
+        ApplicationLayoutContext webLayout = new ApplicationLayoutContext(fsm.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.FSM_APP);
+        webLayout.setId(ApplicationApi.getAddApplicationLayout(webLayout));
+        ApplicationApi.addFsmWebLayout(webLayout);
+
+        //Adding Default Mobile Layout
+        ApplicationLayoutContext mobileLayout = new ApplicationLayoutContext(fsm.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.MOBILE, FacilioConstants.ApplicationLinkNames.FSM_APP);
+        ApplicationApi.addFsmMobileLayout(mobileLayout);
+
+        //Adding Default Setup Layout
+        ApplicationLayoutContext setupLayout = new ApplicationLayoutContext(fsm.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.SETUP, FacilioConstants.ApplicationLinkNames.FSM_APP);
+        ApplicationApi.addFsmSetupLayout(setupLayout);
+
+        //Adding Super Admin Role
+        ApplicationApi.addFSMSuperAdmin(fsm);
+    }
+
+    public static void addFsmMobileLayout(ApplicationLayoutContext fsmLayoutMobile) throws Exception {
+        addApplicationLayout(fsmLayoutMobile);
+        addFsmPortalWebGroupsForMobileLayout(fsmLayoutMobile);
+    }
+
+    public static void addFsmSetupLayout(ApplicationLayoutContext fsmLayoutSetup) throws Exception {
+        addApplicationLayout(fsmLayoutSetup);
+        addSetupLayoutWebGroups(fsmLayoutSetup);
+    }
+    public static void addFSMSuperAdmin(ApplicationContext fsm) throws Exception {
+
+        Role fsmSuperAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+        addAppRoleMapping(fsmSuperAdmin.getRoleId(), fsm.getId());
+
+        Role fsmAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),FacilioConstants.DefaultRoleNames.FSM_ADMIN);
+        addAppRoleMapping(fsmAdmin.getRoleId(), fsm.getId());
+
+    }
+    public static void addFsmWebLayout(ApplicationLayoutContext layout) {
         try {
             long webGroupId = 0l;
             FacilioChain chain;

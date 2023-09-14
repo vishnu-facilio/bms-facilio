@@ -16,6 +16,7 @@ import com.facilio.fsm.commands.serviceAppointment.FetchServiceAppointmentSupple
 import com.facilio.fsm.commands.serviceOrders.AddOrUpdateServiceOrderCostCommand;
 import com.facilio.fsm.commands.serviceOrders.LoadSupplementsForSOCommand;
 import com.facilio.fsm.commands.serviceOrders.SetServiceTaskCommandV3;
+import com.facilio.fsm.commands.serviceTasks.DeleteSATaskRelCommand;
 import com.facilio.fsm.commands.serviceTasks.LoadTaskPlansCommandV3;
 import com.facilio.fsm.commands.timeOff.FetchTimeOffSupplementsCommand;
 import com.facilio.fsm.commands.timeSheet.CheckRecordLockForTimeSheetCommand;
@@ -70,6 +71,7 @@ public class FieldServiceManagementV3Config {
                 .beforeFetch(new LoadServiceTaskLookupCommandV3())
                 .afterFetch(new LoadTaskPlansCommandV3())
                 .delete()
+                .beforeDelete(new DeleteSATaskRelCommand())
                 .afterDelete(FsmTransactionChainFactoryV3.getTaskAfterDeleteChain())
                 .build();
     }
