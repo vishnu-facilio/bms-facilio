@@ -67,7 +67,7 @@ public class FetchServiceAppointmentListCommand extends FacilioCommand {
         if(scheduledStatus != null) {
             serverCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(scheduledStatus.getId()), NumberOperators.EQUALS));
         } else {
-            throw new FSMException(FSMErrorCode.UNKOWN_ERROR);
+            throw new FSMException(FSMErrorCode.UNKNOWN_ERROR);
         }
 
         if(criteriaId != null && criteriaId>0) {

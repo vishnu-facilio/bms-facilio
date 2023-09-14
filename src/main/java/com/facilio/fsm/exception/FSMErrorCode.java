@@ -2,7 +2,7 @@ package com.facilio.fsm.exception;
 
 public enum FSMErrorCode {
     // Service Order error codes
-    UNKOWN_ERROR(Severity.ERROR, "Unknown error occurred", "We're sorry, but an unknown error has occurred. Please try again later or contact support for further assistance."),
+    UNKNOWN_ERROR(Severity.ERROR, "Unknown error occurred", "We're sorry, but an unknown error has occurred. Please try again later or contact support for further assistance."),
     SO_CANCEL_FAILED(Severity.ERROR, "Service Order cancel failed", "Service Order cannot be cancelled as it is already in a 'Cancelled,' 'Completed,' or 'Closed' state."),
     SO_COMPLETE_WARNING(Severity.WARNING, "Service Order complete failed", "Service Order can only be completed when it is in the 'In Progress' state."),
     SO_CLOSE_WARNING(Severity.WARNING, "Service Order close failed", "Service Order can only be closed when it is in the 'Completed' state."),

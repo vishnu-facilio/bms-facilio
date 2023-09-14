@@ -71,7 +71,7 @@ public class SetServiceOrderServiceCommand extends FacilioCommand {
                 if(service.getSellingPrice()!=null && serviceOrderService.getQuantity()!=null){
                     Double totalCost = service.getSellingPrice()* serviceOrderService.getQuantity();
                     if(service.getPaymentTypeEnum().equals(V3ServiceContext.PaymentType.DURATION_BASED) && duration!=null){
-                        totalCost *= duration;
+                        totalCost *= (duration / 3600);
                     }
                     serviceOrderService.setTotalCost(totalCost);
                 }
