@@ -1,16 +1,15 @@
 package com.facilio.fsm.commands.plans;
 
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderPlannedItemsContext;
+import com.facilio.fsm.exception.FSMErrorCode;
+import com.facilio.fsm.exception.FSMException;
 import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.v3.context.Constants;
-import com.facilio.v3.exception.ErrorCode;
-import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -32,16 +31,17 @@ public class ValidateServiceOrderPlannedItemsCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(serviceOrderPlannedItems)) {
             for (ServiceOrderPlannedItemsContext serviceOrderPlannedItem : serviceOrderPlannedItems) {
                 if(serviceOrderPlannedItem.getIsReserved()){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot update a reserved item");
+                    throw new FSMException(FSMErrorCode.ALREADY_RESERVED);
                 }
                 if (MapUtils.isNotEmpty(bodyParams) && (bodyParams.containsKey("reserve"))) {
                     // Quantity Validation
                     if (serviceOrderPlannedItem.getQuantity() == null || serviceOrderPlannedItem.getQuantity() == 0) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
+                        throw new FSMException(FSMErrorCode.QUANTITY_REQUIRED);
+
                     }
                     //reservation type validation
                     if (serviceOrderPlannedItem.getReservationType() == null) {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Reservation type cannot be null");
+                        throw new FSMException(FSMErrorCode.RESERVATION_TYPE_REQUIRED);
                     }
                     // Item validation
                     Long itemTypeId = serviceOrderPlannedItem.getItemType().getId();
@@ -50,7 +50,7 @@ public class ValidateServiceOrderPlannedItemsCommand extends FacilioCommand {
                         V3ItemContext item = V3InventoryUtil.getItemWithStoreroomServingSites(itemTypeId, storeRoomId);
 
                         if (item == null) {
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item is not present in the given storeroom");
+                            throw new FSMException(FSMErrorCode.ITEM_NOT_PRESENT);
                         } else {
                             // checking if storeroom servers the service order's site
                             if (serviceOrderPlannedItem.getServiceOrder() != null) {
@@ -63,16 +63,15 @@ public class ValidateServiceOrderPlannedItemsCommand extends FacilioCommand {
                                     so = serviceOrderMap.get(serviceOrderId);
                                 }
                                 if (so.getSite()!=null && so.getSite().getId() > 0 && !servingSiteIds.contains(so.getSite().getId())) {
-                                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storeroom does not serve the selected work order's site");
+                                    throw new FSMException(FSMErrorCode.STORE_DOES_NOT_SERVE_SITE);
                                 }
                             }
                             if (item.getQuantity() < serviceOrderPlannedItem.getQuantity() && serviceOrderPlannedItem.getReservationTypeEnum().equals(ReservationType.HARD)) {
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Available quantity in store is less than the requested quantity");
+                                throw new FSMException(FSMErrorCode.INSUFFICIENT_QUANTITY);
                             }
                         }
                     } else {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storeroom cannot be empty");
-                    }
+                        throw new FSMException(FSMErrorCode.STOREROOM_REQUIRED);                    }
                 }
             }
         }

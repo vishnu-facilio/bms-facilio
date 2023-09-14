@@ -19,6 +19,14 @@ public enum FSMErrorCode {
     SO_AUTOCREATE_PREVENT_CHANGE(Severity.ERROR, "AutoCreate SA cannot be modified", "AutoCreate SA cannot be modified after creating Service Order."),
     SO_CANCEL_EDIT_FAILED(Severity.ERROR, "Service Order cannot be edited", "Service order cannot be edited as it is already in a 'Cancelled,' 'Completed,' or 'Closed' state."),
     SO_ID_NOT_EMPTY(Severity.ERROR, "SO ID is required", "Service Order Id cannot be empty."),
+    //Planned Inventory
+    ALREADY_RESERVED(Severity.ERROR,"Non Reservable","Cannot update a Reserved Item"),
+    QUANTITY_REQUIRED(Severity.ERROR,"Non Reservable","Quantity is required for reservation"),
+    RESERVATION_TYPE_REQUIRED(Severity.ERROR,"Non Reservable","Reservation Type is required for reservation"),
+    ITEM_NOT_PRESENT(Severity.ERROR,"Non Reservable","Item is not present in the mentioned Storeroom"),
+    STOREROOM_REQUIRED(Severity.ERROR,"Non Reservable","Storeroom is required for reservation"),
+    INSUFFICIENT_QUANTITY(Severity.ERROR,"Non Reservable","Available quantity in Store is less than the requested quantity"),
+    STORE_DOES_NOT_SERVE_SITE(Severity.ERROR,"Non Reservable","Storeroom does not serve the selected Service Order's site"),
 
     // Service Appointment error codes
     SA_MISMATCH(Severity.WARNING,"Dispatch Alert: Mismatched Assignment","The Service Appointment does not match the selected Field Agent due to the following reasons. Do you want to proceed?"),
