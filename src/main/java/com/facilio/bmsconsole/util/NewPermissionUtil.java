@@ -7,6 +7,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.WebTabContext.Type;
+import com.facilio.bmsconsoleV3.signup.fsmApp.AddDefaultRolesFsmApp;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -26,7 +27,7 @@ import java.util.*;
 @Log4j
 public class NewPermissionUtil {
 
-    private static Map<String, Integer> moduleTabType = Collections.unmodifiableMap(initModuleMap());
+    private static Map<String, Long> moduleTabType = Collections.unmodifiableMap(initModuleMap());
     private static Map<String, Integer> approvalTabType = Collections.unmodifiableMap(initApprovalMap());
     private static Map<String, Integer> calendarTabType = Collections.unmodifiableMap(initCalendarMap());
     private static Map<String, Integer> reportTabType = Collections.unmodifiableMap(initReportMap());
@@ -57,41 +58,42 @@ public class NewPermissionUtil {
     private static Map<String, Integer> alarmModulePermissionType = Collections.unmodifiableMap(initAlarmPermissionsMap());
 
 
-    private static Map<String, Integer> initModuleMap() {
+    private static Map<String, Long> initModuleMap() {
         moduleTabType = new HashMap<>();
-        moduleTabType.put("CREATE", 1);
-        moduleTabType.put("IMPORT", 2); //Deprecated
-        moduleTabType.put("READ", 4);
-        moduleTabType.put("UPDATE", 8);
-        moduleTabType.put("DELETE", 16);
-        moduleTabType.put("EXPORT", 32);
-        moduleTabType.put("READ_TEAM", 64);
-        moduleTabType.put("READ_OWN", 128);
-        moduleTabType.put("UPDATE_TEAM", 256);
-        moduleTabType.put("UPDATE_OWN", 512);
-        moduleTabType.put("UPDATE_CHANGE_OWNERSHIP", 1024);
-        moduleTabType.put("UPDATE_CLOSE_WORKORDER", 2048);
-        moduleTabType.put("UPDATE_TASK", 4096);
-        moduleTabType.put("DELETE_TEAM", 8192);
-        moduleTabType.put("DELETE_OWN", 16384);
-        moduleTabType.put("UPDATE_WORKORDER_TASK", 32768);
-        moduleTabType.put("CONTROL", 65536);
-        moduleTabType.put("CANCEL_SERVICE_ORDER", 131072);
-        moduleTabType.put("COMPLETE_SERVICE_ORDER", 262144);
-        moduleTabType.put("CLOSE_SERVICE_ORDER", 524288);
-        moduleTabType.put("START_WORK_ALL", 1048576);
-        moduleTabType.put("START_WORK_OWN", 2097152);
-        moduleTabType.put("COMPLETE_ALL", 4194304);
-        moduleTabType.put("COMPLETE_OWN", 8388608);
-        moduleTabType.put("CANCEL", 16777216);
-        moduleTabType.put("DISPATCH",33554432);
-        moduleTabType.put("RESERVE",67108864);
-        moduleTabType.put("VIEW_PRICING",134217728);
-        moduleTabType.put("CREATE_OWN",268435456);
-        moduleTabType.put("CLOSE_ALL",536870912);
-        moduleTabType.put("CLOSE_OWN",1073741824);
-
-
+        moduleTabType.put("CREATE", 1L);
+        moduleTabType.put("IMPORT", 2L); //Deprecated
+        moduleTabType.put("READ", 4L);
+        moduleTabType.put("UPDATE", 8L);
+        moduleTabType.put("DELETE", 16L);
+        moduleTabType.put("EXPORT", 32L);
+        moduleTabType.put("READ_TEAM", 64L);
+        moduleTabType.put("READ_OWN", 128L);
+        moduleTabType.put("UPDATE_TEAM", 256L);
+        moduleTabType.put("UPDATE_OWN", 512L);
+        moduleTabType.put("UPDATE_CHANGE_OWNERSHIP", 1024L);
+        moduleTabType.put("UPDATE_CLOSE_WORKORDER", 2048L);
+        moduleTabType.put("UPDATE_TASK", 4096L);
+        moduleTabType.put("DELETE_TEAM", 8192L);
+        moduleTabType.put("DELETE_OWN", 16384L);
+        moduleTabType.put("UPDATE_WORKORDER_TASK", 32768L);
+        moduleTabType.put("CONTROL", 65536L);
+        moduleTabType.put("CANCEL_SERVICE_ORDER", 131072L);
+        moduleTabType.put("COMPLETE_SERVICE_ORDER", 262144L);
+        moduleTabType.put("CLOSE_SERVICE_ORDER", 524288L);
+        moduleTabType.put("START_WORK_ALL", 1048576L);
+        moduleTabType.put("START_WORK_OWN", 2097152L);
+        moduleTabType.put("COMPLETE_ALL", 4194304L);
+        moduleTabType.put("COMPLETE_OWN", 8388608L);
+        moduleTabType.put("CANCEL", 16777216L);
+        moduleTabType.put("DISPATCH",33554432L);
+        moduleTabType.put("RESERVE",67108864L);
+        moduleTabType.put("VIEW_PRICING",134217728L);
+        moduleTabType.put("CREATE_OWN",268435456L);
+        moduleTabType.put("CLOSE_ALL",536870912L);
+        moduleTabType.put("CLOSE_OWN",1073741824L);
+        moduleTabType.put("MANAGE_SERVICE_TASKS", 2147483648L);
+        moduleTabType.put("MANAGE_INVENTORY_AND_SERVICE",4294967296L);
+        moduleTabType.put("MANAGE_INVENTORY_REQUEST",8589934592L);
 
         //moduleTabType.put("READ_TASK", 131072);
         return moduleTabType;
@@ -409,10 +411,13 @@ public class NewPermissionUtil {
         permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
         permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
         permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
-        permissions.add(new Permission("CONTROL", "Control", moduleTabType.get("CONTROL"), null));
-        permissions.add(new Permission("CANCEL_SERVICE_ORDER", "Cancel ServiceOrder", moduleTabType.get("CANCEL_SERVICE_ORDER"), null));
-        permissions.add(new Permission("CLOSE_SERVICEORDER_TASK", "Close ServiceOrder", moduleTabType.get("CLOSE_SERVICE_ORDER"), null));
-        permissions.add(new Permission("COMPLETE_SERVICEORDER_TASK", "Complete ServiceOrder", moduleTabType.get("COMPLETE_SERVICE_ORDER"), null));
+        permissions.add(new Permission("COMPLETE_SERVICE_ORDER", "Complete Work", moduleTabType.get("COMPLETE_SERVICE_ORDER"), null));
+        permissions.add(new Permission("CLOSE_SERVICE_ORDER", "Close", moduleTabType.get("CLOSE_SERVICE_ORDER"), null));
+        permissions.add(new Permission("CANCEL_SERVICE_ORDER", "Cancel", moduleTabType.get("CANCEL_SERVICE_ORDER"), null));
+        permissions.add(new Permission("MANAGE_SERVICE_TASKS", "Manage Tasks", moduleTabType.get("MANAGE_SERVICE_TASKS"), null));
+        permissions.add(new Permission("MANAGE_INVENTORY_AND_SERVICE", "Manage Inventory & Service", moduleTabType.get("MANAGE_INVENTORY_AND_SERVICE"), null));
+        permissions.add(new Permission("MANAGE_INVENTORY_REQUEST", "Manage Inventory Request", moduleTabType.get("MANAGE_INVENTORY_REQUEST"), null));
+//        permissions.add(new Permission("VIEW_PRICING", "View Pricing", moduleTabType.get("VIEW_PRICING"), null));
         permissionMap.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
@@ -435,8 +440,10 @@ public class NewPermissionUtil {
         completeWork.add(new Permission("COMPLETE_OWN", "Own", moduleTabType.get("COMPLETE_OWN"), null));
         permissions.add(new PermissionGroup("Complete Work", completeWork));
         permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
-        permissions.add(new Permission("RESERVE", "Reserve Inventory", moduleTabType.get("RESERVE"), null));
-        permissions.add(new Permission("VIEW_PRICING", "View Pricing", moduleTabType.get("VIEW_PRICING"), null));
+        permissions.add(new Permission("MANAGE_INVENTORY_AND_SERVICE", "Manage Inventory & Service", moduleTabType.get("MANAGE_INVENTORY_AND_SERVICE"), null));
+        permissions.add(new Permission("MANAGE_SERVICE_TASKS", "Manage Task", moduleTabType.get("MANAGE_SERVICE_TASKS"), null));
+//        permissions.add(new Permission("VIEW_PRICING", "View Pricing", moduleTabType.get("VIEW_PRICING"), null));
+        permissions.add(new Permission("MANAGE_INVENTORY_REQUEST", "Manage Inventory Request", moduleTabType.get("MANAGE_INVENTORY_REQUEST"), null));
         permissionMap.put(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
@@ -448,12 +455,12 @@ public class NewPermissionUtil {
         permissions.add(new PermissionGroup("Read", readGroupPermissions));
 
         List<Permission> createPermissions = new ArrayList<>();
-        createPermissions.add(new Permission("CREATE_ALL", "All", moduleTabType.get("CREATE"), null));
+        createPermissions.add(new Permission("CREATE", "All", moduleTabType.get("CREATE"), null));
         createPermissions.add(new Permission("CREATE_OWN", "Own", moduleTabType.get("CREATE_OWN"), null));
         permissions.add(new PermissionGroup("Create", createPermissions));
 
         List<Permission> updatePermissions = new ArrayList<>();
-        updatePermissions.add(new Permission("UPDATE_ALL", "All", moduleTabType.get("UPDATE"), null));
+        updatePermissions.add(new Permission("UPDATE", "All", moduleTabType.get("UPDATE"), null));
         updatePermissions.add(new Permission("UPDATE_OWN", "Own", moduleTabType.get("UPDATE_OWN"), null));
         permissions.add(new PermissionGroup("Update", updatePermissions));
 
@@ -474,12 +481,12 @@ public class NewPermissionUtil {
         permissions.add(new PermissionGroup("Read", readPermissionGroup));
 
         List<Permission> createGroup = new ArrayList<>();
-        createGroup.add(new Permission("CREATE_ALL", "All", moduleTabType.get("CREATE"), null));
+        createGroup.add(new Permission("CREATE", "All", moduleTabType.get("CREATE"), null));
         createGroup.add(new Permission("CREATE_OWN", "Own", moduleTabType.get("CREATE_OWN"), null));
         permissions.add(new PermissionGroup("Create", createGroup));
 
         List<Permission> updateGroups = new ArrayList<>();
-        updateGroups.add(new Permission("UPDATE_ALL", "All", moduleTabType.get("UPDATE"), null));
+        updateGroups.add(new Permission("UPDATE", "All", moduleTabType.get("UPDATE"), null));
         updateGroups.add(new Permission("UPDATE_OWN", "Own", moduleTabType.get("UPDATE_OWN"), null));
         permissions.add(new PermissionGroup("Update", updateGroups));
 
@@ -866,7 +873,7 @@ public class NewPermissionUtil {
         }
         switch (tabType) {
             case 1:
-                return moduleTabType.getOrDefault(action, -1);
+                return moduleTabType.getOrDefault(action, -1L);
             case 2:
                 return approvalTabType.getOrDefault(action, -1);
             case 3:
