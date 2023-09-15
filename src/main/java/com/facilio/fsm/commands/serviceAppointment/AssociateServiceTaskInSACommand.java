@@ -36,7 +36,7 @@ public class AssociateServiceTaskInSACommand extends FacilioCommand {
                     if(tasks != null && !tasks.isEmpty()){
                         List<ServiceTaskContext> allServiceTasks = new ArrayList<>();
                         List<ServiceTaskContext> newTasks = (List<ServiceTaskContext>) tasks.get("newTasks");
-                        List<ServiceTaskContext> associatedTasks = (List<ServiceTaskContext>) tasks.get("associatedTasks");
+                        List<Map<String,Object>> associatedTasks = (List<Map<String,Object>>) tasks.get("associatedTasks");
                         if(CollectionUtils.isNotEmpty(newTasks)) {
                             FacilioModule serviceTaskModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
                             FacilioContext taskList = V3Util.createRecordList(serviceTaskModule, FieldUtil.getAsMapList(newTasks, ServiceTaskContext.class), null, null);
@@ -48,7 +48,7 @@ public class AssociateServiceTaskInSACommand extends FacilioCommand {
                                 allServiceTasks.addAll(FieldUtil.getAsBeanListFromMapList(serviceTaskList,ServiceTaskContext.class));
                             }
                         }
-                        allServiceTasks.addAll(associatedTasks);
+                        allServiceTasks.addAll(FieldUtil.getAsBeanListFromMapList(associatedTasks,ServiceTaskContext.class));
                         serviceAppointment.setServiceTasks(allServiceTasks);
                         serviceAppointment.setRelations(null);
                     }
