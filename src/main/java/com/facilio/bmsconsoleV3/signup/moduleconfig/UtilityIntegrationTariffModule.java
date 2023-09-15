@@ -22,7 +22,7 @@ import java.util.*;
 
 
 public class UtilityIntegrationTariffModule extends BaseModuleConfig {
-    public static List<String> supportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+    public static List<String> supportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
 
     public UtilityIntegrationTariffModule(){
         setModuleName(FacilioConstants.UTILITY_INTEGRATION_TARIFF);

@@ -59,7 +59,7 @@ public class ElectricityMeterModule extends BaseModuleConfig{
         ElectricityMeterForm.setName("default_electricitymeter_web");
         ElectricityMeterForm.setModule(electricityMeterModule);
         ElectricityMeterForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        ElectricityMeterForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        ElectricityMeterForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
 
         List<FormField> electricityMeterFormFields = new ArrayList<>();
         electricityMeterFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, "name", 1, 1));

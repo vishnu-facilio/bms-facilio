@@ -59,7 +59,7 @@ public class GasMeterModule extends BaseModuleConfig{
         GasMeterForm.setName("default_gasmeter_web");
         GasMeterForm.setModule(gasMeterModule);
         GasMeterForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        GasMeterForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        GasMeterForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
 
         List<FormField> gasMeterFormFields = new ArrayList<>();
         gasMeterFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, "name", 1, 1));

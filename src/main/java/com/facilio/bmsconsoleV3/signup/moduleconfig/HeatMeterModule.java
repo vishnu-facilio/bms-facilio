@@ -59,7 +59,7 @@ public class HeatMeterModule extends BaseModuleConfig{
         HeatMeterForm.setName("default_heatmeter_web");
         HeatMeterForm.setModule(heatMeterModule);
         HeatMeterForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        HeatMeterForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        HeatMeterForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
 
         List<FormField> heatMeterFormFields = new ArrayList<>();
         heatMeterFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, "name", 1, 1));

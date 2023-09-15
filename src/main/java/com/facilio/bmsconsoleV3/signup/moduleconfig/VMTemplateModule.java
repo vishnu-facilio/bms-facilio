@@ -77,6 +77,7 @@ public class VMTemplateModule extends BaseModuleConfig{
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
         Map<String, List<PagesContext>> pageTemp = new HashMap<>();
         pageTemp.put(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, getSystemPage());
+        pageTemp.put(FacilioConstants.ApplicationLinkNames.ENERGY_APP,getSystemPage());
         return  pageTemp;
     }
     private static List<PagesContext> getSystemPage() throws Exception {

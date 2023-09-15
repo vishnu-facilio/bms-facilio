@@ -59,7 +59,7 @@ public class WaterMeterModule extends BaseModuleConfig{
         WaterMeterForm.setName("default_watermeter_web");
         WaterMeterForm.setModule(waterMeterModule);
         WaterMeterForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        WaterMeterForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        WaterMeterForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
 
         List<FormField> waterMeterFormFields = new ArrayList<>();
         waterMeterFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, "name", 1, 1));

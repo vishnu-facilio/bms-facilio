@@ -59,7 +59,7 @@ public class BTUMeterModule extends BaseModuleConfig{
         BTUMeterForm.setName("default_btumeter_web");
         BTUMeterForm.setModule(btuMeterModule);
         BTUMeterForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        BTUMeterForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        BTUMeterForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
 
         List<FormField> btuMeterFormFields = new ArrayList<>();
         btuMeterFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, "name", 1, 1));
