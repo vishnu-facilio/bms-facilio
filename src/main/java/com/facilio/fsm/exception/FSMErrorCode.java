@@ -1,5 +1,7 @@
 package com.facilio.fsm.exception;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
+
 public enum FSMErrorCode {
     // Service Order error codes
     UNKNOWN_ERROR(Severity.ERROR, "Unknown error occurred", "We're sorry, but an unknown error has occurred. Please try again later or contact support for further assistance."),
@@ -27,6 +29,10 @@ public enum FSMErrorCode {
     STOREROOM_REQUIRED(Severity.ERROR,"Non Reservable","Storeroom is required for reservation"),
     INSUFFICIENT_QUANTITY(Severity.ERROR,"Non Reservable","Available quantity in Store is less than the requested quantity"),
     STORE_DOES_NOT_SERVE_SITE(Severity.ERROR,"Non Reservable","Storeroom does not serve the selected Service Order's site"),
+    TOOL_TYPE_REQUIRED(Severity.ERROR,"Actuals Validation","Tool type is required"),
+    STORE_REQUIRED(Severity.ERROR,"Actuals Validation","Store room is required"),
+    TOOL_NOT_PRESENT(Severity.ERROR,"Actuals Validation","Tool not present is Storeroom"),
+    SERVICE_REQUIRED(Severity.ERROR,"Actuals Validation","Service is required"),
 
     // Service Appointment error codes
     SA_MISMATCH(Severity.WARNING,"Dispatch Alert: Mismatched Assignment","The Service Appointment does not match the selected Field Agent due to the following reasons. Do you want to proceed?"),

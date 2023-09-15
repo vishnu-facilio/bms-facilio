@@ -2038,6 +2038,20 @@
                 method="serviceOrderItemFromReservation">
         </action>
     </package>
+    <package name="serviceOrderTool" namespace="/api/v3/serviceOrderTool"
+             extends="v3Api">
+        <action name="serviceOrderToolFromPlan"
+                class="com.facilio.fsm.actions.ServiceOrderToolsAction"
+                method="serviceOrderToolFromPlan">
+        </action>
+    </package>
+    <package name="serviceOrderService" namespace="/api/v3/serviceOrderService"
+             extends="v3Api">
+        <action name="serviceOrderServiceFromPlan"
+                class="com.facilio.fsm.actions.ServiceOrderServicesAction"
+                method="serviceOrderServiceFromPlan">
+        </action>
+    </package>
     <package name="serviceAppointment" namespace="/api/v3/serviceAppointment"
              extends="v3Api">
         <action name="associateTask"
