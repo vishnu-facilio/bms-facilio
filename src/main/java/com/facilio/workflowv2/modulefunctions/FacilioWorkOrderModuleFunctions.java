@@ -1,16 +1,17 @@
 package com.facilio.workflowv2.modulefunctions;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.v3.util.V3Util;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -18,12 +19,6 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.BulkWorkOrderContext;
-import com.facilio.bmsconsole.context.JobPlanContext;
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.JobPlanApi;
@@ -34,9 +29,6 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.annotation.ScriptModule;
 import com.facilio.util.FacilioUtil;
@@ -60,6 +52,101 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 
 	public List<Map<String, Object>> getTopNBuildings(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 		return WorkOrderAPI.getTopNBuildings(Integer.parseInt(objects.get(1).toString()), Long.valueOf(objects.get(2).toString()), Long.valueOf(objects.get(3).toString()), Long.valueOf(objects.get(4).toString()));
+	}
+
+	/**
+	 * In script this function would look like,
+	 * reschedulePreOpenWorkOrder(workOrderID, createdTime)
+	 *
+	 * createdTime updates modifiedTime(as createdTime), scheduledStart(as createdTime), estimatedStart(as createdTime)
+	 * dueDuration updates dueDate(as createdTime + dueDuration), estimatedEnd(as createdTime + dueDuration) | dueDuration fetched from PMv2 directly
+	 *
+	 */
+	public String reschedulePreOpenWorkOrder(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
+
+		String functionParamsMessage = " | This function takes in (workOrderId, createdTime) only";
+
+		if(objects.size() < 3){
+			if(objects.size() == 1){ // calling empty function
+				throw new RuntimeException("WorkOrder ID and createdTime is required." + functionParamsMessage);
+			}else if(objects.size() == 2){ // calling function with workOrderID
+				throw new RuntimeException("CreatedTime is required." + functionParamsMessage);
+			}else {
+				throw new RuntimeException("Please check the parameters." + functionParamsMessage);
+			}
+		}else if(objects.size() > 3){
+			throw new RuntimeException("Excess parameters aren't allowed." + functionParamsMessage);
+		}
+
+		//objects[moduleName, workOrderID, createdTime]
+		Object workOrderId = objects.get(1);
+		Object createdTime = objects.get(2);
+
+		if ((workOrderId instanceof Long || workOrderId instanceof Integer) && createdTime  instanceof Long) {
+
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+			List<FacilioField> woFieldsList = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+			Map<String, FacilioField> woFieldsMap = FieldFactory.getAsMap(woFieldsList);
+
+			SelectRecordsBuilder<V3WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<V3WorkOrderContext>()
+					.module(woModule)
+					.select(woFieldsList)
+					.beanClass(V3WorkOrderContext.class)
+					.andCondition(CriteriaAPI.getIdCondition((Long) workOrderId, woModule))
+					.skipModuleCriteria();
+
+			List<V3WorkOrderContext> workOrderContextList = selectRecordsBuilder.get();
+
+			if(CollectionUtils.isEmpty(workOrderContextList)){
+				return "No WorkOrder found with ID: " + workOrderId;
+			}
+
+			V3WorkOrderContext workOrderContext = workOrderContextList.get(0);
+
+			// Check for dueDuration availability from PM_V2
+			long dueDuration = 0L;
+			if(workOrderContext.getPmV2() != null){
+				PlannedMaintenance pmv2 = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, workOrderContext.getPmV2());
+				if(pmv2 != null && pmv2.getDueDuration() != null && pmv2.getDueDuration() > 0){
+					dueDuration = pmv2.getDueDuration();
+				}
+			}
+
+			List<FacilioField> fieldsToBeUpdate = new ArrayList<>();
+			fieldsToBeUpdate.add(woFieldsMap.get("createdTime"));
+			fieldsToBeUpdate.add(woFieldsMap.get("modifiedTime"));
+			fieldsToBeUpdate.add(woFieldsMap.get("scheduledStart"));
+			fieldsToBeUpdate.add(woFieldsMap.get("estimatedStart"));
+
+			V3WorkOrderContext updateWorkOrderContext = new V3WorkOrderContext();
+			updateWorkOrderContext.setCreatedTime((Long) createdTime);
+			updateWorkOrderContext.setModifiedTime((Long) createdTime);
+			updateWorkOrderContext.setScheduledStart((Long) createdTime);
+
+			if(dueDuration > 0){
+				fieldsToBeUpdate.add(woFieldsMap.get("dueDate"));
+				fieldsToBeUpdate.add(woFieldsMap.get("estimatedEnd"));
+
+				long dueDate = (Long) createdTime + (dueDuration * 1000);
+				updateWorkOrderContext.setDueDate(dueDate);
+				updateWorkOrderContext.setEstimatedEnd(dueDate);
+			}
+
+			UpdateRecordBuilder<V3WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<V3WorkOrderContext>()
+					.module(woModule)
+					.fields(fieldsToBeUpdate)
+					.andCondition(CriteriaAPI.getIdCondition((Long) workOrderId, woModule))
+					.skipModuleCriteria();
+			int updated = updateRecordBuilder.update(updateWorkOrderContext);
+			if(updated > 0) {
+				return "Updated WorkOrder with ID: " + workOrderContext.getId();
+			}else {
+				return "Not Updated the WorkOrder with ID: " + workOrderContext.getId();
+			}
+		}
+
+		throw new RuntimeException("Input not of expected type.");
 	}
 
 	@Override
