@@ -179,7 +179,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         startWork.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         startWork.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
         startWork.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        startWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        startWork.setPermission("EXECUTE_SERVICE_TASKS_ALL");
         startWork.setPermissionRequired(true);
         Criteria startWorkCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.DISPATCHED);
         if(startWorkCriteria!=null){
@@ -192,7 +192,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         pause.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
         pause.setIdentifier(FacilioConstants.ServiceAppointment.PAUSE);
         pause.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        pause.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        pause.setPermission("EXECUTE_SERVICE_TASKS_ALL");
         pause.setPermissionRequired(true);
         Criteria pauseCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
         if(pauseCriteria!=null) {
@@ -205,7 +205,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         resume.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         resume.setIdentifier(FacilioConstants.ServiceAppointment.RESUME);
         resume.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        resume.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        resume.setPermission("EXECUTE_SERVICE_TASKS_ALL");
         resume.setPermissionRequired(true);
         Criteria resumeCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.ON_HOLD);
         if(resumeCriteria!=null){
@@ -219,7 +219,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         complete.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         complete.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
         complete.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        complete.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        complete.setPermission("EXECUTE_SERVICE_TASKS_ALL");
         complete.setPermissionRequired(true);
         Criteria completeCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
         if(completeCriteria!=null){
@@ -232,13 +232,74 @@ public class ServiceTaskModule extends BaseModuleConfig {
         reOpen.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         reOpen.setIdentifier(FacilioConstants.ServiceAppointment.REOPEN);
         reOpen.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        reOpen.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        reOpen.setPermission("EXECUTE_SERVICE_TASKS_ALL");
         reOpen.setPermissionRequired(true);
         Criteria reopenCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED);
         if(reopenCriteria!=null){
             reOpen.setCriteria(reopenCriteria);
         }
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,reOpen);
+
+        SystemButtonRuleContext startWorkOwn = new SystemButtonRuleContext();
+        startWorkOwn.setName("Start Work");
+        startWorkOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        startWorkOwn.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
+        startWorkOwn.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        startWorkOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
+        startWorkOwn.setPermissionRequired(true);
+        if(startWorkCriteria!=null){
+            startWorkOwn.setCriteria(startWorkCriteria);
+        }
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,startWorkOwn);
+
+        SystemButtonRuleContext pauseOwn = new SystemButtonRuleContext();
+        pauseOwn.setName("Pause Work");
+        pauseOwn.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        pauseOwn.setIdentifier(FacilioConstants.ServiceAppointment.PAUSE);
+        pauseOwn.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        pauseOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
+        pauseOwn.setPermissionRequired(true);
+        if(pauseCriteria!=null) {
+            pauseOwn.setCriteria(pauseCriteria);
+        }
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,pauseOwn);
+
+        SystemButtonRuleContext resumeOwn = new SystemButtonRuleContext();
+        resumeOwn.setName("Resume Work");
+        resumeOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        resumeOwn.setIdentifier(FacilioConstants.ServiceAppointment.RESUME);
+        resumeOwn.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        resumeOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
+        resumeOwn.setPermissionRequired(true);
+        if(resumeCriteria!=null){
+            resumeOwn.setCriteria(resumeCriteria);
+        }
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,resumeOwn);
+
+        SystemButtonRuleContext completeOwn = new SystemButtonRuleContext();
+        completeOwn.setName("Complete");
+        completeOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        completeOwn.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
+        completeOwn.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        completeOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
+        completeOwn.setPermissionRequired(true);
+        if(completeCriteria!=null){
+            completeOwn.setCriteria(completeCriteria);
+        }
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,completeOwn);
+
+        SystemButtonRuleContext reopenOwn = new SystemButtonRuleContext();
+        reopenOwn.setName("Reopen");
+        reopenOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        reopenOwn.setIdentifier(FacilioConstants.ServiceAppointment.REOPEN);
+        reopenOwn.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        reopenOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
+        reopenOwn.setPermissionRequired(true);
+        if(reopenCriteria!=null){
+            reopenOwn.setCriteria(reopenCriteria);
+        }
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,reopenOwn);
+
 
     }
 

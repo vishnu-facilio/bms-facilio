@@ -301,7 +301,7 @@ public class FieldServiceManagementV3Config {
                 .beforeFetch(new FetchServiceAppointmentSupplementsCommand())
                 .pickList()
                 .delete()
-                .beforeDelete(new CheckRecordLockCommand())
+                .beforeDelete(FsmTransactionChainFactoryV3.getServiceAppointmentBeforeDeleteChain())
                 .afterDelete(FsmTransactionChainFactoryV3.getServiceAppointmentAfterDeleteChain())
                 .build();
     }

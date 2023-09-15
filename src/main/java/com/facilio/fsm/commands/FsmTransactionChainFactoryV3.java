@@ -141,6 +141,7 @@ public class FsmTransactionChainFactoryV3 {
         c.addCommand(new SetServiceAppointmentNameCommand());
         c.addCommand(new SetDefaultAppointmentTypeCommand());
         c.addCommand(new SetServiceAppointmentStatusCommand());
+        c.addCommand(new AssociateServiceTaskInSACommand());
         c.addCommand(new RollUpServiceAppointmentFieldsCommand());
         c.addCommand(new ValidateSAMismatch());
         c.addCommand(new GenerateSACodeCommand());
@@ -154,6 +155,13 @@ public class FsmTransactionChainFactoryV3 {
         c.addCommand(new AddServiceOrderActivityForAddServiceAppointmentAction_ServiceAppointment_Command());
         c.addCommand(new ConstructAddCustomActivityCommandV3());
         return c;
+    }
+
+    public static Command getServiceAppointmentBeforeDeleteChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new CheckRecordLockCommand());
+        chain.addCommand(new DelinkTaskOnSADeleteCommand());
+        return chain;
     }
 
     public static Command getServiceAppointmentAfterDeleteChain() {

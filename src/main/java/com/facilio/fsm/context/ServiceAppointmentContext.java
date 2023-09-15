@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
+import java.util.ServiceConfigurationError;
 
 @Getter@Setter
 public class ServiceAppointmentContext extends V3Context {
@@ -20,7 +22,7 @@ public class ServiceAppointmentContext extends V3Context {
     private String description;
     private ServiceOrderContext serviceOrder;
     private TerritoryContext territory;
-    private List<ServiceAppointmentTaskContext> serviceTasks;
+    private List<ServiceTaskContext> serviceTasks;
     private List<ServiceAppointmentSkillContext> skills;
     private Long scheduledStartTime;
     private Long scheduledEndTime;
@@ -48,6 +50,7 @@ public class ServiceAppointmentContext extends V3Context {
     private Double estimatedCost;
     private Double actualCost;
     private PriorityContext priority;
+    private Map<String,Object> associatedTasks;
     private AppointmentType appointmentType;
     public int getAppointmentType() {
         if (appointmentType != null) {

@@ -1320,7 +1320,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             startWork.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
             startWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
 //            startWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-            startWork.setPermission("START_WORK_ALL");
+            startWork.setPermission("EXECUTE_SERVICE_TASKS_ALL");
             startWork.setPermissionRequired(true);
             Criteria startWorkCriteria = new Criteria();
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(dispatchedStatus.getId()), PickListOperators.IS));
@@ -1336,7 +1336,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             startWorkOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
             startWorkOwn.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK_OWN);
             startWorkOwn.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-            startWorkOwn.setPermission("START_WORK_OWN");
+            startWorkOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
             startWorkOwn.setPermissionRequired(true);
             Criteria startWorkOwnCriteria = new Criteria();
             startWorkOwnCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(dispatchedStatus.getId()), PickListOperators.IS));
@@ -1356,7 +1356,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             complete.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
             complete.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
 //            complete.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-            complete.setPermission("COMPLETE_ALL");
+            complete.setPermission("EXECUTE_SERVICE_TASKS_ALL");
             complete.setPermissionRequired(true);
             Criteria completeCriteria = new Criteria();
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(inProgressStatus.getId()), PickListOperators.IS));
@@ -1373,7 +1373,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             completeOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
             completeOwn.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE_OWN);
             completeOwn.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-            completeOwn.setPermission("COMPLETE_OWN");
+            completeOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
             completeOwn.setPermissionRequired(true);
             Criteria completeOwnCriteria = new Criteria();
             completeOwnCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(inProgressStatus.getId()), PickListOperators.IS));

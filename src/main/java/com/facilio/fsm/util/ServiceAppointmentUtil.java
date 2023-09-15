@@ -232,7 +232,7 @@ public class ServiceAppointmentUtil {
                             Map<String, Object> recordProps = FieldUtil.getAsProperties(newTimeSheet);
                             List<TimeSheetTaskContext> tasks = new ArrayList<>();
                             if(CollectionUtils.isNotEmpty(existingAppointment.getServiceTasks())){
-                                for(ServiceAppointmentTaskContext saTask : existingAppointment.getServiceTasks()){
+                                for(ServiceTaskContext saTask : existingAppointment.getServiceTasks()){
                                     TimeSheetTaskContext newTask = new TimeSheetTaskContext();
                                     newTask.setId(saTask.getId());
                                     tasks.add(newTask);
@@ -348,8 +348,8 @@ public class ServiceAppointmentUtil {
                                 for(Long taskId : taskIds){
                                     FacilioContext taskContext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, Collections.singletonList(taskId));
                                     ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(taskContext).get(0);
-                                    if(existingTask.getStatus()!=null && existingTask.getStatus().getName() != FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED
-                                     && existingTask.getStatus().getName() !=FacilioConstants.ContextNames.ServiceTaskStatus.CANCELLED ) {
+                                    if(existingTask.getStatus()!=null && !existingTask.getStatus().getName().equals(FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED)
+                                     && !existingTask.getStatus().getName().equals(FacilioConstants.ContextNames.ServiceTaskStatus.CANCELLED )) {
                                         oldRecords.add(existingTask);
                                         Map<String, Object> updateProps = FieldUtil.getAsProperties(existingTask);
                                         ServiceTaskStatusContext taskStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED);
@@ -438,8 +438,8 @@ public class ServiceAppointmentUtil {
                             for(Long taskId : taskIds){
                                 FacilioContext taskContext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, Collections.singletonList(taskId));
                                 ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(taskContext).get(0);
-                                if(existingTask.getStatus()!=null && existingTask.getStatus().getName() != FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED
-                                        && existingTask.getStatus().getName() != FacilioConstants.ContextNames.ServiceTaskStatus.CANCELLED ) {
+                                if(existingTask.getStatus()!=null && !existingTask.getStatus().getName().equals(FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED)
+                                        && !existingTask.getStatus().getName().equals(FacilioConstants.ContextNames.ServiceTaskStatus.CANCELLED )) {
                                     oldRecords.add(existingTask);
                                     Map<String,Object> updateProps = FieldUtil.getAsProperties(existingTask);
                                     ServiceTaskStatusContext taskStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.CANCELLED);

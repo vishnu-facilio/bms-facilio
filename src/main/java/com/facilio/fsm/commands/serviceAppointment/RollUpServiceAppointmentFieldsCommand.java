@@ -79,7 +79,7 @@ public class RollUpServiceAppointmentFieldsCommand extends FacilioCommand {
                     }
                 }
 
-                List<ServiceAppointmentTaskContext> serviceAppointmentTaskContextList = serviceAppointment.getServiceTasks();
+                List<ServiceTaskContext> serviceAppointmentTaskContextList = serviceAppointment.getServiceTasks();
                 if(eventType == EventType.EDIT) {
                     //fetching old service task ids from serviceAppointmenttask table
                     FacilioField taskField = modBean.getField("right", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);

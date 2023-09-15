@@ -35,7 +35,7 @@ public class AutoCreateSA extends FacilioCommand {
         for(ServiceOrderContext order : serviceOrders) {
 
             if(order.isAutoCreateSa()){
-                List<ServiceTaskContext> serviceTaskList = (List<ServiceTaskContext>) order.getRelations().get("serviceTask").get(0).getData();
+//                List<ServiceTaskContext> serviceTaskList = (List<ServiceTaskContext>) order.getRelations().get("serviceTask").get(0).getData();
                 ServiceAppointmentContext sa = new ServiceAppointmentContext();
                 sa.setAppointmentType(ServiceAppointmentContext.AppointmentType.SERVICE_WORK_ORDER);
                 sa.setName(order.getName());
@@ -61,19 +61,10 @@ public class AutoCreateSA extends FacilioCommand {
                 FacilioContext socontext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, Collections.singletonList(order.getId()));
                 ServiceOrderContext so = (ServiceOrderContext) Constants.getRecordList(socontext).get(0);
 
-                List<ServiceAppointmentTaskContext> serviceAppointmentTaskList=new ArrayList<>();
                 if(CollectionUtils.isNotEmpty(so.getServiceTask())) {
-
-                    for ( ServiceTaskContext serviceTask : so.getServiceTask()) {
-//                        Map<String, Object> data = (Map<String,Object>)serviceTask.getData().get("status");
-                        ServiceAppointmentTaskContext satask = new ServiceAppointmentTaskContext();
-//                        satask.setId((Long) data.get("id"));
-                        satask.setId(serviceTask.getId());
-
-                        serviceAppointmentTaskList.add(satask);
-                    }
+                    sa.setServiceTasks(so.getServiceTask());
                 }
-                sa.setServiceTasks(serviceAppointmentTaskList);
+
                 serviceAppointmentList.add(sa);
 
 

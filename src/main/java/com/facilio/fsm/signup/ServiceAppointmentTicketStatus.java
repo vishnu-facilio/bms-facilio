@@ -91,7 +91,7 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         dispatchedState.setTextColor("#ffffff");
         dispatchedState.setTypeCode(1);
         dispatchedState.setRecordLocked(false);
-        scheduledState.setDeleteLocked(false);
+        dispatchedState.setDeleteLocked(false);
         ticketStatusContextList.add(dispatchedState);
 
         ServiceAppointmentTicketStatusContext enRouteState = new ServiceAppointmentTicketStatusContext();
@@ -102,7 +102,7 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         enRouteState.setTextColor("#ffffff");
         enRouteState.setTypeCode(1);
         enRouteState.setRecordLocked(false);
-        scheduledState.setDeleteLocked(true);
+        enRouteState.setDeleteLocked(true);
         ticketStatusContextList.add(enRouteState);
 
         ServiceAppointmentTicketStatusContext inProgressState = new ServiceAppointmentTicketStatusContext();
@@ -114,7 +114,7 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         inProgressState.setTextColor("#000000");
         inProgressState.setTypeCode(2);
         inProgressState.setRecordLocked(false);
-        scheduledState.setDeleteLocked(true);
+        inProgressState.setDeleteLocked(true);
         ticketStatusContextList.add(inProgressState);
 
         ServiceAppointmentTicketStatusContext completedState = new ServiceAppointmentTicketStatusContext();
@@ -126,7 +126,7 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         completedState.setTextColor("#ffffff");
         completedState.setTypeCode(3);
         completedState.setRecordLocked(true);
-        scheduledState.setDeleteLocked(true);
+        completedState.setDeleteLocked(true);
         ticketStatusContextList.add(completedState);
 
         ServiceAppointmentTicketStatusContext cancelledState = new ServiceAppointmentTicketStatusContext();
@@ -138,7 +138,7 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         cancelledState.setTextColor("#ffffff");
         cancelledState.setTypeCode(3);
         cancelledState.setRecordLocked(true);
-        scheduledState.setDeleteLocked(true);
+        cancelledState.setDeleteLocked(true);
         ticketStatusContextList.add(cancelledState);
 
 

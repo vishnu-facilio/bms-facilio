@@ -462,6 +462,15 @@ public class TripModule extends BaseModuleConfig {
             endTripCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT), CommonOperators.IS_NOT_EMPTY));
             endTrip.setCriteria(endTripCriteria);
             SystemButtonApi.addSystemButton(FacilioConstants.Trip.TRIP,endTrip);
+
+            SystemButtonRuleContext endTripButton = new SystemButtonRuleContext();
+            endTripButton.setName("End Trip");
+            endTripButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+            endTripButton.setIdentifier(FacilioConstants.ServiceAppointment.END_TRIP);
+            endTripButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+            endTripButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+            endTripButton.setCriteria(endTripCriteria);
+            SystemButtonApi.addSystemButton(FacilioConstants.Trip.TRIP,endTripButton);
         }
     }
 
