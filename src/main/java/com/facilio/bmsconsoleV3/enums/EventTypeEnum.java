@@ -291,7 +291,7 @@ public enum EventTypeEnum implements FacilioEnum {
                 if(localDate.getMonthValue() == startMonth && (localDate.getDayOfMonth() > startDate || localDate.getDayOfMonth() < endDate)){
                     check = true;
                 }
-                if(localDate.getMonthValue() != startMonth){
+                if(localDate.getMonthValue() != startMonth && startDate > endDate){
                     check = true;
                 }
             }

@@ -23,10 +23,9 @@ public class CalendarSlotCreateCommand extends FacilioCommand {
         }
         List<Long> calendarIdList = new ArrayList<>();
         List<V3CalendarContext> v3CalendarContextList = (List<V3CalendarContext>) recordMap.get(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
-        if(CollectionUtils.isEmpty(v3CalendarContextList)){
-            return false;
+        if(CollectionUtils.isNotEmpty(v3CalendarContextList)){
+            calendarIdList.addAll(v3CalendarContextList.stream().map(V3CalendarContext::getId).collect(Collectors.toList()));
         }
-        calendarIdList.addAll(v3CalendarContextList.stream().map(V3CalendarContext::getId).collect(Collectors.toList()));
         if(context.containsKey(FacilioConstants.Calendar.SAVE_CALENDAR_ID_LIST)){
             calendarIdList.addAll((List<Long>) context.get(FacilioConstants.Calendar.SAVE_CALENDAR_ID_LIST));
         }

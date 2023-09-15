@@ -65,6 +65,10 @@ public class NamespaceBeanCacheImpl extends NamespaceBeanImpl implements Namespa
 
         FacilioCache<String, NameSpaceCacheContext> nameSpaceCache = LRUCache.getNameSpaceCache();
         nameSpaceCache.remove(CacheUtil.NAMESPACE_KEY(AccountUtil.getCurrentOrg().getId(), ns.getId()));
+        FacilioCache<String, NameSpaceCacheContext> parentNameSpaceCache = LRUCache.getNameSpaceParentCache();
+        if(ns.getParentRuleId() != null && ns.getType() > 0) {
+            parentNameSpaceCache.remove(CacheUtil.NAMESPACE_PARENT_KEY(AccountUtil.getCurrentOrg().getId(), ns.getParentRuleId(), ns.getType()));
+        }
         FacilioCache<String, List<Long>> nameSpaceIdCache = LRUCache.getNameSpaceIdCache();
         List<Long> fieldIds = NamespaceAPI.getFieldIdsForNamespace(ns.getId());
         for (Long fieldId : fieldIds) {

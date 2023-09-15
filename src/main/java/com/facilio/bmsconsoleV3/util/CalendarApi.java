@@ -560,6 +560,27 @@ public class CalendarApi {
         return ZonedDateTime.of(calendarSlotsContext.getCalendarYear(),calendarSlotsContext.getCalendarMonth(),calendarSlotsContext.getCalendarDate(),0,0,0,0,ZoneId.systemDefault());
 
     }
+    public static String convertMinuteToHourAndMins(Integer slotTime){
+        String hr = java.lang.String.valueOf(slotTime/60);
+        String min = java.lang.String.valueOf(slotTime%60);
+        if(hr.length() == 1){
+            hr = "0"+hr;
+        }
+        if(min.length() == 1){
+            min = "0"+min;
+        }
+        java.lang.String suffix = "am";
+        if(Integer.parseInt(hr) > 11){
+            hr = java.lang.String.valueOf(Integer.parseInt(hr) - 12);
+            if(hr.length() == 1){
+                hr = "0"+hr;
+            }
+
+            suffix = "pm";
+        }
+        String time = hr+":"+min+""+suffix;
+        return time;
+    }
 
 }
 

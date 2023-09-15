@@ -27,6 +27,10 @@ public class PageBuilderConfigUtil {
             moduleList.add(modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER));
             moduleList.add(modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_BILLS));
             moduleList.add(modBean.getModule(FacilioConstants.UTILITY_DISPUTE));
+            moduleList.add(modBean.getModule(FacilioConstants.Meter.METER));
+            moduleList.add(modBean.getModule(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE));
+            moduleList.add(modBean.getModule(FacilioConstants.Calendar.CALENDAR_MODULE_NAME));
+            moduleList.add(modBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME));
 
             if (CollectionUtils.isNotEmpty(moduleList)) {
                 List<Long> moduleIds = moduleList.stream().filter(Objects::nonNull).map(FacilioModule::getModuleId).collect(Collectors.toList());

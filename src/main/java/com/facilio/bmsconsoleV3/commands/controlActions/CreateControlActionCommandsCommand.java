@@ -1,18 +1,22 @@
 package com.facilio.bmsconsoleV3.commands.controlActions;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.CalendarActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3ActionContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3CommandsContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
 import com.facilio.bmsconsoleV3.util.ControlActionAPI;
 import com.facilio.bmsconsoleV3.util.V3SpaceAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +56,7 @@ public class CreateControlActionCommandsCommand extends FacilioCommand {
     public static V3CommandsContext createCommand(V3ControlActionContext controlActionContext, V3ActionContext actionContext, Long actionTime, V3AssetContext assetContext, V3CommandsContext.CommandActionType commandActionType) throws Exception{
         V3CommandsContext commandsContext = new V3CommandsContext();
         commandsContext.setAction(actionContext);
+        commandsContext.setName(constructCommandSubject(actionContext,commandActionType));
         commandsContext.setControlAction(controlActionContext);
         commandsContext.setSite(V3SpaceAPI.getSiteSpace(assetContext.getSiteId()));
         commandsContext.setAsset(assetContext);
@@ -60,5 +65,33 @@ public class CreateControlActionCommandsCommand extends FacilioCommand {
         commandsContext.setControlActionCommandStatus(V3CommandsContext.ControlActionCommandStatus.NOT_SCHEDULED.getVal());
         commandsContext.setCommandActionType(commandActionType.getVal());
         return commandsContext;
+    }
+    public static String constructCommandSubject(V3ActionContext actionContext,V3CommandsContext.CommandActionType commandActionType){
+        String subject = "";
+        if(commandActionType == V3CommandsContext.CommandActionType.SCHEDULED_ACTION){
+            if(actionContext.getScheduledActionOperatorTypeEnum() == V3ActionContext.ActionOperatorTypeEnum.FIXED){
+                subject += "Set Value To ";
+            }
+            else if(actionContext.getScheduledActionOperatorTypeEnum() == V3ActionContext.ActionOperatorTypeEnum.INCREASED_BY){
+                subject += "Increased By ";
+            }
+            else if(actionContext.getScheduledActionOperatorTypeEnum() == V3ActionContext.ActionOperatorTypeEnum.DECREASED_BY){
+                subject += "Decreased By ";
+            }
+            subject += String.valueOf(actionContext.getScheduleActionValue());
+        }
+        else if(commandActionType == V3CommandsContext.CommandActionType.REVERT_ACTION){
+            if(actionContext.getRevertActionOperatorTypeEnum() == V3ActionContext.ActionOperatorTypeEnum.FIXED){
+                subject += "Set Value To ";
+            }
+            else if(actionContext.getRevertActionOperatorTypeEnum() == V3ActionContext.ActionOperatorTypeEnum.INCREASED_BY){
+                subject += "Increased By ";
+            }
+            else if(actionContext.getRevertActionOperatorTypeEnum() == V3ActionContext.ActionOperatorTypeEnum.DECREASED_BY){
+                subject += "Decreased By ";
+            }
+            subject += String.valueOf(actionContext.getRevertActionValue());
+        }
+        return subject;
     }
 }

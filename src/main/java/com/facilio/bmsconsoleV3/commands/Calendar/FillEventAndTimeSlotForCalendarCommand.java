@@ -35,6 +35,11 @@ public class FillEventAndTimeSlotForCalendarCommand extends FacilioCommand {
                 List<V3CalendarTimeSlotContext> calendarTimeSlotContextList = CalendarApi.getTimeSlotOfEventAssociatedWithCalendar(calendarContext.getId(),calendarEventMappingContext.getEvent().getId());
                 if(CollectionUtils.isNotEmpty(calendarTimeSlotContextList)){
                     calendarEventMappingContext.setCalendarTimeSlotContextList(calendarTimeSlotContextList);
+                    List<String> calendarEventTimeSlotString = new ArrayList<>();
+                    for(V3CalendarTimeSlotContext calendarTimeSlotContext : calendarTimeSlotContextList){
+                        calendarEventTimeSlotString.add(CalendarApi.convertMinuteToHourAndMins(calendarTimeSlotContext.getStartMin())+" - "+CalendarApi.convertMinuteToHourAndMins(calendarTimeSlotContext.getEndMin()));
+                    }
+                    calendarEventMappingContext.setCalendarEventTimeSlotString(calendarEventTimeSlotString);
                 }
             }
             calendarContext.setCalendarEventMappingContextList(calendarEventMappingContextList);

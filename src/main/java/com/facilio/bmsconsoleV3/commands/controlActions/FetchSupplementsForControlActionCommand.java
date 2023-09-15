@@ -14,19 +14,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FetchSupplementsForControlActionCommandsCommand extends FacilioCommand {
+public class FetchSupplementsForControlActionCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> commandModuleFields = modBean.getAllFields(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
-        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(commandModuleFields);
+        List<FacilioField> controlActionModuleFields = modBean.getAllFields(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(controlActionModuleFields);
 
         List<LookupField> additionaLookups = new ArrayList<>();
-        additionaLookups.add((LookupField) fieldsAsMap.get("action"));
-        additionaLookups.add((LookupField) fieldsAsMap.get("site"));
-        additionaLookups.add((LookupField) fieldsAsMap.get("asset"));
-        additionaLookups.add((LookupField) fieldsAsMap.get("controlAction"));
-        additionaLookups.add((LookupField) fieldsAsMap.get("controller"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("assetCategory"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("controlActionTemplate"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("sysCreatedByPeople"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("sysModifiedByPeople"));
 
         if(CollectionUtils.isNotEmpty(additionaLookups)) {
             context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, additionaLookups);

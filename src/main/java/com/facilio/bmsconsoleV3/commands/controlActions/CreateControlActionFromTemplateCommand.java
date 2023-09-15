@@ -74,6 +74,8 @@ public class CreateControlActionFromTemplateCommand extends FacilioCommand {
             }
             records.add(controlActionRecord);
             controlActionRecord.setControlActionTemplate(controlActionTemplateContext);
+            controlActionRecord.setControlActionSourceType(V3ControlActionContext.ControlActionSourceTypeEnum.CONTROL_ACTION_TEMPLATE.getVal());
+            controlActionRecord.setControlActionTemplate(controlActionTemplateContext);
         }
         if(CollectionUtils.isNotEmpty(records)){
             V3Util.createRecord(controlActionModule,records);

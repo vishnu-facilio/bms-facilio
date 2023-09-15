@@ -80,7 +80,7 @@ public class AssociateEventAndTimeSlotForCalendarCommand extends FacilioCommand 
 
             List<Long> eventIdsToBeUpdated = new ArrayList<>();
             eventIdsToBeUpdated.addAll(existingEventIdList);
-            eventIdsToBeUpdated.addAll(eventIdsToBeAdded);
+            //eventIdsToBeUpdated.addAll(eventIdsToBeAdded);
             eventIdsToBeUpdated.removeAll(eventIdsToBeDeleted);
 
             if(CollectionUtils.isNotEmpty(eventIdsToBeAdded)){

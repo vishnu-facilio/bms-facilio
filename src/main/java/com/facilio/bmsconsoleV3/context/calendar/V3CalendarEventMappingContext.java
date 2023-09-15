@@ -13,4 +13,5 @@ public class V3CalendarEventMappingContext extends V3Context {
     private V3EventContext event;
     private Boolean isEventEdited;
     private List<V3CalendarTimeSlotContext> calendarTimeSlotContextList;
+    private List<String> calendarEventTimeSlotString;
 }

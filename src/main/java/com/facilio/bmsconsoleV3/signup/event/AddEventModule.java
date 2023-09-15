@@ -45,69 +45,69 @@ public class AddEventModule extends SignUpData {
         fields.add(name);
 
         StringField description = SignupUtil.getStringField(eventModule,"description","Description","DESCRIPTION",
-                FacilioField.FieldDisplayType.TEXTBOX,false,false,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,false,false,true,false,orgId);
         fields.add(description);
 
         DateField startTimeField = SignupUtil.getDateField(eventModule, "validityStartTime", "Start Time", "VALID_FROM",
-                FacilioField.FieldDisplayType.TEXTBOX, false, false, false, orgId);
+                FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(startTimeField);
 
         DateField endTimeField = SignupUtil.getDateField(eventModule, "validityEndTime", "End Time", "VALID_TILL",
-                FacilioField.FieldDisplayType.TEXTBOX, false, false, false, orgId); // check for display name
+                FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId); // check for display name
         fields.add(endTimeField);
 
         SystemEnumField eventType = SignupUtil.getSystemEnumField(eventModule,"eventType","Event Type","EVENT_TYPE","EventTypeEnum",
-                FacilioField.FieldDisplayType.TEXTBOX,true,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
         fields.add(eventType);
 
         NumberField eventSequence = SignupUtil.getNumberField(eventModule,"eventSequence","Event Sequence","EVENT_SEQUENCE",
-                FacilioField.FieldDisplayType.TEXTBOX,true,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
         fields.add(eventSequence);
 
         NumberField scheduledYear = SignupUtil.getNumberField(eventModule,"scheduledYear","Year","SCHEDULED_YEAR",
-        FacilioField.FieldDisplayType.SELECTBOX,false,false,false,orgId);
+        FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(scheduledYear);
 
         NumberField scheduledMonth = SignupUtil.getNumberField(eventModule,"scheduledMonth","Month","SCHEDULED_MONTH",
-                FacilioField.FieldDisplayType.SELECTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(scheduledMonth);
 
         NumberField scheduledDate = SignupUtil.getNumberField(eventModule,"scheduledDate","Date","SCHEDULED_DATE",
-                FacilioField.FieldDisplayType.SELECTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(scheduledDate);
 
         NumberField scheduledWeekNumber = SignupUtil.getNumberField(eventModule,"scheduledWeekNumber","Week","SCHEDULED_WEEK_NUMBER",
-                FacilioField.FieldDisplayType.SELECTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(scheduledWeekNumber);
 
         NumberField scheduledDay = SignupUtil.getNumberField(eventModule,"scheduledDay","Day","SCHEDULED_DAY",
-                FacilioField.FieldDisplayType.SELECTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(scheduledDay);
 
         SystemEnumField frequencyField = SignupUtil.getSystemEnumField(eventModule, "eventFrequency", "Frequency", "EVENT_FREQUENCY",
-                "EventFrequencyEnum", FacilioField.FieldDisplayType.TEXTBOX, false, false, false, orgId);
+                "EventFrequencyEnum", FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
         fields.add(frequencyField);
 
         BooleanField isSpecific = SignupUtil.getBooleanField(eventModule,"isSpecific","Specific","IS_SPECIFIC",
-                FacilioField.FieldDisplayType.DECISION_BOX,null,false,false,false,orgId);
+                FacilioField.FieldDisplayType.DECISION_BOX,null,false,false,true,orgId);
         isSpecific.setTrueVal("Specific");
         isSpecific.setFalseVal("Relative");
         fields.add(isSpecific);
 
         NumberField seasonStartMonth = SignupUtil.getNumberField(eventModule,"seasonStartMonth","Season Start Month","SEASON_START_MONTH",
-                FacilioField.FieldDisplayType.SELECTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(seasonStartMonth);
 
         NumberField seasonStartDate = SignupUtil.getNumberField(eventModule,"seasonStartDate","Season Start Date","SEASON_START_DATE",
-                FacilioField.FieldDisplayType.SELECTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(seasonStartDate);
 
         NumberField seasonEndMonth = SignupUtil.getNumberField(eventModule,"seasonEndMonth","Season End Month","SEASON_END_MONTH",
-                FacilioField.FieldDisplayType.SELECTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(seasonEndMonth);
 
         NumberField seasonEndDate = SignupUtil.getNumberField(eventModule,"seasonEndDate","Season End Date","SEASON_END_DATE",
-                FacilioField.FieldDisplayType.SELECTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(seasonEndDate);
 
         LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE",FieldType.LOOKUP);
@@ -122,7 +122,7 @@ public class AddEventModule extends SignUpData {
         fields.add((FacilioField) FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.DATE_TIME));
 
         eventModule.setFields(fields);
-       modules.add(eventModule);
+        modules.add(eventModule);
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
@@ -232,7 +232,7 @@ public class AddEventModule extends SignUpData {
         fields.add(eventField);
 
         BooleanField isEventEdited = SignupUtil.getBooleanField(calendarEventMappingModule,"isEventEdited","Event Edited",
-                "EVENT_EDITED", FacilioField.FieldDisplayType.DECISION_BOX,null,false,false,false,orgId);
+                "EVENT_EDITED", FacilioField.FieldDisplayType.DECISION_BOX,null,false,false,true,orgId);
         fields.add(isEventEdited);
 
         LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE",FieldType.LOOKUP);

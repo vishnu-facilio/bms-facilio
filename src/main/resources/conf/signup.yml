@@ -459,7 +459,8 @@ classes:
   - com.facilio.bmsconsoleV3.signup.controlAction.AddControlActionModulePostAction
   - com.facilio.bmsconsoleV3.signup.controlAction.AddControlActionTemplateModule
   - com.facilio.bmsconsoleV3.signup.controlAction.ControlActionModule
-
+  - com.facilio.bmsconsoleV3.signup.controlAction.ControlActionTemplateModule
+  - com.facilio.bmsconsoleV3.signup.controlAction.CommandModule
 
 
   #Adding Flow log modules

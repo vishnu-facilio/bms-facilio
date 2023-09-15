@@ -3249,8 +3249,10 @@ public class APIv3Config {
                 .afterTransaction(new CalendarSlotCreateCommand())
                 .delete().markAsDeleteByPeople()
                 .summary()
+                .beforeFetch(TransactionChainFactoryV3.getEventBeforeFetchChain())
                 .afterFetch(TransactionChainFactoryV3.getEventAfterFetchChain())
                 .list()
+                .beforeFetch(TransactionChainFactoryV3.getEventBeforeFetchChain())
                 .afterFetch(TransactionChainFactoryV3.getEventAfterFetchChain())
                 .build();
     }
@@ -3282,6 +3284,7 @@ public class APIv3Config {
                 .delete().markAsDeleteByPeople()
                 .summary()
                 .list()
+                .beforeFetch(TransactionChainFactoryV3.getCalendarEventMappingBeforeListChain())
                 .build();
     }
     @Module(FacilioConstants.Calendar.CALENDAR_TIME_SLOT_MODULE_NAME)
@@ -3352,6 +3355,8 @@ public class APIv3Config {
         return () -> new V3Config(VirtualMeterTemplateReadingContext.class, null)
                 .create()
                 .afterSave(new PopulateNameSpaceAndFieldForVMReadingsCommand())
+                .update()
+                .afterSave(TransactionChainFactoryV3.getUpdateVirtualMeterTemplateReadingAfterChain())
                 .summary()
                 .afterFetch(new FetchNameSpaceAndFieldForVMReadingsCommand())
                 .build();
@@ -3373,13 +3378,16 @@ public class APIv3Config {
                 .afterSave(TransactionChainFactoryV3.getControlActionAfterSaveChain())
                 .afterTransaction(new CallToCommandGenerationCommand())
                 .update()
-                .afterSave(TransactionChainFactoryV3.getControlActionBeforeUpdateChain())
+                .beforeSave(TransactionChainFactoryV3.getControlActionBeforeUpdateChain())
+                .afterSave(TransactionChainFactoryV3.getControlActionAfterUpdateChain())
                 .afterTransaction(new CallToCommandGenerationCommand())
                 .delete().markAsDeleteByPeople()
                 .beforeDelete(TransactionChainFactoryV3.getControlActionBeforeDeleteChain())
                 .summary()
+                .beforeFetch(TransactionChainFactoryV3.getControlActionBeforeListChain())
                 .afterFetch(TransactionChainFactoryV3.getControlActionAfterFetchChain())
                 .list()
+                .beforeFetch(TransactionChainFactoryV3.getControlActionBeforeListChain())
                 .build();
     }
     @Module(FacilioConstants.Control_Action.ACTION_MODULE_NAME)
@@ -3399,7 +3407,9 @@ public class APIv3Config {
         return () -> new V3Config(V3CommandsContext.class,null)
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getCommandsBeforeCreateChain())
+                .afterSave(TransactionChainFactoryV3.getCommandsAfterSaveChain())
                 .update()
+                .afterSave(TransactionChainFactoryV3.getCommandsAfterSaveChain())
                 .delete().markAsDeleteByPeople()
                 .summary()
                 .afterFetch(TransactionChainFactoryV3.getCommandsAfterSummaryChain())
@@ -3412,14 +3422,20 @@ public class APIv3Config {
     public static Supplier<V3Config> getControlActionTemplate() {
         return () -> new V3Config(V3ControlActionTemplateContext.class, null)
                 .create()
+                .beforeSave(TransactionChainFactoryV3.getControlActionTemplateBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getControlActionTemplateAfterSaveChain())
                 .afterTransaction(new CallToControlActionGenerationCommand())
                 .update()
+                .beforeSave(TransactionChainFactoryV3.getControlActionTemplateBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getControlActionTemplateAfterSaveChain())
                 .afterTransaction(new CallToControlActionGenerationCommand())
                 .delete().markAsDeleteByPeople()
                 .beforeDelete(TransactionChainFactoryV3.getControlActionTemplateBeforeDeleteChain())
                 .summary()
+                .beforeFetch(TransactionChainFactoryV3.getControlActionTemplateBeforeListChain())
+                .afterFetch(TransactionChainFactoryV3.getControlActionTemplateAfterFetchChain())
+                .list()
+                .beforeFetch(TransactionChainFactoryV3.getControlActionTemplateBeforeListChain())
                 .build();
     }
 
@@ -3468,7 +3484,6 @@ public class APIv3Config {
     @Module(FacilioConstants.UTILITY_INTEGRATION_LINE_ITEMS)
     public static Supplier<V3Config> getUtilityLineItems() {
         return () -> new V3Config(UtilityIntegrationLineItemContext.class, new ModuleCustomFieldCount30())
-
                 .list()
                 .build();
     }

@@ -35,6 +35,15 @@ public class AddCriteriaForControlActionCommand extends FacilioCommand {
                 CriteriaAPI.updateConditionField(FacilioConstants.ContextNames.CONTROLLER_MODULE_NAME,controlActionContext.getControllerCriteria());
                 controlActionContext.setControllerCriteriaId(CriteriaAPI.addCriteria(controlActionContext.getControllerCriteria()));
             }
+            if(controlActionContext.getSiteCriteria() == null){
+                controlActionContext.setSiteCriteriaId(null);
+            }
+            if(controlActionContext.getAssetCriteria() == null){
+                controlActionContext.setAssetCriteriaId(null);
+            }
+            if(controlActionContext.getControllerCriteria() == null){
+                controlActionContext.setControllerCriteriaId(null);
+            }
         }
 
         return false;

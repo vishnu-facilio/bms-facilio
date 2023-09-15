@@ -111,6 +111,9 @@ public class ApplicationApi {
         else if (appLinkName.equals("iwms")) {
             appLinkName = FacilioConstants.ApplicationLinkNames.IWMS_APP;
         }
+        else if(appLinkName.equals("energy")){
+            appLinkName = FacilioConstants.ApplicationLinkNames.ENERGY_APP;
+        }
         if(appLinkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && !skipCheck) {
             appLinkName = SignupUtil.getSignupApplicationLinkName();
         }
@@ -886,6 +889,12 @@ public class ApplicationApi {
                 ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
         workplaceApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
 
+        ApplicationContext energyApplication = new ApplicationContext(orgId, "Energy", false,
+                facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.ENERGY_APP,
+                ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Energy App",
+                ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
+        energyApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
+
         List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();
         if(!SignupUtil.maintenanceAppSignup()) {
             applicationsDefault.add(facilioApplication);
@@ -900,6 +909,7 @@ public class ApplicationApi {
         applicationsDefault.add(kioskApplication);
         applicationsDefault.add(employeePortalApplication);
         applicationsDefault.add(workplaceApplication);
+        applicationsDefault.add(energyApplication);
 
         List<Map<String, Object>> props = FieldUtil.getAsMapList(applicationsDefault, ApplicationContext.class);
 
@@ -1132,6 +1142,18 @@ public class ApplicationApi {
             addAppRoleMapping(workplaceAdmin.getRoleId(), workplaceApp.getId());
 
         }
+//        ApplicationContext energyApp = getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+//        if(energyApp.getId() > 0){
+//
+//            //Energy App Layout
+//            ApplicationLayoutContext energyLayout = new ApplicationLayoutContext(energyApp.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE,
+//                    ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+//            addApplicationLayout(energyLayout);
+//            addEnergyAppWebTabs(energyLayout);
+//            Role superAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
+//                    FacilioConstants.DefaultRoleNames.SUPER_ADMIN);
+//            ApplicationApi.addAppRoleMapping(superAdmin.getRoleId(), energyApp.getId());
+//        }
 
     }
 
@@ -3412,6 +3434,96 @@ public class ApplicationApi {
             e.printStackTrace();
         }
 
+    }
+    public static void addEnergyAppWebTabs(ApplicationLayoutContext layout) {
+        ModuleBean modBean = null;
+        try {
+            modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            List<WebTabGroupContext> webTabGroups = new ArrayList<>();
+            Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
+            List<WebTabContext> webTabs = new ArrayList<>();
+            JSONObject configJSON;
+            int groupOrder = 1;
+
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"portfolio\" }", 1,null,layout.getApplicationId()));
+            webTabGroups.add(new WebTabGroupContext(webTabs,"Home", "home",  IconType.home.ordinal(),groupOrder++,null,layout.getId(),IconType.home));
+            groupNameVsWebTabsMap.put("home", webTabs);
+
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Meters", "meter", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule(FacilioConstants.Meter.METER).getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Virtual Meter Template", "virtualMeterTemplate", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE).getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Assets", "asset", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.ASSET).getModuleId()), layout.getApplicationId(), null));
+            webTabGroups.add(new WebTabGroupContext(webTabs,"Meters And Assets", "metersAndAssets",IconType.meter.ordinal(), groupOrder++,null,layout.getId(),IconType.meter));
+            groupNameVsWebTabsMap.put("metersAndAssets", webTabs);
+
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Faults", "fault", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM).getModuleId()), layout.getApplicationId(), null,AccountUtil.FeatureLicense.NEW_ALARMS.getFeatureId()));
+            webTabs.add(new WebTabContext("Sensor Faults","sensorFault",WebTabContext.Type.MODULE,Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM).getModuleId()),layout.getApplicationId(), null,AccountUtil.FeatureLicense.SENSOR_RULE.getFeatureId()));
+            webTabs.add(new WebTabContext("Rules","rule",WebTabContext.Type.MODULE,Arrays.asList(modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE).getModuleId()),layout.getApplicationId(), null,AccountUtil.FeatureLicense.NEW_READING_RULE.getFeatureId()));
+            webTabs.add(new WebTabContext("Bms Alarms","bmsAlarm",WebTabContext.Type.MODULE,Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.BMS_ALARM).getModuleId()),layout.getApplicationId(), null));
+            webTabGroups.add(new WebTabGroupContext(webTabs,"Diagnostics", "diagnostics",IconType.diagnostics.ordinal(), groupOrder++,null,layout.getId(),IconType.diagnostics));
+            groupNameVsWebTabsMap.put("diagnostics", webTabs);
+
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Buildings", "building", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.BUILDING).getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Reading Kpis", "readingKpi", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule(FacilioConstants.ReadingKpi.READING_KPI).getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Pivot Table", "pivotTable", WebTabContext.Type.PIVOT, null, layout.getApplicationId(), null));
+            configJSON  = new JSONObject();
+            configJSON.put("type", "analytics_reports");
+            webTabs.add(new WebTabContext("Reports", "report", WebTabContext.Type.REPORT,Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING).getModuleId()),layout.getApplicationId(),configJSON));
+            webTabGroups.add(new WebTabGroupContext(webTabs,"Analytics", "analytics",IconType.analytics.ordinal(), groupOrder++,null,layout.getId(),IconType.analytics));
+            groupNameVsWebTabsMap.put("analytics", webTabs);
+
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Disputes", "disputes", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule(FacilioConstants.UTILITY_DISPUTE).getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Utility Bills","utilityBills",WebTabContext.Type.MODULE,Arrays.asList(modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_BILLS).getModuleId()),layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Tariffs","tariffs",WebTabContext.Type.MODULE,Arrays.asList(modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_TARIFF).getModuleId()),layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Utility Accounts","utilityAccount",WebTabContext.Type.MODULE,Arrays.asList(modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER).getModuleId()),layout.getApplicationId(), null));
+            webTabGroups.add(new WebTabGroupContext(webTabs,"Utility", "utility",IconType.utility.ordinal(),groupOrder++,null,layout.getId(),IconType.utility));
+            groupNameVsWebTabsMap.put("utility", webTabs);
+
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Control Actions", "controlAction", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME).getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Control Action Templates","controlActionTemplate",WebTabContext.Type.MODULE,Arrays.asList(modBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME).getModuleId()),layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Calendars","calender",WebTabContext.Type.MODULE,Arrays.asList(modBean.getModule(FacilioConstants.Calendar.CALENDAR_MODULE_NAME).getModuleId()),layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Calendar Events","calendarEvent",WebTabContext.Type.MODULE,Arrays.asList(modBean.getModule(FacilioConstants.Calendar.EVENT_MODULE_NAME).getModuleId()),layout.getApplicationId(), null));
+            webTabGroups.add(new WebTabGroupContext(webTabs,"Controls", "controls",IconType.controls.ordinal(),groupOrder++,null,layout.getId(),IconType.controls));
+            groupNameVsWebTabsMap.put("controls", webTabs);
+
+            for (WebTabGroupContext webTabGroupContext : webTabGroups) {
+                System.out.println("we: " + webTabGroupContext.getRoute());
+                FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
+                FacilioContext chainContext = chain.getContext();
+                chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, webTabGroupContext);
+                chain.execute();
+                long webGroupId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID);
+                webTabGroupContext.setId(webGroupId);
+                List<WebTabContext> tabs = groupNameVsWebTabsMap.get(webTabGroupContext.getRoute());
+                for (WebTabContext webTabContext : tabs) {
+                    chain = TransactionChainFactory.getAddOrUpdateTabChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
+                    chain.execute();
+                    long tabId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_ID);
+                    webTabContext.setId(tabId);
+                }
+                if(CollectionUtils.isNotEmpty(tabs)){
+                    chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
+                    chainContext = chain.getContext();
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TABS, tabs);
+                    chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, webGroupId);
+                    chain.execute();
+                }
+            }
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static Map<String, String> evaluateValueGenerators() throws Exception {

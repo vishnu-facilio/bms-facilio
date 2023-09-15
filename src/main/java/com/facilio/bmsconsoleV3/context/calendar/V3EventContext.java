@@ -39,9 +39,6 @@ public class V3EventContext extends V3Context {
     private List<V3EventTimeSlotContext> timeSlotList;
     private List<String> timeSlotString;
 
-    public List<String> getTimeSlotString() {
-        return Arrays.asList("09:30 - 12:30","15:00 - 17:30");
-    }
 
     public Integer getEventType() {
         return eventType == null ? null : eventType.getIntVal();

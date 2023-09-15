@@ -2,20 +2,20 @@ package com.facilio.bmsconsoleV3.signup.controlAction;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.ApprovalRuleMetaContext;
-import com.facilio.bmsconsole.context.SharingContext;
-import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
+import com.facilio.bmsconsoleV3.util.CalendarApi;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -53,6 +53,13 @@ public class AddControlActionModulePostAction extends BaseModuleConfig {
         approverContextList.add(secondLevelApprover);
         approvalRuleMetaContext.setApprovers(approverContextList);
 
+        Criteria criteria = new Criteria();
+        Condition firstLevelApprovalCondition = CriteriaAPI.getCondition(moduleBean.getField("firstLevelApproval",FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME), CommonOperators.IS_NOT_EMPTY);
+        Condition secondLevelApprovalCondition = CriteriaAPI.getCondition(moduleBean.getField("secondLevelApproval",FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME), CommonOperators.IS_NOT_EMPTY);
+        criteria.addAndCondition(firstLevelApprovalCondition);
+        criteria.addOrCondition(secondLevelApprovalCondition);
+        approvalRuleMetaContext.setCriteria(criteria);
+
         approvalRuleMetaContext.setEventType(EventType.CREATE_OR_EDIT);
         approvalRuleMetaContext.setName("Control Action Default Approval");
         approvalRuleMetaContext.setRejectDialogType(AbstractStateTransitionRuleContext.DialogType.MODULE);
@@ -65,5 +72,10 @@ public class AddControlActionModulePostAction extends BaseModuleConfig {
         chain.setContext(context);
         chain.execute();
 
+    }
+
+    @Override
+    public List<WidgetContext> getModuleWidgets() throws Exception {
+        return null ;
     }
 }

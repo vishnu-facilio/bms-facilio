@@ -1,4 +1,4 @@
-package com.facilio.bmsconsoleV3.commands.controlActions;
+package com.facilio.bmsconsoleV3.commands.Calendar;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
@@ -14,19 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FetchSupplementsForControlActionCommandsCommand extends FacilioCommand {
+public class FetchSupplementsForCalendarEventMappingCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> commandModuleFields = modBean.getAllFields(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
-        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(commandModuleFields);
+        List<FacilioField> calendarEventMappingModule = modBean.getAllFields(FacilioConstants.Calendar.CALENDAR_EVENT_MAPPING_MODULE_NAME);
+        Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(calendarEventMappingModule);
 
         List<LookupField> additionaLookups = new ArrayList<>();
-        additionaLookups.add((LookupField) fieldsAsMap.get("action"));
-        additionaLookups.add((LookupField) fieldsAsMap.get("site"));
-        additionaLookups.add((LookupField) fieldsAsMap.get("asset"));
-        additionaLookups.add((LookupField) fieldsAsMap.get("controlAction"));
-        additionaLookups.add((LookupField) fieldsAsMap.get("controller"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("event"));
 
         if(CollectionUtils.isNotEmpty(additionaLookups)) {
             context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, additionaLookups);

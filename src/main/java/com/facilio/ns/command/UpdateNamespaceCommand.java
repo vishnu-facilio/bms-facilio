@@ -2,6 +2,7 @@ package com.facilio.ns.command;
 
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateReadingContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.ns.context.NameSpaceContext;
@@ -27,6 +28,10 @@ public class UpdateNamespaceCommand extends FacilioCommand {
         else if(moduleName.equals(FacilioConstants.ReadingKpi.READING_KPI)){
             ReadingKPIContext kpi = (ReadingKPIContext) context.get(FacilioConstants.ReadingKpi.READING_KPI);
             this.ns = kpi.getNs();
+        }
+        else if(moduleName.equals(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE_READING)){
+            VirtualMeterTemplateReadingContext vmt = (VirtualMeterTemplateReadingContext) context.get(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE_READING);
+            this.ns = vmt.getNs();
         }
         updateIncludedAssets();
         updateNamespace();

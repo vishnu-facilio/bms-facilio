@@ -2,10 +2,13 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.chain.FacilioChain;
@@ -13,15 +16,15 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -159,6 +162,7 @@ public class MeterModule extends BaseModuleConfig{
 
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -240,6 +244,7 @@ public class MeterModule extends BaseModuleConfig{
 
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         meterView.setAppLinkNames(appLinkNames);
 
         return meterView;
@@ -304,7 +309,7 @@ public class MeterModule extends BaseModuleConfig{
         MeterForm.setName("default_meter_web");
         MeterForm.setModule(MeterModule);
         MeterForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        MeterForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        MeterForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
 
         List<FormField> MeterFormFields = new ArrayList<>();
         MeterFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, "name", 1, 1));
@@ -371,5 +376,442 @@ public class MeterModule extends BaseModuleConfig{
 
         return columns;
 
+    }
+
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String, List<PagesContext>> pageTemp = new HashMap<>();
+        pageTemp.put(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, getSystemPage());
+        return  pageTemp;
+    }
+    private static List<PagesContext> getSystemPage() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        FacilioModule meterModule = modBean.getModule(FacilioConstants.Meter.METER);
+        JSONObject historyWidgetParam = new JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.Meter.METER_ACTIVITY);
+        List<PagesContext> MeterPages = new ArrayList<>();
+        PagesContext physicalMeterSystemTypePage = new PagesContext("physicalmetersystemtypepage", "Physical Meter System Type Page", "Physical Meter page for System UtilityTypes", getPhysicalMeterSystemTypeCriteria(), false, false, true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("metersummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                .addSection("meterDetailsSection", null, null)
+                .addWidget("meterDetailsWidget", "Meter Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_26", 0, 0, null, getPhysicalMeterSummaryWidgetDetails(meterModule.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("commentsAndAttachmentsSection", null, null)
+                .addWidget("commentsAndAttachmentsWidget", "Comments And Attachments", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getCommentsAttachmentsWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                .addSection("monthlyConsumptionSection", null, null)
+                .addWidget("monthlyConsumptionWidget", "Monthly Consumption", PageWidget.WidgetType.MONTHLY_CONSUMPTION, "webmonthlyconsumption_14_24", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("totalConsumptionSection", null, null)
+                .addWidget("totalConsumptionWidget", "Total Consumption", PageWidget.WidgetType.TOTAL_CONSUMPTION, "webtotalconsumption_14_24", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("peakDemandSection", null, null)
+                .addWidget("peakDemandWidget", "Peak Demand", PageWidget.WidgetType.PEAK_DEMAND, "webpeakDemamd_14_24", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("meterreadings", "Readings", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterReadingsSection", null, null)
+                .addWidget("meterReadingsWidget", "Meter Readings", PageWidget.WidgetType.METER_READINGS, "flexiblewebmeterreadings_33", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("meterrelated", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterrelationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("meterrelatedlist", "Related List", "List of related records across modules")
+                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(meterModule))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("meterhistory", "History", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("historySection", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone();
+        PagesContext physicalMeterCustomTypePage = new PagesContext("physicalmetercustomtypepage", "Physical Meter Custom Type Page", "Physical Meter page for Custom UtilityTypes", getPhysicalMeterCustomTypeCriteria(), false, true, true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("metersummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterDetailsSection", null, null)
+                .addWidget("meterDetailsWidget", "Meter Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_26", 0, 0, null, getPhysicalMeterSummaryWidgetDetails(meterModule.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("commentsAndAttachmentsSection", null, null)
+                .addWidget("commentsAndAttachmentsWidget", "Comments And Attachments", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getCommentsAttachmentsWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("meterreadings", "Readings", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterReadingsSection", null, null)
+                .addWidget("meterReadingsWidget", "Meter Readings", PageWidget.WidgetType.METER_READINGS, "flexiblewebmeterreadings_33", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("meterrelated", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterrelationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("meterrelatedlist", "Related List", "List of related records across modules")
+                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(meterModule))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("meterhistory", "History", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("historySection", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone();
+        PagesContext virtualMeterSystemTypePage = new PagesContext("virtualmetersystemtypepage", "Virtual Meter System Type Page", "Virtual Meter page for System UtilityTypes", getVirtualMeterSystemTypeCriteria(), false, false, true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("metersummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                .addSection("meterDetailsSection", null, null)
+                .addWidget("meterDetailsWidget", "Meter Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_20", 0, 0, null, getVirtualMeterSummaryWidgetDetails(meterModule.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("commentsAndAttachmentsSection", null, null)
+                .addWidget("commentsAndAttachmentsWidget", "Comments And Attachments", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getCommentsAttachmentsWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                .addSection("monthlyConsumptionSection", null, null)
+                .addWidget("monthlyConsumptionWidget", "Monthly Consumption", PageWidget.WidgetType.MONTHLY_CONSUMPTION, "webmonthlyconsumption_14_24", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("totalConsumptionSection", null, null)
+                .addWidget("totalConsumptionWidget", "Total Consumption", PageWidget.WidgetType.TOTAL_CONSUMPTION, "webtotalconsumption_14_24", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("peakDemandSection", null, null)
+                .addWidget("peakDemandWidget", "Peak Demand", PageWidget.WidgetType.PEAK_DEMAND, "webpeakDemamd_14_24", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("meterreadings", "Readings", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterReadingsSection", null, null)
+                .addWidget("meterReadingsWidget", "Meter Readings", PageWidget.WidgetType.METER_READINGS, "flexiblewebmeterreadings_33", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("meterrelated", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterrelationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("meterrelatedlist", "Related List", "List of related records across modules")
+                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(meterModule))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("meterhistory", "History", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("historySection", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone();
+        PagesContext virtualMeterCustomTypePage = new PagesContext("virtualmetercustomtypepage", "Virtual Meter Custom Type Page", "Virtual Meter page for Custom UtilityTypes", getVirtualMeterCustomTypeCriteria(), false, false, true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("metersummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterDetailsSection", null, null)
+                .addWidget("meterDetailsWidget", "Meter Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_20", 0, 0, null, getVirtualMeterSummaryWidgetDetails(meterModule.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("commentsAndAttachmentsSection", null, null)
+                .addWidget("commentsAndAttachmentsWidget", "Comments And Attachments", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getCommentsAttachmentsWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("meterreadings", "Readings", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterReadingsSection", null, null)
+                .addWidget("meterReadingsWidget", "Meter Readings", PageWidget.WidgetType.METER_READINGS, "flexiblewebmeterreadings_33", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("meterrelated", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterrelationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("meterrelatedlist", "Related List", "List of related records across modules")
+                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(meterModule))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("meterhistory", "History", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("historySection", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone();
+        MeterPages.add(physicalMeterSystemTypePage);
+        MeterPages.add(physicalMeterCustomTypePage);
+        MeterPages.add(virtualMeterSystemTypePage);
+        MeterPages.add(virtualMeterCustomTypePage);
+        return MeterPages;
+    }
+    private static Criteria getPhysicalMeterSystemTypeCriteria() {
+        Criteria criteria = new Criteria();
+        Condition meterTypeCondition = new Condition();
+        meterTypeCondition.setFieldName("isVirtual");
+        meterTypeCondition.setColumnName("Meters.IS_VIRTUAL");
+        meterTypeCondition.setOperator(BooleanOperators.IS);
+        meterTypeCondition.setValue("false");
+        meterTypeCondition.setModuleName(FacilioConstants.Meter.METER);
+        criteria.addAndCondition(meterTypeCondition);
+        Condition utilityTypeCon = new Condition();
+        utilityTypeCon.setModuleName("meter");
+        utilityTypeCon.setFieldName("utilityType");
+        utilityTypeCon.setOperator(LookupOperator.LOOKUP);
+        Condition condition = CriteriaAPI.getCondition("Utility_Type.IS_DEFAULT","isDefault","true" , BooleanOperators.IS);
+        Criteria oneLevel = new Criteria();
+        oneLevel.addAndCondition(condition);
+        utilityTypeCon.setCriteriaValue(oneLevel);
+        criteria.addAndCondition(utilityTypeCon);
+        return criteria;
+    }
+    private static Criteria getPhysicalMeterCustomTypeCriteria() {
+        Criteria criteria = new Criteria();
+        Condition meterTypeCondition = new Condition();
+        meterTypeCondition.setFieldName("isVirtual");
+        meterTypeCondition.setColumnName("Meters.IS_VIRTUAL");
+        meterTypeCondition.setOperator(BooleanOperators.IS);
+        meterTypeCondition.setValue("false");
+        meterTypeCondition.setModuleName(FacilioConstants.Meter.METER);
+        criteria.addAndCondition(meterTypeCondition);
+        Condition utilityTypeCon = new Condition();
+        utilityTypeCon.setModuleName("meter");
+        utilityTypeCon.setFieldName("utilityType");
+        utilityTypeCon.setOperator(LookupOperator.LOOKUP);
+        Condition condition = CriteriaAPI.getCondition("Utility_Type.IS_DEFAULT","isDefault","false" , BooleanOperators.IS);
+        Criteria oneLevel = new Criteria();
+        oneLevel.addAndCondition(condition);
+        utilityTypeCon.setCriteriaValue(oneLevel);
+        criteria.addAndCondition(utilityTypeCon);
+        return criteria;
+    }
+    private static Criteria getVirtualMeterSystemTypeCriteria() {
+        Criteria criteria = new Criteria();
+        Condition meterTypeCondition = new Condition();
+        meterTypeCondition.setFieldName("isVirtual");
+        meterTypeCondition.setColumnName("Meters.IS_VIRTUAL");
+        meterTypeCondition.setOperator(BooleanOperators.IS);
+        meterTypeCondition.setValue("true");
+        meterTypeCondition.setModuleName(FacilioConstants.Meter.METER);
+        criteria.addAndCondition(meterTypeCondition);
+        Condition utilityTypeCon = new Condition();
+        utilityTypeCon.setModuleName("meter");
+        utilityTypeCon.setFieldName("utilityType");
+        utilityTypeCon.setOperator(LookupOperator.LOOKUP);
+        Condition condition = CriteriaAPI.getCondition("Utility_Type.IS_DEFAULT","isDefault","true" , BooleanOperators.IS);
+        Criteria oneLevel = new Criteria();
+        oneLevel.addAndCondition(condition);
+        utilityTypeCon.setCriteriaValue(oneLevel);
+        criteria.addAndCondition(utilityTypeCon);
+        return criteria;
+    }
+    private static Criteria getVirtualMeterCustomTypeCriteria() {
+        Criteria criteria = new Criteria();
+        Condition meterTypeCondition = new Condition();
+        meterTypeCondition.setFieldName("isVirtual");
+        meterTypeCondition.setColumnName("Meters.IS_VIRTUAL");
+        meterTypeCondition.setOperator(BooleanOperators.IS);
+        meterTypeCondition.setValue("true");
+        meterTypeCondition.setModuleName(FacilioConstants.Meter.METER);
+        criteria.addAndCondition(meterTypeCondition);
+        Condition utilityTypeCon = new Condition();
+        utilityTypeCon.setModuleName("meter");
+        utilityTypeCon.setFieldName("utilityType");
+        utilityTypeCon.setOperator(LookupOperator.LOOKUP);
+        Condition condition = CriteriaAPI.getCondition("Utility_Type.IS_DEFAULT","isDefault","false" , BooleanOperators.IS);
+        Criteria oneLevel = new Criteria();
+        oneLevel.addAndCondition(condition);
+        utilityTypeCon.setCriteriaValue(oneLevel);
+        criteria.addAndCondition(utilityTypeCon);
+        return criteria;
+    }
+    private static JSONObject getPhysicalMeterSummaryWidgetDetails(String moduleName, ApplicationContext app) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(moduleName);
+        FacilioField utilityType = moduleBean.getField("utilityType", moduleName);
+        FacilioField servingTo = moduleBean.getField("servingTo", moduleName);
+        FacilioField space = moduleBean.getField("space",moduleName);
+        FacilioField isVirtual = moduleBean.getField("isVirtual", moduleName);
+        FacilioField manufacturer = moduleBean.getField("manufacturer", moduleName);
+        FacilioField supplier = moduleBean.getField("supplier", moduleName);
+        FacilioField model = moduleBean.getField("model", moduleName);
+        FacilioField unitPrice = moduleBean.getField("unitPrice", moduleName);
+        FacilioField serialNumber = moduleBean.getField("serialNumber", moduleName);
+        FacilioField tagNumber = moduleBean.getField("tagNumber", moduleName);
+        FacilioField partNumber = moduleBean.getField("partNumber", moduleName);
+        FacilioField purchasedDate = moduleBean.getField("purchasedDate", moduleName);
+        FacilioField retireDate = moduleBean.getField("retireDate", moduleName);
+        FacilioField warrantyExpiryDate = moduleBean.getField("warrantyExpiryDate", moduleName);
+        FacilioField qrVal = moduleBean.getField("qrVal", moduleName);
+        FacilioField isCheckMeter = moduleBean.getField("isCheckMeter", moduleName);
+        FacilioField isBillable = moduleBean.getField("isBillable", moduleName);
+        FacilioField sysCreatedBy = moduleBean.getField("sysCreatedBy", moduleName);
+        FacilioField sysCreatedTime = moduleBean.getField("sysCreatedTime", moduleName);
+        FacilioField sysModifiedBy = moduleBean.getField("sysModifiedBy", moduleName);
+        FacilioField sysModifiedTime = moduleBean.getField("sysModifiedTime", moduleName);
+        FacilioField description = moduleBean.getField("description", moduleName);
+        SummaryWidget pageWidget = new SummaryWidget();
+        SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
+        addSummaryFieldInWidgetGroup(widgetGroup, utilityType, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, servingTo, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, space, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, isVirtual, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, manufacturer, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, supplier, 2, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, model, 2, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, unitPrice, 2, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, serialNumber, 3, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, tagNumber, 3, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, partNumber, 3, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, purchasedDate, 3, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, retireDate, 4, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, warrantyExpiryDate, 4, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, qrVal, 4, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, isCheckMeter, 4, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, isBillable, 5, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedBy, 5, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedTime, 5, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedBy, 5, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTime, 6, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, description, 7, 1, 4);
+        widgetGroup.setName("moduleDetails");
+        widgetGroup.setDisplayName("General Information");
+        widgetGroup.setColumns(4);
+        List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
+        widgetGroupList.add(widgetGroup);
+        pageWidget.setDisplayName("");
+        pageWidget.setModuleId(module.getModuleId());
+        pageWidget.setAppId(app.getId());
+        pageWidget.setGroups(widgetGroupList);
+        return FieldUtil.getAsJSON(pageWidget);
+    }
+    private static JSONObject getVirtualMeterSummaryWidgetDetails(String moduleName, ApplicationContext app) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(moduleName);
+        FacilioField utilityType = moduleBean.getField("utilityType", moduleName);
+        FacilioField servingTo = moduleBean.getField("servingTo", moduleName);
+        FacilioField vmTemplate = moduleBean.getField("virtualMeterTemplate", moduleName);
+        FacilioField isVirtual = moduleBean.getField("isVirtual", moduleName);
+        FacilioField description = moduleBean.getField("description", moduleName);
+        SummaryWidget pageWidget = new SummaryWidget();
+        SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
+        addSummaryFieldInWidgetGroup(widgetGroup, utilityType, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, servingTo, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, vmTemplate, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, isVirtual, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, description, 2, 1, 4);
+        widgetGroup.setName("moduleDetails");
+        widgetGroup.setDisplayName("General Information");
+        widgetGroup.setColumns(4);
+        List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
+        widgetGroupList.add(widgetGroup);
+        pageWidget.setDisplayName("");
+        pageWidget.setModuleId(module.getModuleId());
+        pageWidget.setAppId(app.getId());
+        pageWidget.setGroups(widgetGroupList);
+        return FieldUtil.getAsJSON(pageWidget);
+    }
+    private static JSONObject getReadingCardDetails(String moduleName, ApplicationContext app) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(moduleName);
+        FacilioField utilityType = moduleBean.getField("utilityType", moduleName);
+        SummaryWidget pageWidget = new SummaryWidget();
+        SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
+        addSummaryFieldInWidgetGroup(widgetGroup, utilityType, 1, 1, 1);
+        widgetGroup.setName("moduleDetails");
+        widgetGroup.setDisplayName("General Information");
+        widgetGroup.setColumns(4);
+        List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
+        widgetGroupList.add(widgetGroup);
+        pageWidget.setDisplayName("");
+        pageWidget.setModuleId(module.getModuleId());
+        pageWidget.setAppId(app.getId());
+        pageWidget.setGroups(widgetGroupList);
+        return FieldUtil.getAsJSON(pageWidget);
+    }
+    private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan) {
+        if (field != null) {
+            SummaryWidgetGroupFields summaryField = new SummaryWidgetGroupFields();
+            summaryField.setName(field.getName());
+            if (field.getName().equals("space")) {
+                summaryField.setDisplayName("Meter Location");
+            }
+            else {
+                summaryField.setDisplayName(field.getDisplayName());
+            }
+            summaryField.setFieldId(field.getFieldId());
+            summaryField.setRowIndex(rowIndex);
+            summaryField.setColIndex(colIndex);
+            summaryField.setColSpan(colSpan);
+            if (widgetGroup.getFields() == null) {
+                widgetGroup.setFields(new ArrayList<>(Arrays.asList(summaryField)));
+            } else {
+                widgetGroup.getFields().add(summaryField);
+            }
+        }
+    }
+    private static JSONObject getCommentsAttachmentsWidgetGroup(boolean isMobile) throws Exception {
+        WidgetGroupContext widgetGroup = new WidgetGroupContext()
+                .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
+                .addSection("notes", "Notes", "")
+                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone()
+                .addSection("documents", "Documents", "")
+                .addWidget("attachmentwidget", "Attachments", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone();
+        return FieldUtil.getAsJSON(widgetGroup);
     }
 }

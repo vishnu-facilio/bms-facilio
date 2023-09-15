@@ -45,40 +45,40 @@ public class AddCalendarSlotModule extends SignUpData {
         }
         LookupField calendarField = SignupUtil.getLookupField(calendarSlotsModule, calendarModule, "calendar", "Calendar",
                 "CALENDAR_ID", null, FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
-                true, false, false, orgId, false);
+                true, false, true, orgId, false);
         fields.add(calendarField);
 
         LookupField eventField = SignupUtil.getLookupField(calendarSlotsModule,eventModule,"event","Event",
                 "EVENT_ID",null,FacilioField.FieldDisplayType.LOOKUP_SIMPLE,
-                true,false,false,orgId,false);
+                true,false,true,orgId,false);
         fields.add(eventField);
 
         NumberField calendarYear = SignupUtil.getNumberField(calendarSlotsModule,"calendarYear","Year",
-                "CALENDAR_YEAR", FacilioField.FieldDisplayType.TEXTBOX,false,false,false,orgId);
+                "CALENDAR_YEAR", FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(calendarYear);
 
         NumberField calendarMonth = SignupUtil.getNumberField(calendarSlotsModule,"calendarMonth","Month",
-                "CALENDAR_MONTH", FacilioField.FieldDisplayType.TEXTBOX,false,false,false,orgId);
+                "CALENDAR_MONTH", FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(calendarMonth);
 
         NumberField calendarDate = SignupUtil.getNumberField(calendarSlotsModule,"calendarDate","Date",
-                "CALENDAR_DATE", FacilioField.FieldDisplayType.TEXTBOX,false,false,false,orgId);
+                "CALENDAR_DATE", FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(calendarDate);
 
         NumberField calendarWeekNumber = SignupUtil.getNumberField(calendarSlotsModule,"calendarWeekNumber","Week",
-                "CALENDAR_WEEK_NUMBER", FacilioField.FieldDisplayType.TEXTBOX,false,false,false,orgId);
+                "CALENDAR_WEEK_NUMBER", FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(calendarWeekNumber);
 
         NumberField calendarWeekDay = SignupUtil.getNumberField(calendarSlotsModule,"calendarWeekDay","Day",
-                "CALENDAR_WEEK_DAY", FacilioField.FieldDisplayType.TEXTBOX,false,false,false,orgId);
+                "CALENDAR_WEEK_DAY", FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(calendarWeekDay);
 
         NumberField slotStartTime = SignupUtil.getNumberField(calendarSlotsModule,"slotStartTime","Start Time",
-                "SLOT_START_TIME", FacilioField.FieldDisplayType.TEXTBOX,false,false,false,orgId);
+                "SLOT_START_TIME", FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(slotStartTime);
 
         NumberField slotEndTime = SignupUtil.getNumberField(calendarSlotsModule,"slotEndTime","End Time",
-                "SLOT_END_TIME", FacilioField.FieldDisplayType.TEXTBOX,false,false,false,orgId);
+                "SLOT_END_TIME", FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(slotEndTime);
 
         LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE", FieldType.LOOKUP);
@@ -96,7 +96,7 @@ public class AddCalendarSlotModule extends SignUpData {
         calendarSlotsModule.setFields(fields);
         modules.add(calendarSlotsModule);
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
-        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST,modules );
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST,modules);
         addModuleChain.execute();
         return calendarSlotsModule;
     }

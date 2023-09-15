@@ -60,7 +60,11 @@ public interface ActivityType {
 		for(ActivityType type : CalendarActivityType.values()){
 			activityMap.put(type.getValue(),type);
 		}
-		// Last number = 124
+		for(ActivityType type : CommandActivityType.values()){
+			activityMap.put(type.getValue(),type);
+		}
+
+		// Last number = 125
 
 		return activityMap;
 	}

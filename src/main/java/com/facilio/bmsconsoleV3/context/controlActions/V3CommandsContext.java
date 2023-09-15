@@ -13,6 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class V3CommandsContext extends V3Context {
+    private String name;
     private V3ControlActionContext controlAction;
     private V3ActionContext action;
     private V3SiteContext site;

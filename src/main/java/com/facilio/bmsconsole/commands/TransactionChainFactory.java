@@ -45,6 +45,7 @@ import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsComman
 import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
 import com.facilio.bmsconsoleV3.commands.shift.AssignShiftToUserCommand;
+import com.facilio.bmsconsoleV3.signup.AddEnergyApp;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultForms;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultViews;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.*;
@@ -120,6 +121,7 @@ public class TransactionChainFactory {
 			//c.addCommand(new AddDefaultWoTimelineCommand());
 			c.addCommand(addMaintenanceApplication());
 			c.addCommand(addEmployeePortalChain());
+			c.addCommand(new AddEnergyApp());
 			c.addCommand(addScopingChain());
 			c.addCommand(new AssignShiftToUserCommand());
 			c.addCommand(new DefaultPermissionSetCommand());

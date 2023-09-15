@@ -2237,19 +2237,18 @@
       peak = Module("gasdata").fetch(db);
       res.put("peakDemand",peak);
       
-      db1 = {
-        criteria : [parentId == meterId && flowRate == peak],
-        field : "ttime",
-      };
-      date = Module("gasdata").fetch(db1);
-      if(date != null) {
-        datetime = date[0];
-        format = "MMM dd, yyyy hh:mm a";
-        formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
-        res.put("peakTime",formattedTime);
-      }
-      else {
-      res.put("peakTime",date);
+      if(peak != null) {
+        db1 = {
+          criteria : [parentId == meterId && flowRate == peak],
+          field : "ttime",
+        };
+        date = Module("gasdata").fetch(db1);
+        if(date != null) {
+          datetime = date[0];
+          format = "MMM dd, yyyy hh:mm a";
+          formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
+          res.put("peakTime",formattedTime);
+        }
       }
       res.put("readingName", "flowRate");
       res.put("widgetName", "Maximum Flow");
@@ -2263,19 +2262,18 @@
       peak = Module("waterdata").fetch(db);
       res.put("peakDemand",peak);
       
-      db1 = {
-        criteria : [parentId == meterId && flowRate == peak],
-        field : "ttime",
-      };
-      date = Module("waterdata").fetch(db1);
-      if(date != null) {
-        datetime = date[0];
-        format = "MMM dd, yyyy hh:mm a";
-        formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
-        res.put("peakTime",formattedTime);
-      }
-      else {
-      res.put("peakTime",date);
+      if(peak != null) {
+        db1 = {
+          criteria : [parentId == meterId && flowRate == peak],
+          field : "ttime",
+        };
+        date = Module("waterdata").fetch(db1);
+        if(date != null) {
+          datetime = date[0];
+          format = "MMM dd, yyyy hh:mm a";
+          formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
+          res.put("peakTime",formattedTime);
+        }
       }
       res.put("readingName", "flowRate");
       res.put("widgetName", "Maximum Flow");
@@ -2289,19 +2287,18 @@
       peak = Module("electricitydata").fetch(db);
       res.put("peakDemand",peak);
       
-      db1 = {
-        criteria : [parentId == meterId && totalDemand == peak],
-        field : "ttime",
-      };
-      date = Module("electricitydata").fetch(db1);
-      if(date != null) {
-        datetime = date[0];
-        format = "MMM dd, yyyy hh:mm a";
-        formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
-        res.put("peakTime",formattedTime);
-      }
-      else {
-      res.put("peakTime",date);
+      if(peak != null) {
+        db1 = {
+          criteria : [parentId == meterId && totalDemand == peak],
+          field : "ttime",
+        };
+        date = Module("electricitydata").fetch(db1);
+        if(date != null) {
+          datetime = date[0];
+          format = "MMM dd, yyyy hh:mm a";
+          formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
+          res.put("peakTime",formattedTime);
+        }
       }
       res.put("readingName", "totalDemand");
       res.put("widgetName", "Peak Demand");
@@ -2315,19 +2312,18 @@
       peak = Module("heatdata").fetch(db);
       res.put("peakDemand",peak);
       
-      db1 = {
-        criteria : [parentId == meterId && thermalPower == peak],
-        field : "ttime",
-      };
-      date = Module("heatdata").fetch(db1);
-      if(date != null) {
-        datetime = date[0];
-        format = "MMM dd, yyyy hh:mm a";
-        formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
-        res.put("peakTime",formattedTime);
-      }
-      else {
-      res.put("peakTime",date);
+      if(peak != null) {
+        db1 = {
+          criteria : [parentId == meterId && thermalPower == peak],
+          field : "ttime",
+        };
+        date = Module("heatdata").fetch(db1);
+        if(date != null) {
+          datetime = date[0];
+          format = "MMM dd, yyyy hh:mm a";
+          formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
+          res.put("peakTime",formattedTime);
+        }
       }
       res.put("readingName", "thermalPower");
       res.put("widgetName", "Peak Thermal Power");
@@ -2341,19 +2337,18 @@
       peak = Module("btudata").fetch(db);
       res.put("peakDemand",peak);
       
-      db1 = {
-        criteria : [parentId == meterId && flowRate == peak],
-        field : "ttime",
-      };
-      date = Module("btudata").fetch(db1);
-      if(date != null) {
-        datetime = date[0];
-        format = "MMM dd, yyyy hh:mm a";
-        formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
-        res.put("peakTime",formattedTime);
-      }
-      else {
-      res.put("peakTime",date);
+      if(peak != null) {
+        db1 = {
+          criteria : [parentId == meterId && flowRate == peak],
+          field : "ttime",
+        };
+        date = Module("btudata").fetch(db1);
+        if(date != null) {
+          datetime = date[0];
+          format = "MMM dd, yyyy hh:mm a";
+          formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
+          res.put("peakTime",formattedTime);
+        }
       }
       res.put("readingName", "flowRate");
       res.put("widgetName", "Maximum Flow");

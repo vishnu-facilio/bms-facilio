@@ -39,7 +39,7 @@ public class DropAssociatedCalendarSlotRecordCommand extends FacilioCommand {
                 CalendarApi.dropCalendarSlotsOfCalendar(calendarId);
             }
         }
-        if(CollectionUtils.isEmpty(calendarIdList)){
+        if(CollectionUtils.isNotEmpty(calendarIdList)){
             context.put(FacilioConstants.Calendar.SAVE_CALENDAR_ID_LIST,calendarIdList);
         }
         return false;

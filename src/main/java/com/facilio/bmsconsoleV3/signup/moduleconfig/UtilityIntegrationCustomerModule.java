@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
+    public static List<String> supportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP);
 
     public UtilityIntegrationCustomerModule(){
         setModuleName(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER);
@@ -169,6 +170,7 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
         FacilioView utilityCustomerView = new FacilioView();
         utilityCustomerView.setName("all");
         utilityCustomerView.setDisplayName("Utility Integration Customer");
+        utilityCustomerView.setAppLinkNames(UtilityIntegrationCustomerModule.supportedApps);
 
         utilityCustomerView.setModuleName(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER);
         utilityCustomerView.setSortFields(sortFields);
@@ -190,6 +192,7 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
         Map<String, List<PagesContext>> pageTemp = new HashMap<>();
         pageTemp.put(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, getSystemPage());
+        pageTemp.put(FacilioConstants.ApplicationLinkNames.ENERGY_APP,getSystemPage());
         return  pageTemp;
     }
     private static List<PagesContext> getSystemPage() throws Exception {

@@ -186,6 +186,7 @@ public class UtilityIntegrationMeterModule extends BaseModuleConfig {
     public void addSummaryWidget(FacilioModule utilityIntegrationMeterModule) throws Exception {
         ArrayList<String> apps = new ArrayList<>();
         apps.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        apps.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
 
 
         for (String app : apps) {

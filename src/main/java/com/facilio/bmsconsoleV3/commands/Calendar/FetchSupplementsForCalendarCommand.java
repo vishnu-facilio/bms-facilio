@@ -23,7 +23,8 @@ public class FetchSupplementsForCalendarCommand extends FacilioCommand {
 
         List<LookupField> additionaLookups = new ArrayList<>();
         additionaLookups.add((LookupField) fieldsAsMap.get("client"));
-
+        additionaLookups.add((LookupField) fieldsAsMap.get("sysCreatedByPeople"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("sysModifiedByPeople"));
         if(CollectionUtils.isNotEmpty(additionaLookups)) {
             context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, additionaLookups);
         }

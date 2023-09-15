@@ -48,11 +48,11 @@ public class AddCalendarModule extends SignUpData {
          fields.add(name);
 
          StringField description = SignupUtil.getStringField(calendar,"description","Description","DESCRIPTION",
-                 FacilioField.FieldDisplayType.TEXTBOX,false,false,false,false,orgId);
+                 FacilioField.FieldDisplayType.TEXTBOX,false,false,true,false,orgId);
          fields.add(description);
 
         SystemEnumField calendarType = SignupUtil.getSystemEnumField(calendar,"calendarType","Type","CALENDAR_TYPE","CalendarTypeEnum",
-                FacilioField.FieldDisplayType.SELECTBOX,true,false,false,orgId);
+                FacilioField.FieldDisplayType.SELECTBOX,true,false,true,orgId);
         fields.add(calendarType);
 
         FacilioModule clientModule = moduleBean.getModule(FacilioConstants.ContextNames.CLIENT);
@@ -140,19 +140,17 @@ public class AddCalendarModule extends SignUpData {
         //FacilioTimer.schedulePeriodicJob(AccountUtil.getCurrentOrg().getId(), "calendarNightlyJob", 60, 60, "facilio");
     }
     private void addCalendarLookUpToSiteModule(FacilioModule calendarModule) throws Exception {
-
         LookupField calendarField = (LookupField) FieldFactory.getField("calendar", "Calendar", "CALENDAR_ID", Constants.getModBean().getModule(FacilioConstants.ContextNames.SITE), FieldType.LOOKUP);
         calendarField.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         calendarField.setLookupModule(calendarModule);
-        calendarField.setDefault(false);
+        calendarField.setDefault(true);
         Constants.getModBean().addField(calendarField);
     }
     private void addCalendarLookUpToAssetModule(FacilioModule calendarModule) throws Exception {
-
         LookupField calendarField = (LookupField) FieldFactory.getField("calendar", "Calendar", "CALENDAR_ID", Constants.getModBean().getModule(FacilioConstants.ContextNames.ASSET), FieldType.LOOKUP);
         calendarField.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         calendarField.setLookupModule(calendarModule);
-        calendarField.setDefault(false);
+        calendarField.setDefault(true);
         Constants.getModBean().addField(calendarField);
     }
 }

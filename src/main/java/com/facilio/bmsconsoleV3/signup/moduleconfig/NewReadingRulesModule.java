@@ -70,7 +70,7 @@ public class NewReadingRulesModule extends BaseModuleConfig {
         view.setCriteria(criteria);
         view.setSortFields(sortFields);
         view.setFields(getViewFields());
-        view.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        view.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
 
         return view;
     }
@@ -90,7 +90,7 @@ public class NewReadingRulesModule extends BaseModuleConfig {
         List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
         allView.setSortFields(sortFields);
         allView.setFields(getViewFields());
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
         return allView;
         
     }

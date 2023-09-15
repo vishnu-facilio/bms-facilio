@@ -3730,6 +3730,13 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddOrUpdateVMTemplateReadingCommand());
         return c;
     }
+    public static FacilioChain getUpdateVirtualMeterTemplateReadingAfterChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateNameSpaceForVMReadingsCommand());
+        c.addCommand(new UpdateNamespaceCommand());
+        c.addCommand(new UpdateWorkflowCommand());
+        return c;
+    }
 
     public static FacilioChain getCalendarAfterCreateChain() {
         FacilioChain c = getDefaultChain();
@@ -3833,7 +3840,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getControlActionTemplateAfterSaveChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new AddCriteriaAndActionFromControlActionTemplateCommand());
+        c.addCommand(new AddActionsForControlActionTemplateCommand());
         c.addCommand(new DropControlActionsOfControlActionTemplateCommand());
         c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         c.addCommand(new AddActivitiesCommandV3(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME));
@@ -3879,6 +3886,49 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
         return c;
     }
+    public static FacilioChain getCommandsAfterSaveChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.Control_Action.COMMAND_ACTIVITY_MODULE_NAME));
+        return c;
+    }
+    public static FacilioChain getControlActionBeforeListChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchSupplementsForControlActionCommand());
+        return c;
+    }
+    public static FacilioChain getControlActionAfterUpdateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME));
+        return c;
+    }
+    public static FacilioChain getControlActionTemplateBeforeListChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchSupplementsForControlActionTemplateCommand());
+        return c;
+    }
+    public static FacilioChain getControlActionTemplateAfterFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FillActionsAndCriteriaForControlActionTemplateCommand());
+        return c;
+    }
+    public static FacilioChain getControlActionTemplateBeforeSaveChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddCriteriaFromControlActionTemplateCommand());
+        return c;
+    }
+    public static FacilioChain getEventBeforeFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchSupplementsForCalendarEventCommand());
+        return c;
+    }
+    public static FacilioChain getCalendarEventMappingBeforeListChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchSupplementsForCalendarEventMappingCommand());
+        return c;
+    }
+
 
     public static FacilioChain addQuotationSetting(){
         FacilioChain c=getDefaultChain();

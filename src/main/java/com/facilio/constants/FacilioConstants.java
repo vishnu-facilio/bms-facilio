@@ -3237,6 +3237,7 @@ public class FacilioConstants {
 			classMap.put(Calendar.EVENT_ACTIVITY_MODULE,ActivityContext.class);
 			classMap.put(Control_Action.CONTROL_ACTION_ACTIVITY_MODULE_NAME, ActivityContext.class);
 			classMap.put(Control_Action.CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME, ActivityContext.class);
+			classMap.put(Control_Action.CONTROL_ACTION_MODULE_NAME,ActivityContext.class);
 
 
 			for (QuestionType type : QuestionType.values()) {
@@ -3664,7 +3665,7 @@ public class FacilioConstants {
 		public static final String EMPLOYEE_PORTAL_APP = "employee";
 		public static final String SERVICE_APP = "service";
 		public static final String IWMS_APP = "iwms";
-
+		public static final String ENERGY_APP = "energy";
 	}
 
 	public static class DefaultRoleNames {
@@ -4397,6 +4398,7 @@ public class FacilioConstants {
 		public static final String CONTROL_ACTION_ACTIVITY_MODULE_NAME = "controlActionActivity";
 		public static final String CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME = "controlActionTemplateActivity";
 		public static final String CONTROL_ACTION_NOTES_MODULE_NAME = "controlActionNotes";
+		public static final String COMMAND_ACTIVITY_MODULE_NAME = "commandActivity";
 	}
 
 	public static final String UTILITY_INTEGRATION_CUSTOMER = "utilityIntegrationCustomer";

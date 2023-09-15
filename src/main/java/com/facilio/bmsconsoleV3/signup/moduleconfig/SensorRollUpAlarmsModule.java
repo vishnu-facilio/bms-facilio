@@ -49,7 +49,7 @@ public class SensorRollUpAlarmsModule extends BaseModuleConfig{
         groupDetails.put("displayName", "Sensor Alarms");
         groupDetails.put("moduleName", FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM);
         groupDetails.put("views", sensorAlarms);
-        groupDetails.put("appLinkNames",Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        groupDetails.put("appLinkNames",Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
         groupVsViews.add(groupDetails);
 
         return groupVsViews;
@@ -73,7 +73,7 @@ public class SensorRollUpAlarmsModule extends BaseModuleConfig{
         view.setDisplayName(displayName);
         view.setCriteria(criteria);
         view.setModuleName("sensorrollupalarm");
-        view.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        view.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
         view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
         return view;
@@ -91,7 +91,7 @@ public class SensorRollUpAlarmsModule extends BaseModuleConfig{
         view.setName(name);
         view.setDisplayName(displayName);
         view.setModuleName("sensorrollupalarm");
-        view.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        view.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
         view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
         view.setDefault(true);
 
@@ -112,7 +112,7 @@ public class SensorRollUpAlarmsModule extends BaseModuleConfig{
         typeAlarms.setDisplayName("Unacknowledged");
         typeAlarms.setCriteria(criteria);
         typeAlarms.setModuleName("sensorrollupalarm");
-        typeAlarms.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        typeAlarms.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
         typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
         return typeAlarms;
@@ -132,7 +132,7 @@ public class SensorRollUpAlarmsModule extends BaseModuleConfig{
         typeAlarms.setDisplayName("Meter Alarms");
         typeAlarms.setCriteria(criteria);
         typeAlarms.setModuleName("sensorrollupalarm");
-        typeAlarms.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        typeAlarms.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
         typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
         return typeAlarms;
@@ -152,7 +152,7 @@ public class SensorRollUpAlarmsModule extends BaseModuleConfig{
         typeAlarms.setDisplayName("Sensor Alarms");
         typeAlarms.setCriteria(criteria);
         typeAlarms.setModuleName("sensorrollupalarm");
-        typeAlarms.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        typeAlarms.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
         typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
         return typeAlarms;

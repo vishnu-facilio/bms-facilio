@@ -531,13 +531,16 @@ public class PageWidget {
 		VIRTUAL_METER_TEMPLATE_READINGS("virtualMeterTemplateReadings"),
 		RELATED_VIRTUAL_METERS_LIST("relatedVirtualMetersList"),
 
+		CALENDAR_FIELDS_WIDGET("calendarFieldsWidget"),
+		CALENDAR_EVENT_VIEW("calendarEventView"),
+		CONRTOL_ACTION_CRITERIA("controlActionCriteria"),
 		RESPONSE_DUE_DATE("responseduedate"),
 		TIME_DETAILS("timedetails"),
 
 		UTILITY_INTEGRATION_BILL_PREVIEW("utilityIntegrationBillPreviewWidget"),
 		METER_WIDGET("meterWidget"),
 		BILL_SUMMARY_WIDGET("billSummaryWidget");
-		
+
 
 		private String name;
 		@Getter

@@ -35,6 +35,7 @@ public class AddControlActionModule extends SignUpData {
         FacilioModule commandModule = constructCommandModule(modBean,orgId,controlActionModule,actionModule);
         constructControlActionActivityModule(controlActionModule,modBean);
         constructControlActionNotesModule(modBean,orgId,controlActionModule);
+        constructCommandActivityModule(commandModule,modBean);
     }
     private FacilioModule constructControlActionModule(ModuleBean moduleBean, long orgId) throws Exception{
         List<FacilioModule> modules = new ArrayList<>();
@@ -49,15 +50,15 @@ public class AddControlActionModule extends SignUpData {
         fields.add(name);
 
         StringField desc = SignupUtil.getStringField(controlActionModule,"description","Description","DESCRIPTION", FacilioField.FieldDisplayType.TEXTBOX,
-                false,false,false,false,orgId);
+                false,false,true,false,orgId);
         fields.add(desc);
 
         SystemEnumField sourceType = SignupUtil.getSystemEnumField(controlActionModule,"controlActionSourceType","Source Type","SOURCE_TYPE","ControlActionSourceTypeEnum",
-                FacilioField.FieldDisplayType.TEXTBOX,true,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
         fields.add(sourceType);
 
         SystemEnumField calendarType = SignupUtil.getSystemEnumField(controlActionModule,"controlActionType","Type","CONTROL_ACTION_TYPE","ControlActionTypeEnum",
-                FacilioField.FieldDisplayType.TEXTBOX,true,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
         fields.add(calendarType);
 
         LookupField assetCategoryField = SignupUtil.getLookupField(controlActionModule, moduleBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY),
@@ -72,28 +73,28 @@ public class AddControlActionModule extends SignUpData {
         fields.add(revertActionDateTime);
 
         NumberField siteCriteriaId = SignupUtil.getNumberField(controlActionModule,"siteCriteriaId","Site Criteria Id","SITE_CRITERIA_ID",
-                FacilioField.FieldDisplayType.TEXTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(siteCriteriaId);
 
         NumberField assetCriteriaId = SignupUtil.getNumberField(controlActionModule,"assetCriteriaId","Asset Criteria Id","ASSET_CRITERIA_ID",
-                FacilioField.FieldDisplayType.TEXTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(assetCriteriaId);
 
 
         NumberField controllerCriteriaId = SignupUtil.getNumberField(controlActionModule,"controllerCriteriaId","Controller Criteria Id","CONTROLLER_CRITERIA_ID",
-                FacilioField.FieldDisplayType.TEXTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(controllerCriteriaId);
 
         LookupField approvalState = SignupUtil.getLookupField(controlActionModule,moduleBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS),"approvalStatus","Approval Status",
-                "APPROVAL_STATE",null, FacilioField.FieldDisplayType.SELECTBOX,false,false,false,orgId);
+                "APPROVAL_STATE",null, FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(approvalState);
 
         NumberField approvalFlowId = SignupUtil.getNumberField(controlActionModule,"approvalFlowId","Approval Flow Id","APPROVAL_FLOW_ID",
-                FacilioField.FieldDisplayType.TEXTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(approvalFlowId);
 
         SystemEnumField controlActionStatus = SignupUtil.getSystemEnumField(controlActionModule,"controlActionStatus","Status","STATUS","ControlActionStatus",
-                FacilioField.FieldDisplayType.TEXTBOX,true,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
         fields.add(controlActionStatus);
 
         LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE",FieldType.LOOKUP);
@@ -125,23 +126,23 @@ public class AddControlActionModule extends SignUpData {
         List<FacilioField> fields = new ArrayList<>();
 
         LookupField controlAction = SignupUtil.getLookupField(actionsModule,controlActionModule,"controlAction","Control Action","CONTROL_ACTION_ID",null,
-                FacilioField.FieldDisplayType.TEXTBOX,false,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(controlAction);
 
         SystemEnumField actionVariableType = SignupUtil.getSystemEnumField(actionsModule,"actionVariableType","Variable Type","VARIABLE_TYPE","ActionVariableTypeEnum",
-                FacilioField.FieldDisplayType.TEXTBOX,true,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
         fields.add(actionVariableType);
 
         NumberField readingFieldId = SignupUtil.getNumberField(actionsModule,"readingFieldId","Reading","READING_FIELD_ID",
-                FacilioField.FieldDisplayType.SELECTBOX, true,false,false,orgId);
+                FacilioField.FieldDisplayType.SELECTBOX, true,false,true,orgId);
         fields.add(readingFieldId);
 
         NumberField readingFieldDataType = SignupUtil.getNumberField(actionsModule,"readingFieldDataType","Data Type","READING_FIELD_DATE_TYPE",
-                FacilioField.FieldDisplayType.TEXTBOX,true,true,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,true,true,true,orgId);
         fields.add(readingFieldDataType);
 
         SystemEnumField scheduledActionOperatorType = SignupUtil.getSystemEnumField(actionsModule,"scheduledActionOperatorType","Operator","SCHEDULE_ACTION_OPERATOR_TYPE","ActionOperatorTypeEnum",
-                FacilioField.FieldDisplayType.SELECTBOX,true,false,false,orgId);
+                FacilioField.FieldDisplayType.SELECTBOX,true,false,true,orgId);
         fields.add(scheduledActionOperatorType);
 
         StringField scheduleActionValue = SignupUtil.getStringField(actionsModule,"scheduleActionValue","Schedule Action Value","SCHEDULE_ACTION_VALUE", FacilioField.FieldDisplayType.TEXTBOX,
@@ -149,7 +150,7 @@ public class AddControlActionModule extends SignUpData {
         fields.add(scheduleActionValue);
 
         SystemEnumField revertActionOperatorType = SignupUtil.getSystemEnumField(actionsModule,"revertActionOperatorType","Operator","REVERT_ACTION_OPERATOR_TYPE","ActionOperatorTypeEnum",
-                FacilioField.FieldDisplayType.SELECTBOX,true,false,false,orgId);
+                FacilioField.FieldDisplayType.SELECTBOX,true,false,true,orgId);
         fields.add(revertActionOperatorType);
 
         StringField revertActionValue = SignupUtil.getStringField(actionsModule,"revertActionValue","Revert Action Value","REVERT_ACTION_VALUE", FacilioField.FieldDisplayType.TEXTBOX,
@@ -259,7 +260,7 @@ public class AddControlActionModule extends SignUpData {
         firstLevelApproval.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
         firstLevelApproval.setRequired(false);
         firstLevelApproval.setDisabled(false);
-        firstLevelApproval.setDefault(false);
+        firstLevelApproval.setDefault(true);
         firstLevelApproval.setMainField(false);
         firstLevelApproval.setOrgId(orgId);
         firstLevelApproval.setModule(controlAction);
@@ -272,7 +273,7 @@ public class AddControlActionModule extends SignUpData {
         secondLevelApproval.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
         secondLevelApproval.setRequired(false);
         secondLevelApproval.setDisabled(false);
-        secondLevelApproval.setDefault(false);
+        secondLevelApproval.setDefault(true);
         secondLevelApproval.setMainField(false);
         secondLevelApproval.setOrgId(orgId);
         secondLevelApproval.setModule(controlAction);
@@ -293,58 +294,62 @@ public class AddControlActionModule extends SignUpData {
 
         List<FacilioField> fields = new ArrayList<>();
 
+        StringField name = SignupUtil.getStringField(commandModule,"name","Name","NAME", FacilioField.FieldDisplayType.TEXTBOX,
+                true,false,true,true,orgId);
+        fields.add(name);
+
         LookupField controlAction = SignupUtil.getLookupField(commandModule,controlActionModule,"controlAction","Control Action","CONTROL_ACTION_ID",
-                null, FacilioField.FieldDisplayType.TEXTBOX,true,true,false,orgId);
+                null, FacilioField.FieldDisplayType.TEXTBOX,true,true,true,orgId);
         fields.add(controlAction);
 
         LookupField action = SignupUtil.getLookupField(commandModule,actionModule,"action","Action","ACTION_ID",
-                null, FacilioField.FieldDisplayType.TEXTBOX,true,true,false,orgId);
+                null, FacilioField.FieldDisplayType.TEXTBOX,true,true,true,orgId);
         fields.add(action);
 
         LookupField site = SignupUtil.getLookupField(commandModule,moduleBean.getModule(FacilioConstants.ContextNames.SITE),"site","Site","SITE_ID",
-                null, FacilioField.FieldDisplayType.TEXTBOX,true,true,false,orgId);
+                null, FacilioField.FieldDisplayType.TEXTBOX,true,true,true,orgId);
         fields.add(site);
 
         LookupField asset = SignupUtil.getLookupField(commandModule,moduleBean.getModule(FacilioConstants.ContextNames.ASSET),"asset","Asset","ASSET_ID",
-                null, FacilioField.FieldDisplayType.TEXTBOX,true,true,false,orgId);
+                null, FacilioField.FieldDisplayType.TEXTBOX,true,true,true,orgId);
         fields.add(asset);
 
         LookupField controller = SignupUtil.getLookupField(commandModule,moduleBean.getModule(FacilioConstants.ContextNames.CONTROLLER),"controller","Controller","CONTROLLER_ID",
-                null, FacilioField.FieldDisplayType.TEXTBOX,true,true,false,orgId);
+                null, FacilioField.FieldDisplayType.TEXTBOX,true,true,true,orgId);
         fields.add(controller);
 
         NumberField fieldId = SignupUtil.getNumberField(commandModule,"fieldId","Field","FIELD_ID", FacilioField.FieldDisplayType.TEXTBOX,
-                false,false,false,orgId);
+                false,false,true,orgId);
         fields.add(fieldId);
 
         FacilioField actionTime = FieldFactory.getDefaultField("actionTime","Action Time","ACTION_TIME",FieldType.DATE_TIME);
         fields.add(actionTime);
 
         StringField setValue = SignupUtil.getStringField(commandModule,"setValue","Set Value","SET_VALUE", FacilioField.FieldDisplayType.TEXTBOX,
-                false,false,false,false,orgId);
+                false,false,true,false,orgId);
         fields.add(setValue);
 
         StringField afterValue = SignupUtil.getStringField(commandModule,"afterValue","After Value","AFTER_VALUE", FacilioField.FieldDisplayType.TEXTBOX,
-                false,false,false,false,orgId);
+                false,false,true,false,orgId);
         fields.add(afterValue);
 
         StringField previousValue = SignupUtil.getStringField(commandModule,"previousValue","Previous Value","PREVIOUS_VALUE", FacilioField.FieldDisplayType.TEXTBOX,
-                false,false,false,false,orgId);
+                false,false,true,false,orgId);
         fields.add(previousValue);
 
         SystemEnumField controlActionCommandStatus = SignupUtil.getSystemEnumField(commandModule,"controlActionCommandStatus","Status","STATUS","ControlActionCommandStatus",
-                FacilioField.FieldDisplayType.TEXTBOX,true,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
         fields.add(controlActionCommandStatus);
 
         StringField errorMsg = SignupUtil.getStringField(commandModule,"errorMsg","Error Msg","ERROR_MSG",
-                FacilioField.FieldDisplayType.TEXTAREA,false,false,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTAREA,false,false,true,false,orgId);
         fields.add(errorMsg);
 
         FacilioField previousValueCapturedTime = FieldFactory.getDefaultField("previousValueCapturedTime","Previous Value Captured Time","PREVIOUS_VALUE_CAPTURED_TIME",FieldType.DATE_TIME);
         fields.add(previousValueCapturedTime);
 
         SystemEnumField commandActionType = SignupUtil.getSystemEnumField(commandModule,"commandActionType","Action Type","ACTION_TYPE","CommandActionType",
-                FacilioField.FieldDisplayType.TEXTBOX,true,false,false,orgId);
+                FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
         fields.add(commandActionType);
 
         LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE",FieldType.LOOKUP);
@@ -465,5 +470,43 @@ public class AddControlActionModule extends SignUpData {
         modBean.addSubModule(controlActionModule.getModuleId(), notesModule.getModuleId());
 
         return notesModule;
+    }
+    private void constructCommandActivityModule(FacilioModule commandModule, ModuleBean moduleBean) throws Exception{
+        FacilioModule module = new FacilioModule(FacilioConstants.Control_Action.COMMAND_ACTIVITY_MODULE_NAME,
+                "Command Activity",
+                "Command_Activity",
+                FacilioModule.ModuleType.ACTIVITY
+        );
+        List<FacilioField> fields = new ArrayList<>();
+        NumberField parentId = (NumberField) FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.NUMBER);
+        fields.add(parentId);
+        FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
+        fields.add(timefield);
+        NumberField type = (NumberField) FieldFactory.getDefaultField("type", "Type", "ACTIVITY_TYPE", FieldType.NUMBER);
+        fields.add(type);
+        LookupField doneBy = (LookupField) FieldFactory.getDefaultField("doneBy", "Done By", "DONE_BY_ID", FieldType.LOOKUP, FacilioField.FieldDisplayType.LOOKUP_POPUP);
+        doneBy.setSpecialType("users");
+        fields.add(doneBy);
+        FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING, FacilioField.FieldDisplayType.TEXTAREA);
+        fields.add(info);
+
+        LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE",FieldType.LOOKUP);
+        createdByPeople.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(createdByPeople);
+
+        LookupField modifiedByPeople = FieldFactory.getDefaultField("sysModifiedByPeople","Modified By","SYS_MODIFIED_BY_PEOPLE",FieldType.LOOKUP);
+        modifiedByPeople.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(modifiedByPeople);
+
+
+        fields.add((FacilioField) FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.DATE_TIME));
+        fields.add((FacilioField) FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.DATE_TIME));
+
+
+        module.setFields(fields);
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain1.execute();
+        moduleBean.addSubModule(commandModule.getModuleId(), module.getModuleId());
     }
 }

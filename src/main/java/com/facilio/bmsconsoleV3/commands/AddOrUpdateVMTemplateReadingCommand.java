@@ -43,6 +43,7 @@ public class AddOrUpdateVMTemplateReadingCommand extends FacilioCommand {
 							reading.setStatus(Boolean.TRUE);
 							VirtualMeterTemplateContext vmTemplate = new VirtualMeterTemplateContext();
 							vmTemplate.setId(virtualMeterTemplateContext.getId());
+							vmTemplate.setUtilityType(virtualMeterTemplateContext.getUtilityType());
 							reading.setVirtualMeterTemplate(vmTemplate);
 							addReadings.add(reading);
 						}

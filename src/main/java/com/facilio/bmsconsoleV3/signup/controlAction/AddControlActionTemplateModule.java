@@ -3,7 +3,6 @@ package com.facilio.bmsconsoleV3.signup.controlAction;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
@@ -19,13 +18,13 @@ import com.facilio.modules.fields.StringField;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 @Log4j
 public class AddControlActionTemplateModule extends SignUpData {
     @Override
@@ -46,7 +45,7 @@ public class AddControlActionTemplateModule extends SignUpData {
         controlActionTemplate.setOrgId(orgId);
 
         List<FacilioField> fields = new ArrayList<>();
-        StringField subject = SignupUtil.getStringField(controlActionTemplate,"subject","Name","SUBJECT", FacilioField.FieldDisplayType.TEXTBOX,
+        StringField subject = SignupUtil.getStringField(controlActionTemplate,"subject","Control Action Template Name","SUBJECT", FacilioField.FieldDisplayType.TEXTBOX,
                 true,false,true,true,orgId);
         fields.add(subject);
         FacilioModule calendarModule = moduleBean.getModule(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
@@ -55,7 +54,7 @@ public class AddControlActionTemplateModule extends SignUpData {
             throw new IllegalArgumentException("Calendar Module Not Found for OrgId - #"+orgId);
         }
         LookupField calendar = SignupUtil.getLookupField(controlActionTemplate,calendarModule,"calendar","Calendar","CALENDAR_ID",null,
-                FacilioField.FieldDisplayType.LOOKUP_SIMPLE,false,false,false,orgId);
+                FacilioField.FieldDisplayType.LOOKUP_SIMPLE,false,false,true,orgId);
         fields.add(calendar);
         controlActionTemplate.setFields(fields);
         modules.add(controlActionTemplate);
