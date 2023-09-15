@@ -825,8 +825,10 @@ public class PackageBeanUtil {
                 messagePlaceHolder.element("workflowV2String").cData(confirmationDialog.getMessagePlaceHolderScript().getWorkflowV2String());
             }
             long namedCriteriaId = confirmationDialog.getNamedCriteriaId();
-            NamedCriteria namedCriteria = NamedCriteriaAPI.getNamedCriteria(namedCriteriaId);
-            builder.element("namedCriteriaName").text(namedCriteria.getName());
+            if (namedCriteriaId > 0) {
+                NamedCriteria namedCriteria = NamedCriteriaAPI.getNamedCriteria(namedCriteriaId);
+                builder.element("namedCriteriaName").text(namedCriteria.getName());
+            }
         }
     }
 

@@ -218,7 +218,10 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                     case BULK_EMAIL_NOTIFICATION:
                         XMLBuilder emailElement = templateJsonElement.element(PackageConstants.VALUE_ELEMENT);
                         Integer emailStructureId = (Integer) templateJson.get("emailStructureId");
-                        EMailStructure eMailTemplate = (EMailStructure) TemplateAPI.getTemplate(emailStructureId.longValue());
+                        EMailStructure eMailTemplate = new EMailStructure();
+                        if (emailStructureId != null) {
+                             eMailTemplate = (EMailStructure) TemplateAPI.getTemplate(emailStructureId.longValue());
+                        }
                         String emailStructureName = eMailTemplate != null ? eMailTemplate.getName() : null;
                         emailElement.element(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_NAME).text(emailStructureName);
                         emailElement.element("name").text(String.valueOf(templateJson.get("name")));
