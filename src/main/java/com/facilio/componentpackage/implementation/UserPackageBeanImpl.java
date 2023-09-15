@@ -1,6 +1,6 @@
 package com.facilio.componentpackage.implementation;
 
-import com.facilio.accounts.dto.AppDomain;
+import com.facilio.identity.client.dto.AppDomain;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -237,6 +237,7 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
             }
         }
 
+        Map<Long, com.facilio.identity.client.dto.AppDomain> appIdVsAppDomain = getAppIdVsAppDomain(new ArrayList<>(appIdVsApp.keySet()));
         FacilioModule facilioModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE);
         List<PeopleContext> peopleModuleData = (List<PeopleContext>) PackageBeanUtil.getModuleData(null, facilioModule, PeopleContext.class, false);
         Map<String, PeopleContext> peopleMailVsPeople = new HashMap<>();
@@ -258,6 +259,7 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
                 ApplicationContext appContext = appIdVsApp.getOrDefault(peopleUserContext.getApplicationId(), null);
                 String appLinkName = appContext != null ? appContext.getLinkName() : null;
                 User user = peopleUserContext.getUser();
+                peopleUserContext.getUser().setAppDomain(appIdVsAppDomain.get(peopleUserContext.getApplicationId()));
 
                 long orgUserId = -1;
                 if (user.getEmail().equals(superAdminUser.getEmail()) && SUPER_ADMIN_DEFAULT_APPS.contains(appLinkName)) {
@@ -485,7 +487,7 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
     }
 
     private long addUser(PeopleUserContext peopleUser) throws Exception {
-        AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(peopleUser.getApplicationId());
+        com.facilio.accounts.dto.AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(peopleUser.getApplicationId());
         FacilioUtil.throwIllegalArgumentException(appDomainObj == null, "Invalid App Domain");
 
         com.facilio.identity.client.dto.AppDomain appDomain = IdentityClient.getDefaultInstance().getAppDomainBean().getAppDomain(appDomainObj.getDomain());
@@ -584,5 +586,19 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
             toIndex = Math.min((toIndex + 500), userIdsList.size());
         }
         return userList;
+    }
+
+    private Map<Long, com.facilio.identity.client.dto.AppDomain> getAppIdVsAppDomain(List<Long> appIds) throws Exception {
+        Map<Long, com.facilio.identity.client.dto.AppDomain> appIdVsAppDomain = new HashMap<>();
+        for (Long appId : appIds) {
+            com.facilio.accounts.dto.AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
+            if (appDomainObj != null) {
+                com.facilio.identity.client.dto.AppDomain appDomain = IdentityClient.getDefaultInstance().getAppDomainBean().getAppDomain(appDomainObj.getDomain());
+                if (appDomain != null) {
+                    appIdVsAppDomain.put(appId, appDomain);
+                }
+            }
+        }
+        return appIdVsAppDomain;
     }
 }

@@ -65,6 +65,7 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 					organization = IAMUserUtil.getOrg(sandboxName, iamAccount.getUser().getUid(), Organization.OrgType.SANDBOX);
 				} else if (reqUri.equals("/api/v2/application/fetchDetails")) {
 					organization = SandboxAPI.getAccessibleSandboxOrg(iamAccount.getUser().getUid());
+					sandboxName = organization != null ? organization.getDomain() : null;
 				}
 
 				FacilioUtil.throwIllegalArgumentException(organization == null, "Invalid Sandbox details passed");

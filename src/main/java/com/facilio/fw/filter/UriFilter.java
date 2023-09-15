@@ -136,7 +136,7 @@ public class UriFilter implements Filter {
                 if (SandboxAPI.isSandboxSubDomain(domainName)) {
                     List<String> reqUriSplit = Arrays.asList(reqUri.split("/"));
                     int idx = reqUriSplit.indexOf("api");
-                    if (idx == 1 && reqUri.equals("/api/v2/application/fetchDetails")) {    // "/api/"
+                    if (idx == 1) {                                                     // "/api/"
                         req.getRequestDispatcher(reqUri).forward(request, response);
                     } else if (idx == 2) {                                              // "/sandboxName/api/"
                         String sandboxName = reqUriSplit.get(1);
