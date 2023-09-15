@@ -12,10 +12,12 @@ import com.facilio.componentpackage.bean.OrgSwitchBean;
 import com.facilio.componentpackage.command.PackageChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageContext;
+import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fms.message.Message;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.ims.endpoint.Messenger;
 import com.facilio.ims.handler.LongRunningTaskHandler;
 import com.facilio.modules.FieldUtil;
@@ -35,8 +37,10 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import com.facilio.weather.commands.WeatherTransactionChainFactory;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 
+import java.io.File;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,7 +89,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 		for (Object resourceIdobj : resourceIdobjList) {
 			resourceIds.add(FacilioUtil.parseLong(resourceIdobj));
 		}
-		
+
 		Map<Long,V3MeterContext> vmParentMap = vmTemplate.constructParentVsVirtualMeters(resourceIds);
 		
 		for(Long parentId : vmParentMap.keySet()) {
@@ -127,14 +131,14 @@ public class LongTasksBeanImpl implements LongTasksBean {
 		try {
 			JSONObject content = new JSONObject();
 			String productionDomainName = String.valueOf(data.get(SandboxConstants.PRODUCTION_DOMAIN_NAME));
-			Map<String, Object> sandboxOrgData = (Map<String, Object>)data.get(SandboxConstants.SANDBOX_ORG);
 			Map<String, Object> signupData = (Map<String, Object>)data.get(FacilioConstants.ContextNames.SIGNUP_INFO);
 			Map<String, Object> userData = (Map<String, Object>)data.get(SandboxConstants.SANDBOX_ORG_USER);
-			SandboxAPI.sendSandboxProgress( 5, sandboxId, "Org-Creation started for sandbox", productionOrgId);
+			SandboxAPI.sendSandboxProgress( 0, sandboxId, "Org-Creation started for sandbox", productionOrgId);
 			JSONObject signupDataJson = SandboxUtil.getSandboxSignUpDataParser(signupData);
-			Organization sandBoxOrg = SandboxUtil.constructSandboxOrganizationFromMap(sandboxOrgData);
+			Organization sandBoxOrg = IAMOrgUtil.getOrg(sandboxOrgId);
 			IAMUser iamUser = SandboxUtil.constructSandboxIAMUserFromMap(userData);
 			Account account = new Account(sandBoxOrg, new User(iamUser));
+
 			AccountUtil.setCurrentAccount(account);
 
 			LOGGER.info("####Sandbox - Initiating Sandbox Domain Creation");
@@ -169,7 +173,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 					.setContent(content));
 		}catch (Exception e){
 			LOGGER.error("####Sandbox - Error While Creating Sandbox Org",e);
-			SandboxAPI.sendSandboxProgress( 5, sandboxId, "Org-Creation Failed for sandbox", productionOrgId);
+			SandboxAPI.sendSandboxProgress( 0, sandboxId, "Org-Creation Failed for sandbox", productionOrgId);
 		}
 	}
 	@Override
@@ -232,10 +236,10 @@ public class LongTasksBeanImpl implements LongTasksBean {
 		long sandboxId = ((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue();
 		List<Integer> skipComponents = (List<Integer>) data.getOrDefault(PackageConstants.SKIP_COMPONENTS,new ArrayList<>());
 		SandboxConfigContext sandboxConfigContext = null;
+		FacilioChain deployPackageChain = PackageChainFactory.getDeployPackageChain();
+		FacilioContext deployContext = deployPackageChain.getContext();
 		try {
 			LOGGER.info("####Sandbox - Initiating Package Deployment");
-			FacilioChain deployPackageChain = PackageChainFactory.getDeployPackageChain();
-			FacilioContext deployContext = deployPackageChain.getContext();
 			deployContext.put(PackageConstants.FILE_ID, ((Number)data.get(PackageConstants.FILE_ID)).longValue());
 			deployContext.put(PackageConstants.SOURCE_ORG_ID, productionOrgId);
 			deployContext.put(PackageConstants.TARGET_ORG_ID, sandboxOrgId);
@@ -260,6 +264,12 @@ public class LongTasksBeanImpl implements LongTasksBean {
 				SandboxAPI.sendSandboxProgress(50, sandboxId, "Data Installation Failed for sandbox", productionOrgId);
 			} catch(Exception ex){
 				LOGGER.error("####Sandbox - Error occurred while changing status", ex);
+			}
+		}finally {
+			PackageFolderContext rootFolder = (PackageFolderContext) deployContext.getOrDefault(PackageConstants.PACKAGE_ROOT_FOLDER, null);
+			if(rootFolder != null) {
+				File file = new File(rootFolder.getPath());
+				FileUtils.deleteDirectory(file);
 			}
 		}
 	}

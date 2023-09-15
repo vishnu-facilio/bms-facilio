@@ -46,10 +46,7 @@ import org.json.simple.JSONObject;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.text.MessageFormat;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class EmailClient extends BaseEmailClient {

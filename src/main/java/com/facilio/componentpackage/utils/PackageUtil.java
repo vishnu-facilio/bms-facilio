@@ -12,6 +12,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fs.FileInfo;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -40,6 +41,8 @@ public class PackageUtil {
     private static ThreadLocal<Map<String, Long>> PEOPLE_CONFIG_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new);                // PeopleEmail/Name vs PeopleId
     private static ThreadLocal<Map<Long, String>> PEOPLE_CONFIG_FOR_XML = ThreadLocal.withInitial(HashMap::new);                    // PeopleId vs PeopleEmail/Name
     private static ThreadLocal<Map<String, String>> PEOPLE_OLD_VS_NEW_MAIL = ThreadLocal.withInitial(HashMap::new);                 // People oldMail vs newMail from AdminTool
+    private static ThreadLocal<Map<String, Map<String, FileInfo>>> META_FILES_FOR_COMPONENTS = ThreadLocal.withInitial(HashMap::new);     // Filename vs Id vs File
+    private static ThreadLocal<String> PACKAGE_ROOT_PATH = new ThreadLocal<>();         // Root folder path
 
     public static void setInstallThread() throws Exception {
         isInstallThread.set(true);
@@ -177,6 +180,25 @@ public class PackageUtil {
     public static void addOldVsNewPeopleMail(Map<String, String> oldVsNewPeopleMailToAdd) {
         Map<String, String> oldVsNewPeopleMail = PEOPLE_OLD_VS_NEW_MAIL.get();
         oldVsNewPeopleMail.putAll(oldVsNewPeopleMailToAdd);
+    }
+    public static void addComponentFileForContext(String componentName, String uniqueFileIdentifier, FileInfo fileInfo) {
+        Map<String, Map<String, FileInfo>> metaFilesMap = META_FILES_FOR_COMPONENTS.get();
+        metaFilesMap.computeIfAbsent(componentName, k -> new HashMap<>());;
+        metaFilesMap.get(componentName).put(uniqueFileIdentifier, fileInfo);
+    }
+    public static Map<String,FileInfo> getComponentFileIdVsFileInfo(String componentName) {
+        Map<String, Map<String, FileInfo>> metaFilesMap = META_FILES_FOR_COMPONENTS.get();
+        return metaFilesMap.getOrDefault(componentName, null);
+    }
+
+    public static void clearComponentFiles() {
+        META_FILES_FOR_COMPONENTS.remove();
+    }
+    public static void addRootFolderPath(String fileName) {
+        PACKAGE_ROOT_PATH.set(fileName);
+    }
+    public static String getRootFolderPath() {
+        return PACKAGE_ROOT_PATH.get();
     }
 
     public static void clearPickListConf() throws Exception {

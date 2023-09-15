@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
+import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
@@ -58,6 +59,11 @@ public class CreateOrgForSandboxCommand extends FacilioCommand implements PostTr
             sandboxOrgId = iamAccount.getOrg().getOrgId();
             sandboxUserId = iamAccount.getUser().getUid();
             sandboxConfig.setSandboxOrgId(sandboxOrgId);
+            context.put(PackageConstants.SOURCE_ORG_ID, productionOrg.getOrgId());
+            context.put(PackageConstants.TARGET_ORG_ID, sandboxOrgId);
+            context.put(SandboxConstants.PRODUCTION_DOMAIN_NAME, productionOrg.getDomain());
+            context.put(SandboxConstants.SANDBOX_ORG_USER, iamAccount.getUser());
+            context.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupData);
         } catch(Exception e) {
             LOGGER.error(e.getMessage(), e);
             if(iamAccount != null && iamAccount.getOrg() != null && iamAccount.getOrg().getOrgId() > 0) {

@@ -9,19 +9,18 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.command.PackageChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageContext;
+import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.componentpackage.utils.PackageUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.collections4.CollectionUtils;
-import lombok.extern.log4j.Log4j;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,13 +77,12 @@ public class PackageAction extends FacilioAction {
         LOGGER.info("####Sandbox - Initiating Package Deployment");
         FacilioChain deployPackageChain = PackageChainFactory.getDeployPackageChain();
         FacilioContext deployContext = deployPackageChain.getContext();
-        deployContext.put(PackageConstants.FILE_ID, (Long)context.get(PackageConstants.FILE_ID));
+        deployContext.put(PackageConstants.FILE_ID, (Long) context.get(PackageConstants.FILE_ID));
         deployContext.put(PackageConstants.SOURCE_ORG_ID, sourceOrgId);
         deployContext.put(PackageConstants.TARGET_ORG_ID, targetOrgId);
         deployContext.put(PackageConstants.FROM_ADMIN_TOOL, fromAdminTool);
         deployPackageChain.execute();
         LOGGER.info("####Sandbox - Completed Package Deployment");
-
         CommonCommandUtil.updateOrgInfo("metaMigrationStatus", String.valueOf(1));
         ServletActionContext.getResponse().setStatus(200);
         setResult("result", "success");
@@ -131,17 +129,27 @@ public class PackageAction extends FacilioAction {
         LOGGER.info("####Sandbox - Initiating Package Deployment");
         FacilioChain deployPackageChain = PackageChainFactory.getDeployPackageChain();
         FacilioContext deployContext = deployPackageChain.getContext();
-        deployContext.put(PackageConstants.FILE, file);
-        deployContext.put(PackageConstants.TARGET_ORG_ID, targetOrgId);
-        deployContext.put(PackageConstants.FROM_ADMIN_TOOL, fromAdminTool);
-        deployPackageChain.execute();
-        LOGGER.info("####Sandbox - Completed Package Deployment");
+        try {
+            deployContext.put(PackageConstants.FILE, file);
+            deployContext.put(PackageConstants.TARGET_ORG_ID, targetOrgId);
+            deployContext.put(PackageConstants.FROM_ADMIN_TOOL, fromAdminTool);
+            deployPackageChain.execute();
+            LOGGER.info("####Sandbox - Completed Package Deployment");
 
-        CommonCommandUtil.updateOrgInfo("metaMigrationStatus", String.valueOf(1));
-        ServletActionContext.getResponse().setStatus(200);
-        setResult("result", "success");
-        AccountUtil.cleanCurrentAccount();
-
+            CommonCommandUtil.updateOrgInfo("metaMigrationStatus", String.valueOf(1));
+            ServletActionContext.getResponse().setStatus(200);
+            setResult("result", "success");
+            AccountUtil.cleanCurrentAccount();
+        }catch (Exception ex) {
+            LOGGER.error("####Sandbox - Error In Package Deployment", ex);
+            throw new Exception(ex);
+        }finally {
+            PackageFolderContext rootFolder = (PackageFolderContext) deployContext.getOrDefault(PackageConstants.PACKAGE_ROOT_FOLDER, null);
+            if(rootFolder != null) {
+                File file = new File(rootFolder.getPath());
+                FileUtils.deleteDirectory(file);
+            }
+        }
         return SUCCESS;
     }
     public String addOrgInfoData() throws Exception {

@@ -1,5 +1,7 @@
 package com.facilio.componentpackage.bean;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.backgroundactivity.util.BackgroundActivityAPI;
 import com.facilio.backgroundactivity.util.BackgroundActivityService;
 import com.facilio.modules.FieldFactory;
@@ -32,7 +34,7 @@ public class OrgSwitchBeanImpl implements OrgSwitchBean{
     public boolean sendSandboxProgress(Integer percentage, Long recordId, String message) throws Exception {
         try {
             BackgroundActivityService backgroundActivityService = new BackgroundActivityService(BackgroundActivityAPI.parentActivityForRecordIdAndType(recordId, "sandbox"));
-            if (backgroundActivityService != null) {
+            if (backgroundActivityService != null && backgroundActivityService.getActivityId() != null) {
                 backgroundActivityService.updateActivity(percentage, message);
             }
             return true;
@@ -54,5 +56,10 @@ public class OrgSwitchBeanImpl implements OrgSwitchBean{
     @Override
     public SandboxConfigContext getSandboxById(long id) throws Exception {
         return SandboxAPI.getSandboxById(id);
+    }
+
+    @Override
+    public long getSuperAdminOuidFromSandbox() throws Exception {
+        return AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId()).getOuid();
     }
 }

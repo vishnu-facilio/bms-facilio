@@ -15,6 +15,7 @@ public class SandboxTransactionChainFactory {
         c.addCommand(new CreateOrgForSandboxCommand());
         c.addCommand(new AddOrUpdateSandboxCommand());
         c.addCommand(new AddOrUpdateSandboxSharingCommand());
+        c.addCommand(new AddDefaultSignupDataAndCreationInstallationCommand());
         return c;
     }
 
@@ -33,12 +34,6 @@ public class SandboxTransactionChainFactory {
         c.addCommand(new ChangeSandboxStatusCommand());
         return c;
     }
-    public static FacilioChain getAddSandboxDefaultDataAndCreationInstallationChain() {
-        FacilioChain c = getDefaultChain();
-//        c.addCommand(new AddSandboxDomainCommand());
-        c.addCommand(new AddDefaultSignupDataAndCreationInstallationCommand());
-        return c;
-    }
     public static FacilioChain getSandboxDataCreationInstallationChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new CreateAndInstallPackageCommand());
@@ -46,7 +41,7 @@ public class SandboxTransactionChainFactory {
     }
     public static FacilioChain getSandboxDataInstallationChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new InstallPackageAloneCommand());
+        c.addCommand(new InstallPackageCommand());
         return c;
     }
 }

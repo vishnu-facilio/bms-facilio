@@ -186,7 +186,7 @@
         dataObject.skipComponents = selectedComponents;
 
         $.ajax({
-            url: "/admin/doInstallAlone", // Change this to your custom endpoint URL
+            url: "/admin/doInstall", // Change this to your custom endpoint URL
             type: "POST",
             contentType: "application/json",
             dataType: "json",

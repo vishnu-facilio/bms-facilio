@@ -27,21 +27,6 @@ public class SandboxUtil {
         signupData.put("productionOrgId", ((Number)dataMap.get("productionOrgId")).longValue());
         return signupData;
     }
-    public static Organization constructSandboxOrganizationFromMap(Map<String, Object> sandboxOrgMap){
-        Organization sandboxOrganization = new Organization();
-        sandboxOrganization.setId( ((Number)sandboxOrgMap.get("id")).longValue());
-        sandboxOrganization.setOrgId( ((Number)sandboxOrgMap.get("orgId")).longValue());
-        sandboxOrganization.setName(String.valueOf(sandboxOrgMap.get("name")));
-        sandboxOrganization.setProductionOrgId( ((Number)sandboxOrgMap.get("productionOrgId")).longValue());
-        sandboxOrganization.setDbName( String.valueOf(sandboxOrgMap.get("dbName")));
-        sandboxOrganization.setLanguage(String.valueOf(sandboxOrgMap.get("language")));
-        sandboxOrganization.setDomain(String.valueOf(sandboxOrgMap.get("domain")));
-        sandboxOrganization.setCountry( String.valueOf(sandboxOrgMap.get("country")));
-        sandboxOrganization.setOrgType(((Number)sandboxOrgMap.get("orgType")).intValue());
-        sandboxOrganization.setTimezone( String.valueOf(sandboxOrgMap.get("timezone")));
-        sandboxOrganization.setCreatedTime( ((Number)sandboxOrgMap.get("createdTime")).longValue());
-        return sandboxOrganization;
-    }
     public static IAMUser constructSandboxIAMUserFromMap(Map<String, Object> userDataMap) {
         IAMUser iamUser = new IAMUser();
         iamUser.setId(((Number)userDataMap.get("id")).longValue());

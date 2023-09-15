@@ -337,7 +337,7 @@
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
 		</action>
-		<action name="doInstallAlone" class="com.facilio.sandbox.action.SandboxAction" method="doInstall" >
+		<action name="doInstall" class="com.facilio.sandbox.action.SandboxAction" method="doInstall" >
 			<result name="success" type="json">
 				<param name="root">result</param>
 				<param name="statusCode">200</param>

@@ -21,6 +21,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.function.Unchecked;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -158,12 +159,12 @@ public class SandboxAPI {
         selectBuilder.limit(perPage);
 
         List<Map<String, Object>> props = selectBuilder.get();
-        List<Long> sandboxIds = props.stream()
+        if (!CollectionUtils.isEmpty(props)) {
+            List<Long> sandboxIds = props.stream()
                 .map(prop -> (Long) prop.get("id"))
                 .collect(Collectors.toList());
-        FacilioModule sandboxSharingModule = ModuleFactory.getSandboxSharingModule();
-        List<FacilioField> sandboxSharingFields = FieldFactory.getSandboxSharingFields();
-        if (!CollectionUtils.isEmpty(props)) {
+            FacilioModule sandboxSharingModule = ModuleFactory.getSandboxSharingModule();
+            List<FacilioField> sandboxSharingFields = FieldFactory.getSandboxSharingFields();
             Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharing(sandboxIds, sandboxSharingModule,
                     SingleSharingContext.class, sandboxSharingFields);
             List<SandboxConfigContext> sandboxList = FieldUtil.getAsBeanListFromMapList(props, SandboxConfigContext.class);
@@ -221,14 +222,13 @@ public class SandboxAPI {
     }
 
     public static boolean checkSandboxDomainIfExist(String domainName) throws Exception {
-        FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .select(FieldFactory.getFacilioSandboxFields())
-                .table(sandboxModule.getTableName())
-                .andCondition(CriteriaAPI.getCondition("DOMAIN_NAME", "subDomain", domainName, StringOperators.IS));
+                .select(IAMAccountConstants.getOrgFields())
+                .table(IAMAccountConstants.getOrgModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("FACILIODOMAINNAME", "domainName", domainName, StringOperators.IS));
         Map<String, Object> props = selectBuilder.fetchFirst();
-        if (props != null && props.containsKey("subDomain")) {
-            boolean avail = String.valueOf(props.get("subDomain")).equalsIgnoreCase(domainName);
+        if (props != null && props.containsKey("domain")) {
+            boolean avail = String.valueOf(props.get("domain")).equalsIgnoreCase(domainName);
             if (avail) {
                 return false;
             } else {
@@ -240,9 +240,9 @@ public class SandboxAPI {
 
     public static boolean checkSandboxRestrictionCondition() throws Exception {
         FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
-        List<Long> restrictStatuses = new ArrayList<>();
-        restrictStatuses.add(3L);
-        restrictStatuses.add(4L);
+        List<Integer> restrictStatuses = new ArrayList<>();
+        restrictStatuses.add(SandboxConfigContext.SandboxStatus.CREATION_IN_PROGRESS.getIndex());
+        restrictStatuses.add(SandboxConfigContext.SandboxStatus.UPGRADE_IN_PROGRESS.getIndex());
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getFacilioSandboxFields())
                 .table(sandboxModule.getTableName())
@@ -255,7 +255,7 @@ public class SandboxAPI {
     }
     public static void sendSandboxProgress(Integer percentage, Long recordId, String message) throws Exception {
         BackgroundActivityService backgroundActivityService = new BackgroundActivityService(BackgroundActivityAPI.parentActivityForRecordIdAndType(recordId, "sandbox"));
-        if (backgroundActivityService != null) {
+        if (backgroundActivityService != null && backgroundActivityService.getActivityId() != null) {
             backgroundActivityService.updateActivity(percentage, message);
         }
     }

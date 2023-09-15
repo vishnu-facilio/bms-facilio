@@ -6,33 +6,33 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.forms.*;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormRuleContext;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.Template;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.*;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ActionType;
-import com.facilio.bmsconsoleV3.context.V3PeopleContext;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetTypeContext;
-import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
-import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.manager.NamedCriteria;
 import com.facilio.db.criteria.manager.NamedCriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.emailtemplate.context.EMailStructure;
+import com.facilio.fs.FileInfo;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -46,11 +46,13 @@ import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1022,11 +1024,11 @@ public class PackageBeanUtil {
                 workflow.element(PackageConstants.WorkFlowRuleConstants.EXPRESSIONS).text(String.valueOf(templateContext.getWorkflow().getExpressions()));
                 XMLBuilder parameterBuilder = workflow.element(PackageConstants.WorkFlowRuleConstants.PARAMETERS);
                 List<ParameterContext> parameterList = templateContext.getWorkflow().getParameters();
-                for (ParameterContext parameter : parameterList){
+                for (ParameterContext parameter : parameterList) {
                    XMLBuilder parameters = parameterBuilder.element("parameter");
                    parameters.element("name").text(parameter.getName());
                    parameters.element("typeString").text(parameter.getTypeString());
-                   if(parameter.getValue() != null) {
+                   if (parameter.getValue() != null) {
                        parameters.element("value").text(String.valueOf(parameter.getValue()));
                    }
                    parameters.element("workflowFieldType").text(String.valueOf(parameter.getWorkflowFieldType()));
@@ -1414,11 +1416,11 @@ public class PackageBeanUtil {
                 .table(ModuleFactory.getFormRuleModule().getTableName())
                 .select(FieldFactory.getFormRuleFields());
 
-        if(formRule.getFormId()>0){
+        if (formRule.getFormId()>0){
             ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("FORM_ID", "formId", String.valueOf(formRule.getFormId()), NumberOperators.EQUALS));
         }
 
-        if(formRule.getSubFormId()>0){
+        if (formRule.getSubFormId()>0){
             ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("SUB_FORM_ID", "subFormId", String.valueOf(formRule.getSubFormId()), NumberOperators.EQUALS));
         }
 
@@ -1426,10 +1428,10 @@ public class PackageBeanUtil {
             ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name", formRule.getName(), StringOperators.IS));
         }
 
-        if(StringUtils.isNotEmpty(formRule.getDescription())){
+        if(StringUtils.isNotEmpty(formRule.getDescription())) {
             ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("DESCRIPTION", "description", formRule.getDescription(), StringOperators.IS));
         }
-        ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("IS_DEFAULT_RULE","isDefault",String.valueOf(formRule.getIsDefault()), BooleanOperators.IS));
+        ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("IS_DEFAULT_RULE", "isDefault",String.valueOf(formRule.getIsDefault()), BooleanOperators.IS));
 
         Map<String, Object> prop = ruleSelectBuilder.fetchFirst();
         return MapUtils.isNotEmpty(prop) ? (Long) prop.get("id") : -1;
@@ -1448,5 +1450,23 @@ public class PackageBeanUtil {
             }
         }
     }
-
+    public static List<Map<String, Object>> addEMailAttachments(XMLBuilder element) throws Exception {
+        XMLBuilder attachmentListElement = element.getElement(PackageConstants.EmailConstants.ATTACHMENT_LIST);
+        List<Map<String, Object>> attachmentList = new ArrayList<>();
+        if (attachmentListElement != null) {
+            List<XMLBuilder> attachmentElements = attachmentListElement.getElementList(PackageConstants.EmailConstants.ATTACHMENT);
+            for (XMLBuilder attachmentElement : attachmentElements) {
+                if (attachmentElement != null) {
+                    FileContext fileContext = PackageFileUtil.addMetaFileAndGetContext(attachmentElement);
+                    if(fileContext != null) {
+                        Map<String, Object> attachmentObj = new HashMap<>();
+                        attachmentObj.put("fileId", fileContext.getFileId());
+                        attachmentObj.put("type", 1L);
+                        attachmentList.add(attachmentObj);
+                    }
+                }
+            }
+        }
+        return attachmentList;
+    }
 }

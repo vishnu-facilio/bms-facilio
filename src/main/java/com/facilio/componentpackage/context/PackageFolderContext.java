@@ -1,5 +1,6 @@
 package com.facilio.componentpackage.context;
 
+import com.facilio.fs.FileInfo;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,11 +15,13 @@ public class PackageFolderContext {
 
     Map<String, PackageFolderContext> folders;
     Map<String, PackageFileContext> files;
+    Map<String, FileInfo> filesInfo;
 
     public PackageFolderContext(String name) {
         this.name = name;
         folders = new HashMap<>();
         files = new HashMap<>();
+        filesInfo = new HashMap<>();
     }
 
     public PackageFolderContext addFolder(String name) {
@@ -37,6 +40,12 @@ public class PackageFolderContext {
 
     public void addFile(String name, PackageFileContext file) {
         files.put(name, file);
+    }
+    public void addFileInfo(String name, FileInfo fileInfo) {
+        filesInfo.put(name, fileInfo);
+    }
+    public FileInfo getFileInfo(String name) {
+        return filesInfo.get(name);
     }
 
     public PackageFileContext getFile(String name) {

@@ -1,16 +1,15 @@
 package com.facilio.componentpackage.command;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageContext;
 import com.facilio.componentpackage.context.PackageFileContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.componentpackage.utils.PackageFileUtil;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.time.DateTimeUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.zeroturnaround.zip.ZipUtil;
 
@@ -38,8 +37,8 @@ public class UnzipPackageFileCommand extends FacilioCommand {
 
 		File outputDirectory = new File(System.getProperties().getProperty("java.io.tmpdir") + File.separator + "sandbox"+ File.separator + "Unzipped-Package-Files"+ File.separator + "Org_Package_" + "_" + DateTimeUtil.getFormattedTime(DateTimeUtil.getCurrenTime()));
 		ZipUtil.unpack(packageZipFile, outputDirectory);
+		PackageUtil.addRootFolderPath(outputDirectory.getPath());
 		PackageFolderContext rootFolder = convertUnzippedFileToPackageFolder(outputDirectory.getAbsolutePath());
-		FileUtils.deleteDirectory(outputDirectory);
 
 		context.put(PackageConstants.PACKAGE_ROOT_FOLDER, rootFolder);
 
@@ -69,7 +68,7 @@ public class UnzipPackageFileCommand extends FacilioCommand {
 					String fileName = FilenameUtils.getBaseName(fileNameWithExtn);
 					String extension = FilenameUtils.getExtension(fileNameWithExtn);
 
-					if(PackageConstants.ALLOWED_EXTN.contains(extension) && !fileName.startsWith(".")) {
+					if(PackageConstants.ALLOWED_EXTN.contains(extension) && !fileName.startsWith(".") && !currentFolder.getName().endsWith(PackageConstants.META_FILES_FOLDER_NAME)) {
 						String content = PackageFileUtil.readFileContent(file.getAbsolutePath());
 						PackageFileContext packageFile = new PackageFileContext(fileName, extension, content);
 						folderContent.addFile(fileNameWithExtn, packageFile);

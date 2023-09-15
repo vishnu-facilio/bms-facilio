@@ -30,6 +30,7 @@ public class PackageConstants {
     public static final String FROM_ADMIN_TOOL = "fromAdminTool";
     public static final String SKIP_COMPONENTS = "skipComponents";
     public static final String COMPONENTS_FOLDER_NAME = "components";
+    public static final String META_FILES_FOLDER_NAME = "metafiles";
     public static final String XML_FILE_EXTN = "xml";
     public static final String PACKAGE_CONTEXT = "packageContext";
     public static final String CREATED_USER_ID = "createdUserId";
@@ -407,7 +408,7 @@ public class PackageConstants {
         public static final String IS_V2_SCRIPT = "IsV2Script";
         public static final String WORKFLOW_V2_STRING = "WorkflowV2String";
         public static final String ATTACHMENT_LIST = "AttachmentList";
-
+        public static final String ATTACHMENT = "Attachment";
     }
     public static class WorkFlowConstants{
         public static final String PARAMETERS = "Parameters";
@@ -623,5 +624,11 @@ public class PackageConstants {
         public static final String RESOURCE = "resource";
         public static final String SCOPE = "scope";
 
+    }
+    public class FileConstants{
+        public static final String FILE_NAME = "File_Name";
+        public static final String FILE_PATH = "File_Path";
+        public static final String UNIQUE_FILE_IDENTIFIER = "Unique_File_Identifier";
+        public static final String CONTENT_TYPE = "Content_Type";
     }
 }

@@ -1,24 +1,32 @@
 
 package com.facilio.componentpackage.implementation;
 
+import com.facilio.accounts.util.EmailAttachmentAPI;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.TemplateFileContext;
+import com.facilio.bmsconsole.templates.TemplateAttachment;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
+import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.componentpackage.utils.PackageFileUtil;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.emailtemplate.action.EMailTemplateAction;
 import com.facilio.emailtemplate.context.EMailStructure;
+import com.facilio.fs.FileInfo;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.context.ParameterContext;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -26,6 +34,9 @@ import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -59,7 +70,6 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
         }
         return eMailStructureIdVsEMailStructureMap;
     }
-
     @Override
     public void convertToXMLComponent(EMailStructure component, XMLBuilder element) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
@@ -106,6 +116,16 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
                 userWorkflowElements.element(PackageConstants.EmailConstants.WORKFLOW_V2_STRING).cData(component.getUserWorkflow().getWorkflowV2String());
             }
         }
+        XMLBuilder attachmentList = element.element(PackageConstants.EmailConstants.ATTACHMENT_LIST);
+        if (component.getIsAttachmentAdded() != null && component.getIsAttachmentAdded()) {
+            List<? extends TemplateAttachment> fileAttachments = component.getAttachments();
+            for (TemplateFileContext templateFileContext: (List<TemplateFileContext>)fileAttachments){
+                XMLBuilder attachment = attachmentList.element(PackageConstants.EmailConstants.ATTACHMENT);
+                FileStore fs = FacilioFactory.getFileStore();
+                FileInfo fileInfo = fs.getFileInfo(templateFileContext.getFileId());
+                attachmentList.addElement(PackageFileUtil.constructMetaAttachmentXMLBuilder(ComponentType.EMAIL_TEMPLATE , component.getId(), attachment, fileInfo));
+            }
+        }
     }
 
     @Override
@@ -132,6 +152,7 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
             XMLBuilder emailElement = idVsData.getValue();
             String moduleName = new String();
             EMailStructure eMailStructure = constructEmailFromBuilder(emailElement);
+            List<Map<String, Object>> attachmentList = PackageBeanUtil.addEMailAttachments(emailElement);
             long eMailStructureModuleId = eMailStructure.getModuleId();
             if (CollectionUtils.isNotEmpty(Collections.singleton(eMailStructureModuleId))) {
                 FacilioModule module = moduleBean.getModule(eMailStructureModuleId);
@@ -152,11 +173,11 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
             }
             if(moduleName != null) {
                 if (!containsName) {
-                    long emailStructureId = addEMailStructure(moduleName, eMailStructure);
+                    long emailStructureId = addEMailStructure(moduleName, eMailStructure, attachmentList);
                     uniqueIdentifierVsComponentId.put(idVsData.getKey(), emailStructureId);
                 } else {
                     eMailStructure.setId(id);
-                    updateEmailStructure(moduleName, eMailStructure);
+                    updateEmailStructure(moduleName, eMailStructure, attachmentList);
                     uniqueIdentifierVsComponentId.put(idVsData.getKey(), id);
                 }
             }
@@ -187,6 +208,7 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
             XMLBuilder emailElement = idVsData.getValue();
             EMailStructure eMailStructure = constructEmailFromBuilder(emailElement);
             eMailStructure.setId(emailStructureId);
+            List<Map<String, Object>> attachmentList = PackageBeanUtil.addEMailAttachments(emailElement);
             String moduleName = new String();
             long eMailStructureModuleId = eMailStructure.getModuleId();
             if (CollectionUtils.isNotEmpty(Collections.singleton(eMailStructureModuleId))) {
@@ -198,14 +220,13 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
                 }
             }
             if(moduleName!=null) {
-                updateEmailStructure(moduleName, eMailStructure);
+                updateEmailStructure(moduleName, eMailStructure, attachmentList);
             }
         }
     }
 
     @Override
     public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
-
     }
 
     @Override
@@ -328,48 +349,37 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
 
     }
     public List<EMailStructure> getEmailStructureForIds(Collection<Long> ids) throws Exception {
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getEMailStructureModule().getTableName())
-                .select(FieldFactory.getEMailStructureFields())
-                .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getEMailStructureModule()));
-
-        List<EMailStructure> eMailStructures = FieldUtil.getAsBeanListFromMapList(builder.get(), EMailStructure.class);
-        if (CollectionUtils.isNotEmpty(eMailStructures)) {
-            for (EMailStructure eMailStructure:eMailStructures){
-                EMailStructure emailTemplate = ( EMailStructure) TemplateAPI.getTemplate(eMailStructure.getId());
-                eMailStructure.setName(emailTemplate.getName());
-                eMailStructure.setMessage(emailTemplate.getMessage());
-                eMailStructure.setWorkflow(emailTemplate.getWorkflow());
-
-                eMailStructure.setUserWorkflow(emailTemplate.getUserWorkflow());
+        List<EMailStructure> eMailStructures = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(ids)) {
+            for (Long id : ids){
+                EMailStructure emailTemplate = ( EMailStructure) TemplateAPI.getTemplate(id);
+                List<TemplateFileContext> templateFileContexts = EmailAttachmentAPI.getAttachments(emailTemplate.getId());
+                for (TemplateFileContext templateFileContext : templateFileContexts) {
+                    emailTemplate.addAttachment(templateFileContext);
+                }
+                eMailStructures.add(emailTemplate);
             }
         }
         return eMailStructures;
     }
-    private long addEMailStructure(String module, EMailStructure eMailStructure) throws Exception {
+    private long addEMailStructure(String module, EMailStructure eMailStructure, List<Map<String, Object>> attachmentList) throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateEmailStructureChain();
         FacilioContext context = chain.getContext();
-        EMailTemplateAction eMailTemplateAction = new EMailTemplateAction();
-        List<Map<String, Object>> attachmentList = new ArrayList<>();
-        eMailTemplateAction.setAttachmentList(attachmentList);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, module);
         context.put(FacilioConstants.ContextNames.EMAIL_STRUCTURE, eMailStructure);
-        context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, eMailTemplateAction.getAttachmentList());
+        context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, attachmentList);
         chain.execute();
         EMailStructure emailStructureContext1 = (EMailStructure) context.get(FacilioConstants.ContextNames.EMAIL_STRUCTURE);
         long emailStructureContextId = emailStructureContext1.getId();
 
         return emailStructureContextId;
     }
-    public void updateEmailStructure(String module, EMailStructure eMailStructure) throws Exception {
+    public void updateEmailStructure(String module, EMailStructure eMailStructure, List<Map<String, Object>> attachmentList) throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateEmailStructureChain();
         FacilioContext context = chain.getContext();
-        EMailTemplateAction eMailTemplateAction = new EMailTemplateAction();
-        List<Map<String, Object>> attachmentList = new ArrayList<>();
-        eMailTemplateAction.setAttachmentList(attachmentList);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, module);
         context.put(FacilioConstants.ContextNames.EMAIL_STRUCTURE, eMailStructure);
-        context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, eMailTemplateAction.getAttachmentList());
+        context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, attachmentList);
         chain.execute();
     }
 }

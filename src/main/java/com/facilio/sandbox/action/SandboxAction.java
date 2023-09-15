@@ -36,6 +36,7 @@ public class SandboxAction extends FacilioAction {
     private static final long serialVersionUID = 1L;
     SandboxConfigContext sandbox;
     private long id = -1;
+    private int status = 1;
     private int page = -1;
     private int perPage = -1;
     private long sourceOrgId;
@@ -81,18 +82,6 @@ public class SandboxAction extends FacilioAction {
         FacilioContext sandboxContext = createSandboxChain.getContext();
         sandboxContext.put(SandboxConstants.SANDBOX, sandbox);
         createSandboxChain.execute();
-
-        IAMAccount sbAccount = (IAMAccount) sandboxContext.get(SandboxConstants.SANDBOX_ACCOUNT);
-        Organization productionOrg = IAMOrgUtil.getOrg(AccountUtil.getCurrentOrg().getOrgId());
-
-        FacilioChain sandboxDataChain = SandboxTransactionChainFactory.getAddSandboxDefaultDataAndCreationInstallationChain();
-        FacilioContext sandboxDataContext = sandboxDataChain.getContext();
-        sandboxDataContext.put(SandboxConstants.PRODUCTION_DOMAIN_NAME, productionOrg.getDomain());
-        sandboxDataContext.put(SandboxConstants.SANDBOX_ORG, sbAccount.getOrg());
-        sandboxDataContext.put(SandboxConstants.SANDBOX_ORG_USER, sbAccount.getUser());
-        sandboxDataContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, sandboxContext.get(FacilioConstants.ContextNames.SIGNUP_INFO));
-        sandboxDataContext.put(SandboxConstants.SANDBOX, sandbox);
-        sandboxDataChain.execute();
 
         setResult(SandboxConstants.SANDBOX_ID, sandbox.getId());
         setResult(PackageConstants.TARGET_ORG_ID, sandbox.getSandboxOrgId());
@@ -144,7 +133,7 @@ public class SandboxAction extends FacilioAction {
         sandboxDataContext.put(PackageConstants.SKIP_COMPONENTS, skipComponents);
         sandboxDataChain.execute();
         ServletActionContext.getResponse().setStatus(200);
-        setResult(FacilioConstants.ContextNames.MESSAGE, "DATA CREATION AND INSTALLATION STARTED");
+        setResult(FacilioConstants.ContextNames.MESSAGE, "DATA INSTALLATION STARTED");
         AccountUtil.cleanCurrentAccount();
         return SUCCESS;
     }
@@ -160,9 +149,12 @@ public class SandboxAction extends FacilioAction {
     }
 
     public String changeStatus() throws Exception{
+        SandboxConfigContext sandboxConfigContext = new SandboxConfigContext();
+        sandboxConfigContext.setId(id);
+        sandboxConfigContext.setStatus(status);
         FacilioChain updateSandboxChain = SandboxTransactionChainFactory.getChangeSandboxStatusChain();
         FacilioContext sandboxContext = updateSandboxChain.getContext();
-        sandboxContext.put(SandboxConstants.SANDBOX, sandbox);
+        sandboxContext.put(SandboxConstants.SANDBOX, sandboxConfigContext);
         updateSandboxChain.execute();
         setResult(FacilioConstants.ContextNames.MESSAGE, "Status changed successfully");
 

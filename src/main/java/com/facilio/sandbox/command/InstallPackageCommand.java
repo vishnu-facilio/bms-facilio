@@ -15,7 +15,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InstallPackageAloneCommand extends FacilioCommand {
+public class InstallPackageCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long sourceOrgId = (long) context.get(PackageConstants.SOURCE_ORG_ID);

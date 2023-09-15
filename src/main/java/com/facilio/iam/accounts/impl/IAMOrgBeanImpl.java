@@ -42,7 +42,7 @@ import com.facilio.services.filestore.FileStore;
 public class IAMOrgBeanImpl implements IAMOrgBean {
 
 	private static final String DOMAIN_PATTERN = "[a-z0-9]+";
-	private static final String SANDBOX_DOMAIN_PATTERN = "[a-z0-9-]+";
+	private static final String SANDBOX_DOMAIN_PATTERN = "[a-z0-9_]+";
 
 	@Override
 	public boolean updateOrgv2(long orgId, Organization org) throws Exception {
