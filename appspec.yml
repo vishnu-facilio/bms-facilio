@@ -43,8 +43,6 @@ files:
     destination: /home/facilio/deployment-files/    
   - source: /awsprops-ae-scheduler.properties
     destination: /home/facilio/deployment-files/
-  - source: /awsprops-scheduler-app.properties
-    destination: /home/facilio/deployment-files/
   - source: /awsprops-kafka.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-kafka.properties
@@ -79,8 +77,6 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-ae-preprod.properties
     destination: /home/facilio/deployment-files/
-  - source: /awsprops-demo.properties
-    destination: /home/facilio/deployment-files/
   - source: /log4j-user.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-preprod.properties
@@ -96,8 +92,6 @@ files:
   - source: /log4j-syd-kafka.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-ae-kafka.properties
-    destination: /home/facilio/deployment-files/
-  - source: /log4j-scheduler-app.properties
     destination: /home/facilio/deployment-files/
   - source: /log4j-syd-user-critical.properties
     destination: /home/facilio/deployment-files/
@@ -165,12 +159,6 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-user.properties
     destination: /home/facilio/deployment-files/
-  - source: /awsprops-syd-user-int.properties
-    destination: /home/facilio/deployment-files/
-  - source: /awsprops-oci-user.properties
-    destination: /home/facilio/deployment-files/
-  - source: /awsprops-oci-scheduler.properties
-    destination: /home/facilio/deployment-files/    
   - source: /executors-org.xml
     destination: /home/facilio/deployment-files/
   - source: /executors-org-au.xml
@@ -213,7 +201,26 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /log4j-azure-processor.properties
     destination: /home/facilio/deployment-files/
-    
+  - source: /log4j-preprod-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-sp-preprod-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-uk-preprod-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-syd-preprod-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-ae-preprod-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-preprod-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-sp-preprod-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-uk-preprod-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-syd-preprod-scheduler.properties
+    destination: /home/facilio/deployment-files/
+  - source: /awsprops-ae-preprod-scheduler.properties
+    destination: /home/facilio/deployment-files/
 
 permissions:
   - object: /home/facilio
