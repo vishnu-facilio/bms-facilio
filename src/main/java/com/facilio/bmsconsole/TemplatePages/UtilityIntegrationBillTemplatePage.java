@@ -10,11 +10,15 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UtilityIntegrationBillTemplatePage implements TemplatePageFactory {
     @Override
@@ -33,17 +37,17 @@ public class UtilityIntegrationBillTemplatePage implements TemplatePageFactory {
 
         return new PagesContext(null, null, "", null, true, false, false)
                 .addLayout(PagesContext.PageLayoutType.WEB)
-                .addTab("utilityintegrationbillsummary", "SUMMARY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilityintegrationbillsummary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("", "", null)
-                .addWidget("billSummaryWidget", "null", PageWidget.WidgetType.BILL_SUMMARY_WIDGET, "webBillSummaryWidget_65_12", 0, 0, null, null)
+                .addWidget("billSummaryWidget", "Bill", PageWidget.WidgetType.BILL_SUMMARY_WIDGET, "webBillSummaryWidget_65_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
 
-                .addTab("utilityintegrationbillnotes", "NOTES & INFORMATION", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilityintegrationbillnotes", "NOTES & INFORMATION", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilityintegrationbillsummaryfields", null, null)
                 .addWidget("utilityintegrationbillsummaryfieldswidget", "Bill  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.UTILITY_INTEGRATION_BILLS))
@@ -56,23 +60,21 @@ public class UtilityIntegrationBillTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addTab("utilityintegrationbillrelated", "RELATED", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilityintegrationbillrelated", "RELATED", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilityintegrationbillrelationships", "Relationships", "List of relationships and types between records across modules")
                 .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("utilityintegrationbilllist", "Related List", "List of related records across modules")
-                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(billModule))
+                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, fetchAllRelatedListForModule(billModule))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
 
-                .layoutDone()
-
-                ;
+                .layoutDone();
     }
 
     private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
@@ -176,6 +178,66 @@ public class UtilityIntegrationBillTemplatePage implements TemplatePageFactory {
 
         return FieldUtil.getAsJSON(widgetGroup);
     }
+    public static JSONObject fetchAllRelatedListForModule(FacilioModule module) throws Exception {
+        BulkRelatedListContext bulkRelatedListWidget = new BulkRelatedListContext();
+        List<RelatedListWidgetContext> relLists = new ArrayList<>();
+        if(module != null) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            List<FacilioModule.ModuleType> subModuleTypesToFetch = RelatedListWidgetUtil.getSubModuleTypesToFetchForRelatedList(module);
+
+            List<String> modulesToAdd = new ArrayList<>();
+            List<String> modulesToRemove = new ArrayList<>();
+            RelatedListWidgetUtil.addOrRemoveModulesFromRelatedLists(module, modulesToAdd, modulesToRemove);
+
+            List<FacilioModule> subModules = modBean.getSubModules(module.getName(), subModuleTypesToFetch.toArray(new FacilioModule.ModuleType[]{}));
+            if(CollectionUtils.isNotEmpty(modulesToAdd)) {
+                List<String> existingSubModuleNames = subModules
+                        .stream()
+                        .map(FacilioModule::getName)
+                        .collect(Collectors.toList());
+                List<String> modulesToAddInSubModules =  new ArrayList<>(modulesToAdd);
+                modulesToAddInSubModules.removeAll(existingSubModuleNames);
+                //modulesToAddInSubModules.addAll(modulesToAdd);
+                subModules.addAll(modBean.getModuleList(modulesToAddInSubModules));
+            }
+
+            if(CollectionUtils.isNotEmpty(modulesToRemove)) {
+                subModules.removeIf(mod->modulesToRemove.contains(mod.getName()));
+            }
+            for(FacilioModule subModule : subModules ) {
+                if (subModule.isModuleHidden()) {
+                    continue;
+                }
+
+                List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
+                List<FacilioField> fields = allFields.stream()
+                        .filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == module.getModuleId()))
+                        .collect(Collectors.toList());
+
+                long moduleId = module.getModuleId();
+                if (CollectionUtils.isNotEmpty(fields)) {
+
+                    for(FacilioField field : fields ) {
+                        //if (PageFactory.relatedListHasPermission(moduleId, subModule, field)) {
+                        RelatedListWidgetContext relList = new RelatedListWidgetContext();
+                        if (StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
+                            relList.setDisplayName(((LookupField) field).getRelatedListDisplayName());
+                        } else {
+                            relList.setDisplayName(field.getDisplayName());
+                        }
+                        relList.setSubModuleName(subModule.getName());
+                        relList.setSubModuleId(subModule.getModuleId());
+                        relList.setFieldName(field.getName());
+                        relList.setFieldId(field.getFieldId());
+                        relLists.add(relList);
+                        // }
+                    }
+                }
+            }
+        }
+        bulkRelatedListWidget.setRelatedList(relLists);
+        return FieldUtil.getAsJSON(bulkRelatedListWidget);
+    };
 }
 
 

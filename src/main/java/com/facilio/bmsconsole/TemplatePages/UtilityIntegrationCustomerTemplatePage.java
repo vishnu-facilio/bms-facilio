@@ -10,11 +10,15 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UtilityIntegrationCustomerTemplatePage implements TemplatePageFactory {
     @Override
@@ -41,14 +45,14 @@ public class UtilityIntegrationCustomerTemplatePage implements TemplatePageFacto
 
         return new PagesContext(null, null, "", null, true, false, false)
                 .addLayout(PagesContext.PageLayoutType.WEB)
-                .addTab("utilityintegrationcustomersummary", "SUMMARY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilityintegrationcustomersummary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilityintegrationcustomersummaryfields", null, null)
-                .addWidget("utilityintegrationcustomersummaryfieldswidget", "Utility  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER))
+                .addWidget("utilityintegrationcustomersummaryfieldswidget", "Account  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER))
                 .widgetDone()
                 .sectionDone()
                 .addSection("meterConnections", null, null)
-                .addWidget("meterWidget", "Meter Connections", PageWidget.WidgetType.METER_WIDGET, "webMeterWidget-10*12", 0, 0, moduleData, getSummaryWidgetDetails(FacilioConstants.UTILITY_INTEGRATION_METER))
+                .addWidget("meterWidget", "Meter Connections", PageWidget.WidgetType.METER_WIDGET, "webMeterWidget_24_12", 0, 0, moduleData, getSummaryWidgetDetails(FacilioConstants.UTILITY_INTEGRATION_METER))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -58,36 +62,92 @@ public class UtilityIntegrationCustomerTemplatePage implements TemplatePageFacto
                 .columnDone()
                 .tabDone()
 
-                .addTab("utilityintegrationcustomerrelated", "BILLS", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilityintegrationcustomerrelated", "BILLS", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilityintegrationcustomerrelationships", "Relationships", "List of relationships and types between records across modules")
                 .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
-                .addSection("utilityintegrationcustomerlist", "Bill List", "List of bills")
-                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(customerModule))
-                //.addWidget("singleRelatedList", "Related List", PageWidget.WidgetType.RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.fetchRelatedListForModule(customerModule))
+                .addSection("utilityintegrationcustomerlist", "", "")
+                .addWidget("utilitycustomerrelatedList", "", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 0, null, fetchAllRelatedListForModule(customerModule))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addTab("utilityintegrationcustomerhistory", "HISTORY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilityintegrationcustomerhistory", "HISTORY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("activity", null, null)
                 .addWidget("activity", "Customer History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
-//                .addSection("activity", null, null)
-//                .addWidget("activity", "Meter History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, meterHistoryWidgetParam, null)
-//                .widgetDone()
-//                .sectionDone()
                 .columnDone()
                 .tabDone()
-                .layoutDone()
+                .layoutDone();
 
-                ;
+
     }
+
+    public static JSONObject fetchAllRelatedListForModule(FacilioModule module) throws Exception {
+        BulkRelatedListContext bulkRelatedListWidget = new BulkRelatedListContext();
+        List<RelatedListWidgetContext> relLists = new ArrayList<>();
+        if(module != null) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            List<FacilioModule.ModuleType> subModuleTypesToFetch = RelatedListWidgetUtil.getSubModuleTypesToFetchForRelatedList(module);
+
+            List<String> modulesToAdd = new ArrayList<>();
+            List<String> modulesToRemove = new ArrayList<>();
+            RelatedListWidgetUtil.addOrRemoveModulesFromRelatedLists(module, modulesToAdd, modulesToRemove);
+
+            List<FacilioModule> subModules = modBean.getSubModules(module.getName(), subModuleTypesToFetch.toArray(new FacilioModule.ModuleType[]{}));
+            if(CollectionUtils.isNotEmpty(modulesToAdd)) {
+                List<String> existingSubModuleNames = subModules
+                        .stream()
+                        .map(FacilioModule::getName)
+                        .collect(Collectors.toList());
+                List<String> modulesToAddInSubModules =  new ArrayList<>(modulesToAdd);
+                modulesToAddInSubModules.removeAll(existingSubModuleNames);
+                //modulesToAddInSubModules.addAll(modulesToAdd);
+                subModules.addAll(modBean.getModuleList(modulesToAddInSubModules));
+            }
+
+            if(CollectionUtils.isNotEmpty(modulesToRemove)) {
+                subModules.removeIf(mod->modulesToRemove.contains(mod.getName()));
+            }
+            for(FacilioModule subModule : subModules ) {
+                if (subModule.isModuleHidden()) {
+                    continue;
+                }
+
+                List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
+                List<FacilioField> fields = allFields.stream()
+                        .filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == module.getModuleId()))
+                        .collect(Collectors.toList());
+
+                long moduleId = module.getModuleId();
+                if (CollectionUtils.isNotEmpty(fields)) {
+
+                    for(FacilioField field : fields ) {
+                        //if (PageFactory.relatedListHasPermission(moduleId, subModule, field)) {
+                        RelatedListWidgetContext relList = new RelatedListWidgetContext();
+                        if (StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
+                            relList.setDisplayName(((LookupField) field).getRelatedListDisplayName());
+                        } else {
+                            relList.setDisplayName(field.getDisplayName());
+                        }
+                        relList.setSubModuleName(subModule.getName());
+                        relList.setSubModuleId(subModule.getModuleId());
+                        relList.setFieldName(field.getName());
+                        relList.setFieldId(field.getFieldId());
+                        relLists.add(relList);
+                        // }
+                    }
+                }
+            }
+        }
+        bulkRelatedListWidget.setRelatedList(relLists);
+        return FieldUtil.getAsJSON(bulkRelatedListWidget);
+    };
 
     private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -133,7 +193,7 @@ public class UtilityIntegrationCustomerTemplatePage implements TemplatePageFacto
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP).getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
@@ -179,18 +239,5 @@ public class UtilityIntegrationCustomerTemplatePage implements TemplatePageFacto
         return FieldUtil.getAsJSON(widgetGroup);
     }
 
-    private static JSONObject getHistoryWidgetGroup(boolean isMobile) throws Exception {
-        JSONObject historyWidgetParam = new JSONObject();
-        historyWidgetParam.put("activityModuleName", FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_ACTIVITY);
-
-        WidgetGroupContext widgetGroup = new WidgetGroupContext()
-                .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
-                .addSection("fieldUpdate", "Field Update", "")
-                .addWidget("fieldUpdatewidget", "Field Update", PageWidget.WidgetType.ACTIVITY, isMobile ? "flexiblemobilecomment_8" : "flexiblewebactivity_60", 0, 0, historyWidgetParam, null)
-                .widgetGroupWidgetDone()
-                .widgetGroupSectionDone();
-
-        return FieldUtil.getAsJSON(widgetGroup);
-    }
 }
 

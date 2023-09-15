@@ -1,6 +1,7 @@
 package com.facilio.utility;
 
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FieldUtil;
@@ -16,13 +17,12 @@ import java.time.Month;
 
 public  enum UtilityDisputeType implements RuleInterface, FacilioIntEnum {
 
-    BILL_MISSING(1) {
+    BILL_MISSING(1,"Bill Missing") {
         @Override
-        public UtilityDisputeContext execute(UtilityIntegrationBillContext context,String tariffToBeApplied,String tariffApplied) throws Exception {
-            return null;
-        }
-        @Override
-        public  UtilityDisputeContext ValidateBillMissing(long billDate,UtilityIntegrationMeterContext list)throws Exception {
+        public  UtilityDisputeContext execute(FacilioContext context) throws Exception {
+                //long billDate,UtilityIntegrationMeterContext list)
+            long billDate = (long) context.get("billDate");
+            UtilityIntegrationMeterContext list = (UtilityIntegrationMeterContext) context.get("list");
 
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             LocalDate billMonth = LocalDate.parse(formatter.format(billDate));
@@ -39,134 +39,78 @@ public  enum UtilityDisputeType implements RuleInterface, FacilioIntEnum {
             return dispute;
         }
 
-        @Override
-        public UtilityDisputeContext validateConumptionMismatch(UtilityIntegrationBillContext context,Double actualConsumption,Double billMeterConsumption,Double difference) throws Exception {
-            return null;
-        }
-        public UtilityDisputeContext validateCostMismatch(UtilityIntegrationBillContext context,Double calculatedBillAmount,Double billAmount,Double difference) throws Exception{
-            return null;
-        }
-        public UtilityDisputeContext validateTerminatedAccount(UtilityIntegrationBillContext context) throws Exception {
-            return null;
-        }
+
 
     },
-    BILL_FOR_TERMINATED_ACCOUNT (2){
-        public UtilityDisputeContext execute(UtilityIntegrationBillContext context,String tariffToBeApplied,String tariffApplied) throws Exception {
-            return null;
-        }
-        @Override
-        public UtilityDisputeContext validateTerminatedAccount(UtilityIntegrationBillContext context) throws Exception {
+    BILL_FOR_TERMINATED_ACCOUNT (2, "Bill for terminated Account"){
+        public UtilityDisputeContext execute(FacilioContext context) throws Exception {
+            UtilityIntegrationBillContext bill = (UtilityIntegrationBillContext) context.get("billList");
 
             String subject = "Bill generated for a terminated account";
 
-            UtilityIntegrationCustomerContext customerContext = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(V3RecordAPI.getRecord(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,context.getUtilityIntegrationCustomer().getId())),UtilityIntegrationCustomerContext.class);
-            UtilityDisputeContext dispute = new UtilityDisputeContext(subject,this,customerContext,context, UtilityDisputeContext.BillStatus.DISPUTE);
+            UtilityIntegrationCustomerContext customerContext = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(V3RecordAPI.getRecord(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,bill.getUtilityIntegrationCustomer().getId())),UtilityIntegrationCustomerContext.class);
+            UtilityDisputeContext dispute = new UtilityDisputeContext(subject,this,customerContext,bill, UtilityDisputeContext.BillStatus.DISPUTE);
 
             return dispute;
-
         }
 
-        @Override
-        public  UtilityDisputeContext ValidateBillMissing(long billDate,UtilityIntegrationMeterContext list)throws Exception {
-            return null;
-        }
-        @Override
-        public UtilityDisputeContext validateConumptionMismatch(UtilityIntegrationBillContext context,Double actualConsumption,Double billMeterConsumption,Double difference) throws Exception {
-            return null;
-        }
-        public UtilityDisputeContext validateCostMismatch(UtilityIntegrationBillContext context,Double calculatedBillAmount,Double billAmount,Double difference) throws Exception{
-            return null;
-        }
     },
-    CONSUMPTION_READING_MISMATCH(3){
+    CONSUMPTION_READING_MISMATCH(3,"Consumption Mismatch"){
         @Override
-        public UtilityDisputeContext validateConumptionMismatch(UtilityIntegrationBillContext context,Double actualConsumption, Double billMeterConsumption,Double difference) throws Exception {
+        public UtilityDisputeContext execute(FacilioContext context) throws Exception {
+                //UtilityIntegrationBillContext context,Double actualConsumption, Double billMeterConsumption,Double difference) throws Exception {
+            UtilityIntegrationBillContext bill = (UtilityIntegrationBillContext) context.get("bill");
+            Double actualConsumption = (Double) context.get("actualConsumption");
+            Double billMeterConsumption = (Double) context.get("billTotalVolume");
+            Double difference= (Double) context.get("difference");
 
             String subject = "Consumption mismatch in the bill generated";
 
-            UtilityIntegrationCustomerContext customerContext = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(V3RecordAPI.getRecord(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,context.getUtilityIntegrationCustomer().getId())),UtilityIntegrationCustomerContext.class);
-            UtilityDisputeContext dispute = new UtilityDisputeContext(subject,this,customerContext,context,UtilityDisputeContext.BillStatus.DISPUTE,actualConsumption,billMeterConsumption,difference);
+            UtilityIntegrationCustomerContext customerContext = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(V3RecordAPI.getRecord(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,bill.getUtilityIntegrationCustomer().getId())),UtilityIntegrationCustomerContext.class);
+            UtilityDisputeContext dispute = new UtilityDisputeContext(subject,this,customerContext,bill,UtilityDisputeContext.BillStatus.DISPUTE,actualConsumption,billMeterConsumption,difference);
             return dispute;
         }
-        @Override
-        public  UtilityDisputeContext ValidateBillMissing(long billDate, UtilityIntegrationMeterContext list)throws Exception {
 
-            return null;
-        }
-        @Override
-        public UtilityDisputeContext execute(UtilityIntegrationBillContext context,String tariffToBeApplied,String tariffApplied) throws Exception {
-            return null;
-        }
-        public UtilityDisputeContext validateCostMismatch(UtilityIntegrationBillContext context,Double calculatedBillAmount,Double billAmount,Double difference) throws Exception{
-            return null;
-        }
-        public UtilityDisputeContext validateTerminatedAccount(UtilityIntegrationBillContext context) throws Exception {
-            return null;
-        }
     },
-    TARIFF_MAPPING_MISMATCH (4){
+    TARIFF_MAPPING_MISMATCH (4,"Tariff mapping mismatch"){
         @Override
-        public UtilityDisputeContext execute(UtilityIntegrationBillContext context,String tariffToBeApplied,String tariffApplied) throws Exception {
+        public UtilityDisputeContext execute(FacilioContext context) throws Exception {
+            UtilityIntegrationBillContext bill = (UtilityIntegrationBillContext) context.get("bill");
+            String tariffToBeApplied = (String) context.get("meterServiceTariff");
+            String tariffApplied = (String) context.get("billServiceTariff");
 
             String subject = "Bill generated with tariff mismatch";
 
-            UtilityIntegrationCustomerContext customerContext = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(V3RecordAPI.getRecord(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,context.getUtilityIntegrationCustomer().getId())),UtilityIntegrationCustomerContext.class);
-            UtilityDisputeContext dispute = new UtilityDisputeContext(subject,this,customerContext,context,UtilityDisputeContext.BillStatus.DISPUTE,tariffToBeApplied,tariffApplied);
+            UtilityIntegrationCustomerContext customerContext = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(V3RecordAPI.getRecord(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER, bill.getUtilityIntegrationCustomer().getId())), UtilityIntegrationCustomerContext.class);
+            UtilityDisputeContext dispute = new UtilityDisputeContext(subject, this, customerContext, bill, UtilityDisputeContext.BillStatus.DISPUTE, tariffToBeApplied, tariffApplied);
 
             return dispute;
         }
-        @Override
-        public  UtilityDisputeContext ValidateBillMissing(long billDate, UtilityIntegrationMeterContext list)throws Exception {
-
-        return null;
-    }
-        @Override
-        public UtilityDisputeContext validateConumptionMismatch(UtilityIntegrationBillContext context,Double actualConsumption,Double billMeterConsumption,Double difference) throws Exception {
-            return null;
-        }
-        public UtilityDisputeContext validateCostMismatch(UtilityIntegrationBillContext context,Double calculatedBillAmount,Double billAmount,Double difference) throws Exception{
-            return null;
-        }
-        public UtilityDisputeContext validateTerminatedAccount(UtilityIntegrationBillContext context) throws Exception {
-            return null;
-        }
-
     },
-    COST_MISMATCH(5) {
-        public UtilityDisputeContext validateCostMismatch(UtilityIntegrationBillContext context,Double calculatedBillAmount,Double billAmount,Double difference) throws Exception{
+    COST_MISMATCH(5,"Cost Mismatch") {
+        public UtilityDisputeContext execute(FacilioContext context) throws Exception{
+            //UtilityIntegrationBillContext context,Double calculatedBillAmount,Double billAmount,Double difference
+            UtilityIntegrationBillContext bill = (UtilityIntegrationBillContext) context.get("bill");
+                    Double calculatedBillAmount = (Double) context.get("calculatedBill");
+                    Double billAmount = (Double) context.get("billTotalCost");
+                    Double difference = (Double) context.get("diff");
 
             String subject = "Total cost  mismatch in the bill generated";
 
-            UtilityIntegrationCustomerContext customerContext = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(V3RecordAPI.getRecord(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,context.getUtilityIntegrationCustomer().getId())),UtilityIntegrationCustomerContext.class);
-            UtilityDisputeContext dispute = new UtilityDisputeContext(subject,this,customerContext,context,calculatedBillAmount,billAmount,difference);
+            UtilityIntegrationCustomerContext customerContext = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(V3RecordAPI.getRecord(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,bill.getUtilityIntegrationCustomer().getId())),UtilityIntegrationCustomerContext.class);
+            UtilityDisputeContext dispute = new UtilityDisputeContext(subject,this,customerContext,bill,calculatedBillAmount,billAmount,difference);
             return dispute;
         }
-        @Override
-        public UtilityDisputeContext validateConumptionMismatch(UtilityIntegrationBillContext context, Double actualConsumption, Double billMeterConsumption, Double difference) throws Exception {
 
-            return null;
-        }
-
-        @Override
-        public UtilityDisputeContext ValidateBillMissing(long billDate, UtilityIntegrationMeterContext list) throws Exception {
-
-            return null;
-        }
-
-        @Override
-        public UtilityDisputeContext execute(UtilityIntegrationBillContext context,String tariffToBeApplied,String tariffApplied) throws Exception {
-            return null;
-        }
-        public UtilityDisputeContext validateTerminatedAccount(UtilityIntegrationBillContext context) throws Exception {
-            return null;
-        }
     };
 
-    Integer type;
+    private final Integer type;
+    private final String value;
 
-    private UtilityDisputeType(Integer type) {
+
+    private UtilityDisputeType(Integer type,String value) {
         this.type = type;
+        this.value = value;
 
     }
 
@@ -174,7 +118,10 @@ public  enum UtilityDisputeType implements RuleInterface, FacilioIntEnum {
     public Integer getType() {
         return type;
     }
-
+    @Override
+    public String getValue() {
+        return value;
+    }
     public Integer getIndex() {
         return ordinal()+1;
     }

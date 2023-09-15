@@ -262,10 +262,7 @@ public class UtilityIntegrationBillsModule extends BaseModuleConfig {
 
         WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
 
-//        Criteria completionCtriteria = new Criteria();
-//        completionCtriteria.addAndCondition(CriteriaAPI.getCondition("BILL_STATUS", "billStatus", UtilityDisputeContext.BillStatus.RESOLVED.getIndex()+"", EnumOperators.IS));
-//
-//        addStateflowTransitionContext(disputeModule, stateFlowRuleContext, "Resolved", createdStatus, resolvedStatus, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,completionCtriteria,null);
+
 
     }
     private FacilioStatus getFacilioStatus(FacilioModule module, String status, String displayName, FacilioStatus.StatusType status1, Boolean timerEnabled) throws Exception {

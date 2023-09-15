@@ -1,5 +1,6 @@
 package com.facilio.utility;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.MetersAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -59,22 +60,42 @@ public class UtilitySDK {
     private static final Logger LOGGER = Logger.getLogger(UtilitySDK.class.getName());
 
     public static String UTILITY_ENDPOINT = "https://utilityapi.com/api/v2/";
-    public static String UTILITY_REFERRALS = "374013";
+
     public static String UTILITY_AUTHORIZATION ="Bearer 03093b53146340c9865fbec09f052e5e";
+    public static String UTILITY_AUTHORIZATION_PROD = "Bearer a54676a6470640ceaa34832f57e4575a";
+    public static String UTILITY_AUTHORIZATION_STAGE = "Bearer 14125c68f03a4e41822d25770bba076c";
+    public static String UTILITY_AUTHORIZATION_STAGE2 = "Bearer 1934470e27f840ba9c2424ea4bf02b36";
 
     public static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX";
 
-    public static String BASE_URL = "https://utilityapi.com/authorize/keerthana_facilio";
+    //public static String BASE_URL = "https://utilityapi.com/authorize/keerthana_facilio"; local
+    //public static String BASE_URL_PROD ="https://utilityapi.com/authorize/facilio_data_request";
+    //BASE_URL_stage ="https://utilityapi.com/authorize/keerthana+stage_facilio "
+    //BASE_URL_STAGE2 = "https://utilityapi.com/authorize/keerthana+stage2_facilio"
 
     //"yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX";
 
 
 
+    public static String getUtilityAuthorizationToken() throws Exception {
+        if(FacilioProperties.isProduction()){
+            return UTILITY_AUTHORIZATION_PROD;
+        }
+        else if (FacilioProperties.getEnvironment().equals("stage2")){
+            return UTILITY_AUTHORIZATION_STAGE2;
+        }
+        else if (FacilioProperties.getEnvironment().equals("stage")){
+            return UTILITY_AUTHORIZATION_STAGE;
+        }
+        else {
+            return UTILITY_AUTHORIZATION;
+        }
+    }
     public static void getUtilityAccountsAndMeters(String referrals,Long id) throws Exception {
 
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeaders.AUTHORIZATION, UTILITY_AUTHORIZATION);
+        headers.put(HttpHeaders.AUTHORIZATION, getUtilityAuthorizationToken());
 
         Map<String, String> params = new HashMap<>();
         params.put("referrals", referrals);
@@ -272,7 +293,7 @@ public class UtilitySDK {
         List<FacilioField>fields = modBean.getAllFields(moduleName);
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeaders.AUTHORIZATION, UTILITY_AUTHORIZATION);
+        headers.put(HttpHeaders.AUTHORIZATION, getUtilityAuthorizationToken());
 
         JSONObject obj = new JSONObject();
         obj.put("meters",meterUids);
@@ -309,7 +330,7 @@ public class UtilitySDK {
     public static JSONObject getMetersAfterActivation(String meterUid) throws Exception {
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeaders.AUTHORIZATION, UTILITY_AUTHORIZATION);
+        headers.put(HttpHeaders.AUTHORIZATION, getUtilityAuthorizationToken());
 
         Map<String, String> params = new HashMap<>();
         params.put("uids", meterUid);
@@ -420,7 +441,7 @@ public class UtilitySDK {
     }
     public static void getBillsForMeter(String meterUid,Long startTime,Long endTime) throws Exception{
         Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeaders.AUTHORIZATION, UTILITY_AUTHORIZATION);
+        headers.put(HttpHeaders.AUTHORIZATION, getUtilityAuthorizationToken());
 
 
         String startUTC = convertMillisToUTCPlusOneDay(startTime);
@@ -1008,7 +1029,7 @@ public class UtilitySDK {
     public static void enableOnGoingMonitoring(String meterUid, String frequency, String prepay) throws Exception {
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeaders.AUTHORIZATION, UTILITY_AUTHORIZATION);
+        headers.put(HttpHeaders.AUTHORIZATION, getUtilityAuthorizationToken());
 
         List<String> meterUids = new ArrayList<>();
         meterUids.add(meterUid);
@@ -1044,7 +1065,7 @@ public class UtilitySDK {
     public static JSONObject getMeters(String meterUid) throws Exception {
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeaders.AUTHORIZATION, UTILITY_AUTHORIZATION);
+        headers.put(HttpHeaders.AUTHORIZATION, getUtilityAuthorizationToken());
 
         String response = FacilioHttpUtils.doHttpGet(UTILITY_ENDPOINT + "meters/" + meterUid, headers, null);
 
@@ -1100,7 +1121,7 @@ public class UtilitySDK {
         String fileName = FilenameUtils.getName(url.getPath());
         File file = File.createTempFile(fileName, "");
         URLConnection connection = url.openConnection();
-        connection.setRequestProperty("Authorization", UTILITY_AUTHORIZATION);
+        connection.setRequestProperty("Authorization", getUtilityAuthorizationToken());
         FileUtils.copyInputStreamToFile(connection.getInputStream(), file);
         //FileUtils.copyURLToFile(url, file);
         String mimeType = connection.getContentType();
@@ -1176,7 +1197,13 @@ public class UtilitySDK {
 
                                 //Tariff mismatch
                                 if (!list.getServiceTariff().equals(bill.getServiceTariff())) {
-                                    UtilityDisputeContext tariffDispute = UtilityDisputeType.TARIFF_MAPPING_MISMATCH.execute(bill, list.getServiceTariff(), bill.getServiceTariff());
+                                    FacilioContext context = new FacilioContext();
+                                    context.put("bill", bill);
+                                    context.put("meterServiceTariff",list.getServiceTariff());
+                                    context.put("billServiceTariff",bill.getServiceTariff());
+
+                                    UtilityDisputeContext tariffDispute = UtilityDisputeType.TARIFF_MAPPING_MISMATCH.execute(context);
+                                            //bill, list.getServiceTariff(), bill.getServiceTariff());
                                     if (tariffDispute != null) {
                                         FacilioModule disputeModule = modBean.getModule(FacilioConstants.UTILITY_DISPUTE);
                                         V3Util.createRecord(disputeModule, FieldUtil.getAsJSON(tariffDispute));
@@ -1210,7 +1237,14 @@ public class UtilitySDK {
                                     } else {
                                         difference = actualConsumption - bill.getBillTotalVolume();
                                     }
-                                    UtilityDisputeContext consumptionDispute = UtilityDisputeType.CONSUMPTION_READING_MISMATCH.validateConumptionMismatch(bill, actualConsumption, bill.getBillTotalVolume(), difference);
+
+                                    FacilioContext context = new FacilioContext();
+                                    context.put("bill",bill);
+                                    context.put("actualConsumption",actualConsumption);
+                                    context.put("billTotalVolume",bill.getBillTotalVolume());
+                                    context.put("difference",difference);
+                                    UtilityDisputeContext consumptionDispute = UtilityDisputeType.CONSUMPTION_READING_MISMATCH.execute(context);
+                                            //bill, actualConsumption, bill.getBillTotalVolume(), difference);
                                     FacilioModule disputeModule = modBean.getModule(FacilioConstants.UTILITY_DISPUTE);
                                     V3Util.createRecord(disputeModule, FieldUtil.getAsJSON(consumptionDispute));
                                     bill.setUtilityBillStatus(UtilityIntegrationBillContext.UtilityBillStatus.DISPUTED.getIntVal());
@@ -1257,7 +1291,15 @@ public class UtilitySDK {
                                                 } else {
                                                     diff = calculatedBill - bill.getBillTotalCost();
                                                 }
-                                                UtilityDisputeContext costDispute = UtilityDisputeType.COST_MISMATCH.validateCostMismatch(bill, calculatedBill, bill.getBillTotalCost(), diff);
+
+                                                FacilioContext context = new FacilioContext();
+                                                context.put("bill",bill);
+                                                context.put("calculatedBill",calculatedBill);
+                                                context.put("billTotalCost",bill.getBillTotalCost());
+                                                context.put("diff",diff);
+
+                                                UtilityDisputeContext costDispute = UtilityDisputeType.COST_MISMATCH.execute(context);
+                                                        //bill, calculatedBill, bill.getBillTotalCost(), diff);
                                                 FacilioModule disputeModule = modBean.getModule(FacilioConstants.UTILITY_DISPUTE);
                                                 V3Util.createRecord(disputeModule, FieldUtil.getAsJSON(costDispute));
                                                 bill.setUtilityBillStatus(UtilityIntegrationBillContext.UtilityBillStatus.DISPUTED.getIntVal());
@@ -1299,11 +1341,19 @@ public class UtilitySDK {
                                                 .moduleName(billModulename)
                                                 .select(fields1)
                                                 .beanClass(UtilityIntegrationBillContext.class)
-                                                .andCondition(CriteriaAPI.getCondition("UTILITY_INTEGRATION_CUSTOMER_ID", "utilityIntegrationCustomer", String.valueOf(utilityIntegrationCustomerContext.getId()), NumberOperators.EQUALS));
+                                                .andCondition(CriteriaAPI.getCondition("UTILITY_INTEGRATION_CUSTOMER_ID", "utilityIntegrationCustomer", String.valueOf(utilityIntegrationCustomerContext.getId()), NumberOperators.EQUALS))
+                                                .andCondition(CriteriaAPI.getCondition("BILL_START_DATE", "billStartDate", String.valueOf(startMillis), NumberOperators.GREATER_THAN_EQUAL))
+                                                .andCondition(CriteriaAPI.getCondition("BILL_END_DATE", "billEndDate", String.valueOf(endMillis), NumberOperators.LESS_THAN_EQUAL));
+
                                         List<UtilityIntegrationBillContext> billLists = bill.get();
                                         if (CollectionUtils.isNotEmpty(billLists)) {
                                             for (UtilityIntegrationBillContext billList : billLists) {
-                                                UtilityDisputeContext dispute = UtilityDisputeType.BILL_FOR_TERMINATED_ACCOUNT.validateTerminatedAccount(billList);
+
+                                                FacilioContext context = new FacilioContext();
+                                                context.put("billList",billList);
+
+                                                UtilityDisputeContext dispute = UtilityDisputeType.BILL_FOR_TERMINATED_ACCOUNT.execute(context);
+                                                        //billList);
                                                 FacilioModule disputeModule = modBean.getModule(FacilioConstants.UTILITY_DISPUTE);
                                                 V3Util.createRecord(disputeModule, FieldUtil.getAsJSON(dispute));
                                                 //update bill sTATUS

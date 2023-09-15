@@ -76,14 +76,14 @@ public class UtilityDisputeModule extends BaseModuleConfig {
         utilityBill.setLookupModule(bean.getModule(FacilioConstants.UTILITY_INTEGRATION_BILLS));
         fields.add(utilityBill);
 
-        SystemEnumField type = (SystemEnumField) FieldFactory.getDefaultField("type", "UtilityDisputeType", "TYPE", FieldType.SYSTEM_ENUM);
+        SystemEnumField type = (SystemEnumField) FieldFactory.getDefaultField("type", "Utility Dispute Type", "TYPE", FieldType.SYSTEM_ENUM);
         type.setEnumName("UtilityDisputeType");
         fields.add(type);
 
         StringField utilityType = (StringField) FieldFactory.getDefaultField("utilityType", "Utility Type", "UTILITY_TYPE", FieldType.STRING);
         fields.add(utilityType);
 
-        SystemEnumField billStatus = (SystemEnumField) FieldFactory.getDefaultField("billStatus", "Bill Status", "BILL_STATUS", FieldType.SYSTEM_ENUM);
+        SystemEnumField billStatus = (SystemEnumField) FieldFactory.getDefaultField("billStatus", "Status", "BILL_STATUS", FieldType.SYSTEM_ENUM);
         billStatus.setEnumName("BillStatus");
         fields.add(billStatus);
 
@@ -235,8 +235,8 @@ public class UtilityDisputeModule extends BaseModuleConfig {
         utilityDisputeViewFields.add(new ViewField("subject","Subject"));
         utilityDisputeViewFields.add(new ViewField("account","Account"));
         utilityDisputeViewFields.add(new ViewField("utilityBill","Utility Bill"));
-        utilityDisputeViewFields.add(new ViewField("billStatus","BillStatus"));
-        utilityDisputeViewFields.add(new ViewField("type","UtilityDisputeType"));
+        utilityDisputeViewFields.add(new ViewField("billStatus","Status"));
+        utilityDisputeViewFields.add(new ViewField("type","Utility Dispute Type"));
 
 
 

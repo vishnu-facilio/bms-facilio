@@ -84,7 +84,7 @@ public class APIModuleWidgets {
         return () -> new ModuleWidgets()
                 .addModuleWidget("meterWidget" , "Meter Connections",PageWidget.WidgetType.METER_WIDGET)
                 //.addWidgetConfig("webMeterWidget-10*12","Full Width Meter Connections  Widget - 10*12", WidgetConfigContext.ConfigType.FIXED,65,12,PagesContext.PageLayoutType.WEB)
-                .addFixedWidgetConfig("webMeterWidget-10*12", "Full Width Meter Connections  Widget - 10*12",24,12, PagesContext.PageLayoutType.WEB)
+                .addFixedWidgetConfig("webMeterWidget_24_12", "Meter Connections  Widget -24-12",24,12, PagesContext.PageLayoutType.WEB)
                 .done();
     }
 
@@ -92,7 +92,7 @@ public class APIModuleWidgets {
     public static Supplier<ModuleWidgets> getUtilityBillWidgets(){
         return () -> new ModuleWidgets()
                 .addModuleWidget("billSummaryWidget" , "null",PageWidget.WidgetType.BILL_SUMMARY_WIDGET)
-                .addFixedWidgetConfig("webBillSummaryWidget_65_12", "Full Width Bill Summary  Widget - 65-12",65,12, PagesContext.PageLayoutType.WEB)
+                .addFixedWidgetConfig("webBillSummaryWidget_65_12", "Bill Summary Widget -65-12",65,12, PagesContext.PageLayoutType.WEB)
                 .done();
     }
     @WidgetsForModule("meter")

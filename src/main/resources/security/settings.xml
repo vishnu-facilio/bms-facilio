@@ -3324,11 +3324,12 @@
         <requestbody type="object">
         </requestbody>
     </request>
-    <request path="/api/v3/utilityIntegration/associateMeter">
+    <request path="/api/v3/utilityIntegration/associateMeter" method="POST">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
-            <property name="meterIds" type="array" mandatory="true"/>
-
+            <property name="meterIds" type="array" >
+                <items type="number"/>
+            </property>
         </requestbody>
     </request>
     <request path="/api/v1/setup/quotesetting/add" method="POST">

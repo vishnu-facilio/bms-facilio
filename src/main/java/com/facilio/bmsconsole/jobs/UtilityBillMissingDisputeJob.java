@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -101,7 +102,12 @@ public class UtilityBillMissingDisputeJob extends FacilioJob {
                                     List<UtilityIntegrationBillContext> billContextList = billContext.get();
 
                                     if (CollectionUtils.isEmpty(billContextList)) {
-                                        UtilityDisputeContext dispute = UtilityDisputeType.BILL_MISSING.ValidateBillMissing(billDate, list);
+                                        FacilioContext context = new FacilioContext();
+                                        context.put("billDate",billDate);
+                                        context.put("list",list);
+
+                                        UtilityDisputeContext dispute = UtilityDisputeType.BILL_MISSING.execute(context);
+                                                //billDate, list);
                                         if (dispute != null) {
                                             FacilioModule disputeModule = modBean.getModule(FacilioConstants.UTILITY_DISPUTE);
                                             V3Util.createRecord(disputeModule, FieldUtil.getAsJSON(dispute));
