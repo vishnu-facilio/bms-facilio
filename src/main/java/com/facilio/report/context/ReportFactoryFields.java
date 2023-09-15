@@ -443,7 +443,7 @@ public class ReportFactoryFields {
 		for (FacilioField field : fields) {
 			if(field != null) {
 				if (field.getDataTypeEnum() != FieldType.BIG_STRING && field.getDataTypeEnum() != FieldType.LARGE_TEXT) {
-					if (field instanceof NumberField) {
+					if (field instanceof NumberField || field instanceof MultiCurrencyField) {
 						metricFields.add(field);
 					} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
 						addFieldInList(dimensionFieldMap, "time", field);

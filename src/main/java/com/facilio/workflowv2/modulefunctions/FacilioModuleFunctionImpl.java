@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import com.facilio.modules.*;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.services.factory.FacilioFactory;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -688,7 +689,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				else {
 					selectFields.add(select);	// check
 				}
-
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(module)) {
+					selectFields.addAll(FieldFactory.getCurrencyPropsFields(module));
+				}
 				selectBuilder.select(selectFields);
 			}
 			else if(CollectionUtils.isNotEmpty(dbParamContext.getFieldNames())){
@@ -704,6 +707,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 								}
 							}
 						}
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(module)) {
+					fetchFields.addAll(FieldFactory.getCurrencyPropsFields(module));
+				}
 					selectBuilder.select(fetchFields);
 			}
 			else {
@@ -718,6 +724,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 							selectFields.add(field);
 						}
 					}
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CurrencyUtil.isMultiCurrencyEnabledModule(module)) {
+					selectFields.addAll(FieldFactory.getCurrencyPropsFields(module));
+				}
 					selectBuilder.select(selectFields);
 			}
 			
