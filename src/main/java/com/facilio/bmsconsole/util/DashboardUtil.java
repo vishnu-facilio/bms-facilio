@@ -867,6 +867,7 @@ public class DashboardUtil {
 			if(dashboard.getReportSpaceFilterContext() != null) {
 				dashboardJson.put("spaceFilter", "building");
 			}
+			dashboardJson.put("description", dashboard.getDescription());
 			dashboardJson.put("dashboardFolderId", dashboard.getDashboardFolderId());
 			dashboardJson.put("linkName", dashboard.getLinkName());
 			dashboardJson.put("dateOperator",dashboard.getDateOperator());

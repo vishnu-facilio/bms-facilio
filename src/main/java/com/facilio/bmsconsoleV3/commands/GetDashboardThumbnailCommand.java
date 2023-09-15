@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -18,7 +19,7 @@ public class GetDashboardThumbnailCommand  extends FacilioCommand {
         JSONObject dashboardObj = new JSONObject();
         DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
         dashboardObj.put("dashboardId",dashboard.getId());
-        dashboardObj.put("dashboardUrl",context.get("dashboardUrl"));
+        dashboardObj.put("appLink", AccountUtil.getCurrentApp().getLinkName());
         message.setKey(DashboardUpdateHandler.KEY);
         message.setContent(dashboardObj);
         Messenger.getMessenger().sendMessage(message);
