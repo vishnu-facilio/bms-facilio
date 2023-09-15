@@ -51,6 +51,13 @@ public class HandlePortalSummaryMarkupDataCommand extends FacilioCommand {
                         Boolean isGlobalMarkup = quotation.getIsGlobalMarkup();
                         Double globalMarkupValue = quotation.getMarkup();
 
+                        if(showMarkup == null) {
+                            showMarkup = false;
+                        }
+                        if(isGlobalMarkup == null) {
+                            isGlobalMarkup = false;
+                        }
+
                         List<QuotationLineItemsContext> lineItems = quotation.getLineItems();
                         if (CollectionUtils.isNotEmpty(lineItems)) {
 

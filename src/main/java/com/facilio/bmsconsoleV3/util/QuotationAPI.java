@@ -134,10 +134,10 @@ public class QuotationAPI {
         QuotationSettingContext quotationSetting = (QuotationSettingContext) context.get(FacilioConstants.ContextNames.QUOTATIONSETTING);
         if( app != null && quotationSetting != null) {
             if ( (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP) || app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP))) {
-                if(quotation != null && quotation.getCustomerType() == 4) {
+                if(quotation != null && quotation.getCustomerType() != null && quotation.getCustomerType() == 4) {
                     return quotationSetting.getVendorquote();
                 }
-                else if(quotation != null && (quotation.getCustomerType() == 1 || quotation.getCustomerType() == 2)) {
+                else if(quotation != null && quotation.getCustomerType() != null && (quotation.getCustomerType() == 1 || quotation.getCustomerType() == 2)) {
                     return quotationSetting.getEnduserquote();
                 }
                 else if(quotationSetting.getVendorquote() || quotationSetting.getEnduserquote()) {
