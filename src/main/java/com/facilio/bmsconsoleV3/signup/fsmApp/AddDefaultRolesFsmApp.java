@@ -113,7 +113,7 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("serviceAppointment_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)));
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("timeOff_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.TimeOff.TIME_OFF)));
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("serviceOrder_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.SERVICE_ORDER)));
-            fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("attendance_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.ATTENDANCE)));
+//            fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("attendance_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.ATTENDANCE)));
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("timeSheet_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.TimeSheet.TIME_SHEET)));
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("trip_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.Trip.TRIP)));
 
@@ -135,7 +135,7 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
             assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("serviceAppointment_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)));
             assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("timeOff_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.TimeOff.TIME_OFF)));
             assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("serviceOrder_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.SERVICE_ORDER)));
-            assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("attendance_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.ATTENDANCE)));
+//            assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("attendance_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.ATTENDANCE)));
             assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("timeSheet_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.TimeSheet.TIME_SHEET)));
             assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("trip_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.Trip.TRIP)));
 
