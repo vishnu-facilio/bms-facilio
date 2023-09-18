@@ -1,7 +1,5 @@
 package com.facilio.fsm.context;
 
-import com.facilio.fsm.signup.ServiceOrderPlannedToolsModule;
-import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -179,6 +177,11 @@ public class ServiceTaskContext extends V3Context {
     }
 
     public ServiceAppointmentContext getServiceAppointment() {
+        if(serviceAppointment != null && serviceAppointment.getId() > 0) {
+            ServiceAppointmentContext onlyId = new ServiceAppointmentContext();
+            onlyId.setId(serviceAppointment.getId());
+            return onlyId;
+        }
         return serviceAppointment;
     }
 
