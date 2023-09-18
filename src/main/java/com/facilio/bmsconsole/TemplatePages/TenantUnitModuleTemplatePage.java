@@ -1,180 +1,32 @@
-package com.facilio.bmsconsoleV3.signup.moduleconfig;
+package com.facilio.bmsconsole.TemplatePages;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
-import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
-import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.relation.util.RelationshipWidgetUtil;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class TenantUnitSpaceModule extends BaseModuleConfig{
-    public TenantUnitSpaceModule(){
-        setModuleName(FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
+public class TenantUnitModuleTemplatePage implements TemplatePageFactory{
+    @Override
+    public String getModuleName() {
+        return FacilioConstants.ContextNames.TENANT_UNIT_SPACE;
     }
 
     @Override
-    public List<Map<String, Object>> getViewsAndGroups() {
-        List<Map<String, Object>> groupVsViews = new ArrayList<>();
-        Map<String, Object> groupDetails;
-
-        int order = 1;
-        ArrayList<FacilioView> tenantUnitSpace = new ArrayList<FacilioView>();
-        tenantUnitSpace.add(getAllTenantUnitSpace().setOrder(order++));
-        tenantUnitSpace.add(getAllTenantUnitSpaceDetailsView().setOrder(order++));
-
-        groupDetails = new HashMap<>();
-        groupDetails.put("name", "systemviews");
-        groupDetails.put("displayName", "System Views");
-        groupDetails.put("moduleName", FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
-        groupDetails.put("views", tenantUnitSpace);
-        groupVsViews.add(groupDetails);
-
-        return groupVsViews;
-    }
-
-    private static FacilioView getAllTenantUnitSpace() {
-
-        FacilioModule tenantUnitSpaceModule = ModuleFactory.getTenantUnitSpaceModule();
-
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME", FieldType.STRING), true));
-
-        FacilioView allView = new FacilioView();
-        allView.setName("all");
-        allView.setDisplayName("All Tenant Unit");
-        allView.setModuleName(tenantUnitSpaceModule.getName());
-        allView.setSortFields(sortFields);
-
-        List<String> appLinkNames = new ArrayList<>();
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        allView.setAppLinkNames(appLinkNames);
-
-        return allView;
-    }
-
-    private static FacilioView getAllTenantUnitSpaceDetailsView() {
-
-        FacilioModule tenantUnitSpaceModule = ModuleFactory.getTenantUnitSpaceModule();
-
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
-
-        FacilioView allView = new FacilioView();
-        allView.setName("details");
-        allView.setDisplayName("All Tenant Units");
-        allView.setModuleName(tenantUnitSpaceModule.getName());
-        allView.setSortFields(sortFields);
-        allView.setHidden(true);
-
-        List<String> appLinkNames = new ArrayList<>();
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        allView.setAppLinkNames(appLinkNames);
-
-        return allView;
-    }
-
-    @Override
-    public List<FacilioForm> getModuleForms() throws Exception {
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule tenantUnitModule = modBean.getModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
-
-        FacilioForm tenantUnitSpaceForm = new FacilioForm();
-        tenantUnitSpaceForm.setDisplayName("NEW TENANT UNIT");
-        tenantUnitSpaceForm.setName("default_tenantunit_web");
-        tenantUnitSpaceForm.setModule(tenantUnitModule);
-        tenantUnitSpaceForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        tenantUnitSpaceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
-
-        List<FormField> tenantUnitSpaceFormFields = new ArrayList<>();
-        tenantUnitSpaceFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
-        tenantUnitSpaceFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
-        tenantUnitSpaceFormFields.add(new FormField("area", FacilioField.FieldDisplayType.NUMBER, "Area", FormField.Required.OPTIONAL, 3, 2));
-        tenantUnitSpaceFormFields.add(new FormField("maxOccupancy", FacilioField.FieldDisplayType.NUMBER, "Max Occupancy", FormField.Required.OPTIONAL, 3, 3));
-        tenantUnitSpaceFormFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED,"site", 4, 2));
-        tenantUnitSpaceFormFields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.OPTIONAL,"building", 4, 3));
-        FormField tenant = new FormField("tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.OPTIONAL,"tenant", 5, 1);
-        tenant.setHideField(true);
-        tenantUnitSpaceFormFields.add(tenant);
-        FormField isOccupied = new FormField("isOccupied", FacilioField.FieldDisplayType.DECISION_BOX, "Occupancy Status", FormField.Required.OPTIONAL, 5, 1);
-        isOccupied.setHideField(true);
-        tenantUnitSpaceFormFields.add(isOccupied);
-        tenantUnitSpaceFormFields.add(new FormField("floor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Floor", FormField.Required.OPTIONAL,"floor", 5, 1));
-        tenantUnitSpaceFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 4, 1));
-        FormField spaceCategory = new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1,false);
-        spaceCategory.setHideField(true);
-        tenantUnitSpaceFormFields.add(spaceCategory);
-
-        tenantUnitSpaceForm.setFields(tenantUnitSpaceFormFields);
-
-        FormSection section = new FormSection("Default", 1, tenantUnitSpaceFormFields, false);
-        section.setSectionType(FormSection.SectionType.FIELDS);
-        tenantUnitSpaceForm.setSections(Collections.singletonList(section));
-        tenantUnitSpaceForm.setIsSystemForm(true);
-        tenantUnitSpaceForm.setType(FacilioForm.Type.FORM);
-
-        return Collections.singletonList(tenantUnitSpaceForm);
-    }
-
-
-    @Override
-    public List<GlimpseContext> getModuleGlimpse() throws Exception{
-
-        List<String> fieldNames = new ArrayList<>();
-        fieldNames.add("tenant");
-        fieldNames.add("space");
-        fieldNames.add("building");
-        fieldNames.add("floor");
-        fieldNames.add("site");
-
-        GlimpseContext glimpse = GlimpseUtil.getNewGlimpse(fieldNames,getModuleName());
-
-        List<GlimpseContext> glimpseList = new ArrayList<>();
-        glimpseList.add(glimpse);
-
-        return glimpseList;
-
-    }
-    @Override
-    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
-        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
-
-        String[] appNames=new String[]{
-                FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
-                FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP,
-                FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP};
-
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(getModuleName());
-        for(String appName:appNames){
-            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName,buildTenantUnitPage(app,module,false,true));
-        }
-
-        return appNameVsPage;
-    }
-    public List<PagesContext> buildTenantUnitPage(ApplicationContext app, FacilioModule module,boolean isTemplate, boolean isDefault) throws Exception {
-        String pageName, pageDisplayName;
-        pageName = module.getName()+ "defaultpage";
-        pageDisplayName = "Default "+module.getDisplayName()+" Page ";
-
+    public PagesContext getTemplatePage(ApplicationContext app, FacilioModule module) throws Exception {
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.TENANT_ACTIVITY);
-        return new ModulePages().addPage(pageName, pageDisplayName, "", null, isTemplate, isDefault, false)
+        return new PagesContext(null, null, "", null, true, false, false)
                 .addWebLayout()
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
@@ -222,9 +74,7 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .layoutDone()
-                .pageDone()
-                .getCustomPages();
+                .layoutDone();
     }
     private static JSONObject getSummaryWidgetDetails(String moduleName, ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -315,5 +165,4 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
 
         return FieldUtil.getAsJSON(widgetGroup);
     }
-
 }

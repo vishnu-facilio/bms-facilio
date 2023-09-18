@@ -450,4 +450,51 @@ public class APIModuleWidgets {
                 .addModuleWidget("safetyPlanPrecautions","Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
                 .done();
          }
+    @WidgetsForModule(FacilioConstants.ContextNames.TENANT)
+    public static Supplier<ModuleWidgets> getTenantWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("webtenantdetailcontactwidget", "Tenant Detail Contact", PageWidget.WidgetType.TENANT_DETAIL_CONTACT)
+                .addWidgetConfig("webtenantdetailcontactwidget_13_6","Tenant Detail Contact - 13 - 6",WidgetConfigContext.ConfigType.FIXED,13,6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantdetailoverviewwidget", "Tenant Detail Overview", PageWidget.WidgetType.TENANT_DETAIL_OVERVIEW)
+                .addWidgetConfig("webtenantdetailoverviewwidget_13_6","Tenant Detail Overview - 13 - 6",WidgetConfigContext.ConfigType.FIXED,13,6,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantspecialwidget","Tenant Special Widget",PageWidget.WidgetType.TENANT_SPECIAL_WIDGET)
+                .addWidgetConfig("webtenantspecialwidget_31_9","Tenant Special Widget - 31 - 9",WidgetConfigContext.ConfigType.FIXED,31,9,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantworkorderswidget","Tenant WorkOrders",PageWidget.WidgetType.TENANT_WORKORDERS)
+                .addWidgetConfig("webtenantworkorders_13_3","Tenant WorkOrders -13 -3",WidgetConfigContext.ConfigType.FIXED,13,3,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantrecentlyclosedworkorderwidget","Recently Closed Work order",PageWidget.WidgetType.TENANT_RECENTLY_CLOSED_WORKORDER)
+                .addWidgetConfig("webtenantrecentlyclosedworkorder_23_3","Recently Closed Work order -23 -3",WidgetConfigContext.ConfigType.FIXED,23,3,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantfacilitybookingwidget","Facility Bookings",PageWidget.WidgetType.TENANT_BOOKINGS)
+                .addWidgetConfig("webtenantfacilitybookingwidget_13_3","Facility Bookings -13 -3",WidgetConfigContext.ConfigType.FIXED,13,3,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantupcomingfacilitybookingwidget","Upcoming Facility Booking",PageWidget.WidgetType.TENANT_UPCOMING_BOOKING)
+                .addWidgetConfig("webtenantupcomingfacilitybookingwidget_10_3","Upcoming Facility Booking -10 -3",WidgetConfigContext.ConfigType.FIXED,10,3,PagesContext.PageLayoutType.WEB)
+                .done();
     }
+    @WidgetsForModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)
+    public static Supplier<ModuleWidgets> getTenantUnitWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("webtenantunitoccupantwidget", "Occupant", PageWidget.WidgetType.TENANT_UNIT_TENANT)
+                .addFlexibleWidgetConfig("webtenantunitoccupantwidget_13","Occupant -13",13, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantunitlocationwidget", "Location Details", PageWidget.WidgetType.TENANT_UNIT_LOCATION)
+                .addFlexibleWidgetConfig("webtenantunitlocationwidget_13","Location Details - 13",13,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantunithistorywidget", "Tenant  History", PageWidget.WidgetType.TENANT_UNIT_SPECIAL_WIDGET)
+                .addFlexibleWidgetConfig("webtenantunithistorywidget_32","Tenant History -32",32,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantunitinsightswidget","Insights",PageWidget.WidgetType.TENANT_UNIT_OVERVIEW)
+                .addFlexibleWidgetConfig("webtenantunitinsightswidget_20","Insights - 20",20,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantunitworkorderswidget","Tenant Unit Workorders",PageWidget.WidgetType.TENANT_UNIT_WORKORDER)
+                .addFlexibleWidgetConfig("webtenantunitworkorderswidget_13","Tenant Unit Workorders - 13",13,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantunitrecentlyclosedworkorderwidget","Recently Closed Workorder",PageWidget.WidgetType.TENANT_UNIT_RECENTLY_CLOSED_WORKORDER)
+                .addFlexibleWidgetConfig("webtenantunitrecentlyclosedworkorderwidget_23","Recently Closed Workorder - 23",23,PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+}

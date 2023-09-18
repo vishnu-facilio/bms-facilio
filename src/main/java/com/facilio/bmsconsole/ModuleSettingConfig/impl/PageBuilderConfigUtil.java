@@ -53,6 +53,7 @@ public class PageBuilderConfigUtil {
             moduleList.add(modBean.getModule(FilteredAlarmModule.MODULE_NAME));
             moduleList.add(modBean.getModule(FlaggedEventRuleModule.MODULE_NAME));
             moduleList.add(modBean.getModule(FlaggedEventModule.MODULE_NAME));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.TENANT));
 
             if (CollectionUtils.isNotEmpty(moduleList)) {
                 List<Long> moduleIds = moduleList.stream().filter(Objects::nonNull).map(FacilioModule::getModuleId).collect(Collectors.toList());
