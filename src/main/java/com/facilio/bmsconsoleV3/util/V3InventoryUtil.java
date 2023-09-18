@@ -9,6 +9,8 @@ import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotatio
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesLineItemsContext;
+import com.facilio.bmsconsoleV3.enums.CostType;
+import com.facilio.bmsconsoleV3.enums.InventoryReservationStatus;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -47,10 +49,10 @@ public class V3InventoryUtil {
         List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
         List<V3PurchasedItemContext> purchasedItems = new ArrayList<>();
         if (item.getCostTypeEnum() == null || item.getCostType() <= 0
-                || item.getCostType().equals(V3ItemContext.CostType.FIFO.getIndex())) {
+                || item.getCostType().equals(CostType.FIFO.getIndex())) {
             purchasedItems = getPurchasedItemList(item.getId(), " asc", purchasedItemModule,
                     purchasedItemFields);
-        } else if (item.getCostType().equals(V3ItemContext.CostType.LIFO.getIndex())) {
+        } else if (item.getCostType().equals(CostType.LIFO.getIndex())) {
             purchasedItems = getPurchasedItemList(item.getId(), " desc", purchasedItemModule,
                     purchasedItemFields);
         }
@@ -78,6 +80,42 @@ public class V3InventoryUtil {
 
         if (purchasedItemlist != null && !purchasedItemlist.isEmpty()) {
             return purchasedItemlist;
+        }
+        return null;
+    }
+
+    public static List<V3PurchasedToolContext> getPurchasedToolsBasedOnCostType(V3ToolContext tool, Boolean getOnlyAvailableTools) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule purchasedToolModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
+        List<FacilioField> purchasedToolFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
+        List<V3PurchasedToolContext> purchasedTool = new ArrayList<>();
+        if (tool.getCostTypeEnum() == null || tool.getCostType() <= 0
+                || tool.getCostType().equals(CostType.FIFO.getIndex())) {
+            purchasedTool = getPurchasedToolList(tool.getId(), " asc", purchasedToolModule,
+                    purchasedToolFields,getOnlyAvailableTools);
+        } else if (tool.getCostType().equals(CostType.LIFO.getIndex())) {
+            purchasedTool = getPurchasedToolList(tool.getId(), " desc", purchasedToolModule,
+                    purchasedToolFields,getOnlyAvailableTools);
+        }
+        return purchasedTool;
+    }
+    public static List<V3PurchasedToolContext> getPurchasedToolList(long id, String orderByType, FacilioModule module,
+                                                                    List<FacilioField> fields, Boolean getOnlyAvailableTools) throws Exception {
+        String quantityFieldName =  getOnlyAvailableTools ? "currentQuantity" : "quantity";
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        SelectRecordsBuilder<V3PurchasedToolContext> selectBuilder = new SelectRecordsBuilder<V3PurchasedToolContext>()
+                .select(fields).table(module.getTableName()).moduleName(module.getName())
+                .beanClass(V3PurchasedToolContext.class)
+                .andCondition(
+                        CriteriaAPI.getCondition(fieldMap.get("tool"), String.valueOf(id), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get(quantityFieldName), String.valueOf(0),
+                        NumberOperators.GREATER_THAN))
+                .orderBy(fieldMap.get("costDate").getColumnName() + orderByType);
+
+        List<V3PurchasedToolContext> purchasedToolList = selectBuilder.get();
+
+        if (purchasedToolList != null && !purchasedToolList.isEmpty()) {
+            return purchasedToolList;
         }
         return null;
     }
@@ -157,6 +195,102 @@ public class V3InventoryUtil {
         ReservationType reservationType = ReservationType.valueOf(reservationTypeInt);
         updateReservedItem(item,itemTypeId, reservationType, quantity);
         addReservedItemTransaction(reservationType, item, quantity, null,reservation);
+    }
+    public static void rollUpReservedTool(V3ToolTypesContext toolType, V3StoreRoomContext storeRoom, Integer reservationTypeInt, Double quantity, InventoryReservationContext inventoryReservation) throws Exception {
+        Long toolTypeId = toolType != null ? toolType.getId() : null;
+        Long storeRoomId = storeRoom != null ? storeRoom.getId() : null;
+        ReservationType reservationType = ReservationType.valueOf(reservationTypeInt);
+        updateReservedToolAndToolTransaction(toolTypeId, storeRoomId, reservationType, quantity, inventoryReservation);
+    }
+    //optimize item and tool implementation, extract the methods
+    public static void updateReservedToolAndToolTransaction(Long toolTypeId, Long storeRoomId, ReservationType reservationType, Double reservationQuantity, InventoryReservationContext inventoryReservation) throws Exception {
+        V3ToolContext tool = V3ToolsApi.getTool(toolTypeId, storeRoomId);
+        long toolId = tool.getId();
+        Double reservedQuantity = tool.getReservedQuantity() == null ? 0 : tool.getReservedQuantity();
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String toolModuleName = FacilioConstants.ContextNames.TOOL;
+        FacilioModule module = modBean.getModule(toolModuleName);
+        List<FacilioField> fields = modBean.getAllFields(toolModuleName);
+        List<FacilioField> updatedFields = new ArrayList<>();
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+        updatedFields.add(fieldsMap.get("reservedQuantity"));
+
+        Double newReservedQuantity = reservedQuantity + reservationQuantity;
+        Map<String, Object> map = new HashMap<>();
+        map.put("reservedQuantity", newReservedQuantity);
+        if (reservationType.getValue().equals(ReservationType.HARD.getValue())) {
+            // to update available quantity in tool module
+            Double availableQuantity = tool.getQuantity() == null ? 0 : tool.getQuantity();
+            Double newAvailableQuantity = availableQuantity - reservationQuantity;
+            updatedFields.add(fieldsMap.get("quantity"));
+            map.put("quantity", newAvailableQuantity);
+            // updating available quantity in tool type
+            updateAvailableQuantityInToolType(reservationQuantity, toolTypeId);
+        }
+        UpdateRecordBuilder<V3ToolContext> updateBuilder = new UpdateRecordBuilder<V3ToolContext>()
+                .module(module).fields(updatedFields)
+                .andCondition(CriteriaAPI.getIdCondition(toolId, module));
+        updateBuilder.updateViaMap(map);
+
+        // adding tool transaction
+        addReservedToolTransaction(reservationType, tool, reservationQuantity, inventoryReservation);
+    }
+    private static void updateAvailableQuantityInToolType(Double reservationQuantity, Long toolTypeId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String moduleName = FacilioConstants.ContextNames.TOOL_TYPES;
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+        SelectRecordsBuilder<V3ToolTypesContext> selectRecordsBuilder = new SelectRecordsBuilder<V3ToolTypesContext>()
+                .module(module)
+                .beanClass(V3ToolTypesContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getIdCondition(toolTypeId,module));
+
+        List<V3ToolTypesContext> toolTypes = selectRecordsBuilder.get();
+
+        Double availableQuantity = toolTypes.get(0).getQuantity();
+
+        Double newAvailableQuantity = availableQuantity - reservationQuantity;
+
+        List<FacilioField> updatedFields = new ArrayList<>();
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+        updatedFields.add(fieldsMap.get("quantity"));
+        Map<String, Object> map = new HashMap<>();
+        map.put("quantity", newAvailableQuantity);
+
+        UpdateRecordBuilder<V3ToolTypesContext> updateBuilder = new UpdateRecordBuilder<V3ToolTypesContext>()
+                .module(module).fields(updatedFields)
+                .andCondition(CriteriaAPI.getIdCondition(toolTypeId, module));
+        updateBuilder.updateViaMap(map);
+    }
+
+    private static void addReservedToolTransaction(ReservationType reservationType, V3ToolContext tool, Double reservationQuantity, InventoryReservationContext inventoryReservation) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String toolModuleName = FacilioConstants.ContextNames.TOOL_TRANSACTIONS;
+        FacilioModule module = modBean.getModule(toolModuleName);
+        List<FacilioField> fields = modBean.getAllFields(toolModuleName);
+
+        V3ToolTransactionContext toolTransaction = new V3ToolTransactionContext();
+        toolTransaction.setTool(tool);
+        toolTransaction.setToolType(tool.getToolType());
+        toolTransaction.setStoreRoom(tool.getStoreRoom());
+        toolTransaction.setQuantity(reservationQuantity);
+        toolTransaction.setIsReturnable(false);
+        toolTransaction.setTransactionType(TransactionType.RESERVATION);
+        toolTransaction.setInventoryReservation(inventoryReservation);
+        toolTransaction.setParentId(inventoryReservation.getId());
+
+        if(reservationType.equals(ReservationType.HARD)) {
+            toolTransaction.setTransactionState(TransactionState.HARD_RESERVE);
+        }
+        else if(reservationType.equals(ReservationType.SOFT)){
+            toolTransaction.setTransactionState(TransactionState.SOFT_RESERVE);
+        }
+        InsertRecordBuilder<V3ToolTransactionContext> readingBuilder = new InsertRecordBuilder<V3ToolTransactionContext>()
+                .module(module).fields(fields).addRecord(toolTransaction);
+        readingBuilder.save();
     }
     public static void rollUpReservedItem(V3ItemTypesContext itemType, V3StoreRoomContext storeRoom, Integer reservationTypeInt, Double quantity, InventoryReservationContext inventoryReservation) throws Exception {
         Long itemTypeId = itemType != null ? itemType.getId() : null;
@@ -311,13 +445,39 @@ public class V3InventoryUtil {
                 .module(module).fields(fields).addRecord(itemTransaction);
         readingBuilder.save();
     }
-    public static void validateReservation(Double quantity, Integer reservationTypeInt, V3ItemTypesContext itemType, V3StoreRoomContext storeRoom) throws Exception {
-        ReservationType reservationType = ReservationType.valueOf(reservationTypeInt);
+    public static void validateReservationForItem(Double quantity,ReservationType reservationType, V3ItemTypesContext itemType, V3StoreRoomContext storeRoom) throws Exception {
         Long itemTypeId = itemType != null ? itemType.getId() : null;
         Long storeRoomId = storeRoom !=null ? storeRoom.getId() : null;
-        validateQuantityAndReservationType(quantity, reservationType);
-        validateItem(itemTypeId, storeRoomId, quantity, reservationType);
+        if (storeRoomId != null) {
+            V3ItemContext item = V3ItemsApi.getItem(itemTypeId, storeRoomId);
+            if (FacilioUtil.isEmptyOrNull(item)) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item is not Present in the given storeroom");
+            } else if (item.getQuantity() < quantity
+                    && reservationType.getValue().equals(ReservationType.HARD.getValue())) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR,
+                        "Available quantity in store is less than the requested quantity");
+            }
+        } else {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storeroom cannot be empty");
+        }
     }
+    public static void validateReservationForTool(Double quantity,ReservationType reservationType, V3ToolTypesContext toolType, V3StoreRoomContext storeRoom) throws Exception {
+        Long toolTypeId = toolType != null ? toolType.getId() : null;
+        Long storeRoomId = storeRoom !=null ? storeRoom.getId() : null;
+        if (storeRoomId != null) {
+            V3ToolContext tool = V3ToolsApi.getTool(toolTypeId, storeRoomId);
+            if (FacilioUtil.isEmptyOrNull(tool)) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tool is not Present in the given storeroom");
+            } else if (tool.getQuantity() < quantity
+                    && reservationType.getValue().equals(ReservationType.HARD.getValue())) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR,
+                        "Available quantity in store is less than the requested quantity");
+            }
+        } else {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storeroom cannot be empty");
+        }
+    }
+
     public static void validateQuantityAndReservationType(Double reservationQuantity, ReservationType reservationType) throws RESTException {
         if (reservationQuantity == null || reservationQuantity <= 0) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
@@ -329,18 +489,7 @@ public class V3InventoryUtil {
 
     public static void validateItem(Long itemTypeId, Long storeRoomId, Double reservationQuantity,
             ReservationType reservationType) throws Exception {
-        if (storeRoomId != null) {
-            V3ItemContext item = V3ItemsApi.getItem(itemTypeId, storeRoomId);
-            if (FacilioUtil.isEmptyOrNull(item)) {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item is not Present in the given storeroom");
-            } else if (item.getQuantity() < reservationQuantity
-                    && reservationType.getValue().equals(ReservationType.HARD.getValue())) {
-                throw new RESTException(ErrorCode.VALIDATION_ERROR,
-                        "Available quantity in store is less than the requested quantity");
-            }
-        } else {
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storeroom cannot be empty");
-        }
+
     }
     public static V3ItemContext getItemWithStoreroomServingSites(Long itemTypeId,Long storeRoomId)throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -363,6 +512,31 @@ public class V3InventoryUtil {
         V3ItemContext item = selectRecordsBuilder.fetchFirst();
         if(item!=null){
             return item;
+        }
+        return null;
+    }
+
+    public static V3ToolContext getToolWithStoreroomServingSites(Long toolTypeId,Long storeRoomId)throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String toolModuleName = FacilioConstants.ContextNames.TOOL;
+        FacilioModule module = modBean.getModule(toolModuleName);
+        List<FacilioField> fields = modBean.getAllFields(toolModuleName);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        Collection<SupplementRecord> lookUpfields = new ArrayList<>();
+        LookupFieldMeta storeRoomField = new LookupFieldMeta((LookupField) fieldMap.get("storeRoom"));
+        MultiLookupField servingSitesField = (MultiLookupField) modBean.getField("servingsites", FacilioConstants.ContextNames.STORE_ROOM);
+        storeRoomField.addChildSupplement(servingSitesField);
+        lookUpfields.add(storeRoomField);
+        SelectRecordsBuilder<V3ToolContext> selectRecordsBuilder = new SelectRecordsBuilder<V3ToolContext>()
+                .module(module)
+                .beanClass(V3ToolContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition("TOOL_TYPE_ID", "toolType", String.valueOf(toolTypeId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS))
+                .fetchSupplements(lookUpfields);
+        V3ToolContext tool = selectRecordsBuilder.fetchFirst();
+        if(tool!=null){
+            return tool;
         }
         return null;
     }
@@ -465,4 +639,36 @@ public class V3InventoryUtil {
         return context != null && context.getId() > 0;
     }
 
+    public static void UpdateReservationRecordForActuals(V3TicketContext workOrder, Long reservationId, Double quantity) throws Exception {
+        InventoryReservationContext reservation = V3RecordAPI.getRecord(FacilioConstants.ContextNames.INVENTORY_RESERVATION,reservationId,InventoryReservationContext.class);
+
+        Double woQuantity = quantity;
+        if(  workOrder!=null && reservation.getWorkOrder()!=null &&  workOrder.getId() != reservation.getWorkOrder().getId()){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Plan created in one Work Order cannot be issued to another");
+        }
+        if(reservation.getReservationStatusEnum().equals(InventoryReservationStatus.ISSUED)){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Selected reserved item is fully issued");
+        }
+        if(woQuantity > reservation.getBalanceReservedQuantity()){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity is greater than balance reserved quantity");
+        }
+        else{
+            Double balanceReservedQuantity = reservation.getBalanceReservedQuantity();
+            balanceReservedQuantity -= woQuantity;
+            Double issuedQuantity = reservation.getIssuedQuantity()!=null ? reservation.getIssuedQuantity(): 0;
+            issuedQuantity += woQuantity;
+
+            if(balanceReservedQuantity>0){
+                reservation.setReservationStatus(InventoryReservationStatus.PARTIALLY_ISSUED.getIndex());
+            }
+            else if(balanceReservedQuantity==0){
+                reservation.setReservationStatus(InventoryReservationStatus.ISSUED.getIndex());
+            }
+            reservation.setIssuedQuantity(issuedQuantity);
+            reservation.setBalanceReservedQuantity(balanceReservedQuantity);
+
+            V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.INVENTORY_RESERVATION, reservation.getId(), FieldUtil.getAsJSON(reservation), null, null, null, null, null,null,null, null,null);
+
+        }
+    }
 }

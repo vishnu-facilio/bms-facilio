@@ -1612,6 +1612,14 @@
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
                 method="getWorkorderTool">
         </action>
+        <action name="getWorkorderToolFromReservation"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
+                method="getWorkorderToolFromReservation">
+        </action>
+        <action name="getWorkOrderToolFromIssuedTool"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
+                method="getWorkOrderToolFromIssuedTool">
+        </action>
     </package>
 
     <package name="workorderService" namespace="/api/v3/workorderService"
@@ -1648,6 +1656,10 @@
         <action name="forActuals"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedToolsAction"
                 method="getPlannedToolForActuals">
+        </action>
+        <action name="reserve"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedToolsAction"
+                method="reserve">
         </action>
     </package>
     <package name="workOrderPlannedServices" namespace="/api/v3/workOrderPlannedServices"

@@ -118,16 +118,10 @@ public class GetToolTransactionsListCommand extends FacilioCommand {
 //					String.valueOf(0), NumberOperators.GREATER_THAN));
 			// builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("isReturnable"),
 			// String.valueOf(true), BooleanOperators.IS));
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
-					String.valueOf(4), NumberOperators.EQUALS));
-			criteria.addAndCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("parentTransactionId"),
-					String.valueOf(0), NumberOperators.LESS_THAN));
 			Criteria criteriaIssue = new Criteria();
 			criteriaIssue.addAndCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
 					String.valueOf(2), NumberOperators.EQUALS));
 			Criteria finalCriteria = new Criteria();
-			finalCriteria.andCriteria(criteria);
 			finalCriteria.orCriteria(criteriaIssue);
 			builder.andCriteria(finalCriteria);
 			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("remainingQuantity"),

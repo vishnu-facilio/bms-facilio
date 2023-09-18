@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.V3Context;
@@ -153,26 +154,7 @@ public class V3ItemContext extends V3Context {
 
 
 
-    public enum CostType implements FacilioIntEnum {
-        FIFO, LIFO;
 
-        @Override
-        public Integer getIndex() {
-            return ordinal() + 1;
-        }
-
-        @Override
-        public String getValue() {
-            return name();
-        }
-
-        public static CostType valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
-    }
 
     public Double getIssuanceCost() {
         return issuanceCost;

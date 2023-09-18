@@ -9,6 +9,11 @@ public class V3PurchasedToolContext extends V3Context {
     private V3ToolTypesContext toolType;
     private V3ToolContext tool;
     private Double rate;
+
+    private Double unitPrice;
+    private Double quantity;
+    private Double currentQuantity;
+
     private Long costDate;
     public Boolean isUsed;
     private String serialNumber;
@@ -61,5 +66,26 @@ public class V3PurchasedToolContext extends V3Context {
         this.serialNumber = serialNumber;
     }
 
+    public Double getQuantity() {
+        return quantity;
+    }
 
+    public void setQuantity(Double quantity) {
+        this.quantity = quantity;
+    }
+
+    public Double getCurrentQuantity() {
+        return currentQuantity;
+    }
+
+    public void setCurrentQuantity(Double currentQuantity) {
+        this.currentQuantity = currentQuantity;
+    }
+    public Double getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(Double unitPrice) {
+        this.unitPrice = unitPrice;
+    }
 }

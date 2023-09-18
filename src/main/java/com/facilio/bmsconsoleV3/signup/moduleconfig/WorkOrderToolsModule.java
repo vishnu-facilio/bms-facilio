@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -64,6 +65,16 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
         allView.setModuleName(workOrderToolsModule.getName());
         allView.setSortFields(Collections.singletonList(sortField));
 
+        List<ViewField> viewFields = new ArrayList<>();
+
+        viewFields.add(new ViewField("tool","Tool"));
+        viewFields.add(new ViewField("storeRoom","StoreRoom"));
+        viewFields.add(new ViewField("quantity","Quantity"));
+        viewFields.add(new ViewField("duration","Duration"));
+        viewFields.add(new ViewField("rate","Rate"));
+        viewFields.add(new ViewField("cost","Total Cost"));
+
+        allView.setFields(viewFields);
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
@@ -179,8 +190,8 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
         int seqNum = 0;
         workOrderToolsModuleFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", ++seqNum,1));
         workOrderToolsModuleFormFields.add(new FormField("tool", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tool", FormField.Required.REQUIRED, "tool", ++seqNum, 1));
-        workOrderToolsModuleFormFields.add(new FormField("issueTime", FacilioField.FieldDisplayType.DATETIME,"Issue Time", FormField.Required.OPTIONAL,++seqNum,1));
-        workOrderToolsModuleFormFields.add(new FormField("returnTime", FacilioField.FieldDisplayType.DATETIME,"Return Time", FormField.Required.OPTIONAL,++seqNum,1));
+        workOrderToolsModuleFormFields.add(new FormField("workorder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Work Order", FormField.Required.OPTIONAL, "ticket", ++seqNum, 1));
+        workOrderToolsModuleFormFields.add(new FormField("issuedTo", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Issue To", FormField.Required.REQUIRED, "users", ++seqNum, 1));
         workOrderToolsModuleFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION,"Duration", FormField.Required.OPTIONAL,"duration",++seqNum,1));
         workOrderToolsModuleFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
 

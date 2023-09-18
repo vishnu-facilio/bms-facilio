@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
+import com.facilio.bmsconsoleV3.enums.CostType;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.V3Context;
 
@@ -13,12 +15,17 @@ public class V3ToolContext extends V3Context {
     private V3ToolTypesContext toolType;
     private V3StoreRoomContext storeRoom;
     private V3ToolStatusContext status;
+    private CostType costType;
     private Unit issuingUnit;
     private Double quantity;
     private Double rate;
     private Double currentQuantity;
+    private Double reservedQuantity;
+
     private List<V3PurchasedToolContext> purchasedTools;
     private Long lastPurchasedDate;
+    private Double lastPurchasedPrice;
+
     private Double minimumQuantity;
     public Boolean isUnderstocked;
 
@@ -44,6 +51,21 @@ public class V3ToolContext extends V3Context {
 
     public void setStatus(V3ToolStatusContext status) {
         this.status = status;
+    }
+    public Integer getCostType() {
+        if (costType != null) {
+            return costType.getIndex();
+        }
+        return -1;
+    }
+
+    public void setCostType(Integer costType) {
+        if (costType != null) {
+            this.costType = CostType.valueOf(costType);
+        }
+    }
+    public CostType getCostTypeEnum() {
+        return costType;
     }
 
     public Unit getIssuingUnitEnum() {
@@ -104,7 +126,13 @@ public class V3ToolContext extends V3Context {
     public void setLastPurchasedDate(Long lastPurchasedDate) {
         this.lastPurchasedDate = lastPurchasedDate;
     }
+    public Double getLastPurchasedPrice() {
+        return lastPurchasedPrice;
+    }
 
+    public void setLastPurchasedPrice(Double lastPurchasedPrice) {
+        this.lastPurchasedPrice = lastPurchasedPrice;
+    }
     public Double getMinimumQuantity() {
         return minimumQuantity;
     }
@@ -128,5 +156,12 @@ public class V3ToolContext extends V3Context {
         return false;
     }
 
+    public Double getReservedQuantity() {
+        return reservedQuantity;
+    }
+
+    public void setReservedQuantity(Double reservedQuantity) {
+        this.reservedQuantity = reservedQuantity;
+    }
 
 }

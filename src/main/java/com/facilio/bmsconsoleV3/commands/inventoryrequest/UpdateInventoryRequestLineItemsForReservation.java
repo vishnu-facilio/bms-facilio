@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.inventoryrequest;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.facilio.bmsconsoleV3.util.V3InventoryUtil.rollUpReservedItem;
+import static com.facilio.bmsconsoleV3.util.V3InventoryUtil.rollUpReservedTool;
 
 public class UpdateInventoryRequestLineItemsForReservation extends FacilioCommand {
     @Override
@@ -39,7 +41,12 @@ public class UpdateInventoryRequestLineItemsForReservation extends FacilioComman
             }
             for(V3InventoryRequestLineItemContext inventoryRequestLineItem : inventoryRequestLineItems){
                 InventoryReservationContext inventoryReservation = createInventoryReservationRecord(inventoryRequestLineItem, workorder);
-                rollUpReservedItem(inventoryRequestLineItem.getItemType(), inventoryRequestLineItem.getStoreRoom(), inventoryRequestLineItem.getReservationType(), inventoryRequestLineItem.getQuantity(), inventoryReservation);
+                if(inventoryRequestLineItem.getInventoryType() == InventoryType.ITEM.getValue()){
+                    rollUpReservedItem(inventoryRequestLineItem.getItemType(), inventoryRequestLineItem.getStoreRoom(), inventoryRequestLineItem.getReservationType(), inventoryRequestLineItem.getQuantity(), inventoryReservation);
+                }
+                if(inventoryRequestLineItem.getInventoryType() == InventoryType.TOOL.getValue()){
+                    rollUpReservedTool(inventoryRequestLineItem.getToolType(), inventoryRequestLineItem.getStoreRoom(), inventoryRequestLineItem.getReservationType(), inventoryRequestLineItem.getQuantity(), inventoryReservation);
+                }
             }
         }
         return false;
@@ -52,7 +59,12 @@ public class UpdateInventoryRequestLineItemsForReservation extends FacilioComman
         reservation.setReservationStatus(InventoryReservationStatus.NOT_ISSUED.getIndex());
         reservation.setStoreRoom(inventoryRequestLineItem.getStoreRoom());
         reservation.setWorkOrder(workorder);
-        reservation.setItemType(inventoryRequestLineItem.getItemType());
+        if(inventoryRequestLineItem.getInventoryType() == InventoryType.ITEM.getValue()){
+            reservation.setItemType(inventoryRequestLineItem.getItemType());
+        }
+        if(inventoryRequestLineItem.getInventoryType() == InventoryType.TOOL.getValue()){
+            reservation.setToolType(inventoryRequestLineItem.getToolType());
+        }
         reservation.setReservedQuantity(inventoryRequestLineItem.getQuantity());
         reservation.setBalanceReservedQuantity(inventoryRequestLineItem.getQuantity());
         reservation.setInventoryRequestLineItem(inventoryRequestLineItem);
@@ -60,6 +72,7 @@ public class UpdateInventoryRequestLineItemsForReservation extends FacilioComman
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_RESERVATION);
+
         FacilioContext inventoryReservationContext = V3Util.createRecord(module, FacilioUtil.getAsMap(FieldUtil.getAsJSON(reservation)),null,null);
         Map<String, List> recordMap = (Map<String, List>) inventoryReservationContext.get(Constants.RECORD_MAP);
 

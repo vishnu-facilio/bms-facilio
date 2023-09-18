@@ -13,6 +13,7 @@ public class V3ToolTypesContext extends V3Context {
    	private Double minimumQuantity;
    	public Boolean isRotating;
    	private Long photoId;
+    private Double quantity;
    	private Double currentQuantity;
    	private Long lastPurchasedDate;
    	private Double lastPurchasedPrice;
@@ -36,7 +37,15 @@ public class V3ToolTypesContext extends V3Context {
    		this.photoId = photoId;
    	}
 
-   	public Double getCurrentQuantity() {
+	public Double getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Double quantity) {
+		this.quantity = quantity;
+	}
+
+	public Double getCurrentQuantity() {
    		return currentQuantity;
    	}
 

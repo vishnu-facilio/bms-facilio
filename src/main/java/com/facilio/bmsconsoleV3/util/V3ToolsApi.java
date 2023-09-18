@@ -1,14 +1,19 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.util.StoreroomApi;
+import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
+import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -18,10 +23,7 @@ import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class V3ToolsApi {
     public static V3ToolTypesContext getToolTypes(long id) throws Exception {
@@ -115,6 +117,8 @@ public class V3ToolsApi {
         throw new IllegalArgumentException("Tool shoud be issued before being used");
     }
 
+
+
     public static List<V3ToolContext> getToolsForType(List<Long> toolTypeIds) throws Exception {
         String ids = StringUtils.join(toolTypeIds, ",");
 
@@ -152,6 +156,24 @@ public class V3ToolsApi {
         return lastPurchasedDate;
     }
 
+    public static Double getLastPurchasedToolPriceForToolId(long id) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+        List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(assetFields);
+        Double lastPurchasedPrice = null;
+        SelectRecordsBuilder<V3AssetContext> itemselectBuilder = new SelectRecordsBuilder<V3AssetContext>()
+                .select(assetFields).table(module.getTableName()).moduleName(module.getName())
+                .beanClass(V3AssetContext.class).andCondition(CriteriaAPI.getCondition(fieldMap.get("rotatingTool"), String.valueOf(id), NumberOperators.EQUALS))
+                .orderBy("PURCHASED_DATE DESC");
+        List<V3AssetContext> assetscontext = itemselectBuilder.get();
+        if(assetscontext!=null && !assetscontext.isEmpty()) {
+            lastPurchasedPrice = assetscontext.get(0).getUnitPrice();
+        }
+
+        return lastPurchasedPrice;
+    }
+
     public static void updateLastPurchasedDateForTool(V3ToolContext tool)
             throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -176,6 +198,8 @@ public class V3ToolsApi {
         Map<String, FacilioField> transactionFieldMap = FieldFactory.getAsMap(transactionFields);
 
         long lastPurchasedDate = -1, lastIssuedDate = -1;
+        double lastPurchasedPrice = -1;
+
 
         SelectRecordsBuilder<V3ToolContext> builder = new SelectRecordsBuilder<V3ToolContext>()
                 .select(toolFields).moduleName(toolModule.getName())
@@ -191,6 +215,9 @@ public class V3ToolsApi {
             storeRoomId = tool.getStoreRoom().getId();
             if(tool.getLastPurchasedDate()!=null){
                 lastPurchasedDate = tool.getLastPurchasedDate();
+            }
+            if( tool.getLastPurchasedPrice()!=null){
+                lastPurchasedPrice = tool.getLastPurchasedPrice();
             }
         }
 
@@ -212,6 +239,7 @@ public class V3ToolsApi {
         V3ToolTypesContext toolType = new V3ToolTypesContext();
         toolType.setId(id);
         toolType.setLastPurchasedDate(lastPurchasedDate);
+        toolType.setLastPurchasedPrice(lastPurchasedPrice);
         toolType.setLastIssuedDate(lastIssuedDate);
 
         UpdateRecordBuilder<V3ToolTypesContext> updateBuilder = new UpdateRecordBuilder<V3ToolTypesContext>()
@@ -251,6 +279,7 @@ public class V3ToolsApi {
         V3ToolContext tool = new V3ToolContext();
         tool.setStoreRoom(store);
         tool.setToolType(toolType);
+        tool.setCostType(CostType.FIFO.getIndex());
         InsertRecordBuilder<V3ToolContext> readingBuilder = new InsertRecordBuilder<V3ToolContext>().module(module)
                 .fields(fields);
         readingBuilder.withLocalId();
@@ -294,5 +323,36 @@ public class V3ToolsApi {
             tool = selectRecordsBuilder.fetchFirst();
         }
         return tool;
+    }
+
+
+    public static Double getIssuedToolsQuantityForUser( V3ToolContext tool, User issuedTo) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> toolTransactionFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(toolTransactionFields);
+
+        Criteria criteria = new Criteria();
+        Condition toolCondition = CriteriaAPI.getCondition(fieldsMap.get("tool"), Collections.singleton(tool.getId()), NumberOperators.EQUALS);
+        Condition transactionStateCondition = CriteriaAPI.getCondition(fieldsMap.get("transactionState"), String.valueOf(TransactionState.ISSUE.getValue()), NumberOperators.EQUALS);
+        Condition issuedUserCondition = CriteriaAPI.getCondition(fieldsMap.get("issuedTo"), String.valueOf(issuedTo.getId()), NumberOperators.EQUALS);
+
+        criteria.addAndCondition(toolCondition);
+        criteria.addAndCondition(transactionStateCondition);
+        criteria.addAndCondition(issuedUserCondition);
+
+        Map<Long, V3ToolTransactionContext> props = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.TOOL_TRANSACTIONS, null,V3ToolTransactionContext.class, criteria);
+        Double availableQuantity = 0.00;
+        if(props != null){
+            Collection<V3ToolTransactionContext> toolTransactions = props.values();
+            if(CollectionUtils.isNotEmpty(toolTransactions)){
+                for(V3ToolTransactionContext toolTransaction :toolTransactions){
+                    Double transactionQuantity = toolTransaction.getRemainingQuantity();
+                    if(transactionQuantity != null &&  transactionQuantity > 0){
+                        availableQuantity += transactionQuantity;
+                    }
+                }
+            }
+        }
+        return availableQuantity;
     }
 }

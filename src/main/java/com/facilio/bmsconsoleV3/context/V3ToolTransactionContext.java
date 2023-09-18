@@ -12,6 +12,7 @@ import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderToolsContext;
+import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -282,6 +283,15 @@ public class V3ToolTransactionContext extends V3Context {
 
     public void setServiceOrderTool(ServiceOrderToolsContext serviceOrderTool) {
         this.serviceOrderTool = serviceOrderTool;
+    }
+    public InventoryReservationContext inventoryReservation;
+
+    public InventoryReservationContext getInventoryReservation() {
+        return inventoryReservation;
+    }
+
+    public void setInventoryReservation(InventoryReservationContext inventoryReservation) {
+        this.inventoryReservation = inventoryReservation;
     }
 }
 

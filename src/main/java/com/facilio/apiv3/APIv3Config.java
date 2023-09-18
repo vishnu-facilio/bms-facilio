@@ -116,11 +116,9 @@ import com.facilio.bmsconsoleV3.commands.tenantunit.AddSpaceCommandV3;
 import com.facilio.bmsconsoleV3.commands.tenantunit.CheckForTenantBeforeDeletionCommand;
 import com.facilio.bmsconsoleV3.commands.tenantunit.LoadTenantUnitLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.termsandconditions.CheckForPublishedCommand;
-import com.facilio.bmsconsoleV3.commands.tool.LoadToolLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.tool.SetManualToolTransactionsCommandV3;
-import com.facilio.bmsconsoleV3.commands.tool.StockOrUpdateToolsCommandV3;
-import com.facilio.bmsconsoleV3.commands.tool.UpdateToolTransactionsCommandV3;
+import com.facilio.bmsconsoleV3.commands.tool.*;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.tooltypes.SetToolRateCommandV3;
 import com.facilio.bmsconsoleV3.commands.transferRequest.*;
 import com.facilio.bmsconsoleV3.commands.vendor.AddOrUpdateLocationForVendorCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
@@ -989,11 +987,12 @@ public class APIv3Config {
     public static Supplier<V3Config> getToolTransactions() {
         return () -> new V3Config(V3ToolTransactionContext.class,null)
                 .create()
-                .beforeSave(new SetManualToolTransactionsCommandV3())
+                .beforeSave(new SetManualToolTransactionsCommandV3(), new AdjustmentToolTransactionCommandV3())
                 .afterSave(new UpdateToolTransactionsCommandV3())
                 .update()
                 .list()
-                .beforeFetch(new LoadToolTransactionsLookupCommandV3())
+                .beforeCount(new FilterItemTransactionsCommandV3())
+                .beforeFetch(TransactionChainFactoryV3.getBeforeFetchToolTransactionsChain())
                 .summary()
                 .build();
     }
@@ -1020,8 +1019,10 @@ public class APIv3Config {
                 .list()
                 .beforeCount(new IncludeServingSiteFilterCommandV3())
                 .beforeFetch(TransactionChainFactoryV3.getBeforeFetchToolListChain())
+                .afterFetch(new SetToolRateCommandV3())
                 .summary()
                 .beforeFetch(new LoadToolLookupCommandV3())
+                .afterFetch(new SetToolRateCommandV3())
                 .build();
     }
 
@@ -1812,7 +1813,8 @@ public class APIv3Config {
                 .create()
                 .beforeSave(new SetWorkOrderPlannedToolsCommandV3())
                 .update()
-                .beforeSave(new SetWorkOrderPlannedToolsCommandV3())
+                .beforeSave(TransactionChainFactoryV3.getWoPlannedToolsBeforeUpdateChain())
+                .afterSave(new UpdateWorkorderPlannedToolsCommandV3())
                 .list()
                 .beforeFetch(new LoadPlannedToolsExtraFieldsCommandV3())
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "toolType")
@@ -1821,6 +1823,7 @@ public class APIv3Config {
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "toolType")
                 .fetchSupplement(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, "storeRoom")
+                .afterFetch(TransactionChainFactoryV3.getReserveToolValidationChainV3())
                 .delete()
                 .build();
     }
@@ -1849,6 +1852,7 @@ public class APIv3Config {
                 .list()
                 .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_RESERVATION,"workOrder")
                 .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_RESERVATION,"itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_RESERVATION,"toolType")
                 .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_RESERVATION,"storeRoom")
                 .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_RESERVATION, "inventoryRequest")
                 .summary()
@@ -1895,11 +1899,13 @@ public class APIv3Config {
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "tool")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "storeRoom")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "toolType")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS,"inventoryReservation")
                 .beforeFetch(new LoadWorkorderActualsExtraFieldsCommandV3())
                 .summary()
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "tool")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "storeRoom")
                 .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS, "toolType")
+                .fetchSupplement(FacilioConstants.ContextNames.WORKORDER_TOOLS,"inventoryReservation")
                 .delete()
                 .afterDelete(TransactionChainFactoryV3.getAfterDeleteWorkorderToolsChainV3())
                 .build();
@@ -2384,6 +2390,7 @@ public class APIv3Config {
                 .beforeFetch(TransactionChainFactoryV3.getLineItemsBeforeFetchChain())
                 .afterFetch(TransactionChainFactoryV3.getAfterFetchInventoryRequestLineItemsChain())
                 .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, "toolType")
                 .fetchSupplement(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, "storeRoom")
                 .summary()
                 .build();

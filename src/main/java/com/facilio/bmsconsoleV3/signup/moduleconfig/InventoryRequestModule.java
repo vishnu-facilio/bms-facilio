@@ -215,7 +215,7 @@ public class InventoryRequestModule extends BaseModuleConfig{
         inventoryRequestModuleFormDefaultFields.add(new FormField("requestedTime", FacilioField.FieldDisplayType.DATE, "Requested Date", FormField.Required.OPTIONAL, ++seqNum, 2));
         inventoryRequestModuleFormDefaultFields.add(new FormField("requiredTime", FacilioField.FieldDisplayType.DATE, "Required Date", FormField.Required.OPTIONAL, ++seqNum, 2));
         inventoryRequestModuleFormDefaultFields.add(new FormField("requestedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Requested By", FormField.Required.OPTIONAL, "user", ++seqNum, 2));
-        inventoryRequestModuleFormDefaultFields.add(new FormField("requestedFor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Requested For", FormField.Required.OPTIONAL, "user", ++seqNum, 2));
+        inventoryRequestModuleFormDefaultFields.add(new FormField("requestedFor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Requested For", FormField.Required.REQUIRED, "user", ++seqNum, 2));
         inventoryRequestModuleFormDefaultFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", ++seqNum, 2));
 //        inventoryRequestModuleFormDefaultFields.add(new FormField("transactionType", FacilioField.FieldDisplayType.SELECTBOX, "Transaction Type", FormField.Required.REQUIRED, ++seqNum, 2));
         inventoryRequestModuleFormDefaultFields.add(new FormField("workorder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Work Order", FormField.Required.REQUIRED, ++seqNum, 2));

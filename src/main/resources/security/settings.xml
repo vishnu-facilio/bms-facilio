@@ -2709,7 +2709,18 @@
             <property name="itemId" type="number" mandatory="true"/>
         </requestbody>
     </request>
+    <request path="/api/v3/getWorkorderTools">
+        <requestbody type="object">
+            <property name="workOrderId" type="number" mandatory="true"/>
+            <property name="toolId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
     <request path="/api/v3/workOrderItem/getWorkorderItemFromReservation">
+        <requestbody type="object">
+            <property name="reservationId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/workorderTools/getWorkorderToolFromReservation">
         <requestbody type="object">
             <property name="reservationId" type="number" mandatory="true"/>
         </requestbody>
@@ -2718,6 +2729,12 @@
         <requestbody type="object">
             <property name="workOrderId" type="number" mandatory="true"/>
             <property name="itemTransactionId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/workorderTools/getWorkOrderToolFromIssuedTool">
+        <requestbody type="object">
+            <property name="workOrderId" type="number" mandatory="true"/>
+            <property name="toolTransactionId" type="number" mandatory="true"/>
         </requestbody>
     </request>
     <request path="/api/v3/workorderService/getWorkorderService">
@@ -2733,6 +2750,11 @@
         </requestbody>
     </request>
     <request path="/api/v3/workOrderPlannedItems/reserve">
+        <requestbody type="object">
+            <property name="recordIds" type="array" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/workOrderPlannedTools/reserve">
         <requestbody type="object">
             <property name="recordIds" type="array" mandatory="true"/>
         </requestbody>

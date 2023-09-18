@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.commands.inventoryrequest;
 
+import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
+import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -27,7 +29,14 @@ public class ValidateInventoryRequestLineItemForReservation extends FacilioComma
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot Update Reserved Item");
                 }
                 if(MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("reserve") && (boolean) bodyParams.get("reserve")) {
-                    validateReservation(inventoryRequestLineItem.getQuantity(), inventoryRequestLineItem.getReservationType(), inventoryRequestLineItem.getItemType(), inventoryRequestLineItem.getStoreRoom());
+                    ReservationType reservationType = ReservationType.valueOf(inventoryRequestLineItem.getReservationType());
+                    validateQuantityAndReservationType(inventoryRequestLineItem.getQuantity(), reservationType);
+                    if(inventoryRequestLineItem.getInventoryType() == InventoryType.ITEM.getValue()){
+                        validateReservationForItem(inventoryRequestLineItem.getQuantity(),reservationType , inventoryRequestLineItem.getItemType(), inventoryRequestLineItem.getStoreRoom());
+                    }
+                    if(inventoryRequestLineItem.getInventoryType() == InventoryType.TOOL.getValue()){
+                        validateReservationForTool(inventoryRequestLineItem.getQuantity(), reservationType, inventoryRequestLineItem.getToolType(), inventoryRequestLineItem.getStoreRoom());
+                    }
                 }
             }
         }

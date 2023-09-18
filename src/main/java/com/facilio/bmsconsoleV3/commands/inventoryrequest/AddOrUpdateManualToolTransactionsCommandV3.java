@@ -7,12 +7,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.bmsconsoleV3.util.V3AssetAPI;
+import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.*;
 import com.facilio.util.FacilioUtil;
@@ -20,6 +25,7 @@ import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
@@ -27,12 +33,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ShipmentContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.ToolTransactionContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
@@ -70,19 +70,20 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
                 V3ToolContext tool = getTool(toolTransaction.getTool().getId());
                 V3ToolTypesContext toolTypes = getToolType(tool.getToolType().getId());
                 toolTypesId = toolTypes.getId();
-                V3StoreRoomContext storeRoom = tool.getStoreRoom();
                 if (toolTransaction.getId() > 0) {
                     SelectRecordsBuilder<V3ToolTransactionContext> selectBuilder = new SelectRecordsBuilder<V3ToolTransactionContext>()
                             .select(toolTransactionsFields).table(toolTransactionsModule.getTableName())
                             .moduleName(toolTransactionsModule.getName()).beanClass(V3ToolTransactionContext.class)
                             .andCondition(CriteriaAPI.getIdCondition(toolTransaction.getId(), toolTransactionsModule))
                             .fetchSupplements(lookUpfields);
-                    ;
+
                     List<V3ToolTransactionContext> woIt = selectBuilder.get();
                     if (woIt != null) {
                         V3ToolTransactionContext wTool = woIt.get(0);
+                        V3PurchasedToolContext purchasedTool = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PURCHASED_TOOL,wTool.getPurchasedTool().getId(),V3PurchasedToolContext.class);
+                        double q = wTool.getQuantity();
                         if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
-                                && (wTool.getQuantity() + wTool.getTool().getCurrentQuantity()) < toolTransaction
+                                && (q + purchasedTool.getCurrentQuantity() + wTool.getTool().getCurrentQuantity()) < toolTransaction
                                 .getQuantity()) {
                             throw new IllegalArgumentException("Insufficient quantity in inventory!");
                         } else {
@@ -90,9 +91,10 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
                             if (toolTransaction.getRequestedLineItem() != null && toolTransaction.getRequestedLineItem().getId() > 0) {
                                 approvalState = ApprovalState.APPROVED;
                             }
+                            double quantity = toolTypes.getIsRotating() ? 1 : toolTransaction.getQuantity();
 
-                            wTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
-                                    toolTypes, approvalState, null, context);
+                            wTool = setWorkorderItemObj(null,quantity, tool, toolTransaction,
+                                    toolTypes, approvalState, wTool.getAsset(), context);
                             // update
                             wTool.setId(toolTransaction.getId());
                             toolTransactionslist.add(wTool);
@@ -136,7 +138,7 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
                                     // == TransactionState.ISSUE) {
                                     // pTool.setIsUsed(true);
                                     // }
-                                    woTool = setWorkorderItemObj(1, tool, toolTransaction, toolTypes,
+                                    woTool = setWorkorderItemObj(null,1, tool, toolTransaction, toolTypes,
                                             approvalState, asset, context);
                                     updateAsset(asset);
                                     toolTransactionslist.add(woTool);
@@ -144,11 +146,37 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
                                 }
                             }
                         } else {
-                            V3ToolTransactionContext woTool = new V3ToolTransactionContext();
-                            woTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
-                                    toolTypes, approvalState, null, context);
-                            toolTransactionslist.add(woTool);
-                            toolTransactionsToBeAdded.add(woTool);
+                            List<V3PurchasedToolContext> purchasedTools = V3InventoryUtil.getPurchasedToolsBasedOnCostType(tool,true);
+                            if(CollectionUtils.isNotEmpty(purchasedTools)) {
+                                V3PurchasedToolContext pTool = purchasedTools.get(0);
+                                if(toolTransaction.getQuantity() <= pTool.getCurrentQuantity()){
+                                    V3ToolTransactionContext woTool = new V3ToolTransactionContext();
+                                    woTool = setWorkorderItemObj(pTool,toolTransaction.getQuantity(), tool, toolTransaction,
+                                            toolTypes, approvalState, null, context);
+                                    toolTransactionslist.add(woTool);
+                                    toolTransactionsToBeAdded.add(woTool);
+                                } else {
+                                    double requiredQuantity = toolTransaction.getQuantity();
+                                    for(V3PurchasedToolContext purchasedTool : purchasedTools){
+                                        V3ToolTransactionContext toolTransactionContext;
+                                        double quantityUsedForTheCost = 0;
+                                        if (requiredQuantity <= purchasedTool.getCurrentQuantity()) {
+                                            quantityUsedForTheCost = requiredQuantity;
+                                        } else {
+                                            quantityUsedForTheCost = purchasedTool.getCurrentQuantity();
+                                        }
+                                        toolTransactionContext = setWorkorderItemObj(purchasedTool, quantityUsedForTheCost, tool,
+                                                 toolTransaction, toolTypes, approvalState, null, context);
+                                        requiredQuantity -= quantityUsedForTheCost;
+                                        toolTransactionslist.add(toolTransactionContext);
+                                        toolTransactionsToBeAdded.add(toolTransactionContext);
+                                        if (requiredQuantity <= 0) {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
                         }
                     }
                 }
@@ -170,9 +198,9 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
         return false;
     }
 
-    private V3ToolTransactionContext setWorkorderItemObj(double quantity,
-                                                       V3ToolContext tool, V3ToolTransactionContext toolTransaction, V3ToolTypesContext toolTypes,
-                                                       ApprovalState approvalState, V3AssetContext asset, Context context) throws Exception {
+    private V3ToolTransactionContext setWorkorderItemObj(V3PurchasedToolContext purchasedTool, double quantity,
+                                                         V3ToolContext tool, V3ToolTransactionContext toolTransaction, V3ToolTypesContext toolTypes,
+                                                         ApprovalState approvalState, V3AssetContext asset, Context context) throws Exception {
         V3ToolTransactionContext woTool = new V3ToolTransactionContext();
 
         woTool.setTransactionType(TransactionType.MANUAL.getValue());
@@ -180,6 +208,9 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
         woTool.setTransactionState(toolTransaction.getTransactionStateEnum());
         woTool.setStoreRoom(tool.getStoreRoom());
         woTool.setIsReturnable(true);
+        if (purchasedTool != null) {
+            woTool.setPurchasedTool(purchasedTool);
+        }
         if(asset!=null) {
             woTool.setAsset(asset);
         }

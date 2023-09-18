@@ -22,7 +22,6 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-
 public class ToolTransactionRemainingQuantityRollupCommandV3 extends FacilioCommand {
 
     @Override
@@ -52,6 +51,7 @@ public class ToolTransactionRemainingQuantityRollupCommandV3 extends FacilioComm
                     updateBuilder.update(toolTransaction);
                 }
             }
+
         }
         return false;
     }

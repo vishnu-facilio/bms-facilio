@@ -111,6 +111,8 @@ public class InventoryRequestLineItemsModule extends BaseModuleConfig{
         int order = 1;
         ArrayList<FacilioView> inventoryRequestLineItems = new ArrayList<FacilioView>();
         inventoryRequestLineItems.add(getAllInventoryRequestLineItemsView().setOrder(order++));
+        inventoryRequestLineItems.add(getAllItemsInventoryRequestLineItemsView().setOrder(order++));
+        inventoryRequestLineItems.add(getAllToolsInventoryRequestLineItemsView().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
@@ -153,6 +155,72 @@ public class InventoryRequestLineItemsModule extends BaseModuleConfig{
         List<ViewField> columns = new ArrayList<ViewField>();
         columns.add(new ViewField("itemType","Item"));
         columns.add(new ViewField("description","Description","itemType"));
+        columns.add(new ViewField("toolType","Tool"));
+        columns.add(new ViewField("description","Description","toolType"));
+        columns.add(new ViewField("storeRoom","Storeroom"));
+        columns.add(new ViewField("quantity","Quantity"));
+//        columns.add(new ViewField("reservationType","Reservation"));
+        return columns;
+    }
+
+    private static FacilioView getAllItemsInventoryRequestLineItemsView() {
+        FacilioModule invReqLineItems = ModuleFactory.getInventoryRequestLineItemsModule();
+
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("all-items");
+        allView.setDisplayName("All Inventory Request Line Items");
+        allView.setModuleName(invReqLineItems.getName());
+        allView.setSortFields(sortFields);
+        allView.setFields(getAllItemsViewColumns());
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        allView.setAppLinkNames(appLinkNames);
+
+        return allView;
+    }
+
+    private static List<ViewField> getAllItemsViewColumns() {
+        List<ViewField> columns = new ArrayList<ViewField>();
+        columns.add(new ViewField("itemType","Item"));
+        columns.add(new ViewField("description","Description","itemType"));
+        columns.add(new ViewField("storeRoom","Storeroom"));
+        columns.add(new ViewField("quantity","Quantity"));
+//        columns.add(new ViewField("reservationType","Reservation"));
+        return columns;
+    }
+
+    private static FacilioView getAllToolsInventoryRequestLineItemsView() {
+        FacilioModule invReqLineItems = ModuleFactory.getInventoryRequestLineItemsModule();
+
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), true));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("all-tools");
+        allView.setDisplayName("All Inventory Request Line Items");
+        allView.setModuleName(invReqLineItems.getName());
+        allView.setSortFields(sortFields);
+        allView.setFields(getAllToolsViewColumns());
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        allView.setAppLinkNames(appLinkNames);
+
+        return allView;
+    }
+
+    private static List<ViewField> getAllToolsViewColumns() {
+        List<ViewField> columns = new ArrayList<ViewField>();
+        columns.add(new ViewField("toolType","Tool"));
+        columns.add(new ViewField("description","Description","toolType"));
         columns.add(new ViewField("storeRoom","Storeroom"));
         columns.add(new ViewField("quantity","Quantity"));
 //        columns.add(new ViewField("reservationType","Reservation"));
@@ -173,7 +241,8 @@ public class InventoryRequestLineItemsModule extends BaseModuleConfig{
 
         List<FormField> inventoryRequestLineItemsFormFields = new ArrayList<>();
         int seqNum = 0;
-        inventoryRequestLineItemsFormFields.add(new FormField("itemType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item", FormField.Required.REQUIRED,"itemTypes", ++seqNum, 1));
+        inventoryRequestLineItemsFormFields.add(new FormField("itemType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item", FormField.Required.OPTIONAL,"itemTypes", ++seqNum, 1));
+        inventoryRequestLineItemsFormFields.add(new FormField("toolType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tool", FormField.Required.OPTIONAL,"toolTypes", ++seqNum, 1));
 //        inventoryRequestLineItemsFormFields.add(new FormField("reservationType", FacilioField.FieldDisplayType.SELECTBOX, "Reservation Type", FormField.Required.REQUIRED, ++seqNum, 1));
         inventoryRequestLineItemsFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.NUMBER, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
 

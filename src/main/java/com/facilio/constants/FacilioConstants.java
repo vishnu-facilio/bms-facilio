@@ -1990,6 +1990,10 @@ public class FacilioConstants {
 		public static final String WORKORDER_ITEM_RECORD = "workorderItemRecord";
 		public static final String ITEM_TRANSACTIONS = "itemTransactions";
 		public static final String ITEM_TRANSACTION_ID = "itemTransactionId";
+		public static final String TOOL_TRANSACTION_ID = "toolTransactionId";
+		public static final String CURRENT_QUANTITY = "currentQuantity";
+		public static final String ADJUSTMENT_DECREASE = "adjustmentDecrease";
+
 		public static final String ITEM_TRANSACTIONS_PARAMS = "itemTransactionsParams";
 
 		public static final String TOOL_LIST = "toolList";
@@ -2607,6 +2611,7 @@ public class FacilioConstants {
 		public static final String TRANSFER_REQUEST = "transferrequest";
 		public static final String TRANSFER_REQUEST_LINE_ITEM = "transferrequestlineitems";
 		public static final String TRANSFER_REQUEST_PURCHASED_ITEMS = "transferrequestpurchaseditems";
+		public static final String TRANSFER_REQUEST_PURCHASED_TOOLS= "transferrequestpurchasedtools";
 		public static final String TRANSFER_REQUEST_SHIPMENT = "transferrequestshipment";
 		public static final String TRANSFER_REQUEST_SHIPMENT_RECEIVABLES = "transferrequestshipmentreceivables";
 		public static final String REQUEST_FOR_QUOTATION = "requestForQuotation";

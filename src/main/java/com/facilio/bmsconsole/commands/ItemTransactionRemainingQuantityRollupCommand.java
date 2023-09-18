@@ -21,7 +21,6 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-
 public class ItemTransactionRemainingQuantityRollupCommand extends FacilioCommand {
 
 	@Override

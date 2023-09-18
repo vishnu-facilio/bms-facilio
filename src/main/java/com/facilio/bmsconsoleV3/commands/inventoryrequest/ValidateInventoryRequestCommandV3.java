@@ -35,9 +35,6 @@ public class ValidateInventoryRequestCommandV3 extends FacilioCommand {
                 if (inventoryRequestContexts.getInventoryrequestlineitems() == null) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Line items cannot be empty");
                 }
-                if (inventoryRequestContexts.getRequestedFor() == null) {
-                    inventoryRequestContexts.setRequestedFor(AccountUtil.getCurrentUser());
-                }
                 if (inventoryRequestContexts.getRequestedTime() == null) {
                     inventoryRequestContexts.setRequestedTime(System.currentTimeMillis());
                 }

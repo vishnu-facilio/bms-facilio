@@ -20,20 +20,23 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-
 public class FilterItemTransactionsCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String, Object> queryParams = Constants.getQueryParams(context);
+        Boolean showItemsForIssue = MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("showItemsForIssue") && FacilioUtil.parseBoolean((Constants.getQueryParam(context, "showItemsForIssue")));
+        Boolean showToolsForIssue = MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("showToolsForIssue") && FacilioUtil.parseBoolean((Constants.getQueryParam(context, "showToolsForIssue")));
+        Boolean showItemsForReturn = MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("showItemsForReturn") && FacilioUtil.parseBoolean((Constants.getQueryParam(context, "showItemsForReturn")));
+        Boolean showToolsForReturn = MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("showToolsForReturn") && FacilioUtil.parseBoolean((Constants.getQueryParam(context, "showToolsForReturn")));
+
         Criteria criteria = new Criteria();
         Condition softReserveFilterCondition = CriteriaAPI.getCondition("TRANSACTION_STATE", "transactionState", String.valueOf(TransactionState.SOFT_RESERVE.getValue()), NumberOperators.NOT_EQUALS);
         Condition hardReserveFilterCondition = CriteriaAPI.getCondition("TRANSACTION_STATE", "transactionState", String.valueOf(TransactionState.HARD_RESERVE.getValue()), NumberOperators.NOT_EQUALS);
         criteria.addAndCondition(softReserveFilterCondition);
         criteria.addAndCondition(hardReserveFilterCondition);
-        if(MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("showItemsForIssue") && queryParams.containsKey("siteId")){
-            boolean showItemsForIssue = FacilioUtil.parseBoolean((Constants.getQueryParam(context, "showItemsForIssue")));
+        if((showItemsForIssue || showToolsForIssue) && queryParams.containsKey("siteId")){
             Long siteId = FacilioUtil.parseLong(Objects.requireNonNull(Constants.getQueryParam(context, "siteId")));
-            if(showItemsForIssue && siteId!=null){
+            if(siteId!=null){
                 criteria.addAndCondition(CriteriaAPI.getCondition("REMAINING_QUANTITY","remainingQuantity",
                         String.valueOf(0), NumberOperators.GREATER_THAN));
                 criteria.addAndCondition(CriteriaAPI.getCondition("TRANSACTION_STATE","transactionState",
@@ -47,7 +50,7 @@ public class FilterItemTransactionsCommandV3 extends FacilioCommand {
                 }
             }
         }
-        else if (MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("showItemsForReturn") && FacilioUtil.parseBoolean((Constants.getQueryParam(context, "showItemsForReturn")))){
+        else if (showItemsForReturn || showToolsForReturn){
             criteria.addAndCondition(CriteriaAPI.getCondition("REMAINING_QUANTITY","remainingQuantity",
                     String.valueOf(0), NumberOperators.GREATER_THAN));
             criteria.addAndCondition(CriteriaAPI.getCondition("IS_RETURNABLE","isReturnable",

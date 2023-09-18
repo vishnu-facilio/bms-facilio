@@ -77,15 +77,17 @@ public class NewPermissionUtil {
         moduleTabType.put("UPDATE_WORKORDER_TASK", 32768L);
         moduleTabType.put("CONTROL", 65536L);
         moduleTabType.put("EXECUTE",131072L);
-        moduleTabType.put("CANCEL", 262144L);
-        moduleTabType.put("DISPATCH",524288L);
-        moduleTabType.put("VIEW_PRICING",1048576L);
-        moduleTabType.put("CLOSE",2097152L);
-        moduleTabType.put("MANAGE_SERVICE_TASKS", 4194304L);
-        moduleTabType.put("MANAGE_INVENTORY_AND_SERVICE",8388608L);
-        moduleTabType.put("MANAGE_INVENTORY_REQUEST",16777216L);
-        moduleTabType.put("CLONE",33554432L);
-        moduleTabType.put("COMPLETE",67108864L);
+        moduleTabType.put("MANAGE_INVENTORY",262144L);
+        moduleTabType.put("RESERVE_INVENTORY",524288L);
+        moduleTabType.put("CANCEL", 1048576L);
+        moduleTabType.put("DISPATCH",2097152L);
+        moduleTabType.put("VIEW_PRICING",4194304L);
+        moduleTabType.put("CLOSE",8388608L);
+        moduleTabType.put("MANAGE_SERVICE_TASKS", 16777216L);
+        moduleTabType.put("MANAGE_INVENTORY_AND_SERVICE",33554432L);
+        moduleTabType.put("MANAGE_INVENTORY_REQUEST",67108864L);
+        moduleTabType.put("CLONE",134217728L);
+        moduleTabType.put("COMPLETE",268435456L);
         return moduleTabType;
     }
 
@@ -357,6 +359,8 @@ public class NewPermissionUtil {
         deleteGroup.add(new Permission("DELETE_OWN", "Own", moduleTabType.get("DELETE_OWN"), null));
         permissions.add(new PermissionGroup("Delete", deleteGroup));
         permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("MANAGE_INVENTORY","Manage Inventory",moduleTabType.get("MANAGE_INVENTORY"), null));
+
         permissionMap.put("workorder", permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
@@ -380,6 +384,10 @@ public class NewPermissionUtil {
         permissions.add(new PermissionGroup("Delete", delete));
         permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
         permissionMap.put("inventory", permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions.add(new Permission("RESERVE_INVENTORY", "Reserve", moduleTabType.get("RESERVE_INVENTORY"), null));
+        permissionMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
         permissions = new ArrayList<>();

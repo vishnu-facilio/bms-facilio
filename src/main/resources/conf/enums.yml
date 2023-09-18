@@ -2,13 +2,13 @@ version: 1.0
 
 enums:
   - name: CostType
-    enumClassName: com.facilio.bmsconsole.context.ItemContext$CostType #If it's static inner class use $
+    enumClassName: com.facilio.bmsconsoleV3.enums.CostType
 
   - name: AlarmType
     enumClassName: com.facilio.bmsconsole.context.BaseAlarmContext$Type
 
   - name: AgentAlarmType
-    enumClassName: com.facilio.agent.alarms.AgentAlarmContext$AgentAlarmType
+    enumClassName: com.facilio.agent.alarms.AgentAlarmContext$AgentAlarmType #If it's static inner class use $
 
   - name: ReservationDurationType
     enumClassName: com.facilio.bmsconsole.context.reservation.ReservationContext$DurationType

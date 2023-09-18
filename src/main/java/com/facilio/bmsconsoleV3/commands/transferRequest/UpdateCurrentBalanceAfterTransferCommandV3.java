@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.inventory.*;
+import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.bmsconsoleV3.util.V3StoreroomApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -69,7 +70,7 @@ public class UpdateCurrentBalanceAfterTransferCommandV3 extends FacilioCommand {
                                 V3ItemContext itemRecord = new V3ItemContext();
                                 itemRecord.setItemType(itemType);
                                 itemRecord.setStoreRoom(storeRoom);
-                                itemRecord.setCostType(V3ItemContext.CostType.FIFO.getIndex());
+                                itemRecord.setCostType(CostType.FIFO.getIndex());
                                 itemRecord.setQuantity(quantityTransferred);
                                 itemRecord.setCurrentQuantity(quantityTransferred);
                                 InsertRecordBuilder<V3ItemContext> readingBuilder = new InsertRecordBuilder<V3ItemContext>()
@@ -121,8 +122,8 @@ public class UpdateCurrentBalanceAfterTransferCommandV3 extends FacilioCommand {
                             toolRecord.setToolType(toolType);
                             toolRecord.setStoreRoom(storeRoom);
                             toolRecord.setQuantity(quantityTransferred);
+                            toolRecord.setCostType(CostType.FIFO.getIndex());
                             toolRecord.setCurrentQuantity(quantityTransferred);
-                            toolRecord.setRate(0.0);
                             toolRecord.setLastPurchasedDate(System.currentTimeMillis());
                             InsertRecordBuilder<V3ToolContext> readingBuilder = new InsertRecordBuilder<V3ToolContext>()
                                     .module(module).fields(fields).addRecord(toolRecord);
