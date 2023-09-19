@@ -69,7 +69,7 @@ public class GetModulesListCommand extends FacilioCommand {
 			FacilioConstants.UTILITY_INTEGRATION_BILLS,
 			FacilioConstants.UTILITY_DISPUTE,
 			FacilioConstants.Calendar.CALENDAR_MODULE_NAME,
-			FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME),
+			FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,
 			FacilioConstants.TimeOff.TIME_OFF,
 			FacilioConstants.Territory.TERRITORY,
 			FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,
