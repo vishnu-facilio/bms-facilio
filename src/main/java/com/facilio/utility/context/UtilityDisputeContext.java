@@ -154,7 +154,7 @@ public class UtilityDisputeContext extends V3Context {
     public UtilityDisputeContext( String subject, UtilityDisputeType type, UtilityIntegrationCustomerContext account, UtilityIntegrationBillContext utilityBill,BillStatus status,String tariffToBeApplied,String tariffApplied) {
 
         this.subject = subject;
-        this.type = UtilityDisputeType.valueOf(UtilityDisputeType.TARIFF_MAPPING_MISMATCH.getType());
+        this.type = type;
         this.account = account;
         this.utilityBill  = utilityBill;
         this.billStatus = BillStatus.valueOf(BillStatus.DISPUTE.getIntVal());
@@ -177,7 +177,7 @@ public class UtilityDisputeContext extends V3Context {
     public UtilityDisputeContext( String subject, UtilityDisputeType type, UtilityIntegrationCustomerContext account, long billDate,BillStatus status) {
 
         this.subject = subject;
-        this.type = UtilityDisputeType.valueOf(UtilityDisputeType.BILL_MISSING.getType());
+        this.type = type;
         this.account = account;
         this.billDate = billDate;
         this.billStatus = BillStatus.valueOf(BillStatus.DISPUTE.getIntVal());
@@ -197,7 +197,7 @@ public class UtilityDisputeContext extends V3Context {
     public UtilityDisputeContext( String subject, UtilityDisputeType type, UtilityIntegrationCustomerContext account, UtilityIntegrationBillContext utilityBill,BillStatus status) {
 
         this.subject = subject;
-        this.type = UtilityDisputeType.valueOf(UtilityDisputeType.BILL_FOR_TERMINATED_ACCOUNT.getType());
+        this.type = type;
         this.account = account;
         //this.billDate = billDate;
         this.billStatus = BillStatus.valueOf(BillStatus.DISPUTE.getIntVal());
@@ -219,7 +219,7 @@ public class UtilityDisputeContext extends V3Context {
     public UtilityDisputeContext( String subject, UtilityDisputeType type, UtilityIntegrationCustomerContext account, UtilityIntegrationBillContext utilityBill,BillStatus status,Double actualConsumption,Double billMeterConsumption,Double difference) {
 
         this.subject = subject;
-        this.type = UtilityDisputeType.valueOf(UtilityDisputeType.CONSUMPTION_READING_MISMATCH.getType());
+        this.type = type;
         this.account = account;
        // this.billDate = billDate;
         this.utilityBill = utilityBill;
@@ -241,7 +241,7 @@ public class UtilityDisputeContext extends V3Context {
     public UtilityDisputeContext( String subject, UtilityDisputeType type, UtilityIntegrationCustomerContext account, UtilityIntegrationBillContext utilityBill,Double calculatedBillAmount,Double billAmount,Double difference) {
 
         this.subject = subject;
-        this.type = UtilityDisputeType.valueOf(UtilityDisputeType.COST_MISMATCH.getType());
+        this.type = type;
         this.account = account;
         this.billStatus = BillStatus.valueOf(BillStatus.DISPUTE.getIntVal());
         this.utilityBill = utilityBill;
