@@ -569,6 +569,7 @@ public class ChainUtil {
         transactionChain.addCommand(new PatchSubFormLineItemsCommand());
         transactionChain.addCommand(new SaveSubFormCommand());
         transactionChain.addCommand(new SaveSubFormFromLineItemsCommand());
+        transactionChain.addCommand(new AddNotesFromTransitionCommand());
         transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
 

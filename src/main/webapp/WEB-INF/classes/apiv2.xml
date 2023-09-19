@@ -744,6 +744,9 @@
 
 		<action name="updateState"
 				class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStateTransitionStates" />
+
+		<action name="reorder"
+				class="com.facilio.bmsconsole.actions.StateFlowAction" method="reorderActions" />
 	</package>
 
 

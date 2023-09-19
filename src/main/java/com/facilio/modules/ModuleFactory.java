@@ -3641,6 +3641,13 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getStateFlowTransitionSequenceModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("stateFlowTransitionSequence");
+		module.setDisplayName("StateFlow Transition Sequence");
+		module.setTableName("StateFlowTransition_Sequence");
+		return module;
+	}
 	public static FacilioModule getParallelStateTransitionsStatusModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("parallelStateRuleTransitionStatus");

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
@@ -19,6 +20,7 @@ public class GetStateTransitionCommand extends FacilioCommand {
 				throw new IllegalArgumentException("Invalid id");
 			}
 			abstractStateTransitionContext.setActions(ActionAPI.getActiveActionsFromWorkflowRule(abstractStateTransitionContext.getId()));
+			((StateflowTransitionContext) abstractStateTransitionContext).setStateFlowTransitionSequence(WorkflowRuleAPI.getTransitionActionSequence(transitionId));
 			context.put(FacilioConstants.ContextNames.RECORD, abstractStateTransitionContext);
 		}
 		else {

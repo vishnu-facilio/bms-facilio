@@ -9497,9 +9497,20 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getNumberField("radius","RADIUS",stageRuleModule));
         list.add(getNumberField("locationLookupFieldId","LOCATION_LOOKUP_FIELD_ID",stageRuleModule));
         list.add(getField("isOffline","IS_OFFLINE",stageRuleModule,FieldType.BOOLEAN));
+        list.add(getField("commentRequired","COMMENT_REQUIRED",stageRuleModule,FieldType.BOOLEAN));
         return list;
     }
 
+    public static List<FacilioField> getStateflowTransitionSequenceFields(){
+        FacilioModule module = ModuleFactory.getStateFlowTransitionSequenceModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("stateTransitionId","STATE_TRANSITION_ID",module));
+        fields.add(getStringField("transitionActionType","TRANSITION_ACTION_TYPE",module));
+
+        return fields;
+    }
     public static List<FacilioField> getParallelStateTransitionsStatusFields() {
         FacilioModule module = ModuleFactory.getParallelStateTransitionsStatusModule();
         List<FacilioField> list = new ArrayList<>();

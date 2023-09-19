@@ -15,6 +15,7 @@ import lombok.Setter;
 import org.apache.commons.chain.Context;
 import org.apache.struts2.json.annotations.JSON;
 
+import java.util.List;
 import java.util.Map;
 
 public class StateflowTransitionContext extends AbstractStateTransitionRuleContext {
@@ -69,6 +70,13 @@ public class StateflowTransitionContext extends AbstractStateTransitionRuleConte
 	}
 	public Boolean isOffline;
 
+	@Getter
+	@Setter
+	public Boolean commentRequired;
+
+	@Getter
+	@Setter
+	private List<StateFlowTransitionSequenceContext> stateFlowTransitionSequence;
 	@Override
 	public boolean evaluateSite (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		if(isOffline != null && isOffline){

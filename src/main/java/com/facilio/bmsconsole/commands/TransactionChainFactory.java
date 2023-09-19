@@ -3225,6 +3225,11 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getReorderTransitionActionChain(){
+			FacilioChain chain = getDefaultChain();
+			chain.addCommand(new AddReOrderForActionTypeCommand());
+			return chain;
+		}
 		public static FacilioChain getOfflineStateTransitionChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GetOfflineStateTransitionCommand());

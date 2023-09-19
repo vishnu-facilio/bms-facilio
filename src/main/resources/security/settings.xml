@@ -3227,6 +3227,16 @@
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
     </request>
+    <request path="/api/v2/statetransition/reorder" method="POST">
+        <requestbody type="object">
+            <property name="stateTransitionId" type="number"/>
+            <property name="stateFlowTransitionSequence" type="array">
+                <items type="object">
+                    <property name="transitionActionType" type="string"/>
+                </items>
+            </property>
+        </requestbody>
+    </request>
 
     <request path="/api/v3/point/list" method="POST">
         <requestbody type="object">
@@ -3377,5 +3387,5 @@
             <property name="delete" type="boolean" />
         </requestbody>
     </request>
-    
+
 </config>

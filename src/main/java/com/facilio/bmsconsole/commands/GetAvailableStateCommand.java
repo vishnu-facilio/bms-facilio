@@ -1,13 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -15,12 +20,8 @@ import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class GetAvailableStateCommand extends FacilioCommand {
 
@@ -46,7 +47,7 @@ public class GetAvailableStateCommand extends FacilioCommand {
 				List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(stateFlowId, currentState.getId(), moduleName,
 						moduleData, (FacilioContext) context);
 				removeUnwantedTranstions(availableState);
-
+				setStateTransitionSequence(availableState);
 				if (ruleType == WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW) {
 					// if the status is in current state, list count should be 2
 					if (currentState.isRequestedState() && CollectionUtils.isNotEmpty(availableState) && availableState.size() != 2) {
@@ -58,6 +59,39 @@ public class GetAvailableStateCommand extends FacilioCommand {
 			}
 		}
 		return false;
+	}
+
+	private void setStateTransitionSequence(List<WorkflowRuleContext> availableStates) throws Exception{
+		if (CollectionUtils.isEmpty(availableStates)){
+			return;
+		}
+
+		List<Long> stateTransitionIds = availableStates.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList());
+		Criteria criteria = new Criteria();
+		for (Long id : stateTransitionIds){
+			criteria.addOrCondition(CriteriaAPI.getCondition("STATE_TRANSITION_ID","stateTransitionId",String.valueOf(id), NumberOperators.EQUALS));
+		}
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getStateflowTransitionSequenceFields())
+				.table(ModuleFactory.getStateFlowTransitionSequenceModule().getTableName())
+				.andCriteria(criteria);
+
+		List<StateFlowTransitionSequenceContext> transitionSequence = FieldUtil.getAsBeanListFromMapList(builder.get(),StateFlowTransitionSequenceContext.class);
+
+		Map<Long, List<StateFlowTransitionSequenceContext>> transitionSequenceMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(transitionSequence)) {
+			transitionSequenceMap = transitionSequence.stream().collect(
+					Collectors.groupingBy(StateFlowTransitionSequenceContext::getStateTransitionId, HashMap::new, Collectors.toCollection(ArrayList::new)
+					));
+		}
+
+		if (MapUtils.isNotEmpty(transitionSequenceMap)) {
+			for (WorkflowRuleContext state : availableStates) {
+				((StateflowTransitionContext) state).setStateFlowTransitionSequence(transitionSequenceMap.get(state.getId()));
+			}
+		}
+
 	}
 
 	private long getStateFlowId(ModuleBaseWithCustomFields moduleData, WorkflowRuleContext.RuleType ruleType) {

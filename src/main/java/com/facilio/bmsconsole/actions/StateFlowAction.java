@@ -7,10 +7,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.interceptors.AuthInterceptor;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.StateContext;
-import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -19,6 +16,9 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.ims.handler.AuditLogHandler;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.ServletActionContext;
@@ -550,6 +550,19 @@ public class StateFlowAction extends FacilioAction {
 		chain.execute();
 
 		setResult(FacilioConstants.ContextNames.OFFLINE_STATE_TRANSITION, context.get("offlineStateTransition"));
+		return SUCCESS;
+	}
+
+	@Getter
+	@Setter
+	private List<StateFlowTransitionSequenceContext> stateFlowTransitionSequence;
+	public String reorderActions() throws Exception{
+		FacilioChain chain = TransactionChainFactory.getReorderTransitionActionChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID,stateTransitionId);
+		context.put(FacilioConstants.ContextNames.STATEFLOW_TRANSITION_SEQUENCE,stateFlowTransitionSequence);
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.TRANSITION_ACTION_SEQUENCE,context.get(FacilioConstants.ContextNames.TRANSITION_ACTION_SEQUENCE));
 		return SUCCESS;
 	}
 

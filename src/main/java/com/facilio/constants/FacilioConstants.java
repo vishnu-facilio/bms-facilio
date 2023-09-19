@@ -2083,6 +2083,10 @@ public class FacilioConstants {
 		public static final String STATE_FLOW_LIST = "stateFlows";
 		public static final String STATE_FLOW_ID = "stateFlowId";
 		public static final String TRANSITION_ID = "transition_id";
+		public static final String TRANSITION_ACTION_TYPES = "transitionActionTypes";
+
+		public static final String STATEFLOW_TRANSITION_SEQUENCE = "stateFlowTransitionSequence";
+		public static final String TRANSITION_ACTION_SEQUENCE = "transitionActionSequence";
 		public static final String STATE_TRANSITION_LIST = "stateTransitionList";
 		public static final String AVAILABLE_STATES = "states";
 		public static final String CURRENT_STATE = "currentState";

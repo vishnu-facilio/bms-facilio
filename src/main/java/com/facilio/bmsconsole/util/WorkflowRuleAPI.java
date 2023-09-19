@@ -162,6 +162,16 @@ public class WorkflowRuleAPI {
 				ApprovalRulesAPI.addApprover(rule.getId(), ((ApprovalRuleContext) rule).getApprovers());
 				break;
 			case STATE_RULE:
+				ApprovalRulesAPI.addApproverRuleChildren((ApproverWorkflowRuleContext) rule);
+				AbstractStateTransitionRuleContext stateTransition = (AbstractStateTransitionRuleContext) rule;
+				StateFlowRulesAPI.addTimeFieldBasedTransition(stateTransition);
+				if (stateTransition.getDialogTypeEnum() != null && stateTransition.getDialogTypeEnum() == AbstractStateTransitionRuleContext.DialogType.MODULE) {
+					StateFlowRulesAPI.addOrUpdateFormDetails(stateTransition);
+				}
+				ruleProps = FieldUtil.getAsProperties(rule);
+				addExtendedProps(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), ruleProps);
+				addTransitionActionSequence((StateflowTransitionContext) rule);
+				break;
 			case APPROVAL_STATE_TRANSITION:
 				ApprovalRulesAPI.addApproverRuleChildren((ApproverWorkflowRuleContext) rule);
 				AbstractStateTransitionRuleContext stateflowTransition = (AbstractStateTransitionRuleContext) rule;
@@ -225,6 +235,83 @@ public class WorkflowRuleAPI {
 		TriggerUtil.addTriggersForWorkflowRule(rule);
 
 		return rule.getId();
+	}
+
+	public static void addTransitionActionSequence(StateflowTransitionContext stateTransition) throws Exception{
+
+		if(stateTransition == null || CollectionUtils.isEmpty(stateTransition.getStateFlowTransitionSequence())){
+			return;
+		}
+
+		List<StateFlowTransitionSequenceContext> stateTransitionSequences = stateTransition.getStateFlowTransitionSequence();
+
+		long formId = stateTransition.getFormId();
+		String formModuleName = stateTransition.getFormModuleName();
+		Boolean comment = stateTransition.getCommentRequired();
+
+		boolean inValid = false;
+
+		for (StateFlowTransitionSequenceContext transitionSequence : stateTransitionSequences){
+			switch (transitionSequence.getTransitionActionType()){
+				case field_update:
+					inValid = formId <= 0;
+					break;
+				case comment:
+					inValid = (comment == null) || !(comment);
+					break;
+				case create_record:
+					inValid = (StringUtils.isEmpty(formModuleName) && (formId <= 0));
+					break;
+			}
+
+			if (inValid){
+				throw new IllegalArgumentException("Invalid action type");
+			}
+			transitionSequence.setStateTransitionId(stateTransition.getId());
+		}
+
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getStateFlowTransitionSequenceModule().getTableName())
+				.fields(FieldFactory.getStateflowTransitionSequenceFields())
+				.addRecords(FieldUtil.getAsMapList(stateTransitionSequences,StateFlowTransitionSequenceContext.class));
+		builder.save();
+
+	}
+
+	public static List<StateFlowTransitionSequenceContext> getTransitionActionSequence(long transitionId) throws Exception{
+
+		if (transitionId <= 0){
+			return null;
+		}
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getStateFlowTransitionSequenceModule().getTableName())
+				.select(FieldFactory.getStateflowTransitionSequenceFields())
+				.andCondition(CriteriaAPI.getCondition("STATE_TRANSITION_ID","stateTransitionId", String.valueOf(transitionId), NumberOperators.EQUALS));
+
+		List<StateFlowTransitionSequenceContext> sequences = FieldUtil.getAsBeanListFromMapList(builder.get(), StateFlowTransitionSequenceContext.class);
+
+		return sequences;
+
+	}
+
+	public static void updateTransitionActionSequence(StateflowTransitionContext stateTransition) throws Exception{
+		if(stateTransition == null){
+			return;
+		}
+		deleteTransitionActionSequence(stateTransition.getId());
+		addTransitionActionSequence(stateTransition);
+	}
+
+	public static void deleteTransitionActionSequence(long stateTransitionId)throws Exception{
+		if(stateTransitionId <= 0){
+			return;
+		}
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getStateFlowTransitionSequenceModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("STATE_TRANSITION_ID","stateTransitionId", String.valueOf(stateTransitionId),NumberOperators.EQUALS));
+
+		builder.delete();
 	}
 
 	public static void updateSurveyResponseRule(long id, Map<String, Object> asProperties) throws SQLException{

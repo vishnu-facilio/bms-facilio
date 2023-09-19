@@ -1,5 +1,6 @@
 package com.facilio.v3.context;
 
+import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
 import com.facilio.classification.context.ClassificationContext;
@@ -28,6 +29,10 @@ public class V3Context extends ModuleBaseWithCustomFields {
     public void setRelations(Map<String, List<SubFormContext>> relations) {
         this.relations = relations;
     }
+
+    @Getter
+    @Setter
+    private Map<String,Object> transitionCommentData;
 
     @JsonProperty("orgId")
     public Long _getOrgId() {
