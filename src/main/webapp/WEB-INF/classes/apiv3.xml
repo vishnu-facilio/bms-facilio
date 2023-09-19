@@ -1753,9 +1753,17 @@
         <action name="getPpmJobs" class="com/facilio/bmsconsoleV3/actions/WorkorderAction" method="getPpmJobs"/>
     </package>
 
-    <package name="pickList" namespace="/api/v3/pickList/modules" extends="v3Api">
-        <action name="*" class="com.facilio.v3.action.PickListActionV3">
+    <package name="pickList" namespace="/api/v3/pickList" extends="v3Api">
+        <action name="/modules/*" class="com.facilio.v3.action.PickListActionV3">
             <param name="moduleName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="checkPermission">true</param>
+        </action>
+        <action name="/forms/*/*" class="com.facilio.bmsconsoleV3.actions.FormPickListAction" method="getPickListData">
+            <param name="moduleName">{1}</param>
+            <param name="fieldName">{2}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="checkPermission">true</param>
         </action>
     </package>
 

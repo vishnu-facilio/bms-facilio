@@ -458,6 +458,7 @@ public class FacilioConstants {
 		public static final String OFFSET = "offset";
 		public static final String TABLE_NAME = "tableName";
 		public static final String CRITERIA = "criteria";
+		public static final String DEFAULT="default";
 		public static final String CLIENT_FILTER_CRITERIA = "clientFilterCriteria";
 		public static final String WEB_TAB_GROUP = "webTabGroup";
 		public static final String USE_ORDER_FROM_CONTEXT = "useOrderFromContext";
@@ -1499,6 +1500,8 @@ public class FacilioConstants {
 		public static final String FILTER_CRITERIA = "filterCriteria";
 		public static final String INCLUDE_PARENT_CRITERIA = "includeParentCriteria";
 		public static final String SEARCH = "search";
+		public static final String EXCLUDE_PARENT_FILTER="excludeParentFilter";
+		public static final String WITH_COUNT="withCount";
 		public static final String GENERIC_SEARCH = "genericSearch";
 		public static final String SEARCH_RESULT = "searchResult";
 		public static final String SEARCH_CRITERIA = "searchCriteria";

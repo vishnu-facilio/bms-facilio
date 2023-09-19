@@ -589,6 +589,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getFormsPickListChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetFormsPickListCommand());
+		return c;
+	}
+
 	public static FacilioChain readingPostProcessingChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ReadingPostProcessingCommand());
