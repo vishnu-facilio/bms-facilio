@@ -144,11 +144,11 @@ public class QuotationAPI {
                     return true;
                 }
             }
-            else if(((app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) || (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) && quotationSetting.getAllowUserSeeMarkup()))) {
-                return true;
+            else if(((app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP) || (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP))))) {
+                return quotationSetting.getAllowUserSeeMarkup();
             }
-            else if(((app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) && quotationSetting.getVendorquote())) {
-                return true;
+            else if(((app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)))) {
+                return quotationSetting.getVendorquote();
             }
         }
         return false;
