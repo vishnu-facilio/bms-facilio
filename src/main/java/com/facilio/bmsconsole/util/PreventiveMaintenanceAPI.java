@@ -1481,17 +1481,18 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static List<PreventiveMaintenance> getPMs(Collection<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, List<FacilioField> fields, Boolean... fetchDependencies) throws Exception {
-		return getPMs(ids, criteria, searchQuery, pagination, fields, null, fetchDependencies);
+		return getPMs(ids, criteria, searchQuery, pagination, fields, null, null, fetchDependencies);
 	}
 
-	public static List<PreventiveMaintenance> getPMs(Collection<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, List<FacilioField> fields, String siteFilterValues, Boolean... fetchDependencies) throws Exception {
+	public static List<PreventiveMaintenance> getPMs(Collection<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, List<FacilioField> fields, String siteFilterValues, String resourceFilterValues, Boolean... fetchDependencies) throws Exception {
 
-			FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		if (fields == null || fields.isEmpty()) {
 			fields = FieldFactory.getPreventiveMaintenanceFields();
 		} else {
 			fields = new ArrayList<>(fields);
 		}
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
 
 
@@ -1616,6 +1617,32 @@ public class PreventiveMaintenanceAPI {
 //			selectBuilder.andCustomWhere("( Preventive_Maintenance.ID IN ( select PM_ID from PM_Sites p1 where SITE_ID in ("
 //					+ siteFilterValues
 //					+ ") group by PM_ID having count(PM_ID) = (select COUNT(PM_ID) from PM_Sites p2 where p1.PM_ID = p2.PM_ID group by PM_ID)))");
+		}
+
+		/*
+			Handling for resourceId filter - space/asset.
+		 */
+		if (StringUtils.isNotEmpty(resourceFilterValues)) {
+			LOGGER.log(Level.INFO, "resourceFilterValues: " + resourceFilterValues);
+			Map<String, FacilioField> pmIncludeExcludeResourceFieldsMap = FieldFactory.getAsMap(FieldFactory.getPMIncludeExcludeResourceFields());
+			FacilioField pmIdField = pmIncludeExcludeResourceFieldsMap.get("pmId");
+			pmIdField.setColumnName("DISTINCT("+pmIdField.getCompleteColumnName()+")");
+			pmIdField.setModule(null);
+			GenericSelectRecordBuilder resourceFilterBuilder = new GenericSelectRecordBuilder()
+					.select(Collections.singletonList(pmIdField))
+					.table("PM_Include_Exclude_Resource")
+					.andCondition(CriteriaAPI.getCondition(pmIncludeExcludeResourceFieldsMap.get("resourceId"), resourceFilterValues, NumberOperators.EQUALS));
+			List<Map<String, Object>> pmIdsProp = resourceFilterBuilder.get();
+			List<String> pmIds = pmIdsProp.stream().map((f)->{
+				return String.valueOf((Long) f.get("pmId"));
+			}).collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(pmIds)) {
+				LOGGER.log(Level.INFO, "PMs with resourceFilterValues: " + pmIds);
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), String.join(",",pmIds), NumberOperators.EQUALS));
+			}else{
+				LOGGER.log(Level.INFO,"No PMs with resourceFilterValues.");
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), "-1", NumberOperators.EQUALS));
+			}
 		}
 
 		if(!builder.toString().isEmpty()) {

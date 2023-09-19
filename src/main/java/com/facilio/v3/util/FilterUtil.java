@@ -95,6 +95,9 @@ public class FilterUtil {
                 Object fieldJson = conditionObj;
                 String fieldName= (String) ((JSONObject)fieldJson).get("fieldName");
                 if(isPm) {
+                    if(fieldName.equals("resourceIdSpace") || fieldName.equals("resourceIdAsset")){
+                        fieldName = "resourceId";
+                    }
                     moduleName = PreventiveMaintenanceAPI.getPmModule(templateFields, fieldName);
                 }
 
@@ -329,7 +332,19 @@ public class FilterUtil {
             condition.validateValue();
             if (isPm && moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE) && fieldName.equals(FacilioConstants.ContextNames.SITE_ID) && context != null) {
                 context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_SITE_FILTER_VALUES, condition.getValue());
-            } else {
+            } else if (isPm && moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE) && fieldName.equals("resourceId") && context != null) {
+                if(context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCE_FILTER_VALUES) != null){
+                    String existingResourceIds = (String) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCE_FILTER_VALUES);
+                    StringBuilder stringBuilder = new StringBuilder(existingResourceIds);
+                    stringBuilder.append(",");
+                    stringBuilder.append(condition.getValue());
+                    context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCE_FILTER_VALUES, stringBuilder.toString());
+                }else {
+                    context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCE_FILTER_VALUES, condition.getValue());
+                }
+
+            }
+            else {
                 conditionList.add(condition);
             }
         }

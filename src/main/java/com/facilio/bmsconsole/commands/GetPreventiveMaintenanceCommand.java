@@ -29,6 +29,7 @@ public class GetPreventiveMaintenanceCommand extends FacilioCommand {
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
 		String siteFilterValues = (String) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_SITE_FILTER_VALUES);
+		String resourceFilterValues = (String) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCE_FILTER_VALUES);
 		
 		Boolean isFromView = (Boolean)context.getOrDefault(FacilioConstants.ContextNames.IS_FROM_VIEW, Boolean.FALSE);
 		
@@ -88,7 +89,7 @@ public class GetPreventiveMaintenanceCommand extends FacilioCommand {
 		if(isFromView != null && isFromView) {
 			fetchDependencies = false;
 		}
-		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMs(idsToSelect, criteria, query, pagination,null, siteFilterValues,fetchDependencies, false, true);
+		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMs(idsToSelect, criteria, query, pagination,null, siteFilterValues,resourceFilterValues, fetchDependencies, false, true);
 		if (pms != null) {
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
 		}

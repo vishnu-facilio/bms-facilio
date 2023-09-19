@@ -1466,6 +1466,7 @@ public class FacilioConstants {
 		public static final String PM_TRIGGER = "trigger";
 		public static final String HIDE_PM_RESOURCE_PLANNER = "hidePMPlanner";
 		public static final String PREVENTIVE_MAINTENANCE_SITE_FILTER_VALUES = "preventivemaintenanceSiteFilterValues";
+		public static final String PREVENTIVE_MAINTENANCE_RESOURCE_FILTER_VALUES = "preventivemaintenanceResourceFilterValues";
 		public static final String SELECTABLE_FIELD_NAMES="selectableFieldNames";
 		public static final String IS_SUB_FORM_RECORD="isSubformRecord";
 
