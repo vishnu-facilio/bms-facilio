@@ -504,4 +504,16 @@ public class APIModuleWidgets {
                 .addFlexibleWidgetConfig("webtenantunitrecentlyclosedworkorderwidget_23","Recently Closed Workorder - 23",23,PagesContext.PageLayoutType.WEB)
                 .done();
     }
+    
+    @WidgetsForModule(FacilioConstants.ContextNames.SERVICE_REQUEST)
+    public static Supplier<ModuleWidgets> getServiceRequestWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("servicerequestemailthread", "Service Request Email Thread", PageWidget.WidgetType.SR_EMAIL_THREAD)
+                .addWidgetConfig("flexibleservicerequestemailthread_50","Service Request Email Thread - 50",WidgetConfigContext.ConfigType.FLEXIBLE,50,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("servicerequestdetailswidget", "Service Request Details Widget", PageWidget.WidgetType.SR_DETAILS_WIDGET)
+                .addWidgetConfig("servicerequestdetails_50_3","Service Request Details Widget - 50 - 3",WidgetConfigContext.ConfigType.FLEXIBLE,50,3,PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
+    }
 }

@@ -52,6 +52,7 @@ public class AddCommonModuleWidgetsCommand extends FacilioCommand {
                     .done()
                     .addModuleWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY)
                         .addFlexibleWidgetConfig("flexiblewebactivity_20","Activity - 20",20, PagesContext.PageLayoutType.WEB)
+                        .addWidgetConfig("flexiblewebactivity_50","Activity - 50",WidgetConfigContext.ConfigType.FLEXIBLE,50,-1,PagesContext.PageLayoutType.WEB)
                     .done()
                     .addModuleWidget("failurereport", "Failure Report", PageWidget.WidgetType.FAILURE_REPORT)
                         .addFlexibleWidgetConfig("flexiblewebfailurereport_29","Failure Report - 29", 29, PagesContext.PageLayoutType.WEB)
