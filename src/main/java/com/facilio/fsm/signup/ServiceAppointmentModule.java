@@ -294,7 +294,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         List<FormField> serviceTasksFields = new ArrayList<>();
 
         serviceTasksFields.add(new FormField("serviceTasks", FacilioField.FieldDisplayType.SERVICE_APPOINTMENT_TASKS, "Tasks", FormField.Required.OPTIONAL, 1, 1));
-        FormSection serviceTaskSection = new FormSection("Service Task Details", 2, serviceTasksFields, true);
+        FormSection serviceTaskSection = new FormSection("Service Task Details", 2, serviceTasksFields, false);
 
         serviceTaskSection.setSectionType(FormSection.SectionType.FIELDS);
 
@@ -1403,6 +1403,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             startTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE, PickListOperators.IS));
             startTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
             startTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
+            startTripCriteria.andCriteria(getTrackGeoLocationCriteria());
             startTrip.setCriteria(startTripCriteria);
             SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, startTrip);
         }
@@ -1423,6 +1424,50 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             cancel.setCriteria(cancelCriteria);
             SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,cancel);
         }
+        SystemButtonRuleContext redispatch = new SystemButtonRuleContext();
+        redispatch.setName("Redispatch");
+        redispatch.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        redispatch.setIdentifier(FacilioConstants.ServiceAppointment.DISPATCH);
+        redispatch.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        redispatch.setPermission("DISPATCH");
+        redispatch.setPermissionRequired(true);
+        List<Long> statusIds = new ArrayList<>();
+        if(dispatchedStatus != null) {
+            statusIds.add(dispatchedStatus.getId());
+        }
+        if(enRouteStatus != null) {
+            statusIds.add(enRouteStatus.getId());
+        }
+        Criteria redispatchCriteria = new Criteria();
+        redispatchCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),statusIds, PickListOperators.IS));
+        redispatchCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.ACTUAL_START_TIME), CommonOperators.IS_EMPTY));
+        redispatch.setCriteria(redispatchCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,redispatch);
+
+        SystemButtonRuleContext reschedule = new SystemButtonRuleContext();
+        reschedule.setName("Reschedule");
+        reschedule.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        reschedule.setIdentifier(FacilioConstants.ServiceAppointment.RESCHEDULE);
+        reschedule.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        reschedule.setPermission("DISPATCH");
+        reschedule.setPermissionRequired(true);
+        List<Long> statusIdList = new ArrayList<>();
+        if(dispatchedStatus != null) {
+            statusIds.add(dispatchedStatus.getId());
+        }
+        if(inProgressStatus != null) {
+            statusIds.add(inProgressStatus.getId());
+        }
+        if(enRouteStatus != null) {
+            statusIds.add(enRouteStatus.getId());
+        }
+        Criteria rescheduleCriteria = new Criteria();
+        rescheduleCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),statusIdList, PickListOperators.IS));
+        rescheduleCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
+        rescheduleCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
+        reschedule.setCriteria(rescheduleCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,reschedule);
+
 
     }
 
@@ -1480,18 +1525,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         }
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,complete);
 
-        SystemButtonRuleContext reOpen = new SystemButtonRuleContext();
-        reOpen.setName("Reopen");
-        reOpen.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        reOpen.setIdentifier(FacilioConstants.ServiceAppointment.REOPEN);
-        reOpen.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        reOpen.setPermission("EXECUTE_SERVICE_TASKS_ALL");
-        reOpen.setPermissionRequired(true);
-        Criteria reopenCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED);
-        if(reopenCriteria!=null){
-            reOpen.setCriteria(reopenCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,reOpen);
 
         SystemButtonRuleContext startWorkOwn = new SystemButtonRuleContext();
         startWorkOwn.setName("Start Work");
@@ -1501,7 +1534,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         startWorkOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
         startWorkOwn.setPermissionRequired(true);
         if(startWorkCriteria!=null){
-            startWorkCriteria.andCriteria(getFieldAgentCondition());
+            startWorkCriteria.andCriteria(getFieldAgentCriteria());
             startWorkOwn.setCriteria(startWorkCriteria);
         }
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,startWorkOwn);
@@ -1514,7 +1547,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         pauseOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
         pauseOwn.setPermissionRequired(true);
         if(pauseCriteria!=null) {
-            pauseCriteria.andCriteria(getFieldAgentCondition());
+            pauseCriteria.andCriteria(getFieldAgentCriteria());
             pauseOwn.setCriteria(pauseCriteria);
         }
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,pauseOwn);
@@ -1527,7 +1560,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         resumeOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
         resumeOwn.setPermissionRequired(true);
         if(resumeCriteria!=null){
-            resumeCriteria.andCriteria(getFieldAgentCondition());
+            resumeCriteria.andCriteria(getFieldAgentCriteria());
             resumeOwn.setCriteria(resumeCriteria);
         }
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,resumeOwn);
@@ -1540,23 +1573,11 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         completeOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
         completeOwn.setPermissionRequired(true);
         if(completeCriteria!=null){
-            completeCriteria.andCriteria(getFieldAgentCondition());
+            completeCriteria.andCriteria(getFieldAgentCriteria());
             completeOwn.setCriteria(completeCriteria);
         }
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,completeOwn);
 
-        SystemButtonRuleContext reopenOwn = new SystemButtonRuleContext();
-        reopenOwn.setName("Reopen");
-        reopenOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        reopenOwn.setIdentifier(FacilioConstants.ServiceAppointment.REOPEN);
-        reopenOwn.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        reopenOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
-        reopenOwn.setPermissionRequired(true);
-        if(reopenCriteria!=null){
-            reopenCriteria.andCriteria(getFieldAgentCondition());
-            reopenOwn.setCriteria(reopenCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,reopenOwn);
 
 
     }
@@ -1573,7 +1594,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         return null;
     }
 
-    public static Criteria getFieldAgentCondition() throws Exception {
+    public static Criteria getFieldAgentCriteria() throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
 
         LookupField fieldAgent = new LookupField();
@@ -1583,7 +1604,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         fieldAgent.setModule(moduleBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
         fieldAgent.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE));
 
-
         Condition loggedInPeopleCondition = new Condition();
         loggedInPeopleCondition.setField(fieldAgent);
         loggedInPeopleCondition.setOperator(PickListOperators.IS);
@@ -1592,14 +1612,12 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(loggedInPeopleCondition);
 
-
         LookupField serviceAppointment = new LookupField();
         serviceAppointment.setName("serviceAppointment");
         serviceAppointment.setColumnName("SERVICE_APPOINTMENT");
         serviceAppointment.setDataType(FieldType.LOOKUP);
         serviceAppointment.setModule(moduleBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK));
         serviceAppointment.setLookupModule(moduleBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
-
 
         Condition serviceAppointmentCondition = new Condition();
         serviceAppointmentCondition.setField(serviceAppointment);
@@ -1609,5 +1627,39 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         Criteria serviceAppointmentCriteria = new Criteria();
         serviceAppointmentCriteria.addAndCondition(serviceAppointmentCondition);
         return serviceAppointmentCriteria;
+    }
+    public static Criteria getTrackGeoLocationCriteria() throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+
+        LookupField trackGeoLocation = new LookupField();
+        trackGeoLocation.setName("trackGeoLocation");
+        trackGeoLocation.setColumnName("TRACK_GEO_LOCATION");
+        trackGeoLocation.setDataType(FieldType.BOOLEAN);
+        trackGeoLocation.setModule(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE));
+
+        Condition trackLocationCondition = new Condition();
+        trackLocationCondition.setField(trackGeoLocation);
+        trackLocationCondition.setOperator(BooleanOperators.IS);
+        trackLocationCondition.setValue(String.valueOf(true));
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(trackLocationCondition);
+
+        LookupField fieldAgent = new LookupField();
+        fieldAgent.setName("fieldAgent");
+        fieldAgent.setColumnName("PEOPLE_ID");
+        fieldAgent.setDataType(FieldType.LOOKUP);
+        fieldAgent.setModule(moduleBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
+        fieldAgent.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE));
+
+        Condition fieldAgentCondition = new Condition();
+        fieldAgentCondition.setField(fieldAgent);
+        fieldAgentCondition.setOperator(LookupOperator.LOOKUP);
+        fieldAgentCondition.setCriteriaValue(criteria);
+
+        Criteria fieldAgentCriteria = new Criteria();
+        criteria.addAndCondition(fieldAgentCondition);
+
+        return fieldAgentCriteria;
     }
 }

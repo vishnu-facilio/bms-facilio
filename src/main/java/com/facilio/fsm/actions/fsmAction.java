@@ -207,6 +207,8 @@ public class fsmAction extends V3Action {
                 cancelSAChain.execute(context);
                 successMsg.put("message","Service Appointment Cancelled Successfully");
                 break;
+            case FacilioConstants.ServiceAppointment.RESCHEDULE:
+                break;
         }
         setData(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_STATUS_ACTIONS,successMsg);
         return SUCCESS;
