@@ -77,6 +77,10 @@ public class NewPermissionUtil {
         moduleTabType.put("DELETE_OWN", 16384);
         moduleTabType.put("UPDATE_WORKORDER_TASK", 32768);
         moduleTabType.put("CONTROL", 65536);
+        moduleTabType.put("CREATE_WORKORDER",131072);
+        moduleTabType.put("ACKNOWLEDGE_ALARM",262144);
+        moduleTabType.put("CLEAR_ALARM",524288);
+
         //moduleTabType.put("READ_TASK", 131072);
         return moduleTabType;
     }
@@ -331,6 +335,16 @@ public class NewPermissionUtil {
         permissions.add(new PermissionGroup("Delete", deleteGroup));
         permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
         permissionMap.put("workorder", permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+
+        permissions = new ArrayList<>();
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
+        permissions.add(new Permission("ACKNOWLEDGE_ALARM", "Acknowledge Alarm", moduleTabType.get("ACKNOWLEDGE_ALARM"), null));
+        permissions.add(new Permission("CLEAR_ALARM", "Clear Alarm", moduleTabType.get("CLEAR_ALARM"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("WORKORDER_FROM_FAULT", "Create WorkOrder", moduleTabType.get("CREATE_WORKORDER"), null));
+        permissionMap.put("newreadingalarm", permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
         permissions = new ArrayList<>();
