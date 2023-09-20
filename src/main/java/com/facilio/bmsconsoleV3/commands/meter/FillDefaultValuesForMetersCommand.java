@@ -23,6 +23,9 @@ public class FillDefaultValuesForMetersCommand extends FacilioCommand {
                 if(meterContext.getIsVirtual() == null) {
                     meterContext.setIsVirtual(false);
                 }
+                if(meterContext.getMeterTypeEnum() == null) {
+                    meterContext.setMeterTypeEnum(V3MeterContext.MeterType.PHYSICAL);
+                }
             }
         }
 

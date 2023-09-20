@@ -1058,7 +1058,9 @@ public class MultiImportApi {
 
         if (Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER,
                 FacilioConstants.ContextNames.TENANT,
-                FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.SERVICE_REQUEST,
+                FacilioConstants.ContextNames.ASSET,
+                FacilioConstants.Meter.METER,
+                FacilioConstants.ContextNames.SERVICE_REQUEST,
                 FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(moduleName)) {
             facilioFields.add(FieldFactory.getSiteIdField());
         }
@@ -1100,7 +1102,7 @@ public class MultiImportApi {
         List<FacilioField> facilioFields = modBean.getAllFields(moduleName);
         if (Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER,
                 FacilioConstants.ContextNames.TENANT,
-                FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.SERVICE_REQUEST,
+                FacilioConstants.ContextNames.ASSET, FacilioConstants.Meter.METER, FacilioConstants.ContextNames.SERVICE_REQUEST,
                 FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(moduleName)) {
             facilioFields.add(FieldFactory.getSiteIdField(module));
         }
@@ -1125,6 +1127,8 @@ public class MultiImportApi {
                 return Arrays.asList("name","site","building");
             case FacilioConstants.ContextNames.ASSET:
                 return Arrays.asList("category","siteId","name");
+            case FacilioConstants.Meter.METER:
+                return Arrays.asList("utilityType","siteId","name");
             case FacilioConstants.ContextNames.VENDORS:
                 return Arrays.asList("name","primaryContactName","primaryContactPhone");
             case FacilioConstants.ContextNames.VENDOR_CONTACT:

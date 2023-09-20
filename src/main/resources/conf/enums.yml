@@ -453,3 +453,6 @@ enums:
   - name: MonthValueEnum
     enumClassName: com.facilio.bmsconsoleV3.context.calendar.V3EventContext$MonthValueEnum
 
+  - name: MeterType
+    enumClassName: com.facilio.bmsconsoleV3.context.meter.V3MeterContext$MeterType
+

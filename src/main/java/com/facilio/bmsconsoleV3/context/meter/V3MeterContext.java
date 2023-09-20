@@ -4,10 +4,12 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,8 +24,9 @@ public class V3MeterContext extends V3Context {
 	private String description;
 	private String moduleName;
 	private String qrVal;
-	private Long uniqueIdNumber;
+	private String meterIdNumber;
 	private V3UtilityTypeContext utilityType;
+	private MeterType meterType;
 	private Long parentMeterId;
 	private V3ResourceContext servingTo;
 	private V3BaseSpaceContext meterLocation;
@@ -184,14 +187,6 @@ public class V3MeterContext extends V3Context {
 		super.setLocalId(localId);
 	}
 
-	
-
-
-	public String getUrl() {
-		return FacilioProperties.getConfig("clientapp.url") + "/app/at/asset/all/" + getId() + "/overview";
-	}
-
-	
 
 	public Boolean getIsCommissioned() {
 		return isCommissioned;
@@ -253,5 +248,52 @@ public class V3MeterContext extends V3Context {
 	}
 	public void setUtilityTypeModuleName(String utilityTypeModuleName) {
 		this.utilityTypeModuleName = utilityTypeModuleName;
+	}
+
+	public Integer getMeterType() {
+		if (meterType == null) {
+			return null;
+		}
+		return meterType.getIndex();
+	}
+
+	public void setMeterType(Integer meterType) {
+		if (meterType != null) {
+			this.meterType = MeterType.valueOf(meterType);
+		} else {
+			this.meterType = null;
+		}
+	}
+
+	public void setMeterTypeEnum(MeterType meterType) {
+		this.meterType = meterType;
+	}
+
+	public MeterType getMeterTypeEnum() {
+		return meterType;
+	}
+	@AllArgsConstructor
+	@Getter
+	public static enum MeterType implements FacilioIntEnum {
+
+		PHYSICAL("physical"),
+		VIRTUAL("virtual");
+
+		public int getVal() {
+			return ordinal() + 1;
+		}
+		String name;
+		@Override
+		public String getValue() {
+			// TODO Auto-generated method stub
+			return this.name;
+		}
+		private static final MeterType[] CREATION_TYPES = MeterType.values();
+		public static MeterType valueOf(int type) {
+			if (type > 0 && type <= CREATION_TYPES.length) {
+				return CREATION_TYPES[type - 1];
+			}
+			return null;
+		}
 	}
 }

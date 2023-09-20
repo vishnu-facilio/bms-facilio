@@ -2788,4 +2788,5 @@
 /api/v2/survey/fetch/:moduleName/:recordId
 /api/v2/readings/meter/add
 /api/v2/readings/utilitytype
+/api/v3/virtualMeterTemplate/publish
 

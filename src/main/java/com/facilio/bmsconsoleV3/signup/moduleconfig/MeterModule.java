@@ -65,11 +65,15 @@ public class MeterModule extends BaseModuleConfig{
         LookupField meterLocation = new LookupField(module, "meterLocation", "Meter Location", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "METER_LOCATION_ID", FieldType.LOOKUP, false, false, true, null, "Meter Location", moduleBean.getModule(FacilioConstants.ContextNames.BASE_SPACE));
         fields.add(meterLocation);
 
-        NumberField uniqueIdNumber = new NumberField(module, "uniqueIdNumber", "Meter Identification Number", FacilioField.FieldDisplayType.NUMBER, "UNIQUE_ID_NUMBER", FieldType.NUMBER, false, false, true, null);
-        fields.add(uniqueIdNumber);
+        StringField meterIdNumber = new StringField(module, "meterIdNumber", "Meter Identification Number", FacilioField.FieldDisplayType.TEXTBOX, "METER_ID_NUMBER", FieldType.STRING, false, false, true, null);
+        fields.add(meterIdNumber);
 
         StringField qrVal = new StringField(module, "qrVal", "QR Value", FacilioField.FieldDisplayType.TEXTBOX, "QR_VALUE", FieldType.STRING, false, false, true, null);
         fields.add(qrVal);
+
+        SystemEnumField meterType = (SystemEnumField) FieldFactory.getDefaultField("meterType", "Meter Type", "METER_TYPE", FieldType.SYSTEM_ENUM);
+        meterType.setEnumName("MeterType");
+        fields.add(meterType);
 
         LookupField utilityType = new LookupField(module, "utilityType", "Utility Type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "UTILITY_TYPE", FieldType.LOOKUP, false, false, true, null, "Utility Type", moduleBean.getModule(FacilioConstants.Meter.UTILITY_TYPE));
         fields.add(utilityType);

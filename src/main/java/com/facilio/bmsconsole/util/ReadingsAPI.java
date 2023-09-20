@@ -1096,7 +1096,7 @@ public class ReadingsAPI {
 			
 			FacilioContext context = new FacilioContext();
 			
-			context.put(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID, meterId);
+			context.put(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID, meter.getUtilityType().getId());
 			FacilioChain getCategoryReadingChain = FacilioChainFactory.getUtilityTypeReadingsChain();
 			getCategoryReadingChain.execute(context);
 
