@@ -1453,13 +1453,13 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         reschedule.setPermissionRequired(true);
         List<Long> statusIdList = new ArrayList<>();
         if(dispatchedStatus != null) {
-            statusIds.add(dispatchedStatus.getId());
+            statusIdList.add(dispatchedStatus.getId());
         }
         if(inProgressStatus != null) {
-            statusIds.add(inProgressStatus.getId());
+            statusIdList.add(inProgressStatus.getId());
         }
         if(enRouteStatus != null) {
-            statusIds.add(enRouteStatus.getId());
+            statusIdList.add(enRouteStatus.getId());
         }
         Criteria rescheduleCriteria = new Criteria();
         rescheduleCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),statusIdList, PickListOperators.IS));
