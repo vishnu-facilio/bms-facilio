@@ -876,7 +876,7 @@ public class ApplicationApi {
 
         ApplicationContext fsmApplication = new ApplicationContext(orgId, "FSM", false,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.FSM_APP,
-                ApplicationContext.AppLayoutType.SINGLE.getIndex(), "FSM App",
+                ApplicationContext.AppLayoutType.DUAL.getIndex(), "FSM App",
                 ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
         fsmApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
 
@@ -1630,7 +1630,7 @@ public class ApplicationApi {
     public static void addDefaultFSMLayout(ApplicationContext fsm) throws Exception{
 
         //Adding Default Web Layout
-        ApplicationLayoutContext webLayout = new ApplicationLayoutContext(fsm.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.FSM_APP);
+        ApplicationLayoutContext webLayout = new ApplicationLayoutContext(fsm.getId(), ApplicationLayoutContext.AppLayoutType.DUAL, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.FSM_APP);
         webLayout.setId(ApplicationApi.getAddApplicationLayout(webLayout));
         ApplicationApi.addFsmWebLayout(webLayout);
 

@@ -5,7 +5,6 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fsm.activity.ServiceTaskActivityType;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
 import com.facilio.fsm.context.ServiceTaskContext;
