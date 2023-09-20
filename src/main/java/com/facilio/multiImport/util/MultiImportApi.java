@@ -1062,7 +1062,7 @@ public class MultiImportApi {
                 FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(moduleName)) {
             facilioFields.add(FieldFactory.getSiteIdField());
         }
-        if(moduleName.equals("asset")){
+        if(moduleName.equals("asset") || moduleName.equals(FacilioConstants.Meter.METER)){
             Map<String,FacilioField> baseSpaceFieldsMap = FieldFactory.getAsMap(modBean.getAllFields("basespace"));
             List<String> fieldNames = Arrays.asList("building","floor","space1","space2","space3","space4","space5");
             for (String fieldName:fieldNames){

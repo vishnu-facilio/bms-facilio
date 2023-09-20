@@ -25,7 +25,8 @@ GetMultiImportModulesCommand extends FacilioCommand {
             FacilioConstants.ContextNames.LOCATION,
             FacilioConstants.ContextNames.TENANT,
             FacilioConstants.ContextNames.TENANT_CONTACT,
-            FacilioConstants.ContextNames.TENANT_UNIT_SPACE
+            FacilioConstants.ContextNames.TENANT_UNIT_SPACE,
+            FacilioConstants.Meter.METER
             /*FacilioConstants.ContextNames.INSURANCE,
             FacilioConstants.ContextNames.BASE_VISIT,
             FacilioConstants.ContextNames.VISITOR_LOG,

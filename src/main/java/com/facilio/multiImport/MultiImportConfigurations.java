@@ -1,27 +1,41 @@
 package com.facilio.multiImport;
 
+import java.util.Arrays;
+import java.util.function.Supplier;
+
 import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.asset.RemoveAssetExtendedModulesFromRecordMap;
 import com.facilio.bmsconsoleV3.commands.asset.multi_import.AssetCategoryAdditionInExtendModuleV3ImportCommand;
 import com.facilio.bmsconsoleV3.commands.building.multi_import.CreateBuildingAfterSaveImport;
 import com.facilio.bmsconsoleV3.commands.floor.multi_import.CreateFloorAfterSaveImport;
+import com.facilio.bmsconsoleV3.commands.meter.multi_import.MeterUtilityTypeAdditioninExtendedModuleV3ImportCommand;
 import com.facilio.bmsconsoleV3.commands.site.multi_import.CreateSiteAfterSaveImport;
 import com.facilio.bmsconsoleV3.commands.space.multi_import.CreateSpaceAfterSaveImport;
 import com.facilio.bmsconsoleV3.commands.tenant.multi_import.AddTenantUserImportCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.multi_import.BeforeTenantImportProcessCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.multi_import.UpdateTenantUserImportCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.multi_import.ValidateTenantPeopleEmailBeforeAddOrUpdateImportCommand;
-import com.facilio.bmsconsoleV3.commands.vendor.multi_import.*;
-import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.commands.vendor.multi_import.AddVendorUserImportCommand;
+import com.facilio.bmsconsoleV3.commands.vendor.multi_import.BeforeVendorImportProcessCommand;
+import com.facilio.bmsconsoleV3.commands.vendor.multi_import.UpdateVendorUserImportCommand;
+import com.facilio.bmsconsoleV3.commands.vendor.multi_import.ValidateVendorPeopleEmailBeforeAddOrUpdateImportCommand;
+import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
+import com.facilio.bmsconsoleV3.context.V3BuildingContext;
+import com.facilio.bmsconsoleV3.context.V3FloorContext;
+import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.bmsconsoleV3.context.V3SpaceContext;
+import com.facilio.bmsconsoleV3.context.V3TenantContext;
+import com.facilio.bmsconsoleV3.context.V3TenantUnitSpaceContext;
+import com.facilio.bmsconsoleV3.context.V3VendorContext;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.multiImport.annotations.ImportModule;
+import com.facilio.multiImport.command.InsertRDMForMultiImportMeterModuleCommand;
 import com.facilio.multiImport.command.InsertReadingDataMetaForMultiImportCommand;
 import com.facilio.multiImport.config.ImportConfig;
-
-import java.util.Arrays;
-import java.util.function.Supplier;
 
 public class MultiImportConfigurations {
     @ImportModule("workorder")
@@ -111,6 +125,20 @@ public class MultiImportConfigurations {
                 .createHandler()
                 .beforeSaveCommand(new AssetCategoryAdditionInExtendModuleV3ImportCommand(),new SetLocalIdCommandV3())
                 .afterSaveCommand(new InsertReadingDataMetaForMultiImportCommand(),new RemoveAssetExtendedModulesFromRecordMap())
+                .done()
+                .build();
+    }
+        
+    @ImportModule(FacilioConstants.Meter.METER)
+    public static Supplier<ImportConfig> getMeterImportConfig(){
+        return () -> new ImportConfig.ImportConfigBuilder(V3MeterContext.class)
+                .importHandler()
+                .lookupUniqueFieldsMap("meterLocation",Arrays.asList("name","site","*building","*floor","*space1","*space2","*space3","*space4","*space5"))
+                .loadLookUpExtraSelectFields(FacilioConstants.Meter.UTILITY_TYPE,Arrays.asList("meterModuleID"))
+                .done()
+                .createHandler()
+                .beforeSaveCommand(new MeterUtilityTypeAdditioninExtendedModuleV3ImportCommand(),new SetLocalIdCommandV3())
+                .afterSaveCommand(new InsertRDMForMultiImportMeterModuleCommand(),new RemoveAssetExtendedModulesFromRecordMap())
                 .done()
                 .build();
     }

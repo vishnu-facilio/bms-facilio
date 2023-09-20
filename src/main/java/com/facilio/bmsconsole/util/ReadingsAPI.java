@@ -18,6 +18,8 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -1068,6 +1070,69 @@ public class ReadingsAPI {
 	public static void updateReadingDataMeta(List<ResourceContext> resourcesList) throws Exception {
 		updateReadingDataMeta(resourcesList, null);
 	}
+	
+	
+	public static void updateReadingDataMetaForMeters(List<V3MeterContext> meterList) throws Exception {
+		
+		if (meterList == null || meterList.isEmpty()) {
+			return;
+		}
+		
+		long orgId=AccountUtil.getCurrentOrg().getOrgId();
+		
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
+				.fields(FieldFactory.getReadingDataMetaFields());
+		
+		LOGGER.error("meterList size -- "+meterList.size());
+		int i=0;
+		for(V3MeterContext meter:meterList) {
+			
+			LOGGER.error(++i +" RDM update running for V3MeterContext -- "+meter.getId());
+			
+			List<FacilioModule>	finalModuleList= new ArrayList<FacilioModule>();
+			
+			long meterId = meter.getId();
+			
+			FacilioContext context = new FacilioContext();
+			
+			context.put(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID, meterId);
+			FacilioChain getCategoryReadingChain = FacilioChainFactory.getUtilityTypeReadingsChain();
+			getCategoryReadingChain.execute(context);
+
+			finalModuleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+			
+			
+			if(finalModuleList==null || finalModuleList.isEmpty()) {
+				continue;
+			}
+			for(FacilioModule module:finalModuleList) {
+				
+				List<FacilioField> fieldList= module.getFields();
+				for(FacilioField field:fieldList) {
+					
+					ReadingDataMeta oldRdm=  getReadingDataMeta(meterId,field);
+					if(oldRdm!=null) {
+						continue;
+					}
+					ReadingDataMeta rdm= new ReadingDataMeta();
+					rdm.setOrgId(orgId);
+					rdm.setFieldId(field.getFieldId());
+					rdm.setField(field);
+					rdm.setValue("-1");
+					rdm.setResourceId(meterId);
+					rdm.setTtime(System.currentTimeMillis());
+					rdm.setInputType(ReadingInputType.WEB);
+					rdm.setCustom(!field.isDefault());
+					builder.addRecord(FieldUtil.getAsProperties(rdm));
+					LOGGER.info("new rdm entry : " + rdm);
+				}
+			}
+		}
+		builder.save();
+	}
+	
+	
 	public static void updateReadingDataMeta(List<ResourceContext> resourcesList, List<Long> readingModuleIds) throws Exception {
 		
 		if (resourcesList == null || resourcesList.isEmpty()) {
