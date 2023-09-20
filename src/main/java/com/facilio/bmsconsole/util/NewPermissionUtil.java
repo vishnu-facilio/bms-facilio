@@ -57,6 +57,8 @@ public class NewPermissionUtil {
     private static Map<String, Integer> setupPermissionMap = Collections.unmodifiableMap(initSetupPermissionMap());
     private static Map<String, Integer> newDashboardTabType = Collections.unmodifiableMap(initNewDashboardMap());
 
+    private static Map<String, Integer> alarmModulePermissionType = Collections.unmodifiableMap(initAlarmPermissionsMap());
+
 
     private static Map<String, Integer> initModuleMap() {
         moduleTabType = new HashMap<>();
@@ -77,10 +79,6 @@ public class NewPermissionUtil {
         moduleTabType.put("DELETE_OWN", 16384);
         moduleTabType.put("UPDATE_WORKORDER_TASK", 32768);
         moduleTabType.put("CONTROL", 65536);
-        moduleTabType.put("CREATE_WORKORDER",131072);
-        moduleTabType.put("ACKNOWLEDGE_ALARM",262144);
-        moduleTabType.put("CLEAR_ALARM",524288);
-
         //moduleTabType.put("READ_TASK", 131072);
         return moduleTabType;
     }
@@ -290,6 +288,14 @@ public class NewPermissionUtil {
         return serviceCatalogTabType;
     }
 
+    private static Map<String, Integer> initAlarmPermissionsMap() {
+        alarmModulePermissionType = new HashMap<>();
+        alarmModulePermissionType.put("CREATE_WORKORDER", 1);
+        alarmModulePermissionType.put("ACKNOWLEDGE_ALARM", 2);
+        alarmModulePermissionType.put("CLEAR_ALARM", 4);
+
+        return alarmModulePermissionType;
+    }
 
     static Map<Integer, Map<String, List<Permission>>> permissionList = new HashMap<>();
 
@@ -338,14 +344,8 @@ public class NewPermissionUtil {
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
 
-        permissions = new ArrayList<>();
-        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
-        permissions.add(new Permission("ACKNOWLEDGE_ALARM", "Acknowledge Alarm", moduleTabType.get("ACKNOWLEDGE_ALARM"), null));
-        permissions.add(new Permission("CLEAR_ALARM", "Clear Alarm", moduleTabType.get("CLEAR_ALARM"), null));
-        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
-        permissions.add(new Permission("WORKORDER_FROM_FAULT", "Create WorkOrder", moduleTabType.get("CREATE_WORKORDER"), null));
-        permissionMap.put("newreadingalarm", permissions);
-        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+        //make use of this method to add permissions for alarm modules
+        alarmModulePermissions(permissionMap);
 
         permissions = new ArrayList<>();
         permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
@@ -640,6 +640,19 @@ public class NewPermissionUtil {
                 permissionList.put(type.getIndex(), permissionMap);
             }
         }
+    }
+
+    private static void alarmModulePermissions(Map<String, List<Permission>> permissionMap) {
+        List<Permission> permissions = new ArrayList<>();
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
+        permissions.add(new Permission("ACKNOWLEDGE_ALARM", "Acknowledge Alarm", alarmModulePermissionType.get("ACKNOWLEDGE_ALARM"), null));
+        permissions.add(new Permission("CLEAR_ALARM", "Clear Alarm", alarmModulePermissionType.get("CLEAR_ALARM"), null));
+        permissions.add(new Permission("WORKORDER_FROM_FAULT", "Create WorkOrder", alarmModulePermissionType.get("CREATE_WORKORDER"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+
+        Arrays.asList(FacilioConstants.ContextNames.NEW_READING_ALARM, FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM, FacilioConstants.ContextNames.BMS_ALARM).
+                stream().forEach(m -> permissionList.put(Type.MODULE.getIndex(), (Map<String, List<Permission>>) permissionMap.put(m, permissions)));
     }
 
     //Whenever adding a new permission set here add in AppModulePermissionUtil.java also for backward compatability
