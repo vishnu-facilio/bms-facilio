@@ -2,6 +2,7 @@ package com.facilio.workflows.command;
 
 import java.util.Map;
 
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowHistoryUtil;
@@ -41,7 +42,9 @@ public class AddWorkflowCommand extends FacilioCommand {
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 
 		WorkflowUtil.scriptSyntaxValidation(workflow);
-		workflow.validateScript();
+		if(PackageUtil.isInstallThread() == null || !PackageUtil.isInstallThread()){
+			workflow.validateScript();
+		}
 		WorkflowHistoryUtil.trackWorkflowVersionHistory(workflow);
 
 		

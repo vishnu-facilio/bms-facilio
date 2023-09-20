@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -503,7 +504,9 @@ public class WorkflowUtil {
 		}
 
 		scriptSyntaxValidation(workflowContext);
-		workflowContext.validateScript();
+		if(PackageUtil.isInstallThread() == null || !PackageUtil.isInstallThread()){
+			workflowContext.validateScript();
+		}
 		workflowContext.setSysCreatedBy(AccountUtil.getCurrentUser().getOuid());
 		workflowContext.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
 		workflowContext.setSysCreatedTime(DateTimeUtil.getCurrenTime());
@@ -548,7 +551,9 @@ public class WorkflowUtil {
 
 	public static void updateWorkflow(WorkflowContext workflowContext, Long workflowId) throws Exception{
 		scriptSyntaxValidation(workflowContext);
-		workflowContext.validateScript();
+		if(PackageUtil.isInstallThread() == null || !PackageUtil.isInstallThread()){
+			workflowContext.validateScript();
+		}
 		workflowContext.setSysModifiedBy(AccountUtil.getCurrentUser().getOuid());
 		workflowContext.setSysModifiedTime(DateTimeUtil.getCurrenTime());
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());

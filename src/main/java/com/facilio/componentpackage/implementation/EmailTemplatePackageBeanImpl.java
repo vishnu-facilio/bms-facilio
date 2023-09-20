@@ -3,8 +3,6 @@ package com.facilio.componentpackage.implementation;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.TicketTypeContext;
-import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -15,9 +13,11 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.emailtemplate.action.EMailTemplateAction;
 import com.facilio.emailtemplate.context.EMailStructure;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.relation.context.RelationContext;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflows.context.ExpressionContext;
@@ -25,11 +25,11 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
-
 public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure> {
 
     @Override
@@ -39,7 +39,15 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
 
     @Override
     public Map<Long, Long> fetchCustomComponentIdsToPackage() throws Exception {
-        return getEmailStructureIdVsModuleId();
+        Map<Long, Long> allEmailStructureIdVsModuleId = getEmailStructureIdVsModuleId();
+        // TODO - To be removed after proper field migration done in "workOrderSurveyResponse" module
+        if (MapUtils.isNotEmpty(allEmailStructureIdVsModuleId)) {
+            FacilioModule module = Constants.getModBean().getModule("workOrderSurveyResponse");
+            if(module != null) {
+                allEmailStructureIdVsModuleId.entrySet().removeIf(entry -> entry.getValue().equals(module.getModuleId()));
+            }
+        }
+        return allEmailStructureIdVsModuleId;
     }
 
     @Override
@@ -142,13 +150,15 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
                     break;
                 }
             }
-            if (!containsName) {
-                long emailStructureId = addEMailStructure(moduleName, eMailStructure);
-                uniqueIdentifierVsComponentId.put(idVsData.getKey(), emailStructureId);
-            }else{
-                eMailStructure.setId(id);
-                updateEmailStructure(moduleName,eMailStructure);
-                uniqueIdentifierVsComponentId.put(idVsData.getKey(), id);
+            if(moduleName != null) {
+                if (!containsName) {
+                    long emailStructureId = addEMailStructure(moduleName, eMailStructure);
+                    uniqueIdentifierVsComponentId.put(idVsData.getKey(), emailStructureId);
+                } else {
+                    eMailStructure.setId(id);
+                    updateEmailStructure(moduleName, eMailStructure);
+                    uniqueIdentifierVsComponentId.put(idVsData.getKey(), id);
+                }
             }
         }
         return uniqueIdentifierVsComponentId;
@@ -181,9 +191,15 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
             long eMailStructureModuleId = eMailStructure.getModuleId();
             if (CollectionUtils.isNotEmpty(Collections.singleton(eMailStructureModuleId))) {
                 FacilioModule module = moduleBean.getModule(eMailStructureModuleId);
-                moduleName = module.getName();
+                if(module == null) {
+                    moduleName = null;
+                }else{
+                    moduleName = module.getName();
+                }
             }
-            updateEmailStructure(moduleName, eMailStructure);
+            if(moduleName!=null) {
+                updateEmailStructure(moduleName, eMailStructure);
+            }
         }
     }
 
@@ -251,11 +267,13 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
             if(parametersLists!=null) {
                 for (XMLBuilder paramList : parametersLists) {
                     XMLBuilder param = paramList.getElement(PackageConstants.WorkFlowConstants.PARAMETER);
-                    String paramName = param.getElement(PackageConstants.NAME).getText();
-                    String paramTypeString = param.getElement(PackageConstants.TYPE_STRING).getText();
-                    parameterEmail.put(PackageConstants.NAME, paramName);
-                    parameterEmail.put(PackageConstants.TYPE_STRING, paramTypeString);
-                    parameterKeyEmail.add(parameterEmail);
+                    if(param!=null) {
+                        String paramName = param.getElement(PackageConstants.NAME).getText();
+                        String paramTypeString = param.getElement(PackageConstants.TYPE_STRING).getText();
+                        parameterEmail.put(PackageConstants.NAME, paramName);
+                        parameterEmail.put(PackageConstants.TYPE_STRING, paramTypeString);
+                        parameterKeyEmail.add(parameterEmail);
+                    }
                 }
             }
 
@@ -264,11 +282,13 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
             if(expressionsLists!=null) {
                 for (XMLBuilder expList : expressionsLists) {
                     XMLBuilder exp = expList.getElement(PackageConstants.WorkFlowConstants.EXPRESSION);
-                    String expressionName = exp.getElement(PackageConstants.NAME).getText();
-                    String expressionConstant = exp.getElement(PackageConstants.CONSTANT).getText();
-                    expEmail.put(PackageConstants.NAME, expressionName);
-                    expEmail.put(PackageConstants.CONSTANT, expressionConstant);
-                    expressionKeyEmail.add(expEmail);
+                    if(exp!=null) {
+                        String expressionName = exp.getElement(PackageConstants.NAME).getText();
+                        String expressionConstant = exp.getElement(PackageConstants.CONSTANT).getText();
+                        expEmail.put(PackageConstants.NAME, expressionName);
+                        expEmail.put(PackageConstants.CONSTANT, expressionConstant);
+                        expressionKeyEmail.add(expEmail);
+                    }
                 }
             }
 
@@ -298,7 +318,11 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
             ModuleBean moduleBean = Constants.getModBean();
             String moduleName = modulesBuilder.getText();
             FacilioModule module = moduleBean.getModule(moduleName);
-            eMailStructure.setModuleId(module.getModuleId());
+            if(module == null) {
+                eMailStructure.setModuleId(-1L);
+            }else{
+                eMailStructure.setModuleId(module.getModuleId());
+            }
         }
         return eMailStructure;
 

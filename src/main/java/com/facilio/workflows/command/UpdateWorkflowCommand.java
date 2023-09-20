@@ -3,6 +3,7 @@ package com.facilio.workflows.command;
 import java.util.Collections;
 import java.util.Map;
 
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowRelUtil;
 import org.apache.commons.chain.Context;
@@ -50,7 +51,9 @@ public class UpdateWorkflowCommand extends FacilioCommand {
 			workflow.setSysModifiedTime(DateTimeUtil.getCurrenTime());
 
 			WorkflowUtil.scriptSyntaxValidation(workflow);
-			workflow.validateScript();
+			if(PackageUtil.isInstallThread() == null || !PackageUtil.isInstallThread()){
+				workflow.validateScript();
+			}
 			WorkflowHistoryUtil.trackWorkflowVersionHistory(workflow);
 
 

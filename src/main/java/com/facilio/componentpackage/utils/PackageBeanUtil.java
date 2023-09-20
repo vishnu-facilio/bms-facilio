@@ -1246,7 +1246,7 @@ public class PackageBeanUtil {
 
                                 for (XMLBuilder valueElement : valueElements) {
                                     String emailStructureName = valueElement.getElement(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_NAME).getText();
-                                    Template emailStructureTemplate = TemplateAPI.getTemplate(emailStructureName, Template.Type.EMAIL_STRUCTURE);
+                                    Template emailStructureTemplate = StringUtils.isNotEmpty(emailStructureName) ?TemplateAPI.getTemplate(emailStructureName, Template.Type.EMAIL_STRUCTURE) : null;
                                     if (emailStructureTemplate != null) {
                                         templateJson.put(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_ID, emailStructureTemplate.getId());
                                         templateJson.put("message", ((EMailStructure)emailStructureTemplate).getMessage());
