@@ -66,7 +66,7 @@ public class UpdatePlansAndSkillsCommandV3 extends FacilioCommand {
                         }
 
                     }
-            V3Util.processAndUpdateBulkRecords(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK), recordMap.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK),  FieldUtil.getAsMapList(serviceTasks, ServiceTaskContext.class)  ,null,null,null,null,null,null,null,null,false,false);
+            V3Util.processAndUpdateBulkRecords(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK), recordMap.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK),  FieldUtil.getAsMapList(serviceTasks, ServiceTaskContext.class)  ,null,null,null,null,null,null,null,null,false,false,null);
         }
         return false;
     }

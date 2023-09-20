@@ -108,7 +108,7 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
                         context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, "assetactivity");
                         CommonCommandUtil.addActivityToContext(rotatingAssetRecord.getId(), -1, AssetActivityType.USE_IN_SO, newInfo,(FacilioContext) context);
                         //update asset
-                        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.ASSET, rotatingAssetRecord.getId(), FieldUtil.getAsJSON(rotatingAssetRecord), null, null, null, null, null,null,null, null);
+                        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.ASSET, rotatingAssetRecord.getId(), FieldUtil.getAsJSON(rotatingAssetRecord), null, null, null, null, null,null,null, null,null);
                         itemTransaction.setAsset(serviceOrderItem.getRotatingAsset());
                         itemTransaction = setItemTransaction(itemTransaction,null,1.0);
                         if(item.getIssuanceCost()!=null) {

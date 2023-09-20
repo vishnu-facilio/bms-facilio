@@ -22,7 +22,7 @@ public class ServiceAppointmentContext extends V3Context {
     private String description;
     private ServiceOrderContext serviceOrder;
     private TerritoryContext territory;
-    private List<ServiceTaskContext> serviceTasks;
+    private List<ServiceAppointmentTaskContext> serviceTasks;
     private List<ServiceAppointmentSkillContext> skills;
     private Long scheduledStartTime;
     private Long scheduledEndTime;

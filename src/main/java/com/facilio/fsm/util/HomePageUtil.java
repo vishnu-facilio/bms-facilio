@@ -111,7 +111,7 @@ public class HomePageUtil {
 
             FacilioContext overDueListContext = V3Util.fetchList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, true, "overdueAppointments", null,
                     true, null, null, null,
-                    null, 1, 2, false, null, null);
+                    null, 1, 2, false, null, null,null);
 
             Map<String, Object> overduesRecordMap = (Map<String, Object>) overDueListContext.get("recordMap");
             List<ServiceAppointmentContext> overdueAppointmentsList = (List<ServiceAppointmentContext>) overduesRecordMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
@@ -140,7 +140,7 @@ public class HomePageUtil {
 
             FacilioContext TodayOpenListContext = V3Util.fetchList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, true, "myOpenAppointments", null,
                     true, null, null, null,
-                    null, 1, 2, false, null, todayCriteria);
+                    null, 1, 2, false, null, todayCriteria,null);
 
             Map<String, Object> todayRecordMap = (Map<String, Object>) TodayOpenListContext.get("recordMap");
             List<ServiceAppointmentContext> todayOpenAppointmentsList = (List<ServiceAppointmentContext>) todayRecordMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
@@ -166,7 +166,7 @@ public class HomePageUtil {
 
             FacilioContext openAppointmentsListContext = V3Util.fetchList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, true, "myOpenAppointments", null,
                     true, null, null, null,
-                    null, 1, 2, false, null, null);
+                    null, 1, 2, false, null, null,null);
 
             Map<String, Object> openRecordMap = (Map<String, Object>) openAppointmentsListContext.get("recordMap");
             List<ServiceAppointmentContext> openAppointmentsList = (List<ServiceAppointmentContext>) openRecordMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);

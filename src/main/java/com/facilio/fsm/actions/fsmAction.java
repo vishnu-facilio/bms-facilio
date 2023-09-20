@@ -342,7 +342,7 @@ public class fsmAction extends V3Action {
                 tasks.addAll(serviceTasks);
                 updateProps.put("serviceTasks",tasks);
                 updateRecordList.add(updateProps);
-                V3Util.processAndUpdateBulkRecords(Constants.getModBean().getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT), oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
+                V3Util.processAndUpdateBulkRecords(Constants.getModBean().getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT), oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false,null);
             }
             return SUCCESS;
         }

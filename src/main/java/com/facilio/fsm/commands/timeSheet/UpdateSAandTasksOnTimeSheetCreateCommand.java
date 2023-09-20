@@ -76,10 +76,10 @@ public class UpdateSAandTasksOnTimeSheetCreateCommand extends FacilioCommand {
                                     if (appointmentStatus.equals(FacilioConstants.ServiceAppointment.DISPATCHED)) {
                                         ServiceAppointmentTicketStatusContext inProgressState = ServiceAppointmentUtil.getStatus(FacilioConstants.ServiceAppointment.IN_PROGRESS);
                                         appointment.setStatus(inProgressState);
-                                        V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,appointmentId, FieldUtil.getAsJSON(appointment), null, null, null, null, null, null, null, null);
+                                        V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,appointmentId, FieldUtil.getAsJSON(appointment), null, null, null, null, null, null, null, null,null);
                                     }
                                 }
-                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, task.getId(), FieldUtil.getAsJSON(task), null, null, null, null, null, null, null, null);
+                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, task.getId(), FieldUtil.getAsJSON(task), null, null, null, null, null, null, null, null,null);
 
                             }
                         }}

@@ -67,7 +67,7 @@ public class RollUpServiceTaskCommand extends FacilioCommand {
 
                                 existingTask.setServiceAppointment(null);
                                 existingTask.setStatus(newStatus);
-                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, id, FieldUtil.getAsJSON(existingTask), null, null, null, null, null, null, null, null);
+                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, id, FieldUtil.getAsJSON(existingTask), null, null, null, null, null, null, null, null,null);
 
 
 //
@@ -92,7 +92,7 @@ public class RollUpServiceTaskCommand extends FacilioCommand {
                                 } else {
                                     existingTask.setStatus(scheduled);
                                 }
-                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, taskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null, null, null, null);
+                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, taskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null, null, null, null,null);
 //                        V3RecordAPI.updateRecord(serviceTask, serviceTaskModule, Collections.singletonList(serviceAppointmentId));
                             }
 
@@ -113,7 +113,7 @@ public class RollUpServiceTaskCommand extends FacilioCommand {
                                 }
 
 
-                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, serviceTaskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null, null, null, null);
+                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, serviceTaskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null, null, null, null,null);
 //                    V3RecordAPI.updateRecord(serviceTask, serviceTaskModule, Collections.singletonList(serviceAppointmentId));
                             }
                         }

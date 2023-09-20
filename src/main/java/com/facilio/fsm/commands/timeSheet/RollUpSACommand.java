@@ -30,7 +30,7 @@ public class RollUpSACommand extends FacilioCommand {
                     Long agentId = timeSheet.getFieldAgent().getId();
                     long workDuration = ServiceAppointmentUtil.getAppointmentDuration(agentId, appointmentId);
                     appointment.setActualDuration(workDuration);
-                    V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, appointmentId, FieldUtil.getAsJSON(appointment), null, null, null, null, null, null, null, null);
+                    V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, appointmentId, FieldUtil.getAsJSON(appointment), null, null, null, null, null, null, null, null,null);
                 }
                 else{
                     throw new FSMException(FSMErrorCode.TIME_SHEET_SA_MANDATORY);

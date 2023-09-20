@@ -28,15 +28,6 @@ public class FieldsAction extends FacilioAction {
 
     private boolean isOneLevelFields;
 
-    public boolean isOneLevelFields() {
-        return isOneLevelFields;
-    }
-
-    public void setOneLevelFields(boolean oneLevelFields) {
-        isOneLevelFields = oneLevelFields;
-    }
-
-    private boolean isOneLevelFields;
 
 
     public String fetchFilterFields() throws Exception {

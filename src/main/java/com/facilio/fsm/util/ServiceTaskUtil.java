@@ -94,7 +94,7 @@ public class ServiceTaskUtil {
         existingTask.setActualStartTime(currentTime);
         ServiceTaskStatusContext inProgress = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
         existingTask.setStatus(inProgress);
-        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null,null, null, null);
+        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null,null, null, null,null);
 
         //updating sa
         ServiceAppointmentTicketStatusContext status = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS, serviceAppointmentContext.getStatus().getId());
@@ -116,7 +116,7 @@ public class ServiceTaskUtil {
             appointment.setActualStartTime(currentTime);
             ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("inProgress");
             appointment.setStatus(appointmentStatus);
-            V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,appointment.getId(), FieldUtil.getAsJSON(appointment), null, null, null, null, null,null, null, null);
+            V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,appointment.getId(), FieldUtil.getAsJSON(appointment), null, null, null, null, null,null, null, null,null);
         }
 
     }
@@ -192,7 +192,7 @@ public class ServiceTaskUtil {
         ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(task).get(0);
         ServiceTaskStatusContext taskStatus = ServiceOrderAPI.getTaskStatus(status);
         existingTask.setStatus(taskStatus);
-        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null,null, null, null);
+        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null,null, null, null,null);
 
         //fetch all tasks mapped with ServiceAppointment
         ServiceAppointmentContext serviceAppointmentContext = getServiceAppointmentFromTask(taskId);
@@ -297,7 +297,7 @@ public class ServiceTaskUtil {
         ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(task).get(0);
         ServiceTaskStatusContext taskStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED);
         existingTask.setStatus(taskStatus);
-        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null,null, null, null);
+        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null,null, null, null,null);
 
         //fetch all tasks mapped with ServiceAppointment
         ServiceAppointmentContext serviceAppointmentContext = getServiceAppointmentFromTask(taskId);
@@ -478,7 +478,7 @@ public class ServiceTaskUtil {
             criteria.addAndCondition(CriteriaAPI.getIdCondition(taskIds, serviceTask));
             FacilioContext taskList = V3Util.fetchList(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, true, "hidden-all", null,
                     true, null, null, null,
-                    null, page, perPage, false, null, criteria);
+                    null, page, perPage, false, null, criteria,null);
             return taskList;
         }
         return null;

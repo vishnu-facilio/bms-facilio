@@ -156,7 +156,7 @@ public class ServiceAppointmentUtil {
                         bodyParams.put(FacilioConstants.ServiceAppointment.SKIP_VALIDATION,false);
                     }
                     updateSARecordList.add(updateSAProps);
-                    V3Util.processAndUpdateBulkRecords(serviceAppointment, oldSARecords, updateSARecordList, bodyParams, null, null, null, null, null, null, null, true,false);
+                    V3Util.processAndUpdateBulkRecords(serviceAppointment, oldSARecords, updateSARecordList, bodyParams, null, null, null, null, null, null, null, true,false,null);
                     JSONObject info = new JSONObject();
                     info.put("fieldAgent",fieldAgent.getName());
                     info.put("doneBy", AccountUtil.getCurrentUser().getName());
@@ -182,7 +182,7 @@ public class ServiceAppointmentUtil {
                             updateProps.put("status",taskStatus);
                             updateRecordList.add(updateProps);
                         }
-                        V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
+                        V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false,null);
                     }
                 }
             }
@@ -232,7 +232,7 @@ public class ServiceAppointmentUtil {
                             Map<String, Object> recordProps = FieldUtil.getAsProperties(newTimeSheet);
                             List<TimeSheetTaskContext> tasks = new ArrayList<>();
                             if(CollectionUtils.isNotEmpty(existingAppointment.getServiceTasks())){
-                                for(ServiceTaskContext saTask : existingAppointment.getServiceTasks()){
+                                for(ServiceAppointmentTaskContext saTask : existingAppointment.getServiceTasks()){
                                     TimeSheetTaskContext newTask = new TimeSheetTaskContext();
                                     newTask.setId(saTask.getId());
                                     tasks.add(newTask);
@@ -278,7 +278,7 @@ public class ServiceAppointmentUtil {
                                 updateProps.put("actualStartTime",currentTime);
                                 updateRecordList.add(updateProps);
                             }
-                            V3Util.processAndUpdateBulkRecords(Constants.getModBean().getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK), oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
+                            V3Util.processAndUpdateBulkRecords(Constants.getModBean().getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK), oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false,null);
                         }
                     }
                 }
@@ -358,7 +358,7 @@ public class ServiceAppointmentUtil {
                                         updateRecordList.add(updateProps);
                                     }
                                 }
-                                V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
+                                V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false,null);
 
                             }
 
@@ -448,7 +448,7 @@ public class ServiceAppointmentUtil {
                                     updateRecordList.add(updateProps);
                                 }
                             }
-                            V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false);
+                            V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false,null);
                         }
 
                         V3PeopleContext agent = existingAppointment.getFieldAgent();
@@ -911,7 +911,7 @@ public class ServiceAppointmentUtil {
             updatedServiceAppointment.setEstimatedCost(newEstimatedCost);
             updatedServiceAppointmentList.add(updatedServiceAppointment);
         }
-        V3Util.processAndUpdateBulkRecords(serviceAppointmentModule,oldServiceAppointmentList,FieldUtil.getAsMapList(updatedServiceAppointmentList,ServiceAppointmentContext.class),null, null, null, null, null, null, null, null, true,false);
+        V3Util.processAndUpdateBulkRecords(serviceAppointmentModule,oldServiceAppointmentList,FieldUtil.getAsMapList(updatedServiceAppointmentList,ServiceAppointmentContext.class),null, null, null, null, null, null, null, null, true,false,null);
     }
     public static void updateActualCost(Map<Long,Double> appointmentCostMap, EventType eventType)throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -928,7 +928,7 @@ public class ServiceAppointmentUtil {
             updatedServiceAppointment.setActualCost(newActualCost);
             updatedServiceAppointmentList.add(updatedServiceAppointment);
         }
-        V3Util.processAndUpdateBulkRecords(serviceAppointmentModule,oldServiceAppointmentList,FieldUtil.getAsMapList(updatedServiceAppointmentList,ServiceAppointmentContext.class),null, null, null, null, null, null, null, null, true,false);
+        V3Util.processAndUpdateBulkRecords(serviceAppointmentModule,oldServiceAppointmentList,FieldUtil.getAsMapList(updatedServiceAppointmentList,ServiceAppointmentContext.class),null, null, null, null, null, null, null, null, true,false,null);
     }
     public static void updateEstimatedCostDuringUpdate( List<UpdateChangeSet> changes,ServiceAppointmentContext serviceAppointment,String moduleName)throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -940,7 +940,7 @@ public class ServiceAppointmentUtil {
             Double estimatedCost = serviceAppointment.getEstimatedCost()!=null ? serviceAppointment.getEstimatedCost() : 0;
             Double newEstimatedCost = estimatedCost - oldTotalCost + newTotalCost;
             serviceAppointment.setEstimatedCost(newEstimatedCost);
-            V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,serviceAppointment.getId(), FieldUtil.getAsJSON(serviceAppointment),null, null, null, null, null, null, null, null);
+            V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,serviceAppointment.getId(), FieldUtil.getAsJSON(serviceAppointment),null, null, null, null, null, null, null, null,null);
         }
     }
     public static void updateActualCostDuringUpdate( List<UpdateChangeSet> changes,ServiceAppointmentContext serviceAppointment,String moduleName)throws Exception{
@@ -953,7 +953,7 @@ public class ServiceAppointmentUtil {
             Double actualCost = serviceAppointment.getActualCost()!=null ? serviceAppointment.getActualCost() : 0;
             Double newActualCost = actualCost - oldTotalCost + newTotalCost;
             serviceAppointment.setActualCost(newActualCost);
-            V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,serviceAppointment.getId(), FieldUtil.getAsJSON(serviceAppointment),null, null, null, null, null, null, null, null);
+            V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,serviceAppointment.getId(), FieldUtil.getAsJSON(serviceAppointment),null, null, null, null, null, null, null, null,null);
         }
     }
     public static Map<Long,Double> getAppointmentEstimatedCostMapForItems(List<ServiceOrderPlannedItemsContext> serviceOrderPlannedItems){

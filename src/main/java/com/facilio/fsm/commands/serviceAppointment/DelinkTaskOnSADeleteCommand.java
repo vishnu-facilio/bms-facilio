@@ -28,7 +28,7 @@ public class DelinkTaskOnSADeleteCommand extends FacilioCommand {
         }
         if (CollectionUtils.isNotEmpty(serviceAppointments)) {
             for(ServiceAppointmentContext serviceAppointment : serviceAppointments){
-                List<ServiceTaskContext> saTasks = serviceAppointment.getServiceTasks();
+                List<ServiceAppointmentTaskContext> saTasks = serviceAppointment.getServiceTasks();
             if(CollectionUtils.isNotEmpty(saTasks)) {
                 List<Long> serviceTaskIds = saTasks.stream().map(row -> (Long) row.getId()).collect(Collectors.toList());
                 Map<String, Object> mapping = new HashMap<>();

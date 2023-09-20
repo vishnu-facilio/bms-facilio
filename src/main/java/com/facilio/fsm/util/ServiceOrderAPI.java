@@ -61,7 +61,7 @@ public class ServiceOrderAPI {
     public static void updateServiceOrder(ServiceOrderContext so) throws Exception
     {
         Long soId = so.getId();
-        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, soId, FieldUtil.getAsJSON(so), null, null, null, null, null,null, null, null);
+        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, soId, FieldUtil.getAsJSON(so), null, null, null, null, null,null, null, null,null);
     }
     public static ServiceOrderContext getServiceOrder(long soId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

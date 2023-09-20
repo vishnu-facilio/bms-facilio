@@ -5867,6 +5867,7 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setName("assetCategoryFeatureActivation");
 		module.setDisplayName("Asset Category Level Feature Activation");
 		module.setTableName("Asset_Categories_Feature_Activation");
+		return module;
 	}
 	public static FacilioModule getDispatcherModule() {
 		FacilioModule module = new FacilioModule();

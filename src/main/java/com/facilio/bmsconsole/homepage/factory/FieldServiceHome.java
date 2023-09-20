@@ -83,7 +83,7 @@ public class FieldServiceHome extends HomePageFactory {
 
             FacilioContext overDueListContext = V3Util.fetchList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, true, "overdueAppointments", null,
                     true, null, null, null,
-                    null, 1, 2, false, null, null);
+                    null, 1, 2, false, null, null,null);
 
             Map<String, Object> overduesRecordMap = (Map<String, Object>) overDueListContext.get("recordMap");
             List<ServiceAppointmentContext> overdueAppointmentsList = (List<ServiceAppointmentContext>) overduesRecordMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
@@ -101,9 +101,7 @@ public class FieldServiceHome extends HomePageFactory {
             clientCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), DateOperators.TODAY));
             clientCriteria.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), DateOperators.TODAY));
 
-            FacilioContext TodayOpenListContext = V3Util.fetchList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, true, "myOpenAppointments", null,
-                    true, null, null, null,
-                    null, 1, 2, false, null, clientCriteria);
+            FacilioContext TodayOpenListContext = V3Util.fetchList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, true, "myOpenAppointments", null, true, null, null, null, null, 1, 2, false, null, clientCriteria,null);
 
             Map<String, Object> todayRecordMap = (Map<String, Object>) TodayOpenListContext.get("recordMap");
             List<ServiceAppointmentContext> todayOpenAppointmentsList = (List<ServiceAppointmentContext>) todayRecordMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);

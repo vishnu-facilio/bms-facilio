@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AssociateServiceTaskInSACommand extends FacilioCommand {
     @Override
@@ -32,26 +33,41 @@ public class AssociateServiceTaskInSACommand extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(serviceAppointments)) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
-                Map<String,Object>  tasks = serviceAppointment.getAssociatedTasks();
-                    if(tasks != null && !tasks.isEmpty()){
-                        List<ServiceTaskContext> allServiceTasks = new ArrayList<>();
-                        List<ServiceTaskContext> newTasks = (List<ServiceTaskContext>) tasks.get("newTasks");
-                        List<Map<String,Object>> associatedTasks = (List<Map<String,Object>>) tasks.get("associatedTasks");
-                        if(CollectionUtils.isNotEmpty(newTasks)) {
-                            FacilioModule serviceTaskModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
-                            FacilioContext taskList = V3Util.createRecordList(serviceTaskModule, FieldUtil.getAsMapList(newTasks, ServiceTaskContext.class), null, null);
-                            List<Map<String, Object>> serviceTaskList = new ArrayList<>();
-                            if (taskList != null) {
-                                Map<String, List<ModuleBaseWithCustomFields>> record = Constants.getRecordMap(taskList);
-                                List<ModuleBaseWithCustomFields> serviceTasks = record.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
-                                serviceTaskList = FieldUtil.getAsMapList(serviceTasks, ServiceTaskContext.class);
-                                allServiceTasks.addAll(FieldUtil.getAsBeanListFromMapList(serviceTaskList,ServiceTaskContext.class));
+                Map<String, Object> tasks = serviceAppointment.getAssociatedTasks();
+                if (tasks != null && !tasks.isEmpty()) {
+
+                    List<ServiceAppointmentTaskContext> serviceAppointmentTaskList = new ArrayList<>();
+
+                    List<ServiceTaskContext> newTasks = (List<ServiceTaskContext>) tasks.get("newTasks");
+                    List<Map<String, Object>> associatedTasks = (List<Map<String, Object>>) tasks.get("associatedTasks");
+                    if (CollectionUtils.isNotEmpty(newTasks)) {
+                        FacilioModule serviceTaskModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+                        FacilioContext taskList = V3Util.createRecordList(serviceTaskModule, FieldUtil.getAsMapList(newTasks, ServiceTaskContext.class), null, null);
+                        List<Map<String, Object>> serviceTaskList = new ArrayList<>();
+                        if (taskList != null) {
+                            Map<String, List<ModuleBaseWithCustomFields>> record = Constants.getRecordMap(taskList);
+                            List<ModuleBaseWithCustomFields> serviceTasks = record.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+                            serviceTaskList = FieldUtil.getAsMapList(serviceTasks, ServiceTaskContext.class);
+                            List<Long> taskIds = serviceTaskList.stream().map(row -> (long) row.get("id")).collect(Collectors.toList());
+                            if (CollectionUtils.isNotEmpty(associatedTasks)) {
+                                taskIds.addAll(associatedTasks.stream().map(row -> (long) row.get("id")).collect(Collectors.toList()));
                             }
+                            if (CollectionUtils.isNotEmpty(taskIds)) {
+                                for (Long taskId : taskIds) {
+                                    ServiceAppointmentTaskContext saTask = new ServiceAppointmentTaskContext();
+                                    saTask.setId(taskId);
+                                    serviceAppointmentTaskList.add(saTask);
+//                                allServiceTasks.addAll(FieldUtil.getAsBeanListFromMapList(serviceTaskList,ServiceTaskContext.class));
+                                }
+                            }
+
+
                         }
-                        allServiceTasks.addAll(FieldUtil.getAsBeanListFromMapList(associatedTasks,ServiceTaskContext.class));
-                        serviceAppointment.setServiceTasks(allServiceTasks);
-                        serviceAppointment.setRelations(null);
+//                        allServiceTasks.addAll(FieldUtil.getAsBeanListFromMapList(associatedTasks,ServiceTaskContext.class));
+                        serviceAppointment.setServiceTasks(serviceAppointmentTaskList);
+//                        serviceAppointment.setRelations(null);
                     }
+                }
             }
         }
         return false;

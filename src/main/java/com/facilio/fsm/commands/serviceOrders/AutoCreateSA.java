@@ -61,9 +61,16 @@ public class AutoCreateSA extends FacilioCommand {
                 FacilioContext socontext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, Collections.singletonList(order.getId()));
                 ServiceOrderContext so = (ServiceOrderContext) Constants.getRecordList(socontext).get(0);
 
+                List<ServiceAppointmentTaskContext> serviceAppointmentTaskList=new ArrayList<>();
+
                 if(CollectionUtils.isNotEmpty(so.getServiceTask())) {
-                    sa.setServiceTasks(so.getServiceTask());
+                    for ( ServiceTaskContext serviceTask : so.getServiceTask()) {
+                        ServiceAppointmentTaskContext satask = new ServiceAppointmentTaskContext();
+                        satask.setId(serviceTask.getId());
+                        serviceAppointmentTaskList.add(satask);
+                    }
                 }
+                sa.setServiceTasks(serviceAppointmentTaskList);
 
                 serviceAppointmentList.add(sa);
 

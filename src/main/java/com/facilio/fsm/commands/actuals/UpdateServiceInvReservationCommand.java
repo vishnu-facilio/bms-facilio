@@ -53,7 +53,7 @@ public class UpdateServiceInvReservationCommand extends FacilioCommand {
                         reservation.setIssuedQuantity(issuedQuantity);
                         reservation.setBalanceReservedQuantity(balanceReservedQuantity);
 
-                        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, reservation.getId(), FieldUtil.getAsJSON(reservation), null, null, null, null, null,null,null, null);
+                        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, reservation.getId(), FieldUtil.getAsJSON(reservation), null, null, null, null, null,null,null, null,null);
 
                     }
                     updateReservedQuantity(serviceOrderItem.getItem().getId(),serviceOrderItem.getQuantity());
