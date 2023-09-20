@@ -15,6 +15,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.ims.handler.AuditLogHandler;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -250,6 +252,11 @@ public class RoleAction extends ActionSupport {
         return newPermissions;
     }
 
+    @Setter @Getter
+    private List<WebTabContext> newPermissionWithBool;
+
+    @Getter @Setter
+    private boolean checkBool = false;
     public void setNewPermissions(List<NewPermission> newPermissions) {
         this.newPermissions = newPermissions;
     }
@@ -281,10 +288,12 @@ public class RoleAction extends ActionSupport {
 
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ROLE, getRole());
-		context.put(FacilioConstants.ContextNames.PERMISSIONS, getNewPermissions());
+        context.put(FacilioConstants.ContextNames.PERMISSIONS, getNewPermissions());
         context.put(FacilioConstants.ContextNames.ROLES_APPS, getRoleApp());
         context.put(FacilioConstants.ContextNames.WEB_TABS, getWebTabs());
         context.put(FacilioConstants.ContextNames.IS_WEBTAB_PERMISSION,true);
+        context.put(FacilioConstants.ContextNames.BOOL_PERMISSIONS, getNewPermissionWithBool());
+        context.put(FacilioConstants.ContextNames.CHECK_BOOL, isCheckBool());
 
 		Command updateRole = FacilioChainFactory.getUpdateWebTabRoleCommand();
 		updateRole.execute(context);

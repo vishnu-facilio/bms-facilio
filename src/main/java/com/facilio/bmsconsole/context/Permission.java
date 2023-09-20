@@ -71,6 +71,10 @@ public class Permission {
 		this.permissionMapping = permissionMapping;
 	}
 
+	public Permission(String actionName, String displayName){
+		this.actionName = actionName;
+		this.displayName = displayName;
+	}
 	public boolean isEnabled() {
 		return enabled;
 	}
