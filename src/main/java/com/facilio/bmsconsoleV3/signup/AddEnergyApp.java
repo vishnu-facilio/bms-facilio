@@ -14,10 +14,13 @@ public class AddEnergyApp extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ApplicationContext energyApp = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
-        ApplicationLayoutContext energyLayout = new ApplicationLayoutContext(energyApp.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE,
+        ApplicationLayoutContext energyLayout = new ApplicationLayoutContext(energyApp.getId(), ApplicationLayoutContext.AppLayoutType.DUAL,
                 ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         ApplicationApi.addApplicationLayout(energyLayout);
         ApplicationApi.addEnergyAppWebTabs(energyLayout);
+        ApplicationLayoutContext energySetupLayout = new ApplicationLayoutContext(energyApp.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.SETUP, FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+        ApplicationApi.addApplicationLayout(energySetupLayout);
+        ApplicationApi.addEnergySetupLayoutWebGroups(energySetupLayout);
         Role superAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
                 FacilioConstants.DefaultRoleNames.SUPER_ADMIN);
         ApplicationApi.addAppRoleMapping(superAdmin.getRoleId(), energyApp.getId());

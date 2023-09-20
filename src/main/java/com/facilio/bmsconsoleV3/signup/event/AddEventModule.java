@@ -68,8 +68,8 @@ public class AddEventModule extends SignUpData {
         FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(scheduledYear);
 
-        NumberField scheduledMonth = SignupUtil.getNumberField(eventModule,"scheduledMonth","Month","SCHEDULED_MONTH",
-                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
+        SystemEnumField scheduledMonth = SignupUtil.getSystemEnumField(eventModule,"scheduledMonth","Month","SCHEDULED_MONTH",
+                "MonthValueEnum", FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(scheduledMonth);
 
         NumberField scheduledDate = SignupUtil.getNumberField(eventModule,"scheduledDate","Date","SCHEDULED_DATE",
@@ -80,8 +80,8 @@ public class AddEventModule extends SignUpData {
                 FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(scheduledWeekNumber);
 
-        NumberField scheduledDay = SignupUtil.getNumberField(eventModule,"scheduledDay","Day","SCHEDULED_DAY",
-                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
+        SystemEnumField scheduledDay = SignupUtil.getSystemEnumField(eventModule,"scheduledDay","Day","SCHEDULED_DAY",
+                "WeekDayEnum", FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(scheduledDay);
 
         SystemEnumField frequencyField = SignupUtil.getSystemEnumField(eventModule, "eventFrequency", "Frequency", "EVENT_FREQUENCY",

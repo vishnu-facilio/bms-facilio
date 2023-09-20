@@ -447,3 +447,9 @@ enums:
   - name: UtilityBillStatus
     enumClassName: com.facilio.utility.context.UtilityIntegrationBillContext$UtilityBillStatus
 
+  - name: WeekDayEnum
+    enumClassName: com.facilio.bmsconsoleV3.context.calendar.V3EventContext$WeekDayEnum
+
+  - name: MonthValueEnum
+    enumClassName: com.facilio.bmsconsoleV3.context.calendar.V3EventContext$MonthValueEnum
+

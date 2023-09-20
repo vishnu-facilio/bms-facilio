@@ -9,6 +9,7 @@ import com.facilio.bmsconsoleV3.util.CalendarApi;
 import com.facilio.bmsconsoleV3.util.ControlActionAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
@@ -51,6 +52,15 @@ public class CreateControlActionFromTemplateCommand extends FacilioCommand {
                     }
                     if (CollectionUtils.isNotEmpty(secondLevelApprovalList)) {
                         controlActionRecord.setSecondLevelApproval(secondLevelApprovalList);
+                    }
+                    if(controlActionTemplateContext.getAssetCriteriaId() != null && controlActionTemplateContext.getAssetCriteriaId() > 0){
+                        controlActionRecord.setAssetCriteria(CriteriaAPI.getCriteria(controlActionTemplateContext.getAssetCriteriaId()));
+                    }
+                    if(controlActionTemplateContext.getSiteCriteriaId() != null && controlActionTemplateContext.getSiteCriteriaId() > 0){
+                        controlActionRecord.setSiteCriteria(CriteriaAPI.getCriteria(controlActionTemplateContext.getSiteCriteriaId()));
+                    }
+                    if(controlActionTemplateContext.getControllerCriteriaId() != null && controlActionTemplateContext.getControllerCriteriaId() > 0){
+                        controlActionRecord.setControllerCriteria(CriteriaAPI.getCriteria(controlActionTemplateContext.getControllerCriteriaId()));
                     }
                     controlActionRecord.setControlActionSourceType(V3ControlActionContext.ControlActionSourceTypeEnum.CONTROL_ACTION_TEMPLATE.getVal());
                     controlActionRecord.setScheduledActionDateTime(convertDateTimeToMillis(calendarSlotsContext.getCalendarYear(), calendarSlotsContext.getCalendarMonth(), calendarSlotsContext.getCalendarDate(), calendarSlotsContext.getSlotStartTime()));

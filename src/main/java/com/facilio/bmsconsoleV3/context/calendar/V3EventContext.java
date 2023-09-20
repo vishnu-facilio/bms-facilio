@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.enums.EventTypeEnum;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.v3.commands.SaveCommand;
 import com.facilio.v3.context.V3Context;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,10 +26,10 @@ public class V3EventContext extends V3Context {
     private Long validityEndTime;
     private Integer eventSequence;
     private Integer scheduledYear;
-    private Integer scheduledMonth;
+    private MonthValueEnum scheduledMonth;
     private Integer scheduledDate;
     private Integer scheduledWeekNumber;
-    private Integer scheduledDay;
+    private WeekDayEnum scheduledDay;
     private EventTypeEnum eventType;
     private Boolean isSpecific;
     private Integer seasonStartMonth;
@@ -84,7 +85,10 @@ public class V3EventContext extends V3Context {
             ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()),ZoneId.systemDefault());
             return dateTime.getMonthValue();
         }
-        return scheduledMonth;
+        if(scheduledMonth == null) {
+           return null;
+        }
+        return scheduledMonth.getIndex();
     }
     public Integer getScheduledYear(){
         if(getSpecialCaseMilliSecond() != null){
@@ -117,6 +121,99 @@ public class V3EventContext extends V3Context {
         }
         private static final EventFrequencyEnum[] CREATION_TYPES = EventFrequencyEnum.values();
         public static EventFrequencyEnum valueOf(int type) {
+            if (type > 0 && type <= CREATION_TYPES.length) {
+                return CREATION_TYPES[type - 1];
+            }
+            return null;
+        }
+    }
+    public Integer getScheduledDay(){
+        if(scheduledDay == null){
+            return null;
+        }
+        return scheduledDay.getIndex();
+    }
+    public void setScheduledDay(Integer scheduledDay) {
+        if (scheduledDay != null) {
+            this.scheduledDay = WeekDayEnum.valueOf(scheduledDay);
+        } else {
+            this.scheduledDay = null;
+        }
+    }
+    public void setScheduledDayEnum(WeekDayEnum scheduledDay) {
+        this.scheduledDay = scheduledDay;
+    }
+
+    public WeekDayEnum getScheduledDayEnum() {
+        return scheduledDay;
+    }
+    @AllArgsConstructor
+    public static enum WeekDayEnum implements FacilioIntEnum {
+        MONDAY("Monday"),
+        TUESDAY("Tuesday"),
+        WEDNESDAY("Wednesday"),
+        THURSDAY("Thursday"),
+        FRIDAY("Friday"),
+        SATURDAY("Saturday"),
+        SUNDAY("Sunday")
+        ;
+        public int getVal() {
+            return ordinal() + 1;
+        }
+        String name;
+        @Override
+        public String getValue() {
+            // TODO Auto-generated method stub
+            return this.name;
+        }
+        private static final WeekDayEnum[] CREATION_TYPES = WeekDayEnum.values();
+        public static WeekDayEnum valueOf(int type) {
+            if (type > 0 && type <= CREATION_TYPES.length) {
+                return CREATION_TYPES[type - 1];
+            }
+            return null;
+        }
+    }
+    public void setScheduledMonth(Integer scheduledMonth) {
+        if (scheduledMonth != null) {
+            this.scheduledMonth = MonthValueEnum.valueOf(scheduledMonth);
+        } else {
+            this.scheduledMonth = null;
+        }
+    }
+    public void setScheduledMonthEnum(MonthValueEnum scheduledMonth) {
+        this.scheduledMonth = scheduledMonth;
+    }
+
+    public MonthValueEnum getScheduledMonthEnum() {
+        return scheduledMonth;
+    }
+    @AllArgsConstructor
+    public static enum MonthValueEnum implements FacilioIntEnum {
+        JANUARY("January"),
+        FEBRUARY("February"),
+        MARCH("March"),
+        APRIL("April"),
+        MAY("May"),
+        JUNE("June"),
+        JULY("July"),
+        AUGUST("August"),
+        SEPTEMBER("September"),
+        OCTOBER("October"),
+        NOVEMBER("November"),
+        DECEMBER("December")
+        ;
+        public int getVal() {
+            return ordinal() + 1;
+        }
+        String name;
+        @Override
+        public String getValue() {
+            // TODO Auto-generated method stub
+            return this.name;
+        }
+        private static final MonthValueEnum[] CREATION_TYPES = MonthValueEnum.values();
+        public static MonthValueEnum valueOf(int type) {
             if (type > 0 && type <= CREATION_TYPES.length) {
                 return CREATION_TYPES[type - 1];
             }

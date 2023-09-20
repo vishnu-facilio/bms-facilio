@@ -13,7 +13,7 @@ public class AddMaintenanceApplicationLayout extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         //web layout for Maintenance App
         ApplicationContext maintenance = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        ApplicationLayoutContext webLayout = new ApplicationLayoutContext(maintenance.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        ApplicationLayoutContext webLayout = new ApplicationLayoutContext(maintenance.getId(), ApplicationLayoutContext.AppLayoutType.DUAL, ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         webLayout.setId(ApplicationApi.getAddApplicationLayout(webLayout));
         ApplicationApi.addMaintenancePortalWebGroupsForWebLayout(webLayout);
 //        Role maintenanceManager = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), FacilioConstants.DefaultRoleNames.MAINTENANCE_MANAGER);

@@ -436,6 +436,13 @@ public class V3ProcessImportCommand extends FacilioCommand {
                     }
 
                 }
+                case "groups": {
+                    Group group = AccountUtil.getGroupBean().getGroup(value.toString());
+                    if (group == null && lookupField.getName().equals("assignmentGroup")) {
+                        throw new Exception("Value not found");
+                    }
+                    return FieldUtil.getAsProperties(group);
+                }
 
             }
 
