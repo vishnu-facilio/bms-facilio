@@ -16,6 +16,8 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.flowLog.moduleFlowLog.context.FlowLogContext;
 import com.facilio.flowLog.moduleFlowLog.util.FlowLogUtil;
+import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
+import com.facilio.fsm.util.ServicePlannedMaintenanceAPI;
 import com.facilio.modules.*;
 import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import com.facilio.time.DateTimeUtil;
@@ -1453,6 +1455,16 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		context.put("plannerId",plannerId);
 		context.put("operation",operation);
 		FacilioChain chain = TransactionChainFactoryV3.preCreateWorkOrderAfterPPMPublish();
+		chain.setContext(context);
+		chain.execute();
+	}
+
+	@Override
+	public void scheduleServicePM(Long servicePMId, ServicePlannedMaintenanceAPI.ScheduleOperation operation) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put("servicePMId",servicePMId);
+		context.put("operation",operation);
+		FacilioChain chain = FsmTransactionChainFactoryV3.preCreateServiceOrder();
 		chain.setContext(context);
 		chain.execute();
 	}

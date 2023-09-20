@@ -67,6 +67,8 @@ public class GetCriteriaFieldsForModuleCommand extends FacilioCommand {
                     case FacilioConstants.ContextNames.EMPLOYEE:
                     case FacilioConstants.ContextNames.VENDOR_CONTACT:
                     case FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT:
+                    case FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE:
+                    case FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE:
                     case FacilioConstants.ServiceOrder.SERVICE_ORDER:
                     case FacilioConstants.Trip.TRIP:
                     case FacilioConstants.TimeSheet.TIME_SHEET:

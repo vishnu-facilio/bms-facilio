@@ -28,7 +28,7 @@
 		<job name='pmV2MonitoringToolJob' classname='com.facilio.bmsconsole.jobs.PMV2MonitoringToolJob' transactionTimeout='300000'/>
 		<!-- PM V1 Monitoring tool-->
 		<job name='PMV1MonitoringToolJob' classname='com.facilio.bmsconsole.jobs.monitoring.PMV1MonitoringToolJob' transactionTimeout='300000'/>
-	
+
 	<!-- PM RELATED JOBS ENDS  -->
 	
 	<job name='VirtualMeterCalculation' classname='com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator'
@@ -290,6 +290,15 @@
 	<job name='PeopleStatusUpdateJob' classname='com.facilio.fsm.jobs.UpdatePeopleStatusJob' transactionTimeout='900000'/>
 	<job name='SilentNotificationForShiftJob' classname='com.facilio.fsm.jobs.SilentNotificationForShiftJob' transactionTimeout='900000'/>
 
+
+	<!-- Service PM jobs -->
+
+	<!-- 30 minutes job to schedule status change -->
+	<job name='ServiceOrderStatusChangeScheduler' classname='com.facilio.fsm.jobs.ServiceOrderStatusChangeScheduler' transactionTimeout='900000'/>
+	<!-- Preview to New state -->
+	<job name='MoveScheduledServiceOrdersToNewState' classname='com.facilio.fsm.jobs.MoveScheduledServiceOrdersToNewState' transactionTimeout='300000'/>
+	<!-- Service PM Nightly jobs -->
+	<job name='ServicePMNightlyScheduler' classname='com.facilio.fsm.jobs.ServicePMNightlyScheduler' transactionTimeout='900000'/>
 
 
 </scheduler>

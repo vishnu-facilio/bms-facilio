@@ -118,8 +118,11 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.FAILURE_CODE,
 			ContextNames.FAILURE_CODE_PROBLEMS,
 			ContextNames.FAILURE_CODE_CAUSES,
-			ContextNames.FAILURE_CODE_REMEDIES
+			ContextNames.FAILURE_CODE_REMEDIES,
 
+			FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE,
+			FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN,
+			FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE
 	});
 
 	@Override

@@ -5997,4 +5997,12 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setDisplayName("Virtual Relationship Config");
 		return module;
 	}
+	public static FacilioModule getServicePMModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE);
+		module.setDisplayName("Service Planned Maintenance");
+		module.setTableName("Service_Planned_Maintenance");
+		return module;
+	}
 }

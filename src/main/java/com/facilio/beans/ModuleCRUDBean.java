@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.fsm.util.ServicePlannedMaintenanceAPI;
 import com.facilio.ims.handler.AuditLogHandler;
 import com.facilio.flowLog.moduleFlowLog.context.FlowLogContext;
 import org.apache.commons.chain.Context;
@@ -172,4 +173,5 @@ public interface ModuleCRUDBean {
 	void addWorkflowRuleLog(WorkflowRuleLogContext workflowRuleLog, List<WorkflowRuleActionLogContext> workflowRuleActionLogList) throws Exception;
 	void addFlowLog(FlowLogContext flowLogContext) throws Exception;
 
+	void scheduleServicePM(Long servicePMId, ServicePlannedMaintenanceAPI.ScheduleOperation operation) throws Exception;
 }

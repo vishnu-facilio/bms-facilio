@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ServiceSkillModule  extends BaseModuleConfig {
+public class ServiceSkillModule extends BaseModuleConfig {
 
     public ServiceSkillModule(){
         setModuleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_SKILL);

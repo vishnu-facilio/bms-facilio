@@ -26,7 +26,7 @@ public class ServiceOrderContext extends V3Context {
     private List<ServiceTaskContext> serviceTask;
     private ServiceAppointmentContext.ServiceAppointmentCategory category;
     private PriorityContext priority;
-    private V3SpaceContext space;
+    private V3BaseSpaceContext space;
     private V3AssetContext asset;
     private ServiceOrderTicketStatusContext status;
     private ServiceOrderRequestResponseStatus resolutionDueStatus;
@@ -41,7 +41,6 @@ public class ServiceOrderContext extends V3Context {
     private Long resolvedTime;
     private StateFlowRuleContext stateflow;
     private ServiceOrderSourceType sourceType;
-    private V3PeopleContext createdBy;
     private Long createdTime;
     private V3PeopleContext modifiedBy;
     private Long modifiedTime;
@@ -56,7 +55,6 @@ public class ServiceOrderContext extends V3Context {
     private Long dueDate;
     private Long estimatedStartTime;
     private Long estimatedEndTime;
-    private Long estimatedDuration;
 //    private Long moduleState;
     private Long noOfAttachments;
     private Long noOfClosedTasks;
@@ -66,7 +64,7 @@ public class ServiceOrderContext extends V3Context {
     private Long approvalRuleId;
     private Long approvalState;
     private Long parentSo;
-    private PlannedMaintenance pm;
+    private ServicePlannedMaintenanceContext servicePlannedMaintenance;
     private ServiceOrderPrerequisiteStatus prerequestStatus;
     private Boolean prerequisiteApproved;
     private Boolean prerequisiteEnabled;
@@ -74,6 +72,7 @@ public class ServiceOrderContext extends V3Context {
     private V3PeopleContext requestedBy;
     private V3PeopleContext fieldAgent;
     private TerritoryContext territory;
+    private ServicePMTriggerContext servicePMTrigger;
 //    private Long localId;
 
     public int getPrerequeststatus() {
@@ -237,7 +236,7 @@ public class ServiceOrderContext extends V3Context {
 
     public static enum ServiceOrderSourceType implements FacilioIntEnum {
         PLANNED("Planned"),
-        UNPLANNED("Unplanned");
+        REACTIVE("Reactive");
 
         private String name;
 

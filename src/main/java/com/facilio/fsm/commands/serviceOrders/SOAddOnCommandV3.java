@@ -27,6 +27,7 @@ public class SOAddOnCommandV3 extends FacilioCommand {
         List<ServiceOrderContext> dataList = (List<ServiceOrderContext>) recordMap.get(moduleName);
         List<ServiceOrderContext> serviceOrdersNew = new ArrayList<>();
         for(ServiceOrderContext order : dataList) {
+            order.setSourceType(ServiceOrderContext.ServiceOrderSourceType.REACTIVE);
             V3SiteContext site = order.getSite();
             if(site != null){
                 SiteContext siteData = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SITE,site.getId());

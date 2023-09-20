@@ -73,15 +73,15 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
 
         List<ServiceOrderTicketStatusContext> ticketStatusContextList = new ArrayList<>();
 
-        ServiceOrderTicketStatusContext previewState = new ServiceOrderTicketStatusContext();
-        previewState.setStatus(FacilioConstants.ServiceOrder.PREVIEW);
-        previewState.setDisplayName("Preview");
-        previewState.setColor("default");
-        previewState.setTextColor("#ffffff");
-        previewState.setTypeCode(1);
-        previewState.setRecordLocked(false);
-        previewState.setDeleteLocked(false);
-        ticketStatusContextList.add(previewState);
+        ServiceOrderTicketStatusContext upcomingState = new ServiceOrderTicketStatusContext();
+        upcomingState.setStatus(FacilioConstants.ServiceOrder.UPCOMING);
+        upcomingState.setDisplayName("Upcoming");
+        upcomingState.setColor("default");
+        upcomingState.setTextColor("#ffffff");
+        upcomingState.setTypeCode(1);
+        upcomingState.setRecordLocked(false);
+        upcomingState.setDeleteLocked(false);
+        ticketStatusContextList.add(upcomingState);
 
         ServiceOrderTicketStatusContext newState = new ServiceOrderTicketStatusContext();
         newState.setStatus(FacilioConstants.ServiceOrder.NEW);

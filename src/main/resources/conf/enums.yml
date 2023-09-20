@@ -549,3 +549,14 @@ enums:
   - name: RuleType
     enumClassName: com.facilio.remotemonitoring.context.RuleType
 
+  - name: PMType
+    enumClassName: com.facilio.fsm.context.ServicePlannedMaintenanceContext$PMType
+
+  - name: TriggerType
+    enumClassName: com.facilio.fsm.context.ServicePlannedMaintenanceContext$TriggerType
+
+  - name: ServicePMTriggerFrequency
+    enumClassName: com.facilio.fsm.context.ServicePMTriggerContext$ServicePMTriggerFrequency
+
+  - name: MasterPMType
+    enumClassName: com.facilio.fsm.context.ServicePMTemplateContext$MasterPMType

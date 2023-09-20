@@ -55,7 +55,7 @@ public class ServiceOrderServicesModule  extends BaseModuleConfig {
 
         List<FacilioField> fields = new ArrayList<>();
 
-        LookupField service = FieldFactory.getDefaultField("service","Service","SERVICE",FieldType.LOOKUP);
+        LookupField service = FieldFactory.getDefaultField("service","Service","SERVICE",FieldType.LOOKUP,true);
         service.setLookupModule(serviceMod);
         fields.add(service);
 

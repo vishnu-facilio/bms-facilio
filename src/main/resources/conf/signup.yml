@@ -172,7 +172,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkOrderLabourPlanModules
   - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkorderActualsLabourModule
 
-
   # Shift & Shift Related Modules
   - com.facilio.bmsconsoleV3.signup.shift.ShiftModules
   - com.facilio.bmsconsoleV3.signup.breakMod.AddBreakModule
@@ -371,7 +370,7 @@ classes:
     #Quotation module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.QuotationModule
 
-#   Decommission Logs Module
+  #   Decommission Logs Module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.DecommissionLogsModule
 
   #adding commissioninglog module
@@ -412,16 +411,15 @@ classes:
   - com.facilio.bmsconsoleV3.signup.Point.AddRDMPointModule
   - com.facilio.bmsconsoleV3.signup.Point.AddE2PointModule
 
-
   - com.facilio.backgroundactivity.util.AddBackgroundActivityModule
 
   #sensorRuleModule
   - com.facilio.alarms.sensor.signup.AddSensorRuleModules #Sensor
 
-   #agentDataLog Module
+
+    #agentDataLog Module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataLoggerModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataProcessingLoggerModule
-
 
   #Adding Meter Modules
   
@@ -442,7 +440,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.HeatDataReadingModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.BTUDataReadingModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VMTemplateModule
-
 
   #calendarModule
   - com.facilio.bmsconsoleV3.signup.calendar.AddCalendarModule
@@ -492,7 +489,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityDisputeAttachmentModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationMeterActivityModule
 
-
   - com.facilio.remotemonitoring.signup.AlarmCategoryModule
   - com.facilio.remotemonitoring.signup.AlarmTypeModule
   - com.facilio.remotemonitoring.signup.AlarmDefinitionModule
@@ -530,7 +526,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmFilterRuleCriteriaModuleConfig
   - com.facilio.bmsconsoleV3.signup.moduleconfig.FlaggedEventActionModuleConfig
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmAssetTaggingModuleConfig
-
 
   #FSM Modules
   - com.facilio.fsm.signup.PriorityModule
@@ -570,8 +565,7 @@ classes:
   #Adding Trip Location History Module
   - com.facilio.fsm.signup.TripLocationHistoryModule
 
-
-#  adding default email templates of workorder
+  #  adding default email templates of workorder
   - com.facilio.bmsconsoleV3.signup.moduleconfig.DefaultEmailTemplateForWorkorder
 
   #Add System Value Generators
@@ -580,3 +574,13 @@ classes:
 
   #System Button Adding
   - com.facilio.bmsconsoleV3.signup.vendorQuote.VendorQuotesSystemButton
+
+  #Service PM Modules
+  - com.facilio.fsm.signup.ServicePMTriggerModule
+  - com.facilio.fsm.signup.ServicePlannedMaintenanceModule
+  - com.facilio.fsm.signup.ServicePlanModule
+  - com.facilio.fsm.signup.ServiceTaskTemplateModule
+  - com.facilio.fsm.signup.ServicePlanItemsModule
+  - com.facilio.fsm.signup.ServicePlanToolsModule
+  - com.facilio.fsm.signup.ServicePlanServicesModule
+  - com.facilio.fsm.signup.ServicePMTemplateModule

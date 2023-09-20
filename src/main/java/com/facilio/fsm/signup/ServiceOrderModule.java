@@ -309,6 +309,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField actualendtime = FieldFactory.getDefaultField("actualEndTime", "Actual End Time", "ACTUAL_END_TIME", FieldType.DATE_TIME);
         serviceOrderFieldsList.add(actualendtime);
 
+        serviceOrderFieldsList.add(FieldFactory.getDefaultField("createdTime","SO Created Time","SO_CREATED_TIME",FieldType.DATE_TIME, FacilioField.FieldDisplayType.DATETIME));
+
         FacilioField actualduration = FieldFactory.getDefaultField("actualDuration", "Actual Duration", "ACTUAL_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION);
         serviceOrderFieldsList.add(actualduration);
 
@@ -453,6 +455,24 @@ public class ServiceOrderModule extends BaseModuleConfig {
         return openCriteria;
     }
 
+    public static Criteria getUpcomingServiceOrdersViewCriteria(Map<String, FacilioField> fieldMap) throws Exception {
+        ServiceOrderTicketStatusContext upcomingState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.UPCOMING);
+
+        Criteria openCriteria = new Criteria();
+        openCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Collections.singletonList(upcomingState.getId()), PickListOperators.IS));
+        openCriteria.setPattern("(1)");
+
+        return openCriteria;
+    }
+    public static Criteria getAllServiceOrdersViewCriteria(Map<String, FacilioField> fieldMap) throws Exception {
+        ServiceOrderTicketStatusContext upcomingState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.UPCOMING);
+
+        Criteria openCriteria = new Criteria();
+        openCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Collections.singletonList(upcomingState.getId()), PickListOperators.ISN_T));
+        openCriteria.setPattern("(1)");
+
+        return openCriteria;
+    }
     public static Criteria getCompletedServiceOrdersViewCriteria(FacilioModule module, Map<String, FacilioField> fieldMap) throws Exception {
         ServiceOrderTicketStatusContext completedState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.COMPLETED);
 
@@ -483,14 +503,16 @@ public class ServiceOrderModule extends BaseModuleConfig {
         return cancelledCriteria;
     }
 
-    private static FacilioView getAllServiceOrdersView(FacilioModule module, Map<String, FacilioField> fieldMap, List<Role> roles) {
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
+    private static FacilioView getAllServiceOrdersView(FacilioModule module, Map<String, FacilioField> fieldMap, List<Role> roles) throws Exception {
+        Criteria criteria = getAllServiceOrdersViewCriteria(fieldMap);
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), false));
 
         FacilioView allView = new FacilioView();
         allView.setName("all_service_orders_view");
         allView.setDisplayName("All Work Orders");
         allView.setModuleName(FacilioConstants.ContextNames.SERVICE_ORDER);
         allView.setSortFields(sortFields);
+        allView.setCriteria(criteria);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
 
         SharingContext<SingleSharingContext> viewSharing = new SharingContext<>();
@@ -519,11 +541,55 @@ public class ServiceOrderModule extends BaseModuleConfig {
         serviceOrderViewFields.add(new ViewField("space", "Space"));
         serviceOrderViewFields.add(new ViewField("asset", "Asset"));
         serviceOrderViewFields.add(new ViewField("status", "Status"));
+        serviceOrderViewFields.add(new ViewField("servicePlannedMaintenance", "Planned Maintenance"));
+
         allView.setFields(serviceOrderViewFields);
 
         return allView;
     }
 
+    private static FacilioView getUpcomingServiceOrdersView(FacilioModule serviceOrderModule, Map<String, FacilioField> serviceOrderFieldsMap, List<Role> roles) throws Exception {
+        Criteria criteria = getUpcomingServiceOrdersViewCriteria(serviceOrderFieldsMap);
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("preferredStartTime", "PREFERRED_START_TIME", FieldType.DATE_TIME), true));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("upcoming_service_orders_view");
+        allView.setDisplayName("Upcoming Work Orders");
+        allView.setSortFields(sortFields);
+        allView.setCriteria(criteria);
+        allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
+
+        SharingContext<SingleSharingContext> viewSharing = new SharingContext<>();
+
+        // Add the super admin and Dispatcher for view sharing permission.
+        for (Role role : roles) {
+            if (role.isPrevileged()) {
+                SingleSharingContext sharingContext = new SingleSharingContext();
+                sharingContext.setType(SingleSharingContext.SharingType.ROLE);
+                sharingContext.setRoleId(role.getRoleId());
+                viewSharing.add(sharingContext);
+            } else if (role.getName().equals("Dispatcher")) {
+                SingleSharingContext sharingContext = new SingleSharingContext();
+                sharingContext.setType(SingleSharingContext.SharingType.ROLE);
+                sharingContext.setRoleId(role.getRoleId());
+                viewSharing.add(sharingContext);
+            }
+        }
+
+        allView.setViewSharing(viewSharing);
+
+        List<ViewField> serviceOrderViewFields = new ArrayList<>();
+        serviceOrderViewFields.add(new ViewField("name", "Subject"));
+        serviceOrderViewFields.add(new ViewField("site", "Site"));
+        serviceOrderViewFields.add(new ViewField("priority", "Priority"));
+        serviceOrderViewFields.add(new ViewField("space", "Space"));
+        serviceOrderViewFields.add(new ViewField("asset", "Asset"));
+        serviceOrderViewFields.add(new ViewField("status", "Status"));
+        serviceOrderViewFields.add(new ViewField("servicePlannedMaintenance", "Planned Maintenance"));
+
+        allView.setFields(serviceOrderViewFields);
+        return allView;
+    }
     private static FacilioView getOverdueServiceOrdersView(FacilioModule serviceOrderModule, Map<String, FacilioField> serviceOrderFieldsMap, List<Role> roles) throws Exception {
         List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
 
@@ -565,6 +631,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         serviceOrderViewFields.add(new ViewField("space", "Space"));
         serviceOrderViewFields.add(new ViewField("asset", "Asset"));
         serviceOrderViewFields.add(new ViewField("status", "Status"));
+        serviceOrderViewFields.add(new ViewField("servicePlannedMaintenance", "Planned Maintenance"));
+
         allView.setFields(serviceOrderViewFields);
         return allView;
     }
@@ -610,6 +678,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         serviceOrderViewFields.add(new ViewField("space", "Space"));
         serviceOrderViewFields.add(new ViewField("asset", "Asset"));
         serviceOrderViewFields.add(new ViewField("status", "Status"));
+        serviceOrderViewFields.add(new ViewField("servicePlannedMaintenance", "Planned Maintenance"));
+
         allView.setFields(serviceOrderViewFields);
         return allView;
     }
@@ -654,6 +724,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         serviceOrderViewFields.add(new ViewField("space", "Space"));
         serviceOrderViewFields.add(new ViewField("asset", "Asset"));
         serviceOrderViewFields.add(new ViewField("status", "Status"));
+        serviceOrderViewFields.add(new ViewField("servicePlannedMaintenance", "Planned Maintenance"));
+
         allView.setFields(serviceOrderViewFields);
         return allView;
     }
@@ -698,6 +770,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         serviceOrderViewFields.add(new ViewField("space", "Space"));
         serviceOrderViewFields.add(new ViewField("asset", "Asset"));
         serviceOrderViewFields.add(new ViewField("status", "Status"));
+        serviceOrderViewFields.add(new ViewField("servicePlannedMaintenance", "Planned Maintenance"));
+
         allView.setFields(serviceOrderViewFields);
         return allView;
     }
@@ -742,6 +816,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         serviceOrderViewFields.add(new ViewField("space", "Space"));
         serviceOrderViewFields.add(new ViewField("asset", "Asset"));
         serviceOrderViewFields.add(new ViewField("status", "Status"));
+        serviceOrderViewFields.add(new ViewField("servicePlannedMaintenance", "Planned Maintenance"));
+
         allView.setFields(serviceOrderViewFields);
         return allView;
     }
@@ -786,6 +862,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         serviceOrderViewFields.add(new ViewField("space", "Space"));
         serviceOrderViewFields.add(new ViewField("asset", "Asset"));
         serviceOrderViewFields.add(new ViewField("status", "Status"));
+        serviceOrderViewFields.add(new ViewField("servicePlannedMaintenance", "Planned Maintenance"));
+
         allView.setFields(serviceOrderViewFields);
         return allView;
     }
@@ -808,6 +886,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         all.add(getOpenServiceOrdersView(serviceOrderModule, serviceOrderFieldsMap, roles).setOrder(order++));
         all.add(getNewServiceOrdersView(serviceOrderModule, serviceOrderFieldsMap, roles).setOrder(order++));
         all.add(getAllServiceOrdersView(serviceOrderModule, serviceOrderFieldsMap, roles).setOrder(order++));
+        all.add(getUpcomingServiceOrdersView(serviceOrderModule, serviceOrderFieldsMap, roles).setOrder(order++));
         all.add(getOverdueServiceOrdersView(serviceOrderModule, serviceOrderFieldsMap, roles).setOrder(order++));
         all.add(getCompletedServiceOrdersView(serviceOrderModule, serviceOrderFieldsMap, roles).setOrder(order++));
         all.add(getClosedServiceOrdersView(serviceOrderModule, serviceOrderFieldsMap, roles).setOrder(order++));
@@ -850,6 +929,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         ServiceOrderTicketStatusContext completedState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.COMPLETED);
         ServiceOrderTicketStatusContext cancelledState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.CANCELLED);
         ServiceOrderTicketStatusContext closedState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.CLOSED);
+        ServiceOrderTicketStatusContext upcomingState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.UPCOMING);
+
 
         /* PRIMARY BUTTON DECLARATIONS GOES HERE */
 
@@ -886,6 +967,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         cancelAllowedStates.add(newState.getId());
         cancelAllowedStates.add(scheduledState.getId());
         cancelAllowedStates.add(inprogressState.getId());
+        cancelAllowedStates.add(upcomingState.getId());
         cancelButtonCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"), cancelAllowedStates, PickListOperators.IS));
 
         SystemButtonRuleContext cancelWork = new SystemButtonRuleContext();
@@ -953,6 +1035,28 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
 
 
+        SystemButtonRuleContext cancelInList = new SystemButtonRuleContext();
+        cancelInList.setName("Cancel");
+        cancelInList.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        cancelInList.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        cancelInList.setIdentifier("cancelSO");
+        cancelInList.setPermissionRequired(true);
+        cancelInList.setPermission("CANCEL");
+        cancelInList.setCriteria(cancelButtonCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, cancelInList);
+
+        Criteria rescheduleCriteria = new Criteria();
+        rescheduleCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Collections.singletonList(upcomingState.getId()), PickListOperators.IS));
+
+        SystemButtonRuleContext reschedule = new SystemButtonRuleContext();
+        reschedule.setName("Reschedule");
+        reschedule.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        reschedule.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        reschedule.setIdentifier("reschedule");
+        reschedule.setPermissionRequired(true);
+        reschedule.setPermission("UPDATE");
+        reschedule.setCriteria(rescheduleCriteria);
+        addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, reschedule);
         return false;
     }
 
@@ -1147,6 +1251,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField statusField = serviceOrderFieldsMap.get("status");
         FacilioField priorityField = serviceOrderFieldsMap.get("priority");
         FacilioField sourceTypeField = serviceOrderFieldsMap.get("sourceType");
+        FacilioField servicePlannedMaintenance = serviceOrderFieldsMap.get("servicePlannedMaintenance");
         FacilioField maintenanceTypeField = serviceOrderFieldsMap.get("maintenanceType");
         FacilioField autoCreateSaField = serviceOrderFieldsMap.get("autoCreateSa");
         FacilioField descriptionField = serviceOrderFieldsMap.get("description");
@@ -1184,8 +1289,9 @@ public class ServiceOrderModule extends BaseModuleConfig {
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, sourceTypeField, 2, 4, 1);
 
         // Row 3
-        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, maintenanceTypeField, 3, 1, 1);
-        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, autoCreateSaField, 3, 2, 1);
+        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, servicePlannedMaintenance, 3, 1, 1);
+        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, maintenanceTypeField, 3, 2, 1);
+        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, autoCreateSaField, 3, 3, 1);
 
         // Group 2
         SummaryWidgetGroup siteWidgetGroup = new SummaryWidgetGroup();

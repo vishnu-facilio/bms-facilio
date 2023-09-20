@@ -738,7 +738,12 @@ public class PageWidget {
 		TRIP_LIST("tripList"),
 		SERVICE_APPOINTMENT_LIST("serviceAppointmentList"),
 		TRIP_MAP_WIDGET("tripMapWidget"),
-		SERVICE_APPOINTMENT_CARD("serviceAppointmentCard");
+		SERVICE_APPOINTMENT_CARD("serviceAppointmentCard"),
+		SERVICE_PLAN_TASKS("servicePlanTasks"),
+		SERVICE_PLAN_INVENTORY("servicePlanInventory"),
+		SERVICE_PM_SERVICE_ORDERS("servicePMServiceOrders"),
+		SERVICE_PM("servicePM")
+		;
 
 		private String name;
 		@Getter

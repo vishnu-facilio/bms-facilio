@@ -233,6 +233,13 @@ import com.facilio.fsm.commands.serviceAppointment.FetchServiceAppointmentSupple
 import com.facilio.fsm.commands.serviceOrders.AddOrUpdateServiceOrderCostCommand;
 import com.facilio.fsm.commands.serviceOrders.LoadSupplementsForSOCommand;
 import com.facilio.fsm.commands.serviceOrders.SetServiceTaskCommandV3;
+import com.facilio.fsm.commands.servicePMTemplate.SetServicePMTriggerCommandV3;
+import com.facilio.fsm.commands.servicePMTemplate.SetServicePMTriggerInListCommandV3;
+import com.facilio.fsm.commands.servicePMTemplate.ValidateServicePMTemplateCommand;
+import com.facilio.fsm.commands.servicePlan.*;
+import com.facilio.fsm.commands.servicePlannedMaintenance.ConstructTriggerNameCommand;
+import com.facilio.fsm.commands.servicePlannedMaintenance.UpdateServicePlannedMaintenanceCommand;
+import com.facilio.fsm.commands.servicePlannedMaintenance.ValidateServicePMCommand;
 import com.facilio.fsm.commands.serviceTasks.DeleteSATaskRelCommand;
 import com.facilio.fsm.commands.serviceTasks.LoadTaskPlansCommandV3;
 import com.facilio.fsm.commands.serviceTasks.SetTaskAttachmentsCountCommand;
@@ -4156,6 +4163,9 @@ public class APIv3Config {
                 .create()
                 .beforeSave(new FsmTransactionChainFactoryV3().getTaskBeforeSaveChain())
                 .afterSave(new FsmTransactionChainFactoryV3().getTaskAfterSaveChain())
+                .preCreate()
+                .beforeSave(new FsmTransactionChainFactoryV3().getTaskBeforeSaveChain())
+                .afterSave(new FsmTransactionChainFactoryV3().getTaskAfterPreCreateChain())
                 .update()
                 .beforeSave(new FsmTransactionChainFactoryV3().getTaskBeforeUpdateChain())
                 .afterSave(new FsmTransactionChainFactoryV3().getTaskAfterUpdateChain())
@@ -4177,6 +4187,8 @@ public class APIv3Config {
                 .beforeSave(FsmTransactionChainFactoryV3.getSOBeforeSaveCreateChain())
                 .afterSave(FsmTransactionChainFactoryV3.afterSOCreateChain())
                 .afterTransaction(new AddActivitiesCommandV3(FacilioConstants.ContextNames.SERVICE_ORDER_ACTIVITY))
+                .preCreate()
+                .afterSave(FsmTransactionChainFactoryV3.getServiceOrderPreCreateChain())
                 .update()
                 .beforeSave(FsmTransactionChainFactoryV3.getSOBeforeUpdateChain())
                 .afterSave(FsmTransactionChainFactoryV3.afterSOUpdateChain())
@@ -4187,12 +4199,17 @@ public class APIv3Config {
                 .beforeFetch(new LoadSupplementsForSOCommand())
                 .afterFetch(new SetServiceTaskCommandV3())
                 .delete()
+                .postCreate()
+                .afterSave(FsmTransactionChainFactoryV3.getServiceOrderPostCreateChain())
                 .build();
     }
     @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS)
     public static Supplier<V3Config> getServiceOrderPlannedItems() {
         return () -> new V3Config(ServiceOrderPlannedItemsContext.class, null)
                 .create()
+                .beforeSave(new SetServiceOrderPlannedItemsCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand(),new SAEstimatedItemCostAfterCreateCommand())
+                .preCreate()
                 .beforeSave(new SetServiceOrderPlannedItemsCommand())
                 .afterSave(new AddOrUpdateServiceOrderCostCommand(),new SAEstimatedItemCostAfterCreateCommand())
                 .update()
@@ -4217,6 +4234,9 @@ public class APIv3Config {
                 .create()
                 .beforeSave(new SetServiceOrderPlannedToolsCommand())
                 .afterSave(new AddOrUpdateServiceOrderCostCommand(),new SAEstimatedToolCostAfterCreateCommand())
+                .preCreate()
+                .beforeSave(new SetServiceOrderPlannedToolsCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand(),new SAEstimatedToolCostAfterCreateCommand())
                 .update()
                 .beforeSave(new SetServiceOrderPlannedToolsCommand())
                 .afterSave(new AddOrUpdateServiceOrderCostCommand(),new SAEstimatedToolCostAfterUpdateCommand())
@@ -4237,6 +4257,9 @@ public class APIv3Config {
     public static Supplier<V3Config> getServiceOrderPlannedServices() {
         return () -> new V3Config(ServiceOrderPlannedServicesContext.class, null)
                 .create()
+                .beforeSave(new SetServiceOrderPlannedServicesCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand(), new SAEstimatedServiceCostAfterCreateCommand())
+                .preCreate()
                 .beforeSave(new SetServiceOrderPlannedServicesCommand())
                 .afterSave(new AddOrUpdateServiceOrderCostCommand(), new SAEstimatedServiceCostAfterCreateCommand())
                 .update()
@@ -4529,6 +4552,165 @@ public class APIv3Config {
                 .pickList()
                 .setAccentField(FacilioConstants.TimeOff.TIME_OFF_TYPE,FacilioConstants.ContextNames.FieldServiceManagement.COLOR)
                 .setSeverityLevel("L2")
+                .build();
+    }
+    @Module(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE)
+    public static Supplier<V3Config> getServicePlannedMaintenance(){
+        return () -> new V3Config(ServicePlannedMaintenanceContext.class,null)
+                .create()
+                .beforeSave(new ValidateServicePMCommand())
+                .afterSave(new ConstructAddCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_ACTIVITY))
+                .update()
+                .beforeSave(FsmTransactionChainFactoryV3.getServicePMBeforeUpdateChain())
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_ACTIVITY))
+                .list()
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "servicePMTrigger")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "servicePMTemplate")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "site")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "space")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "client")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "asset")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "servicePlan")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "priority")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "fieldAgent")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "vendor")
+                .summary()
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "servicePMTrigger")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "servicePMTemplate")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "site")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "space")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "client")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "asset")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "servicePlan")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "priority")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "fieldAgent")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "vendor")
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TRIGGER)
+    public static Supplier<V3Config> getServicePMTrigger(){
+        return () -> new V3Config(ServicePMTriggerContext.class,null)
+                .create()
+                .beforeSave(new ConstructTriggerNameCommand())
+                .afterSave(new UpdateServicePlannedMaintenanceCommand())
+                .update()
+                .beforeSave(new ConstructTriggerNameCommand())
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN)
+    public static Supplier<V3Config> getServicePlan(){
+        return () -> new V3Config(ServicePlanContext.class,null)
+                .create()
+                .beforeSave(new ValidateServicePlanCommand())
+                .afterSave(new ConstructAddCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_ACTIVITY))
+                .update()
+                .beforeSave(new ValidateServicePlanCommand())
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_ACTIVITY))
+                .list()
+                .summary()
+                .afterFetch(new SetServiceTaskTemplateCommand())
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_ITEMS)
+    public static Supplier<V3Config> getServicePlanItems(){
+        return () -> new V3Config(ServicePlanItemsContext.class,null)
+                .create()
+                .beforeSave(new SetServicePlanItemsCommand())
+                .update()
+                .beforeSave(new SetServicePlanItemsCommand())
+                .list()
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_ITEMS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_ITEMS, "serviceTaskTemplate")
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_TOOLS)
+    public static Supplier<V3Config> getServicePlanTools(){
+        return () -> new V3Config(ServicePlanToolsContext.class,null)
+                .create()
+                .beforeSave(new SetServicePlanToolsCommand())
+                .update()
+                .beforeSave(new SetServicePlanToolsCommand())
+                .list()
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_TOOLS, "toolType")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_TOOLS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_TOOLS, "serviceTaskTemplate")
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_SERVICES)
+    public static Supplier<V3Config> getServicePlanServices(){
+        return () -> new V3Config(ServicePlanServicesContext.class,null)
+                .create()
+                .beforeSave(new SetServicePlanServicesCommand())
+                .update()
+                .beforeSave(new SetServicePlanServicesCommand())
+                .list()
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_SERVICES, "service")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_SERVICES, "serviceTaskTemplate")
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ServicePlannedMaintenance.SERVICE_TASK_TEMPLATE)
+    public static Supplier<V3Config> getServiceTaskTemplate(){
+        return () -> new V3Config(ServiceTaskTemplateContext.class,null)
+                .create()
+                .update()
+                .list()
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_SERVICES, "workType")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_SERVICES, "skills")
+                .summary()
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_SERVICES, "workType")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN_SERVICES, "skills")
+                .afterFetch(new LoadTaskTemplatePlansCommandV3())
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE)
+    public static Supplier<V3Config> getServicePMTemplate(){
+        return () -> new V3Config(ServicePMTemplateContext.class,null)
+                .create()
+                .beforeSave(new ValidateServicePMTemplateCommand())
+                .afterSave(new ConstructAddCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE_ACTIVITY))
+                .update()
+                .beforeSave(new ValidateServicePMTemplateCommand())
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE_ACTIVITY))
+                .list()
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "site")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "spaceCategory")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "client")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "assetCategory")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "servicePlan")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "priority")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "fieldAgent")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "vendor")
+                .afterFetch(new SetServicePMTriggerInListCommandV3())
+                .summary()
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "site")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "spaceCategory")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "client")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "assetCategory")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "servicePlan")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "priority")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "fieldAgent")
+                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "vendor")
+                .afterFetch(new SetServicePMTriggerCommandV3())
+                .delete()
                 .build();
     }
 }

@@ -276,6 +276,18 @@
             <param name="buttonPermission">true</param>
             <param name="deprecated">true</param>
         </action>
+        <action name="servicePlannedMaintenance/*/systemButton/*" class="com.facilio.fsm.actions.ServicePlannedMaintenanceAction" method="publishServicePM">
+            <param name="moduleName">servicePlannedMaintenance</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">{2}</param>
+        </action>
+        <action name="servicePMTemplate/*/systemButton/*" class="com.facilio.fsm.actions.ServicePMTemplateAction" method="createServicePM">
+            <param name="moduleName">servicePMTemplate</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">{2}</param>
+        </action>
         <action name="serviceOrder/*/systemButton/*" class="com.facilio.fsm.actions.ServiceOrderAction" method="updateServiceOrders">
             <param name="moduleName">serviceOrder</param>
             <param name="orderId">{1}</param>

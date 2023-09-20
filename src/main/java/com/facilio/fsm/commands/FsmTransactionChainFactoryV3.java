@@ -15,6 +15,7 @@ import com.facilio.fsm.commands.plans.SetServiceOrderPlannedItemsCommand;
 import com.facilio.fsm.commands.plans.ValidateServiceOrderPlannedItemsCommand;
 import com.facilio.fsm.commands.serviceAppointment.*;
 import com.facilio.fsm.commands.serviceOrders.*;
+import com.facilio.fsm.commands.servicePlannedMaintenance.*;
 import com.facilio.fsm.commands.serviceTasks.*;
 import com.facilio.fsm.commands.timeOff.GenerateTimeOffCodeCommand;
 import com.facilio.fsm.commands.timeSheet.*;
@@ -54,6 +55,11 @@ public class FsmTransactionChainFactoryV3 {
         c.addCommand(new SOStatusChangeViaSTCommandV3());
         c.addCommand(new SOSTAutoCreateAfterCommand());
         c.addCommand(new AddServiceOrderActivityForAddServiceTaskAction_ServiceTask_Command());
+        return c;
+    }
+    public static FacilioChain getTaskAfterPreCreateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SOSTAutoCreateAfterCommand());
         return c;
     }
     public static FacilioChain getTaskAfterUpdateChain() {
@@ -381,6 +387,49 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain getPeopleSkillLevelBeforeSaveCommand(){
         FacilioChain c=getDefaultChain();
         c.addCommand(new PeopleSkillLevelBeforeSaveCommand());
+        return c;
+    }
+    public static FacilioChain getServicePMBeforeUpdateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PublishServicePMCommand());
+        c.addCommand(new UpdateNextRunCommand());
+        return c;
+    }
+    public static FacilioChain preCreateServiceOrder(){
+        FacilioChain c = FacilioChain.getTransactionChain(1800000);// in ms
+        c.addCommand(new GenerateServiceOrdersCommand());
+        c.addCommand(new PreCreateServiceOrdersCommand());
+        return c;
+    }
+    public static FacilioChain getServiceOrderStatusChangeChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchServiceOrdersToChangeStatusCommand());
+        c.addCommand(new ScheduleServiceOrdersToChangeStatusCommand());
+        return c;
+    }
+    public static FacilioChain servicePMNightlySchedulerChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ServicePMNightlySchedulerCommand());
+        return c;
+    }
+    public static FacilioChain getServiceOrderPostCreateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ServiceOrderPreviewToNewStatusUpdateCommand());
+        c.addCommand(new UpdateServicePMExecutionTimesCommand());
+        c.addCommand(new UpdateCounterInServicePMCommand());
+        c.addCommand(new AutoCreateSA());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.SERVICE_ORDER_ACTIVITY));
+        return c;
+    }
+    public static FacilioChain getServiceOrderPreCreateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddServiceTaskCommand());
+        c.addCommand(new AddPlansCommand());
+        return c;
+    }
+    public static FacilioChain createServicePMFromTemplateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CreateServicePMFromTemplateCommand());
         return c;
     }
 }

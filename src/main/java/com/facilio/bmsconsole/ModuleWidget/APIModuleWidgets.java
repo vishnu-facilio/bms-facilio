@@ -918,7 +918,28 @@ public class APIModuleWidgets {
                 .addModuleWidget("evaluationTeamDetails","Evaluation Team Details",PageWidget.WidgetType.EVALUATION_TEAM_DETAILS)
                 .addWidgetConfig("evaluationTeamDetails_4_3","Evaluation Team Details - 4 - 3",WidgetConfigContext.ConfigType.FIXED,4,3,PagesContext.PageLayoutType.WEB)
                 .done();
-
+    }
+    @WidgetsForModule(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE)
+    public static Supplier<ModuleWidgets> getServicePlannedMaintenanceWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("servicePlanTasks","Tasks",PageWidget.WidgetType.SERVICE_PLAN_TASKS)
+                .addWidgetConfig("webServicePlanTasks_5_12","Service Plan Tasks - 5 - 12", WidgetConfigContext.ConfigType.FIXED,5,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("servicePlanInventory","Inventory",PageWidget.WidgetType.SERVICE_PLAN_INVENTORY)
+                .addWidgetConfig("webServicePlanInventory_5_12","Service Plan Inventory - 5 - 12", WidgetConfigContext.ConfigType.FIXED,5,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("serviceOrders","Work Orders",PageWidget.WidgetType.SERVICE_PM_SERVICE_ORDERS)
+                .addWidgetConfig("webPMServiceOrders_10_12","Work Orders - 10 - 12", WidgetConfigContext.ConfigType.FIXED,10,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
+    }
+    @WidgetsForModule(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE)
+    public static Supplier<ModuleWidgets> getServicePMTemplateWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("servicePMs","Planned Maintenance",PageWidget.WidgetType.SERVICE_PM)
+                .addWidgetConfig("webPM_10_12","Planned Maintenance - 10 - 12", WidgetConfigContext.ConfigType.FIXED,10,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
     }
     @WidgetsForModule(FacilioConstants.ContextNames.ITEM_TYPES)
     public static Supplier<ModuleWidgets> getItemTypesWidgets(){

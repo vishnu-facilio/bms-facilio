@@ -39,7 +39,7 @@ public class ServiceAppointmentContext extends V3Context {
     private ServiceAppointmentTicketStatusContext status;
     private Long resolutionDueDuration;
     private V3ClientContext client;
-    private V3SpaceContext space;
+    private V3BaseSpaceContext space;
     private V3AssetContext asset;
     private VendorContext vendor;
     private V3TenantContext tenant;

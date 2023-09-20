@@ -197,6 +197,7 @@ public class FacilioConstants {
 		public static final String AVAILABLE_TRIGGER_FREQUENCIES = "availableTriggerFrequncies";
 		public static final String PM_V2_SITES = "plannedMaintenanceSite";
 	}
+
 	public static class JOB_PLAN {
 		public static final String JOB_PLAN_ID = "jobPlanId";
 		public static final String JOB_PLAN_STATUS = "jobPlanStatus";
@@ -3486,6 +3487,8 @@ public class FacilioConstants {
 			classMap.put(ServiceOrder.SERVICE_ORDER_TICKET_STATUS, ServiceOrderTicketStatusContext.class);
 			classMap.put(TimeOff.TIME_OFF_TYPE, TimeOffTypeContext.class);
 			classMap.put(SERVICE_ORDER_ACTIVITY,ActivityContext.class);
+			classMap.put(ServicePlannedMaintenance.SERVICE_PM_ACTIVITY,ActivityContext.class);
+			classMap.put(ServicePlannedMaintenance.SERVICE_PLAN_ACTIVITY,ActivityContext.class);
 			classMap.put(EMPLOYEE_ACTIVITY,ActivityContext.class);
 			classMap.put(VENDOR_CONTACTS_ACTIVITY,ActivityContext.class);
 			classMap.put(Territory.TERRITORY_ACTIVITY,ActivityContext.class);
@@ -3508,7 +3511,16 @@ public class FacilioConstants {
 			classMap.put(ServiceAppointment.SERVICE_APPOINTMENT,ServiceAppointmentContext.class);
 			classMap.put(FieldServiceManagement.SERVICE_ORDER,ServiceOrderContext.class);
 			classMap.put(Priority.PRIORITY, PriorityContext.class);
-
+			classMap.put(ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, ServicePlannedMaintenanceContext.class);
+			classMap.put(ServicePlannedMaintenance.SERVICE_PM_TRIGGER, ServicePMTriggerContext.class);
+			classMap.put(ServicePlannedMaintenance.SERVICE_PLAN, ServicePlanContext.class);
+			classMap.put(ServicePlannedMaintenance.SERVICE_TASK_TEMPLATE, ServiceTaskTemplateContext.class);
+			classMap.put(ServicePlannedMaintenance.SERVICE_PLAN_ITEMS, ServicePlanItemsContext.class);
+			classMap.put(ServicePlannedMaintenance.SERVICE_PLAN_TOOLS, ServicePlanToolsContext.class);
+			classMap.put(ServicePlannedMaintenance.SERVICE_PLAN_SERVICES, ServicePlanServicesContext.class);
+			classMap.put(ServicePlannedMaintenance.SERVICE_TASK_TEMPLATE_SKILLS, ServiceTaskTemplateSkillsContext.class);
+			classMap.put(ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, ServicePMTemplateContext.class);
+			classMap.put(ServicePlannedMaintenance.SERVICE_PM_TEMPLATE_ACTIVITY,ActivityContext.class);
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());
@@ -4878,7 +4890,7 @@ public class FacilioConstants {
 		public static final String SERVICE_ORDER = "serviceOrder";
 		public static final String SERVICE_ORDER_TICKET_STATUS = "serviceOrderTicketStatus";
 		public static final String SERVICE_ORDER_STATUS_ACTIONS = "serviceOrderStatusActions";
-		public static final String PREVIEW = "preview";
+		public static final String UPCOMING = "upcoming";
 		public static final String NEW = "new";
 		public static final String SCHEDULED = "scheduled";
 		public static final String IN_PROGRESS = "inProgress";
@@ -4886,9 +4898,6 @@ public class FacilioConstants {
 		public static final String CANCELLED = "cancelled";
 		public static final String CLOSED = "closed";
 	}
-
-
-
 
 	public static class PeopleSkillLevel{
 		public static final String PEOPLE_SKILL_LEVEL = "peopleskilllevel";
@@ -4937,5 +4946,29 @@ public class FacilioConstants {
     public static class RelationshipField {
 		public static final String ASSOCIATE_IDS = "associateIds";
 		public static final String DISSOCIATE_IDS = "dissociateIds";
+	}
+    public static class ServicePlannedMaintenance {
+		public static final String SERVICE_PLANNED_MAINTENANCE = "servicePlannedMaintenance";
+		public static final String SERVICE_PM_TRIGGER = "servicePMTrigger";
+		public static final String GENERATED_SERVICE_ORDERS = "generatedServiceOrders";
+		public static final String NEXT_EXECUTION_DATES = "nextExecutionDates";
+		public static final String SERVICE_PM_ACTIVITY = "servicePMActivity";
+		public static final String SERVICE_PLAN_ACTIVITY = "servicePlanActivity";
+		public static final String SERVICE_PM_STATUS_ACTIONS = "servicePMStatusActions";
+		public static final String SERVICE_PLAN="servicePlan";
+		public static final String SERVICE_TASK_TEMPLATE="serviceTaskTemplate";
+		public static final String SERVICE_PLAN_ITEMS="servicePlanItems";
+		public static final String SERVICE_PLAN_TOOLS="servicePlanTools";
+		public static final String SERVICE_PLAN_SERVICES="servicePlanServices";
+		public static final String SERVICE_TASK_TEMPLATE_SKILLS = "serviceTaskTemplateSkills";
+		public static final String SERVICE_PM_TEMPLATE = "servicePMTemplate";
+		public static final String SERVICE_PM_TEMPLATE_ACTIVITY = "servicePMTemplateActivity";
+		public static final String SERVICE_PM_TEMPLATE_NOTES = "servicePMTemplateNotes";
+		public static final String SERVICE_PM_TEMPLATE_ATTACHMENTS = "servicePMTemplateAttachments";
+		public static final String SERVICE_PM_NOTES = "servicePlannedMaintenanceNotes";
+		public static final String SERVICE_PM_ATTACHMENTS = "servicePlannedMaintenanceAttachments";
+		public static final String SERVICE_PLAN_NOTES = "servicePlanNotes";
+		public static final String SERVICE_PLAN_ATTACHMENTS = "servicePlanAttachments";
+
 	}
 }

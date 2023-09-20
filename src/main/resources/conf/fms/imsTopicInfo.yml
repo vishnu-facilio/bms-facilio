@@ -35,6 +35,8 @@ topics:
       - { key: controlAction/+, handler: com.facilio.wmsv2.handler.CommandGenerationHandler, recordTimeout: 1800 }
       - { key: controlActionTemplate/+, handler: com.facilio.wmsv2.handler.ControlActionGenerationHandler, recordTimeout: 600 }
       - { key: controller__offline__alarm__/#, handler: com.facilio.remotemonitoring.wms.ControllerOfflineHandler, recordTimeout: 1800 }
+      - { key: service_pm/+/execute, handler: com.facilio.ims.handler.ServicePMPublishHandler,recordTimeout: 1800 }
+      - { key: service_pm_template/+/execute, handler: com.facilio.ims.handler.ServicePMCreationFromTemplateHandler,recordTimeout: 1800 }
 
   - topic: pre-send-mail
     keys:
@@ -47,11 +49,11 @@ topics:
   - topic: pm-planner
     keys:
       - { key: pm_planner/+/execute, handler: com.facilio.ims.handler.PMPlannerHandler, recordTimeout: 1800 }
-      - { key: inspection-generation-process/#, handler: com.facilio.ims.handler.InspectionGenerationHandler , priority: -5, recordTimeout: 1800 }
+      - { key: inspection-generation-process/#, handler: com.facilio.ims.handler.InspectionGenerationHandler, priority: -5, recordTimeout: 1800 }
 
   - topic: scriptlog
     keys:
-      - { key: script-log/#, handler: com.facilio.ims.handler.ScriptLogHander, recordTimeout: 10 }
+      - { key: script-log/#, handler: com.facilio.ims.handler.ScriptLogHander,recordTimeout: 10 }
 
   - topic: alarm-wf
     keys:

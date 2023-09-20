@@ -4318,7 +4318,6 @@
 
     <request path="/api/v3/servicePlannedMaintenance/getNextExecutionDates">
         <requestbody type="object">
-            <property name="recordId" type="number" mandatory="true"/>
             <property name="startTime" type="number" mandatory="true"/>
             <property name="scheduleInfo" type="string" mandatory="true"/>
         </requestbody>

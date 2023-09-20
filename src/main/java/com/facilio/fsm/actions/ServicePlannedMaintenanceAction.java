@@ -43,7 +43,18 @@ public class ServicePlannedMaintenanceAction  extends V3Action {
             }
             nextExecutionTimes.add(nextExecutionTime);
         }
-        setData("nextExecutionDates",nextExecutionTimes);
+        setData(FacilioConstants.ServicePlannedMaintenance.NEXT_EXECUTION_DATES,nextExecutionTimes);
         return V3Action.SUCCESS;
     }
+    public String publishServicePM() throws Exception {
+        Map<String, Object> patchObj = new HashMap<>();
+        JSONObject bodyParam = new JSONObject();
+        bodyParam.put("publishServicePM",true);
+        V3Util.processAndUpdateSingleRecord(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, recordId, patchObj, bodyParam , null, null, null, null,null, null, null,null);
+        HashMap<String, String> successMsg = new HashMap<>();
+        successMsg.put("message","Successfully published Service PM");
+        setData(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_STATUS_ACTIONS,successMsg);
+        return V3Action.SUCCESS;
+    }
+
 }

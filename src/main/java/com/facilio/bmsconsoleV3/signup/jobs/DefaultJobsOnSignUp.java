@@ -143,5 +143,8 @@ public class DefaultJobsOnSignUp extends SignUpData {
         FacilioTimer.schedulePeriodicJob(orgId, "PeopleStatusUpdateJob", 1800, 1800, "facilio");
         //Job to send silent notification for shift start and end
         FacilioTimer.schedulePeriodicJob(orgId,"SilentNotificationForShiftJob",1800,1800,"facilio");
+        //periodic job to schedule service order status change
+        FacilioTimer.schedulePeriodicJob(orgId, "ServiceOrderStatusChangeScheduler", 1800, 1800, "facilio");
+
     }
 }

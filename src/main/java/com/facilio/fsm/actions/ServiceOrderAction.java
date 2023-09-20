@@ -1,5 +1,6 @@
 package com.facilio.fsm.actions;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -7,19 +8,29 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
+import com.facilio.fsm.context.ServicePlannedMaintenanceContext;
 import com.facilio.fsm.exception.FSMErrorCode;
 import com.facilio.fsm.exception.FSMException;
 import com.facilio.fsm.util.ServiceOrderAPI;
+import com.facilio.fsm.util.ServicePlannedMaintenanceAPI;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.V3Action;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import com.facilio.v3.util.V3Util;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.*;
 
 import static com.facilio.fsm.util.ServiceOrderAPI.updateServiceOrder;
 
@@ -32,12 +43,17 @@ public class ServiceOrderAction extends V3Action {
     private String identifier;
     private String buttonAction;
     private boolean validate;
+    private Long preferredStartTime;
+    private Long servicePMId;
+    private Boolean rescheduleSubsequent;
+
     private static Map<String,String> statusMap = new HashMap<String, String>() {{
         put("cancelSO", FacilioConstants.ServiceOrder.CANCELLED);
         put("cloneSO", "Clone");
         put("associateSOSP", "Associate");
         put("completeWork", FacilioConstants.ServiceOrder.COMPLETED);
         put("closeSO", FacilioConstants.ServiceOrder.CLOSED);
+        put("reschedule", "Reschedule");
     }};
 
 
@@ -106,6 +122,51 @@ public class ServiceOrderAction extends V3Action {
                 updateServiceOrder(serviceOrderInfo);
                 successMsg.put("message","Work Order Closed Successfully");
             }
+            if(identifier.equals("reschedule")){
+                if(serviceOrderInfo.getStatus()!=null && serviceOrderInfo.getStatus().getId() == cancelledState.getId()){
+                    throw new FSMException(FSMErrorCode.SO_CANCEL_EDIT_FAILED);
+                }
+                ModuleBean modBean = Constants.getModBean();
+                FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ServiceOrder.SERVICE_ORDER);
+                ServicePlannedMaintenanceContext servicePM = V3RecordAPI.getRecord(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE,servicePMId,ServicePlannedMaintenanceContext.class);
+                Integer leadTime = servicePM.getLeadTime();
+                Long estimatedDuration = servicePM.getEstimatedDuration();
+                List<ServiceOrderContext> serviceOrders = new ArrayList<>();
+                serviceOrders.add(serviceOrderInfo);
+                if(rescheduleSubsequent){
+                    List<ServiceOrderContext> subsequentServiceOrders = ServicePlannedMaintenanceAPI.getSubsequentServiceOrders(servicePMId,serviceOrderInfo.getPreferredStartTime());
+                    if(CollectionUtils.isNotEmpty(subsequentServiceOrders)){
+                        serviceOrders.addAll(subsequentServiceOrders);
+                    }
+                }
+                List<ModuleBaseWithCustomFields> oldServiceOrders = new ArrayList<>();
+                List<ServiceOrderContext> updatedServiceOrders = new ArrayList<>();
+                for(ServiceOrderContext serviceOrder : serviceOrders){
+                    if(isTimeAfterToday(preferredStartTime)){
+                        ServiceOrderContext oldServiceOrder = FieldUtil.cloneBean(serviceOrder,ServiceOrderContext.class) ;
+                        oldServiceOrders.add(oldServiceOrder);
+                        serviceOrder.setPreferredStartTime(preferredStartTime);
+                        serviceOrder.setCreatedTime(preferredStartTime);
+                        if(leadTime!=null && leadTime>0){
+                            Long createdTime = getCreatedTime(preferredStartTime,leadTime);
+                            if(isTimeAfterToday(createdTime)){
+                                serviceOrder.setCreatedTime(createdTime);
+                            }else{
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Your preferred start date cannot be rescheduled to a date that would set the 'created time' field to today or a date in the past!");
+                            }
+                        }
+                        if(estimatedDuration!=null && estimatedDuration>0){
+                            Long preferredEndTime = preferredStartTime + estimatedDuration * 1000;
+                            serviceOrder.setPreferredEndTime(preferredEndTime);
+                        }
+                        updatedServiceOrders.add(serviceOrder);
+                    }else{
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR,"You can only reschedule to a future date. Please select a date that is after the current date.");
+                    }
+                }
+                V3Util.processAndUpdateBulkRecords(serviceOrderModule,oldServiceOrders,FieldUtil.getAsMapList(updatedServiceOrders,ServiceOrderContext.class) , null, null, null, null, null, null, null, null, true,false,null);
+                successMsg.put("message","Work Order Rescheduled Successfully");
+            }
             setData(FacilioConstants.ServiceOrder.SERVICE_ORDER_STATUS_ACTIONS,successMsg);
 
         }catch(Exception e){
@@ -116,5 +177,19 @@ public class ServiceOrderAction extends V3Action {
             }
         }
         return SUCCESS;
+    }
+    private Boolean isTimeAfterToday(Long time){
+        LocalDate currentDate = LocalDate.now();
+        LocalDate nextDate = currentDate.plusDays(1);
+        LocalDateTime nextDayMidNight = nextDate.atStartOfDay();
+        Long nextDayTime = nextDayMidNight.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        return time >= nextDayTime;
+    }
+    private Long getCreatedTime(Long preferredStartTime,Integer leadTime){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(preferredStartTime);
+        calendar.add(Calendar.DAY_OF_MONTH,-leadTime);
+        Long createdTime = calendar.getTimeInMillis();
+        return createdTime;
     }
 }
