@@ -27,6 +27,17 @@ public class APIModuleWidgets {
 
     }
     */
+    @WidgetsForModule("client")
+    public static Supplier<ModuleWidgets> getClientModuleWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("sitelistwidget", "Site List Widget", PageWidget.WidgetType.SITE_LIST_WIDGET)
+                .addWidgetConfig("flexiblewebsitelistwidget_29","Site List Widget - 29",WidgetConfigContext.ConfigType.FLEXIBLE,29,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("clientContactlistwidget", "Client Contact List Widget", PageWidget.WidgetType.CLIENT_CONTACT_LIST_WIDGET)
+                .addWidgetConfig("flexibleclientcontactlistwidget_29","Workorder List Widget - 29",WidgetConfigContext.ConfigType.FLEXIBLE,29,-1, PagesContext.PageLayoutType.WEB)
+                .done();
+
+    }
     @WidgetsForModule("workorder")
     public static Supplier<ModuleWidgets> getWorkorderModuleWidgets() {
         return () -> new ModuleWidgets()

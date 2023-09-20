@@ -257,6 +257,8 @@ public class WidgetAPI {
             case BULK_RELATION_SHIP_WIDGET:
                 return FieldUtil.getAsBeanFromJson(widgetDetails, BulkRelationshipWidget.class);
             case RELATED_LIST:
+            case SITE_LIST_WIDGET:
+            case CLIENT_CONTACT_LIST_WIDGET:
                 return FieldUtil.getAsBeanFromJson(widgetDetails, RelatedListWidgetContext.class);
             case RELATIONSHIP_WIDGET:
                 return FieldUtil.getAsBeanFromJson(widgetDetails, RelationshipWidget.class);

@@ -1,9 +1,14 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.TemplatePages.ClientContactModuleTemplatePage;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.ClientContactModuleUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -57,6 +62,41 @@ public class ClientContactModule extends BaseModuleConfig{
         allView.setHidden(true);
 
         return allView;
+    }
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String>  appNameList=new ArrayList<>();
+        appNameList.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
+        for(String appName:appNameList) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            appNameVsPage.put(appName, buildClientContactPage(app, module, false, true));
+        }
+        return appNameVsPage;
+    }
+    private List<PagesContext> buildClientContactPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+        String pageName, pageDisplayName;
+        pageName = module.getName() + "defaultpage";
+        pageDisplayName = "Default " + module.getDisplayName() + " Page ";
+        return new ModulePages()
+                .addPage(pageName, pageDisplayName, "", null, isTemplate, isDefault, false)
+                .addWebLayout()
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summaryFields", null, null)
+                .addWidget("contactDetails", "Contact Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, ClientContactModuleUtil.getSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null,  null)
+                .addWidget("commentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0,  null, ClientContactModuleUtil.getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone().getCustomPages();
     }
 
     private static FacilioView getAllClientContacts() {

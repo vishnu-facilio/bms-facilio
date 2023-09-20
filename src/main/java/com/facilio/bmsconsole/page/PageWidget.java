@@ -539,7 +539,8 @@ public class PageWidget {
 
 		UTILITY_INTEGRATION_BILL_PREVIEW("utilityIntegrationBillPreviewWidget"),
 		METER_WIDGET("meterWidget"),
-		BILL_SUMMARY_WIDGET("billSummaryWidget");
+		BILL_SUMMARY_WIDGET("billSummaryWidget"),
+		CLIENT_CONTACT_LIST_WIDGET("clientcontactListWidget");
 
 
 		private String name;

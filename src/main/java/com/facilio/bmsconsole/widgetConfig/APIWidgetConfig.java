@@ -88,5 +88,26 @@ public class APIWidgetConfig {
                 .build();
     }
 
-
+    @WidgetType(PageWidget.WidgetType.SITE_LIST_WIDGET)
+    public static Supplier<WidgetConfig> getSiteListWidgetCRUD() {
+        return () ->  new WidgetConfig()
+                .create()
+                .saveCommand(TransactionChainFactory.getAddOrUpdateRelatedListWidgetDetailChain())
+                .update()
+                .updateCommand(TransactionChainFactory.getAddOrUpdateRelatedListWidgetDetailChain())
+                .summary()
+                .fetchCommand(ReadOnlyChainFactory.getRelatedListWidgetDetailChain())
+                .build();
+    }
+    @WidgetType(PageWidget.WidgetType.CLIENT_CONTACT_LIST_WIDGET)
+    public static Supplier<WidgetConfig> getClientContactListWidgetCRUD() {
+        return () ->  new WidgetConfig()
+                .create()
+                .saveCommand(TransactionChainFactory.getAddOrUpdateRelatedListWidgetDetailChain())
+                .update()
+                .updateCommand(TransactionChainFactory.getAddOrUpdateRelatedListWidgetDetailChain())
+                .summary()
+                .fetchCommand(ReadOnlyChainFactory.getRelatedListWidgetDetailChain())
+                .build();
+    }
 }

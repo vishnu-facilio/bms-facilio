@@ -35,6 +35,8 @@ public class PageBuilderConfigUtil {
             moduleList.add(modBean.getModule("vendors"));
             moduleList.add(modBean.getModule("insurance"));
 
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.CLIENT));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT));
 
             if (CollectionUtils.isNotEmpty(moduleList)) {
                 List<Long> moduleIds = moduleList.stream().filter(Objects::nonNull).map(FacilioModule::getModuleId).collect(Collectors.toList());
