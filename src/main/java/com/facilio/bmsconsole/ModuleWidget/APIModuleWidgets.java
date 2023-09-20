@@ -83,16 +83,15 @@ public class APIModuleWidgets {
     public static Supplier<ModuleWidgets> getUtilityCustomerWidgets(){
         return () -> new ModuleWidgets()
                 .addModuleWidget("meterWidget" , "Meter Connections",PageWidget.WidgetType.METER_WIDGET)
-                //.addWidgetConfig("webMeterWidget-10*12","Full Width Meter Connections  Widget - 10*12", WidgetConfigContext.ConfigType.FIXED,65,12,PagesContext.PageLayoutType.WEB)
-                .addFixedWidgetConfig("webMeterWidget_24_12", "Meter Connections  Widget -24-12",24,12, PagesContext.PageLayoutType.WEB)
+                .addFixedWidgetConfig("webMeterWidget_24_12", "Meter Connections - 24 - 12",24,12, PagesContext.PageLayoutType.WEB)
                 .done();
     }
 
     @WidgetsForModule(FacilioConstants.UTILITY_INTEGRATION_BILLS)
     public static Supplier<ModuleWidgets> getUtilityBillWidgets(){
         return () -> new ModuleWidgets()
-                .addModuleWidget("billSummaryWidget" , "null",PageWidget.WidgetType.BILL_SUMMARY_WIDGET)
-                .addFixedWidgetConfig("webBillSummaryWidget_65_12", "Bill Summary Widget -65-12",65,12, PagesContext.PageLayoutType.WEB)
+                .addModuleWidget("billSummaryWidget" , "Bill",PageWidget.WidgetType.BILL_SUMMARY_WIDGET)
+                .addFixedWidgetConfig("webBillSummaryWidget_65_12", "Bill Summary Widget - 65 - 12",65,12, PagesContext.PageLayoutType.WEB)
                 .done();
     }
     @WidgetsForModule("meter")

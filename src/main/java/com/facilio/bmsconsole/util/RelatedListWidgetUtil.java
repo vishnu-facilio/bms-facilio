@@ -235,9 +235,9 @@ public class RelatedListWidgetUtil {
             case FacilioConstants.ContextNames.VENDORS:
                 modulesToRemove.add(FacilioConstants.ContextNames.VENDOR_CONTACT);
                 break;
-            case "utilityIntegrationCustomer":
-                modulesToRemove.add("utilityIntegrationMeter");
-                modulesToRemove.add("utilityDispute");
+            case FacilioConstants.UTILITY_INTEGRATION_CUSTOMER:
+                modulesToRemove.add(FacilioConstants.UTILITY_INTEGRATION_METER);
+                modulesToRemove.add(FacilioConstants.UTILITY_DISPUTE);
 
                 break;
             default:

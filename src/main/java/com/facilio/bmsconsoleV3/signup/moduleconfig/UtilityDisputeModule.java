@@ -344,25 +344,67 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
     }
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
-        Map<String, List<PagesContext>> pageTemp = new HashMap<>();
-        pageTemp.put(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, getSystemPage());
-        pageTemp.put(FacilioConstants.ApplicationLinkNames.ENERGY_APP,getSystemPage());
-        return  pageTemp;
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String> appNames = new ArrayList<>();
+
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,getSystemPage(app, module));
+        }
+        return appNameVsPage;
     }
-    private static List<PagesContext> getSystemPage() throws Exception {
+    private static List<PagesContext> getSystemPage(ApplicationContext app,FacilioModule module) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule disputeModule = modBean.getModule(FacilioConstants.UTILITY_DISPUTE);
 
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.UTILITY_DISPUTE_ACTIVITY);
         List<PagesContext> disputePages = new ArrayList<>();
+        String pageName, pageDisplayName;
+        pageName = disputeModule.getName().toLowerCase().replaceAll("[^a-zA-Z0-9]+", "") + "defaultpage";
+        pageDisplayName = "Default "+ disputeModule.getDisplayName()+" Page ";
+
+        //Default page
+        PagesContext defaultPage = new PagesContext(pageName, pageDisplayName, "", getBillMissingCriteria(), false, true, true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("utilitydisputesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("utilitydisputesummaryfields", null, null)
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getSummaryWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+
+                ;
+
         //bill missing
-        PagesContext billMissingTemplatePage = new PagesContext(null, null, "", getBillMissingCriteria(), true, false, false)
+        PagesContext billMissingTemplatePage = new PagesContext("billmissingdisputepage", "Bill Missing Dispute Page", "", getBillMissingCriteria(), false, false, true)
                 .addLayout(PagesContext.PageLayoutType.WEB)
-                .addTab("utilitydisputesummary", "SUMMARY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilitydisputesummaryfields", null, null)
-                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getBillMissingSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE))
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getBillMissingSummaryWidgetDetails((FacilioConstants.UTILITY_DISPUTE),app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -372,7 +414,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addTab("utilitydisputehistory", "HISTORY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
@@ -382,13 +424,13 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .tabDone()
                 .layoutDone();
 
-
-        PagesContext accountTerminatedTemplatePage = new PagesContext(null, null, "", getAccountRevokedCriteria(), true, false, false)
+        //account terminated
+        PagesContext accountTerminatedTemplatePage = new PagesContext("accountterminateddisputepage", "Account Terminated Dispute Page", "", getAccountRevokedCriteria(), false, false, true)
                 .addLayout(PagesContext.PageLayoutType.WEB)
-                .addTab("utilitydisputesummary", "SUMMARY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilitydisputesummaryfields", null, null)
-                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getAccountTerminatedSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE))
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getAccountTerminatedSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -398,7 +440,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addTab("utilitydisputehistory", "HISTORY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
@@ -408,12 +450,13 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .tabDone()
                 .layoutDone();
 
-        PagesContext consumptionTemplatePage = new PagesContext(null, null, "", getConsumptionMismatchCriteria(), true, false, false)
+        //consumption mismatch
+        PagesContext consumptionTemplatePage = new PagesContext("consumptiondisputepage", "Consumption Dispute Page", "", getConsumptionMismatchCriteria(), false, false, true)
                 .addLayout(PagesContext.PageLayoutType.WEB)
-                .addTab("utilitydisputesummary", "SUMMARY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputesummary", "Sumary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilitydisputesummaryfields", null, null)
-                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getConsumptionMismatchSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE))
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getConsumptionMismatchSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -423,7 +466,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addTab("utilitydisputehistory", "HISTORY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
@@ -433,12 +476,13 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .tabDone()
                 .layoutDone();
 
-        PagesContext tariffTemplatePage = new PagesContext(null, null, "", getTariffMismatchCriteria(), true, false, false)
+        //tariffmismatch
+        PagesContext tariffTemplatePage = new PagesContext("tariffdisputepage", "Tariff Dispute Page", "", getTariffMismatchCriteria(), false, false, true)
                 .addLayout(PagesContext.PageLayoutType.WEB)
-                .addTab("utilitydisputesummary", "SUMMARY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilitydisputesummaryfields", null, null)
-                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getTariffMismatchSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE))
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getTariffMismatchSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -448,7 +492,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addTab("utilitydisputehistory", "HISTORY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
@@ -458,12 +502,13 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .tabDone()
                 .layoutDone();
 
-        PagesContext costMismatchTemplatePage = new PagesContext(null, null, "", getCostMismatch(), true, false, false)
+        //costmismatch
+        PagesContext costMismatchTemplatePage = new PagesContext("costmismatchdisputepage", "Cost Mismatched Dispute Page", "", getCostMismatch(), false, false, true)
                 .addLayout(PagesContext.PageLayoutType.WEB)
-                .addTab("utilitydisputesummary", "SUMMARY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilitydisputesummaryfields", null, null)
-                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getCostMismatchSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE))
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getCostMismatchSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -473,7 +518,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addTab("utilitydisputehistory", "HISTORY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
@@ -546,8 +591,93 @@ public class UtilityDisputeModule extends BaseModuleConfig {
         criteria.addAndCondition(cost);
         return criteria;
     }
+    private static JSONObject getSummaryWidgetDetails(String moduleName,ApplicationContext app) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(moduleName);
 
-    private static JSONObject getBillMissingSummaryWidgetDetails(String moduleName) throws Exception{
+        FacilioField dateField = moduleBean.getField("billDate", moduleName);
+        FacilioField accNoField = moduleBean.getField("accountNumber", moduleName);
+        FacilioField supplierField = moduleBean.getField("supplier", moduleName);
+        FacilioField typeField = moduleBean.getField("type", moduleName);
+
+
+        FacilioField createdField = moduleBean.getField("sysCreatedTime", moduleName);
+        FacilioField createdByField = moduleBean.getField("sysCreatedBy",moduleName);
+        FacilioField modifiedField = moduleBean.getField("sysModifiedBy",moduleName);
+        FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime",moduleName);
+        FacilioField resolvedBy = moduleBean.getField("resolvedBy",moduleName);
+
+        FacilioField actualMeterConsumption = moduleBean.getField("actualMeterConsumption",moduleName);
+        FacilioField billMeterConsumption = moduleBean.getField("billMeterConsumption",moduleName);
+        FacilioField disputedConsumption = moduleBean.getField("disputedConsumption",moduleName);
+        FacilioField expectedCost = moduleBean.getField("expectedCost",moduleName);
+        FacilioField actualCost = moduleBean.getField("actualCost",moduleName);
+        FacilioField differenceInCost = moduleBean.getField("differenceInCost",moduleName);
+        FacilioField tariffToBeApplied = moduleBean.getField("tariffToBeApplied",moduleName);
+        FacilioField tariffApplied = moduleBean.getField("tariffApplied",moduleName);
+
+
+        SummaryWidget pageWidget = new SummaryWidget();
+
+        SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
+
+
+        addSummaryFieldInWidgetGroup(widgetGroup, accNoField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, supplierField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, typeField, 1, 3, 1);
+
+
+        widgetGroup.setName("moduleDetails");
+        widgetGroup.setDisplayName("Primary Information");
+        widgetGroup.setColumns(4);
+
+
+        SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
+        addSummaryFieldInWidgetGroup(widgetGroup1, createdField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup1, createdByField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup1, modifiedField, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup1, sysModifiedTimeField, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup1, resolvedBy, 2, 1, 1);
+
+
+        widgetGroup1.setName("moduleSystemDetails");
+        widgetGroup1.setDisplayName("System Information");
+        widgetGroup1.setColumns(4);
+
+        SummaryWidgetGroup widgetGroup2 = new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(widgetGroup2, actualMeterConsumption, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup2, billMeterConsumption, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup2, disputedConsumption, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup2, expectedCost, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup2, actualCost, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup2, differenceInCost, 2, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup2, tariffToBeApplied, 2, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup2, tariffApplied, 2, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup2, dateField, 3, 1, 1);
+
+
+        widgetGroup2.setName("otherDetails");
+        widgetGroup2.setDisplayName("Dispute Information");
+        widgetGroup2.setColumns(4);
+
+
+        List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
+        widgetGroupList.add(widgetGroup);
+        widgetGroupList.add(widgetGroup2);
+        widgetGroupList.add(widgetGroup1);
+
+        pageWidget.setDisplayName("");
+        pageWidget.setModuleId(module.getModuleId());
+        pageWidget.setAppId(app.getId());
+        pageWidget.setGroups(widgetGroupList);
+
+        return FieldUtil.getAsJSON(pageWidget);
+
+    }
+
+
+    private static JSONObject getBillMissingSummaryWidgetDetails(String moduleName,ApplicationContext app) throws Exception{
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -595,12 +725,12 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
     }
-    private static JSONObject getAccountTerminatedSummaryWidgetDetails(String moduleName) throws Exception{
+    private static JSONObject getAccountTerminatedSummaryWidgetDetails(String moduleName,ApplicationContext app) throws Exception{
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -648,12 +778,12 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
     }
-    private static JSONObject getConsumptionMismatchSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getConsumptionMismatchSummaryWidgetDetails(String moduleName,ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -719,13 +849,13 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
 
     }
-    private static JSONObject getTariffMismatchSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getTariffMismatchSummaryWidgetDetails(String moduleName,ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -791,13 +921,13 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
 
     }
-    private static JSONObject getCostMismatchSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getCostMismatchSummaryWidgetDetails(String moduleName,ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -866,7 +996,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);

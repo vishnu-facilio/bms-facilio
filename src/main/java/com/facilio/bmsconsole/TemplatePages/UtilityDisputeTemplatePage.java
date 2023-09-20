@@ -29,12 +29,12 @@ public class UtilityDisputeTemplatePage implements TemplatePageFactory {
         historyWidgetParam.put("activityModuleName", FacilioConstants.UTILITY_DISPUTE_ACTIVITY);
 
 
-        return new PagesContext(null, null, "", null, true, false, false)
+        return new PagesContext("disputetemplatepage", " Dispute Template Page", "", null, true, false, false)
                 .addLayout(PagesContext.PageLayoutType.WEB)
-                .addTab("utilitydisputesummary", "SUMMARY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilitydisputesummaryfields", null, null)
-                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE))
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -44,7 +44,7 @@ public class UtilityDisputeTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addTab("utilitydisputehistory", "HISTORY", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
@@ -57,7 +57,7 @@ public class UtilityDisputeTemplatePage implements TemplatePageFactory {
                 ;
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(String moduleName,ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -135,7 +135,7 @@ public class UtilityDisputeTemplatePage implements TemplatePageFactory {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
