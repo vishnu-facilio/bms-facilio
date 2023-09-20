@@ -213,30 +213,36 @@ public class ServiceTaskUtil {
     }
 
     public static ServiceAppointmentContext getServiceAppointmentFromTask(Long taskId) throws Exception {
-        ModuleBean moduleBean = Constants.getModBean();
-
         String serviceTaskModuleName = FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK;
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioField appointmentField = Constants.getModBean().getField("serviceAppointment", serviceTaskModuleName);
         FacilioModule serviceTask = moduleBean.getModule(serviceTaskModuleName);
         List<FacilioField> fields = moduleBean.getAllFields(serviceTaskModuleName);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
-        FacilioModule serviceAppointmentModule = moduleBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
-        List<FacilioField> serviceAppointmentFields = moduleBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
-
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getIdCondition(taskId, serviceTask));
 
-        SelectRecordsBuilder<ServiceAppointmentContext> selectRecordsBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>()
-                .module(serviceAppointmentModule)
-                .select(serviceAppointmentFields)
-                .beanClass(ServiceAppointmentContext.class)
-                .innerJoin(serviceTask.getTableName())
-                .on(FieldFactory.getIdField(serviceAppointmentModule).getCompleteColumnName()+" = "+fieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT).getCompleteColumnName())
-                .andCriteria(criteria);
+        List<LookupField> lookUpfields = new ArrayList<>();
+        lookUpfields.add((LookupField) fieldMap.get("serviceAppointment"));
 
-        return selectRecordsBuilder.fetchFirst();
+        SelectRecordsBuilder<ServiceTaskContext> selectRecordsBuilder = new SelectRecordsBuilder<ServiceTaskContext>()
+                .module(serviceTask)
+                .select(Collections.singleton(appointmentField))
+                .beanClass(ServiceTaskContext.class)
+                .fetchSupplements(lookUpfields)
+                .andCriteria(criteria);
+        List<ServiceTaskContext> props = selectRecordsBuilder.get();
+        if (CollectionUtils.isNotEmpty(props)) {
+            ServiceAppointmentContext serviceAppointmentContext = props.get(0).getServiceAppointment();
+            return serviceAppointmentContext;
+
+        }
+        return null;
     }
     public static List<ServiceTaskContext> getAllTasksFromServiceAppointment(Long appointmentId)throws Exception {
+
+
         List<FacilioField> taskFields =
                 Constants.getModBean().getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -253,6 +259,8 @@ public class ServiceTaskUtil {
             }
             List<ServiceTaskContext> serviceTasks = V3RecordAPI.getRecordsList(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,tasks);
             return serviceTasks;
+
+
         }
         return null;
     }
