@@ -10,10 +10,8 @@ public enum ServiceOrderActivityType implements ActivityType {
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
             Long taskCount = (Long) json.get("taskCount");
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy)
-                    .append(" added ")
+            builder.append(" added ")
                     .append(taskCount);
             if(taskCount == 1){
                 return builder.append(" task").toString();
@@ -25,10 +23,8 @@ public enum ServiceOrderActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             Long taskCount = (Long) json.get("taskCount");
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy)
-                    .append(" deleted ")
+            builder.append(" deleted ")
                     .append(taskCount);
             if(taskCount == 1){
                 return builder.append(" task").toString();
@@ -40,11 +36,8 @@ public enum ServiceOrderActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             String serviceAppointmentName = (String) json.get("serviceAppointmentName");
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy)
-                    .append(" added ")
-                    .append(" Service Appointment - ")
+            builder.append(" added Service Appointment - ")
                     .append(serviceAppointmentName);
             return builder.toString();
         }
@@ -53,11 +46,8 @@ public enum ServiceOrderActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             String serviceAppointmentName = (String) json.get("serviceAppointmentName");
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy)
-                    .append(" deleted ")
-                    .append(" Service Appointment - ")
+            builder.append(" deleted Service Appointment - ")
                     .append(serviceAppointmentName);
             return builder.toString();
         }
@@ -66,63 +56,63 @@ public enum ServiceOrderActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " ADDED_QUOTE the record";
+            return " added a quote";
         }
     },
     DELETED_QUOTE(131) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " DELETED_QUOTE the record";
+            return " deleted a quote";
         }
     },
     ADDED_INVOICE(132) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " ADDED_INVOICE the record";
+            return " added an Invoice ";
         }
     },
     DELETED_INVOICE(133) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " DELETED_INVOICE the record";
+            return " deleted an Invoice ";
         }
     },
     ADDED_INVENTORY_REQUEST(134) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " ADDED_INVENTORY_REQUEST the record";
+            return " added an Inventory Request ";
         }
     },
     DELETED_INVENTORY_REQUEST(135) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " DELETED_INVENTORY_REQUEST the record";
+            return " deleted an Inventory Request ";
         }
     },
     COMPLETED_SERVICE_ORDER(136) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " Completed ";
+            return " Completed the Service Order ";
         }
     },
     CLOSED_SERVICE_ORDER(137) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " Closed ";
+            return " Closed the Service Order ";
         }
     },
     CANCELLED_SERVICE_ORDER(138) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " Cancelled ";
+            return " Cancelled the Service Order ";
         }
     },
     ADD(139){

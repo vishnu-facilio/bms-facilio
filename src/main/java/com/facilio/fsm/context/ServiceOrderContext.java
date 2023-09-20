@@ -237,8 +237,8 @@ public class ServiceOrderContext extends V3Context {
     }
 
     public static enum ServiceOrderSourceType implements FacilioIntEnum {
-        WEB("Web"),
-        Mobile("Mobile");
+        PLANNED("Planned"),
+        UNPLANNED("Unplanned");
 
         private String name;
 

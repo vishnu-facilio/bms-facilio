@@ -213,159 +213,150 @@ public class ServiceOrderModule extends BaseModuleConfig {
         ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
         long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId();
 
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, "Service Order", "ServiceOrders", FacilioModule.ModuleType.BASE_ENTITY, true);
+        FacilioModule serviceOrderModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, "Service Order", "ServiceOrders", FacilioModule.ModuleType.BASE_ENTITY, true);
 
-        List<FacilioField> fields = new ArrayList<>();
-
-        LookupField site = FieldFactory.getDefaultField("site", "Site", "SITE_ID", FieldType.LOOKUP);
-        site.setLookupModule(bean.getModule(FacilioConstants.ContextNames.SITE));
-        fields.add(site);
-
-        LookupField client = FieldFactory.getDefaultField("client", "Client", "CLIENT_ID", FieldType.LOOKUP);
-        client.setLookupModule(bean.getModule(FacilioConstants.ContextNames.CLIENT));
-        fields.add(client);
-
-        LookupField tenant = FieldFactory.getDefaultField("tenant", "Tenant", "TENANT_ID", FieldType.LOOKUP);
-        tenant.setLookupModule(bean.getModule(FacilioConstants.ContextNames.TENANT));
-        fields.add(tenant);
+        List<FacilioField> serviceOrderFieldsList = new ArrayList<>();
 
         FacilioField subject = FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING, true);
         subject.setRequired(true);
-        fields.add(subject);
+        serviceOrderFieldsList.add(subject);
+
+        LookupField site = FieldFactory.getDefaultField("site", "Site", "SITE_ID", FieldType.LOOKUP);
+        site.setLookupModule(bean.getModule(FacilioConstants.ContextNames.SITE));
+        serviceOrderFieldsList.add(site);
+
+        LookupField client = FieldFactory.getDefaultField("client", "Client", "CLIENT_ID", FieldType.LOOKUP);
+        client.setLookupModule(bean.getModule(FacilioConstants.ContextNames.CLIENT));
+        serviceOrderFieldsList.add(client);
+
+        LookupField tenant = FieldFactory.getDefaultField("tenant", "Tenant", "TENANT_ID", FieldType.LOOKUP);
+        tenant.setLookupModule(bean.getModule(FacilioConstants.ContextNames.TENANT));
+        serviceOrderFieldsList.add(tenant);
 
         FacilioField description = FieldFactory.getDefaultField("description", "Description", "DESCRIPTION", FieldType.STRING, FacilioField.FieldDisplayType.TEXTAREA);
-        fields.add(description);
+        serviceOrderFieldsList.add(description);
 
         SystemEnumField category = FieldFactory.getDefaultField("category", "Category", "CATEGORY", FieldType.SYSTEM_ENUM);
         category.setEnumName("ServiceAppointmentCategory");
-        fields.add(category);
+        serviceOrderFieldsList.add(category);
 
         SystemEnumField maintenanceType = FieldFactory.getDefaultField("maintenanceType", "Maintenance Type", "MAINTENANCE_TYPE", FieldType.SYSTEM_ENUM);
         maintenanceType.setEnumName("ServiceOrderMaintenanceType");
-        fields.add(maintenanceType);
+        serviceOrderFieldsList.add(maintenanceType);
 
         LookupField priority = FieldFactory.getDefaultField("priority", "Priority", "PRIORITY", FieldType.LOOKUP);
         priority.setLookupModule(bean.getModule(FacilioConstants.Priority.PRIORITY));
         priority.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
-        fields.add(priority);
+        serviceOrderFieldsList.add(priority);
 
         LookupField space = FieldFactory.getDefaultField("space", "Space", "SPACE_ID", FieldType.LOOKUP);
         space.setLookupModule(bean.getModule(FacilioConstants.ContextNames.BASE_SPACE));
-        fields.add(space);
+        serviceOrderFieldsList.add(space);
 
         LookupField asset = FieldFactory.getDefaultField("asset", "Asset", "ASSET_ID", FieldType.LOOKUP);
         asset.setLookupModule(bean.getModule(FacilioConstants.ContextNames.ASSET));
-        fields.add(asset);
+        serviceOrderFieldsList.add(asset);
 
         LookupField status = FieldFactory.getDefaultField("status", "Status", "STATUS_ID", FieldType.LOOKUP);
         status.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         status.setLookupModule(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS));
-        fields.add(status);
-
+        serviceOrderFieldsList.add(status);
 
         LookupField vendor = FieldFactory.getDefaultField("vendor", "Vendor", "VENDOR_ID", FieldType.LOOKUP);
         vendor.setLookupModule(bean.getModule(FacilioConstants.ContextNames.VENDORS));
-        fields.add(vendor);
-
-        FacilioField preferredstarttime = FieldFactory.getDefaultField("scheduledStartTime", "Scheduled Start Time", "SCHEDULED_START_TIME", FieldType.DATE_TIME);
-        fields.add(preferredstarttime);
-
-        FacilioField preferredendtime = FieldFactory.getDefaultField("scheduledEndTime", "Scheduled End Time", "SCHEDULED_END_TIME", FieldType.DATE_TIME);
-        fields.add(preferredendtime);
+        serviceOrderFieldsList.add(vendor);
 
         FacilioField autocreatesa = FieldFactory.getDefaultField("autoCreateSa", "AutoCreate SA", "AUTO_CREATE_SA", FieldType.BOOLEAN);
-        fields.add(autocreatesa);
-
-        FacilioField responseDueDate = FieldFactory.getDefaultField("responseDueDate", "Response Due Date", "RESPONSE_DUE_DATE", FieldType.DATE_TIME);
-        fields.add(responseDueDate);
-
-        FacilioField resolutionDueDate = FieldFactory.getDefaultField("resolutionDueDate", "Resolution Due Date", "RESOLUTION_DUE_DATE", FieldType.DATE_TIME);
-        fields.add(resolutionDueDate);
-
-        FacilioField responseDueDuration = FieldFactory.getDefaultField("responseDueDuration", "Response Due Duration", "RESPONSE_DUE_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION);
-        fields.add(responseDueDuration);
-
-        FacilioField resolutionDueDuration = FieldFactory.getDefaultField("resolutionDueDuration", "Resolution Due Duration", "RESOLUTION_DUE_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION);
-        fields.add(resolutionDueDuration);
-
-        FacilioField resolvedTime = FieldFactory.getDefaultField("resolvedTime", "Resolved Time", "RESOLVED_TIME", FieldType.DATE_TIME);
-        fields.add(resolvedTime);
+        serviceOrderFieldsList.add(autocreatesa);
 
         SystemEnumField sourceType = FieldFactory.getDefaultField("sourceType", "Source Type", "SOURCE_TYPE", FieldType.SYSTEM_ENUM);
         sourceType.setEnumName("ServiceOrderSourceType");
-        fields.add(sourceType);
+        serviceOrderFieldsList.add(sourceType);
 
-        LookupField sysdeletedby = FieldFactory.getDefaultField("sysdeletedby", "Sys Deleted By", "SYS_DELETED_BY", FieldType.LOOKUP);
-        sysdeletedby.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
-        fields.add(sysdeletedby);
-
-        LookupField territory = FieldFactory.getDefaultField("territory", "Territory", "Territory", FieldType.LOOKUP);
+        LookupField territory = FieldFactory.getDefaultField("territory", "Territory", "TERRITORY", FieldType.LOOKUP);
         territory.setLookupModule(bean.getModule(FacilioConstants.Territory.TERRITORY));
-        fields.add(territory);
+        serviceOrderFieldsList.add(territory);
 
-        FacilioField sysdeleted = FieldFactory.getDefaultField("sysDeleted", "Sys Deleted", "SYS_DELETED", FieldType.BOOLEAN);
-        fields.add(sysdeleted);
-
-        FacilioField sysdeletedtime = FieldFactory.getDefaultField("sysDeletedTime", "Sys Deleted Time", "SYS_DELETED_TIME", FieldType.DATE_TIME);
-        fields.add(sysdeletedtime);
-
-        FacilioField actualstarttime = FieldFactory.getDefaultField("actualStartTime", "Actual Start Time", "ACTUAL_START_TIME", FieldType.DATE_TIME);
-        fields.add(actualstarttime);
-
-        FacilioField actualendtime = FieldFactory.getDefaultField("actualEndTime", "Actual End Time", "ACTUAL_END_TIME", FieldType.DATE_TIME);
-        fields.add(actualendtime);
-
-        FacilioField actualduration = FieldFactory.getDefaultField("actualDuration", "Actual Duration", "ACTUAL_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION);
-        fields.add(actualduration);
-
-        FacilioField noOfAttachments = FieldFactory.getDefaultField("noOfAttachments", "No Of Attachments", "NO_OF_ATTACHMENTS", FieldType.NUMBER);
-        fields.add(noOfAttachments);
-
-        FacilioField noOfClosedTasks = FieldFactory.getDefaultField("noOfClosedTasks", "No Of ClosedTasks", "NO_OF_CLOSED_TASKS", FieldType.NUMBER);
-        fields.add(noOfClosedTasks);
-
-        FacilioField noOfNotes = FieldFactory.getDefaultField("noOfNotes", "No Of Notes", "NO_OF_NOTES", FieldType.NUMBER);
-        fields.add(noOfNotes);
-
-        FacilioField noOfTasks = FieldFactory.getDefaultField("noOfTasks", "No Of Tasks", "NO_OF_TASKS", FieldType.NUMBER);
-        fields.add(noOfTasks);
-
-        FacilioField slapolicyid = FieldFactory.getDefaultField("slaPolicyId", "Sla Policy Id", "SLA_POLICY_ID", FieldType.NUMBER);
-        fields.add(slapolicyid);
-
-        FacilioField parentso = FieldFactory.getDefaultField("parentSo", "Parent So", "PARENT_SOID", FieldType.NUMBER);
-        fields.add(parentso);
-
-        LookupField pm = FieldFactory.getDefaultField("pm", "PM", "PM_ID", FieldType.LOOKUP);
-        pm.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE));
-        fields.add(pm);
+        FacilioField slapolicyid = FieldFactory.getDefaultField("slaPolicyId", "SLA Policy", "SLA_POLICY_ID", FieldType.NUMBER);
+        serviceOrderFieldsList.add(slapolicyid);
 
         LookupField fieldAgent = FieldFactory.getDefaultField("fieldAgent", "Field Agent", "FIELD_AGENT", FieldType.LOOKUP);
         fieldAgent.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
-        fields.add(fieldAgent);
+        serviceOrderFieldsList.add(fieldAgent);
 
-        FacilioField qrenabled = FieldFactory.getDefaultField("qrEnabled", "Qr Enabled", "QR_ENABLED", FieldType.BOOLEAN);
-        fields.add(qrenabled);
+
+        FacilioField preferredstarttime = FieldFactory.getDefaultField("scheduledStartTime", "Scheduled Start Time", "SCHEDULED_START_TIME", FieldType.DATE_TIME);
+        serviceOrderFieldsList.add(preferredstarttime);
+
+        FacilioField preferredendtime = FieldFactory.getDefaultField("scheduledEndTime", "Scheduled End Time", "SCHEDULED_END_TIME", FieldType.DATE_TIME);
+        serviceOrderFieldsList.add(preferredendtime);
+
+        FacilioField responseDueDate = FieldFactory.getDefaultField("responseDueDate", "Response Due Date", "RESPONSE_DUE_DATE", FieldType.DATE_TIME);
+        serviceOrderFieldsList.add(responseDueDate);
+
+        FacilioField resolutionDueDate = FieldFactory.getDefaultField("resolutionDueDate", "Resolution Due Date", "RESOLUTION_DUE_DATE", FieldType.DATE_TIME);
+        serviceOrderFieldsList.add(resolutionDueDate);
+
+        FacilioField responseDueDuration = FieldFactory.getDefaultField("responseDueDuration", "Response Due Duration", "RESPONSE_DUE_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION);
+        serviceOrderFieldsList.add(responseDueDuration);
+
+        FacilioField resolutionDueDuration = FieldFactory.getDefaultField("resolutionDueDuration", "Resolution Due Duration", "RESOLUTION_DUE_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION);
+        serviceOrderFieldsList.add(resolutionDueDuration);
+
+        FacilioField resolvedTime = FieldFactory.getDefaultField("resolvedTime", "Resolved Time", "RESOLVED_TIME", FieldType.DATE_TIME);
+        serviceOrderFieldsList.add(resolvedTime);
+
+        FacilioField actualstarttime = FieldFactory.getDefaultField("actualStartTime", "Actual Start Time", "ACTUAL_START_TIME", FieldType.DATE_TIME);
+        serviceOrderFieldsList.add(actualstarttime);
+
+        FacilioField actualendtime = FieldFactory.getDefaultField("actualEndTime", "Actual End Time", "ACTUAL_END_TIME", FieldType.DATE_TIME);
+        serviceOrderFieldsList.add(actualendtime);
+
+        FacilioField actualduration = FieldFactory.getDefaultField("actualDuration", "Actual Duration", "ACTUAL_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION);
+        serviceOrderFieldsList.add(actualduration);
 
         FacilioField localid = FieldFactory.getDefaultField("localId", "Local Id", "LOCAL_ID", FieldType.NUMBER);
-        fields.add(localid);
+        serviceOrderFieldsList.add(localid);
 
-        FacilioField responseDueStatusField = SignupUtil.getSystemEnumField(module, "responseDueStatus", "Response Due Status",
-                "RESPONSE_STATUS", "ServiceOrderRequestResponseStatus", FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
-        fields.add(responseDueStatusField);
+        FacilioField responseDueStatusField = SignupUtil.getSystemEnumField(serviceOrderModule, "responseDueStatus", "Response Due Status",
+                "RESPONSE_DUE_STATUS", "ServiceOrderRequestResponseStatus", FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
+        serviceOrderFieldsList.add(responseDueStatusField);
 
-        FacilioField requestDueStatusField = SignupUtil.getSystemEnumField(module, "requestDueStatus", "Request Due Status",
-                "RESOLUTION_STATUS", "ServiceOrderRequestResponseStatus", FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
-        fields.add(requestDueStatusField);
+        FacilioField resolutionDueStatusField = SignupUtil.getSystemEnumField(serviceOrderModule, "resolutionDueStatus", "Resolution Due Status",
+                "RESOLUTION_DUE_STATUS", "ServiceOrderRequestResponseStatus", FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
+        serviceOrderFieldsList.add(resolutionDueStatusField);
 
-        module.setFields(fields);
+        FacilioModule ticketStatusModule = bean.getModule("ticketstatus");
+
+        NumberField stateFlowIdField = SignupUtil.getNumberField(serviceOrderModule,
+                "stateFlowId", "State Flow ID", "STATE_FLOW_ID",
+                FacilioField.FieldDisplayType.NUMBER, false, false, true, orgId);
+        serviceOrderFieldsList.add(stateFlowIdField);
+
+        LookupField moduleStateField = SignupUtil.getLookupField(serviceOrderModule,ticketStatusModule,
+                "moduleState", "Module State", "MODULE_STATE", null,
+                FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
+        serviceOrderFieldsList.add(moduleStateField);
+
+        NumberField approvalFlowIdField = SignupUtil.getNumberField(serviceOrderModule,
+                "approvalFlowId", "Approval Flow Id", "APPROVAL_FLOW_ID",
+                FacilioField.FieldDisplayType.NUMBER, false, false, true, orgId);
+        serviceOrderFieldsList.add(approvalFlowIdField);
+
+        LookupField approvalStateField = SignupUtil.getLookupField(serviceOrderModule, ticketStatusModule,
+                "approvalStatus", "Approval Status", "APPROVAL_STATE", null,
+                FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
+        serviceOrderFieldsList.add(approvalStateField);
+
+        // Total no. of Fields = 34
+        serviceOrderModule.setFields(serviceOrderFieldsList);
 
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
-        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(serviceOrderModule));
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.execute();
 
-        return module;
+        return serviceOrderModule;
     }
 
     @Override
@@ -465,7 +456,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         ServiceOrderContext.ServiceOrderRequestResponseStatus overdueResponseRequestStatus = ServiceOrderContext.ServiceOrderRequestResponseStatus.OVERDUE;
 
         Criteria openCriteria = new Criteria();
-        openCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("requestDueStatus"), overdueResponseRequestStatus.getIndex().toString(), PickListOperators.IS));
+        openCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resolutionDueStatus"), overdueResponseRequestStatus.getIndex().toString(), PickListOperators.IS));
         openCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("responseDueStatus"), overdueResponseRequestStatus.getIndex().toString(), PickListOperators.IS));
         openCriteria.setPattern("(1 or 2)");
 
@@ -995,7 +986,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
-                .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(serviceOrderModule.getName()))
+                .addWidget("summaryFieldsWidget", "Service Order Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(serviceOrderModule.getName()))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
