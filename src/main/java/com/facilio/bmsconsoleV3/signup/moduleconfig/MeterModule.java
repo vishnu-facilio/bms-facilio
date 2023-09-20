@@ -47,18 +47,29 @@ public class MeterModule extends BaseModuleConfig{
         addModuleChain.execute();
 
         addModuleLocalId();
-
+        addMeterSubModules(meterModule);
 
     }
 
     public FacilioModule addMeterModule() throws Exception{
 
         ModuleBean moduleBean = Constants.getModBean();
-        FacilioModule resourceModule = moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 
-        FacilioModule module = new FacilioModule("meter", "Meters", "Meters", FacilioModule.ModuleType.BASE_ENTITY, resourceModule, true);
+        FacilioModule module = new FacilioModule("meter", "Meters", "Meters", FacilioModule.ModuleType.BASE_ENTITY, true);
 
         List<FacilioField> fields = new ArrayList<>();
+
+        StringField name = new StringField(module, "name", "Name", FacilioField.FieldDisplayType.TEXTBOX, "NAME", FieldType.STRING, false, false, true, null);
+        fields.add(name);
+
+        LookupField meterLocation = new LookupField(module, "meterLocation", "Meter Location", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "METER_LOCATION_ID", FieldType.LOOKUP, false, false, true, null, "Meter Location", moduleBean.getModule(FacilioConstants.ContextNames.BASE_SPACE));
+        fields.add(meterLocation);
+
+        NumberField uniqueIdNumber = new NumberField(module, "uniqueIdNumber", "Meter Identification Number", FacilioField.FieldDisplayType.NUMBER, "UNIQUE_ID_NUMBER", FieldType.NUMBER, false, false, true, null);
+        fields.add(uniqueIdNumber);
+
+        StringField qrVal = new StringField(module, "qrVal", "QR Value", FacilioField.FieldDisplayType.TEXTBOX, "QR_VALUE", FieldType.STRING, false, false, true, null);
+        fields.add(qrVal);
 
         LookupField utilityType = new LookupField(module, "utilityType", "Utility Type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "UTILITY_TYPE", FieldType.LOOKUP, false, false, true, null, "Utility Type", moduleBean.getModule(FacilioConstants.Meter.UTILITY_TYPE));
         fields.add(utilityType);
@@ -125,6 +136,21 @@ public class MeterModule extends BaseModuleConfig{
 
         BooleanField isBillable = new BooleanField(module, "isBillable", "Is Billable", FacilioField.FieldDisplayType.DECISION_BOX, "IS_BILLABLE", FieldType.BOOLEAN, false, false, true, null);
         fields.add(isBillable);
+
+        NumberField sysCreatedTime = FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.NUMBER);
+        fields.add(sysCreatedTime);
+
+        LookupField sysCreatedBy = FieldFactory.getField("sysCreatedBy", "Created By", "SYS_CREATED_BY",ModuleFactory.getUsersModule(), FieldType.LOOKUP);
+        sysCreatedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
+        fields.add(sysCreatedBy);
+
+
+        NumberField sysModifiedTime = FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.NUMBER);
+        fields.add(sysModifiedTime);
+
+        LookupField sysModifiedBy = FieldFactory.getField("sysModifiedBy", "Modified By", "SYS_MODIFIED_BY",ModuleFactory.getUsersModule(), FieldType.LOOKUP);
+        sysModifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
+        fields.add(sysModifiedBy);
 
         module.setFields(fields);
         return module;
@@ -318,7 +344,7 @@ public class MeterModule extends BaseModuleConfig{
         FormField utilityTypeField = new FormField("utilityType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Utility Type", FormField.Required.REQUIRED, "utilitytype", 4, 2);
         utilityTypeField.setIsDisabled(true);
         MeterFormFields.add(utilityTypeField);
-        MeterFormFields.add(new FormField("space", FacilioField.FieldDisplayType.SPACECHOOSER, "Meter Location", FormField.Required.REQUIRED, 5, 2));
+        MeterFormFields.add(new FormField("meterLocation", FacilioField.FieldDisplayType.SPACECHOOSER, "Meter Location", FormField.Required.REQUIRED, 5, 2));
         MeterFormFields.add(new FormField("servingTo", FacilioField.FieldDisplayType.SPACECHOOSER, "Serving To", FormField.Required.REQUIRED, 5, 2));
         MeterFormFields.add(new FormField("manufacturer", FacilioField.FieldDisplayType.TEXTBOX, "Manufacturer", FormField.Required.OPTIONAL, 6, 2));
         MeterFormFields.add(new FormField("supplier", FacilioField.FieldDisplayType.TEXTBOX, "Supplier", FormField.Required.OPTIONAL, 6, 3));
@@ -357,6 +383,46 @@ public class MeterModule extends BaseModuleConfig{
 
     }
 
+    private void addMeterSubModules(FacilioModule meterModule) throws Exception {
+        List<FacilioModule> modules = new ArrayList<>();
+        FacilioModule meterRichText = constructMeterRichTextModule(meterModule);
+        modules.add(meterRichText);
+        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+        addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, false);
+        addModuleChain.execute();
+
+        addRichTextField(meterModule, meterRichText);
+    }
+
+    private FacilioModule constructMeterRichTextModule(FacilioModule meterModule) throws Exception {
+        FacilioModule module = new FacilioModule(FacilioConstants.Meter.METER_RICH_TEXT,
+                "Meter Rich Text",
+                "Large_Text_Values",
+                FacilioModule.ModuleType.SUB_ENTITY
+        );
+
+        List<FacilioField> fields = new ArrayList<>();
+        LookupField parentField = (LookupField) FieldFactory.getDefaultField("parentId", "Parent ID", "PARENT_ID", FieldType.LOOKUP);
+        parentField.setLookupModule(meterModule);
+        fields.add(parentField);
+        fields.add(FieldFactory.getDefaultField("fileId", "File ID", "FILE_ID", FieldType.NUMBER));
+
+        module.setFields(fields);
+
+        return module;
+    }
+    /**
+     * creates description field for Shift
+     **/
+    private void addRichTextField(FacilioModule meterModule, FacilioModule richText) throws Exception {
+        LargeTextField field = (LargeTextField) FieldFactory.getDefaultField("description", "Description", null, FieldType.LARGE_TEXT);
+        field.setModule(meterModule);
+        field.setRelModuleId(richText.getModuleId());
+
+        Constants.getModBean().addField(field);
+    }
+
     private static List<ViewField> getAllViewColumns() {
         List<ViewField> columns = new ArrayList<ViewField>();
 
@@ -366,7 +432,7 @@ public class MeterModule extends BaseModuleConfig{
         columns.add(new ViewField("isVirtual", "Is Virtual"));
         columns.add(new ViewField("virtualMeterTemplate", "Virtual Meter Template"));
         columns.add(new ViewField("siteId", "Site"));
-        columns.add(new ViewField("space", "Meter Location"));
+        columns.add(new ViewField("meterLocation", "Meter Location"));
         columns.add(new ViewField("isCheckMeter", "Is Check Meter"));
         columns.add(new ViewField("isBillable", "Is Billable"));
         columns.add(new ViewField("sysCreatedBy", "Created By"));
@@ -682,7 +748,7 @@ public class MeterModule extends BaseModuleConfig{
         FacilioModule module = moduleBean.getModule(moduleName);
         FacilioField utilityType = moduleBean.getField("utilityType", moduleName);
         FacilioField servingTo = moduleBean.getField("servingTo", moduleName);
-        FacilioField space = moduleBean.getField("space",moduleName);
+        FacilioField meterLocation = moduleBean.getField("meterLocation",moduleName);
         FacilioField isVirtual = moduleBean.getField("isVirtual", moduleName);
         FacilioField manufacturer = moduleBean.getField("manufacturer", moduleName);
         FacilioField supplier = moduleBean.getField("supplier", moduleName);
@@ -706,7 +772,7 @@ public class MeterModule extends BaseModuleConfig{
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
         addSummaryFieldInWidgetGroup(widgetGroup, utilityType, 1, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, servingTo, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, space, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, meterLocation, 1, 3, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, isVirtual, 1, 4, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, manufacturer, 2, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, supplier, 2, 2, 1);
@@ -785,7 +851,7 @@ public class MeterModule extends BaseModuleConfig{
         if (field != null) {
             SummaryWidgetGroupFields summaryField = new SummaryWidgetGroupFields();
             summaryField.setName(field.getName());
-            if (field.getName().equals("space")) {
+            if (field.getName().equals("meterLocation")) {
                 summaryField.setDisplayName("Meter Location");
             }
             else {

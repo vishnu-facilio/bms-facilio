@@ -2786,4 +2786,6 @@
 /api/v2/multicurrency/list
 /api/v2/survey/modules
 /api/v2/survey/fetch/:moduleName/:recordId
+/api/v2/readings/meter/add
+/api/v2/readings/utilitytype
 

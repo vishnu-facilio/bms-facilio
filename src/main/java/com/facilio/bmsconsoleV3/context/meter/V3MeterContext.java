@@ -3,6 +3,8 @@ package com.facilio.bmsconsoleV3.context.meter;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
+import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.v3.context.V3Context;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -10,17 +12,21 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class V3MeterContext extends V3ResourceContext {
+public class V3MeterContext extends V3Context {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
+	private String name;
+	private String description;
 	private String moduleName;
+	private String qrVal;
+	private Long uniqueIdNumber;
 	private V3UtilityTypeContext utilityType;
 	private Long parentMeterId;
 	private V3ResourceContext servingTo;
-	private V3BaseSpaceContext space;
+	private V3BaseSpaceContext meterLocation;
 	private String manufacturer;
 	private String model;
 	private String serialNumber;
@@ -45,7 +51,7 @@ public class V3MeterContext extends V3ResourceContext {
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
 	}
-	
+
 
 	public V3UtilityTypeContext getUtilityType() {
 		return utilityType;
@@ -72,14 +78,13 @@ public class V3MeterContext extends V3ResourceContext {
 		this.servingTo = servingTo;
 	}
 
-	@Override
-	public V3BaseSpaceContext getSpace() {
-		return space;
+	public V3BaseSpaceContext getMeterLocation() {
+		return meterLocation;
 	}
 
-	@Override
-	public void setSpace(V3BaseSpaceContext space) {
-		this.space = space;
+
+	public void setMeterLocation(V3BaseSpaceContext meterLocation) {
+		this.meterLocation = meterLocation;
 	}
 
 
@@ -180,15 +185,7 @@ public class V3MeterContext extends V3ResourceContext {
 	}
 
 	
-	@Override
-	public ResourceType getResourceTypeEnum() {
-		return ResourceType.METER;
-	}
-	@Override
-	@JsonInclude(Include.ALWAYS)
-	public int getResourceType() {
-		return ResourceType.METER.getValue();
-	}
+
 
 	public String getUrl() {
 		return FacilioProperties.getConfig("clientapp.url") + "/app/at/asset/all/" + getId() + "/overview";

@@ -46,10 +46,10 @@ public class UtilityTypeAdditionInExtendModuleCommand extends FacilioCommand {
         Constants.setExtendedModules(context, extendedModules);
         List<V3MeterContext> v3meterList = (List<V3MeterContext>) (((Map<String,Object>)context.get(FacilioConstants.ContextNames.RECORD_MAP)).get(FacilioConstants.Meter.METER));
         for(V3MeterContext meter : v3meterList){
-            if (meter.getSpace() == null || meter.getSpace().getId() < 0) {
+            if (meter.getMeterLocation() == null || meter.getMeterLocation().getId() < 0) {
                 V3BaseSpaceContext meterLocation = new V3BaseSpaceContext();
                 meterLocation.setId(meter.getSiteId());
-                meter.setSpace(meterLocation);
+                meter.setMeterLocation(meterLocation);
             }
         }
         return false;

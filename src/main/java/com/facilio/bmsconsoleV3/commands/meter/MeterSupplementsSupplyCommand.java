@@ -27,21 +27,25 @@ public class MeterSupplementsSupplyCommand extends FacilioCommand {
             supplementFields = new ArrayList<>();
         }
 
-        SupplementRecord spaceField = (SupplementRecord) fieldsAsMap.get("space");
+        SupplementRecord meterLocationField = (SupplementRecord) fieldsAsMap.get("meterLocation");
         SupplementRecord servingToField = (SupplementRecord) fieldsAsMap.get("servingTo");
         SupplementRecord utilityTypeField = (SupplementRecord) fieldsAsMap.get("utilityType");
         SupplementRecord virtualMeterTemplateField = (SupplementRecord) fieldsAsMap.get("virtualMeterTemplate");
+        SupplementRecord sysCreatedBy = (SupplementRecord) fieldsAsMap.get("sysCreatedBy");
+        SupplementRecord sysModifiedBy = (SupplementRecord) fieldsAsMap.get("sysModifiedBy");
 
-        supplementFields.add(spaceField);
+        supplementFields.add(meterLocationField);
         supplementFields.add(servingToField);
         supplementFields.add(utilityTypeField);
         supplementFields.add(virtualMeterTemplateField);
+        supplementFields.add(sysCreatedBy);
+        supplementFields.add(sysModifiedBy);
 
 
-        LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
+        /*LookupField sysCreatedBy = (LookupField) FieldFactory.getSystemField("sysCreatedBy", modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
         supplementFields.add(sysCreatedBy);
         LookupField sysModifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy", modBean.getModule(FacilioConstants.ContextNames.RESOURCE));
-        supplementFields.add(sysModifiedBy);
+        supplementFields.add(sysModifiedBy);*/
 
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplementFields);

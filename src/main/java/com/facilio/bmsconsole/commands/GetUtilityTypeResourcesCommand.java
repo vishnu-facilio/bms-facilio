@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsole.util.MetersAPI;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
@@ -19,11 +20,11 @@ public class GetUtilityTypeResourcesCommand extends FacilioCommand {
 		LOGGER.info("Inside GetUtilityTypeResourcesCommand");
 		long utilityType=(long)context.get(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID);
 			
-		List <? extends V3ResourceContext> resourceList= null;
+		List <? extends V3MeterContext> resourceList= null;
 		resourceList= MetersAPI.getMeterListOfUtilityType(utilityType);
 
 		if (resourceList != null) {
-			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, resourceList.stream().map(V3ResourceContext::getId).collect(Collectors.toList()));
+			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, resourceList.stream().map(V3MeterContext::getId).collect(Collectors.toList()));
 		}
 		
 		return false;

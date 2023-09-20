@@ -4361,7 +4361,7 @@ public class FacilioConstants {
 		public static final String HEAT_DATA_READING = "heatdata";
 		public static final String BTU_DATA_READING = "btudata";
 		public static final String METER_ACTIVITY = "meteractivity";
-		
+		public static final String METER_RICH_TEXT = "meterrichtext";
 		
 		public static final String VIRTUAL_METER_TEMPLATE_RESOURCE = "virtualMeterTemplateResource";
 		public static final String VIRTUAL_METER_TEMPLATE_READING = "virtualMeterTemplateReading";

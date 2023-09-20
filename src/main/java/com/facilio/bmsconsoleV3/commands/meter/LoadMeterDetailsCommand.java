@@ -119,7 +119,7 @@ public class LoadMeterDetailsCommand  extends FacilioCommand {
     }
 
     private void getMeterLocation(V3MeterContext meter) throws Exception {
-        V3BaseSpaceContext meterLocation = meter.getSpace();
+        V3BaseSpaceContext meterLocation = meter.getMeterLocation();
 
         if (meterLocation == null || meterLocation.getId() <= 0) {
             return;
