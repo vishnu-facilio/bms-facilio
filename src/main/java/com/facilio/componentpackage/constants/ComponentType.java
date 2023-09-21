@@ -54,7 +54,7 @@ public enum ComponentType implements FacilioIntEnum {
     NAMED_CRITERIA(NamedCriteriaPackageBeanImpl.class, MODULE, false),
     CUSTOM_BUTTON(CustomButtonPackageBeanImpl.class, MODULE, false),
     RELATIONSHIP(RelationshipPackageBeanImpl.class, MODULE, false),
-    STATE_FLOW(StateFlowPackageBeanImpl.class,MODULE,false),
+    STATE_FLOW(StateFlowPackageBeanImpl.class,MODULE,true),
     STATE_TRANSITION(StateTransitionPackageBeanImpl.class,MODULE,false),
     NOTIFICATION(NotificationPackageBeanImpl.class,MODULE,false),
     APPROVAL_STATE_FLOW(ApprovalStateFlowPackageBeanImpl.class,MODULE,false),

@@ -97,6 +97,34 @@ public class PackageBeanUtil {
         return appNameVsAppId;
     }
 
+    public static Map<String,Long> getStateNameVsId(String moduleName) throws Exception{
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule(moduleName);
+        Map<String,Long> stateNameVsId = new HashMap<>();
+        List<FacilioStatus> ticketStatusesForModule = TicketAPI.getAllStatus(module,true);
+        if (CollectionUtils.isNotEmpty(ticketStatusesForModule)){
+            for (FacilioStatus status : ticketStatusesForModule){
+                stateNameVsId.put(status.getStatus(),status.getId());
+            }
+        }
+        return stateNameVsId;
+    }
+
+    public static Map<String,Long> getStateTransitionNameVsId(String moduleName,String stateflowName) throws Exception{
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule(moduleName);
+        WorkflowRuleContext stateflow = WorkflowRuleAPI.getWorkflowRule(stateflowName,module, WorkflowRuleContext.RuleType.STATE_FLOW,false);
+        long stateflowId = stateflow != null ? stateflow.getId() : -1l;
+        Map<String,Long> stateTransitionNameVsId = new HashMap<>();
+        List<WorkflowRuleContext> stateTransitionsForStateFlow = StateFlowRulesAPI.getAllStateTransitionList(stateflowId);
+        if (CollectionUtils.isNotEmpty(stateTransitionsForStateFlow)) {
+            for (WorkflowRuleContext workflowRuleContext : stateTransitionsForStateFlow) {
+                stateTransitionNameVsId.put(workflowRuleContext.getName(), workflowRuleContext.getId());
+            }
+        }
+        return stateTransitionNameVsId;
+    }
+
     public static void bulkDeleteV3Records(String moduleName, List<Long> ids) throws Exception {
         Map<String, Object> data = new HashMap<>();
         data.put(moduleName, ids);
