@@ -464,7 +464,20 @@ public class FormRulePackageUtil {
             FormRuleAPI.setFormRuleActionAndTriggerFieldContext(formRuleContexts);
             FormRuleAPI.setFormRuleCriteria(formRuleContexts);
 
-            formRuleContexts.forEach(rule -> ruleIdVsFormRule.put(rule.getId(), rule));
+            if (CollectionUtils.isNotEmpty(formRuleContexts)) {
+
+                for(FormRuleContext defaultRule :formRuleContexts){
+                    if(CollectionUtils.isEmpty(defaultRule.getActions())){
+                        continue;
+                    }
+                    if((defaultRule.getTriggerTypeEnum()== FormRuleContext.TriggerType.FIELD_UPDATE)&&CollectionUtils.isEmpty(defaultRule.getTriggerFields())){
+                        continue;
+                    }
+                    ruleIdVsFormRule.put(defaultRule.getId(), defaultRule);
+                }
+
+            }
+
 
             fromIndex = toIndex;
             toIndex = Math.min((toIndex + 250), ids.size());
