@@ -42,7 +42,9 @@ public class CreateOneTimeExecutableJobs extends FacilioCommand {
             List<WorkflowRuleRecordRelationshipContext> rels = WorkflowRuleAPI.getRuleFromRuleAndRecordRelationshipTable(
                     recordIds, rule.getModuleId(), Collections.singletonList(rule.getId()));
 
-            List<Long> recordsToBeIgnored = rels.stream().map(rel -> rel.getRecordId()).collect(Collectors.toList());
+            List<Long> recordsToBeIgnored = rels.stream()
+                    .filter(rel-> rel.getExecutionTime() > (System.currentTimeMillis() / 1000))
+                    .map(WorkflowRuleRecordRelationshipContext::getRecordId).collect(Collectors.toList());
 
             for (ModuleBaseWithCustomFields record : records) {
                 if (recordsToBeIgnored.contains(record.getId())) {
