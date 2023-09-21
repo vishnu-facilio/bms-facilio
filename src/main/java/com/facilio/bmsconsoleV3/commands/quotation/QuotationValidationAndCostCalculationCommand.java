@@ -67,9 +67,9 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                     QuotationAPI.addLocation(quotation, shipToAddressLocation);
                 }
                 if(QuotationAPI.lookupValueIsNotEmpty(quotation.getVendor())) {
-                    if(quotation.getCustomerType() != null) {
-                        quotation.setCustomerType(QuotationContext.CustomerType.VENDOR.getIndex());
-                    }
+//                    if(quotation.getCustomerType() != null) {
+//                        quotation.setCustomerType(QuotationContext.CustomerType.VENDOR.getIndex());
+//                    }
                     if(quotation.getContact() == null) {
                         List<V3VendorContactContext> vendorContacts =  V3PeopleAPI.getVendorContacts(quotation.getVendor().getId(), true, false);
                         if(CollectionUtils.isNotEmpty(vendorContacts)) {
@@ -78,9 +78,9 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                     }
                 }
                 else if (QuotationAPI.lookupValueIsNotEmpty(quotation.getClient())){
-                    if(quotation.getCustomerType() != null) {
-                        quotation.setCustomerType(QuotationContext.CustomerType.CLIENT.getIndex());
-                    }
+//                    if(quotation.getCustomerType() != null) {
+//                        quotation.setCustomerType(QuotationContext.CustomerType.CLIENT.getIndex());
+//                    }
                     if(quotation.getContact() == null) {
                         List<V3ClientContactContext> clientContacts =  V3PeopleAPI.getClientContacts(quotation.getClient().getId(), true);
                         if(CollectionUtils.isNotEmpty(clientContacts)) {
@@ -89,9 +89,9 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                     }
                 }
                 else if(QuotationAPI.lookupValueIsNotEmpty(quotation.getTenant())) {
-                    if(quotation.getCustomerType() != null) {
-                        quotation.setCustomerType(QuotationContext.CustomerType.TENANT.getIndex());
-                    }
+//                    if(quotation.getCustomerType() != null) {
+//                        quotation.setCustomerType(QuotationContext.CustomerType.TENANT.getIndex());
+//                    }
                     if(quotation.getContact() == null) {
                         List<V3TenantContactContext> tenantContacts =  V3PeopleAPI.getTenantContacts(quotation.getTenant().getId(), true, false);
                         if(CollectionUtils.isNotEmpty(tenantContacts)) {
@@ -99,11 +99,11 @@ public class QuotationValidationAndCostCalculationCommand extends FacilioCommand
                         }
                     }
                 }
-                else {
-                    if(quotation.getCustomerType() != null) {
-                        quotation.setCustomerType(QuotationContext.CustomerType.OTHERS.getIndex());
-                    }
-                }
+//                else {
+//                    if(quotation.getCustomerType() != null) {
+//                        quotation.setCustomerType(QuotationContext.CustomerType.OTHERS.getIndex());
+//                    }
+//                }
 
             }
         } else {
