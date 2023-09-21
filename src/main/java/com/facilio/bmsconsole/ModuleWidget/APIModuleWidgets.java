@@ -293,4 +293,34 @@ public class APIModuleWidgets {
                 .addFixedWidgetConfig("webLocationDetails_14_6","Location Details - 14 - 6",14,6,PagesContext.PageLayoutType.WEB)
                 .done();
     }
+
+    @WidgetsForModule(FacilioConstants.ReadingRules.NEW_READING_RULE)
+    public static Supplier<ModuleWidgets> getNewReadingRuleWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("rootCauseAndImpact", "Root Cause and Impact", PageWidget.WidgetType.ROOT_CAUSE_AND_IMPACT)
+                .addFixedWidgetConfig("rootCauseAndImpact-30_3", "Root Cause and Impact - 30_3", 30, 3, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("ruleAssetsAndAlarm", "Assets And Alarm", PageWidget.WidgetType.RULE_ASSETS_ALARM)
+                .addFixedWidgetConfig("webRuleAssetsAndAlarm-30_4", "Assets And Alarm - 30_4", 30, 4, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("ruleAlarmInsights", "Rule Alarm Insights", PageWidget.WidgetType.RULE_ALARM_INSIGHT)
+                .addFixedWidgetConfig("webRuleAlarmInsights-30_5", "Rule Alarm Insights - 30_5", 30, 5, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("associatedWorkOrders", "Associated Work Orders", PageWidget.WidgetType.RULE_ASSOCIATED_WO)
+                .addFixedWidgetConfig("webAssociatedWorkOrders-15_6", "Associated Work Orders - 15_6", 15, 6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("ruleWorkOrderDuration", "Work Order Duration", PageWidget.WidgetType.RULE_WO_DURATION)
+                .addFixedWidgetConfig("webRuleWorkOrderDuration-15_6", "Work Order Duration - 15_6", 15, 6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("rootCauses", "Root Causes", PageWidget.WidgetType.ROOT_CAUSES)
+                .addFixedWidgetConfig("rootCauses-32_12", "Root Causes - 32_12", 32, 12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("ruleInsight", "Rule Insight", PageWidget.WidgetType.RULE_INSIGHT)
+                .addFixedWidgetConfig("ruleInsight-32_12", "Rule Insight - 32_12", 32, 12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("ruleLogs", "Rule Logs", PageWidget.WidgetType.RULE_LOGS)
+                .addFixedWidgetConfig("ruleLogs-32_12", "Rule Logs - 32_12", 32, 12, PagesContext.PageLayoutType.WEB)
+                .done();
+
+    }
 }

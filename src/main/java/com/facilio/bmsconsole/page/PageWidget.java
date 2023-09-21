@@ -573,7 +573,16 @@ public class PageWidget {
 		COST_DETAILS("costDetails"),
 		FAILURE_HIERARCHY("failureHierarchy"),
 		LOCATION_DETAILS("locationDetails"),
-		NO_OF_OCCURRENCES("noOfOccurrences");
+		NO_OF_OCCURRENCES("noOfOccurrences"),
+
+		//Rule Cards
+		ROOT_CAUSE_AND_IMPACT("rootCauseAndImpact"),
+		RULE_ASSETS_ALARM("ruleAssetsAlarm"),
+		RULE_ALARM_INSIGHT("ruleAlarmInsight"),
+		RULE_WO_DURATION("ruleWoDuration"),
+		ROOT_CAUSES("rootCauses"),
+		RULE_INSIGHT("ruleInsight"),
+		RULE_LOGS("ruleLogs");
 
 
 		private String name;
