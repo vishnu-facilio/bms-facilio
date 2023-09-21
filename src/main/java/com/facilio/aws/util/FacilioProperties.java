@@ -1077,6 +1077,6 @@ public class FacilioProperties {
    }
 
     public static String getSandboxSubDomain() {
-        return sandboxSubDomain;
+        return StringUtils.isNotEmpty(sandboxSubDomain) ? sandboxSubDomain : "";
     }
 }

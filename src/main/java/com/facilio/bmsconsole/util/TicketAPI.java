@@ -565,7 +565,47 @@ public class TicketAPI {
 				.fields(fields);
 		insertBuilder.insert(status);
 	}
-	
+
+	public static long addStatusWithoutDuplicateCheck(FacilioStatus status, FacilioModule parentModule) throws Exception {
+		if (parentModule == null) {
+			throw new IllegalArgumentException("Module cannot be empty");
+		}
+
+		if (StringUtils.isEmpty(status.getDisplayName())) {
+			throw new IllegalArgumentException("Display name cannot be empty");
+		}
+		if (status.getType() == null) {
+			throw new IllegalArgumentException("typecode should not be empty");
+		}
+
+		String statusName = status.getStatus();
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule ticketStatusModule = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS);
+
+		status.setStatus(statusName);
+		status.setParentModuleId(parentModule.getModuleId());
+		if (status.getRecordLocked() == null) {
+			status.setRecordLocked(false);
+		}
+		if (status.getRequestedState() == null) {
+			status.setRequestedState(false);
+		}
+		if (status.getTimerEnabled() == null) {
+			status.setTimerEnabled(false);
+		}
+
+		Map<String,Object> statusProps = FieldUtil.getAsProperties(status);
+		InsertRecordBuilder insertBuilder = new InsertRecordBuilder()
+				.module(ticketStatusModule)
+				.fields(fields);
+		insertBuilder.addRecordProp(statusProps);
+		insertBuilder.save();
+
+		long id = (long) statusProps.get("id");
+		return id;
+	}
 	private static void checkTicketStatus(FacilioStatus status, FacilioModule ticketStatusModule, Map<String, FacilioField> fieldMap, FacilioModule parentModule) throws Exception {
 		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
 				.module(ticketStatusModule)

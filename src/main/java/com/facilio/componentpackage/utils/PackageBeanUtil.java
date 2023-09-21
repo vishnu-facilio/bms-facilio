@@ -1,7 +1,9 @@
 package com.facilio.componentpackage.utils;
 
 import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.*;
@@ -12,7 +14,9 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetTypeContext;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
@@ -426,7 +430,7 @@ public class PackageBeanUtil {
             fieldSelectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name", formField.getName(), StringOperators.IS));
         }
         if (StringUtils.isNotEmpty(formField.getDisplayName())) {
-            fieldSelectBuilder.andCondition(CriteriaAPI.getCondition("DISPLAYNAME", "displayName", formField.getDisplayName(), StringOperators.IS));
+            fieldSelectBuilder.andCondition(CriteriaAPI.getCondition("DISPLAYNAME", "displayName", formField.getDisplayName(), StringOperators.CONTAINS));
         }
 
         Map<String, Object> prop = fieldSelectBuilder.fetchFirst();
@@ -468,8 +472,7 @@ public class PackageBeanUtil {
                             .addElement(constructBuilderFromCriteria(condition.getCriteriaValue(), conditionElement.element(PackageConstants.CriteriaConstants.CRITERIA), moduleName));
                 }
 
-                if (StringUtils.isNotEmpty(condition.getValue()) && !DYNAMIC_CONDITION_VALUES.contains(condition.getValue())
-                                                && (condition.getOperatorId() == 36 || condition.getOperatorId() == 37)) {
+                if (StringUtils.isNotEmpty(condition.getValue()) && (condition.getOperatorId() == 36 || condition.getOperatorId() == 37)) {
                     String[] valueArr = condition.getValue().trim().split(FacilioUtil.COMMA_SPLIT_REGEX);
 
                     String fieldName = condition.getFieldName();
@@ -487,12 +490,28 @@ public class PackageBeanUtil {
                         } else if (FacilioConstants.ContextNames.USERS.equals(lookupModule.getName())){
                             XMLBuilder userElementList = conditionElement.element(PackageConstants.CriteriaConstants.USER_ELEMENT_LIST);
                             for (String val : valueArr) {
-                                userElementList.addElement(userXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.USER_ELEMENT), Long.parseLong(val)));
+                                if (DYNAMIC_CONDITION_VALUES.contains(val)) {
+                                    XMLBuilder dynamicValueElement = userElementList.element(PackageConstants.CriteriaConstants.USER_ELEMENT);
+                                    dynamicValueElement.element(PackageConstants.CriteriaConstants.DYNAMIC_VALUE).text(val);
+                                    dynamicValueElement.element(PackageConstants.CriteriaConstants.IS_DYNAMIC_VALUE).text(Boolean.TRUE.toString());
+                                } else {
+                                    XMLBuilder userElement = userXMLBuilder(userElementList.element(PackageConstants.CriteriaConstants.USER_ELEMENT), Long.parseLong(val));
+                                    userElement.element(PackageConstants.CriteriaConstants.IS_DYNAMIC_VALUE).text(Boolean.FALSE.toString());
+                                    userElementList.addElement(userElement);
+                                }
                             }
                         } else if (FacilioConstants.ContextNames.PEOPLE.equals(lookupModule.getName())){
                             XMLBuilder peopleElementList = conditionElement.element(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT_LIST);
                             for (String val : valueArr) {
-                                peopleElementList.addElement(peopleXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT), Long.parseLong(val)));
+                                if (DYNAMIC_CONDITION_VALUES.contains(val)) {
+                                    XMLBuilder dynamicValueElement = peopleElementList.element(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT);
+                                    dynamicValueElement.element(PackageConstants.CriteriaConstants.DYNAMIC_VALUE).text(val);
+                                    dynamicValueElement.element(PackageConstants.CriteriaConstants.IS_DYNAMIC_VALUE).text(Boolean.TRUE.toString());
+                                } else {
+                                    XMLBuilder peopleElement = peopleXMLBuilder(peopleElementList.element(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT), Long.parseLong(val));
+                                    peopleElement.element(PackageConstants.CriteriaConstants.IS_DYNAMIC_VALUE).text(Boolean.FALSE.toString());
+                                    peopleElementList.addElement(peopleElement);
+                                }
                             }
                         } else {
                             LOGGER.info("####Sandbox Tracking - Condition contains Module Record - " + moduleName + " FieldName - " + fieldName + " ConditionId - " + condition.getConditionId());
@@ -527,7 +546,7 @@ public class PackageBeanUtil {
                 boolean isExpressionValue = Boolean.parseBoolean(conditionElement.getElement(PackageConstants.CriteriaConstants.IS_EXPRESSION_VALUE).getText());
 
                 // User (or) PickList values
-                if (!DYNAMIC_CONDITION_VALUES.contains(value) && (operatorId == 36 || operatorId == 37)) {
+                if (operatorId == 36 || operatorId == 37) {
                     XMLBuilder userElement = conditionElement.getElement(PackageConstants.CriteriaConstants.USER_ELEMENT_LIST);
                     XMLBuilder peopleElement = conditionElement.getElement(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT_LIST);
                     XMLBuilder pickListElement = conditionElement.getElement(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT);
@@ -541,26 +560,50 @@ public class PackageBeanUtil {
                     } else if (userElement != null) {
                         List<XMLBuilder> userElementList = conditionElement.getElementList(PackageConstants.CriteriaConstants.USER_ELEMENT);
 
-                        List<String> valueArr = new ArrayList<>();
+                        Set<String> valueArr = new HashSet<>();
                         for (XMLBuilder valueElement : userElementList) {
-                            long orgUserId = userValueBuilder(valueElement);
-                            if (orgUserId > 0) {
-                                valueArr.add(String.valueOf(orgUserId));
+                            boolean isDynamicValue = Boolean.parseBoolean(valueElement.getElement(PackageConstants.CriteriaConstants.IS_DYNAMIC_VALUE).getText());
+                            String currValue = null;
+                            if (isDynamicValue) {
+                                currValue = valueElement.getElement(PackageConstants.CriteriaConstants.DYNAMIC_VALUE).getText();
+                            } else {
+                                long orgUserId = userValueBuilder(valueElement);
+                                currValue = orgUserId > 0 ? String.valueOf(orgUserId) : null;
+                            }
+                            if (StringUtils.isNotEmpty(currValue)) {
+                                valueArr.add(currValue);
                             }
                         }
                         value = StringUtils.join(valueArr, ",");
                     } else if (peopleElement != null) {
                         List<XMLBuilder> peopleElementList = conditionElement.getElementList(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT);
 
-                        List<String> valueArr = new ArrayList<>();
+                        Set<String> valueArr = new HashSet<>();
                         for (XMLBuilder valueElement : peopleElementList) {
-                            long peopleId = peopleValueBuilder(valueElement);
-                            if (peopleId > 0) {
-                                valueArr.add(String.valueOf(peopleId));
+                            boolean isDynamicValue = Boolean.parseBoolean(valueElement.getElement(PackageConstants.CriteriaConstants.IS_DYNAMIC_VALUE).getText());
+                            String currValue = null;
+                            if (isDynamicValue) {
+                                currValue = valueElement.getElement(PackageConstants.CriteriaConstants.DYNAMIC_VALUE).getText();
+                            } else {
+                                long peopleId = peopleValueBuilder(valueElement);
+                                currValue = peopleId > 0 ? String.valueOf(peopleId) : null;
+                            }
+                            if (StringUtils.isNotEmpty(currValue)) {
+                                valueArr.add(currValue);
                             }
                         }
                         value = StringUtils.join(valueArr, ",");
                     }
+
+                    if (StringUtils.isEmpty(value)) {
+                        value = conditionElement.getElement(PackageConstants.CriteriaConstants.VALUE).getText();
+                    }
+                }
+
+                // For MultiLookup, Currency fields (eg. moduleName.fieldName)
+                if (fieldName.contains(".")) {
+                    String[] fieldNameSplit = fieldName.split("\\.");
+                    fieldName = fieldNameSplit[1];
                 }
 
                 Condition condition = new Condition();
@@ -655,7 +698,11 @@ public class PackageBeanUtil {
     public static long userValueBuilder(XMLBuilder userElement) {
         if (userElement.getElement(PackageConstants.UserConstants.USER_NAME) == null ||
                 userElement.getElement(PackageConstants.UserConstants.IDENTIFIER) == null) {
-            return -1;
+            try {
+                return AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId()).getOuid();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         String userName = userElement.getElement(PackageConstants.UserConstants.USER_NAME).getText();
@@ -680,7 +727,13 @@ public class PackageBeanUtil {
 
     public static long peopleValueBuilder(XMLBuilder peopleElement) {
         if (peopleElement.getElement(PackageConstants.UserConstants.EMAIL) == null) {
-            return -1;
+            try {
+                User superAdminUser = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+                V3PeopleContext people = V3PeopleAPI.getPeople(superAdminUser.getEmail());
+                return people != null ? people.getId() : -1L;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         String peopleMail = peopleElement.getElement(PackageConstants.UserConstants.EMAIL).getText();

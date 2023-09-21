@@ -127,7 +127,11 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
             long eMailStructureModuleId = eMailStructure.getModuleId();
             if (CollectionUtils.isNotEmpty(Collections.singleton(eMailStructureModuleId))) {
                 FacilioModule module = moduleBean.getModule(eMailStructureModuleId);
-                moduleName = module.getName();
+                if(module == null) {
+                    moduleName = null;
+                }else{
+                    moduleName = module.getName();
+                }
             }
             boolean containsName = false;
             Long id = -1L;

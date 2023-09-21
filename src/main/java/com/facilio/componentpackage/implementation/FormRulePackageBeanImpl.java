@@ -146,6 +146,10 @@ public class FormRulePackageBeanImpl implements PackageBean<FormRuleContext> {
     private FormRuleContext constructRuleFromXMLBuilder(XMLBuilder ruleElement, ModuleBean moduleBean) throws Exception {
 
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        // TODO - handle skipping FormRule while fetchComponents itself
+        if (ruleElement.getElement(PackageConstants.FormRuleConstants.FORM_NAME) == null) {
+            return null;
+        }
         String formName = ruleElement.getElement(PackageConstants.FormRuleConstants.FORM_NAME).text();
         String moduleName = ruleElement.getElement(PackageConstants.MODULENAME).getText();
         String ruleName = ruleElement.getElement(PackageConstants.NAME).text();

@@ -243,10 +243,10 @@ public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleCont
 
     private CustomButtonRuleContext constructCustomButtonRuleFromBuilder(XMLBuilder builder, ModuleBean modBean,boolean isCreate) throws Exception
     {
-        if(builder.getElement(PackageConstants.MODULENAME)==null) return null;
+        if(builder.getChildElement(PackageConstants.MODULENAME)==null) return null;
         CustomButtonRuleContext customButtonRule=new CustomButtonRuleContext();
 
-        String moduleName = builder.getElement(PackageConstants.MODULENAME).getText();
+        String moduleName = builder.getChildElement(PackageConstants.MODULENAME).getText();
         customButtonRule.setModuleName(moduleName);
         customButtonRule.setModule(modBean.getModule(moduleName));
 
@@ -319,15 +319,17 @@ public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleCont
                 if(configXml.getElement(PackageConstants.CustomButtonConstants.CONNECTED_APP_LINK_NAME)!=null) {
                     String linkName = configXml.getElement(PackageConstants.CustomButtonConstants.CONNECTED_APP_LINK_NAME).getText();
                     if (linkName != null) {
-                        ConnectedAppContext connectedApp = ConnectedAppAPI.getConnectedApp(linkName);
-                        json.put(PackageConstants.CustomButtonConstants.CONNECTED_APP_ID, connectedApp.getId());
+                        // TODO - Remove comments once ConnectedApp is done
+//                        ConnectedAppContext connectedApp = ConnectedAppAPI.getConnectedApp(linkName);
+//                        json.put(PackageConstants.CustomButtonConstants.CONNECTED_APP_ID, connectedApp.getId());
                     }
 
                     if (configXml.getElement(PackageConstants.CustomButtonConstants.WIDGET_LINK_NAME) != null) {
                         String widgetLinkName = configXml.getElement(PackageConstants.CustomButtonConstants.WIDGET_LINK_NAME).getText();
                         if (linkName != null) {
-                            ConnectedAppWidgetContext widget = ConnectedAppAPI.getConnectedAppWidget(linkName, widgetLinkName);
-                            json.put(PackageConstants.CustomButtonConstants.WIDGET_ID, widget.getId());
+                            // TODO - Remove comments once ConnectedApp is done
+//                            ConnectedAppWidgetContext widget = ConnectedAppAPI.getConnectedAppWidget(linkName, widgetLinkName);
+//                            json.put(PackageConstants.CustomButtonConstants.WIDGET_ID, widget.getId());
                         }
                     }
                 }

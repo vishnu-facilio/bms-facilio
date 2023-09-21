@@ -95,6 +95,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         viewElement.element(PackageConstants.IS_DEFAULT).text(String.valueOf(view.isDefault()));
         viewElement.element(PackageConstants.ViewConstants.VIEW_TYPE).text(String.valueOf(view.getType()));
         viewElement.element(PackageConstants.ViewConstants.IS_LOCKED).text(String.valueOf(view.isLocked()));
+        viewElement.element(PackageConstants.ViewConstants.STATUS).text(String.valueOf(view.isStatus()));
         viewElement.element(PackageConstants.SEQUENCE_NUMBER).text(String.valueOf(view.getSequenceNumber()));
         viewElement.element(PackageConstants.ViewConstants.IS_LIST_VIEW).text(String.valueOf(view.isListView()));
         viewElement.element(PackageConstants.ViewConstants.IS_CALENDAR_VIEW).text(String.valueOf(view.isCalendarView()));
@@ -126,12 +127,17 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
                 viewFieldElement.element(PackageConstants.DISPLAY_NAME).text(viewField.getColumnDisplayName());
                 viewFieldElement.element(PackageConstants.ViewConstants.VIEW_FIELD_NAME).text(viewField.getFieldName());
                 viewFieldElement.element(PackageConstants.ViewConstants.CUSTOMIZATION).text(viewField.getCustomization());
-                if (viewField.getFieldId() > 0) {
+
+                if (viewField.getField() == null && ((StringUtils.isNotEmpty(viewField.getName()) && viewField.getName().equals("siteId")) ||
+                        (StringUtils.isNotEmpty(viewField.getColumnDisplayName()) && viewField.getColumnDisplayName().equals("Site")))) {
+                    viewField.setField(FieldFactory.getSiteIdField(currModule));
+                }
+                if (viewField.getField() != null) {
                     FacilioField field = viewField.getField();
                     viewFieldElement.element(PackageConstants.MODULENAME).text(field.getModule().getName());
                     viewFieldElement.element(PackageConstants.FormXMLComponents.FACILIO_FIELD_NAME).text(field.getName());
                 }
-                if (viewField.getParentFieldId() > 0) {
+                if (viewField.getParentField() != null) {
                     FacilioField parentFieldName = viewField.getParentField();
                     viewFieldElement.element(PackageConstants.ViewConstants.PARENT_FIELD_NAME).text(parentFieldName.getName());
                     viewFieldElement.element(PackageConstants.ViewConstants.PARENT_MODULE_NAME).text(parentFieldName.getModule().getName());
@@ -375,7 +381,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
     private FacilioView constructViewFromXMLBuilder(XMLBuilder viewElement, Map<String, Long> appNameVsAppId, ModuleBean moduleBean) throws Exception {
         // Criteria will be constructed only for custom views
 
-        boolean isDefault, isHidden, isLocked, isListView, isCalendarView, excludeModuleCriteria;
+        boolean isDefault, status, isHidden, isLocked, isListView, isCalendarView, excludeModuleCriteria;
         String viewName, displayName, moduleName, appLinkName, sequenceNumberStr;
         int sequenceNumber, viewTypeInt;
         FacilioView.ViewType viewType;
@@ -388,6 +394,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         isDefault = Boolean.parseBoolean(viewElement.getElement(PackageConstants.IS_DEFAULT).getText());
         sequenceNumberStr = viewElement.getElement(PackageConstants.SEQUENCE_NUMBER).getText();
         sequenceNumber = StringUtils.isNotEmpty(sequenceNumberStr) ? Integer.parseInt(sequenceNumberStr) : -1;
+        status = Boolean.parseBoolean(viewElement.getElement(PackageConstants.ViewConstants.STATUS).getText());
         viewTypeInt = Integer.parseInt(viewElement.getElement(PackageConstants.ViewConstants.VIEW_TYPE).getText());
         isLocked = Boolean.parseBoolean(viewElement.getElement(PackageConstants.ViewConstants.IS_LOCKED).getText());
         isListView = Boolean.parseBoolean(viewElement.getElement(PackageConstants.ViewConstants.IS_LIST_VIEW).getText());
@@ -406,7 +413,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
         FacilioView view = new FacilioView(viewName, displayName, viewType, moduleName, moduleId, appId, isDefault,
                                         ownerId, sequenceNumber, isLocked, isListView, isCalendarView, excludeModuleCriteria);
         view.setOrgId(orgId);
-
+        view.setStatus(status);
         XMLBuilder criteriaElement = viewElement.getElement(PackageConstants.CriteriaConstants.CRITERIA);
         XMLBuilder viewGroupElement = viewElement.getElement(PackageConstants.ViewConstants.VIEW_GROUP);
         XMLBuilder viewFieldElementsList = viewElement.getElement(PackageConstants.ViewConstants.VIEW_FIELDS_LIST);

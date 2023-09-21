@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.*;
@@ -167,7 +168,15 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
         if (((StateflowTransitionContext) stateflowTransition).getScheduleTime() > 0){
             element.element(PackageConstants.WorkFlowRuleConstants.SCHEDULE_TIME).text(String.valueOf(((StateflowTransitionContext) stateflowTransition).getScheduleTime()));
         }
-
+        if (stateflowTransition.getScheduleType() > 0){
+            element.element("ScheduleType").text(String.valueOf(stateflowTransition.getScheduleType()));
+        }
+        if (stateflowTransition.getInterval() > 0){
+            element.element("Interval").text(String.valueOf(stateflowTransition.getInterval()));
+        }
+        if (stateflowTransition.getDateFieldId() > 0 && stateflowTransition.getDateField() != null) {
+            element.element(PackageConstants.WorkFlowRuleConstants.DATE_FIELD_NAME).text(stateflowTransition.getDateField().getName());
+        }
 
         if (((StateflowTransitionContext) stateflowTransition).getValidations() != null){
             PackageBeanUtil.constructBuilderFromValidationList(((StateflowTransitionContext) stateflowTransition).getValidations(),element.element(PackageConstants.WorkFlowRuleConstants.VALIDATION_LIST));
@@ -419,6 +428,29 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
         if (builder.getElement(PackageConstants.WorkFlowRuleConstants.SCHEDULE_TIME) != null){
             int scheduleTime = Integer.parseInt(builder.getElement(PackageConstants.WorkFlowRuleConstants.SCHEDULE_TIME).getText());
             stateflowTransition.setScheduleTime(scheduleTime);
+        }
+
+        if (builder.getElement("ScheduleType") != null){
+            int scheduleType = Integer.parseInt(builder.getElement("ScheduleType").getText());
+            WorkflowRuleContext.ScheduledRuleType scheduledRuleType = WorkflowRuleContext.ScheduledRuleType.valueOf(scheduleType);
+            stateflowTransition.setScheduleType(scheduleType);
+            stateflowTransition.setScheduleType(scheduledRuleType);
+        }
+
+        if (builder.getElement("Interval") != null){
+            long interval = Long.parseLong(builder.getElement("Interval").getText());
+            stateflowTransition.setInterval(interval);
+        }
+        if (stateflowTransition.getName().equals("Expired") && moduleName.equals("insurance")) {
+            int i = 0;
+        }
+        if (builder.getElement(PackageConstants.WorkFlowRuleConstants.DATE_FIELD_NAME) != null) {
+            String dateFieldName = builder.getElement(PackageConstants.WorkFlowRuleConstants.DATE_FIELD_NAME).getText();
+            FacilioField dateField = (StringUtils.isNotEmpty(dateFieldName) && StringUtils.isNotEmpty(moduleName)) ? moduleBean.getField(dateFieldName, moduleName) : null;
+            if (dateField != null) {
+                stateflowTransition.setDateField(dateField);
+                stateflowTransition.setDateFieldId(dateField.getFieldId());
+            }
         }
 
         XMLBuilder validationList = builder.getElement(PackageConstants.WorkFlowRuleConstants.VALIDATION_LIST);

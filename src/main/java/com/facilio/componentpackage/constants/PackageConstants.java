@@ -197,6 +197,7 @@ public class PackageConstants {
         public static final String IS_HIDDEN = "Is_Hidden";
         public static final String IS_PRIMARY = "Is_Primary";
         public static final String IS_LOCKED = "Is_Locked";
+        public static final String STATUS = "Status";
         public static final String IS_LIST_VIEW = "Is_List_View";
         public static final String IS_CALENDAR_VIEW = "Is_Calendar_View";
         public static final String CALENDAR_VIEW_CONTEXT = "Calendar_View_Context";
@@ -236,7 +237,8 @@ public class PackageConstants {
         public static final String PEOPLE_ELEMENT_LIST = "People_Element_List";
         public static final String PICKLIST_ELEMENT = "PickList_Element";
         public static final String PARENT_MODULE_NAME = "Parent_Module_Name";
-
+        public static final String DYNAMIC_VALUE = "Dynamic_Value";
+        public static final String IS_DYNAMIC_VALUE = "Is_Dynamic_Value";
     }
 
     public static class RoleConstants {
