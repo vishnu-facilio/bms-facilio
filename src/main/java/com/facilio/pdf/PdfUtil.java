@@ -130,13 +130,16 @@ public class PdfUtil {
 	}
 	
 	private static String getToken() {
+		String Faciliotoken = null;
+		Faciliotoken = IAMUserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
 		if(AccountUtil.getCurrentUser().isPortalUser()){
 			HttpServletRequest request = ServletActionContext.getRequest();
-			String Faciliotoken = null;
-			Faciliotoken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
-			return Faciliotoken;
+			String Faciliowebtoken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
+			if(Faciliowebtoken != null) {
+				Faciliotoken = Faciliowebtoken;
+			}
 		}
-		return IAMUserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
+		return Faciliotoken;
 	}
 	
 	private static String getFileLocation(FileFormat format) {
