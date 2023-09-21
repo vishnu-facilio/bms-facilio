@@ -6,6 +6,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CommentMentionContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
+import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.bmsconsoleV3.context.PeopleNotificationSettings;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
@@ -127,7 +128,16 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
                 continue;
             }
             JSONObject mailJson = new JSONObject();
-            mailJson.put(EmailClient.SENDER, EmailFactory.getEmailClient().getNoReplyFromEmail());
+
+            String sender;
+
+            sender = EmailFactory.getEmailClient().getSystemFromAddress(EmailFromAddress.SourceType.NOTIFICATION);
+
+            if(sender == null) {
+                sender = EmailFactory.getEmailClient().getNoReplyFromEmail();
+            }
+
+            mailJson.put(EmailClient.SENDER, sender);
             mailJson.put(EmailClient.TO, person.getEmail());
             mailJson.put(EmailClient.SUBJECT, notificationContent.get(TITLE));
             mailJson.put(EmailClient.MESSAGE, message);
