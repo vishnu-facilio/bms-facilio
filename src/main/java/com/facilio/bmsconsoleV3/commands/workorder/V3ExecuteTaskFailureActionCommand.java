@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands.workorder;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -15,9 +16,7 @@ import org.apache.commons.collections.MapUtils;
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * V3ExecuteTaskFailureActionCommand
@@ -34,10 +33,24 @@ public class V3ExecuteTaskFailureActionCommand extends FacilioCommand implements
         List<V3WorkOrderContext> workorders = (List<V3WorkOrderContext>) context.get(ContextNames.RECORD_LIST);
 
         if (workorders != null && !workorders.isEmpty()) {
-            if (isAllCloseAction(context)) {
-                for (V3WorkOrderContext workOrderContext : workorders) {
-                    publishTaskDeviationHandler(workOrderContext);
+            List<V3WorkOrderContext> closeActionWorkOrders = getAllCloseActionWorkOrders(context);
+
+            if (CollectionUtils.isNotEmpty(closeActionWorkOrders)) {
+                for (V3WorkOrderContext workOrderContext : closeActionWorkOrders) {
+                    // check if any of the tasks has failed and publishTaskDeviationHandler
+                    List<V3TaskContext> tasks = TicketAPI.getRelatedTasksV3(Collections.singletonList(workOrderContext.getId()), false, false);
+                    if (CollectionUtils.isNotEmpty(tasks)) {
+                        for (V3TaskContext task : tasks) {
+                            if ((task.isFailed() != null && task.isFailed()) && (task.getCreateWoOnFailure() != null && task.getCreateWoOnFailure())) {
+                                LOGGER.info("Task #"+ task.getId() +", has failed.");
+                                publishTaskDeviationHandler(workOrderContext);
+                                break;
+                            }
+                        }
+                    }
                 }
+            }else{
+                LOGGER.info("Workorders are not moved to closed state");
             }
         }
         LOGGER.info("Time take in V3ExecuteTaskFailureActionCommand = " + (System.currentTimeMillis() - startTime));
@@ -80,44 +93,50 @@ public class V3ExecuteTaskFailureActionCommand extends FacilioCommand implements
     }
 
     /**
-     * isAllCloseAction() method checks if moduleState of the workOrder object is changed to "Closed" state, which is
+     * getAllCloseActionWorkOrders() method checks if moduleState of the workOrder object is changed to "Closed" state, which is
      * being done by comparing the same workOrder object from context's OLD_RECORD_MAP and RECORD_LIST.
      *
      * @param context should contain ContextNames.OLD_RECORD_MAP & ContextNames.WORK_ORDER
-     * @return true - if all workOrders in the list are moved to "Closed" state else returns false
+     * @return List of workorders that are moved to "Closed" state else return null
      * @throws Exception
      */
-    public static boolean isAllCloseAction(Context context) throws Exception {
+    public static List<V3WorkOrderContext> getAllCloseActionWorkOrders(Context context) throws Exception {
         HashMap<String, HashMap> oldRecordMap = (HashMap<String, HashMap>) context.get(ContextNames.OLD_RECORD_MAP);
 
         if (MapUtils.isEmpty(oldRecordMap)) {
-            return false;
+            LOGGER.info("oldRecordMap is empty");
+            return null;
         }
 
         HashMap<Long, V3WorkOrderContext> workOrderRecordMap = (HashMap<Long, V3WorkOrderContext>) oldRecordMap.get(ContextNames.WORK_ORDER);
         List<V3WorkOrderContext> newWorkOrderList = (List<V3WorkOrderContext>) context.get(ContextNames.RECORD_LIST);
 
         if (MapUtils.isEmpty(workOrderRecordMap) || CollectionUtils.isEmpty(newWorkOrderList)) {
-            return false;
+            LOGGER.info("workOrderRecordMap or newWorkOrderList is empty");
+            return null;
         }
 
-        boolean isAllCloseAction = true;
+        List<V3WorkOrderContext> closeActionWorkOrders = new ArrayList<>();
 
         if (workOrderRecordMap.size() == newWorkOrderList.size()) {
-            for (V3WorkOrderContext workOrderContext : newWorkOrderList) {
-                V3WorkOrderContext oldWoContext = workOrderRecordMap.get(workOrderContext.getId());
-                FacilioStatus oldModuleState = oldWoContext.getModuleState();
-                FacilioStatus newModuleState = workOrderContext.getModuleState();
-                if (oldModuleState != null && newModuleState != null && !Objects.equals(oldModuleState.getId(), newModuleState.getId())) {
-                    FacilioStatus moduleState = TicketAPI.getStatus(newModuleState.getId());
-                    if (!moduleState.getType().equals(FacilioStatus.StatusType.CLOSED)) {
-                        isAllCloseAction = false;
+            for (V3WorkOrderContext newWorkOrderContext : newWorkOrderList) {
+                V3WorkOrderContext oldWoContext = workOrderRecordMap.get(newWorkOrderContext.getId());
+                if(oldWoContext != null) {
+                    FacilioStatus oldModuleState = oldWoContext.getModuleState();
+                    FacilioStatus newModuleState = newWorkOrderContext.getModuleState();
+
+                    if (oldModuleState != null && newModuleState != null && !Objects.equals(oldModuleState.getId(), newModuleState.getId())) {
+                        FacilioStatus moduleState = TicketAPI.getStatus(newModuleState.getId());
+                        if (moduleState.getType().equals(FacilioStatus.StatusType.CLOSED)) {
+                            closeActionWorkOrders.add(newWorkOrderContext);
+                        }
                     }
                 }
             }
         } else {
-            isAllCloseAction = false;
+            LOGGER.info("Size of workorder lists not equal.");
+            return null;
         }
-        return isAllCloseAction;
+        return closeActionWorkOrders;
     }
 }
