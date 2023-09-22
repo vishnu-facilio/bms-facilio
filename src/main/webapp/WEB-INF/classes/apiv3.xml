@@ -1890,5 +1890,8 @@
         <action name="associateMeter" class="com.facilio.utility.UtilityAction" method="associateMeter"/>
     </package>
 
+    <package name="v2Analytics" namespace="/api/v3/analytics" extends="v3Api">
+        <action name="criteria/module" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="getModuleFromCategory"/>
+    </package>
 
 </struts>

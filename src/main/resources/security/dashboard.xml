@@ -457,4 +457,11 @@
         </urlparams>
     </request>
 
+    <request path="/api/v3/analytics/criteria/module" method="GET">
+        <urlparams>
+            <property name="categoryId" type="number" mandatory="true"></property>
+            <property name="type" type="string" mandatory="true"></property>
+        </urlparams>
+    </request>
+
 </config>
