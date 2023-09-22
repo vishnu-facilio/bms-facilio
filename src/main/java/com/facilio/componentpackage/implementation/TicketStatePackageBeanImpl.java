@@ -145,19 +145,16 @@ public class TicketStatePackageBeanImpl implements PackageBean<FacilioStatus> {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(status.getParentModuleId());
 
+        long statusId;
         FacilioStatus existingStatus = new FacilioStatus();
         existingStatus = TicketAPI.getStatus(module, status.getStatus());
         if (existingStatus != null){
             status.setId(existingStatus.getId());
+            statusId = existingStatus.getId();
+            TicketAPI.updateStatus(status,module);
+        } else {
+            statusId = TicketAPI.addStatusWithoutDuplicateCheck(status, module);
         }
-
-        FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.TICKET_STATUS, status);
-        context.put(FacilioConstants.ContextNames.PARENT_MODULE, module.getName());
-        FacilioChain chain = TransactionChainFactory.getAddOrUpdateTicketStatusChain();
-        chain.execute(context);
-
-        long statusId = (long) context.getOrDefault(FacilioConstants.ContextNames.ID, -1L);
 
         return statusId;
     }

@@ -171,7 +171,7 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
         if (stateflowTransition.getScheduleType() > 0){
             element.element("ScheduleType").text(String.valueOf(stateflowTransition.getScheduleType()));
         }
-        if (stateflowTransition.getInterval() > 0){
+        if (stateflowTransition.getInterval() > -1){
             element.element("Interval").text(String.valueOf(stateflowTransition.getInterval()));
         }
         if (stateflowTransition.getDateFieldId() > 0 && stateflowTransition.getDateField() != null) {
@@ -440,9 +440,6 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
         if (builder.getElement("Interval") != null){
             long interval = Long.parseLong(builder.getElement("Interval").getText());
             stateflowTransition.setInterval(interval);
-        }
-        if (stateflowTransition.getName().equals("Expired") && moduleName.equals("insurance")) {
-            int i = 0;
         }
         if (builder.getElement(PackageConstants.WorkFlowRuleConstants.DATE_FIELD_NAME) != null) {
             String dateFieldName = builder.getElement(PackageConstants.WorkFlowRuleConstants.DATE_FIELD_NAME).getText();
