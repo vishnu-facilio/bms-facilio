@@ -5,6 +5,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.fields.context.FieldListType;
 import com.facilio.util.FacilioUtil;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,8 +38,8 @@ public class FieldConfig {
      * @return FieldConfig
      * @throws Exception if exclude fields are configuired after the fieldConfigurations
      */
-    public FieldConfig exclude(List<String> fieldNames) throws Exception {
-        FacilioUtil.throwIllegalArgumentException(FacilioProperties.isDevelopment() && MapUtils.isNotEmpty(fieldListTypeHandlerMap), "Exclude fields should be defined before adding fieldType configurations");
+    @SneakyThrows
+    public FieldConfig exclude(List<String> fieldNames)  {
         if(CollectionUtils.isNotEmpty(fieldNames)) {
             this.excludeFields.addAll(fieldNames);
         }
@@ -52,7 +53,6 @@ public class FieldConfig {
      * @return FieldConfig
      */
     public FieldConfig addLicenseBasedFields(AccountUtil.FeatureLicense license, List<String> fieldNames) {
-        FacilioUtil.throwIllegalArgumentException(FacilioProperties.isDevelopment() && MapUtils.isNotEmpty(fieldListTypeHandlerMap), "Exclude fields should be defined before adding fieldType configurations");
         if(license != null && CollectionUtils.isNotEmpty(fieldNames)) {
             licenseBasedFieldsMap.put(license, fieldNames);
         }

@@ -28,11 +28,11 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class FieldsConfigChainUtil {
-    protected static final Map<String, Map<String, Object>> FIELDS_CONFIG_MAP = new HashMap<>();
-                           // key fieldListType name --> value their configs defined in fieldsComfig.yaml
     private static final String FIELDS_CONF_PATH = FacilioUtil.normalizePath("conf/fieldsConfig.yaml");
+    protected static final Map<String, Map<String, Object>> FIELDS_CONFIG_MAP = new HashMap<>();
+    // key fieldListType name --> value their configs defined in fieldsComfig.yaml
 
-    protected static void initFieldsConfig() {
+    protected static void fillFieldsConfigMap() {
         Yaml yaml = new Yaml();
         Map<String, Object> json = null;
         try(InputStream inputStream = FieldsConfigChainUtil.class.getClassLoader().getResourceAsStream(FIELDS_CONF_PATH);) {
@@ -51,6 +51,11 @@ public class FieldsConfigChainUtil {
 
                     Map<String, Object> configMap = new HashMap<>();
 
+                    List<String> skipConfigFields = (List<String>) fieldConfigMap.get(FacilioConstants.FieldsConfig.SKIP_CONFIG_FIELDS);
+                    if(CollectionUtils.isNotEmpty(skipConfigFields)) {
+                        configMap.put(FacilioConstants.FieldsConfig.SKIP_CONFIG_FIELDS, Collections.unmodifiableList(skipConfigFields));
+                    }
+
                     String accessTypeName = (String) fieldConfigMap.getOrDefault(FacilioConstants.FieldsConfig.ACCESS_TYPE, null);
                     if(StringUtils.isNotBlank(accessTypeName)) {
                         FacilioField.AccessType accessType = FacilioField.AccessType.valueOf(accessTypeName);
@@ -63,7 +68,7 @@ public class FieldsConfigChainUtil {
                                 .stream()
                                 .map(FieldType::valueOf)
                                 .collect(Collectors.toList());
-                        configMap.put(FacilioConstants.FieldsConfig.FIELD_TYPES_TO_FETCH, fieldsTypesToFetch);
+                        configMap.put(FacilioConstants.FieldsConfig.FIELD_TYPES_TO_FETCH, Collections.unmodifiableList(fieldsTypesToFetch));
                     }
 
                     boolean fetchSupplements = (boolean) fieldConfigMap.getOrDefault(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, false);
@@ -71,7 +76,7 @@ public class FieldsConfigChainUtil {
 
                     List<String> fieldsResponseCommand = (List<String>) fieldConfigMap.get(FacilioConstants.FieldsConfig.FIELD_RESPONSE_CHAIN); //add fieldResponseChain
                     if(CollectionUtils.isNotEmpty(fieldsResponseCommand)) {
-                        configMap.put(FacilioConstants.FieldsConfig.FIELD_RESPONSE_CHAIN, fieldsResponseCommand);
+                        configMap.put(FacilioConstants.FieldsConfig.FIELD_RESPONSE_CHAIN, Collections.unmodifiableList(fieldsResponseCommand));
                     }
 
                     if(fieldListType.getFieldListTypeConfig() != null) {
@@ -82,7 +87,13 @@ public class FieldsConfigChainUtil {
                             }
                         }
                     }
-                    FIELDS_CONFIG_MAP.put(fieldListType.getName(), configMap);
+                    FIELDS_CONFIG_MAP.put(fieldListType.getName(), Collections.unmodifiableMap(configMap));
+                }
+
+                for (FieldListType fieldListType : FieldListType.values()) {
+                    if(!FIELDS_CONFIG_MAP.containsKey(fieldListType.getName()) && fieldListType.getFieldListTypeConfig() != null) {
+                        FIELDS_CONFIG_MAP.put(fieldListType.getName(), FIELDS_CONFIG_MAP.get(fieldListType.getFieldListTypeConfig().getName()));
+                    }
                 }
             }
         }
@@ -107,13 +118,13 @@ public class FieldsConfigChainUtil {
         return null;
     }
 
-    public static FacilioContext fetchFieldList(String moduleName, FieldListType fieldListType, List<Long> defaultFieldIds, boolean checkFieldsPermission) throws Exception {
-        return fetchFieldList(moduleName, fieldListType, defaultFieldIds, checkFieldsPermission, false);
+    public static FacilioContext fetchFieldList(String moduleName, FieldListType fieldListType, List<Long> defaultFieldIds) throws Exception {
+        return fetchFieldList(moduleName, fieldListType, defaultFieldIds, false);
     }
-    public static FacilioContext fetchFieldList(String moduleName, FieldListType fieldListType, List<Long> defaultFieldIds, boolean checkFieldsPermission, boolean isOnelevel) throws Exception {
+    public static FacilioContext fetchFieldList(String moduleName, FieldListType fieldListType, List<Long> defaultFieldIds, boolean isOnelevel) throws Exception {
         FacilioChain fieldsChain = FieldsConfigChain.getFieldsConfigChain(moduleName, fieldListType);
         FacilioContext fieldsContext = fieldsChain.getContext();
-        addDefaultValuesToContext(fieldsContext, moduleName, fieldListType, defaultFieldIds, checkFieldsPermission);
+        addDefaultValuesToContext(fieldsContext, moduleName, fieldListType, defaultFieldIds);
         if(isOnelevel) {
             fieldsContext.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, false);
         }
@@ -123,9 +134,8 @@ public class FieldsConfigChainUtil {
     }
 
 
-    private static void addDefaultValuesToContext(FacilioContext context, String moduleName, FieldListType fieldListType, List<Long> defaultFieldIds, boolean checkFieldsPermission) throws Exception {
+    private static void addDefaultValuesToContext(FacilioContext context, String moduleName, FieldListType fieldListType, List<Long> defaultFieldIds) throws Exception {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.FieldsConfig.CHECK_FIELDS_PERMISSION, checkFieldsPermission);
         context.put(FacilioConstants.ContextNames.DEFAULT_FIELD_IDS, defaultFieldIds);
         context.put(FacilioConstants.FieldsConfig.FIELD_LIST_TYPE, fieldListType);
     }

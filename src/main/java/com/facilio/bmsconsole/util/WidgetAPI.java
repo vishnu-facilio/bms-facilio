@@ -81,13 +81,15 @@ public class WidgetAPI {
 
     public static List<Long> getCommonWidgetIds() throws Exception{
         FacilioModule module = ModuleFactory.getWidgetModuleModule();
+        FacilioField moduleIdField = FieldFactory.getNumberField("moduleId","MODULEID",module);
         FacilioField idField = FieldFactory.getIdField(ModuleFactory.getWidgetListModule());
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(module.getTableName())
                 .innerJoin(ModuleFactory.getWidgetListModule().getTableName())
                 .on("Widget_List.ID = Widget_Modules.WIDGETID")
-                .select(Collections.singletonList(idField));
+                .select(Collections.singletonList(idField))
+                .andCondition(CriteriaAPI.getCondition(moduleIdField, CommonOperators.IS_EMPTY));
         List<Map<String,Object>>  props = builder.get();
 
         if(CollectionUtils.isNotEmpty(props)){
@@ -113,10 +115,12 @@ public class WidgetAPI {
 
     public static Map<Long,List<Long>> getModuleIdsAsMapOfWidgetId(List<Long> widgetIds)throws Exception{
         FacilioModule module = ModuleFactory.getWidgetModuleModule();
+        FacilioField moduleIdField = FieldFactory.getNumberField("moduleId","MODULEID",module);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(module.getTableName())
-                .select(FieldFactory.getWidgetModuleFields());
+                .select(FieldFactory.getWidgetModuleFields())
+                .andCondition(CriteriaAPI.getCondition(moduleIdField, CommonOperators.IS_NOT_EMPTY));
 
         if(CollectionUtils.isNotEmpty(widgetIds)){
                 builder.andCondition(CriteriaAPI.getConditionFromList("WIDGETID","widgetId",widgetIds,NumberOperators.EQUALS));

@@ -36,7 +36,7 @@ public class FieldsConfigChain {
         Reflections reflections = new Reflections(ClasspathHelper.forPackage("com\\.facilio\\.fields"), new MethodAnnotationsScanner());
         FieldsConfigChainUtil.fillModuleNameMap(reflections);
         FieldsConfigChainUtil.fillModuleTypeMap(reflections);
-        FieldsConfigChainUtil.initFieldsConfig();
+        FieldsConfigChainUtil.fillFieldsConfigMap();
     }
 
     public static FacilioModule getModule(String moduleName) throws Exception {
@@ -74,7 +74,7 @@ public class FieldsConfigChain {
         if (fieldHandler != null) {
             fieldsToSkipList = fieldHandler.getFieldsToSkip();
             fieldsToAddList = fieldHandler.getFieldsToAdd();
-            typeSpecificFieldsMap = fieldHandler.getTypeSpecificFieldsMap();
+            typeSpecificFieldsMap = fieldHandler.getConfigSpecificFields();
             fieldTypesToSkip = fieldHandler.getFieldTypesToSkip();
             afterFetchCommand = fieldHandler.getAfterFetchCommand();
         }
@@ -129,25 +129,35 @@ public class FieldsConfigChain {
         context.put(FacilioConstants.FieldsConfig.FIELD_TYPES_TO_FETCH, fieldTypesToFetch);
 
         FacilioField.AccessType accessType = (FacilioField.AccessType) configMap.get(FacilioConstants.FieldsConfig.ACCESS_TYPE);
-        if(accessType != null) {
+        if (accessType != null) {
             context.put(FacilioConstants.FieldsConfig.ACCESS_TYPE, accessType);
         }
 
+        List<String> skipConfigFields = (List<String>) configMap.get(FacilioConstants.FieldsConfig.SKIP_CONFIG_FIELDS);
+        if (CollectionUtils.isNotEmpty(skipConfigFields)) {
+            if (CollectionUtils.isNotEmpty(excludeFields)) {
+                excludeFields.addAll(skipConfigFields);
+            } else {
+                excludeFields = skipConfigFields;
+            }
+        }
         if (CollectionUtils.isNotEmpty(fieldsToAddList)) {
-            if(CollectionUtils.isNotEmpty(excludeFields)) {
+            if (CollectionUtils.isNotEmpty(excludeFields)) {
                 fieldsToAddList.removeAll(excludeFields);
             }
+            context.put(FacilioConstants.FieldsConfig.IS_ADD_FIELD, true);
             context.put(FacilioConstants.FieldsConfig.FIELDS_TO_ADD_LIST, fieldsToAddList);
-        } else if (CollectionUtils.isNotEmpty(fieldsToSkipList)) {
-            if(CollectionUtils.isNotEmpty(excludeFields)) {
-                fieldsToSkipList = Stream.concat(excludeFields.stream(), fieldsToSkipList.stream())
+        } else {
+            if (CollectionUtils.isNotEmpty(excludeFields)) {
+                fieldsToSkipList = Stream.concat(excludeFields.stream(), (CollectionUtils.isNotEmpty(fieldsToSkipList)? fieldsToSkipList : new ArrayList<String>()).stream())
                         .distinct()
                         .collect(Collectors.toList());
             }
+            context.put(FacilioConstants.FieldsConfig.IS_ADD_FIELD, false);
             context.put(FacilioConstants.FieldsConfig.FIELDS_TO_SKIP_LIST, fieldsToSkipList);
         }
 
-        if(MapUtils.isNotEmpty(licenseBasedFieldsMap)) {
+        if (MapUtils.isNotEmpty(licenseBasedFieldsMap)) {
             context.put(FacilioConstants.FieldsConfig.LICENSE_BASED_FIELDS_MAP, licenseBasedFieldsMap);
         }
 
@@ -157,7 +167,6 @@ public class FieldsConfigChain {
 
         boolean fetchSupplements = (boolean) configMap.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchSupplements);
-
     }
     private static void addIfNotNull(FacilioChain chain, Command command) {
         if (command != null) {

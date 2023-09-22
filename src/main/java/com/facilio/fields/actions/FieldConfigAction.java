@@ -14,14 +14,12 @@ import java.util.List;
 @Setter
 public class FieldConfigAction extends FacilioAction {
     private String moduleName;
-    private FieldListType fieldListTypeEnum;
-    private boolean checkFieldsPermission;
     private String fieldListType;
     private List<Long> defaultFieldIds;
 
     public String fetchFieldList() throws Exception {
-        fieldListTypeEnum = FieldListType.getValueOfType(fieldListType);
-        FacilioContext fieldsContext = FieldsConfigChainUtil.fetchFieldList(getModuleName(), fieldListTypeEnum, defaultFieldIds, checkFieldsPermission);
+        FieldListType fieldListTypeEnum = FieldListType.getValueOfType(fieldListType);
+        FacilioContext fieldsContext = FieldsConfigChainUtil.fetchFieldList(getModuleName(), fieldListTypeEnum, defaultFieldIds);
 
         setResult(FacilioConstants.ContextNames.FIELDS, fieldsContext.get(FacilioConstants.ContextNames.FIELDS));
 

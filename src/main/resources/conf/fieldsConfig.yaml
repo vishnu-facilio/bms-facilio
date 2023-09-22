@@ -2,6 +2,14 @@ version: 1
 
 fieldListType:
   - name: SORTABLE
+    skipConfigFields:
+      - siteId
+      - stateFlowId
+      - slaPolicyId
+      - formId
+      - approvalStatus
+      - approvalFlowId
+
     accessType: SORT
     fetchSupplement: true
     fieldTypeNamesToFetch:
@@ -20,7 +28,6 @@ fieldListType:
       - BIG_STRING
       - STRING_SYSTEM_ENUM
     fieldResponseChain:
-      - com.facilio.fields.commands.RemoveSortableInternalFields
       - com.facilio.fields.commands.SortableFieldsResponseCommand
 
   - name: VIEW_FIELDS

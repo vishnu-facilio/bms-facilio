@@ -35,7 +35,7 @@ import java.util.List;
          * @param fieldNames list of fieldNames to be associated with the specified key
          * @return FieldListBuilder
          */
-        FieldListBuilder addTypeSpecificFields(String name, List<String> fieldNames);
+        FieldListBuilder addConfigSpecificFields(String name, List<String> fieldNames);
 
         /**
          * @param afterFetchCommand commands to be executed after the fields are fetched

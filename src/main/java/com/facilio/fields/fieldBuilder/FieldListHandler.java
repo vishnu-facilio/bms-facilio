@@ -33,7 +33,7 @@ public class FieldListHandler implements FieldListBuilder {
     @Getter
     private List<FieldType> fieldTypesToSkip;
     @Getter
-    private Map<String, List<String>> typeSpecificFieldsMap;
+    private Map<String, List<String>> configSpecificFields;
 
 
     @Override
@@ -80,15 +80,15 @@ public class FieldListHandler implements FieldListBuilder {
     }
 
     @Override
-    public FieldListBuilder addTypeSpecificFields(String name, List<String> fieldNames) {
+    public FieldListBuilder addConfigSpecificFields(String name, List<String> fieldNames) {
         if (StringUtils.isNotEmpty(name) && CollectionUtils.isNotEmpty(fieldNames)) {
-            if (typeSpecificFieldsMap == null) {
-                typeSpecificFieldsMap = new HashMap<>();
+            if (configSpecificFields == null) {
+                configSpecificFields = new HashMap<>();
             }
-            if (!typeSpecificFieldsMap.containsKey(name)) {
-                typeSpecificFieldsMap.put(name, new ArrayList<>());
+            if (!configSpecificFields.containsKey(name)) {
+                configSpecificFields.put(name, new ArrayList<>());
             }
-            typeSpecificFieldsMap.get(name).addAll(fieldNames);
+            configSpecificFields.get(name).addAll(fieldNames);
         }
         return this;
     }

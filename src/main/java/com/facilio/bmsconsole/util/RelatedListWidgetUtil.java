@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BulkRelatedListContext;
+import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
 import com.facilio.bmsconsole.context.PageSectionWidgetContext;
 import com.facilio.bmsconsole.context.RelatedListWidgetContext;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -360,6 +361,13 @@ public class RelatedListWidgetUtil {
                                 f.setDisplayName(((LookupField) field).getRelatedListDisplayName());
                             } else {
                                 f.setDisplayName(relListSubModules.get(f.getSubModuleId()));
+                            }
+                        } else if(f.getConnectedAppWidgetId() > 0) {
+                            try {
+                                ConnectedAppWidgetContext conApp = ConnectedAppAPI.getConnectedAppWidget(f.getConnectedAppWidgetId());
+                                f.setDisplayName(conApp != null ? conApp.getWidgetName() : "Connected App Related List");
+                            } catch (Exception e) {
+                                throw new RuntimeException("Error occured while getting connectedAppWidget");
                             }
                         }
                     }).collect(Collectors.toList());

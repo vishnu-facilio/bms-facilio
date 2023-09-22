@@ -26,10 +26,11 @@ public class FilterFieldsBasedOnAddOrSkipFields extends FacilioCommand {
         List<String> fieldsToAddList = (List<String>) context.getOrDefault(FacilioConstants.FieldsConfig.FIELDS_TO_ADD_LIST, null);
         List<String> fieldsToSkipList = (List<String>) context.getOrDefault(FacilioConstants.FieldsConfig.FIELDS_TO_SKIP_LIST, null);
 
-        boolean isAddField = CollectionUtils.isNotEmpty(fieldsToAddList);
-        List<String> addOrSkipFieldsList = isAddField ? fieldsToAddList : fieldsToSkipList;
+        boolean isAddField = (boolean) context.get(FacilioConstants.FieldsConfig.IS_ADD_FIELD);
+        List<String> addOrSkipFieldsList = isAddField ? CollectionUtils.isNotEmpty(fieldsToAddList) ? fieldsToAddList : new ArrayList<>()
+                : CollectionUtils.isNotEmpty(fieldsToSkipList) ? fieldsToSkipList : new ArrayList<>();
 
-        if(CollectionUtils.isNotEmpty(fields) && CollectionUtils.isNotEmpty(addOrSkipFieldsList)) {
+        if(CollectionUtils.isNotEmpty(fields)) {
             fields = fields.stream()
                     .filter(field -> isAddField ? (addOrSkipFieldsList.contains(field.getName()) || !field.isDefault()) : !addOrSkipFieldsList.contains(field.getName()))
                     .collect(Collectors.toList());
