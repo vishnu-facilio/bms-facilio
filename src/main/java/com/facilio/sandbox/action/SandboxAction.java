@@ -85,7 +85,6 @@ public class SandboxAction extends FacilioAction {
 
         setResult(SandboxConstants.SANDBOX_ID, sandbox.getId());
         setResult(PackageConstants.TARGET_ORG_ID, sandbox.getSandboxOrgId());
-        setResult(FacilioConstants.ContextNames.MESSAGE, "Sandbox will be created shortly, Please Wait!!");
 
         return SUCCESS;
     }

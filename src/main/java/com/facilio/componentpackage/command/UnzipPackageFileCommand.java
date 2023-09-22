@@ -27,18 +27,17 @@ public class UnzipPackageFileCommand extends FacilioCommand {
 		File file = (File) context.get(PackageConstants.FILE);
 		Long fileId = (Long) context.get(PackageConstants.FILE_ID);
 		Long sourceOrgId = (Long) context.getOrDefault(PackageConstants.SOURCE_ORG_ID, -1L);
+		Long targetOrgId = (Long) context.getOrDefault(PackageConstants.TARGET_ORG_ID, -1L);
 
 		File packageZipFile;
 		if (file != null) {
 			packageZipFile = file;
 		} else {
-			packageZipFile = PackageFileUtil.getPackageZipFile(fileId, sourceOrgId);
+			packageZipFile = PackageFileUtil.getPackageZipFile(fileId, sourceOrgId, targetOrgId);
 		}
 		context.put(PackageConstants.FILE, packageZipFile);
 
-		File outputDirectory = new File(UnzipPackageFileCommand.class.getClassLoader().getResource("").getFile()
-				+ File.separator + "facilio-temp-files" + File.separator + AccountUtil.getCurrentOrg().getOrgId()
-				+ File.separator + "packages" +File.separator + "Org_Package_" + "_" + DateTimeUtil.getFormattedTime(DateTimeUtil.getCurrenTime()));
+		File outputDirectory = new File(System.getProperties().getProperty("java.io.tmpdir") + File.separator + "sandbox"+ File.separator + "Unzipped-Package-Files"+ File.separator + "Org_Package_" + "_" + DateTimeUtil.getFormattedTime(DateTimeUtil.getCurrenTime()));
 		ZipUtil.unpack(packageZipFile, outputDirectory);
 		PackageFolderContext rootFolder = convertUnzippedFileToPackageFolder(outputDirectory.getAbsolutePath());
 		FileUtils.deleteDirectory(outputDirectory);

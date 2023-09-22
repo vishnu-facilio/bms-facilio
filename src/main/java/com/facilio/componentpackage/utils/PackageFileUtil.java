@@ -23,9 +23,7 @@ public class PackageFileUtil {
 
     public static long saveAsZipFile(PackageFolderContext rootFolder) throws Exception {
 
-        String rootPath = CreateXMLPackageCommand.class.getClassLoader().getResource("").getFile() + File.separator
-                + "facilio-temp-files" + File.separator + AccountUtil.getCurrentOrg().getOrgId() + File.separator
-                + "packages" +File.separator + rootFolder.getName();
+        String rootPath = System.getProperties().getProperty("java.io.tmpdir") + File.separator + "sandbox"+ File.separator + "Unzipped-Package-Files" + File.separator + rootFolder.getName();
 
         File rootFile = new File(rootPath);
         if (!(rootFile.exists() && rootFile.isDirectory())) {
@@ -78,11 +76,10 @@ public class PackageFileUtil {
 
         return fileId;
     }
-    public static File getPackageZipFile(Long fileId, Long orgId) throws Exception {
-
+    public static File getPackageZipFile(Long fileId, Long orgId, Long targetOrgId) throws Exception {
+        AccountUtil.setCurrentAccount(orgId);
         try (InputStream inputStream = FacilioFactory.getFileStoreFromOrg(orgId).readFile(fileId)) {
-
-
+            AccountUtil.setCurrentAccount(targetOrgId);
             String dirPath = System.getProperties().getProperty("java.io.tmpdir") + File.separator + "sandbox"+ File.separator + "Unzipped-Package-Files";
             String path = dirPath + File.separator +fileId+".zip";
             File file = new File(path);
