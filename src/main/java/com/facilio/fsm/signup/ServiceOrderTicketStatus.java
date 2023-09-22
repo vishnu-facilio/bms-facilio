@@ -73,12 +73,22 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
 
         List<ServiceOrderTicketStatusContext> ticketStatusContextList = new ArrayList<>();
 
+        ServiceOrderTicketStatusContext previewState = new ServiceOrderTicketStatusContext();
+        previewState.setStatus(FacilioConstants.ServiceOrder.PREVIEW);
+        previewState.setDisplayName("Preview");
+        previewState.setColor("default");
+        previewState.setTextColor("#ffffff");
+        previewState.setTypeCode(1);
+        previewState.setRecordLocked(false);
+        previewState.setDeleteLocked(false);
+        ticketStatusContextList.add(previewState);
+
         ServiceOrderTicketStatusContext newState = new ServiceOrderTicketStatusContext();
         newState.setStatus(FacilioConstants.ServiceOrder.NEW);
         newState.setDisplayName("New");
         newState.setColor("default");
         newState.setTextColor("#ffffff");
-        newState.setTypeCode(1);
+        newState.setTypeCode(2);
         newState.setRecordLocked(false);
         newState.setDeleteLocked(false);
         ticketStatusContextList.add(newState);
@@ -88,7 +98,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         scheduledState.setDisplayName("Scheduled");
         scheduledState.setColor("information");
         scheduledState.setTextColor("#ffffff");
-        scheduledState.setTypeCode(1);
+        scheduledState.setTypeCode(2);
         scheduledState.setRecordLocked(false);
         scheduledState.setDeleteLocked(false);
         ticketStatusContextList.add(scheduledState);
@@ -98,7 +108,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         inProgressState.setDisplayName("In Progress");
         inProgressState.setColor("information");
         inProgressState.setTextColor("#ffffff");
-        inProgressState.setTypeCode(2);
+        inProgressState.setTypeCode(3);
         inProgressState.setRecordLocked(false);
         inProgressState.setDeleteLocked(false);
         ticketStatusContextList.add(inProgressState);
@@ -108,7 +118,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         completedState.setDisplayName("Completed");
         completedState.setColor("success");
         completedState.setTextColor("#ffffff");
-        completedState.setTypeCode(3);
+        completedState.setTypeCode(4);
         completedState.setRecordLocked(true);
         completedState.setDeleteLocked(true);
         ticketStatusContextList.add(completedState);
@@ -118,7 +128,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         closedState.setDisplayName("Closed");
         closedState.setColor("success");
         closedState.setTextColor("#000000");
-        closedState.setTypeCode(3);
+        closedState.setTypeCode(4);
         closedState.setRecordLocked(true);
         closedState.setDeleteLocked(true);
         ticketStatusContextList.add(closedState);
@@ -128,7 +138,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
         cancelledState.setDisplayName("Cancelled");
         cancelledState.setColor("default");
         cancelledState.setTextColor("#ffffff");
-        cancelledState.setTypeCode(3);
+        cancelledState.setTypeCode(4);
         cancelledState.setRecordLocked(true);
         cancelledState.setDeleteLocked(true);
         ticketStatusContextList.add(cancelledState);

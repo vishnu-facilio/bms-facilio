@@ -37,6 +37,7 @@ public class ServiceOrderTicketStatusContext extends V3Context {
 
 
     public static enum StatusType implements FacilioIntEnum {
+        PREVIEW("Preview"),
         OPEN ("Open"),
         IN_PROGRESS ("In Progress"),
         CLOSED("Closed");

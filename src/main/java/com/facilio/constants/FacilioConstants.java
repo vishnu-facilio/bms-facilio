@@ -4727,6 +4727,7 @@ public class FacilioConstants {
 		public static final String SERVICE_ORDER = "serviceOrder";
 		public static final String SERVICE_ORDER_TICKET_STATUS = "serviceOrderTicketStatus";
 		public static final String SERVICE_ORDER_STATUS_ACTIONS = "serviceOrderStatusActions";
+		public static final String PREVIEW = "preview";
 		public static final String NEW = "new";
 		public static final String SCHEDULED = "scheduled";
 		public static final String IN_PROGRESS = "inProgress";
