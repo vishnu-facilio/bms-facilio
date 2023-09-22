@@ -83,6 +83,8 @@ public class fsmAction extends V3Action {
     public String resourceList() throws Exception{
         FacilioChain chain = FSMReadOnlyChainFactory.fetchPeopleListChain();
         FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ORDER_BY,getOrderBy());
+        context.put(FacilioConstants.ContextNames.ORDER_TYPE,getOrderType());
         context.put(FacilioConstants.ContextNames.PAGE,getPage());
         context.put(FacilioConstants.ContextNames.PER_PAGE,getPerPage());
         context.put(FacilioConstants.ContextNames.START_TIME,getStartTime());
@@ -172,7 +174,7 @@ public class fsmAction extends V3Action {
                 break;
             case FacilioConstants.ServiceAppointment.END_TRIP:
                 context.put(FacilioConstants.Trip.END_LOCATION,getEndLocation());
-                FacilioChain endTripChain = FsmTransactionChainFactoryV3.endTripChain();
+                FacilioChain endTripChain = FsmTransactionChainFactoryV3.endTripForAppointmentChain();
                 endTripChain.execute(context);
                 List<TripContext> resultList = (List<TripContext>) context.get(FacilioConstants.ContextNames.DATA);
                 if(CollectionUtils.isNotEmpty(resultList)){
@@ -318,6 +320,23 @@ public class fsmAction extends V3Action {
                 stopTimeSheetChain.execute(context);
                 break;
         }
+        return SUCCESS;
+    }
+    public String updateTripStatus() throws Exception{
+        HashMap<String, String> successMsg = new HashMap<>();
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.Trip.END_LOCATION,getEndLocation());
+        context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+        FacilioChain endTripChain = FsmTransactionChainFactoryV3.endTripChain();
+        endTripChain.execute(context);
+        List<TripContext> resultList = (List<TripContext>) context.get(FacilioConstants.ContextNames.DATA);
+        if(CollectionUtils.isNotEmpty(resultList)){
+            JSONObject data = new JSONObject();
+            data.put(FacilioConstants.Trip.TRIP,resultList);
+            setData(data);
+        }
+        successMsg.put("message","Trip Ended Successfully");
+        setData(FacilioConstants.Trip.TRIP_STATUS_ACTIONS,successMsg);
         return SUCCESS;
     }
     public String workScheduleList() throws Exception{

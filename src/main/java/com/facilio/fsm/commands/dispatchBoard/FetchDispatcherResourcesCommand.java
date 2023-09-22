@@ -13,17 +13,13 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.fsm.context.DispatcherSettingsContext;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.MultiLookupField;
-import com.facilio.modules.fields.MultiLookupMeta;
-import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.fsm.context.ServiceAppointmentContext;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.*;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.twilio.rest.chat.v1.service.channel.Message;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -61,6 +57,9 @@ public class FetchDispatcherResourcesCommand extends FacilioCommand {
         if (offset < 0) {
             offset = 0;
         }
+
+        String orderBy = (String) context.get(FacilioConstants.ContextNames.ORDER_BY);
+        String orderType = (String) context.get(FacilioConstants.ContextNames.ORDER_TYPE);
 
         FacilioModule module = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
         FacilioField dispatchable = moduleBean.getField("dispatchable",FacilioConstants.ContextNames.PEOPLE);
@@ -112,35 +111,20 @@ public class FetchDispatcherResourcesCommand extends FacilioCommand {
         if(CollectionUtils.isEmpty(selectFields)){
             selectFields = moduleBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
         }
-
-        if (sortBy != null && !sortBy.isEmpty()) {
+        if(orderBy != null && orderType != null){
+            sortBy = moduleBean.getField(orderBy,FacilioConstants.ContextNames.PEOPLE).getCompleteColumnName()+ "," + FieldFactory.getIdField(module).getCompleteColumnName() + " " + orderType;
+        } else if (sortBy != null && !sortBy.isEmpty()) {
             sortBy = moduleBean.getField(sortBy,FacilioConstants.ContextNames.PEOPLE).getCompleteColumnName()+ "," + FieldFactory.getIdField(module).getCompleteColumnName() + " " + sortOrder;
         }
         else {
             sortBy = FieldFactory.getIdField(module).getCompleteColumnName()+" " + sortOrder;
         }
 
-        SelectRecordsBuilder<V3PeopleContext> selectRecordsBuilder = new SelectRecordsBuilder<V3PeopleContext>()
-                .select(selectFields)
-                .beanClass(V3PeopleContext.class)
-                .module(module)
-                .andCriteria(serverCriteria)
-                .orderBy(sortBy)
-                .limit(perPage)
-                .offset(offset)
-                .fetchSupplements(supplementFields);
-
         Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
-        if (filterCriteria != null) {
-            selectRecordsBuilder.andCriteria(filterCriteria);
-        }
 
         Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
-        if (searchCriteria != null) {
-            selectRecordsBuilder.andCriteria(searchCriteria);
-        }
 
-        List<V3PeopleContext> people = selectRecordsBuilder.get();
+        List<V3PeopleContext> people = getResourcesList(module,selectFields,supplementFields,serverCriteria,sortBy,filterCriteria,searchCriteria,perPage,offset);
 
         if(CollectionUtils.isNotEmpty(people)){
             for(V3PeopleContext resource : people){
@@ -206,7 +190,56 @@ public class FetchDispatcherResourcesCommand extends FacilioCommand {
         }
         JSONObject result = new JSONObject();
         result.put(FacilioConstants.Dispatcher.RESOURCES,resources);
+        result.put(FacilioConstants.ContextNames.COUNT, getResourcesCount(module,serverCriteria,sortBy,filterCriteria,searchCriteria));
         context.put(FacilioConstants.Dispatcher.RESOURCES,result);
         return false;
+    }
+
+    public static Long getResourcesCount(FacilioModule module,Criteria serverCriteria,String sortBy,Criteria filterCriteria,Criteria searchCriteria) throws Exception {
+
+        FacilioField id = FieldFactory.getIdField(module);
+        List<FacilioField> selectFields = new ArrayList<>();
+        selectFields.add(id);
+
+        List<SupplementRecord> lookupFields = new ArrayList<>();
+
+        SelectRecordsBuilder<V3PeopleContext> selectRecordsBuilder = getPeopleSelectBuilder(module,selectFields,lookupFields,serverCriteria,sortBy,filterCriteria,searchCriteria);
+        selectRecordsBuilder
+                .select(new HashSet<>())
+                .module(module)
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, id);
+        List<V3PeopleContext> props = selectRecordsBuilder.get();
+
+        long count = 0;
+        if (CollectionUtils.isNotEmpty(props)) {
+            count = props.get(0).getId();
+        }
+        return count;
+    }
+
+    public static List<V3PeopleContext> getResourcesList(FacilioModule module,List<FacilioField> selectFields,List<SupplementRecord>lookUpfields,Criteria serverCriteria,String sortBy,Criteria filterCriteria,Criteria searchCriteria,int perPage,int offset) throws Exception{
+        SelectRecordsBuilder<V3PeopleContext> selectRecordsBuilder =  getPeopleSelectBuilder(module,selectFields,lookUpfields,serverCriteria,sortBy,filterCriteria,searchCriteria);
+
+        selectRecordsBuilder
+                .limit(perPage)
+                .offset(offset);
+        return selectRecordsBuilder.get();
+    }
+
+    private static SelectRecordsBuilder<V3PeopleContext> getPeopleSelectBuilder(FacilioModule module,List<FacilioField> selectFields,List<SupplementRecord>lookupFields,Criteria serverCriteria,String sortBy,Criteria filterCriteria,Criteria searchCriteria)throws Exception{
+        SelectRecordsBuilder<V3PeopleContext> selectRecordsBuilder = new SelectRecordsBuilder<V3PeopleContext>()
+                .module(module)
+                .select(selectFields)
+                .beanClass(V3PeopleContext.class)
+                .fetchSupplements(lookupFields)
+                .andCriteria(serverCriteria)
+                .orderBy(sortBy);
+        if (filterCriteria != null) {
+            selectRecordsBuilder.andCriteria(filterCriteria);
+        }
+        if (searchCriteria != null) {
+            selectRecordsBuilder.andCriteria(searchCriteria);
+        }
+        return selectRecordsBuilder;
     }
 }
