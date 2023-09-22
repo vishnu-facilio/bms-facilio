@@ -9,6 +9,8 @@ import com.facilio.bmsconsole.monitoring.MonitoringMXBeanImp;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
+import com.facilio.backgroundactivity.util.BackgroundActivityUtil;
+import com.facilio.fields.util.FieldsConfigChain;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.client.app.beans.ClientAppBean;
@@ -131,7 +133,7 @@ public class FacilioContextListener implements ServletContextListener {
 				RedisManager.getInstance().connect(true); // creating redis connection pool
 				try(Jedis jedis = RedisManager.getInstance().getJedis()) {
 					jedis.publish("Init Channel", "Test");
-				} 
+				}
 			}
 			LRUCache.getRoleNameCachePs();
 
@@ -165,10 +167,11 @@ public class FacilioContextListener implements ServletContextListener {
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
 			FacilioInstantJobScheduler.init();
-			ChainUtil.initRESTAPIHandler("com.facilio.apiv3");
+			ChainUtil.initRESTAPIHandler("com\\.facilio\\.apiv3");
 			ModuleWidgetsUtil.initWidgetConfigHandler();
 			WidgetConfigChain.initWidgetConfigHandler();
 			WeatherServiceType.init();
+			FieldsConfigChain.initFieldConfigHandlerMap();
 			IdentityClient.init(FacilioProperties.getIdentityServerURL(), FacilioProperties.getRegion());
 			BackgroundActivityUtil.init();
 			/*HashMap customDomains = getCustomDomains();

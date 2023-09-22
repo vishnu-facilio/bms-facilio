@@ -194,7 +194,7 @@ public class V3Config implements V3Builder {
         this.beanClass = beanClass;
     }
 
-    public class CreateHandler implements CreateBuilder {
+    public class  CreateHandler implements CreateBuilder {
         private Command initCommand;
         private Command beforeSaveCommand;
         private Command afterSaveCommand;

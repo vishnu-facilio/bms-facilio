@@ -248,6 +248,25 @@ public class FacilioConstants {
 			}
 		}
 	}
+	public static class FieldsConfig {
+		public static final String LICENSE_BASED_FIELDS_MAP = "licenseBasedFieldsMap";
+		public static final String ACCESS_TYPE = "accessType";
+		public static final String CHECK_FIELDS_PERMISSION = "checkFieldsPermission";
+		public static final String CUSTOM = "custom";
+		public static final String FIELD_RESPONSE_CHAIN = "fieldResponseChain";
+		public static final String SUPPLEMENTS = "supplements";
+		public static final String FIELD_LIST_TYPE = "fieldListType";
+		public static final String CRITERIA = "criteria";
+		public static final String FIELDS_TO_ADD_LIST = "fieldsToAddList";
+		public static final String FIELD_TYPE_NAMES_TO_FETCH = "fieldTypeNamesToFetch";
+		public static final String FIELDS_TO_SKIP_LIST = "fieldsToSkipList";
+		public static final String FIELD_TYPES_TO_SKIP = "fieldTypesToSkip";
+		public static final String FIELD_TYPES_TO_FETCH = "fiedlTypesToFetch";
+		public static final String NAME = "name";
+		public static final String TYPE_SPECIFIC_FIELDS_MAP = "typeSpecificFieldsMap";
+		public static final String FIXED_FIELD_NAMES = "fixedFieldNames";
+		public static final String FIXED_SELECTABLE_FIELD_NAMES = "fixedSelectableFieldNames";
+	}
 
 	public static class ModuleNames {
 		public static final String TOOL_TYPES = "tooltypes";
@@ -531,6 +550,7 @@ public class FacilioConstants {
 		public static final String AGENT_DATA = "agentData";
 		public static final String ROLL_UP_TYPE = "rollUpType";
 		public static final String APPROVAL_STATUS = "approvalStatus";
+		public static final String APPROVAL_FLOW_ID = "approvalFlowId";
 		public static final String SYSTEM_CONTROLLER_MODULE_NAME = "systemController";
 		public static final String CONTROLLER_READINGS_MODULE_NAME = "controllerReadings";
 		public static final String AGGREGATION_META = "aggregationMeta";

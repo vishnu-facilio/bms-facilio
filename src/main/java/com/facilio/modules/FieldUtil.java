@@ -69,7 +69,7 @@ public class FieldUtil {
 		cache = LRUCache.getFieldNameCache();
 		cache.removeStartsWith(CacheUtil.FIELD_NAME_KEY_FOR_REMOVAL(orgId, newField.getName()));
 	}
-	
+
 	public static void init() {
 
 	}
@@ -990,7 +990,7 @@ public class FieldUtil {
 	public static String getRecordIdFieldName (@NonNull FacilioModule module) {
 		return RECORD_ID_AS_ID_MODULES.contains(module.getName()) ? "ID" : "Record ID";
 	}
-	
+
 	public static final List<String> INTERNAL_FIELDS = Collections.unmodifiableList(Arrays.asList(new String[] {
 			ContextNames.SITE_ID, ContextNames.STATE_FLOW_ID, ContextNames.SLA_POLICY_ID, ContextNames.FORM_ID,  ContextNames.APPROVAL_STATUS, "approvalFlowId",
 	}));
@@ -998,6 +998,10 @@ public class FieldUtil {
 	public static final boolean isSupplementRecord (FacilioField field) { // By default will exclude system rel record
 		return field instanceof SupplementRecord && !field.getDataTypeEnum().isSystemRelRecord();
 	}
+
+	public static final List<String> WORKORDER_VIEW_FIEDS = Arrays.asList("subject","category","description","dueDate","responseDueDate",
+			"moduleState","sourceType","assignedTo","createdTime","createdBy","priority","resource","type","modifiedTime","actualWorkStart","actualWorkEnd",
+			"totalCost","siteId","vendor","requester","noOfNotes","noOfTasks","noOfAttachments","attachmentPreview");
 
 	public  static boolean isGeoLocationField(FacilioField field){
 		return field.getDisplayType()== FacilioField.FieldDisplayType.GEO_LOCATION && Objects.equals(((LookupField) field).getLookupModule().getName(), ContextNames.LOCATION);

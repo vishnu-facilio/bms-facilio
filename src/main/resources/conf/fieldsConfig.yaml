@@ -1,0 +1,80 @@
+version: 1
+
+fieldListType:
+  - name: SORTABLE
+    accessType: SORT
+    fetchSupplement: true
+    fieldTypeNamesToFetch:
+      - STRING
+      - NUMBER
+      - DECIMAL
+      - BOOLEAN
+      - DATE
+      - DATE_TIME
+      - LOOKUP
+      - ENUM
+      - COUNTER
+      - ID
+      - SYSTEM_ENUM
+      - SCORE
+      - BIG_STRING
+      - STRING_SYSTEM_ENUM
+    fieldResponseChain:
+      - com.facilio.fields.commands.RemoveSortableInternalFields
+      - com.facilio.fields.commands.SortableFieldsResponseCommand
+
+  - name: VIEW_FIELDS
+    fieldTypeNamesToFetch:
+      - MISC
+      - STRING
+      - NUMBER
+      - DECIMAL
+      - BOOLEAN
+      - DATE
+      - DATE_TIME
+      - LOOKUP
+      - ENUM
+      - FILE
+      - COUNTER
+      - ID
+      - SYSTEM_ENUM
+      - MULTI_LOOKUP
+      - MULTI_ENUM
+      - SCORE
+      - LINE_ITEM
+      - LARGE_TEXT
+      - BIG_STRING
+      - STRING_SYSTEM_ENUM
+      - URL_FIELD
+      - CURRENCY_FIELD
+    fieldResponseChain:
+      - com.facilio.fields.commands.ViewFieldsResponseCommand
+
+  - name: ADVANCED_FILTER_FIELDS
+    fetchSupplement: true
+    fieldTypeNamesToFetch:
+      - STRING
+      - NUMBER
+      - DECIMAL
+      - BOOLEAN
+      - DATE
+      - DATE_TIME
+      - LOOKUP
+      - ENUM
+      - COUNTER
+      - ID
+      - SYSTEM_ENUM
+      - MULTI_LOOKUP
+      - MULTI_ENUM
+      - SCORE
+      - LARGE_TEXT
+      - BIG_STRING
+      - STRING_SYSTEM_ENUM
+      - URL_FIELD
+      - CURRENCY_FIELD
+    fieldResponseChain:
+      - com.facilio.fields.commands.AdvancedFilterFieldsResponseCommand
+
+  - name: PAGE_BUILDER_CRITERIA_FIELDS
+    fetchSupplement: false
+

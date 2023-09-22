@@ -25,7 +25,7 @@ public class ModuleLocalIdUtil {
 	
 	private static final Logger LOGGER = LogManager.getLogger(ModuleLocalIdUtil.class.getName());
 
-	private static final List<String> MODULES_WITH_LOCAL_ID = Collections.unmodifiableList(initModulesWithLocalIds());
+	public static final List<String> MODULES_WITH_LOCAL_ID = Collections.unmodifiableList(initModulesWithLocalIds());
 	
 	private static List<String> initModulesWithLocalIds() {
 		List<String> modulesWithLocalId = new ArrayList<>();

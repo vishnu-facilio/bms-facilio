@@ -7,9 +7,7 @@ import com.facilio.permission.util.PermissionSetUtil;
 import lombok.NonNull;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FieldConfigUtil {
@@ -20,12 +18,10 @@ public class FieldConfigUtil {
 
     public static FacilioField filterFieldByPermission(@NonNull FacilioModule module, FacilioField field) throws Exception {
             return filterFieldByPermission(module.getModuleId(), field);
-
     }
     public static FacilioField filterFieldByPermission( long moduleId, FacilioField field) throws Exception {
         List<FacilioField> fields = filterFieldsByPermission(moduleId, new ArrayList<>(Arrays.asList(field)));
         return CollectionUtils.isNotEmpty(fields) ? fields.get(0):null;
-
     }
     public static List<FacilioField> filterFieldsByPermission(long moduleId, List<FacilioField> fields) throws Exception {
         if (CollectionUtils.isNotEmpty(fields) && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FIELD_LIST_PERMISSION)) {
@@ -35,4 +31,16 @@ public class FieldConfigUtil {
         }
         return fields;
     }
+
+    public static Map<Long, FacilioModule> splitModules(FacilioModule module) {
+        Map<Long, FacilioModule> modules = new HashMap<>();
+
+        FacilioModule parent = module;
+        while(parent != null) {
+            modules.put(parent.getModuleId(), parent);
+            parent = parent.getExtendModule();
+        }
+        return modules;
+    }
+
 }

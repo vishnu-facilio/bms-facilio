@@ -2851,12 +2851,17 @@
 		<action name="advancedFilter/*"
 				class="com.facilio.fields.actions.FieldsAction"
 				method="fetchFilterFields">
-		<param name="moduleName">{1}</param>
+		    <param name="moduleName">{1}</param>
 		</action>
 		<action name="sortable/*"
 				class="com.facilio.fields.actions.FieldsAction"
 				method="fetchSortableFields">
-		<param name="moduleName">{1}</param>
+			<param name="moduleName">{1}</param>
+		</action>
+		<action name="config/*/*"
+				class="com.facilio.fields.actions.FieldConfigAction" method="fetchFieldList" >
+			<param name="fieldListType">{1}</param>
+			<param name="moduleName">{2}</param>
 		</action>
 	</package>
 
