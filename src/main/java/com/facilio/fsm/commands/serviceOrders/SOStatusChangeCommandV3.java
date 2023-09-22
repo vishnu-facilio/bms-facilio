@@ -39,11 +39,11 @@ public class SOStatusChangeCommandV3 extends FacilioCommand {
                 }
                 if(order.isAutoCreateSa()){
 
-                    if(order.getScheduledStartTime() == null || order.getScheduledStartTime() < 0 ){
+                    if(order.getPreferredStartTime() == null || order.getPreferredStartTime() < 0 ){
                         throw new FSMException(FSMErrorCode.SO_AUTOCREATE_SCHEDULEDSTART_TIME);
                     }
 
-                    if(order.getScheduledEndTime() == null || order.getScheduledEndTime() < 0){
+                    if(order.getPreferredEndTime() == null || order.getPreferredEndTime() < 0){
                         throw new FSMException(FSMErrorCode.SO_AUTOCREATE_SCHEDULEDEND_TIME);
                     }
 

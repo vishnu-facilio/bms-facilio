@@ -285,10 +285,10 @@ public class ServiceOrderModule extends BaseModuleConfig {
         serviceOrderFieldsList.add(fieldAgent);
 
 
-        FacilioField preferredstarttime = FieldFactory.getDefaultField("scheduledStartTime", "Scheduled Start Time", "SCHEDULED_START_TIME", FieldType.DATE_TIME);
+        FacilioField preferredstarttime = FieldFactory.getDefaultField("preferredStartTime", "Preferred Start Time", "PREFERRED_START_TIME", FieldType.DATE_TIME);
         serviceOrderFieldsList.add(preferredstarttime);
 
-        FacilioField preferredendtime = FieldFactory.getDefaultField("scheduledEndTime", "Scheduled End Time", "SCHEDULED_END_TIME", FieldType.DATE_TIME);
+        FacilioField preferredendtime = FieldFactory.getDefaultField("preferredEndTime", "Preferred End Time", "PREFERRED_END_TIME", FieldType.DATE_TIME);
         serviceOrderFieldsList.add(preferredendtime);
 
         FacilioField responseDueDate = FieldFactory.getDefaultField("responseDueDate", "Response Due Date", "RESPONSE_DUE_DATE", FieldType.DATE_TIME);
@@ -406,8 +406,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         serviceTaskSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormField> scheduleAppointmentFields = new ArrayList<>();
-        scheduleAppointmentFields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 10, 2));
-        scheduleAppointmentFields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.REQUIRED, 11, 2));
+        scheduleAppointmentFields.add(new FormField("preferredStartTime", FacilioField.FieldDisplayType.DATETIME, "Preferred Start Time", FormField.Required.REQUIRED, 10, 2));
+        scheduleAppointmentFields.add(new FormField("preferredEndTime", FacilioField.FieldDisplayType.DATETIME, "Preferred End Time", FormField.Required.REQUIRED, 11, 2));
         scheduleAppointmentFields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DURATION, "Response Due Duration", FormField.Required.OPTIONAL, 8, 2));
         scheduleAppointmentFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.OPTIONAL, 9, 2));
 
@@ -1076,8 +1076,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         FacilioField vendorField = serviceOrderFieldsMap.get("vendor");
         FacilioField clientField = serviceOrderFieldsMap.get("client");
-        FacilioField prefStartTimeField = serviceOrderFieldsMap.get("scheduledStartTime");
-        FacilioField prefEndTimeField = serviceOrderFieldsMap.get("scheduledEndTime");
+        FacilioField prefStartTimeField = serviceOrderFieldsMap.get("preferredStartTime");
+        FacilioField prefEndTimeField = serviceOrderFieldsMap.get("preferredEndTime");
         FacilioField responseDueDurationField = serviceOrderFieldsMap.get("responseDueDuration");
         FacilioField resolutionDueDurationField = serviceOrderFieldsMap.get("resolutionDueDuration");
         FacilioField responseDueDateField = serviceOrderFieldsMap.get("responseDueDate");

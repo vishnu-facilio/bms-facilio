@@ -32,8 +32,8 @@ public class ServiceOrderContext extends V3Context {
     private ServiceOrderRequestResponseStatus requestDueStatus;
     private ServiceOrderRequestResponseStatus responseDueStatus;
     private VendorContext vendor;
-    private Long scheduledStartTime;
-    private Long scheduledEndTime;
+    private Long preferredStartTime;
+    private Long preferredEndTime;
     private boolean autoCreateSa;
     private Boolean isAllSACompleted;
     private Boolean isTaskInitiated;
