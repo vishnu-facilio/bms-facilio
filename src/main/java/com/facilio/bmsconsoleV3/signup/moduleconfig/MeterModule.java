@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -18,6 +19,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -47,6 +49,7 @@ public class MeterModule extends BaseModuleConfig{
         addModuleChain.execute();
 
         addModuleLocalId();
+        addParentMeterLookup(meterModule);
         addMeterSubModules(meterModule);
 
     }
@@ -56,17 +59,18 @@ public class MeterModule extends BaseModuleConfig{
         ModuleBean moduleBean = Constants.getModBean();
 
         FacilioModule module = new FacilioModule("meter", "Meters", "Meters", FacilioModule.ModuleType.BASE_ENTITY, true);
+        module.setDescription("The meter module offers a digital representation of your physical and virtual meters, enabling advanced monitoring, predictive maintenance, and data-driven insights.");
 
         List<FacilioField> fields = new ArrayList<>();
 
-        StringField name = new StringField(module, "name", "Name", FacilioField.FieldDisplayType.TEXTBOX, "NAME", FieldType.STRING, false, false, true, null);
+        StringField name = new StringField(module, "name", "Name", FacilioField.FieldDisplayType.TEXTBOX, "NAME", FieldType.STRING, true, false, true, true);
         fields.add(name);
 
         LookupField meterLocation = new LookupField(module, "meterLocation", "Meter Location", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "METER_LOCATION_ID", FieldType.LOOKUP, false, false, true, null, "Meter Location", moduleBean.getModule(FacilioConstants.ContextNames.BASE_SPACE));
         fields.add(meterLocation);
 
-        StringField meterIdNumber = new StringField(module, "meterIdNumber", "Meter Identification Number", FacilioField.FieldDisplayType.TEXTBOX, "METER_ID_NUMBER", FieldType.STRING, false, false, true, null);
-        fields.add(meterIdNumber);
+        StringField uniqueId = new StringField(module, "uniqueId", "Meter Identification Number", FacilioField.FieldDisplayType.TEXTBOX, "METER_ID_NUMBER", FieldType.STRING, false, false, true, null);
+        fields.add(uniqueId);
 
         StringField qrVal = new StringField(module, "qrVal", "QR Value", FacilioField.FieldDisplayType.TEXTBOX, "QR_VALUE", FieldType.STRING, false, false, true, null);
         fields.add(qrVal);
@@ -78,12 +82,6 @@ public class MeterModule extends BaseModuleConfig{
         LookupField utilityType = new LookupField(module, "utilityType", "Utility Type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "UTILITY_TYPE", FieldType.LOOKUP, false, false, true, null, "Utility Type", moduleBean.getModule(FacilioConstants.Meter.UTILITY_TYPE));
         fields.add(utilityType);
 
-        NumberField parentMeterId = new NumberField(module, "parentMeterId", "Parent Meter ID", FacilioField.FieldDisplayType.NUMBER, "PARENT_METER_ID", FieldType.NUMBER, false, false, true, null);
-        fields.add(parentMeterId);
-
-        LookupField servingTo = new LookupField(module, "servingTo", "Serving To", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "SERVING_LOCATION_ID", FieldType.LOOKUP, false, false, true, null, "Serving Location", moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE));
-        fields.add(servingTo);
-
         StringField manufacturer = new StringField(module, "manufacturer", "Manufacturer", FacilioField.FieldDisplayType.TEXTBOX, "MANUFACTURER", FieldType.STRING, false, false, true, null);
         fields.add(manufacturer);
 
@@ -93,26 +91,11 @@ public class MeterModule extends BaseModuleConfig{
         StringField serialNumber = new StringField(module, "serialNumber", "Serial Number", FacilioField.FieldDisplayType.TEXTBOX, "SERIAL_NUMBER", FieldType.STRING, false, false, true, null);
         fields.add(serialNumber);
 
-        StringField tagNumber = new StringField(module, "tagNumber", "Tag", FacilioField.FieldDisplayType.TEXTBOX, "TAG_NUMBER", FieldType.STRING, false, false, true, null);
-        fields.add(tagNumber);
-
-        StringField partNumber = new StringField(module, "partNumber", "Part No.", FacilioField.FieldDisplayType.TEXTBOX, "PART_NUMBER", FieldType.STRING, false, false, true, null);
-        fields.add(partNumber);
-
-        NumberField unitPrice = new NumberField(module, "unitPrice", "Unit Price", FacilioField.FieldDisplayType.NUMBER, "UNIT_PRICE", FieldType.NUMBER, false, false, true, null);
-        fields.add(unitPrice);
-
-        StringField supplier = new StringField(module, "supplier", "Supplier", FacilioField.FieldDisplayType.TEXTBOX, "SUPPLIER", FieldType.STRING, false, false, true, null);
-        fields.add(supplier);
-
         DateField purchasedDate = new DateField(module, "purchasedDate", "Purchased Date", FacilioField.FieldDisplayType.DATETIME, "PURCHASED_DATE", FieldType.DATE_TIME, false, false, true, null);
         fields.add(purchasedDate);
 
         DateField retireDate = new DateField(module, "retireDate", "Retire Date", FacilioField.FieldDisplayType.DATETIME, "RETIRE_DATE", FieldType.DATE_TIME, false, false, true, null);
         fields.add(retireDate);
-
-        DateField warrantyExpiryDate = new DateField(module, "warrantyExpiryDate", "Warranty Expiry Date", FacilioField.FieldDisplayType.DATETIME, "WARRANTY_EXPIRY_DATE", FieldType.DATE_TIME, false, false, true, null);
-        fields.add(warrantyExpiryDate);
 
         NumberField localId = new NumberField(module, "localId", "ID", FacilioField.FieldDisplayType.NUMBER, "LOCAL_ID", FieldType.NUMBER, false, false, true, null);
         fields.add(localId);
@@ -128,9 +111,6 @@ public class MeterModule extends BaseModuleConfig{
 
         NumberField approvalFlowId = new NumberField(module, "approvalFlowId", "Approval Flow Id", FacilioField.FieldDisplayType.NUMBER, "APPROVAL_FLOW_ID", FieldType.NUMBER, false, false, true, null);
         fields.add(approvalFlowId);
-
-        BooleanField isVirtual = new BooleanField(module, "isVirtual", "Is Virtual", FacilioField.FieldDisplayType.DECISION_BOX, "IS_VIRTUAL", FieldType.BOOLEAN, false, false, true, null);
-        fields.add(isVirtual);
         
         LookupField virtualMeterTemplate = new LookupField(module, "virtualMeterTemplate", "Virtual Meter Template", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "VIRTUAL_METER_TEMPLATE_ID", FieldType.LOOKUP, false, false, true, null, "Child Meters", moduleBean.getModule(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE));
         fields.add(virtualMeterTemplate);
@@ -138,28 +118,29 @@ public class MeterModule extends BaseModuleConfig{
         BooleanField isCheckMeter = new BooleanField(module, "isCheckMeter", "Is Check Meter", FacilioField.FieldDisplayType.DECISION_BOX, "IS_CHECK_METER", FieldType.BOOLEAN, false, false, true, null);
         fields.add(isCheckMeter);
 
-        BooleanField isBillable = new BooleanField(module, "isBillable", "Is Billable", FacilioField.FieldDisplayType.DECISION_BOX, "IS_BILLABLE", FieldType.BOOLEAN, false, false, true, null);
-        fields.add(isBillable);
+        fields.add((FacilioField) FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.DATE_TIME));
 
-        NumberField sysCreatedTime = FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.NUMBER);
-        fields.add(sysCreatedTime);
+        fields.add((FacilioField) FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.DATE_TIME));
 
-        LookupField sysCreatedBy = FieldFactory.getField("sysCreatedBy", "Created By", "SYS_CREATED_BY",ModuleFactory.getUsersModule(), FieldType.LOOKUP);
-        sysCreatedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
-        fields.add(sysCreatedBy);
+        LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY",FieldType.LOOKUP);
+        createdByPeople.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(createdByPeople);
 
-
-        NumberField sysModifiedTime = FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.NUMBER);
-        fields.add(sysModifiedTime);
-
-        LookupField sysModifiedBy = FieldFactory.getField("sysModifiedBy", "Modified By", "SYS_MODIFIED_BY",ModuleFactory.getUsersModule(), FieldType.LOOKUP);
-        sysModifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
-        fields.add(sysModifiedBy);
+        LookupField modifiedByPeople = FieldFactory.getDefaultField("sysModifiedByPeople","Modified By","SYS_MODIFIED_BY",FieldType.LOOKUP);
+        modifiedByPeople.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(modifiedByPeople);
 
         module.setFields(fields);
         return module;
     }
 
+    private void addParentMeterLookup(FacilioModule meterModule) throws Exception {
+        LookupField parentMeterField = (LookupField) FieldFactory.getField("parentMeter", "Parent Meter", "PARENT_METER_ID", Constants.getModBean().getModule(FacilioConstants.Meter.METER), FieldType.LOOKUP);
+        parentMeterField.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        parentMeterField.setLookupModule(meterModule);
+        parentMeterField.setDefault(true);
+        Constants.getModBean().addField(parentMeterField);
+    }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() throws Exception {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
@@ -344,28 +325,15 @@ public class MeterModule extends BaseModuleConfig{
         List<FormField> MeterFormFields = new ArrayList<>();
         MeterFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, "name", 1, 1));
         MeterFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
-        MeterFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 3, 2));
-        FormField utilityTypeField = new FormField("utilityType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Utility Type", FormField.Required.REQUIRED, "utilitytype", 4, 2);
+        FormField utilityTypeField = new FormField("utilityType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Utility Type", FormField.Required.REQUIRED, "utilitytype", 3, 2);
         utilityTypeField.setIsDisabled(true);
         MeterFormFields.add(utilityTypeField);
+        MeterFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 4, 2));
         MeterFormFields.add(new FormField("meterLocation", FacilioField.FieldDisplayType.SPACECHOOSER, "Meter Location", FormField.Required.REQUIRED, 5, 2));
-        MeterFormFields.add(new FormField("servingTo", FacilioField.FieldDisplayType.SPACECHOOSER, "Serving To", FormField.Required.REQUIRED, 5, 2));
-        MeterFormFields.add(new FormField("manufacturer", FacilioField.FieldDisplayType.TEXTBOX, "Manufacturer", FormField.Required.OPTIONAL, 6, 2));
-        MeterFormFields.add(new FormField("supplier", FacilioField.FieldDisplayType.TEXTBOX, "Supplier", FormField.Required.OPTIONAL, 6, 3));
-        MeterFormFields.add(new FormField("model", FacilioField.FieldDisplayType.TEXTBOX, "Model", FormField.Required.OPTIONAL, 7, 2));
-        MeterFormFields.add(new FormField("serialNumber", FacilioField.FieldDisplayType.TEXTBOX, "Serial Number", FormField.Required.OPTIONAL, 7, 3));
-        MeterFormFields.add(new FormField("tagNumber", FacilioField.FieldDisplayType.TEXTBOX, "Tag", FormField.Required.OPTIONAL, 8, 2));
-        MeterFormFields.add(new FormField("partNumber", FacilioField.FieldDisplayType.TEXTBOX, "Part No.", FormField.Required.OPTIONAL, 8, 3));
-        MeterFormFields.add(new FormField("purchasedDate", FacilioField.FieldDisplayType.DATETIME, "Purchased Date", FormField.Required.OPTIONAL, 9, 2));
-        MeterFormFields.add(new FormField("retireDate", FacilioField.FieldDisplayType.DATETIME, "Retire Date", FormField.Required.OPTIONAL, 9, 3));
-        MeterFormFields.add(new FormField("unitPrice", FacilioField.FieldDisplayType.NUMBER, "Unit Price", FormField.Required.OPTIONAL, 10, 2));
-        MeterFormFields.add(new FormField("warrantyExpiryDate", FacilioField.FieldDisplayType.DATETIME, "Warranty Expiry Date", FormField.Required.OPTIONAL, 10, 3));
-        MeterFormFields.add(new FormField("qrVal", FacilioField.FieldDisplayType.TEXTBOX, "QR Value", FormField.Required.OPTIONAL, 11, 2));
-        MeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Is Check Meter", FormField.Required.OPTIONAL, 12, 2));
-        MeterFormFields.add(new FormField("isBillable", FacilioField.FieldDisplayType.DECISION_BOX, "Is Billable", FormField.Required.OPTIONAL, 13, 2));
+        MeterFormFields.add(new FormField("parentMeter", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent Meter", FormField.Required.OPTIONAL, "meter", 6, 2));
+        MeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Is Check Meter", FormField.Required.OPTIONAL, 7, 2));
 
-
-        FormSection section = new FormSection("Default", 1, MeterFormFields, false);
+        FormSection section = new FormSection("", 1, MeterFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         MeterForm.setSections(Collections.singletonList(section));
         MeterForm.setIsSystemForm(true);
@@ -431,18 +399,13 @@ public class MeterModule extends BaseModuleConfig{
         List<ViewField> columns = new ArrayList<ViewField>();
 
         columns.add(new ViewField("name", "Name"));
-        columns.add(new ViewField("description", "Description"));
         columns.add(new ViewField("utilityType", "Utility Type"));
-        columns.add(new ViewField("isVirtual", "Is Virtual"));
-        columns.add(new ViewField("virtualMeterTemplate", "Virtual Meter Template"));
-        columns.add(new ViewField("siteId", "Site"));
+        columns.add(new ViewField("meterType", "Meter Type"));
         columns.add(new ViewField("meterLocation", "Meter Location"));
+        columns.add(new ViewField("siteId", "Site"));
+        columns.add(new ViewField("parentMeter", "Parent Meter"));
         columns.add(new ViewField("isCheckMeter", "Is Check Meter"));
-        columns.add(new ViewField("isBillable", "Is Billable"));
-        columns.add(new ViewField("sysCreatedBy", "Created By"));
-        columns.add(new ViewField("sysCreatedTime", "Created Time"));
-        columns.add(new ViewField("sysModifiedBy", "Modified By"));
-        columns.add(new ViewField("sysModifiedTime", "Modified Time"));
+        columns.add(new ViewField("virtualMeterTemplate", "Virtual Meter Template"));
 
         return columns;
 
@@ -670,10 +633,10 @@ public class MeterModule extends BaseModuleConfig{
     private static Criteria getPhysicalMeterSystemTypeCriteria() {
         Criteria criteria = new Criteria();
         Condition meterTypeCondition = new Condition();
-        meterTypeCondition.setFieldName("isVirtual");
-        meterTypeCondition.setColumnName("Meters.IS_VIRTUAL");
-        meterTypeCondition.setOperator(BooleanOperators.IS);
-        meterTypeCondition.setValue("false");
+        meterTypeCondition.setFieldName("meterType");
+        meterTypeCondition.setColumnName("Meters.METER_TYPE");
+        meterTypeCondition.setOperator(EnumOperators.IS);
+        meterTypeCondition.setValue(String.valueOf(V3MeterContext.MeterType.PHYSICAL.getVal()));
         meterTypeCondition.setModuleName(FacilioConstants.Meter.METER);
         criteria.addAndCondition(meterTypeCondition);
         Condition utilityTypeCon = new Condition();
@@ -690,10 +653,10 @@ public class MeterModule extends BaseModuleConfig{
     private static Criteria getPhysicalMeterCustomTypeCriteria() {
         Criteria criteria = new Criteria();
         Condition meterTypeCondition = new Condition();
-        meterTypeCondition.setFieldName("isVirtual");
-        meterTypeCondition.setColumnName("Meters.IS_VIRTUAL");
-        meterTypeCondition.setOperator(BooleanOperators.IS);
-        meterTypeCondition.setValue("false");
+        meterTypeCondition.setFieldName("meterType");
+        meterTypeCondition.setColumnName("Meters.METER_TYPE");
+        meterTypeCondition.setOperator(EnumOperators.IS);
+        meterTypeCondition.setValue(String.valueOf(V3MeterContext.MeterType.PHYSICAL.getVal()));
         meterTypeCondition.setModuleName(FacilioConstants.Meter.METER);
         criteria.addAndCondition(meterTypeCondition);
         Condition utilityTypeCon = new Condition();
@@ -710,10 +673,10 @@ public class MeterModule extends BaseModuleConfig{
     private static Criteria getVirtualMeterSystemTypeCriteria() {
         Criteria criteria = new Criteria();
         Condition meterTypeCondition = new Condition();
-        meterTypeCondition.setFieldName("isVirtual");
-        meterTypeCondition.setColumnName("Meters.IS_VIRTUAL");
-        meterTypeCondition.setOperator(BooleanOperators.IS);
-        meterTypeCondition.setValue("true");
+        meterTypeCondition.setFieldName("meterType");
+        meterTypeCondition.setColumnName("Meters.METER_TYPE");
+        meterTypeCondition.setOperator(EnumOperators.IS);
+        meterTypeCondition.setValue(String.valueOf(V3MeterContext.MeterType.VIRTUAL.getVal()));
         meterTypeCondition.setModuleName(FacilioConstants.Meter.METER);
         criteria.addAndCondition(meterTypeCondition);
         Condition utilityTypeCon = new Condition();
@@ -730,10 +693,10 @@ public class MeterModule extends BaseModuleConfig{
     private static Criteria getVirtualMeterCustomTypeCriteria() {
         Criteria criteria = new Criteria();
         Condition meterTypeCondition = new Condition();
-        meterTypeCondition.setFieldName("isVirtual");
-        meterTypeCondition.setColumnName("Meters.IS_VIRTUAL");
-        meterTypeCondition.setOperator(BooleanOperators.IS);
-        meterTypeCondition.setValue("true");
+        meterTypeCondition.setFieldName("meterType");
+        meterTypeCondition.setColumnName("Meters.METER_TYPE");
+        meterTypeCondition.setOperator(EnumOperators.IS);
+        meterTypeCondition.setValue(String.valueOf(V3MeterContext.MeterType.VIRTUAL.getVal()));
         meterTypeCondition.setModuleName(FacilioConstants.Meter.METER);
         criteria.addAndCondition(meterTypeCondition);
         Condition utilityTypeCon = new Condition();
@@ -750,96 +713,100 @@ public class MeterModule extends BaseModuleConfig{
     private static JSONObject getPhysicalMeterSummaryWidgetDetails(String moduleName, ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
+
         FacilioField utilityType = moduleBean.getField("utilityType", moduleName);
-        FacilioField servingTo = moduleBean.getField("servingTo", moduleName);
-        FacilioField meterLocation = moduleBean.getField("meterLocation",moduleName);
-        FacilioField isVirtual = moduleBean.getField("isVirtual", moduleName);
-        FacilioField manufacturer = moduleBean.getField("manufacturer", moduleName);
-        FacilioField supplier = moduleBean.getField("supplier", moduleName);
-        FacilioField model = moduleBean.getField("model", moduleName);
-        FacilioField unitPrice = moduleBean.getField("unitPrice", moduleName);
-        FacilioField serialNumber = moduleBean.getField("serialNumber", moduleName);
-        FacilioField tagNumber = moduleBean.getField("tagNumber", moduleName);
-        FacilioField partNumber = moduleBean.getField("partNumber", moduleName);
-        FacilioField purchasedDate = moduleBean.getField("purchasedDate", moduleName);
-        FacilioField retireDate = moduleBean.getField("retireDate", moduleName);
-        FacilioField warrantyExpiryDate = moduleBean.getField("warrantyExpiryDate", moduleName);
-        FacilioField qrVal = moduleBean.getField("qrVal", moduleName);
+        FacilioField meterType = moduleBean.getField("meterType", moduleName);
+        FacilioField parentMeter = moduleBean.getField("parentMeter", moduleName);
         FacilioField isCheckMeter = moduleBean.getField("isCheckMeter", moduleName);
-        FacilioField isBillable = moduleBean.getField("isBillable", moduleName);
-        FacilioField sysCreatedBy = moduleBean.getField("sysCreatedBy", moduleName);
-        FacilioField sysCreatedTime = moduleBean.getField("sysCreatedTime", moduleName);
-        FacilioField sysModifiedBy = moduleBean.getField("sysModifiedBy", moduleName);
-        FacilioField sysModifiedTime = moduleBean.getField("sysModifiedTime", moduleName);
         FacilioField description = moduleBean.getField("description", moduleName);
+
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
+
         addSummaryFieldInWidgetGroup(widgetGroup, utilityType, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, servingTo, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, meterLocation, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, isVirtual, 1, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, manufacturer, 2, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, supplier, 2, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, model, 2, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, unitPrice, 2, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, serialNumber, 3, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, tagNumber, 3, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, partNumber, 3, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, purchasedDate, 3, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, retireDate, 4, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, warrantyExpiryDate, 4, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, qrVal, 4, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, isCheckMeter, 4, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, isBillable, 5, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedBy, 5, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedTime, 5, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedBy, 5, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTime, 6, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, description, 7, 1, 4);
-        widgetGroup.setName("moduleDetails");
+        addSummaryFieldInWidgetGroup(widgetGroup, meterType, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, parentMeter, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, isCheckMeter, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, description, 2, 1, 4);
+
+        widgetGroup.setName("meterModuleDetails");
         widgetGroup.setDisplayName("General Information");
         widgetGroup.setColumns(4);
+
+
+        FacilioField meterLocation = moduleBean.getField("meterLocation",moduleName);
+
+        SummaryWidgetGroup locationWidgetGroup = new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(locationWidgetGroup, meterLocation, 1, 1, 1);
+
+        locationWidgetGroup.setName("locationDetails");
+        locationWidgetGroup.setDisplayName("Location");
+        locationWidgetGroup.setColumns(4);
+
+
+        FacilioField manufacturer = moduleBean.getField("manufacturer", moduleName);
+        FacilioField model = moduleBean.getField("model", moduleName);
+        FacilioField serialNumber = moduleBean.getField("serialNumber", moduleName);
+        FacilioField purchasedDate = moduleBean.getField("purchasedDate", moduleName);
+        FacilioField retireDate = moduleBean.getField("retireDate", moduleName);
+
+        SummaryWidgetGroup manufactureWidgetGroup = new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(manufactureWidgetGroup, manufacturer, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(manufactureWidgetGroup, model, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(manufactureWidgetGroup, serialNumber, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(manufactureWidgetGroup, purchasedDate, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(manufactureWidgetGroup, retireDate, 2, 1, 1);
+
+        manufactureWidgetGroup.setName("manufactureDetails");
+        manufactureWidgetGroup.setDisplayName("Manufacture");
+        manufactureWidgetGroup.setColumns(4);
+
+
+        FacilioField sysCreatedBy = moduleBean.getField("sysCreatedByPeople", moduleName);
+        FacilioField sysCreatedTime = moduleBean.getField("sysCreatedTime", moduleName);
+        FacilioField sysModifiedBy = moduleBean.getField("sysModifiedByPeople", moduleName);
+        FacilioField sysModifiedTime = moduleBean.getField("sysModifiedTime", moduleName);
+
+        SummaryWidgetGroup systemInformationGroup = new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(systemInformationGroup, sysCreatedBy, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(systemInformationGroup, sysCreatedTime, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(systemInformationGroup, sysModifiedBy, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(systemInformationGroup, sysModifiedTime, 1, 4, 1);
+
+        systemInformationGroup.setName("systemDetails");
+        systemInformationGroup.setDisplayName("System Information");
+        systemInformationGroup.setColumns(4);
+
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
+
         widgetGroupList.add(widgetGroup);
+        widgetGroupList.add(locationWidgetGroup);
+        widgetGroupList.add(manufactureWidgetGroup);
+        widgetGroupList.add(systemInformationGroup);
+
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
         pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
+
         return FieldUtil.getAsJSON(pageWidget);
     }
     private static JSONObject getVirtualMeterSummaryWidgetDetails(String moduleName, ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
         FacilioField utilityType = moduleBean.getField("utilityType", moduleName);
-        FacilioField servingTo = moduleBean.getField("servingTo", moduleName);
         FacilioField vmTemplate = moduleBean.getField("virtualMeterTemplate", moduleName);
-        FacilioField isVirtual = moduleBean.getField("isVirtual", moduleName);
+        FacilioField meterType = moduleBean.getField("meterType", moduleName);
         FacilioField description = moduleBean.getField("description", moduleName);
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
         addSummaryFieldInWidgetGroup(widgetGroup, utilityType, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, servingTo, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, vmTemplate, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, isVirtual, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, vmTemplate, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, meterType, 1, 3, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, description, 2, 1, 4);
-        widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("General Information");
-        widgetGroup.setColumns(4);
-        List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
-        widgetGroupList.add(widgetGroup);
-        pageWidget.setDisplayName("");
-        pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(app.getId());
-        pageWidget.setGroups(widgetGroupList);
-        return FieldUtil.getAsJSON(pageWidget);
-    }
-    private static JSONObject getReadingCardDetails(String moduleName, ApplicationContext app) throws Exception {
-        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = moduleBean.getModule(moduleName);
-        FacilioField utilityType = moduleBean.getField("utilityType", moduleName);
-        SummaryWidget pageWidget = new SummaryWidget();
-        SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
-        addSummaryFieldInWidgetGroup(widgetGroup, utilityType, 1, 1, 1);
         widgetGroup.setName("moduleDetails");
         widgetGroup.setDisplayName("General Information");
         widgetGroup.setColumns(4);

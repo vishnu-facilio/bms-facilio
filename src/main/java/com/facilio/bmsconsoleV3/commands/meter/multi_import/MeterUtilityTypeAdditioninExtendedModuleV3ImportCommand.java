@@ -42,6 +42,7 @@ public class MeterUtilityTypeAdditioninExtendedModuleV3ImportCommand extends Fac
             Long logId = logIdVsMeterPair.getKey();
             try{
             	V3MeterContext meter =(V3MeterContext)logIdVsMeterPair.getValue();
+                meter.setMeterTypeEnum(V3MeterContext.MeterType.PHYSICAL);
             	V3UtilityTypeContext utilityType = meter.getUtilityType();
                 long meterModuleId = utilityType.getMeterModuleID();
                 FacilioModule module = modBean.getModule(meterModuleId);

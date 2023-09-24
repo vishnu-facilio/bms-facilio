@@ -54,7 +54,7 @@ public class MeterPageFactory extends PageFactory {
 
 		int yOffset = 0;
 
-		if(meter.getIsVirtual() != null && meter.getIsVirtual() == true) {
+		if(meter.getMeterTypeEnum() != null && meter.getMeterTypeEnum().equals(V3MeterContext.MeterType.VIRTUAL)) {
 			PageWidget detailsWidget = new PageWidget(WidgetType.VIRTUAL_METER_DETAILS_WIDGET);
 			detailsWidget.addToLayoutParams(0, 0, 18, 8);
 			summarySection.addWidget(detailsWidget);

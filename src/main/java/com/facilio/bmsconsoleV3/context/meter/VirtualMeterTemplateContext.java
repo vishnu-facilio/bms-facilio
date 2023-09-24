@@ -114,10 +114,8 @@ public class VirtualMeterTemplateContext extends V3Context{
             meterContext.setName(meterName);
             meterContext.setDescription(meterDescription);
             meterContext.setVirtualMeterTemplate(this);
-            meterContext.setIsVirtual(Boolean.TRUE);
 			meterContext.setMeterTypeEnum(V3MeterContext.MeterType.VIRTUAL);
             meterContext.setSiteId(resource.getSiteId());
-			meterContext.setServingTo(resource);
             meterContext.setUtilityType(getUtilityType());
             
             generatedMeterContext.put(resourceId,meterContext);

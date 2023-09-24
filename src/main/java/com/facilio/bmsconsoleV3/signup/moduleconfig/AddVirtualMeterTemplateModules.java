@@ -74,21 +74,18 @@ public class AddVirtualMeterTemplateModules extends SignUpData {
 
         BooleanField status = (BooleanField) FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.BOOLEAN);
         fields.add(status);
-        
-        NumberField sysCreatedTime = (NumberField) FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.NUMBER);
-        fields.add(sysCreatedTime);
 
-        LookupField sysCreatedBy = (LookupField) FieldFactory.getField("sysCreatedBy", "Created By", "SYS_CREATED_BY",ModuleFactory.getUsersModule(), FieldType.LOOKUP);
-        sysCreatedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
-        fields.add(sysCreatedBy);
+        fields.add((FacilioField) FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.DATE_TIME));
 
+        fields.add((FacilioField) FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.DATE_TIME));
 
-        NumberField sysModifiedTime = (NumberField) FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.NUMBER);
-        fields.add(sysModifiedTime);
+        LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY",FieldType.LOOKUP);
+        createdByPeople.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(createdByPeople);
 
-        LookupField sysModifiedBy = (LookupField) FieldFactory.getField("sysModifiedBy", "Modified By", "SYS_MODIFIED_BY",ModuleFactory.getUsersModule(), FieldType.LOOKUP);
-        sysModifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
-        fields.add(sysModifiedBy);
+        LookupField modifiedByPeople = FieldFactory.getDefaultField("sysModifiedByPeople","Modified By","SYS_MODIFIED_BY",FieldType.LOOKUP);
+        modifiedByPeople.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(modifiedByPeople);
         
         
         module.setFields(fields);
@@ -184,6 +181,7 @@ public class AddVirtualMeterTemplateModules extends SignUpData {
                 true
         );
 
+        module.setDescription("A Virtual Meter Template aggregates physical meter readings into virtual meters by applying predefined logical grouping criteria.");
         List<FacilioField> fields = new ArrayList<>();
 
         FacilioField nameField = (FacilioField) FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING, true);
@@ -226,20 +224,17 @@ public class AddVirtualMeterTemplateModules extends SignUpData {
         NumberField relationShipId = (NumberField) FieldFactory.getDefaultField("relationShipId", "Relationship Id", "RELATIONSHIP_ID", FieldType.NUMBER);
         fields.add(relationShipId);
 
-        NumberField sysCreatedTime = (NumberField) FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.NUMBER);
-        fields.add(sysCreatedTime);
+        fields.add((FacilioField) FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.DATE_TIME));
 
-        LookupField sysCreatedBy = (LookupField) FieldFactory.getField("sysCreatedBy", "Created By", "SYS_CREATED_BY",ModuleFactory.getUsersModule(), FieldType.LOOKUP);
-        sysCreatedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
-        fields.add(sysCreatedBy);
+        fields.add((FacilioField) FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.DATE_TIME));
 
+        LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY",FieldType.LOOKUP);
+        createdByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(createdByPeople);
 
-        NumberField sysModifiedTime = (NumberField) FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.NUMBER);
-        fields.add(sysModifiedTime);
-
-        LookupField sysModifiedBy = (LookupField) FieldFactory.getField("sysModifiedBy", "Modified By", "SYS_MODIFIED_BY",ModuleFactory.getUsersModule(), FieldType.LOOKUP);
-        sysModifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
-        fields.add(sysModifiedBy);
+        LookupField modifiedByPeople = FieldFactory.getDefaultField("sysModifiedByPeople","Modified By","SYS_MODIFIED_BY",FieldType.LOOKUP);
+        modifiedByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(modifiedByPeople);
 
         module.setFields(fields);
         return module;

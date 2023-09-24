@@ -24,27 +24,19 @@ public class V3MeterContext extends V3Context {
 	private String description;
 	private String moduleName;
 	private String qrVal;
-	private String meterIdNumber;
+	private String uniqueId;
 	private V3UtilityTypeContext utilityType;
 	private MeterType meterType;
-	private Long parentMeterId;
-	private V3ResourceContext servingTo;
+	private V3MeterContext parentMeter;
 	private V3BaseSpaceContext meterLocation;
 	private String manufacturer;
 	private String model;
 	private String serialNumber;
-	private String tagNumber;
-	private String partNumber;
-	private Double unitPrice;
-	private String supplier;
 	private Long purchasedDate;
 	private Long retireDate;
-	private Long warrantyExpiryDate;
 	public Boolean isCommissioned;
-	public Boolean isVirtual;
 	VirtualMeterTemplateContext virtualMeterTemplate;
 	public Boolean isCheckMeter;
-	public Boolean isBillable;
 	private String utilityTypeModuleName;
 
 	public String getModuleName() {
@@ -65,20 +57,12 @@ public class V3MeterContext extends V3Context {
 	}
 
 
-	public Long getParentMeterId() {
-		return parentMeterId;
+	public V3MeterContext getParentMeter() {
+		return parentMeter;
 	}
 
-	public void setParentMeterId(Long parentMeterId) {
-		this.parentMeterId = parentMeterId;
-	}
-
-	public V3ResourceContext getServingTo() {
-		return servingTo;
-	}
-
-	public void setServingTo(V3ResourceContext servingTo) {
-		this.servingTo = servingTo;
+	public void setParentMeter(V3MeterContext parentMeter) {
+		this.parentMeter = parentMeter;
 	}
 
 	public V3BaseSpaceContext getMeterLocation() {
@@ -117,43 +101,6 @@ public class V3MeterContext extends V3Context {
 		this.serialNumber = serialNumber;
 	}
 
-
-	public String getTagNumber() {
-		return tagNumber;
-	}
-
-	public void setTagNumber(String tagNumber) {
-		this.tagNumber = tagNumber;
-	}
-
-
-	public String getPartNumber() {
-		return partNumber;
-	}
-
-	public void setPartNumber(String partNumber) {
-		this.partNumber = partNumber;
-	}
-
-
-	public Double getUnitPrice() {
-		return unitPrice;
-	}
-
-	public void setUnitPrice(Double unitPrice) {
-		this.unitPrice = unitPrice;
-	}
-
-
-	public String getSupplier() {
-		return supplier;
-	}
-
-	public void setSupplier(String supplier) {
-		this.supplier = supplier;
-	}
-
-
 	public Long getPurchasedDate() {
 		return purchasedDate;
 	}
@@ -169,15 +116,6 @@ public class V3MeterContext extends V3Context {
 
 	public void setRetireDate(Long retireDate) {
 		this.retireDate = retireDate;
-	}
-
-
-	public Long getWarrantyExpiryDate() {
-		return warrantyExpiryDate;
-	}
-
-	public void setWarrantyExpiryDate(Long warrantyExpiryDate) {
-		this.warrantyExpiryDate = warrantyExpiryDate;
 	}
 	
 	public long getLocalId() {
@@ -201,21 +139,6 @@ public class V3MeterContext extends V3Context {
 		return false;
 	}
 
-
-	public Boolean getIsVirtual() {
-		return isVirtual;
-	}
-	public void setIsVirtual(Boolean isVirtual) {
-		this.isVirtual = isVirtual;
-	}
-	public boolean isVirtual() {
-		if(isVirtual != null) {
-			return isVirtual.booleanValue();
-		}
-		return false;
-	}
-
-
 	public Boolean getIsCheckMeter() {
 		return isCheckMeter;
 	}
@@ -225,20 +148,6 @@ public class V3MeterContext extends V3Context {
 	public boolean isCheckMeter() {
 		if(isCheckMeter != null) {
 			return isCheckMeter.booleanValue();
-		}
-		return false;
-	}
-
-
-	public Boolean getIsBillable() {
-		return isBillable;
-	}
-	public void setIsBillable(Boolean isBillable) {
-		this.isBillable = isBillable;
-	}
-	public boolean isBillable() {
-		if(isBillable != null) {
-			return isBillable.booleanValue();
 		}
 		return false;
 	}
