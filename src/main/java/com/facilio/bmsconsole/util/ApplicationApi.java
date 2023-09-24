@@ -1451,86 +1451,11 @@ public class ApplicationApi {
 
     public static void addFsmPortalWebGroupsForMobileLayout(ApplicationLayoutContext layout) {
         try {
-            int groupOrder = 1;
 
             long appId = layout.getApplicationId();
 
-//            FSMDefaultTabsAndTabGroups defaultTabsAndTabGroups = new FSMDefaultTabsAndTabGroups();
-//
-//            List<WebTabGroupContext> webTabGroups = new ArrayList<>();
-//            Map<String, List<WebTabContext>> groupNameVsWebTabsMap = new HashMap<>();
-//            List<WebTabContext> webTabs = new ArrayList<>();
-//
-//            webTabGroups.add(new WebTabGroupContext("Home", "home", layout.getId(), 200, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(new WebTabContext("Dashboard", "homepage",  WebTabContext.Type.HOMEPAGE, null, appId, null));
-//            groupNameVsWebTabsMap.put("home", webTabs);
-//
-//            webTabGroups.add(new WebTabGroupContext("Service Appointment", "serviceAppointment", layout.getId(), 201, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(new WebTabContext("Service Appointment", "serviceAppointment_mobile",  WebTabContext.Type.MODULE, null, appId, null));
-//            groupNameVsWebTabsMap.put("serviceAppointment", webTabs);
-//
-//            webTabGroups.add(new WebTabGroupContext("Time Off", "timeOff", layout.getId(), 202, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(new WebTabContext("Time Off", "timeOff_mobile",  WebTabContext.Type.MODULE, null, appId, null));
-//            groupNameVsWebTabsMap.put("timeOff", webTabs);
-//
-//            webTabGroups.add(new WebTabGroupContext("Service Order", "serviceOrder", layout.getId(), 203, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(new WebTabContext("Service Order", "serviceOrder_mobile",  WebTabContext.Type.MODULE, null, appId, null));
-//            groupNameVsWebTabsMap.put("serviceOrder", webTabs);
-//
-//            webTabGroups.add(new WebTabGroupContext("Attendance", "attendance", layout.getId(), 204, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(new WebTabContext("Attendance", "attendance_mobile",  WebTabContext.Type.ATTENDANCE, null, appId, null));
-//            groupNameVsWebTabsMap.put("attendance", webTabs);
-//
-//            webTabGroups.add(new WebTabGroupContext("Time Sheet", "timeSheet", layout.getId(), 205, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(new WebTabContext("Time Sheet", "timeSheet_mobile",  WebTabContext.Type.MODULE, null, appId, null));
-//            groupNameVsWebTabsMap.put("timeSheet", webTabs);
-//
-//            webTabGroups.add(new WebTabGroupContext("Trip", "trip", layout.getId(), 206, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(new WebTabContext("Trip", "trip_mobile",  WebTabContext.Type.MODULE, null, appId, null));
-//            groupNameVsWebTabsMap.put("trip", webTabs);
-
-
-//            webTabGroups.add(new WebTabGroupContext("Service Appointment", "serviceAppointment", layout.getId(), 201, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(getWebTabForApplication(appId, "serviceAppointment"));
-//            groupNameVsWebTabsMap.put("serviceAppointment", webTabs);
-//
-//            webTabGroups.add(new WebTabGroupContext("Time Off", "timeOff", layout.getId(), 202, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(getWebTabForApplication(appId, "timeOff"));
-//            groupNameVsWebTabsMap.put("timeOff", webTabs);
-//
-//            webTabGroups.add(new WebTabGroupContext("Service Order", "serviceOrder", layout.getId(), 203, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(getWebTabForApplication(appId, "serviceOrder"));
-//            groupNameVsWebTabsMap.put("serviceOrder", webTabs);
-//
-//            webTabGroups.add(new WebTabGroupContext("Attendance", "attendance", layout.getId(), 204, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(getWebTabForApplication(appId, "attendance"));
-//            groupNameVsWebTabsMap.put("attendance", webTabs);
-//
-//            webTabGroups.add(new WebTabGroupContext("Time Sheet", "timeSheet", layout.getId(), 205, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(getWebTabForApplication(appId, "timeSheet"));
-//            groupNameVsWebTabsMap.put("timeSheet", webTabs);
-//
-//            webTabGroups.add(new WebTabGroupContext("Trip", "trip", layout.getId(), 206, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(getWebTabForApplication(appId, "trip"));
-//            groupNameVsWebTabsMap.put("trip", webTabs);
-
-
             FSMDefaultTabsAndTabGroups defaultTabsAndTabGroups = new FSMDefaultTabsAndTabGroups();
-
-            for (WebTabGroupContext webTabGroupContext :  defaultTabsAndTabGroups.getWebTabGroupsForMobile(appId, layout.getId())) {
+            for (WebTabGroupContext webTabGroupContext : defaultTabsAndTabGroups.getWebTabGroupsForMobile(appId, layout.getId())) {
                 FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
                 FacilioContext chainContext = chain.getContext();
                 chainContext.put(FacilioConstants.ContextNames.WEB_TAB_GROUP, webTabGroupContext);

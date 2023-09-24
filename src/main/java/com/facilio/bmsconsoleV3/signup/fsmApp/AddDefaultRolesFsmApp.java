@@ -35,6 +35,7 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
     private static final Map<String, Long> dispatchConsoleTabPermissions = NewPermissionUtil.getPermissions(WebTabContext.Type.DISPATCHER_CONSOLE.getIndex());
     private static final Map<String, Long> attendanceTabPermissions = NewPermissionUtil.getPermissions(WebTabContext.Type.ATTENDANCE.getIndex());
     private static final Map<String, Long> myAttendanceTabPermissions = NewPermissionUtil.getPermissions(WebTabContext.Type.MY_ATTENDANCE.getIndex());
+    private static final Map<String, Long> newDashboardTabPermissions = NewPermissionUtil.getPermissions(WebTabContext.Type.NEW_DASHBOARD.getIndex());
 
 
 
@@ -72,7 +73,7 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
 
             //Adding Default Permission for Dispatcher Role
             List<NewPermission> dispatcherDefaultPermission = new ArrayList<>();
-//            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("dashboard"), dispatcherRolePermissionMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)));
+            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("dashboard"), dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.DASHBOARD)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("dispatch"), dispatcherRolePermissionMap.get(FacilioConstants.ServiceAppointment.DISPATCH)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("approval"), dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.APPROVAL)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("portfolio"), dispatcherRolePermissionMap.get(FacilioConstants.Portfolio.PORTFOLIO)));
@@ -82,64 +83,43 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("attendance"), dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.ATTENDANCE)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("myAttendance"), dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.MY_ATTENDANCE)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("timeOff"), dispatcherRolePermissionMap.get(FacilioConstants.TimeOff.TIME_OFF)));
-            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("inventoryrequests"), dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.INVENTORY_REQUEST)));
+            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("inventoryrequest"), dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.INVENTORY_REQUEST)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("serviceAppointment"), dispatcherRolePermissionMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("serviceOrder"), dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.SERVICE_ORDER)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("trip"),dispatcherRolePermissionMap.get(FacilioConstants.Trip.TRIP)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("timeSheet"),dispatcherRolePermissionMap.get(FacilioConstants.TimeSheet.TIME_SHEET)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("homepage"),dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.HOME_PAGE)));
-            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("serviceAppointment_mobile"),dispatcherRolePermissionMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)));
-            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("timeOff_mobile"),dispatcherRolePermissionMap.get(FacilioConstants.TimeOff.TIME_OFF)));
-            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("serviceOrder_mobile"),dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.SERVICE_ORDER)));
-            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("attendance_mobile"),dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.ATTENDANCE)));
-            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("timeSheet_mobile"),dispatcherRolePermissionMap.get(FacilioConstants.TimeSheet.TIME_SHEET)));
-            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("trip_mobile"),dispatcherRolePermissionMap.get(FacilioConstants.Trip.TRIP)));
 
             addDefaultTabPermissionForRoles(dispatcher, dispatcherDefaultPermission, Collections.singletonList(roleApp));
 
 
             //Adding Default Permission for Field Agent Role
             List<NewPermission> fieldAgentDefaultPermission = new ArrayList<>();
-
+            fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("dashboard"), fieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.DASHBOARD)));
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("quote"), fieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.QUOTE)));
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("myAttendance"), fieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.MY_ATTENDANCE)));
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("timeOff"), fieldAgentRolePermissionMap.get(FacilioConstants.TimeOff.TIME_OFF)));
-            fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("inventoryrequests"), fieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.INVENTORY_REQUEST)));
+            fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("inventoryrequest"), fieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.INVENTORY_REQUEST)));
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("serviceAppointment"), fieldAgentRolePermissionMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)));
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("serviceOrder"), fieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.SERVICE_ORDER)));
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("trip"),fieldAgentRolePermissionMap.get(FacilioConstants.Trip.TRIP)));
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("timeSheet"),fieldAgentRolePermissionMap.get(FacilioConstants.TimeSheet.TIME_SHEET)));
             fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("homepage"),fieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.HOME_PAGE)));
-            fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("serviceAppointment_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)));
-            fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("timeOff_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.TimeOff.TIME_OFF)));
-            fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("serviceOrder_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.SERVICE_ORDER)));
-//            fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("attendance_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.ATTENDANCE)));
-            fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("timeSheet_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.TimeSheet.TIME_SHEET)));
-            fieldAgentDefaultPermission.add(new NewPermission(routeVsId.get("trip_mobile"),fieldAgentRolePermissionMap.get(FacilioConstants.Trip.TRIP)));
-
 
 
             addDefaultTabPermissionForRoles(fieldAgent, fieldAgentDefaultPermission, Collections.singletonList(roleApp));
 
             //Adding Default Permission for Assistant Field Agent Role
             List<NewPermission> assistantFieldAgentPermissions = new ArrayList<>();
-
+            assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("dashboard"), assistantFieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.DASHBOARD)));
             assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("myAttendance"), assistantFieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.MY_ATTENDANCE)));
             assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("timeOff"), assistantFieldAgentRolePermissionMap.get(FacilioConstants.TimeOff.TIME_OFF)));
-            assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("inventoryrequests"), assistantFieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.INVENTORY_REQUEST)));
+            assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("inventoryrequest"), assistantFieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.INVENTORY_REQUEST)));
             assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("serviceAppointment"), assistantFieldAgentRolePermissionMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)));
             assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("serviceOrder"), assistantFieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.SERVICE_ORDER)));
             assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("trip"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.Trip.TRIP)));
             assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("timeSheet"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.TimeSheet.TIME_SHEET)));
             assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("homepage"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.HOME_PAGE)));
-            assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("serviceAppointment_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)));
-            assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("timeOff_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.TimeOff.TIME_OFF)));
-            assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("serviceOrder_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.SERVICE_ORDER)));
-//            assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("attendance_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.ContextNames.ATTENDANCE)));
-            assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("timeSheet_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.TimeSheet.TIME_SHEET)));
-            assistantFieldAgentPermissions.add(new NewPermission(routeVsId.get("trip_mobile"),assistantFieldAgentRolePermissionMap.get(FacilioConstants.Trip.TRIP)));
-
-
 
             addDefaultTabPermissionForRoles(assistantFieldAgent, assistantFieldAgentPermissions, Collections.singletonList(roleApp));
 
@@ -147,15 +127,16 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
             List<NewPermission> storeRoomManagerPermissions = new ArrayList<>();
 
             storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("portfolio"), storeRoomManagerRolePermissionMap.get(FacilioConstants.Portfolio.PORTFOLIO)));
+            storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("myAttendance"), storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.MY_ATTENDANCE)));
             storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("assets"), storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.ASSET)));
-            storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("inventoryrequests"), storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.INVENTORY_REQUEST)));
+            storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("inventoryrequest"), storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.INVENTORY_REQUEST)));
             storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("items"), storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.ITEMS)));
             storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("tools"),storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.TOOLS)));
             storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("service"),storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.SERVICES)));
             storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("storeroom"), storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.STORE_ROOM)));
             storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("itemtypes"),storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.ITEM_TYPES)));
             storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("tooltypes"),storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.TOOL_TYPES)));
-            storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("transferrequests"),storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.TRANSFER_REQUEST)));
+            storeRoomManagerPermissions.add(new NewPermission(routeVsId.get("transferrequest"),storeRoomManagerRolePermissionMap.get(FacilioConstants.ContextNames.TRANSFER_REQUEST)));
 
             addDefaultTabPermissionForRoles(storeRoomManager, storeRoomManagerPermissions, Collections.singletonList(roleApp));
 
@@ -166,7 +147,7 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
 
     public static List<Map<String,Object>> getWebtabIdVsRoute(long appId) throws Exception{
 
-        List<String> routeList = new ArrayList<>(Arrays.asList("serviceOrder","serviceAppointment","timeSheet","trip","dashboard","dispatch","approval","portfolio","assets","quote","employees","shift","shiftplanner","attendance","myAttendance","timeOff","vendors","vendorcontact","client","clientcontact","items","tools","service","storeroom","itemtypes","tooltypes","inventoryrequests","transferrequests","homepage","serviceAppointment_mobile","timeOff_mobile","serviceOrder_mobile","attendance_mobile","timeSheet_mobile","trip_mobile"));
+        List<String> routeList = new ArrayList<>(Arrays.asList("serviceOrder","serviceAppointment","timeSheet","trip","dashboard","dispatch","approval","portfolio","assets","quote","employees","shift","shiftplanner","attendance","myAttendance","timeOff","vendors","vendorcontact","client","clientcontact","items","tools","service","storeroom","itemtypes","tooltypes","inventoryrequest","transferrequest","homepage"));
 
 
         List<FacilioField> fields = new ArrayList<>();
@@ -212,6 +193,11 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
         Map<String, Long> dispatcherRolePermissions = new HashMap<>();
 
         Long permission = 0L;
+        permission += newDashboardTabPermissions.get("VIEW")
+                + newDashboardTabPermissions.get("SHARE");
+        dispatcherRolePermissions.put(FacilioConstants.ContextNames.DASHBOARD, permission);
+
+        permission = 0L;// TODO: Reinitialize
         permission += moduleTabPermissions.get("CREATE")
                         + moduleTabPermissions.get("READ")
                         + moduleTabPermissions.get("UPDATE")
@@ -322,7 +308,14 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
         Map<String, Long> fieldAgentRolePermissions = new HashMap<>();
 
         Long permission = 0L;
-        permission += moduleTabPermissions.get("READ");
+        permission += newDashboardTabPermissions.get("CREATE")
+                + newDashboardTabPermissions.get("EDIT")
+                + newDashboardTabPermissions.get("VIEW")
+                + newDashboardTabPermissions.get("SHARE");
+        fieldAgentRolePermissions.put(FacilioConstants.ContextNames.DASHBOARD, permission);
+
+        permission = 0L; // TODO: Reinitialize
+        permission += moduleTabPermissions.get("READ_OWN");
         fieldAgentRolePermissions.put(FacilioConstants.ContextNames.SERVICE_ORDER, permission);
 
         permission = 0L; // TODO: Reinitialize
@@ -371,9 +364,7 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
         fieldAgentRolePermissions.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, permission);
 
         permission = 0L; // TODO: Reinitialize
-        permission += moduleTabPermissions.get("READ")
-                +moduleTabPermissions.get("UPDATE")
-                +moduleTabPermissions.get("DELETE");
+        permission += moduleTabPermissions.get("READ");
         fieldAgentRolePermissions.put(FacilioConstants.ContextNames.HOME_PAGE, permission);
 
         return fieldAgentRolePermissions;
@@ -391,10 +382,15 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
         Map<String, Long> assistantFieldAgentRolePermissions = new HashMap<>();
 
         Long permission = 0L;
-        permission += moduleTabPermissions.get("READ");
+        permission += newDashboardTabPermissions.get("VIEW")
+                + newDashboardTabPermissions.get("SHARE");
+        assistantFieldAgentRolePermissions.put(FacilioConstants.ContextNames.DASHBOARD, permission);
+
+        permission = 0L;// TODO: Reinitialize
+        permission += moduleTabPermissions.get("READ_OWN");
         assistantFieldAgentRolePermissions.put(FacilioConstants.ContextNames.SERVICE_ORDER, permission);
 
-        permission = 0L;
+        permission = 0L; // TODO: Reinitialize
         permission += moduleTabPermissions.get("READ_OWN")
                 + moduleTabPermissions.get("EXECUTE_SERVICE_TASKS_OWN");
         assistantFieldAgentRolePermissions.put(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, permission);
@@ -433,9 +429,7 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
         assistantFieldAgentRolePermissions.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, permission);
 
         permission = 0L; // TODO: Reinitialize
-        permission += moduleTabPermissions.get("READ")
-                +moduleTabPermissions.get("UPDATE")
-                +moduleTabPermissions.get("DELETE");
+        permission += moduleTabPermissions.get("READ");
         assistantFieldAgentRolePermissions.put(FacilioConstants.ContextNames.HOME_PAGE, permission);
 
         return assistantFieldAgentRolePermissions;
@@ -457,10 +451,12 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
         storeRoomManagerRolePermissions.put(FacilioConstants.Portfolio.PORTFOLIO, permission);
 
         permission = 0L; // TODO: Reinitialize
-        permission += moduleTabPermissions.get("CREATE")
-                +moduleTabPermissions.get("READ")
-                +moduleTabPermissions.get("UPDATE")
-                +moduleTabPermissions.get("DELETE");
+        permission += myAttendanceTabPermissions.get("READ")
+                +myAttendanceTabPermissions.get("UPDATE");
+        storeRoomManagerRolePermissions.put(FacilioConstants.ContextNames.MY_ATTENDANCE, permission);
+
+        permission = 0L; // TODO: Reinitialize
+        permission += moduleTabPermissions.get("READ");
         storeRoomManagerRolePermissions.put(FacilioConstants.ContextNames.ASSET, permission);
 
         permission = 0L; // TODO: Reinitialize

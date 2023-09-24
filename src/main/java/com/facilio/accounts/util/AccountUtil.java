@@ -620,9 +620,10 @@ public class AccountUtil {
 		WIZARD_RESOURCE_FILTER(153,getExponentValue(26),LicenseMapping.GROUP3LICENSE),//2^26
 		UTILITY_INTEGRATION(154,getExponentValue(27),new String[]{FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,FacilioConstants.UTILITY_INTEGRATION_BILLS,FacilioConstants.UTILITY_INTEGRATION_TARIFF,FacilioConstants.UTILITY_DISPUTE}, LicenseMapping.GROUP3LICENSE),//2^27
 		SANDBOX(155,getExponentValue(28),LicenseMapping.GROUP3LICENSE),//2^28
-		REMOTE_MONITORING(156,getExponentValue(29),LicenseMapping.GROUP3LICENSE);//2^29
+		REMOTE_MONITORING(156,getExponentValue(29),LicenseMapping.GROUP3LICENSE),//2^29
+		FSM(157,getExponentValue(30),LicenseMapping.GROUP3LICENSE);//2^30
 
-        public int featureId;
+		public int featureId;
 		private long license;
 		private String[] modules;
 		private LicenseMapping group;
