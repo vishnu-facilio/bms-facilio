@@ -5,8 +5,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
-import com.facilio.modules.*;
+import com.facilio.bmsconsoleV3.signup.SignUpData;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -66,11 +65,7 @@ import com.facilio.qa.signup.AddQAndAModules;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 
-public class AddInductionModules extends BaseModuleConfig {
-
-    public AddInductionModules() throws Exception {
-        setModuleName(FacilioConstants.Induction.INDUCTION_RESPONSE);
-    }
+public class AddInductionModules extends SignUpData {
 
 	@Override
     public void addData() throws Exception {

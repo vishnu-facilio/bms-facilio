@@ -216,6 +216,72 @@ public class APIModuleWidgets {
                 .done()
                 ;
     }
+    @WidgetsForModule("inspectionTemplate")
+    public static Supplier<ModuleWidgets> getInspectionTemplateWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("questionCountwidget" , "Question Count Widget",PageWidget.WidgetType.INSPECTION_TEMPLATE_SUMMARY_QUESTION_COUNT)
+                .addWidgetConfig("fixedquestioncountwidget_2_4", "Question Count Widget - 2 - 4",WidgetConfigContext.ConfigType.FIXED,2,4, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("pageCountwidget" , "Page Count Widget",PageWidget.WidgetType.INSPECTION_TEMPLATE_SUMMARY_PAGE_COUNT)
+                .addWidgetConfig("fixedpagecountwidget_2_4", "Page Count Widget - 2 - 4",WidgetConfigContext.ConfigType.FIXED,2,4, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("lastTriggeredwidget" , "Last Triggered Widget",PageWidget.WidgetType.INSPECTION_TEMPLATE_SUMMARY_LAST_TRIGGERED)
+                .addWidgetConfig("fixedlasttriggeredwidget_2_4", "Last Triggered Widget - 2 - 4",WidgetConfigContext.ConfigType.FIXED,2,4, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("questionswidget" , "Questions Widget",PageWidget.WidgetType.INSPECTION_TEMPLATE_SUMMARY_QUESTIONS)
+                .addWidgetConfig("flexibleinspectiontemplatequestionswidget_6","Inspection Template Questions Widget - 6", WidgetConfigContext.ConfigType.FLEXIBLE,6, -1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("inspectiontemplatetriggerwidget" , "Trigger Widget",PageWidget.WidgetType.INSPECTION_TEMPLATE_TRIGGERS)
+                .addWidgetConfig("flexibleinspectiontemplatetriggerwidget_6","Inspection Template Trigger Widget - 6", WidgetConfigContext.ConfigType.FLEXIBLE,6, -1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("inspectiontemplateinsightgraphwidget" , "Insight Graph Widget",PageWidget.WidgetType.INSPECTION_TEMPLATE_INSIGHT_GRAPH)
+                .addWidgetConfig("flexibleinspectiontemplateinsightgraphwidget_6","Inspection Template Insight Graph Widget - 6", WidgetConfigContext.ConfigType.FLEXIBLE,6, -1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("inspectiontemplateinsightsummarywidget" , "Insight Summary Widget",PageWidget.WidgetType.INSPECTION_TEMPLATE_INSIGHT_SUMMARY)
+                .addWidgetConfig("flexibleinspectiontemplateinsightsummarywidget_6","Inspection Template Insight Summary Widget - 6", WidgetConfigContext.ConfigType.FLEXIBLE,6, -1, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+    @WidgetsForModule("inspectionResponse")
+    public static Supplier<ModuleWidgets> getInspectionResponseWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("inspectionResponsesummaryfieldwidget" , "Inspection Summary Field Widget",PageWidget.WidgetType.INSPECTION_RESPONSE_SUMMARY)
+                .addWidgetConfig("flexibleinspectionresponsesummarywidget_5", "Inspection Response Summary Widget - 5",WidgetConfigContext.ConfigType.FLEXIBLE,5,-1, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+
+    @WidgetsForModule("inductionTemplate")
+    public static Supplier<ModuleWidgets> getInductionTemplateWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("inductionquestionCountwidget" , "Question Count Widget",PageWidget.WidgetType.INDUCTION_TEMPLATE_SUMMARY_QUESTION_COUNT)
+                .addWidgetConfig("fixedquestioncountwidget_2_4", "Question Count Widget - 2 - 4",WidgetConfigContext.ConfigType.FIXED,2,4, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("inductionpageCountwidget" , "Page Count Widget",PageWidget.WidgetType.INDUCTION_TEMPLATE_SUMMARY_PAGE_COUNT)
+                .addWidgetConfig("fixedpagecountwidget_2_4", "Page Count Widget - 2 - 4",WidgetConfigContext.ConfigType.FIXED,2,4, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("inductionlastTriggeredwidget" , "Last Triggered Widget",PageWidget.WidgetType.INDUCTION_TEMPLATE_SUMMARY_LAST_TRIGGERED)
+                .addWidgetConfig("fixedlasttriggeredwidget_2_4", "Last Triggered Widget - 2 - 4",WidgetConfigContext.ConfigType.FIXED,2,4, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("inductionquestionswidget" , "Questions Widget",PageWidget.WidgetType.INDUCTION_TEMPLATE_SUMMARY_QUESTIONS)
+                .addWidgetConfig("flexibleinductiontemplatequestionswidget_6","Induction Template Questions Widget - 6", WidgetConfigContext.ConfigType.FLEXIBLE,6, -1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("inductiontemplatetriggerwidget" , "Induction Trigger Widget",PageWidget.WidgetType.INDUCTION_TEMPLATE_TRIGGERS)
+                .addWidgetConfig("flexibleinductiontemplatetriggerwidget_6","Induction Template Trigger Widget - 6", WidgetConfigContext.ConfigType.FLEXIBLE,6, -1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("inductiontemplateinsightgraphwidget" , "Insight Graph Widget",PageWidget.WidgetType.INDUCTION_TEMPLATE_INSIGHT_GRAPH)
+                .addWidgetConfig("flexibleinductiontemplateinsightgraphwidget_6","Induction Template Insight Graph Widget - 6", WidgetConfigContext.ConfigType.FLEXIBLE,6, -1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("inductiontemplateinsightsummarywidget" , "Insight Summary Widget",PageWidget.WidgetType.INDUCTION_TEMPLATE_INSIGHT_SUMMARY)
+                .addWidgetConfig("flexibleinductiontemplateinsightsummarywidget_6","Induction Template Insight Summary Widget - 6", WidgetConfigContext.ConfigType.FLEXIBLE,6, -1, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+    @WidgetsForModule("inductionResponse")
+    public static Supplier<ModuleWidgets> getInductionResponseWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("inductionResponsesummaryfieldwidget" , "Induction Summary Field Widget",PageWidget.WidgetType.INDUCTION_RESPONSE_SUMMARY)
+                .addWidgetConfig("flexibleinductionresponsesummarywidget_5", "Induction Response Summary Widget - 5",WidgetConfigContext.ConfigType.FLEXIBLE,5,-1, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+
     @WidgetsForModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER)
     public static Supplier<ModuleWidgets> getUtilityCustomerWidgets(){
         return () -> new ModuleWidgets()

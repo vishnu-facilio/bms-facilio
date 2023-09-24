@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
@@ -78,13 +79,9 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 
-public class AddInspectionModules extends BaseModuleConfig {
+public class AddInspectionModules extends SignUpData {
 
-	public AddInspectionModules() throws Exception {
-		setModuleName(FacilioConstants.Inspection.INSPECTION_RESPONSE);
-	}
-
-    @Override
+ 	@Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         
@@ -1429,7 +1426,7 @@ public class AddInspectionModules extends BaseModuleConfig {
 		fieldNames.add("totalScore");
 		fieldNames.add("assignedTo");
 
-		GlimpseContext glimpse = GlimpseUtil.getNewGlimpse(fieldNames,getModuleName());
+		GlimpseContext glimpse = GlimpseUtil.getNewGlimpse(fieldNames,FacilioConstants.Inspection.INSPECTION_RESPONSE);
 
 		List<GlimpseContext> glimpseList = new ArrayList<>();
 		glimpseList.add(glimpse);

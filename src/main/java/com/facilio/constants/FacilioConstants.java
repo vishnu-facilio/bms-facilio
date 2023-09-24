@@ -3536,6 +3536,20 @@ public class FacilioConstants {
 
 		public static final String INSPECTION_CATEGORY = "inspectionCategory";
 		public static final String INSPECTION_PRIORITY = "inspectionPriority";
+		public static final String INSPECTION_RESPONSE_NOTES = "inspectionResponsenotes";
+		public static final String INSPECTION_RESPONSE_ATTACHMENTS = "inspectionResponseattachments";
+		public static final String CONDUCT_INSPECTION_BUTTON_TEXT = "Conduct Inspection";
+		public static final String CONDUCT_INSPECTION_BUTTON_IDENTIFIER = "conductInspection";
+		public static final String DOWNLOAD_PDF_BUTTON_TEXT = "Download PDF";
+		public static final String DOWNLOAD_PDF_BUTTON_IDENTIFIER = "downloadPdf";
+		public static final String PRINT_BUTTON_TEXT = "Print";
+		public static final String PRINT_BUTTON_IDENTIFIER = "print";
+		public static final String Q_AND_A_BUILDER_BUTTON_TEXT = "Q & A Builder";
+		public static final String Q_AND_A_BUILDER_BUTTON_IDENTIFIER = "qAndABuilder";
+		public static final String EDIT_BUTTON_TEXT = "Edit";
+		public static final String EDIT_BUTTON_IDENTIFIER = "edit";
+		public static final String EXECUTE_NOW_BUTTON_TEXT = "Execute Now";
+		public static final String EXECUTE_NOW_BUTTON_IDENTIFIER = "executeNow";
 	}
 
 	public static class Survey {
@@ -3569,6 +3583,8 @@ public class FacilioConstants {
 		public static final String INDUCTION_TRIGGER_INCL_EXCL = "inductionTriggerResourceInclExcl";
 
 		public static final String MULTI_SITE_REL = "inductionMultiSiteRel";
+		public static final String ATTEND_INDUCTION_BUTTON = "Attend Induction";
+		public static final String ATTEND_INDUCTION_IDENTIFIER = "attendInduction";
 
 	}
 

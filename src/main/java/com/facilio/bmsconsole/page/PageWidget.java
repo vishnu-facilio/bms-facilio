@@ -18,7 +18,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class PageWidget {
 	private static final long serialVersionUID = 1L;
 
-	public PageWidget () {}
+	public PageWidget() {
+	}
 
 	public PageWidget(WidgetType type) {
 		this(type, null);
@@ -30,43 +31,59 @@ public class PageWidget {
 	}
 
 	private long orgId = -1;
+
 	public long getOrgId() {
 		return orgId;
 	}
+
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
 
 	private long id = -1;
+
 	public long getId() {
 		return id;
 	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
 
 	private String name;
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
 
 	private String title;
-	public String getTitle() { return  title; }
-	public void setTitle (String title) { this.title = title; }
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
 	private WidgetType widgetType;
+
 	public WidgetType getWidgetTypeEnum() {
 		return widgetType;
 	}
+
 	public int getWidgetType() {
-		return widgetType != null ?  widgetType.getValue() : -1;
+		return widgetType != null ? widgetType.getValue() : -1;
 	}
+
 	public void setWidgetType(int widgetType) {
 		this.widgetType = WidgetType.valueOf(widgetType);
 	}
+
 	public void setWidgetType(WidgetType widgetType) {
 		this.widgetType = widgetType;
 	}
@@ -77,17 +94,21 @@ public class PageWidget {
 	}
 
 	private long sectionId;
+
 	public long getSectionId() {
 		return sectionId;
 	}
+
 	public void setSectionId(long sectionId) {
 		this.sectionId = sectionId;
 	}
 
 	private Section section;
+
 	public Section getSection() {
 		return section;
 	}
+
 	public void setSection(Section section) {
 		this.section = section;
 	}
@@ -102,71 +123,83 @@ public class PageWidget {
 		this.relatedList = relatedList;
 	}
 
-
 	private JSONObject widgetParams;
+
 	public JSONObject getWidgetParams() {
 		return widgetParams;
 	}
+
 	public void setWidgetParams(JSONObject widgetParams) {
 		this.widgetParams = widgetParams;
 	}
+
 	public void setWidgetParams(String widgetParams) throws Exception {
-		if(widgetParams != null) {
+		if (widgetParams != null) {
 			JSONParser parser = new JSONParser();
 			this.widgetParams = (JSONObject) parser.parse(widgetParams);
 		}
 	}
 
-	public void addToWidgetParams (String key, Object value) {
+	public void addToWidgetParams(String key, Object value) {
 		if (widgetParams == null) {
 			widgetParams = new JSONObject();
 		}
 		widgetParams.put(key, value);
 	}
 
-	public void addCardType (CardType cardType) {
+	public void addCardType(CardType cardType) {
 		addToWidgetParams("type", cardType.getName());
 	}
 
 	private JSONObject layoutParams;
+
 	public JSONObject getLayoutParams() {
 		return layoutParams;
 	}
+
 	public void setLayoutParams(JSONObject layoutParams) {
 		this.layoutParams = layoutParams;
 	}
+
 	public void setLayoutParams(String layoutParams) throws Exception {
-		if(layoutParams != null) {
+		if (layoutParams != null) {
 			JSONParser parser = new JSONParser();
 			this.layoutParams = (JSONObject) parser.parse(layoutParams);
 		}
 	}
+
 	public void setXPoisition(int position) {
 		addToLayoutParams("x", position);
 	}
+
 	public void setYPoisition(int position) {
 		addToLayoutParams("y", position);
 	}
+
 	public void setWidth(int width) {
 		addToLayoutParams("w", width);
 	}
+
 	public void setHeight(int height) {
 		addToLayoutParams("h", height);
 	}
+
 	public void addToLayoutParams(Section section, int width, int height) {
 		int x = section.getLatestX();
 		int y = section.getLatestY();
 		addToLayoutParams(section, x, y, width, height);
 	}
+
 	public void addToLayoutParams(Section section, int x, int y, int width, int height) {
 		addToLayoutParams(x, y, width, height);
 		x += width;
 		if (x >= 24 || width >= 24) {
-			y += height;	// Assuming the height will be same for everywidget
+			y += height; // Assuming the height will be same for everywidget
 			x = 0;
 		}
 		section.setLatestXY(x, y);
 	}
+
 	public void addToLayoutParams(int xPosition, int yPosition, int width, int height) {
 		setXPoisition(xPosition);
 		setYPoisition(yPosition);
@@ -174,7 +207,7 @@ public class PageWidget {
 		setHeight(height);
 	}
 
-	private void addToLayoutParams (String key, Object value) {
+	private void addToLayoutParams(String key, Object value) {
 		if (layoutParams == null) {
 			layoutParams = new JSONObject();
 		}
@@ -182,13 +215,16 @@ public class PageWidget {
 	}
 
 	private List<PageWidget> widgets;
+
 	public List<PageWidget> getWidgets() {
 		return widgets;
 	}
+
 	public void setWidgets(List<PageWidget> widgets) {
 		this.widgets = widgets;
 	}
-	public void addToWidget (PageWidget widget) {
+
+	public void addToWidget(PageWidget widget) {
 		if (widgets == null) {
 			widgets = new ArrayList<PageWidget>();
 		}
@@ -196,9 +232,11 @@ public class PageWidget {
 	}
 
 	private RelationRequestContext relation;
+
 	public void setRelation(RelationRequestContext relation) {
 		this.relation = relation;
 	}
+
 	public RelationRequestContext getRelation() {
 		return relation;
 	}
@@ -281,8 +319,6 @@ public class PageWidget {
 		DETAILS_TABLE("detailstable"),
 		DETAILS_TAB("detailsTab"),
 
-
-
 		SUPPLIER_CANCELLED_PAYMENTS("supplierCancelledPayments"),
 		SUPPLIER_CARDS("supplierCards"),
 		SUPPLIER_CARDS2("supplierCards2"),
@@ -308,8 +344,6 @@ public class PageWidget {
 		INVENTORY_REQUEST_LINE_ITEMS("inventoryrequestlineitems"),
 
 		SERVICE_VENDORS("servicevendors"),
-
-
 
 		CONNNECTED_APP("connectedApp", AccountUtil.FeatureLicense.CONNECTEDAPPS.getFeatureId()),
 
@@ -500,7 +534,7 @@ public class PageWidget {
 		FIXED_SUMMARY_FIELDS_WIDGET("fixedSummaryFieldsWidget"),
 		CLASSIFICATION("classification", AccountUtil.FeatureLicense.CLASSIFICATION.getFeatureId()),
 		NEW_RELATED_LIST("newRelatedList"),
-		MULTIRESOURCE("multiResource",AccountUtil.FeatureLicense.ROUTES_AND_MULTI_RESOURCE.getFeatureId()),
+		MULTIRESOURCE("multiResource", AccountUtil.FeatureLicense.ROUTES_AND_MULTI_RESOURCE.getFeatureId()),
 		JOBPLAN_PLANNER("jobPlanPlanner"),
 		ALARM_SECONDARY_DETAILS("alarmSecondaryDetails"),
 		NEW_RELATED_COUNT("newRelatedCount"),
@@ -528,7 +562,7 @@ public class PageWidget {
 		BULK_RELATED_LIST("bulkRelatedList"),
 		WIDGET_GROUP("widgetGroup"),
 		BULK_RELATION_SHIP_WIDGET("bulkRelationShipWidget"),
-		COMMANDS_WIDGET("commandsWidget",(AccountUtil.FeatureLicense.CONTROL_ACTIONS.getFeatureId())),
+		COMMANDS_WIDGET("commandsWidget", (AccountUtil.FeatureLicense.CONTROL_ACTIONS.getFeatureId())),
 		PHYSICAL_METER_DETAILS_WIDGET("physicalMeterDetailsWidget"),
 		VIRTUAL_METER_DETAILS_WIDGET("virtualMeterDetailsWidget"),
 		CHILD_METERS("childMeters"),
@@ -592,9 +626,9 @@ public class PageWidget {
 
 		SPACE_LOCATION("spaceLocation"),
 		SPACE_INSIGHTS("spaceInsights"),
-		WEATHER_CARD("weatherCard",AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
-		DEPRECIATION_ANALYSIS("depreciationAnalysis",AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
-		HOURLY_FORECAST("hourlyForecast",AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
+		WEATHER_CARD("weatherCard", AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
+		DEPRECIATION_ANALYSIS("depreciationAnalysis", AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
+		HOURLY_FORECAST("hourlyForecast", AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
 		BUILDINGS("buildings"),
 		SPACES("spaces"),
 		SUB_SPACES("subSpaces"),
@@ -650,8 +684,25 @@ public class PageWidget {
 		TOTAL_INVITE_WIDGET("totalInviteWidget"),
 		CHECKIN_COUNT_WIDGET("checkedInCountWidget"),
 		ITEM_TYPE_DETAILS_CARD("itemTypesDetailsCard"),
-		CALENDAR_ASSOCIATION_LIST("calendarAssociationList")
-		;
+		CALENDAR_ASSOCIATION_LIST("calendarAssociationList"),
+		INSPECTION_TEMPLATE_SUMMARY("inspectionTemplateSummary"),
+		INSPECTION_TEMPLATE_INSIGHT("inspectionTemplateInsight"),
+		INSPECTION_TEMPLATE_SUMMARY_QUESTION_COUNT("inspectionTemplateSummaryQuestionCount"),
+		INSPECTION_TEMPLATE_SUMMARY_PAGE_COUNT("inspectionTemplateSummaryPageCount"),
+		INSPECTION_TEMPLATE_SUMMARY_LAST_TRIGGERED("inspectionTemplateSummaryLastTriggered"),
+		INSPECTION_TEMPLATE_SUMMARY_QUESTIONS("inspectionTemplateSummaryQuestions"),
+		INSPECTION_TEMPLATE_INSIGHT_GRAPH("inspectionTemplateInsightGraph"),
+		INSPECTION_TEMPLATE_INSIGHT_SUMMARY("inspectionTemplateInsightSummary"),
+		INSPECTION_TEMPLATE_TRIGGERS("inspectionTemplateTriggers"),
+		INSPECTION_RESPONSE_SUMMARY("inspectionResponseSummary"),
+		INDUCTION_TEMPLATE_SUMMARY_QUESTION_COUNT("inductionTemplateSummaryQuestionCount"),
+		INDUCTION_TEMPLATE_SUMMARY_PAGE_COUNT("inductionnTemplateSummaryPageCount"),
+		INDUCTION_TEMPLATE_SUMMARY_LAST_TRIGGERED("inductionTemplateSummaryLastTriggered"),
+		INDUCTION_TEMPLATE_SUMMARY_QUESTIONS("inductionTemplateSummaryQuestions"),
+		INDUCTION_TEMPLATE_INSIGHT_GRAPH("inductionTemplateInsightGraph"),
+		INDUCTION_TEMPLATE_INSIGHT_SUMMARY("inductionTemplateInsightSummary"),
+		INDUCTION_TEMPLATE_TRIGGERS("inductionTemplateTriggers"),
+		INDUCTION_RESPONSE_SUMMARY("inductionResponseSummary");
 
 		private String name;
 		@Getter
@@ -660,11 +711,11 @@ public class PageWidget {
 		WidgetType(String name) {
 			this.name = name;
 		}
+
 		WidgetType(String name, int featureId) {
 			this.name = name;
 			this.featureId = featureId;
 		}
-
 
 		public String getName() {
 			return name;
@@ -674,9 +725,9 @@ public class PageWidget {
 			return ordinal() + 1;
 		}
 
-		public static WidgetType valueOf (int value) {
+		public static WidgetType valueOf(int value) {
 			if (value > 0 && value <= values().length) {
-				return values() [value - 1];
+				return values()[value - 1];
 			}
 			return null;
 		}
@@ -752,6 +803,7 @@ public class PageWidget {
 		NEW_OPERATING_HOURS("newOperatingHours"),
 		CURRENT_WEATHER("currentWeather"),
 		;
+
 		private String name;
 
 		CardType(String name) {
@@ -766,9 +818,9 @@ public class PageWidget {
 			return ordinal() + 1;
 		}
 
-		public static CardType valueOf (int value) {
+		public static CardType valueOf(int value) {
 			if (value > 0 && value <= values().length) {
-				return values() [value - 1];
+				return values()[value - 1];
 			}
 			return null;
 		}
