@@ -14,7 +14,8 @@ public class AddFsmAppRelatedApplicationsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        List<String> fsmAppRelatedApplications = Arrays.asList();
+        String appLinkNames[] = new String[]{FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP,FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP};
+        List<String> fsmAppRelatedApplications = Arrays.asList(appLinkNames);
         long fsmAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FSM_APP);
         List<ApplicationRelatedAppsContext> relatedApps = new ArrayList<>();
         for(String appLinkName : fsmAppRelatedApplications) {
@@ -25,6 +26,6 @@ public class AddFsmAppRelatedApplicationsCommand extends FacilioCommand {
             relatedApps.add(relatedAppsContext);
         }
         ApplicationApi.addRelatedApplications(relatedApps);
-        return false;
+            return false;
     }
 }

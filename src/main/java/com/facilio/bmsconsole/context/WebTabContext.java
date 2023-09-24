@@ -311,11 +311,11 @@ public class WebTabContext implements Serializable {
         SANDBOX("Sandbox",false,TabType.SETUP,new SetupTypeHandler()), //102
         PORTFOLIO("Portfolio",false,TabType.NORMAL,null), // 103
         PDF_TEMPLATES("Pdf Templates",false,TabType.SETUP,new SetupTypeHandler()), //104
-        DISPATCHER_CONFIG("Dispatcher Configuration",false,TabType.SETUP,new SetupTypeHandler()), //105
-        DISPATCHER_CONSOLE ("Dispatcher Console", false, TabType.NORMAL,null); // 106
-        WORK_TYPE("Work Type",false,TabType.SETUP,new SetupTypeHandler()),//107
+        DISPATCHER_CONFIG("Dispatcher Console Settings",false,TabType.SETUP,new SetupTypeHandler()), //105
+        DISPATCHER_CONSOLE ("Dispatcher Console", false, TabType.NORMAL,null), // 106
+        FSM_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()),//107
         SKILLS("Skills",false,TabType.SETUP,new SetupTypeHandler()),//108
-        TIME_OFF_SETTINGS("Time Off Settings",false,TabType.SETUP,new SetupTypeHandler());//109
+        FSM_GENERAL_SETTINGS("General Settings",false,TabType.SETUP,new SetupTypeHandler());//109
         public void setName(String name) {
             this.name = name;
         }
