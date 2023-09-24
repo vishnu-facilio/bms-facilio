@@ -176,14 +176,20 @@ public class VendorTemplatePage implements TemplatePageFactory {
     }
 
     private static JSONObject getWidgetGroup() throws Exception {
+        JSONObject notesWidgetParam = new JSONObject();
+        notesWidgetParam.put("notesModuleName", "vendorsNotes");
+
+        JSONObject attachmentsWidgetParam = new JSONObject();
+        attachmentsWidgetParam.put("attachmentsModuleName", "vendorsAttachments");
+
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("comments", "Comments", "")
-                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_27", 0, 0, null, null)
+                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_27", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, "flexiblewebattachment_27", 0, 0, null, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, "flexiblewebattachment_27", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

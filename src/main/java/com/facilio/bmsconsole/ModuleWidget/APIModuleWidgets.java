@@ -475,6 +475,13 @@ public class APIModuleWidgets {
                 .addWidgetConfig("webtenantupcomingfacilitybookingwidget_10_3","Upcoming Facility Booking -10 -3",WidgetConfigContext.ConfigType.FIXED,10,3,PagesContext.PageLayoutType.WEB)
                 .done();
     }
+    @WidgetsForModule(FacilioConstants.ContextNames.VENDOR_QUOTES)
+    public static Supplier<ModuleWidgets> getVendorQuoteTemplateWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("vendorQuoteAllQuoteItems", "Vendor Quoted Items", PageWidget.WidgetType.VENDOR_QUOTES_LINE_ITEMS)
+                .addFlexibleWidgetConfig("flexiblewebvendorquoteditems_30","Vendor Quoted Items -30",30,PagesContext.PageLayoutType.WEB)
+                .done();
+    }
     @WidgetsForModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)
     public static Supplier<ModuleWidgets> getTenantUnitWidgets(){
         return () -> new ModuleWidgets()

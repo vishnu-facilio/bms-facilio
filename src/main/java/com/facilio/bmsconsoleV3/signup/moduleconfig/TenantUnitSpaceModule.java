@@ -154,9 +154,10 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
         Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
 
         String[] appNames=new String[]{
+                FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
                 FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
-                FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP,
-                FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP};
+                FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP
+        };
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(getModuleName());
@@ -301,14 +302,20 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
     }
 
     private static JSONObject getWidgetGroup() throws Exception {
+        JSONObject notesWidgetParam = new JSONObject();
+        notesWidgetParam.put("notesModuleName", "basespacenotes");
+
+        JSONObject attachmentsWidgetParam = new JSONObject();
+        attachmentsWidgetParam.put("attachmentsModuleName", "basespaceattachments");
+
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("comments", "Comments", "")
-                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_27", 0, 0, null, null)
+                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_27", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, "flexiblewebattachment_27", 0, 0, null, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, "flexiblewebattachment_27", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 
