@@ -41,24 +41,61 @@ public class APIModuleWidgets {
     @WidgetsForModule("workorder")
     public static Supplier<ModuleWidgets> getWorkorderModuleWidgets() {
         return () -> new ModuleWidgets()
-                .addModuleWidget("workordermultiresourceWidget", "WORKORDER MULTIRESOURCE", PageWidget.WidgetType.MULTIRESOURCE)
-                .addWidgetConfig("flexibleworkordermultiresource_17","Workorder MultiResource",WidgetConfigContext.ConfigType.FLEXIBLE,19,-1, PagesContext.PageLayoutType.WEB)
+                .addModuleWidget("multiresource", "Multiresource", PageWidget.WidgetType.MULTIRESOURCE)
+                .addWidgetConfig("flexiblewebmultiresource_19","MultiResource - 19",WidgetConfigContext.ConfigType.FLEXIBLE,19,-1, PagesContext.PageLayoutType.WEB)
                 .done()
-                .addModuleWidget("workorderresponsibility", "WORKORDER RESPONSIBILITY", PageWidget.WidgetType.RESPONSIBILITY)
-                .addWidgetConfig("flexibleworkorderresponsibility_14","Workorder Responsibility",WidgetConfigContext.ConfigType.FLEXIBLE,14,-1,PagesContext.PageLayoutType.WEB)
+                .addModuleWidget("responsibility", "Responsibility", PageWidget.WidgetType.RESPONSIBILITY)
+                .addWidgetConfig("flexiblewebresponsibility_14","Responsibility - 14",WidgetConfigContext.ConfigType.FLEXIBLE,14,-1,PagesContext.PageLayoutType.WEB)
                 .done()
-                .addModuleWidget("workordertimedetails","WORKORDER TIME DETAILS",PageWidget.WidgetType.TIME_DETAILS)
-                .addWidgetConfig("flexibleworkordertimedetails_26","Workorder Time Details",WidgetConfigContext.ConfigType.FLEXIBLE,31,-1,PagesContext.PageLayoutType.WEB)
+                .addModuleWidget("timedetails","Time Details",PageWidget.WidgetType.TIME_DETAILS)
+                .addWidgetConfig("flexiblewebtimedetails_31","Time Details - 31",WidgetConfigContext.ConfigType.FLEXIBLE,31,-1,PagesContext.PageLayoutType.WEB)
                 .done()
-                .addModuleWidget("workorderlocationdetails","WORKORDER LOCATION DETAILS",PageWidget.WidgetType.RESOURCE)
-                .addWidgetConfig("fixedworkorderlocationdetails_13","Workorder Location Detail",WidgetConfigContext.ConfigType.FIXED,13,32,PagesContext.PageLayoutType.WEB)
+                .addModuleWidget("resource","Resource",PageWidget.WidgetType.RESOURCE)
+                .addWidgetConfig("flexiblewebresource_13","Resource - 13",WidgetConfigContext.ConfigType.FLEXIBLE,13,-1,PagesContext.PageLayoutType.WEB)
                 .done()
-                .addModuleWidget("workordercostdetails","WORKORDER COST DETAILS",PageWidget.WidgetType.QUOTATION)
-                .addWidgetConfig("flexibleworkordercostdetails_11","Workorder Cost Detail",WidgetConfigContext.ConfigType.FLEXIBLE,19,-1,PagesContext.PageLayoutType.WEB)
+                .addModuleWidget("costdetails","Cost Details",PageWidget.WidgetType.COST_DETAILS)
+                .addWidgetConfig("flexiblewebcostdetails_16","Cost Details - 16",WidgetConfigContext.ConfigType.FLEXIBLE,16,-1,PagesContext.PageLayoutType.WEB)
                 .done()
-                .addModuleWidget("workordersummary","WORKORDER SUMMARY DETAILS",PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET)
-                .addWidgetConfig("flexibleworkordersummary_33","Workorder Summary Detail",WidgetConfigContext.ConfigType.FLEXIBLE,33,-1,PagesContext.PageLayoutType.WEB)
+                .addModuleWidget("plans", "Plans", PageWidget.WidgetType.PLANS)
+                .addFlexibleWidgetConfig("flexiblewebplans_24","Plans - 24", 24, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("actuals", "Actuals", PageWidget.WidgetType.ACTUALS)
+                .addFlexibleWidgetConfig("flexiblewebactuals_24","Actuals - 24", 24, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("tasks", "Tasks", PageWidget.WidgetType.TASKS)
+                .addFlexibleWidgetConfig("flexiblewebtasks_24","Tasks - 24", 24, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("workorderitems", "Work Order Items", PageWidget.WidgetType.WORK_ORDER_ITEMS)
+                .addFlexibleWidgetConfig("flexiblewebworkorderitems_24","Work Order Items - 24", 24, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("workordertools", "Work Order Tools", PageWidget.WidgetType.WORK_ORDER_TOOLS)
+                .addFlexibleWidgetConfig("flexiblewebworkordertools_24","Work Order Tools - 24", 24, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("workorderservice", "Work Order Service", PageWidget.WidgetType.WORK_ORDER_SERVICE)
+                .addFlexibleWidgetConfig("flexiblewebworkorderservice_24","Work Order Service - 24", 24, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("workorderlabour", "Work Order Labour", PageWidget.WidgetType.WORK_ORDER_LABOUR)
+                .addFlexibleWidgetConfig("flexiblewebworkorderlabour_24","Work Order Labour - 24", 24, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("safetyplanhazard", "SafetyPlan Hazard", PageWidget.WidgetType.SAFETYPLAY_HAZARD)
+                .done()
+
+                .addModuleWidget("safetyplanprecautions", "Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .done()
+
+                .addModuleWidget("relatedrecords", "Related Records", PageWidget.WidgetType.RELATED_RECORDS)
+                .addWidgetConfig("flexiblewebrelatedrecords_24","Related Records - 24",WidgetConfigContext.ConfigType.FLEXIBLE,24,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("failurehierarchy", "Failure Hierarchy", PageWidget.WidgetType.FAILURE_HIERARCHY)
+                .addWidgetConfig("flexiblewebfailurehierarchy_24","Failure Hierarchy - 24",WidgetConfigContext.ConfigType.FLEXIBLE,24,-1, PagesContext.PageLayoutType.WEB)
                 .done();
+
 
     }
 

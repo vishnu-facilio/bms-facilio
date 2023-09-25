@@ -494,7 +494,7 @@ public class PageWidget {
 		SUMMARY_FIELDS_WIDGET("summaryFieldsWidget"),
 		CLASSIFICATION("classification", AccountUtil.FeatureLicense.CLASSIFICATION.getFeatureId()),
 		NEW_RELATED_LIST("newRelatedList"),
-		MULTIRESOURCE("multiResource"),
+		MULTIRESOURCE("multiResource",AccountUtil.FeatureLicense.ROUTES_AND_MULTI_RESOURCE.getFeatureId()),
 		JOBPLAN_PLANNER("jobPlanPlanner"),
 		ALARM_SECONDARY_DETAILS("alarmSecondaryDetails"),
 		NEW_RELATED_COUNT("newRelatedCount"),
@@ -536,7 +536,6 @@ public class PageWidget {
 		CONRTOL_ACTION_CRITERIA("controlActionCriteria"),
 		RESPONSE_DUE_DATE("responseduedate"),
 		TIME_DETAILS("timedetails"),
-
 		UTILITY_INTEGRATION_BILL_PREVIEW("utilityIntegrationBillPreviewWidget"),
 		METER_WIDGET("meterWidget"),
 		BILL_SUMMARY_WIDGET("billSummaryWidget"),
@@ -562,8 +561,14 @@ public class PageWidget {
 		SAFETY_PLAN_PRECAUTIONS("safetyPlanPrecautions"),
 
 		RELATED_READINGS("relatedReadings"),
-		ASSET_LOCATION("assetlocation");
+		ASSET_LOCATION("assetlocation"),
 
+		WORK_ORDER_PLAN_ITEMS("workorderplanitems"),
+		WORK_ORDER_PLAN_TOOLS("workorderplantools"),
+		WORK_ORDER_PLAN_SERVICE("workorderplanservice"),
+		WORK_ORDER_PLAN_LABOUR("workorderplanlabour"),
+		COST_DETAILS("costDetails"),
+		FAILURE_HIERARCHY("failureHierarchy");
 
 
 		private String name;
