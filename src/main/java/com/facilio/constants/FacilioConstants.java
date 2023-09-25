@@ -3398,6 +3398,7 @@ public class FacilioConstants {
 			classMap.put(FieldServiceManagement.SERVICE_ORDER_ITEMS, ServiceOrderItemsContext.class);
 			classMap.put(FieldServiceManagement.SERVICE_ORDER_TOOLS, ServiceOrderToolsContext.class);
 			classMap.put(FieldServiceManagement.SERVICE_ORDER_SERVICES, ServiceOrderServiceContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_TASK_ATTACHMENTS, AttachmentV3Context.class);
 
 
 			for (QuestionType type : QuestionType.values()) {
