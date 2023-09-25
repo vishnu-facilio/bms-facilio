@@ -62,7 +62,8 @@ public enum IconType implements FacilioStringEnum {
     service_appointment("Service_appointment"),
     service_pm("Service_pm"),
     invoice("Invoice"),
-    attendance("Attendance");
+    attendance("Attendance"),
+    inventory_request("Inventory_request");
 
     private static final Map<String, IconType> ICON_NAME_VS_TYPE = initIconNamevsType();
 

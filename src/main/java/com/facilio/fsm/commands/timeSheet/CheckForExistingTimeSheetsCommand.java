@@ -19,13 +19,12 @@ import java.util.List;
 public class CheckForExistingTimeSheetsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         HashMap<String,Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
         List<TimeSheetContext> timeSheets = (List<TimeSheetContext>) recordMap.get(context.get("moduleName"));
 
         if(CollectionUtils.isNotEmpty(timeSheets)){
             for(TimeSheetContext timeSheet : timeSheets){
-                if(timeSheet.getFieldAgent() != null && timeSheet.getStartTime() != null){
+                if(timeSheet.getFieldAgent() != null && timeSheet.getStartTime() != null && timeSheet.getServiceTasks() != null){
                     List<TimeSheetContext> records = ServiceAppointmentUtil.getTimeSheetsForTimeRange(timeSheet.getFieldAgent().getId(), timeSheet.getStartTime(), timeSheet.getEndTime());
                     if(CollectionUtils.isNotEmpty(records)){
                         JSONObject errorData = new JSONObject();

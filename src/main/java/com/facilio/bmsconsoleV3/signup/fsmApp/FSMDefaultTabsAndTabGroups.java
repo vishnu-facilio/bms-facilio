@@ -116,7 +116,7 @@ public class FSMDefaultTabsAndTabGroups {
                 new WebTabGroupContext(Arrays.asList(getWebTab(appId, "timeOff")), "Time Off", "timeOff", 1, 1, null, layoutId, IconType.time_off),
                 new WebTabGroupContext(Arrays.asList(getWebTab(appId, "timeSheet")), "Time Sheet", "timeSheet", 1, 1, null, layoutId, IconType.time_sheet),
                 new WebTabGroupContext(Arrays.asList(getWebTab(appId, "trip")), "Trip", "trip", 1, 1, null, layoutId, IconType.trip),
-                new WebTabGroupContext(Arrays.asList(getWebTab(appId, "inventoryrequest")), "Inventory Requests", "inventoryRequests", 6, 3, null,layoutId,IconType.inventory),
+                new WebTabGroupContext(Arrays.asList(getWebTab(appId, "inventoryrequest")), "Inventory Requests", "inventoryRequests", 6, 3, null,layoutId,IconType.inventory_request),
                 new WebTabGroupContext(Arrays.asList(getWebTab(appId, "quote")), "Financials", "financials", 6, 3, null,layoutId,IconType.invoice)
         );
         return webTabGroups;

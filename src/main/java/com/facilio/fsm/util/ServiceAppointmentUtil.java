@@ -40,6 +40,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.*;
 import java.util.function.Function;
@@ -196,6 +197,14 @@ public class ServiceAppointmentUtil {
                     }
                     updateSARecordList.add(updateSAProps);
                     V3Util.processAndUpdateBulkRecords(serviceAppointment, oldSARecords, updateSARecordList, bodyParams, null, null, null, null, null, null, null, true,false,null);
+                    V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,peopleId,V3PeopleContext.class);
+                    LocationContext location = new LocationContext();
+                    if(people.getCurrentLocation() != null) {
+                        JSONParser parser = new JSONParser();
+                        JSONObject locationJson = (JSONObject) parser.parse(people.getCurrentLocation());
+                        location = FieldUtil.getAsBeanFromJson(locationJson,LocationContext.class);
+                    }
+                    endTripForAppointment(appointmentId,location);
                     JSONObject info = new JSONObject();
                     info.put("fieldAgent",fieldAgent.getName());
                     info.put("doneBy", AccountUtil.getCurrentUser().getName());
