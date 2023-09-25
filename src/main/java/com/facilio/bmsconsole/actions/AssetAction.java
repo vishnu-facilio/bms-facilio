@@ -886,6 +886,13 @@ public class AssetAction extends FacilioAction {
 		setResult("metrics", context.get(FacilioConstants.ContextNames.RESULT));
 		return SUCCESS;
 	}
+	public String fetchAssetDowntimeHistory() throws Exception{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		ReadOnlyChainFactory.getAssetDowntimeHistoryChain().execute(context);
+		setResult("history", context.get(FacilioConstants.ContextNames.RESULT));
+		return SUCCESS;
+	}
 	
 	private long itemTypeId;
 	private long toolTypeId;

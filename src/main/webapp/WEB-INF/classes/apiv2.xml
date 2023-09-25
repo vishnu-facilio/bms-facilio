@@ -3354,6 +3354,10 @@
 			class="com.facilio.bmsconsole.actions.AssetAction"
 			method="fetchAssetDowntimeMetrics">
 		</action>
+		<action name="downtimehistory"
+				class="com.facilio.bmsconsole.actions.AssetAction"
+				method="fetchAssetDowntimeHistory">
+		</action>
 		
 		<action name="checkrunstatus"
 			class="com.facilio.bmsconsole.actions.AssetAction"

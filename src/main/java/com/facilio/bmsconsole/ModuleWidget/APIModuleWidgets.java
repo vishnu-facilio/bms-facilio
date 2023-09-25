@@ -75,8 +75,87 @@ public class APIModuleWidgets {
 
  */
     @WidgetsForModule("asset")
-    public static Supplier<ModuleWidgets> getAssetWidgets() {
-        return ModuleWidgets::new;
+    public static Supplier<ModuleWidgets> getAssetWigets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("assetlocation", "Asset Location", PageWidget.WidgetType.ASSET_LOCATION)
+                .addWidgetConfig("flexiblewebassetlocation_13","Asset Location - 13",WidgetConfigContext.ConfigType.FLEXIBLE,13,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("operatinghours", "Operating Hours", PageWidget.WidgetType.OPERATING_HOURS)
+                .addWidgetConfig("flexibleweboperatinghours_18","Operating Hours - 18",WidgetConfigContext.ConfigType.FLEXIBLE,18,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("plannedmaintenance", "Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE)
+                .addWidgetConfig("flexiblewebplannedmaintenance_36","Planned Maintenance - 36",WidgetConfigContext.ConfigType.FLEXIBLE,36,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("unplannedmaintenance", "Unplanned Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE)
+                .addWidgetConfig("flexiblewebunplannedmaintenance_36","UnPlanned Maintenance - 36",WidgetConfigContext.ConfigType.FLEXIBLE,36,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("workorderinsight", "Workorder Insight", PageWidget.WidgetType.WORKORDER_INSIGHT)
+                .addWidgetConfig("flexiblewebworkorderinsight_12","Workorder Insight - 12",WidgetConfigContext.ConfigType.FLEXIBLE,12,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("recentlyclosedpm", "Recently Closed Pm", PageWidget.WidgetType.RECENTLY_CLOSED_PM)
+                .addWidgetConfig("flexiblewebrecentlyclosedpm_23","Recently Closed Pm - 23",WidgetConfigContext.ConfigType.FLEXIBLE,23,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("faultreport", "Fault Report", PageWidget.WidgetType.FAULT_REPORT)
+                .addWidgetConfig("flexiblewebfaultreport_27","Fault Report - 27",WidgetConfigContext.ConfigType.FLEXIBLE,27,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("faultinsight", "Fault Insight", PageWidget.WidgetType.FAULT_INSIGHT)
+                .addWidgetConfig("flexiblewebfaultinsight_23","Fault Insight - 23",WidgetConfigContext.ConfigType.FLEXIBLE,23,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("readings", "Readings", PageWidget.WidgetType.READINGS)
+                .addWidgetConfig("flexiblewebreadings_33","Readings - 33",WidgetConfigContext.ConfigType.FLEXIBLE,33,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("commandswidget", "Commands Widget", PageWidget.WidgetType.COMMANDS_WIDGET)
+                .addWidgetConfig("flexiblewebcommandswidget_34","Commands Widget - 34",WidgetConfigContext.ConfigType.FLEXIBLE,34,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("latestdowntime", "Latest Downtime", PageWidget.WidgetType.LATEST_DOWNTIME)
+                .addWidgetConfig("weblatestdowntime_16_6","Latest Downtime - 16 - 6",WidgetConfigContext.ConfigType.FIXED,16,6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("overalldowntime", "Overall Downtime", PageWidget.WidgetType.OVERALL_DOWNTIME)
+                .addWidgetConfig("weboveralldowntime_16_6","Overall Downtime - 16 - 6",WidgetConfigContext.ConfigType.FIXED,16,6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("downtimehistory", "Downtime History", PageWidget.WidgetType.DOWNTIME_HISTORY)
+                .addWidgetConfig("flexibledowntimehistory_28","Downtime History - 28",WidgetConfigContext.ConfigType.FLEXIBLE,28,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("failurerate", "Failure Rate", PageWidget.WidgetType.FAILURE_RATE)
+                .addWidgetConfig("webfailurerate_41_6","Failure Rate - 41 - 6",WidgetConfigContext.ConfigType.FIXED,41,6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("averagerepairtime", "Average Repair Time", PageWidget.WidgetType.AVERAGE_REPAIR_TIME)
+                .addWidgetConfig("webaveragerepairtime_41_6","Average Repair Time - 41 - 6",WidgetConfigContext.ConfigType.FIXED,41,6, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("assetcostdetail", "Asset Cost Detail", PageWidget.WidgetType.ASSET_COST_DETAILS)
+                .addWidgetConfig("webassetcostdetail_25_4","Asset Cost Detail - 25 - 4",WidgetConfigContext.ConfigType.FIXED,25,4, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("costbreakup", "Cost Breakup", PageWidget.WidgetType.COST_BREAKUP)
+                .addWidgetConfig("webcostbreakup_25_8","Cost Breakup - 25 - 8",WidgetConfigContext.ConfigType.FIXED,25,8, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("maintenancecosttrend", "Maintenance Cost Trend", PageWidget.WidgetType.MAINTENANCE_COST_TREND)
+                .addWidgetConfig("flexiblewebmaintenancecosttrend_31","Maintenance Cost Trend - 31",WidgetConfigContext.ConfigType.FLEXIBLE,31,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("depreciationschedule", "Depreciation Schedule", PageWidget.WidgetType.DEPRECIATION_SCHEDULE)
+                .addWidgetConfig("flexiblewebdepreciationschedule_20","Depreciation Schedule - 20",WidgetConfigContext.ConfigType.FLEXIBLE,20,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("depreciationcosttrend", "Depreciation Cost Trend", PageWidget.WidgetType.DEPRECIATION_COST_TREND)
+                .addWidgetConfig("flexiblewebdepreciationcosttrend_28","Depreciation Cost Trend - 28",WidgetConfigContext.ConfigType.FLEXIBLE,28,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("safetyplanhazard", "SafetyPlan Hazard", PageWidget.WidgetType.SAFETYPLAY_HAZARD)
+                .addWidgetConfig("flexiblewebsafetyplanhazard_28","Safetyplan Hazard - 28",WidgetConfigContext.ConfigType.FLEXIBLE,28,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("safetyplanprecautions", "Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .addWidgetConfig("flexiblewebsafetyplanprecautions_28","Safety Plan Precaution - 28",WidgetConfigContext.ConfigType.FLEXIBLE,28,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("relatedreadings","Related Readings", PageWidget.WidgetType.RELATED_READINGS)
+                .addWidgetConfig("flexiblewebrelatedreadings_33","Related Readings - 33", WidgetConfigContext.ConfigType.FLEXIBLE,33,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+
+                ;
 
     }
     @WidgetsForModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER)

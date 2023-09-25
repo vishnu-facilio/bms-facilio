@@ -2786,6 +2786,7 @@
 /api/v2/multicurrency/list
 /api/v2/survey/modules
 /api/v2/survey/fetch/:moduleName/:recordId
+/api/v2/assets/downtimehistory
 /api/v2/readings/meter/add
 /api/v2/readings/utilitytype
 /api/v3/virtualMeterTemplate/publish

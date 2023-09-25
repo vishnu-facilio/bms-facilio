@@ -1245,6 +1245,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getAssetDowntimeHistoryChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchAssetDowntimeHistoryCommand());
+		return c;
+	}
+
 
 	public static FacilioChain getAlarmInsightChain() {
 		FacilioChain c = getDefaultChain();

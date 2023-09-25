@@ -519,7 +519,7 @@ public class PageWidget {
 		BULK_RELATED_LIST("bulkRelatedList"),
 		WIDGET_GROUP("widgetGroup"),
 		BULK_RELATION_SHIP_WIDGET("bulkRelationShipWidget"),
-		COMMANDS_WIDGET("commandsWidget"),
+		COMMANDS_WIDGET("commandsWidget",(AccountUtil.FeatureLicense.CONTROL_ACTIONS.getFeatureId())),
 		PHYSICAL_METER_DETAILS_WIDGET("physicalMeterDetailsWidget"),
 		VIRTUAL_METER_DETAILS_WIDGET("virtualMeterDetailsWidget"),
 		CHILD_METERS("childMeters"),
@@ -540,7 +540,30 @@ public class PageWidget {
 		UTILITY_INTEGRATION_BILL_PREVIEW("utilityIntegrationBillPreviewWidget"),
 		METER_WIDGET("meterWidget"),
 		BILL_SUMMARY_WIDGET("billSummaryWidget"),
-		CLIENT_CONTACT_LIST_WIDGET("clientcontactListWidget");
+		CLIENT_CONTACT_LIST_WIDGET("clientcontactListWidget"),
+		OPERATING_HOURS("operatingHours"),
+		UNPLANNED_MAINTENANCE("unPlannedMaintenance"),
+		WORKORDER_INSIGHT("workorderInsight"),
+		RECENTLY_CLOSED_PM("recentlyClosedPm"),
+		PLANNED_MAINTENANCE("plannedMaintenance"),
+		FAULT_REPORT("faultReport"),
+		FAULT_INSIGHT("faultInsight"),
+		READINGS("readings"),
+		LATEST_DOWNTIME("lastDownTime"),
+		OVERALL_DOWNTIME("overallDownTime"),
+		DOWNTIME_HISTORY("downloadHistory"),
+		FAILURE_RATE("failureRate"),
+		MAINTENANCE_COST_TREND("maintenanceCostTrend"),
+		ASSET_COST_DETAILS("assetCostDetails"),
+		COST_BREAKUP("costBreakup"),
+		DEPRECIATION_SCHEDULE("depreciationSchedule"),
+		DEPRECIATION_COST_TREND("depreciationCostTrend"),
+		AVERAGE_REPAIR_TIME("avgRepairTime"),
+		SAFETY_PLAN_PRECAUTIONS("safetyPlanPrecautions"),
+
+		RELATED_READINGS("relatedReadings"),
+		ASSET_LOCATION("assetlocation");
+
 
 
 		private String name;

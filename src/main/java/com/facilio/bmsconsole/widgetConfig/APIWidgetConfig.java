@@ -110,4 +110,41 @@ public class APIWidgetConfig {
                 .fetchCommand(ReadOnlyChainFactory.getRelatedListWidgetDetailChain())
                 .build();
     }
+
+    @WidgetType(PageWidget.WidgetType.AVERAGE_REPAIR_TIME)
+    public static Supplier<WidgetConfig> getChartCRUD() {
+        return () -> new WidgetConfig()
+                .summary()
+                .fetchCommand(new GetChartParamsCommand())
+                .build();
+    }
+    @WidgetType(PageWidget.WidgetType.FAILURE_RATE)
+    public static Supplier<WidgetConfig> getFailureRateParams() {
+        return () -> new WidgetConfig()
+                .summary()
+                .fetchCommand(new GetChartParamsCommand())
+                .build();
+    }
+    @WidgetType(PageWidget.WidgetType.MAINTENANCE_COST_TREND)
+    public static Supplier<WidgetConfig> getMaintenanceCostTrendParams() {
+        return () -> new WidgetConfig()
+                .summary()
+                .fetchCommand(new GetChartParamsCommand())
+                .build();
+    }
+    @WidgetType(PageWidget.WidgetType.COST_BREAKUP)
+    public static Supplier<WidgetConfig> getCostBreakupParams() {
+        return () -> new WidgetConfig()
+                .summary()
+                .fetchCommand(new GetChartParamsCommand())
+                .build();
+    }
+    @WidgetType(PageWidget.WidgetType.DEPRECIATION_COST_TREND)
+    public static Supplier<WidgetConfig> getDepreciationCostTrendParams() {
+        return () -> new WidgetConfig()
+                .summary()
+                .fetchCommand(new GetChartParamsCommand())
+                .build();
+    }
+
 }
