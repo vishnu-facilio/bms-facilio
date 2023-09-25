@@ -10,18 +10,16 @@ public enum ServiceAppointmentActivityType implements ActivityType {
             String fieldAgent = (String) json.get("fieldAgent");
             String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy).append(" dispatched the record to ").append(fieldAgent);
+            builder.append(doneBy).append(" dispatched the appointment to ").append(fieldAgent);
             return builder.toString();
         }
     },
-    REDISPATCH(141){
+    RESCHEDULED(141){
         @Override
         public String constructMessage(JSONObject json) {
-            String fieldAgent = (String) json.get("fieldAgent");
             String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy).append(" redispatched the record to ");
-            builder.append(fieldAgent);
+            builder.append(doneBy).append(" rescheduled the appointment");
             return builder.toString();
         }
     },

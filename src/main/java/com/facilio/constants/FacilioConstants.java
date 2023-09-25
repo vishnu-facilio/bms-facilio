@@ -4700,6 +4700,8 @@ public class FacilioConstants {
 		public static final String CANCELLED = "cancelled";
 		public static final String SCHEDULE = "schedule";
 		public static final String DISPATCH = "dispatch";
+
+		public static final String REDISPATCH = "redispatch";
 		public static final String RESCHEDULE = "reschedule";
 		public static final String COMPLETE = "complete";
 		public static final String COMPLETE_OWN = "completeOwn";

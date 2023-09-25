@@ -148,6 +148,29 @@ public class fsmAction extends V3Action {
         HashMap<String, String> successMsg = new HashMap<>();
         context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
         switch(getIdentifier()){
+            case FacilioConstants.ServiceAppointment.RESCHEDULE:
+                if(getRecordId() > 0 && (Optional.ofNullable(getScheduledStartTime()).orElse(0L) > 0
+                        && Optional.ofNullable(getScheduledEndTime()).orElse(0L) > 0)) {
+                    context.put(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME,getScheduledStartTime());
+                    context.put(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME,getScheduledEndTime());
+                    FacilioChain dispatchChain = FsmTransactionChainFactoryV3.rescheduleChain();
+                    dispatchChain.execute(context);
+                    successMsg.put("message","Service Appointment Rescheduled Successfully");
+                } else {
+                    throw new FSMException(FSMErrorCode.SA_DETAILS_REQUIED);
+                }
+                break;
+            case FacilioConstants.ServiceAppointment.REDISPATCH:
+                if(getRecordId() > 0 && (getFieldAgentId() != null && getFieldAgentId() >0)) {
+                    context.put(FacilioConstants.ServiceAppointment.FIELD_AGENT_ID,getFieldAgentId());
+                    context.put(FacilioConstants.ServiceAppointment.SKIP_VALIDATION,isSkipValidation());
+                    FacilioChain dispatchChain = FsmTransactionChainFactoryV3.dispatchChain();
+                    dispatchChain.execute(context);
+                    successMsg.put("message","Service Appointment Redispatched Successfully");
+                } else {
+                    throw new FSMException(FSMErrorCode.SA_DETAILS_REQUIED);
+                }
+                break;
             case FacilioConstants.ServiceAppointment.DISPATCH:
                 if(getRecordId() > 0 && (getFieldAgentId() != null && getFieldAgentId() >0)) {
                     context.put(FacilioConstants.ServiceAppointment.FIELD_AGENT_ID,getFieldAgentId());
@@ -185,31 +208,21 @@ public class fsmAction extends V3Action {
                 successMsg.put("message","Trip Ended Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.START_WORK:
+            case FacilioConstants.ServiceAppointment.START_WORK_OWN:
                 FacilioChain startSAChain = FsmTransactionChainFactoryV3.startSAChain();
                 startSAChain.execute(context);
                 successMsg.put("message","Service Appointment Started Successfully");
                 break;
-            case FacilioConstants.ServiceAppointment.START_WORK_OWN:
-                FacilioChain startWorkSAChain = FsmTransactionChainFactoryV3.startSAChain();
-                startWorkSAChain.execute(context);
-                successMsg.put("message","Service Appointment Started Successfully");
-                break;
             case FacilioConstants.ServiceAppointment.COMPLETE:
+            case FacilioConstants.ServiceAppointment.COMPLETE_OWN:
                 FacilioChain completeSAChain = FsmTransactionChainFactoryV3.completeSAChain();
                 completeSAChain.execute(context);
-                successMsg.put("message","Service Appointment Completed Successfully");
-                break;
-            case FacilioConstants.ServiceAppointment.COMPLETE_OWN:
-                FacilioChain completeWorkSAChain = FsmTransactionChainFactoryV3.completeSAChain();
-                completeWorkSAChain.execute(context);
                 successMsg.put("message","Service Appointment Completed Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.CANCEL:
                 FacilioChain cancelSAChain = FsmTransactionChainFactoryV3.cancelSAChain();
                 cancelSAChain.execute(context);
                 successMsg.put("message","Service Appointment Cancelled Successfully");
-                break;
-            case FacilioConstants.ServiceAppointment.RESCHEDULE:
                 break;
         }
         setData(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_STATUS_ACTIONS,successMsg);

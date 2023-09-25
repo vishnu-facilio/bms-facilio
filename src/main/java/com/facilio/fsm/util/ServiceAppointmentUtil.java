@@ -111,6 +111,45 @@ public class ServiceAppointmentUtil {
         return null;
     }
 
+    public static void rescheduleServiceAppointment(Context dispatchContext) throws Exception {
+        Long appointmentId = (Long) dispatchContext.get(FacilioConstants.ContextNames.RECORD_ID);
+        Long scheduledStartTime = (Long) dispatchContext.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME);
+        Long scheduledEndTime = (Long) dispatchContext.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME);
+        if(appointmentId > 0 && (Optional.ofNullable(scheduledStartTime).orElse(0L) > 0
+                && Optional.ofNullable(scheduledEndTime).orElse(0L) > 0)) {
+            String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
+            ModuleBean moduleBean = Constants.getModBean();
+            FacilioModule serviceAppointment = moduleBean.getModule(serviceAppointmentModuleName);
+            List<FacilioField> saFields = moduleBean.getAllFields(serviceAppointmentModuleName);
+
+            Map<String, FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+            List<FacilioField> updateFields = new ArrayList<>();
+            updateFields.add(saFieldMap.get("scheduledStartTime"));
+            updateFields.add(saFieldMap.get("scheduledEndTime"));
+
+            FacilioContext context = V3Util.getSummary(serviceAppointmentModuleName, Collections.singletonList(appointmentId));
+
+            if (Constants.getRecordList(context) != null) {
+                ServiceAppointmentContext existingAppointment = (ServiceAppointmentContext) Constants.getRecordList(context).get(0);
+                List<ModuleBaseWithCustomFields> oldSARecords = new ArrayList<>();
+                List<Map<String,Object>> updateSARecordList = new ArrayList<>();
+                if (existingAppointment != null) {
+                    oldSARecords.add(existingAppointment);
+                    Map<String,Object> updateSAProps = FieldUtil.getAsProperties(existingAppointment);
+                    updateSAProps.put("scheduledStartTime",scheduledStartTime);
+                    updateSAProps.put("scheduledEndTime",scheduledEndTime);
+                    updateSARecordList.add(updateSAProps);
+                    V3Util.processAndUpdateBulkRecords(serviceAppointment, oldSARecords, updateSARecordList, null, null, null, null, null, null, null, null, true,false,null);
+                    JSONObject info = new JSONObject();
+                    info.put("doneBy", AccountUtil.getCurrentUser().getName());
+                    CommonCommandUtil.addActivityToContext(existingAppointment.getId(), -1, ServiceAppointmentActivityType.RESCHEDULED, info, (FacilioContext) dispatchContext);
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid appointment or field agent details");
+        }
+    }
+
     public static void dispatchServiceAppointment(Context dispatchContext) throws Exception {
         Long appointmentId = (Long) dispatchContext.get(FacilioConstants.ContextNames.RECORD_ID);
         Long peopleId = (Long) dispatchContext.get(FacilioConstants.ServiceAppointment.FIELD_AGENT_ID);

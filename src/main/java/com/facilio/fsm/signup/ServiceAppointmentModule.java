@@ -1406,7 +1406,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         SystemButtonRuleContext redispatch = new SystemButtonRuleContext();
         redispatch.setName("Redispatch");
         redispatch.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        redispatch.setIdentifier(FacilioConstants.ServiceAppointment.DISPATCH);
+        redispatch.setIdentifier(FacilioConstants.ServiceAppointment.REDISPATCH);
         redispatch.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         redispatch.setPermission("DISPATCH");
         redispatch.setPermissionRequired(true);

@@ -313,6 +313,13 @@ public class FsmTransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain rescheduleChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new RescheduleCommand());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY));
+        return c;
+    }
+
     public static FacilioChain startTaskChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new StartTaskCommand());
