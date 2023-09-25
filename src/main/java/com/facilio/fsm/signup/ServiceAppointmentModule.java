@@ -1,7 +1,6 @@
 package com.facilio.fsm.signup;
 
 import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -11,13 +10,11 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
-import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -145,14 +142,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         FacilioField isDefault = FieldFactory.getDefaultField("isDefault","Is Default Appointment","IS_DEFAULT", FieldType.BOOLEAN);
         serviceAppointmentFields.add(isDefault);
 
-        FacilioField responseDueTime = FieldFactory.getDefaultField("responseDueTime","Response Due Time","RESPONSE_DUE_TIME", FieldType.DATE_TIME);
-        serviceAppointmentFields.add(responseDueTime);
-
         FacilioField resolutionDueTime = FieldFactory.getDefaultField("resolutionDueTime","Resolution Due Time","RESOLUTION_DUE_TIME", FieldType.DATE_TIME);
         serviceAppointmentFields.add(resolutionDueTime);
-
-        FacilioField responseDueDuration = FieldFactory.getDefaultField("responseDueDuration","Response Due Duration","RESPONSE_DUE_DURATION", FieldType.NUMBER);
-        serviceAppointmentFields.add(responseDueDuration);
 
         FacilioField resolutionDueDuration = FieldFactory.getDefaultField("resolutionDueDuration","Resolution Due Duration","RESOLUTION_DUE_DURATION", FieldType.NUMBER);
         serviceAppointmentFields.add(resolutionDueDuration);
@@ -166,10 +157,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         territory.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         territory.setLookupModule(moduleBean.getModule("territory"));
         serviceAppointmentFields.add(territory);
-
-        SystemEnumField responseDueStatus = FieldFactory.getDefaultField("responseDueStatus","Response Due Status","RESPONSE_DUE_STATUS",FieldType.SYSTEM_ENUM);
-        responseDueStatus.setEnumName("AppointmentDueStatus");
-        serviceAppointmentFields.add(responseDueStatus);
 
         SystemEnumField resolutionDueStatus = FieldFactory.getDefaultField("resolutionDueStatus","Resolution Due Status","RESOLUTION_DUE_STATUS",FieldType.SYSTEM_ENUM);
         resolutionDueStatus.setEnumName("AppointmentDueStatus");
@@ -285,8 +272,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         generalInformationFields.add(new FormField("description",FacilioField.FieldDisplayType.TEXTAREA,"Description",FormField.Required.OPTIONAL,4,1));
         generalInformationFields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.REQUIRED, 5, 3));
         generalInformationFields.add(new FormField("fieldAgent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Field Agent", FormField.Required.OPTIONAL,6,2));
-        generalInformationFields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 7, 3));
-        generalInformationFields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.REQUIRED, 8, 3));
 
         FormSection generalSection = new FormSection("General Information", 1, generalInformationFields, true);
         generalSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -298,17 +283,17 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         serviceTaskSection.setSectionType(FormSection.SectionType.FIELDS);
 
-        List<FormField> responseInfoFields=new ArrayList<>();
+        List<FormField> scheduleInfoFields=new ArrayList<>();
+        generalInformationFields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 1, 3));
+        generalInformationFields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.REQUIRED, 2, 3));
+        scheduleInfoFields.add(new FormField("resolutionDueDuration",FacilioField.FieldDisplayType.DURATION,"Resolution Due Duration", FormField.Required.REQUIRED, 3, 3));
 
-        responseInfoFields.add(new FormField("responseDueDuration",FacilioField.FieldDisplayType.DURATION,"Response Due Duration",FormField.Required.REQUIRED,1,3));
-        responseInfoFields.add(new FormField("resolutionDueDuration",FacilioField.FieldDisplayType.DURATION,"Resolution Due Duration", FormField.Required.REQUIRED, 2, 3));
-
-        FormSection responseInfoSection=new FormSection("Response Information",3,responseInfoFields,true);
+        FormSection scheduleInfoSection=new FormSection("Schedule Information",3,scheduleInfoFields,true);
 
         List<FormSection> webServiceAppointmentFormSection = new ArrayList<>();
         webServiceAppointmentFormSection.add(generalSection);
         webServiceAppointmentFormSection.add(serviceTaskSection);
-        webServiceAppointmentFormSection.add(responseInfoSection);
+        webServiceAppointmentFormSection.add(scheduleInfoSection);
 
         serviceAppointmentForm.setSections(webServiceAppointmentFormSection);
         serviceAppointmentForm.setIsSystemForm(true);
@@ -570,7 +555,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> saFields = modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         Map<String,FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
-        Integer overDue = ServiceAppointmentContext.DueStatus.OVERDUE.getIndex();
+        Integer overDue = ServiceAppointmentContext.DueStatus.BREACHED.getIndex();
 
         Criteria criteria=new Criteria();
         criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.DISPATCHED));
@@ -578,8 +563,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         criteria.addOrCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.EN_ROUTE));
 
         Criteria dueStatus = new Criteria();
-        dueStatus.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.RESPONSE_DUE_STATUS), String.valueOf(overDue),NumberOperators.EQUALS));
-        dueStatus.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.RESPONSE_DUE_STATUS), String.valueOf(overDue),NumberOperators.EQUALS));
+        dueStatus.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.RESOLUTION_DUE_STATUS), String.valueOf(overDue),NumberOperators.EQUALS));
+        dueStatus.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.RESOLUTION_DUE_STATUS), String.valueOf(overDue),NumberOperators.EQUALS));
 
         criteria.andCriteria(dueStatus);
 
@@ -622,7 +607,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> saFields = modBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
         Map<String,FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
-        Integer overDue = ServiceAppointmentContext.DueStatus.OVERDUE.getIndex();
+        Integer overDue = ServiceAppointmentContext.DueStatus.BREACHED.getIndex();
 
         Criteria criteria=new Criteria();
         criteria.addAndCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.DISPATCHED));
@@ -630,8 +615,8 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         criteria.addOrCondition(getServiceAppointmentConditions(FacilioConstants.ServiceAppointment.EN_ROUTE));
 
         Criteria dueStatus = new Criteria();
-        dueStatus.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.RESPONSE_DUE_STATUS), String.valueOf(overDue),NumberOperators.EQUALS));
-        dueStatus.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.RESPONSE_DUE_STATUS), String.valueOf(overDue),NumberOperators.EQUALS));
+        dueStatus.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.RESOLUTION_DUE_STATUS), String.valueOf(overDue),NumberOperators.EQUALS));
+        dueStatus.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.RESOLUTION_DUE_STATUS), String.valueOf(overDue),NumberOperators.EQUALS));
 
         Criteria loggedInPeople = new Criteria();
         loggedInPeople.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.IS));
@@ -1165,19 +1150,13 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         // SLA Details
 
-        FacilioField responseDueDuration = moduleBean.getField("responseDueDuration", moduleName);
         FacilioField resolutionDueDuration = moduleBean.getField("resolutionDueDuration", moduleName);
-        FacilioField responseDueTimeField = moduleBean.getField("responseDueTime", moduleName);
         FacilioField resolutionDueTimeField = moduleBean.getField("resolutionDueTime", moduleName);
-        FacilioField responseDueStatus=moduleBean.getField("responseDueStatus",moduleName);
         FacilioField resolutionDueStatus=moduleBean.getField("resolutionDueStatus",moduleName);
 
-        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, responseDueDuration, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, resolutionDueDuration, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, responseDueTimeField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, resolutionDueTimeField, 1, 4, 1);
-        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup,responseDueStatus,2,1,1);
-        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup,resolutionDueStatus,2,2,1);
+        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, resolutionDueDuration, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup, resolutionDueTimeField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(slaDetailswidgetGroup,resolutionDueStatus,1,3,1);
 
         // System Details
 

@@ -1,6 +1,5 @@
 package com.facilio.fsm.context;
 
-import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
@@ -13,7 +12,6 @@ import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceConfigurationError;
 
 @Getter@Setter
 public class ServiceAppointmentContext extends V3Context {
@@ -29,7 +27,6 @@ public class ServiceAppointmentContext extends V3Context {
     private Long estimatedDuration;
     private Long actualStartTime;
     private Long actualEndTime;
-    private Long responseDueTime;
     private Long resolutionDueTime;
     private Boolean isDefault;
     private Long actualDuration;
@@ -39,7 +36,6 @@ public class ServiceAppointmentContext extends V3Context {
     private Boolean isAllTasksClosed;
     private boolean mismatch;
     private ServiceAppointmentTicketStatusContext status;
-    private Long responseDueDuration;
     private Long resolutionDueDuration;
     private V3ClientContext client;
     private V3SpaceContext space;
@@ -98,23 +94,7 @@ public class ServiceAppointmentContext extends V3Context {
     }
     private InspectionResponseContext inspection;
     private V3WorkOrderContext workorder;
-
-    private DueStatus responseDueStatus;
     private DueStatus resolutionDueStatus;
-    public Integer getResponseDueStatus() {
-        if (responseDueStatus != null) {
-            return responseDueStatus.getIndex();
-        }
-        return null;
-    }
-    public void setResponseDueStatus(Integer responseDueStatus) {
-        if(responseDueStatus != null) {
-            this.responseDueStatus = DueStatus.valueOf(responseDueStatus);
-        }
-    }
-    public DueStatus getResponseDueStatusEnum() {
-        return responseDueStatus;
-    }
 
     public Integer getResolutionDueStatus() {
         if (resolutionDueStatus != null) {
@@ -134,7 +114,7 @@ public class ServiceAppointmentContext extends V3Context {
     public static enum DueStatus implements FacilioIntEnum {
         DUE ("Due"),
         ON_TIME ("On Time"),
-        OVERDUE ("Overdue");
+        BREACHED ("Breached");
 
         String name;
 

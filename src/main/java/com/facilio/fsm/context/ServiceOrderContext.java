@@ -29,15 +29,13 @@ public class ServiceOrderContext extends V3Context {
     private V3SpaceContext space;
     private V3AssetContext asset;
     private ServiceOrderTicketStatusContext status;
-    private ServiceOrderRequestResponseStatus requestDueStatus;
-    private ServiceOrderRequestResponseStatus responseDueStatus;
+    private ServiceOrderRequestResponseStatus resolutionDueStatus;
     private VendorContext vendor;
     private Long preferredStartTime;
     private Long preferredEndTime;
     private boolean autoCreateSa;
     private Boolean isAllSACompleted;
     private Boolean isTaskInitiated;
-    private Long responseDueDate;
     private Long resolutionDueDate;
     private Long resolvedTime;
     private StateFlowRuleContext stateflow;
@@ -316,44 +314,27 @@ public class ServiceOrderContext extends V3Context {
         }
     }
 
-    public int getRequestDueStatus() {
-        if (requestDueStatus != null) {
-            return requestDueStatus.getIndex();
+    public int getResolutionDueStatus() {
+        if (resolutionDueStatus != null) {
+            return resolutionDueStatus.getIndex();
         }
         return -1;
     }
-    public void setRequestDueStatus(int sourceType) {
-        this.requestDueStatus = ServiceOrderRequestResponseStatus.valueOf(sourceType);
+    public void setResolutionDueStatus(int sourceType) {
+        this.resolutionDueStatus = ServiceOrderRequestResponseStatus.valueOf(sourceType);
     }
     public ServiceOrderRequestResponseStatus getServiceRequestStatusEnum() {
-        return requestDueStatus;
+        return resolutionDueStatus;
     }
-    public void setRequestDueStatus(ServiceOrderRequestResponseStatus status) {
-        this.requestDueStatus = status;
-    }
-
-
-    public int getResponseDueStatus() {
-        if (responseDueStatus != null) {
-            return responseDueStatus.getIndex();
-        }
-        return -1;
-    }
-    public void setResponseDueStatus(int sourceType) {
-        this.responseDueStatus = ServiceOrderRequestResponseStatus.valueOf(sourceType);
-    }
-    public ServiceOrderRequestResponseStatus getServiceResponseStatusEnum() {
-        return responseDueStatus;
-    }
-    public void setResponseDueStatus(ServiceOrderRequestResponseStatus status) {
-        this.responseDueStatus = status;
+    public void setResolutionDueStatus(ServiceOrderRequestResponseStatus status) {
+        this.resolutionDueStatus = status;
     }
 
 
     public static enum ServiceOrderRequestResponseStatus implements FacilioIntEnum {
-        NONE("None"),
+        DUE("Due"),
         ON_TIME("On Time"),
-        OVERDUE("Overdue");
+        BREACHED("Breached");
 
         private String name;
 

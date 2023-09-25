@@ -291,14 +291,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField preferredendtime = FieldFactory.getDefaultField("preferredEndTime", "Preferred End Time", "PREFERRED_END_TIME", FieldType.DATE_TIME);
         serviceOrderFieldsList.add(preferredendtime);
 
-        FacilioField responseDueDate = FieldFactory.getDefaultField("responseDueDate", "Response Due Date", "RESPONSE_DUE_DATE", FieldType.DATE_TIME);
-        serviceOrderFieldsList.add(responseDueDate);
-
         FacilioField resolutionDueDate = FieldFactory.getDefaultField("resolutionDueDate", "Resolution Due Date", "RESOLUTION_DUE_DATE", FieldType.DATE_TIME);
         serviceOrderFieldsList.add(resolutionDueDate);
-
-        FacilioField responseDueDuration = FieldFactory.getDefaultField("responseDueDuration", "Response Due Duration", "RESPONSE_DUE_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION);
-        serviceOrderFieldsList.add(responseDueDuration);
 
         FacilioField resolutionDueDuration = FieldFactory.getDefaultField("resolutionDueDuration", "Resolution Due Duration", "RESOLUTION_DUE_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION);
         serviceOrderFieldsList.add(resolutionDueDuration);
@@ -317,10 +311,6 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         FacilioField localid = FieldFactory.getDefaultField("localId", "Local Id", "LOCAL_ID", FieldType.NUMBER);
         serviceOrderFieldsList.add(localid);
-
-        FacilioField responseDueStatusField = SignupUtil.getSystemEnumField(serviceOrderModule, "responseDueStatus", "Response Due Status",
-                "RESPONSE_DUE_STATUS", "ServiceOrderRequestResponseStatus", FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
-        serviceOrderFieldsList.add(responseDueStatusField);
 
         FacilioField resolutionDueStatusField = SignupUtil.getSystemEnumField(serviceOrderModule, "resolutionDueStatus", "Resolution Due Status",
                 "RESOLUTION_DUE_STATUS", "ServiceOrderRequestResponseStatus", FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
@@ -408,8 +398,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         List<FormField> scheduleAppointmentFields = new ArrayList<>();
         scheduleAppointmentFields.add(new FormField("preferredStartTime", FacilioField.FieldDisplayType.DATETIME, "Preferred Start Time", FormField.Required.REQUIRED, 10, 2));
         scheduleAppointmentFields.add(new FormField("preferredEndTime", FacilioField.FieldDisplayType.DATETIME, "Preferred End Time", FormField.Required.REQUIRED, 11, 2));
-        scheduleAppointmentFields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DURATION, "Response Due Duration", FormField.Required.OPTIONAL, 8, 2));
-        scheduleAppointmentFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.OPTIONAL, 9, 2));
+        scheduleAppointmentFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.OPTIONAL, 12, 2));
 
         FormSection scheduleAppointmentSection = new FormSection("Schedule and Appointment", 5, scheduleAppointmentFields, true);
         scheduleAppointmentSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -453,13 +442,10 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
     public static Criteria getOverdueServiceOrdersViewCriteria(FacilioModule module, Map<String, FacilioField> fieldMap) throws Exception {
-        ServiceOrderContext.ServiceOrderRequestResponseStatus overdueResponseRequestStatus = ServiceOrderContext.ServiceOrderRequestResponseStatus.OVERDUE;
+        ServiceOrderContext.ServiceOrderRequestResponseStatus overdueResponseRequestStatus = ServiceOrderContext.ServiceOrderRequestResponseStatus.BREACHED;
 
         Criteria openCriteria = new Criteria();
         openCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resolutionDueStatus"), overdueResponseRequestStatus.getIndex().toString(), PickListOperators.IS));
-        openCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("responseDueStatus"), overdueResponseRequestStatus.getIndex().toString(), PickListOperators.IS));
-        openCriteria.setPattern("(1 or 2)");
-
         return openCriteria;
     }
 
@@ -585,7 +571,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("open_service_orders_view");
-        allView.setDisplayName("Primary View - Open Service Orders");
+        allView.setDisplayName("Open Service Orders");
         allView.setCriteria(criteria);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
 
@@ -1078,11 +1064,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField clientField = serviceOrderFieldsMap.get("client");
         FacilioField prefStartTimeField = serviceOrderFieldsMap.get("preferredStartTime");
         FacilioField prefEndTimeField = serviceOrderFieldsMap.get("preferredEndTime");
-        FacilioField responseDueDurationField = serviceOrderFieldsMap.get("responseDueDuration");
         FacilioField resolutionDueDurationField = serviceOrderFieldsMap.get("resolutionDueDuration");
-        FacilioField responseDueDateField = serviceOrderFieldsMap.get("responseDueDate");
         FacilioField resolutionDueDateField = serviceOrderFieldsMap.get("resolutionDueDate");
-//        FacilioField responseDueStatusField = serviceOrderFieldsMap.get("status");
 //        FacilioField resolutionDueStatusField = serviceOrderFieldsMap.get("status");
         FacilioField sysCreatedByField = serviceOrderFieldsMap.get("sysCreatedBy");
         FacilioField sysCreatedTimeField = serviceOrderFieldsMap.get("sysCreatedTime");
@@ -1140,10 +1123,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         slaWidgetGroup.setDisplayName("SLA Details");
 
         // Row 1
-        addSummaryFieldInWidgetGroup(slaWidgetGroup, responseDueDurationField, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(slaWidgetGroup, resolutionDueDurationField, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(slaWidgetGroup, responseDueDateField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(slaWidgetGroup, resolutionDueDateField, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(slaWidgetGroup, resolutionDueDurationField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(slaWidgetGroup, resolutionDueDateField, 1, 2, 1);
 
         // Group 5
         SummaryWidgetGroup systemWidgetGroup = new SummaryWidgetGroup();

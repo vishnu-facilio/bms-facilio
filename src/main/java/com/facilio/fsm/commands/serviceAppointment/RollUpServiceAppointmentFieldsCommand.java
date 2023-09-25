@@ -36,9 +36,6 @@ public class RollUpServiceAppointmentFieldsCommand extends FacilioCommand {
 
         if(CollectionUtils.isNotEmpty(serviceAppointments)) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
-                if(Optional.ofNullable(serviceAppointment.getResponseDueDuration()).orElse(0L) > 0){
-                    serviceAppointment.setResponseDueTime(serviceAppointment.getScheduledStartTime() + serviceAppointment.getResponseDueDuration());
-                }
                 if(Optional.ofNullable(serviceAppointment.getResolutionDueDuration()).orElse(0L) > 0){
                     serviceAppointment.setResolutionDueTime(serviceAppointment.getScheduledEndTime() + serviceAppointment.getResolutionDueDuration());
                 }

@@ -9,12 +9,15 @@ import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fsm.integrations.GoogleMapsAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +50,10 @@ public class UpdatePeopleLocationHistoryCommand extends FacilioCommand {
             if(CollectionUtils.isNotEmpty(locationHistoryContextList)){
                 V3LocationHistoryContext locationHistory = locationHistoryContextList.get(0);
                 String location = locationHistory.getLocation();
+                JSONObject latLng = (JSONObject) new JSONParser().parse(location);
+                String formattedAddress = GoogleMapsAPI.reverseGeocode(latLng.get("lat")+","+latLng.get("lng"));
+                latLng.put("address",formattedAddress);
+                location = latLng.toJSONString();
                 long time = locationHistory.getTime();
                 Double battery_info = locationHistory.getBatteryInfo();
                 Double signal_info = locationHistory.getSignalInfo();

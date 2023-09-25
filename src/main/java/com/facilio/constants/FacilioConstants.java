@@ -4769,6 +4769,7 @@ public class FacilioConstants {
 		public static final String START_TIME = "startTime";
 		public static final String TOTAL_DURATION = "totalDuration";
 		public static final String TOTAL_DISTANCE = "totalDistance";
+		public static final String TRIP_STATUS_ACTIONS = "tripStatusActions";
 
 	}
 	public static class Priority{

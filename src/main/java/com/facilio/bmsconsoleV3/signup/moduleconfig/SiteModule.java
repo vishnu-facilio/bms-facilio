@@ -217,7 +217,7 @@ public class SiteModule extends BaseModuleConfig {
         defaultSiteForm.setName("default_site_web");
         defaultSiteForm.setModule(siteModule);
         defaultSiteForm.setDisplayName("Site");
-        defaultSiteForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
+        defaultSiteForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
         defaultSiteForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultSiteForm.setShowInWeb(true);
 

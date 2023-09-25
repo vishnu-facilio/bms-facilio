@@ -299,9 +299,9 @@ public class FsmTransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain endTripChain(){
+    public static FacilioChain endTripForAppointmentChain(){
         FacilioChain c = getDefaultChain();
-        c.addCommand(new EndTripCommand());
+        c.addCommand(new EndTripForAppointmentCommand());
         c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY));
         return c;
     }
@@ -346,6 +346,12 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain stopTimeSheetChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new StopTimeSheetCommand());
+        return c;
+    }
+    public static FacilioChain endTripChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new EndTripCommand());
+        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY));
         return c;
     }
     public static FacilioChain getServiceOrderItemFromReservation(){
