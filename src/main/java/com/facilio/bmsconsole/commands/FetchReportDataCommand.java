@@ -1752,7 +1752,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                      * this code is used by all the orgs and tightly coupled with the pivots (so making any change can affect other orgs
                      * pivot , thats the reason we are adding OrgId check here , once its stable after testing, will remove the orgId check
                      */
-                    if((AccountUtil.getCurrentOrg().getId() == 965) && moduleVsAlias.containsKey(lookupFieldClone.getModule().getName())){
+                    if(moduleVsAlias.containsKey(lookupFieldClone.getModule().getName())){
                         lookupFieldClone.setTableAlias(moduleVsAlias.get(lookupFieldClone.getModule().getName()));
                     }
                     String LookupJoinOn = lookupFieldClone.getCompleteColumnName() + " = " + currentModuleAlias + ".ID";
@@ -1762,13 +1762,13 @@ public class FetchReportDataCommand extends FacilioCommand {
                      * this code is used by all the orgs and tightly coupled with the pivots (so making any change can affect other orgs
                      * pivot , thats the reason we are adding OrgId check here , once its stable after testing, will remove the orgId check
                      */
-                    if((AccountUtil.getCurrentOrg().getId() == 965) && !moduleVsAlias.containsKey(poll.getName()))
+                    if(!moduleVsAlias.containsKey(poll.getName()))
                     {
                         currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
                         prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
                         selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)
                                 .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
-                    }else if(!(AccountUtil.getCurrentOrg().getId() == 965)){
+                    }else {
                         currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
                         prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
                         selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)

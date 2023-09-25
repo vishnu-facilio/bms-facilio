@@ -26,6 +26,9 @@
     <request path="/api/v3/dashboard/rule/newDashboardFilterRuleExecute" method="POST">
         <requestbody type="object"></requestbody>
     </request>
+    <request path="/api/v3/dashboard/rule/create" method="POST">
+        <requestbody type="object"></requestbody>
+    </request>
     <request path="/api/v3/dashboard/tab/update" method="POST">
         <requestbody type="object"></requestbody>
     </request>
@@ -370,6 +373,11 @@
     <request path="/api/v3/dashboard/rule/widgets/:dashboard_rule_id" method="GET">
         <urlparams>
             <property name="dashboard_rule_id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/dashboard/rule/widgets/tab/:dashboardTabId" method="GET">
+        <urlparams>
+            <property name="dashboardTabId" type="number" mandatory="true"/>
         </urlparams>
     </request>
     <request path="/api/v3/dashboard/rule/:dashboardId/list" method="GET">

@@ -1319,6 +1319,11 @@
                 method="getTriggerWidgets">
             <param name="dashboardId">{1}</param>
         </action>
+        <action name="widgets/tab/*"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
+                method="getTriggerWidgets">
+            <param name="dashboardTabId">{1}</param>
+        </action>
         <!-- temp code will be removed once dashboard actions ready-->
         <action name="runMigrationForWidgetLinkName"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"

@@ -152,10 +152,11 @@ public class V3DashboardRuleAction extends V3Action {
     }
 
     public String getTriggerWidgets()throws Exception{
-        if(dashboardId != null){
+        if(dashboardId != null || dashboardTabId != null){
             FacilioChain chain = TransactionChainFactoryV3.getDashboardWidgetsChain();
             FacilioContext context = chain.getContext();
             context.put("dashboardId", dashboardId);
+            context.put("dashboardTabId", dashboardTabId);
             chain.execute();
             if(context.containsKey("widgets")){
                 List widgets = (ArrayList) context.get("widgets");

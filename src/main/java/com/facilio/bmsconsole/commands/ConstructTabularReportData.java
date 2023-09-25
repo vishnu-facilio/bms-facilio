@@ -494,16 +494,10 @@ public class ConstructTabularReportData extends FacilioCommand {
                         if (gField.equals(xField)) {
                             fieldName = groupByRow.getModuleName() + "_" + gField.getName();
                         } else {
-                            if((AccountUtil.getCurrentOrg().getId() == 965)){
                                 fieldName = groupByModule.getName() + "_" + field.getName() + "_"
                                         + groupByRow.getModuleName() + "_" + gField.getName();
-                            }else {
-                                fieldName = field.getLookupModule().getName() + "_" + field.getName() + "_"
-                                        + groupByRow.getModuleName() + "_" + gField.getName();
-                            }
                         }
 
-                        // gField.setName(fieldName);
                         gField.setTableAlias(getAndSetTableAlias(fieldName));
                     } else {
                         gField.setTableAlias(getAndSetTableAlias(gField.getModule().getName()));
