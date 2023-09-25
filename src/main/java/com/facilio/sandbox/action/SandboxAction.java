@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.sandbox.command.SandboxTransactionChainFactory;
@@ -89,7 +90,7 @@ public class SandboxAction extends FacilioAction {
         return SUCCESS;
     }
     public String rerun() throws Exception{
-        AccountUtil.setCurrentAccount(sourceOrgId);
+        PackageFileUtil.accountSwitch(sourceOrgId);
         boolean isNotaSandboxDomain = SandboxAPI.checkSandboxDomainIfExist(domainName);
         if(isNotaSandboxDomain){
             ServletActionContext.getResponse().setStatus(200);
@@ -110,7 +111,7 @@ public class SandboxAction extends FacilioAction {
         return SUCCESS;
     }
     public String doInstall() throws Exception{
-        AccountUtil.setCurrentAccount(sourceOrgId);
+        PackageFileUtil.accountSwitch(sourceOrgId);
         fileId = SandboxAPI.getRecentPackageId(domainName);
         if(fileId == -1L){
             ServletActionContext.getResponse().setStatus(200);
