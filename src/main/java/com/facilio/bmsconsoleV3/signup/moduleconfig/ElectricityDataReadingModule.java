@@ -34,6 +34,7 @@ public class ElectricityDataReadingModule extends BaseModuleConfig{
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE, electricityMeterModule.getName());
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.IS_SKIP_COUNTER_FIELD_ADD, true);
         addModuleChain.execute();
 
 
@@ -96,6 +97,7 @@ public class ElectricityDataReadingModule extends BaseModuleConfig{
         totalEnergyConsumption.setUnit(Unit.KWH.getSymbol());
         totalEnergyConsumption.setUnitId(Unit.KWH.getUnitId());
         totalEnergyConsumption.setMetric(Metric.ENERGY.getMetricId());
+        totalEnergyConsumption.setCounterField(true);
         fields.add(totalEnergyConsumption);
 
         NumberField totalEnergyConsumptionDelta = new NumberField(module, "totalEnergyConsumptionDelta", "Energy", FacilioField.FieldDisplayType.NUMBER, "TOTAL_ENERGY_CONSUMPTION_DELTA", FieldType.DECIMAL, true, false, true, null);

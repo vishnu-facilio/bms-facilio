@@ -72,7 +72,7 @@ public class BTUMeterModule extends BaseModuleConfig{
         btuMeterFormFields.add(new FormField("parentMeter", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent Meter", FormField.Required.OPTIONAL, "meter", 6, 2));
         btuMeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Is Check Meter", FormField.Required.OPTIONAL, 7, 2));
 
-        FormSection section = new FormSection("", 1, btuMeterFormFields, false);
+        FormSection section = new FormSection("BTU Meter Details", 1, btuMeterFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         BTUMeterForm.setSections(Collections.singletonList(section));
         BTUMeterForm.setIsSystemForm(true);
