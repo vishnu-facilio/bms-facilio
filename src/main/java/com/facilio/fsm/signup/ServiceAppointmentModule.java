@@ -146,6 +146,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         serviceAppointmentFields.add(resolutionDueTime);
 
         FacilioField resolutionDueDuration = FieldFactory.getDefaultField("resolutionDueDuration","Resolution Due Duration","RESOLUTION_DUE_DURATION", FieldType.NUMBER);
+        resolutionDueDuration.setDisplayType(FacilioField.FieldDisplayType.DURATION);
         serviceAppointmentFields.add(resolutionDueDuration);
 
         LookupField priority = FieldFactory.getDefaultField("priority","Priority","PRIORITY",FieldType.LOOKUP);
@@ -158,7 +159,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         territory.setLookupModule(moduleBean.getModule("territory"));
         serviceAppointmentFields.add(territory);
 
-        SystemEnumField resolutionDueStatus = FieldFactory.getDefaultField("resolutionDueStatus","Resolution Due Status","RESOLUTION_DUE_STATUS",FieldType.SYSTEM_ENUM);
+        SystemEnumField resolutionDueStatus = FieldFactory.getDefaultField("resolutionDueStatus","Resolution SLA Status","RESOLUTION_DUE_STATUS",FieldType.SYSTEM_ENUM);
         resolutionDueStatus.setEnumName("AppointmentDueStatus");
         serviceAppointmentFields.add(resolutionDueStatus);
 

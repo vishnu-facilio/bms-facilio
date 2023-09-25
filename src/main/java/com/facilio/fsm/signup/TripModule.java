@@ -94,6 +94,7 @@ public class TripModule extends BaseModuleConfig {
         fields.add(endTime);
 
         NumberField tripDuration = FieldFactory.getDefaultField("tripDuration", "Trip Duration", "TRIP_DURATION", FieldType.NUMBER);
+        tripDuration.setDisplayType(FacilioField.FieldDisplayType.DURATION);
         fields.add(tripDuration);
 
         NumberField tripDistance = FieldFactory.getDefaultField("tripDistance","Trip Distance","TRIP_DISTANCE",FieldType.DECIMAL);
