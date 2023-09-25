@@ -133,8 +133,9 @@ public class ServiceTaskUtil {
         timeSheetCriteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID", "fieldAgent", String.valueOf(fieldAgentId), NumberOperators.EQUALS));
         timeSheetCriteria.addAndCondition(CriteriaAPI.getCondition( Constants.getModBean().getField("endTime",FacilioConstants.TimeSheet.TIME_SHEET),  CommonOperators.IS_EMPTY));
 
-        List<MultiLookupField> lookUpfields = new ArrayList<>();
+        List<SupplementRecord> lookUpfields = new ArrayList<>();
         lookUpfields.add((MultiLookupField) fieldMap.get("serviceTasks"));
+        lookUpfields.add((SupplementRecord) fieldMap.get("serviceAppointment"));
 
 //        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 //                .select(selectFields)

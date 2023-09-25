@@ -768,6 +768,7 @@ public class ServiceAppointmentUtil {
                 .select(timeSheetFields)
                 .andCondition(CriteriaAPI.getCondition(timeSheetFieldMap.get("fieldAgent"),String.valueOf(peopleId),NumberOperators.EQUALS))
                 .andCriteria(timeCriteria)
+                .fetchSupplement((SupplementRecord) timeSheetFieldMap.get("serviceAppointment"))
                 ;
         List<TimeSheetContext> timeSheets = timeSheetBuilder.get();
         if(CollectionUtils.isNotEmpty(timeSheets)){
