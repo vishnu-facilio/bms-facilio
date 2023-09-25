@@ -568,8 +568,17 @@ public class PageWidget {
 		WORK_ORDER_PLAN_SERVICE("workorderplanservice"),
 		WORK_ORDER_PLAN_LABOUR("workorderplanlabour"),
 		COST_DETAILS("costDetails"),
-		FAILURE_HIERARCHY("failureHierarchy");
+		FAILURE_HIERARCHY("failureHierarchy"),
 
+		SPACE_LOCATION("spaceLocation"),
+		SPACE_INSIGHTS("spaceInsights"),
+		WEATHER_CARD("weatherCard",AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
+		DEPRECIATION_ANALYSIS("depreciationAnalysis",AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
+		HOURLY_FORECAST("hourlyForecast",AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
+		BUILDINGS("buildings"),
+		SPACES("spaces"),
+		SUB_SPACES("subSpaces"),
+		FLOORS("floors");
 
 		private String name;
 		@Getter

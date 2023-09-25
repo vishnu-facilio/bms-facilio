@@ -267,6 +267,17 @@ public class SpaceAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+
+	public String getSpaceInsights() throws Exception{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getSpaceId());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME,"space");
+		FacilioChain spaceInsights = FacilioChainFactory.getSpaceInsights();
+		spaceInsights.execute(context);
+		setReports((JSONObject) context.get(FacilioConstants.ContextNames.COUNT));
+
+		return SUCCESS;
+	}
 	
 	public String getTenantForSpace() throws Exception
 	{

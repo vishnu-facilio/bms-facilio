@@ -2437,6 +2437,15 @@
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="campuschildren"
+				class="com.facilio.bmsconsole.actions.CampusAction"
+				method="getBaseSpaceChildren">
+			<param name="campusId">space</param>
+			<param name="permission">READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
+			</result>
+		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.CampusAction"
 			method="addCampus">
@@ -2479,6 +2488,23 @@
 			<param name="permission">READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="childrenspace" class="com.facilio.bmsconsole.actions.CampusAction"
+				method="getChildrenSpace">
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
+			</result>
+		</action>
+
+		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.CampusAction"
+				method="getSiteInsights">
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">reports.*</param>
 			</result>
 		</action>
 
@@ -2539,6 +2565,14 @@
 				<param name="includeProperties">reports.*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*,^mainEnergyMeter.*</param>
 			</result>
 		</action>
+		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.BuildingAction"
+				method="getSpaceInsights">
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">reports.*</param>
+			</result>
+		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.BuildingAction"
 			method="viewBuilding">
@@ -2585,6 +2619,14 @@
 			<param name="permission">UPDATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^floor.*</param>
+			</result>
+		</action>
+		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.FloorAction"
+				method="getSpaceInsights">
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">reports.*</param>
 			</result>
 		</action>
 		
@@ -2660,6 +2702,14 @@
 			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">tenant,tenant\[\d+\],tenant\[\d+\].*,^tenant.*</param>
+			</result>
+		</action>
+		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.SpaceAction"
+				method="getSpaceInsights">
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">reports.*</param>
 			</result>
 		</action>
 		

@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -195,6 +196,26 @@ public class CampusAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String getSiteInsights() throws Exception{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getCampusId());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME,"site");
+		FacilioChain getSiteInsightsChain = FacilioChainFactory.getSiteInsights();
+		getSiteInsightsChain.execute(context);
+		setReports((JSONObject) context.get(FacilioConstants.ContextNames.COUNT));
+
+		return SUCCESS;
+	}
+
+	public String getChildrenSpace() throws Exception{
+		FacilioChain getChildrenChain = TransactionChainFactoryV3.getBaseSpaceChildrenChain();
+		FacilioContext context = getChildrenChain.getContext();
+		context.put(FacilioConstants.ContextNames.SITE_ID,getCampusId());
+		getChildrenChain.execute();
+		setReports((JSONObject) context.get("list"));
+
+		return SUCCESS;
+	}
 	public String v2SitesList() throws Exception {
 		FacilioChain chain = ReadOnlyChainFactory.getSpaceModuleListChain();
 		FacilioContext constructListContext = chain.getContext();

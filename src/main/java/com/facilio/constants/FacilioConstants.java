@@ -389,6 +389,8 @@ public class FacilioConstants {
 		//public static final String RESOURCE_ID = "resourceId";
 		public static final String EMAIL = "email";
 		public static final String IS_WEBTAB_PERMISSION = "isWebTabPermission";
+
+		public static final String NOTES_MODULE_NAME = "notesModuleName";
         public static final String WORK_ORDER_FEATURE_SETTINGS_LIST = "workOrderFeatureSettingsList";
 		public static final String WORK_ORDER_FEATURE_SETTINGS_LIST_MAP = "workOrderFeatureSettingsListMap";
 		public static final String WORK_ORDER_FEATURE_SETTINGS_TYPE = "workOrderFeatureSettingsType";
@@ -913,6 +915,8 @@ public class FacilioConstants {
 		public static final String ATTACHMENT_FILE_NAME = "attachmentFileName";
 		public static final String ATTACHMENT_ID_LIST = "attachmentIds";
 		public static final String ATTACHMENT_MODULE_NAME = "attachmentModuleName";
+		public static final String ATTACHMENTS_MODULE_NAME = "attachmentsModuleName";
+
 		public static final String ATTACHMENT_MAP_FILE_LIST = "attachmentsMapFiles";
 		public static final String CURRENT_TIME = "currentTime";
 

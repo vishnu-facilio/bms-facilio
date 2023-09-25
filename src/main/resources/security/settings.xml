@@ -13,6 +13,36 @@
         </requestbody>
     </request>
 
+
+    <request path="/api/campus/spaceInsights">
+        <requestbody type="object">
+            <property name="campusId" type="string"/>
+        </requestbody>
+    </request>
+<!--    <request path="/api/campus/getBaseSpaceChildren">-->
+<!--        <requestbody type="object">-->
+<!--            <property name="campusId" type="string"/>-->
+<!--        </requestbody>-->
+<!--    </request>-->
+
+    <request path="/api/building/spaceInsights">
+        <requestbody type="object">
+            <property name="buildingId" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/floor/spaceInsights">
+        <requestbody type="object">
+            <property name="floorId" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/space/spaceInsights">
+        <requestbody type="object">
+            <property name="spaceId" type="string"/>
+        </requestbody>
+    </request>
+
     <request path="/api/v3/modules/data/create">
         <requestbody type="v3fields"/>
     </request>

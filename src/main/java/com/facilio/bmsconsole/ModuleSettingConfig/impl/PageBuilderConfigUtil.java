@@ -37,6 +37,10 @@ public class PageBuilderConfigUtil {
 
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.CLIENT));
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.SITE));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.BUILDING));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.FLOOR));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.SPACE));
 
             if (CollectionUtils.isNotEmpty(moduleList)) {
                 List<Long> moduleIds = moduleList.stream().filter(Objects::nonNull).map(FacilioModule::getModuleId).collect(Collectors.toList());

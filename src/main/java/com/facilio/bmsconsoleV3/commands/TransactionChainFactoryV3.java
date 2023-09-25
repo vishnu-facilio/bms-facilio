@@ -516,6 +516,12 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getBaseSpaceChildrenChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetSiteChildrenCommand());
+        return chain;
+    }
+
     public static FacilioChain getVisitorBeforeSaveOnAddChain() {
         FacilioChain c = getDefaultChain();
 

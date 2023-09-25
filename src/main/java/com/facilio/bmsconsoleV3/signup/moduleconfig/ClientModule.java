@@ -71,7 +71,7 @@ public class ClientModule extends BaseModuleConfig{
         moduleToRemove.add("contact");
 
         return  new ModulePages()
-                .addPage(pageName, pageDisplayName,"", null, true, false, false)
+                .addPage(pageName, pageDisplayName,"", null, isTemplate, isDefault, false)
                 .addWebLayout()
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
