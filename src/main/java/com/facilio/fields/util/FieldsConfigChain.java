@@ -123,10 +123,11 @@ public class FieldsConfigChain {
         FacilioContext context = chain.getContext();
         List<FieldType> fieldTypesToFetch = (List<FieldType>) configMap.get(FacilioConstants.FieldsConfig.FIELD_TYPES_TO_FETCH);
         FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(fieldTypesToFetch), "fieldTypes to fetch can't be empty");
+        List<FieldType> fieldTypesToFetchCopy = CollectionUtils.isNotEmpty(fieldTypesToFetch) ? new ArrayList<>(fieldTypesToFetch) : new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fieldTypesToSkip)) {
-            fieldTypesToFetch.removeAll(fieldTypesToSkip);
+            fieldTypesToFetchCopy.removeAll(fieldTypesToSkip);
         }
-        context.put(FacilioConstants.FieldsConfig.FIELD_TYPES_TO_FETCH, fieldTypesToFetch);
+        context.put(FacilioConstants.FieldsConfig.FIELD_TYPES_TO_FETCH, fieldTypesToFetchCopy);
 
         FacilioField.AccessType accessType = (FacilioField.AccessType) configMap.get(FacilioConstants.FieldsConfig.ACCESS_TYPE);
         if (accessType != null) {

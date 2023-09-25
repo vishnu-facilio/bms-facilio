@@ -85,7 +85,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
 
         if (app.getDomainType() == AppDomain.AppDomainType.FACILIO.getIndex()) {
             return new ModulePages()
-                    .addPage(pageName, pageDisplayName, "", null, isTemplate, isDefault, false)
+                    .addPage(pageName, pageDisplayName, "", null, isTemplate, isDefault, true)
                     .addWebLayout()
                     .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
@@ -178,7 +178,7 @@ public class CreateDefaultPageCommand extends FacilioCommand {
                     .getCustomPages();
         } else {
             return new ModulePages()
-                    .addPage(pageName, pageDisplayName, "", null, isTemplate, isDefault, false)
+                    .addPage(pageName, pageDisplayName, "", null, isTemplate, isDefault, true)
                     .addWebLayout()
                     .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
@@ -312,15 +312,20 @@ public class CreateDefaultPageCommand extends FacilioCommand {
         }
     }
     private static JSONObject getWidgetGroup(boolean isMobile) throws Exception {
+        JSONObject notesWidgetParam = new JSONObject();
+        notesWidgetParam.put("notesModuleName", "cmdnotes");
+
+        JSONObject attachmentsWidgetParam = new JSONObject();
+        notesWidgetParam.put("attachmentsModuleName", "cmdattachments");
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", null)
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, null, null)
+                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", null)
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, null, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

@@ -49,9 +49,9 @@ public class ViewFieldsResponseCommand extends FacilioCommand {
         for (FacilioField field : fieldsList) {
             ModuleViewField viewField = new ModuleViewField(field);
             if (CollectionUtils.isNotEmpty(fixedFieldNames) && fixedFieldNames.contains(field.getName())) {
-                viewField.setFixedColumn(true);
+                viewField.setFixed(true);
             } else if (CollectionUtils.isNotEmpty(fixedSelectableFieldNames) && fixedSelectableFieldNames.contains(field.getName())) {
-                viewField.setFixedSelectableColumn(true);
+                viewField.setFixedSelectable(true);
             }
             viewFieldList.add(viewField);
         }

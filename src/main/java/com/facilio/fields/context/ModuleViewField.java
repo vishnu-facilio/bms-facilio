@@ -9,13 +9,13 @@ import lombok.Setter;
 public class ModuleViewField {
     private String name, displayName;
     private long id;
-    private boolean isFixedColumn;
-    private boolean isFixedSelectableColumn;
+    private boolean fixed;
+    private boolean fixedSelectable;
 
     public ModuleViewField(FacilioField field) {
         name = field.getName();
         displayName = field.getDisplayName();
         id = field.getId();
-        isFixedColumn = field.isMainField();
+        fixed = field.isMainField(); //mainFields are made fixed
     }
 }
