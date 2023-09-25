@@ -346,6 +346,7 @@ public class FacilioConstants {
 		public static final String FORM_SECTION_SEQUENCE_NUMBER = "formSectionSequenceNumber";
 		public static final String NEXT_FORM_SECTION_ID = "nextFormSectionId";
 		public static final String SEQUENCE_NUMBER = "sequenceNumber";
+		public static final String EMAIL_REGEX = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
 	}
 
 

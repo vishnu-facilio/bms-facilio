@@ -598,6 +598,19 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 break;
             }
             case STRING:{
+
+                if(field.getDisplayType()== FacilioField.FieldDisplayType.EMAIL){
+
+                    String cellValueString = cellValue.toString();
+
+                    String regex = FacilioConstants.FormContextNames.EMAIL_REGEX;
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(cellValueString);
+
+                    FacilioUtil.throwIllegalArgumentException(!matcher.matches(), "Invalid Email");
+
+                }
+
                 if(cellValue instanceof Double){
                     String cellValueString = cellValue.toString();
                     Long number = (long) Double.parseDouble(cellValueString);

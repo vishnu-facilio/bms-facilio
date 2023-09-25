@@ -1,12 +1,6 @@
 package com.facilio.bmsconsole.forms;
 
-import java.io.Serializable;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.json.annotations.JSON;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
-
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.Criteria;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
@@ -14,6 +8,12 @@ import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
+import java.io.Serializable;
 
 public class FormField implements Serializable {
 	private static final long serialVersionUID = 4252438995947509456L;
@@ -388,7 +388,7 @@ public class FormField implements Serializable {
 	}
 
 	public void setEmailValidation(){
-		addValidation("emailRegexPattern","^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$");
+		addValidation("emailRegexPattern", FacilioConstants.FormContextNames.EMAIL_REGEX);
 	}
 
 	public double getFormFieldSequenceNumber() {
