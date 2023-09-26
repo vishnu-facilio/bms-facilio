@@ -341,6 +341,7 @@ public class ChainUtil {
         transactionChain.addCommand(new SaveSubFormCommand());
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "SaveSubFormCommand", moduleName));
         transactionChain.addCommand(new SaveSubFormFromLineItemsCommand());
+        transactionChain.addCommand(new AddOrUpdateRelationShipDataCommand());
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "SaveSubFormFromLineItemsCommand", moduleName));
 
         addIfNotNull(transactionChain, afterSaveCommand);
@@ -587,6 +588,7 @@ public class ChainUtil {
         transactionChain.addCommand(new SaveSubFormCommand());
         transactionChain.addCommand(new SaveSubFormFromLineItemsCommand());
         transactionChain.addCommand(new AddNotesFromTransitionCommand());
+        transactionChain.addCommand(new AddOrUpdateRelationShipDataCommand());
         transactionChain.addCommand(new ChangeApprovalStatusForModuleDataCommand());
         transactionChain.addCommand(new UpdateStateForModuleDataCommand());
 

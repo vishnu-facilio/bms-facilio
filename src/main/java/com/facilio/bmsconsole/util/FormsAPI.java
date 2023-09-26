@@ -53,6 +53,7 @@ import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -443,7 +444,31 @@ public class FormsAPI {
 			}
 		}
 	}
-	
+
+	private static void setNameAndDisplayNameForRelationshipField(FormField field, List<FormField> existingFields) {
+		String originalName = field.getName();
+		int count = 1;
+
+		for (FormField existingField : existingFields) {
+			if (existingField.getName().startsWith(originalName + "_")) {
+				int number = parseNumber(existingField.getName().substring(originalName.length() + 1));
+				count = Math.max(count, number + 1);
+			}
+		}
+
+		field.setName(originalName + "_" + count);
+		field.setDisplayName(field.getDisplayName());
+	}
+
+	private static int parseNumber(String s) {
+		try {
+			return Integer.parseInt(s);
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+
+
 	private static void addFormSections (long formId, List<FormSection> sections, boolean... seqInitialized) throws Exception {
 		if (sections != null) {
 			long orgId = AccountUtil.getCurrentOrg().getId();
@@ -650,10 +675,21 @@ public class FormsAPI {
 			updateFormFields(fieldsToUpdate, null);
 		}
 		if (!fieldsToAdd.isEmpty()) {
+			handleRelationshipField(fieldsToAdd, dbFields);
 			addFormFields(form.getId(), fieldsToAdd, true);
 		}
 	}
-	
+
+	private static void handleRelationshipField(List<FormField> fieldsToAdd, List<FormField> dbFields) {
+		List<FormField> existingFields = new ArrayList<>(dbFields);
+		for (FormField formField : fieldsToAdd) {
+			if (Objects.equals(FieldDisplayType.RELATIONSHIP, formField.getDisplayTypeEnum())) {
+				setNameAndDisplayNameForRelationshipField(formField, existingFields);
+				existingFields.add(formField);
+			}
+		}
+	}
+
 	private static void checkFieldUsageInRule(List<Long> dbFieldIds) throws Exception {
 		// TODO Auto-generated method stub
 		if(FormRuleAPI.isFieldExistAsRuleTriggerField(dbFieldIds)) {
@@ -2333,5 +2369,8 @@ public class FormsAPI {
 
 		addFormSections(parentFormId,Collections.singletonList(subFormSection));
 
+	}
+	public static List<FormField> getRelationshipFieldFromFields(List<FormField> fields) {
+		return fields.stream().filter(formField -> formField.getDisplayTypeEnum().equals(FieldDisplayType.RELATIONSHIP)).collect(Collectors.toList());
 	}
 }

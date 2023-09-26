@@ -2,11 +2,16 @@ package com.facilio.bmsconsole.commands.form;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.facilio.fs.FileInfo;
+import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.relation.util.RelationUtil;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -65,7 +70,9 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 				handleFields(subForm.getModule(), subForm);
 			}
 			else if (section.getFields() != null) {
-				for(FormField field: section.getFields()) {
+				List<FormField> sectionFields = section.getFields();
+				handleRelationshipFields(module, sectionFields);
+				for(FormField field: sectionFields) {
 					if (formSourceType == FormSourceType.FROM_BULK_FORM) {
 						field.setValue(null);
 					}
@@ -87,6 +94,20 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 					setValidations(field);
 				}
 			}
+		}
+	}
+
+	private void handleRelationshipFields(FacilioModule module, List<FormField> sectionFields) throws Exception {
+		List<FormField> relationshipFieldFromFields = FormsAPI.getRelationshipFieldFromFields(sectionFields);
+		if (CollectionUtils.isEmpty(relationshipFieldFromFields)) {
+			return;
+		}
+		List<Long> relationMappingIds = relationshipFieldFromFields.stream().map(FormField::getRelationMappingId).collect(Collectors.toList());
+		List<RelationRequestContext> relations = RelationUtil.getAllRelations(module, relationMappingIds);
+		Map<Long, RelationRequestContext> relationMappingIdVsRelationRequest = RelationUtil.getRelationMappingIdVsRelationRequest(relations);
+
+		for (FormField sectionField : sectionFields) {
+			sectionField.setRelationData(relationMappingIdVsRelationRequest.get(sectionField.getRelationMappingId()));
 		}
 	}
 

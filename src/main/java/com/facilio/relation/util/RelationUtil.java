@@ -124,14 +124,24 @@ public class RelationUtil {
     }
 
     public static List<RelationRequestContext> getAllRelations(FacilioModule module) throws Exception {
-        return getAllRelations(module, false, null, null, false, RelationContext.RelationCategory.NORMAL);
+        return getAllRelations(module, false, null, null, false, null, RelationContext.RelationCategory.NORMAL);
+    }
+
+    public static List<RelationRequestContext> getAllRelations(FacilioModule module, List<Long> relationMappingIds) throws Exception {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getIdCondition(relationMappingIds, ModuleFactory.getRelationMappingModule()));
+        return getAllRelations(module, false, null, null, false, criteria, RelationContext.RelationCategory.NORMAL);
+    }
+
+    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean includeHiddenRelations) throws Exception {
+        return getAllRelations(module, false, null, null, includeHiddenRelations, null, RelationContext.RelationCategory.NORMAL);
     }
 
     public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString, boolean includeHiddenRelations) throws Exception {
-        return getAllRelations(module, isSetupPage, pagination, searchString, includeHiddenRelations, RelationContext.RelationCategory.NORMAL);
+        return getAllRelations(module, isSetupPage, pagination, searchString, includeHiddenRelations, null, RelationContext.RelationCategory.NORMAL);
     }
 
-    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString, boolean includeHiddenRelations, RelationContext.RelationCategory relationCategory) throws Exception {
+    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString, boolean includeHiddenRelations, Criteria criteria, RelationContext.RelationCategory relationCategory) throws Exception {
 
         Map<String, FacilioField> relationFields = FieldFactory.getAsMap(FieldFactory.getRelationFields());
         Map<String, FacilioField> mappingFields = FieldFactory.getAsMap(FieldFactory.getRelationMappingFields());
@@ -162,6 +172,10 @@ public class RelationUtil {
         }
 
         addRelationCategoryCriteriaToBuilder(relationCategory, builder, relationFields.get("relationCategory"));
+
+        if (criteria != null && !criteria.isEmpty()) {
+            builder.andCriteria(criteria);
+        }
 
         StringBuilder orderBy = new StringBuilder().append(relationFields.get("id").getCompleteColumnName()).append(" DESC");
         builder.orderBy(orderBy.toString());
@@ -456,18 +470,29 @@ public class RelationUtil {
         return new ArrayList<>();
     }
 
-    public static void addRelationCategoryCriteriaToBuilder(RelationContext.RelationCategory relationCategory, GenericSelectRecordBuilder builder, FacilioField relationCategoryField) {
+    public static void addRelationCategoryCriteriaToBuilder(RelationContext.RelationCategory relationCategory,
+            GenericSelectRecordBuilder builder, FacilioField relationCategoryField) {
         if (relationCategory != null) {
             Criteria relationCategoryCriteria = new Criteria();
             if (relationCategory.equals(RelationContext.RelationCategory.NORMAL)) {
-                relationCategoryCriteria.addAndCondition(CriteriaAPI.getCondition(relationCategoryField, String.valueOf(RelationContext.RelationCategory.NORMAL.getIndex()), NumberOperators.EQUALS));
-                relationCategoryCriteria.addOrCondition(CriteriaAPI.getCondition(relationCategoryField, CommonOperators.IS_EMPTY));
+                relationCategoryCriteria.addAndCondition(CriteriaAPI.getCondition(relationCategoryField,
+                        String.valueOf(RelationContext.RelationCategory.NORMAL.getIndex()), NumberOperators.EQUALS));
+                relationCategoryCriteria
+                        .addOrCondition(CriteriaAPI.getCondition(relationCategoryField, CommonOperators.IS_EMPTY));
                 builder.andCriteria(relationCategoryCriteria);
-            }
-            else {
-                relationCategoryCriteria.addAndCondition(CriteriaAPI.getCondition(relationCategoryField, String.valueOf(relationCategory.getIndex()), NumberOperators.EQUALS));
+            } else {
+                relationCategoryCriteria.addAndCondition(CriteriaAPI.getCondition(relationCategoryField,
+                        String.valueOf(relationCategory.getIndex()), NumberOperators.EQUALS));
                 builder.andCriteria(relationCategoryCriteria);
             }
         }
+    }
+    
+    public static Map<Long, RelationRequestContext> getRelationMappingIdVsRelationRequest(List<RelationRequestContext> relationRequests) {
+        Map<Long, RelationRequestContext> relationRequestContextMap = new HashMap<>();
+        for (RelationRequestContext relationRequest : relationRequests) {
+            relationRequestContextMap.put(relationRequest.getRelMappingId(), relationRequest);
+        }
+        return relationRequestContextMap;
     }
 }

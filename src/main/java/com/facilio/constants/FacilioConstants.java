@@ -4682,7 +4682,7 @@ public class FacilioConstants {
 	public static final String UTILITY_DISPUTE_STATUS = "utilityDisputeStatus";
 
 
-    public static class Relationship {
+	public static class Relationship {
 		public static final String INCLUDE_HIDDEN_RELATIONS = "includeHiddenRelations";
 		public static final String RELATION_CATEGORY = "relationCategory";
     }
@@ -4813,5 +4813,9 @@ public class FacilioConstants {
 	}
 	public static class Portfolio{
 		public static final String PORTFOLIO = "portfolio";
+	}
+    public static class RelationshipField {
+		public static final String ASSOCIATE_IDS = "associateIds";
+		public static final String DISSOCIATE_IDS = "dissociateIds";
 	}
 }

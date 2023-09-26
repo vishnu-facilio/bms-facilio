@@ -5,9 +5,12 @@ import com.facilio.constants.FacilioConstants.Criteria;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
@@ -435,4 +438,10 @@ public class FormField implements Serializable {
 	private long sysCreatedTime;
 	private long sysModifiedBy;
 	private long sysCreatedBy;
+	@Getter
+	@Setter
+	private long relationMappingId;
+	@Getter
+	@Setter
+	private RelationRequestContext relationData;
 }

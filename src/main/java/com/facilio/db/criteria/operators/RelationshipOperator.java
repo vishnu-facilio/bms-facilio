@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public enum RelationshipOperator implements Operator<String>{
-    CONTAINS_RELATION(109, "containsrelation") {
+    CONTAINS_RELATION(109, "contains relation") {
 
         @Override @SneakyThrows
         public String getWhereClause(String relationName, String value) {
@@ -43,7 +43,7 @@ public enum RelationshipOperator implements Operator<String>{
             return null;
         }
     },
-    NOT_CONTAINS_RELATION(110, "notcontainsrelation") {
+    NOT_CONTAINS_RELATION(110, "not contains relation") {
 
         @Override @SneakyThrows
         public String getWhereClause(String relationName, String value) {
@@ -95,7 +95,7 @@ public enum RelationshipOperator implements Operator<String>{
             return null;
         }
     },
-    NOT_RELATED(112, "notrelated") {
+    NOT_RELATED(112, "not related") {
 
         @Override @SneakyThrows
         public String getWhereClause(String relationName, String value) {

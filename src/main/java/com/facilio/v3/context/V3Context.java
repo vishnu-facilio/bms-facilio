@@ -1,6 +1,5 @@
 package com.facilio.v3.context;
 
-import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.failurecode.V3FailureClassContext;
 import com.facilio.classification.context.ClassificationContext;
