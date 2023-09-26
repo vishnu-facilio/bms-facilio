@@ -2,9 +2,12 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
@@ -14,7 +17,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -384,5 +390,56 @@ public class FacilityBookingModule extends BaseModuleConfig{
         facilityBookingModuleForms.add(parkingBookingPortalForm);
 
         return facilityBookingModuleForms;
+    }
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+
+        FacilioModule module= ModuleFactory.getFacilityBookingModule();
+        List<String> appNames = new ArrayList<>();
+        appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,buildFacilityBookingPage(app, module, false,true));
+        }
+        return appNameVsPage;
+    }
+    private List<PagesContext> buildFacilityBookingPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+        String pageName, pageDisplayName;
+        pageName = module.getName() + "defaultpage";
+        pageDisplayName = "Default " + module.getDisplayName() + " Page ";
+
+        return new ModulePages()
+                .addPage(pageName, pageDisplayName, "", null, isTemplate, isDefault, true)
+                .addWebLayout()
+                .addTab("bookinginfo", null, PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("bookinginfo", null, null)
+                .addWidget("bookinginfowidget", null, PageWidget.WidgetType.BOOKING_INFO, "webbookinginfo_5_12", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("bookingslotinformation", null, null)
+                .addWidget("bookingslotinformationwidget", "Slot Information", PageWidget.WidgetType.BOOKING_SLOT_INFORMATION, "flexiblewebbookinginfo_12", 0, 0, null,null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("bookinginternalattendees", null, null)
+                .addWidget("bookinginternalattendeeswidget", "Internal Attendee List", PageWidget.WidgetType.BOOKING_INTERNAL_ATTENDEES, "flexiblewebbookinginternalattendees_12", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("bookingexternalattendees", null, null)
+                .addWidget("bookingexternalattendeeswidget", "External Attendee List", PageWidget.WidgetType.BOOKING_EXTERNAL_ATTENDEES, "flexiblewebbookingexternalattendees_12", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone().getCustomPages();
     }
 }

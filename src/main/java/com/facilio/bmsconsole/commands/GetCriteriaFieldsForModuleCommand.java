@@ -64,6 +64,12 @@ public class GetCriteriaFieldsForModuleCommand extends FacilioCommand {
                     case FacilioConstants.ContextNames.SERVICE_REQUEST:
                         fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
                         break;
+                    case FacilioConstants.ContextNames.FacilityBooking.FACILITY:
+                        fields=FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(),moduleName);
+                        break;
+                    case FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING:
+                        fields=FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(),moduleName);
+                        break;
                     default:
                         fields = null;
                 }
