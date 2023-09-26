@@ -210,6 +210,9 @@ public class ServiceTaskUtil {
                     }
                 }
             }
+            long workDuration = ServiceAppointmentUtil.getAppointmentDuration(agentId, appointmentId);
+            serviceAppointmentContext.setActualDuration(workDuration);
+            V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,appointmentId, FieldUtil.getAsJSON(serviceAppointmentContext), null, null, null, null, null, null, null, null,null);
         }
     }
 
@@ -343,12 +346,12 @@ public class ServiceTaskUtil {
                }
                 updateServiceTasks(taskIds,FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED,currentTime);
             }
-
             //complete associated service appointment
-            Long saId = timeSheet.getServiceAppointment().getId();
-
-            if(getAppointmentStatus(saId)){
-                updateServiceAppointments(Collections.singletonList(saId),currentTime,FacilioConstants.ServiceAppointment.COMPLETED);
+            if(timeSheet.getServiceAppointment() != null){
+                Long appointmentId = timeSheet.getServiceAppointment().getId();
+                if (getAppointmentStatus(appointmentId)) {
+                    updateServiceAppointments(appointmentId, currentTime, FacilioConstants.ServiceAppointment.COMPLETED);
+                }
             }
 
 
@@ -394,7 +397,7 @@ public class ServiceTaskUtil {
         updateBuilder.updateViaMap(updateProps);
 
     }
-    public static void updateServiceAppointments(List<Long> appointmentIds, Long currentTime, String status) throws Exception {
+    public static void updateServiceAppointments(Long appointmentId, Long currentTime, String status) throws Exception {
 
 
         String serviceAppointmentModuleName = FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT;
@@ -403,40 +406,50 @@ public class ServiceTaskUtil {
         List<FacilioField> saFields = moduleBean.getAllFields(serviceAppointmentModuleName);
 
         ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus(status);
+        ServiceAppointmentContext appointment = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,appointmentId);
+        if(appointment != null) {
+
+            Map<String, FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+
+            List<FacilioField> updateFields = new ArrayList<>();
+            updateFields.add(saFieldMap.get("status"));
+            updateFields.add(saFieldMap.get("actualEndTime"));
+            if(appointment.getFieldAgent() != null) {
+                updateFields.add(saFieldMap.get("actualDuration"));
+
+            }
 
 
-        Map<String, FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
-        List<FacilioField> updateFields = new ArrayList<>();
-        updateFields.add(saFieldMap.get("status"));
-        updateFields.add(saFieldMap.get("actualEndTime"));
+            List<String> saStatus = new ArrayList<>();
+            saStatus.add(FacilioConstants.ServiceAppointment.COMPLETED);
+            saStatus.add(FacilioConstants.ServiceAppointment.CANCELLED);
 
-        List<String> saStatus= new ArrayList<>();
-        saStatus.add(FacilioConstants.ServiceAppointment.COMPLETED);
-        saStatus.add(FacilioConstants.ServiceAppointment.CANCELLED);
+            Map<String, ServiceAppointmentTicketStatusContext> statusMap = ServiceAppointmentUtil.getStatusMap(saStatus);
 
-        Map<String, ServiceAppointmentTicketStatusContext> statusMap=ServiceAppointmentUtil.getStatusMap(saStatus);
+            List<Long> endStatus = new ArrayList<>();
+            endStatus.add(statusMap.get(FacilioConstants.ServiceAppointment.CANCELLED).getId());
+            endStatus.add(statusMap.get(FacilioConstants.ServiceAppointment.COMPLETED).getId());
 
-        List<Long>endStatus = new ArrayList<>();
-        endStatus.add(statusMap.get(FacilioConstants.ServiceAppointment.CANCELLED).getId());
-        endStatus.add(statusMap.get(FacilioConstants.ServiceAppointment.COMPLETED).getId());
-
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getIdCondition(appointmentIds, serviceAppointment));
-        criteria.addAndCondition(CriteriaAPI.getCondition("STATUS","status",StringUtils.join(endStatus,","),NumberOperators.NOT_EQUALS));
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getIdCondition(appointmentId, serviceAppointment));
+            criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", StringUtils.join(endStatus, ","), NumberOperators.NOT_EQUALS));
 
 
+            UpdateRecordBuilder<ServiceAppointmentContext> updateBuilder = new UpdateRecordBuilder<ServiceAppointmentContext>()
+                    .module(serviceAppointment)
+                    .fields(updateFields)
+                    .andCriteria(criteria);
 
-        UpdateRecordBuilder<ServiceAppointmentContext> updateBuilder = new UpdateRecordBuilder<ServiceAppointmentContext>()
-                .module(serviceAppointment)
-                .fields(updateFields)
-                .andCriteria(criteria);
+            Map<String, Object> updateProps = new HashMap<>();
+            updateProps.put("status", FieldUtil.getAsProperties(appointmentStatus));
+            updateProps.put("actualEndTime", currentTime);
 
-        Map<String, Object> updateProps = new HashMap<>();
-        updateProps.put("status", FieldUtil.getAsProperties(appointmentStatus));
-        updateProps.put("actualEndTime", currentTime);
-
-        updateBuilder.updateViaMap(updateProps);
-
+            if(appointment.getFieldAgent() != null) {
+                long workDuration = ServiceAppointmentUtil.getAppointmentDuration(appointment.getFieldAgent().getId(), appointmentId);
+                updateProps.put("actualDuration", workDuration);
+            }
+            updateBuilder.updateViaMap(updateProps);
+        }
     }
 
 

@@ -786,7 +786,7 @@ public class ServiceAppointmentUtil {
         List<FacilioField> updateFields = new ArrayList<>();
         updateFields.add(timeSheetFieldMap.get(FacilioConstants.ContextNames.ENDTIME));
         updateFields.add(timeSheetFieldMap.get(FacilioConstants.ContextNames.DURATION));
-//        updateFields.add(timeSheetFieldMap.get(FacilioConstants.TimeSheet.TIME_SHEET_STATUS));
+        updateFields.add(timeSheetFieldMap.get(FacilioConstants.ContextNames.STATUS));
 
         UpdateRecordBuilder<TimeSheetContext> timeSheetBuilder = new UpdateRecordBuilder<TimeSheetContext>()
                 .module(timeSheetModule)
@@ -796,6 +796,7 @@ public class ServiceAppointmentUtil {
         Map<String,Object> updateProps = new HashMap<>();
         updateProps.put(FacilioConstants.ContextNames.ENDTIME,endTime);
         updateProps.put(FacilioConstants.ContextNames.DURATION,(endTime - ts.getStartTime())/1000);
+        updateProps.put(FacilioConstants.ContextNames.STATUS,FieldUtil.getAsProperties(getTimeSheetStatus(FacilioConstants.TimeSheet.COMPLETED)));
 
         timeSheetBuilder.updateViaMap(updateProps);
     }
