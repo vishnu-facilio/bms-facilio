@@ -29,6 +29,7 @@ import java.util.*;
 public class PackageUtil {
 
     private static ThreadLocal<Boolean> isInstallThread = new ThreadLocal<>();
+    private static ThreadLocal<Boolean> userConfigFromAdminTool = new ThreadLocal<>();
     private static ThreadLocal<Map<String, Map<String, String>>> PICKLIST_CONF_FOR_XML = ThreadLocal.withInitial(HashMap::new);     // PickList ModuleName Vs Id vs RecordName
     private static ThreadLocal<Map<String, Map<String, String>>> PICKLIST_CONF_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new); // PickList ModuleName Vs RecordName vs Id
     private static ThreadLocal<Map<String, Map<String, String>>> TICKET_STATUS_CONF_FOR_XML = ThreadLocal.withInitial(HashMap::new);     // ParentModuleName Vs Id vs Status
@@ -36,8 +37,9 @@ public class PackageUtil {
     private static ThreadLocal<Map<ComponentType, Map<String, Long>>> COMPONENTS_UID_VS_COMPONENT_ID = ThreadLocal.withInitial(HashMap::new);
     private static ThreadLocal<Map<String, Map<String, Long>>> USER_CONFIG_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new);     // UserName vs Identifier vs OrgUserId
     private static ThreadLocal<Map<Long, UserInfo>> USER_CONFIG_FOR_XML = ThreadLocal.withInitial(HashMap::new);                    // OrgUserId vs UserInfo (UserName & Identifier)
-    private static ThreadLocal<Map<String, Long>> PEOPLE_CONFIG_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new);                // PeopleEmail vs PeopleId
-    private static ThreadLocal<Map<Long, String>> PEOPLE_CONFIG_FOR_XML = ThreadLocal.withInitial(HashMap::new);                    // PeopleId vs PeopleEmail
+    private static ThreadLocal<Map<String, Long>> PEOPLE_CONFIG_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new);                // PeopleEmail/Name vs PeopleId
+    private static ThreadLocal<Map<Long, String>> PEOPLE_CONFIG_FOR_XML = ThreadLocal.withInitial(HashMap::new);                    // PeopleId vs PeopleEmail/Name
+    private static ThreadLocal<Map<String, String>> PEOPLE_OLD_VS_NEW_MAIL = ThreadLocal.withInitial(HashMap::new);                 // People oldMail vs newMail from AdminTool
 
     public static void setInstallThread() throws Exception {
         isInstallThread.set(true);
@@ -47,8 +49,18 @@ public class PackageUtil {
         return isInstallThread.get();
     }
 
+    public static void setUserConfigFromAdminTool() {
+        userConfigFromAdminTool.set(true);
+    }
+
+    public static boolean getUserConfigFromAdminTool() {
+        return userConfigFromAdminTool.get() != null && userConfigFromAdminTool.get();
+    }
+
     public static void clearInstallThread() throws Exception {
         isInstallThread.remove();
+        userConfigFromAdminTool.remove();
+        PEOPLE_OLD_VS_NEW_MAIL.remove();
         COMPONENTS_UID_VS_COMPONENT_ID.remove();
     }
 
@@ -111,6 +123,9 @@ public class PackageUtil {
     }
 
     public static long getPeopleId(String peopleMail) {
+        if (PackageUtil.getUserConfigFromAdminTool()) {
+            peopleMail = PackageUtil.getNewPeopleMail(peopleMail);
+        }
         Map<String, Long> peopleMailVsPeopleId = PEOPLE_CONFIG_FOR_CONTEXT.get();
         return peopleMailVsPeopleId.getOrDefault(peopleMail, -1L);
     }
@@ -141,6 +156,9 @@ public class PackageUtil {
     }
 
     public static long getOrgUserId(String userName, String identifier) {
+        if (PackageUtil.getUserConfigFromAdminTool()) {
+            userName = PackageUtil.getNewPeopleMail(userName);
+        }
         Map<String, Map<String, Long>> userConfigMap = USER_CONFIG_FOR_CONTEXT.get();
         return (userConfigMap.containsKey(userName) && userConfigMap.get(userName).containsKey(identifier)) ? userConfigMap.get(userName).get(identifier) : -1L;
     }
@@ -149,6 +167,16 @@ public class PackageUtil {
         Map<String, Map<String, Long>> userConfigMap = USER_CONFIG_FOR_CONTEXT.get();
         userConfigMap.computeIfAbsent(userName, k -> new HashMap<>());
         userConfigMap.get(userName).put(identifier, orgUserId);
+    }
+
+    public static String getNewPeopleMail(String oldPeopleMail) {
+        Map<String, String> oldVsNewPeopleMail = PEOPLE_OLD_VS_NEW_MAIL.get();
+        return oldVsNewPeopleMail.get(oldPeopleMail);
+    }
+
+    public static void addOldVsNewPeopleMail(Map<String, String> oldVsNewPeopleMailToAdd) {
+        Map<String, String> oldVsNewPeopleMail = PEOPLE_OLD_VS_NEW_MAIL.get();
+        oldVsNewPeopleMail.putAll(oldVsNewPeopleMailToAdd);
     }
 
     public static void clearPickListConf() throws Exception {

@@ -147,4 +147,16 @@ public enum ComponentType implements FacilioIntEnum {
         return packageClass;
     }
 
+    public static final List<ComponentType> PICKLIST_COMPONENTS = new ArrayList<ComponentType>(){{
+        add(PEOPLE);
+        add(USER);
+        add(TICKET_STATUS);
+        add(ASSET_CATEGORY);
+        add(ASSET_DEPARTMENT);
+        add(ASSET_TYPE);
+        add(TICKET_CATEGORY);
+        add(TICKET_TYPE);
+        add(TICKET_PRIORITY);
+        add(SPACE_CATEGORY);
+    }};
 }
