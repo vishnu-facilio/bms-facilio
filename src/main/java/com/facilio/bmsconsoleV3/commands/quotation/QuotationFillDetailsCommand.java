@@ -31,7 +31,7 @@ public class QuotationFillDetailsCommand extends FacilioCommand {
         }
         QuotationAPI.setLineItems(quotation);
         QuotationAPI.setQuotationAssociatedTerms(quotation);
-        QuotationAPI.setTaxSplitUp(quotation, quotation.getLineItems());
+        QuotationAPI.setTaxSplitUpforQuotes(quotation, quotation.getLineItems(), context);
 
         Map<String, Object> queryParams = Constants.getQueryParams(context);
         if (MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("fetchContacts"))  {

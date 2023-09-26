@@ -28,14 +28,14 @@ public class HandlePortalQuoteSettingCommand extends FacilioCommand {
 
         ApplicationContext app = AccountUtil.getCurrentApp();
 
+        QuotationSettingContext quotationSetting = QuotationAPI.fetchQuotationSetting();
 
-       if(app != null && (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) || (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) || (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP))) {
-           QuotationSettingContext quotationSetting = QuotationAPI.fetchQuotationSetting();
+        if(quotationSetting != null) {
+            context.put(FacilioConstants.ContextNames.QUOTATIONSETTING, quotationSetting);
 
-           if(quotationSetting != null) {
-               context.put(FacilioConstants.ContextNames.QUOTATIONSETTING, quotationSetting);
+        }
 
-           }
+       if(app != null && app.getLinkName() != null && (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) || (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) || (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP))) {
 
            String moduleName = Constants.getModuleName(context);
            Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);

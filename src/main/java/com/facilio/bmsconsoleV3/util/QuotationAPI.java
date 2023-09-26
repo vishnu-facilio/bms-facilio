@@ -91,6 +91,7 @@ public class QuotationAPI {
     }
 
     public static  Double getMarkupValue(BaseLineItemContext lineItem, QuotationContext quotation, Boolean isGlobalMarkup, Context context) throws Exception {
+        // this method returns only the markup value with relative lineitem cost
         Double globalMarkupValue = getDefaultorStoredMarkupValue(context, null);
 
         Double markup =  getDefaultorStoredMarkupValue(context, lineItem.getMarkup());
@@ -215,7 +216,14 @@ public class QuotationAPI {
                     lineItem.setCost(lineItemCost);
                     if (Objects.equals(taxMode, 1l) && Objects.equals(discountMode, 2l) && lookupValueIsNotEmpty(lineItem.getTax())) {
                         taxRate = taxIdVsRateMap.get(lineItem.getTax().getId());
-                        taxAmount = taxRate * lineItem.getCost() / 100;
+                        if(showMarkup && markupValue != null && isGlobalMarkup) {
+                            // adding global markup value to tax amount
+                            taxAmount = taxRate * (lineItem.getCost() + (markupValue * lineItem.getQuantity())) / 100;
+                        }
+                        else {
+                            taxAmount = taxRate * lineItem.getCost() / 100;
+
+                        }
                     }
                     lineItem.setTaxAmount(taxAmount);
                     totalTaxAmount += taxAmount;
@@ -255,8 +263,15 @@ public class QuotationAPI {
                 for (BaseLineItemContext lineItem : (List<BaseLineItemContext>)lineItems) {
                     Double taxRate;
                     Double taxAmount = 0d;
+                    Double markupValue = getMarkupValue(lineItem, record, isGlobalMarkup, context);
+                    Double unitCost = lineItem.getUnitPrice();
+
                     if (lookupValueIsNotEmpty(lineItem.getTax())) {
-                        Double relativeLineItemCost = relativeLineItemCost(lineItem.getUnitPrice(), lineItem.getQuantity(), lineItemsSubtotal, record.getDiscountAmount());
+                        if (showMarkup && markupValue != null) {
+                            unitCost = lineItem.getUnitPrice() + markupValue;
+                        }
+                        Double relativeLineItemCost = relativeLineItemCost(unitCost, lineItem.getQuantity(), lineItemsSubtotal, record.getDiscountAmount());
+
                         taxRate = taxIdVsRateMap.get(lineItem.getTax().getId());
                         taxAmount = Math.round(((taxRate * relativeLineItemCost) / 100) * 100.0) / 100.0;
                     }
@@ -592,11 +607,72 @@ public class QuotationAPI {
         }
     }
 
-    public static void setTaxSplitUp(BaseLineItemsParentModuleContext record, List lineItems) throws Exception {
+
+    public static void setTaxSplitUpforQuotes(QuotationContext record, List lineItems, Context context) throws Exception {
         Map<Long, TaxSplitUpContext> taxSplitUp = new HashMap<>();
         Long taxMode = getTaxMode();
+        Boolean isGlobalMarkup = getGlobalMarkupValue(context);
+        Boolean showMarkup = showMarkupValue(context, record);
+
+
         if (taxMode  != null && taxMode == 1 && CollectionUtils.isNotEmpty(lineItems)) {
             for (BaseLineItemContext lineItem : (List<BaseLineItemContext>) lineItems) {
+                Double markupValue = getMarkupValue(lineItem, null, isGlobalMarkup, context);
+                Double lineItemCost = lineItem.getUnitPrice();
+                if(showMarkup && markupValue != null) {
+                    lineItemCost = markupValue + lineItemCost;
+                }
+
+                Double relativeLineItemCost = relativeLineItemCost(lineItemCost, lineItem.getQuantity(), record.getSubTotal(), record.getDiscountAmount());
+                if (lookupValueIsNotEmpty(lineItem.getTax()) && relativeLineItemCost != 0d) {
+                    if (lineItem.getTax().getType() != null && lineItem.getTax().getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
+                        Double taxAmount = getTaxAmount(relativeLineItemCost, lineItem.getTax().getRate());
+                        setTaxAmountInMap(taxSplitUp, lineItem.getTax(), taxAmount);
+                    } else if (lineItem.getTax().getType() != null && lineItem.getTax().getType() == TaxContext.Type.GROUP.getIndex()) {
+                        List<TaxGroupContext> taxGroups = getTaxesForGroups(Collections.singletonList(lineItem.getTax().getId()));
+                        for (TaxGroupContext taxGroup : taxGroups) {
+                            if (lookupValueIsNotEmpty(taxGroup.getChildTax())) {
+                                Double taxAmount = getTaxAmount(relativeLineItemCost, taxGroup.getChildTax().getRate());
+                                setTaxAmountInMap(taxSplitUp, taxGroup.getChildTax(), taxAmount);
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (taxMode != null && taxMode == 2 && lookupValueIsNotEmpty(record.getTax())) {
+            if (record.getTax().getType() != null && record.getTax().getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {
+                setTaxAmountInMap(taxSplitUp, record.getTax(), record.getTotalTaxAmount());
+            } else if (record.getTax().getType() != null && record.getTax().getType() == TaxContext.Type.GROUP.getIndex()) {
+                List<TaxGroupContext> taxGroups = getTaxesForGroups(Collections.singletonList(record.getTax().getId()));
+                Double total = record.getSubTotal();
+                if (Objects.equals(getDiscountMode(), 1l) && record.getDiscountAmount() != null) {
+                    total -= record.getDiscountAmount();
+                }
+                for (TaxGroupContext taxGroup : taxGroups) {
+                    if (lookupValueIsNotEmpty(taxGroup.getChildTax())) {
+                        Double taxAmount = getTaxAmount(total, taxGroup.getChildTax().getRate());
+                        setTaxAmountInMap(taxSplitUp, taxGroup.getChildTax(), taxAmount);
+                    }
+                }
+            }
+        }
+        if (MapUtils.isNotEmpty(taxSplitUp)) {
+            List<TaxSplitUpContext> taxSplitUps = new ArrayList<>(taxSplitUp.values());
+            if (CollectionUtils.isNotEmpty(taxSplitUps)) {
+                record.setTaxSplitUp(taxSplitUps);
+            }
+        }
+    }
+
+    public static void setTaxSplitUp(BaseLineItemsParentModuleContext record, List lineItems, Context context) throws Exception {
+        Map<Long, TaxSplitUpContext> taxSplitUp = new HashMap<>();
+        Long taxMode = getTaxMode();
+        Boolean isGlobalMarkup = getGlobalMarkupValue(context);
+
+        if (taxMode  != null && taxMode == 1 && CollectionUtils.isNotEmpty(lineItems)) {
+            for (BaseLineItemContext lineItem : (List<BaseLineItemContext>) lineItems) {
+                Double markupValue = getMarkupValue(lineItem, null, isGlobalMarkup, context);
+
                 Double relativeLineItemCost = relativeLineItemCost(lineItem.getUnitPrice(), lineItem.getQuantity(), record.getSubTotal(), record.getDiscountAmount());
                 if (lookupValueIsNotEmpty(lineItem.getTax()) && relativeLineItemCost != 0d) {
                     if (lineItem.getTax().getType() != null && lineItem.getTax().getType() == TaxContext.Type.INDIVIDUAL.getIndex()) {

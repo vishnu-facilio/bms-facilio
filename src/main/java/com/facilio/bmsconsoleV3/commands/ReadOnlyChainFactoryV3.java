@@ -603,8 +603,8 @@ public class ReadOnlyChainFactoryV3 {
 
     public static FacilioChain getQuoteAfterfetchSummayChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new QuotationFillDetailsCommand());
         c.addCommand(new HandlePortalQuoteSettingCommand());
+        c.addCommand(new QuotationFillDetailsCommand());
         c.addCommand(new HandlePortalSummaryMarkupDataCommand());
         return c;
     }

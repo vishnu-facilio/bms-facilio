@@ -31,7 +31,7 @@ public class FillQuoteDetailsForListCommand extends FacilioCommand {
                 try {
                     QuotationAPI.setLineItems(quotation);
                     QuotationAPI.setQuotationAssociatedTerms(quotation);
-                    QuotationAPI.setTaxSplitUp(quotation, quotation.getLineItems());
+                    QuotationAPI.setTaxSplitUpforQuotes(quotation, quotation.getLineItems(), context);
                 }
                 catch (Exception e) {
                     LOGGER.error("Error while set the quote data ", e);
