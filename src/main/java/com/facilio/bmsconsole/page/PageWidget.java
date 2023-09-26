@@ -574,6 +574,7 @@ public class PageWidget {
 		FAILURE_HIERARCHY("failureHierarchy"),
 		LOCATION_DETAILS("locationDetails"),
 		NO_OF_OCCURRENCES("noOfOccurrences"),
+		ALARM_RCA("alarmRca"),
 
 		//Rule Cards
 		ROOT_CAUSE_AND_IMPACT("rootCauseAndImpact"),

@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BmsAlarmTemplatePage implements TemplatePageFactory {
+public class SensorAlarmTemplatePage implements TemplatePageFactory{
     @Override
     public String getModuleName() {
-        return FacilioConstants.ContextNames.BMS_ALARM;
+        return FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM;
     }
 
     @Override
@@ -28,13 +28,13 @@ public class BmsAlarmTemplatePage implements TemplatePageFactory {
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("alarmDetails", null, null)
-                .addWidget("bmsAlarmDetails", "BMS Alarm Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.BMS_ALARM))
+                .addWidget("sensorAlarmDetails", "Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM))
                 .widgetDone()
                 .sectionDone()
                 .addSection("secondaryDetails",null,null)
-                .addWidget("bmsAlarmLocationDetails", "Location details",PageWidget.WidgetType.LOCATION_DETAILS,"webLocationDetails_14_6",0,0,null,null)
+                .addWidget("sensorAlarmLocationDetails", "Location details",PageWidget.WidgetType.LOCATION_DETAILS,"webLocationDetails_14_6",0,0,null,null)
                 .widgetDone()
-                .addWidget("bmsAlarmDuration", "Time details", PageWidget.WidgetType.ALARM_DURATION, "webAlarmDuration_14_6", 6,0, null, null)
+                .addWidget("sensorAlarmDuration", "Time details", PageWidget.WidgetType.ALARM_DURATION, "webAlarmDuration_14_6", 6,0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -46,35 +46,31 @@ public class BmsAlarmTemplatePage implements TemplatePageFactory {
                 .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("occurrenceHistory", null, null)
-                .addWidget("bmsOccurrenceHistory", "BMS Alarm", PageWidget.WidgetType.OCCURRENCE_HISTORY, "webOccurrenceHistory_58_12", 0, 0, null, null)
+                .addWidget("sensorAlarmOccurrenceHistory", "Sensor Faults", PageWidget.WidgetType.OCCURRENCE_HISTORY, "webOccurrenceHistory_58_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
                 .layoutDone();
     }
+
     private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
         FacilioField lastOccurredTime = moduleBean.getField("lastOccurredTime", moduleName);
         FacilioField lastCreatedTime = moduleBean.getField("lastCreatedTime", moduleName);
-        FacilioField condition = moduleBean.getField("condition", moduleName);
-        FacilioField source = moduleBean.getField("source", moduleName);
-        FacilioField controller = moduleBean.getField("controller", moduleName);
+        FacilioField readingField = moduleBean.getField("readingFieldId", moduleName);
         FacilioField resource = moduleBean.getField("resource", moduleName);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup primaryDetailsWidgetGroup = new SummaryWidgetGroup();
 
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 1, 1, false);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 2, 1, false);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, condition, 1, 3, 1, false);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, source, 1, 4, 1, false);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, controller, 2, 1, 1, false);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 2, 2, 1, false);
-        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 2, 3, 1, true);
-
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 1, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 2, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, readingField, 1, 3, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 1, 4, 1, false);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 2, 1, 1, true);
 
         primaryDetailsWidgetGroup.setName("primaryDetails");
         primaryDetailsWidgetGroup.setDisplayName("Primary Details");

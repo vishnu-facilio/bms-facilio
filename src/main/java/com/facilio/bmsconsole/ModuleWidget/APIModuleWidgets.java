@@ -275,7 +275,7 @@ public class APIModuleWidgets {
                 .addFixedWidgetConfig("webMttc_14_6", "Mttc - 14 - 6", 14, 6, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("noOfOccurrences", "No. of occurrences", PageWidget.WidgetType.NO_OF_OCCURRENCES)
-                    .addFixedWidgetConfig("webNoOfOccurrences_12_6", "No Of Occurrences - 12 - 6", 12, 6, PagesContext.PageLayoutType.WEB)
+                .addFixedWidgetConfig("webNoOfOccurrences_12_6", "No Of Occurrences - 12 - 6", 12, 6, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("impactInfo", "Impact Template", PageWidget.WidgetType.IMPACT_INFO)
                 .addFixedWidgetConfig("webImpactInfo_12_6", "Impact Info - 12 - 6", 12, 6, PagesContext.PageLayoutType.WEB)
@@ -291,6 +291,9 @@ public class APIModuleWidgets {
                 .done()
                 .addModuleWidget("locationDetails","Location Details",PageWidget.WidgetType.LOCATION_DETAILS)
                 .addFixedWidgetConfig("webLocationDetails_14_6","Location Details - 14 - 6",14,6,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("alarmRca", "Alarm RCA", PageWidget.WidgetType.ALARM_RCA)
+                .addFixedWidgetConfig("webAlarmRca_58_12", "Alarm RCA - 58 - 12", 58, 12, PagesContext.PageLayoutType.WEB)
                 .done();
     }
 

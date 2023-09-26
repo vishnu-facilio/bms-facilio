@@ -25,7 +25,7 @@ public class ReadingAlarmTemplatePage implements TemplatePageFactory{
     public PagesContext getTemplatePage(ApplicationContext app, FacilioModule module) throws Exception {
         return new PagesContext(null, null, "", null, true, false, false)
                 .addLayout(PagesContext.PageLayoutType.WEB)
-                .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("alarmDetails", null, null)
                 .addWidget("readingAlarmDetails", "Faults Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.NEW_READING_ALARM))
@@ -43,7 +43,7 @@ public class ReadingAlarmTemplatePage implements TemplatePageFactory{
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("insight", "INSIGHT", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("insight", "Insight", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("impactDetails", null, null)
                 .addWidget("mtba","Mean time between occurrences", PageWidget.WidgetType.MTBA_CARD, "webMtba_14_6",0,0, null, null)
@@ -65,10 +65,18 @@ public class ReadingAlarmTemplatePage implements TemplatePageFactory{
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("history", "HISTORY", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("occurrenceHistory", null, null)
                 .addWidget("readingAlarmOccurrenceHistory", "Faults", PageWidget.WidgetType.OCCURRENCE_HISTORY, "webOccurrenceHistory_58_12", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("rootCauses", "Root Causes", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("rootCauses", null, null)
+                .addWidget("alarmRca", "Root Causes", PageWidget.WidgetType.ALARM_RCA, "webAlarmRca_58_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -111,7 +119,7 @@ public class ReadingAlarmTemplatePage implements TemplatePageFactory{
         }
 
         allFieldsWidgetGroup.setName("otherDetails");
-        allFieldsWidgetGroup.setDisplayName("otherDetails");
+        allFieldsWidgetGroup.setDisplayName("Other Details");
         allFieldsWidgetGroup.setColumns(4);
 
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();

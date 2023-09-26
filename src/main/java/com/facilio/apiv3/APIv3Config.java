@@ -2479,6 +2479,7 @@ public class APIv3Config {
                 .beforeFetch(new LoadSupplementsForSensorAlarmCommand())
                 .summary()
                 .beforeFetch(new LoadSupplementsForSensorAlarmCommand())
+                .afterFetch(new LoadOccurrenceForAlarmCommand())
                 .delete()
                 .afterDelete(new AfterDeleteAlarmCommand())
                 .build();

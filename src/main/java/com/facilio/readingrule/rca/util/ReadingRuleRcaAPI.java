@@ -384,7 +384,7 @@ public class ReadingRuleRcaAPI {
             builder.andCriteria(filterCriteria);
 
         Map<String, Object> props = builder.fetchFirst();
-        return (Long) props.get("rcaFaultId");
+        return (Long) props.get("rcaFault");
     }
 
     public static DateRange getDateRange(Context context) {
