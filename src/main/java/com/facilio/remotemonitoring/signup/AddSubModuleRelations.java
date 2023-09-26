@@ -509,7 +509,7 @@ public class AddSubModuleRelations extends SignUpData {
         Criteria criteria = new Criteria();
         createWorkorderSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         createWorkorderSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        createWorkorderSystemButton.setName("Flagged Event Create Workorder Button");
+        createWorkorderSystemButton.setName("Create Workorder");
 
         Criteria lookupCriteria = new Criteria();
         lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("assignedPeople",FlaggedEventBureauActionModule.MODULE_NAME),(String) null, PeopleOperator.CURRENT_USER));
@@ -528,7 +528,7 @@ public class AddSubModuleRelations extends SignUpData {
         systemButton.setIdentifier("flagged_event_take_custody");
         systemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         systemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        systemButton.setName("Flagged Event Take Custody Button");
+        systemButton.setName("Take Custody");
 
 
         FacilioField groupField = modBean.getField("group",FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER);
@@ -559,7 +559,7 @@ public class AddSubModuleRelations extends SignUpData {
         systemButton.setIdentifier("inhibit_flagged_event_button");
         systemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         systemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        systemButton.setName("Inhibit Flagged Event Button");
+        systemButton.setName("Inhibit");
 
         Criteria criteria = new Criteria();
         Criteria lookupCriteria = new Criteria();
@@ -579,7 +579,7 @@ public class AddSubModuleRelations extends SignUpData {
         systemButton.setIdentifier("pass_to_next_bureau_flagged_event_button");
         systemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         systemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        systemButton.setName("Pass To Next Bureau Flagged Event Button");
+        systemButton.setName("Forward");
 
         Criteria criteria = new Criteria();
         Criteria lookupCriteria = new Criteria();
@@ -600,7 +600,7 @@ public class AddSubModuleRelations extends SignUpData {
         systemButton.setIdentifier("flagged_event_take_action");
         systemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         systemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        systemButton.setName("Take Action Flagged Event Button");
+        systemButton.setName("Take Action");
 
         Criteria criteria = new Criteria();
         Criteria lookupCriteria = new Criteria();
