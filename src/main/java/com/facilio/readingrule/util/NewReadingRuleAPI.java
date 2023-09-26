@@ -2,10 +2,13 @@ package com.facilio.readingrule.util;
 
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
 import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.connected.CommonConnectedUtil;
@@ -136,9 +139,9 @@ public class NewReadingRuleAPI {
     public static NewReadingRuleContext getRule(Long ruleId) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         List<NewReadingRuleContext> rules = getRules(new Condition[]{
-                CriteriaAPI.getIdCondition(ruleId,modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE))});
+                CriteriaAPI.getIdCondition(ruleId, modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE))});
         if (CollectionUtils.isNotEmpty(rules)) {
-             return rules.get(0);
+            return rules.get(0);
         }
         throw new IllegalArgumentException("Invalid Rule Id");
     }
@@ -148,7 +151,7 @@ public class NewReadingRuleAPI {
         String search = null;
         int page = 0, perPage = 50;
         String orderBy = null, orderType = null;
-        if(paramsMap != null){
+        if (paramsMap != null) {
             page = (int) paramsMap.get("page");
             perPage = (int) paramsMap.get("perPage");
             search = (String) paramsMap.get("search");
@@ -157,7 +160,7 @@ public class NewReadingRuleAPI {
                 orderType = (String) paramsMap.get("orderType");
             }
         }
-        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, orderBy, orderType, search, page, perPage, true, null, null,null);
+        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, orderBy, orderType, search, page, perPage, true, null, null, null);
         Map<String, Object> newReadingRuleContexts = (Map<String, Object>) fetch.get(Constants.RECORD_MAP);
 
         List<NewReadingRuleContext> rules = (List<NewReadingRuleContext>) newReadingRuleContexts.get(moduleName);
@@ -242,6 +245,7 @@ public class NewReadingRuleAPI {
         }
         return -1L;
     }
+
     public static void setModuleNameForCriteria(Criteria criteria, String moduleName) {
         Map<String, Condition> conditions = criteria.getConditions();
         for (Map.Entry<String, Condition> entry : conditions.entrySet()) {
@@ -305,7 +309,7 @@ public class NewReadingRuleAPI {
         ModuleBean modBean = Constants.getModBean();
         Map<String, Long> resultMap = new HashMap<>();
         List<NewReadingRuleContext> rules = getReadingRules(Collections.singletonList(ruleId));
-        for(NewReadingRuleContext rule : rules) {
+        for (NewReadingRuleContext rule : rules) {
             FacilioModule module = modBean.getModule(rule.getReadingModuleId());
             List<FacilioField> fields = modBean.getAllFields(module.getName());
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -333,10 +337,19 @@ public class NewReadingRuleAPI {
                 .orderBy("TTIME");
         List<Map<String, Object>> maps = builder.get();
 
+        ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(resourceId, result);
         List<Long[]> data = new ArrayList<>();
+        if (CollectionUtils.isEmpty(maps)) {
+            if ((Boolean) rdm.getValue()) {
+                Long currentTime = DateTimeUtil.utcTimeToOrgTime(System.currentTimeMillis());
+                data.add(new Long[]{startTime, currentTime, currentTime - startTime});
+            }
+            return data;
+        }
+
         Boolean lastValue = null;
         boolean started = false;
-        Long[] p = new Long[2];
+        Long[] p = new Long[3];
         for (Map<String, Object> map : maps) {
             Boolean ruleResult = (Boolean) map.get("ruleResult");
             Long ttimeVal = (Long) map.get("ttime");
@@ -346,8 +359,9 @@ public class NewReadingRuleAPI {
                         p[0] = ttimeVal;
                     } else {
                         p[1] = ttimeVal;
+                        p[2] = p[1] - p[0];
                         data.add(p);
-                        p = new Long[2];
+                        p = new Long[3];
                     }
                 }
             } else if (ruleResult) {
@@ -358,6 +372,7 @@ public class NewReadingRuleAPI {
         }
         if (p[0] != null && p[1] == null && Boolean.TRUE.equals(lastValue)) {
             p[1] = System.currentTimeMillis();
+            p[2] = p[1] - p[0];
             data.add(p);
         }
         return data;
