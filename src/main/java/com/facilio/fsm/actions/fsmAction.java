@@ -368,7 +368,10 @@ public class fsmAction extends V3Action {
             FacilioContext context = V3Util.getSummary(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, Collections.singletonList(appointmentId));
             if (Constants.getRecordList(context) != null) {
                 ServiceAppointmentContext existingAppointment = (ServiceAppointmentContext) Constants.getRecordList(context).get(0);
-                List<Map<String,Object>> tasks = FieldUtil.getAsMapList(existingAppointment.getServiceTasks(), ServiceAppointmentContext.class);
+                List<Map<String,Object>> tasks = new ArrayList<>();
+                if(CollectionUtils.isNotEmpty(existingAppointment.getServiceTasks())) {
+                    tasks.addAll(FieldUtil.getAsMapList(existingAppointment.getServiceTasks(), ServiceAppointmentContext.class));
+                }
                 List<ModuleBaseWithCustomFields> oldRecords = new ArrayList<>();
                 List<Map<String,Object>> updateRecordList = new ArrayList<>();
                 oldRecords.add(existingAppointment);
