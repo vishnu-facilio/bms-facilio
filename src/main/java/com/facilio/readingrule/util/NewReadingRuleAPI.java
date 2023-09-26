@@ -8,11 +8,13 @@ import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.connected.CommonConnectedUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -311,5 +313,53 @@ public class NewReadingRuleAPI {
             resultMap.put(FacilioConstants.ReadingRules.ENERGY_IMPACT_ID, fieldMap.get("energyImpact").getFieldId());
         }
         return resultMap;
+    }
+
+    public static List<Long[]> getBooleanChartData(Long ruleId, Long resourceId, Long startTime, Long endTime) throws Exception {
+        IConnectedRule rule = CommonConnectedUtil.fetchConnectedRule(ruleId, NSType.READING_RULE);
+        ModuleBean modBean = Constants.getModBean();
+        FacilioField result = modBean.getField(rule.getReadingFieldId());
+        FacilioModule readingModule = modBean.getModule(result.getModuleId());
+        Long readingModuleId = readingModule.getModuleId();
+        FacilioField ttime = FieldFactory.getField("ttime", "TTIME", FieldType.NUMBER);
+
+        String ruleReadingsTableName = NewReadingRuleAPI.READING_RULE_FIELD_TABLE_NAME;
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .select(Arrays.asList(ttime, result))
+                .table(ruleReadingsTableName)
+                .andCondition(CriteriaAPI.getCondition(ruleReadingsTableName + ".PARENT_ID", "parentId", resourceId.toString(), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(readingModuleId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime + "," + endTime, DateOperators.BETWEEN))
+                .orderBy("TTIME");
+        List<Map<String, Object>> maps = builder.get();
+
+        List<Long[]> data = new ArrayList<>();
+        Boolean lastValue = null;
+        boolean started = false;
+        Long[] p = new Long[2];
+        for (Map<String, Object> map : maps) {
+            Boolean ruleResult = (Boolean) map.get("ruleResult");
+            Long ttimeVal = (Long) map.get("ttime");
+            if (started) {
+                if (ruleResult != lastValue) {
+                    if (ruleResult && p[0] == null) {
+                        p[0] = ttimeVal;
+                    } else {
+                        p[1] = ttimeVal;
+                        data.add(p);
+                        p = new Long[2];
+                    }
+                }
+            } else if (ruleResult) {
+                p[0] = ttimeVal;
+                started = true;
+            }
+            lastValue = ruleResult;
+        }
+        if (p[0] != null && p[1] == null && Boolean.TRUE.equals(lastValue)) {
+            p[1] = System.currentTimeMillis();
+            data.add(p);
+        }
+        return data;
     }
 }

@@ -319,7 +319,7 @@ public class APIModuleWidgets {
                 .addFixedWidgetConfig("ruleInsight-32_12", "Rule Insight - 32_12", 32, 12, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("ruleLogs", "Rule Logs", PageWidget.WidgetType.RULE_LOGS)
-                .addFixedWidgetConfig("ruleLogs-32_12", "Rule Logs - 32_12", 32, 12, PagesContext.PageLayoutType.WEB)
+                .addFixedWidgetConfig("ruleLogs-32_12", "Rule Logs - 32_12", 60, 12, PagesContext.PageLayoutType.WEB)
                 .done();
 
     }

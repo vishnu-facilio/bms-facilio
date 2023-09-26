@@ -29,7 +29,7 @@ public class ReadingRuleTemplatePage implements TemplatePageFactory {
     public PagesContext getTemplatePage(ApplicationContext app, FacilioModule module) throws Exception {
         return new PagesContext(null, null, "", null, true, false, false)
                 .addLayout(PagesContext.PageLayoutType.WEB)
-                .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("ruleDetails", null, null)
                 .addWidget("ruleDetails", "Rule Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ReadingRules.NEW_READING_RULE))
@@ -160,18 +160,4 @@ public class ReadingRuleTemplatePage implements TemplatePageFactory {
         }
     }
 
-    private static JSONObject getSummaryWidgetGroup(boolean isMobile) throws Exception {
-        WidgetGroupContext widgetGroup = new WidgetGroupContext()
-                .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
-                .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, null, null)
-                .widgetGroupWidgetDone()
-                .widgetGroupSectionDone()
-                .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, null, null)
-                .widgetGroupWidgetDone()
-                .widgetGroupSectionDone();
-
-        return FieldUtil.getAsJSON(widgetGroup);
-    }
 }

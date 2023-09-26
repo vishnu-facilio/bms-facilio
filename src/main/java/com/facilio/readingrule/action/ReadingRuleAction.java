@@ -17,6 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -113,6 +114,7 @@ public class ReadingRuleAction extends V3Action {
 
     private Long parentId;
     Boolean isCostImpact;
+    private List<Long> resourceIds; // boolean chart data
 
     public String impactFetch() throws Exception {
         FacilioChain chain = TransactionChainFactory.getImpactForRuleChain();
@@ -124,7 +126,22 @@ public class ReadingRuleAction extends V3Action {
         JSONObject result = new JSONObject();
         result.put("lastMonth", context.getOrDefault("lastMonth", 0D));
         result.put("thisMonth", context.getOrDefault("thisMonth", 0D));
-        setData("result",result);
+        setData("result", result);
+        return SUCCESS;
+    }
+
+    public String getBooleanChartData() throws Exception {
+        Map<Long, List<Long[]>> data = new HashMap();
+        getResourceIds().forEach(resId -> {
+                    try {
+                        data.put(resId, NewReadingRuleAPI.getBooleanChartData(getRuleId(), resId, getStartTime(), getEndTime()));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        );
+
+        setData("result", data);
         return SUCCESS;
     }
 }
