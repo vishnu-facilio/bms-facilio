@@ -471,5 +471,7 @@
             <property name="type" type="string" mandatory="true"></property>
         </urlparams>
     </request>
-
+    <request path="/api/v3/analytics/fetch" method="PUT">
+        <requestbody type="object"></requestbody>
+    </request>
 </config>

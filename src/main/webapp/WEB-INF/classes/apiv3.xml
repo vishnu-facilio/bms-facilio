@@ -1897,6 +1897,7 @@
 
     <package name="v2Analytics" namespace="/api/v3/analytics" extends="v3Api">
         <action name="criteria/module" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="getModuleFromCategory"/>
+        <action name="fetch" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="fetchOld"/>
     </package>
     <package name="remotemonitor" extends="v3Api" namespace="/api/v3/alarms">
         <action name="generateRawAlarms" class="com.facilio.remotemonitoring.action.RawAlarmAction" method="generateRawAlarms"/>
