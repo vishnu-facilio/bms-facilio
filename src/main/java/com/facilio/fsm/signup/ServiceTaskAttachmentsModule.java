@@ -49,9 +49,7 @@ public class ServiceTaskAttachmentsModule extends BaseModuleConfig {
         fileId.setMainField(true);
         fields.add(fileId);
 
-        LookupField parent = FieldFactory.getDefaultField("parentId","Parent","PARENT",FieldType.LOOKUP);
-        parent.setLookupModule(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK));
-        parent.setRequired(true);
+        FacilioField parent = FieldFactory.getDefaultField("parentId","Parent","PARENT",FieldType.NUMBER);
         fields.add(parent);
 
         FacilioField createdTime = FieldFactory.getDefaultField("createdTime","Created Time","CREATED_TIME",FieldType.NUMBER);
