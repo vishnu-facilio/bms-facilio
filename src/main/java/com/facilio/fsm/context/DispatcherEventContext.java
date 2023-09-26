@@ -14,6 +14,7 @@ public class DispatcherEventContext {
     private boolean allowResize = false;
     private boolean allowReschedule = false;
     private String backgroundColor = "#058545";
+    private String textColor;
     private EventType eventType;
     public Integer getEventType() {
         if (eventType != null) {

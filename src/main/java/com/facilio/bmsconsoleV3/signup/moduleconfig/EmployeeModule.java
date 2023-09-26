@@ -228,7 +228,7 @@ public class EmployeeModule extends BaseModuleConfig{
         return new ModulePages()
                 .addPage("employee", "Employee","", null, isTemplate, isDefault, false)
                 .addWebLayout()
-                .addTab("employeesummary", "SUMMARY",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("employeesummary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeesummaryfields", null, null)
                 .addWidget("employeesummaryfieldswidget", "Employee Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfiledswidget_22", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.EMPLOYEE))
@@ -247,7 +247,7 @@ public class EmployeeModule extends BaseModuleConfig{
                 .columnDone()
                 .tabDone()
 
-                .addTab("employeeskill", "SKILL",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("employeeskill", "Skill",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeeskill", null, null)
                 .addWidget("employeeskillwidget", "Skill", PageWidget.WidgetType.SKILL, "flexiblewebskill_48", 0, 0, null, null)
@@ -256,7 +256,7 @@ public class EmployeeModule extends BaseModuleConfig{
                 .columnDone()
                 .tabDone()
 
-                .addTab("employeeworkschedule", "WORK SCHEDULE",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("employeeworkschedule", "Work Schedule",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeeworkschedule", null, null)
                 .addWidget("employeeworkschedulewidget", "Work Schedule", PageWidget.WidgetType.WORK_SCHEDULE, "flexiblewebworkschedule_50", 0, 0, null, null)
@@ -265,7 +265,7 @@ public class EmployeeModule extends BaseModuleConfig{
                 .columnDone()
                 .tabDone()
 
-                .addTab("employeerelated", "RELATED",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("employeerelated", "Related",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeerelationships", "Relationships", "List of relationships and types between records across modules")
                 .addWidget("employeebulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
@@ -278,7 +278,7 @@ public class EmployeeModule extends BaseModuleConfig{
                 .columnDone()
                 .tabDone()
 
-                .addTab("employeehistory", "HISTORY",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("employeehistory", "History",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_50", 0, 0, null, getHistoryWidgetGroup(false))
