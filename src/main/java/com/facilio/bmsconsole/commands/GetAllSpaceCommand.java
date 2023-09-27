@@ -78,6 +78,11 @@ public class GetAllSpaceCommand extends FacilioCommand {
 			builder.limit(perPage);
 		}
 
+		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
+		if (searchCriteria != null) {
+			builder.andCriteria(searchCriteria);
+		}
+
 		List<SpaceContext> spaces = builder.get();
 		for (SpaceContext space : spaces) {
 			List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(space.getId());

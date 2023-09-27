@@ -85,6 +85,13 @@ public class SpaceAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.SPACE_CATEGORY, getCategoryId());
 		}
 
+		if (getSearch() != null) {
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "space.name");
+			searchObj.put("query", getSearch());
+			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+		}
+
 		if (getPage() > 0) { // Added the check to maintain backward compatibility
 			JSONObject pagination = new JSONObject();
 			pagination.put("page", getPage());

@@ -274,7 +274,7 @@ public class AssetAction extends FacilioAction {
  		}
  		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
- 			searchObj.put("fields", "asset.name,asset.serialNumber");
+ 			searchObj.put("fields", "asset.name");
  			searchObj.put("query", getSearch());
 	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
