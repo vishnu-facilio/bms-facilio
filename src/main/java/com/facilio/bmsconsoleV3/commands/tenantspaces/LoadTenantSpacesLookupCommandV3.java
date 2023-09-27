@@ -33,6 +33,7 @@ public class LoadTenantSpacesLookupCommandV3 extends FacilioCommand {
                 additionalLookups.add((LookupField) field);
             }
         }
+        additionalLookups.add((LookupField) fieldsAsMap.get("space"));
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionalLookups);
         return false;
     }
