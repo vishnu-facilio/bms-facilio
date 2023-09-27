@@ -52,6 +52,12 @@ public class LoadSupplementsForSensorAlarmCommand extends FacilioCommand {
             if (!viewFieldsMap.containsKey("severity")) {
                 extraSensorAlarmFields.add(allFieldsAsMap.get("severity"));
             }
+            if (!viewFieldsMap.containsKey("lastOccurrenceId")) {
+                extraSensorAlarmFields.add(allFieldsAsMap.get("lastOccurrenceId"));
+            }
+            if (!viewFieldsMap.containsKey("lastWoId")) {
+                extraSensorAlarmFields.add(allFieldsAsMap.get("lastWoId"));
+            }
             context.put(FacilioConstants.ContextNames.EXTRA_SELECTABLE_FIELDS, extraSensorAlarmFields);
         }
     }

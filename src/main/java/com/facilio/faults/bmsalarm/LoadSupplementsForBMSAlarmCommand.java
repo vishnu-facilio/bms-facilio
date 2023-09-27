@@ -49,6 +49,12 @@ public class LoadSupplementsForBMSAlarmCommand extends FacilioCommand {
             if (!viewFieldsMap.containsKey("severity")) {
                 extraBMSAlarmFields.add(allFieldsAsMap.get("severity"));
             }
+            if (!viewFieldsMap.containsKey("lastOccurrenceId")) {
+                extraBMSAlarmFields.add(allFieldsAsMap.get("lastOccurrenceId"));
+            }
+            if (!viewFieldsMap.containsKey("lastWoId")) {
+                extraBMSAlarmFields.add(allFieldsAsMap.get("lastWoId"));
+            }
             context.put(FacilioConstants.ContextNames.EXTRA_SELECTABLE_FIELDS, extraBMSAlarmFields);
         }
     }

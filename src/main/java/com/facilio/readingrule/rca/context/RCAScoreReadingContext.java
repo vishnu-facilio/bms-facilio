@@ -6,6 +6,8 @@ import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class RCAScoreReadingContext extends V3Context {
@@ -20,6 +22,7 @@ public class RCAScoreReadingContext extends V3Context {
     private Long score;
     private Long actualTtime;
     private Long ttime;
+    private List<Long[]> booleanChartData;
 
     private Long count;
     private Long duration;

@@ -54,6 +54,7 @@ import com.facilio.readingkpi.commands.list.FetchResourceNamesForKpiLogger;
 import com.facilio.readingkpi.readingslist.FetchAssetNamesCommand;
 import com.facilio.readingkpi.readingslist.FetchKpiNamesCommand;
 import com.facilio.readingkpi.readingslist.FetchKpiReadingsCommand;
+import com.facilio.readingrule.rca.command.AddBooleanChartDataCommand;
 import com.facilio.readingrule.rca.command.FetchRcaReadingsCommand;
 import com.facilio.readingrule.rca.command.RcaReadingFaultCountAndDurationCommand;
 import com.facilio.relation.command.GetAllRelationForSetupPageCommand;
@@ -3406,6 +3407,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new FetchRcaReadingsCommand());
 		c.addCommand(new RcaReadingFaultCountAndDurationCommand());
+		c.addCommand(new AddBooleanChartDataCommand());
 		return c;
 	}
 
