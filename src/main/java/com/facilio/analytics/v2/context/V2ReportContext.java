@@ -29,6 +29,7 @@ public class V2ReportContext {
     public JSONObject reportTTimeFilter;
     public V2ReportType reportTypeEnum;
     public int reportMode;
+    private long folderId;
     public ReadingAnalysisContext.ReportMode reportModeEnum;
 
     public void setReportMode(int reportMode){

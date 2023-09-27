@@ -20,6 +20,16 @@ public class V2AnalyticsReportAction extends V3Action {
     @Getter @Setter
     public V2ReportContext report = new V2ReportContext();
 
+    public String create()throws Exception
+    {
+        FacilioChain chain = V2AnalyticsTransactionChain.getCREDAnalyticsReportChain();
+        FacilioContext context = chain.getContext();
+        context.put("report_v2", report);
+        chain.execute();
+        ReportContext report = (ReportContext)context.get(FacilioConstants.ContextNames.REPORT);
+        setData("reportId", report != null ? report.getId() : -1);
+        return V3Action.SUCCESS;
+    }
     public String fetchOld() throws Exception
     {
         FacilioChain chain = V2AnalyticsTransactionChain.getAnalyticsReportDataOldChain();

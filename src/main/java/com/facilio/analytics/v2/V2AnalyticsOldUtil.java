@@ -20,9 +20,8 @@ import java.util.Map;
 
 public class V2AnalyticsOldUtil {
 
-    public static ReportContext constructReportOld(V2ReportContext report)throws Exception
+    public static ReportContext constructReportOld(V2ReportContext report, ReportContext report_context)throws Exception
     {
-        ReportContext report_context = new ReportContext();
         report_context.setName(report.getName());
         report_context.setDateOperator(DateOperators.BETWEEN);
         report_context.setDateValue(new StringBuilder().append(report.getTimeFilter().getStartTime()).append(", ").append(report.getTimeFilter().getEndTime()).toString());

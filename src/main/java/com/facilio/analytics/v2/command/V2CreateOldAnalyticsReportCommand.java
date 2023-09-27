@@ -29,7 +29,8 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
     public boolean executeCommand(Context context)throws Exception
     {
         V2ReportContext report = (V2ReportContext) context.get("report_v2");
-        ReportContext reportContext = V2AnalyticsOldUtil.constructReportOld(report);
+        ReportContext report_context = context.get("report")  != null ? (ReportContext) context.get("report") : new ReportContext();
+        ReportContext reportContext = V2AnalyticsOldUtil.constructReportOld(report, report_context);
         reportContext.setType(ReportContext.ReportType.READING_REPORT);
         setModeWiseXAggr(reportContext, ReadingAnalysisContext.ReportMode.valueOf(report.getReportMode()));
         if(report.getReportTTimeFilter() != null) {
