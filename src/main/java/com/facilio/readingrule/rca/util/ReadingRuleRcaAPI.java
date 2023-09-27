@@ -24,6 +24,7 @@ import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -313,7 +314,6 @@ public class ReadingRuleRcaAPI {
     }
 
 
-
     public static void prepareGroupForInsert(RCAGroupContext group, Long rcaId) throws Exception {
         setModuleNameForCriteria(group.getCriteria());
         Long criteriaId = ReadingRuleRcaAPI.createCriteria(group.getCriteria());
@@ -550,12 +550,15 @@ public class ReadingRuleRcaAPI {
      * <p> - starts occurrence outside the interval but gets cleared inside the interval </p>
      * <p> - starts occurrence outside the interval and occurs throughout the interval or gets cleared outside the interval </p>
      * @throws Exception
-     * @Query: SUM(LEAST(COALESCE(CLEARED_TIME,LEAST(CLEARED_TIME,endTime)),endTime)-GREATEST(CREATED_TIME,startTime)) AS `duration`,
+     * @Query: SUM(LEAST ( COALESCE ( CLEARED_TIME, LEAST ( CLEARED_TIME, endTime)),endTime)-GREATEST(CREATED_TIME,startTime)) AS `duration`,
      * COUNT(AlarmOccurrence.ID) AS `count`,
      * ALARM_ID AS `alarm`
-     * FROM AlarmOccurrence WHERE ALARM_ID IN (alarmIds) AND
-     * ((CREATED_TIME BETWEEN startTime AND endTime) OR CLEARED_TIME BETWEEN startTime AND endTime)
-     * OR CREATED_TIME<=startTime AND ((CLEARED_TIME IS NULL) OR CLEARED_TIME>=endTime) GROUP BY ALARM_ID
+     * FROM AlarmOccurrence WHERE ALARM_ID IN (alarmIds)
+     * AND(
+     * CREATED_TIME BETWEEN startTime AND endTime
+     * OR CLEARED_TIME BETWEEN startTime AND endTime
+     * OR (CREATED_TIME<=startTime AND (CLEARED_TIME IS NULL OR CLEARED_TIME>=endTime))
+     * ) GROUP BY ALARM_ID
      */
     public static List<Map<String, Object>> getAlarmDurationAndCount(List<Long> alarmIds, Long startTime, Long endTime) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -565,29 +568,39 @@ public class ReadingRuleRcaAPI {
         String clearedTimeFieldColumn = fieldMap.get("clearedTime").getColumnName();
         String createdTimeFieldColumn = fieldMap.get("createdTime").getColumnName();
 
-        StringBuilder durationAggrColumn = new StringBuilder("SUM(LEAST(COALESCE(")
-                .append(clearedTimeFieldColumn).append(",")
-                .append(endTime).append("),")
-                .append(endTime)
-                .append(") - ")
-                .append("GREATEST(")
-                .append(createdTimeFieldColumn).append(",")
-                .append(startTime).append(")")
-                .append(")");
+        Long currentTimeMillis = DateTimeUtil.utcTimeToOrgTime(System.currentTimeMillis());
+        Long endLimit = endTime > currentTimeMillis ? currentTimeMillis : endTime;
+        String durationAggrColumn = "SUM(LEAST(COALESCE(" +
+                clearedTimeFieldColumn + "," +
+                endLimit + ")," +
+                endLimit +
+                ") - " +
+                "GREATEST(" +
+                createdTimeFieldColumn + "," +
+                startTime + ")" +
+                ")";
 
         List<FacilioField> selectFields = new ArrayList<>();
-        FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);
+        FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn, FieldType.NUMBER);
         selectFields.add(durationField);
         selectFields.addAll(FieldFactory.getCountField(module));
         selectFields.add(fieldMap.get("alarm"));
+        selectFields.add(fieldMap.get("resource"));
+
 
         Criteria clearTimeCriteria = new Criteria();
-        clearTimeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("clearedTime"), "" , CommonOperators.IS_EMPTY));
-        clearTimeCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("clearedTime"), String.valueOf(endTime), NumberOperators.GREATER_THAN_EQUAL));
+        clearTimeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(startTime), NumberOperators.LESS_THAN_EQUAL));
+
+        Criteria tempCriteria = new Criteria();
+        tempCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("clearedTime"), "", CommonOperators.IS_EMPTY));
+        tempCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("clearedTime"), String.valueOf(endTime), NumberOperators.GREATER_THAN_EQUAL));
+        clearTimeCriteria.andCriteria(tempCriteria);
+
 
         Criteria timeCriteria = new Criteria();
-        timeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), startTime+ "," + endTime, DateOperators.BETWEEN));
-        timeCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("clearedTime"), startTime+ "," + endTime, DateOperators.BETWEEN));
+        timeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), startTime + "," + endTime, DateOperators.BETWEEN));
+        timeCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("clearedTime"), startTime + "," + endTime, DateOperators.BETWEEN));
+        timeCriteria.orCriteria(clearTimeCriteria);
 
         SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
                 .select(selectFields)
@@ -595,9 +608,7 @@ public class ReadingRuleRcaAPI {
                 .module(module)
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), alarmIds, NumberOperators.EQUALS))
                 .andCriteria(timeCriteria)
-                .orCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(startTime), NumberOperators.LESS_THAN_EQUAL))
-                .andCriteria(clearTimeCriteria)
-                .groupBy(fieldMap.get("alarm").getCompleteColumnName());
+                .groupBy(fieldMap.get("alarm").getCompleteColumnName() + ", " + fieldMap.get("resource").getCompleteColumnName());
 
         return builder.getAsProps();
     }
@@ -611,30 +622,33 @@ public class ReadingRuleRcaAPI {
                 .select(FieldFactory.getCountField())
                 .beanClass(ReadingEventContext.class)
                 .module(module)
-                .andCondition(CriteriaAPI.getCondition(eventModule.getTableName()+".RESOURCE_ID", "resource", String.valueOf(resourceId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(module.getTableName()+".RULE_ID", "rule", String.valueOf(ruleId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(timeField, startTime+ "," + endTime, DateOperators.BETWEEN));
+                .andCondition(CriteriaAPI.getCondition(eventModule.getTableName() + ".RESOURCE_ID", "resource", String.valueOf(resourceId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(module.getTableName() + ".RULE_ID", "rule", String.valueOf(ruleId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(timeField, startTime + "," + endTime, DateOperators.BETWEEN));
         ReadingEventContext props = builder.fetchFirst();
         return (props == null) ? null : (Long) props.getData().get("count");
     }
+
     public static int getFaultType(Long resourceId, Long ruleId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
-        FacilioField field = FieldFactory.getField("faultType",  "Fault Type", "FAULT_TYPE", module, FieldType.SYSTEM_ENUM);
+        FacilioField field = FieldFactory.getField("faultType", "Fault Type", "FAULT_TYPE", module, FieldType.SYSTEM_ENUM);
         ReadingAlarm props = NewAlarmAPI.getReadingAlarm(Collections.singletonList(field), resourceId, ruleId);
         return (props == null) ? -1 : props.getFaultType();
     }
+
     public static Long getAssetCategory(Long resourceId, Long ruleId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
-        FacilioField field = FieldFactory.getField("readingAlarmAssetCategory",  "AssetCategory", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP);
+        FacilioField field = FieldFactory.getField("readingAlarmAssetCategory", "AssetCategory", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP);
         ReadingAlarm props = NewAlarmAPI.getReadingAlarm(Collections.singletonList(field), resourceId, ruleId);
         return (props == null) ? null : props.getReadingAlarmAssetCategory().getId();
     }
+
     public static Long getSeverity(Long resourceId, Long ruleId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
-        FacilioField field = FieldFactory.getField("severity",  "Severity", "SEVERITY_ID", module, FieldType.LOOKUP);
+        FacilioField field = FieldFactory.getField("severity", "Severity", "SEVERITY_ID", module, FieldType.LOOKUP);
         ReadingAlarm props = NewAlarmAPI.getReadingAlarm(Collections.singletonList(field), resourceId, ruleId);
         return (props == null) ? null : props.getSeverity().getId();
     }

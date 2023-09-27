@@ -3394,10 +3394,9 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/readingrule/getBooleanChartData" method="GET">
+    <request path="/api/v3/readingrule/getRuleInsights" method="POST">
         <requestbody type="object">
             <property name="ruleId" type="number"/>
-            <property name="resourceIds" type="array"/>
             <property name="startTime" type="number"/>
             <property name="endTime" type="number"/>
         </requestbody>

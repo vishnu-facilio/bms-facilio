@@ -2,9 +2,11 @@ package com.facilio.readingrule.action;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.rca.context.RCAScoreReadingContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
@@ -17,11 +19,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static com.facilio.bmsconsole.util.NewAlarmAPI.getReadingAlarms;
 import static com.facilio.connected.CommonConnectedUtil.postConRuleHistoryInstructionToStorm;
+import static com.facilio.readingrule.rca.util.ReadingRuleRcaAPI.getAlarmDurationAndCount;
 
 
 @Log4j
@@ -91,11 +95,11 @@ public class ReadingRuleAction extends V3Action {
         context.put(FacilioConstants.ContextNames.PAGE, getPage());
         context.put(FacilioConstants.ContextNames.PER_PAGE, getPerPage());
         chain.execute();
-        List<Map<String,Object>> ruleDetails = (List<Map<String,Object>>) context.get(FacilioConstants.ReadingRules.RCA.RCA_RULE_DETAILS);
+        List<Map<String, Object>> ruleDetails = (List<Map<String, Object>>) context.get(FacilioConstants.ReadingRules.RCA.RCA_RULE_DETAILS);
         JSONObject result = new JSONObject();
         result.put(FacilioConstants.ContextNames.RECORD_LIST, ruleDetails);
         result.put(FacilioConstants.ContextNames.RECORD_COUNT, context.get(FacilioConstants.ContextNames.COUNT));
-        setData("result",result);
+        setData("result", result);
         return SUCCESS;
     }
 
@@ -114,7 +118,7 @@ public class ReadingRuleAction extends V3Action {
 
     private Long parentId;
     Boolean isCostImpact;
-    private List<Long> resourceIds; // boolean chart data
+
 
     public String impactFetch() throws Exception {
         FacilioChain chain = TransactionChainFactory.getImpactForRuleChain();
@@ -130,18 +134,24 @@ public class ReadingRuleAction extends V3Action {
         return SUCCESS;
     }
 
-    public String getBooleanChartData() throws Exception {
-        Map<Long, List<Long[]>> data = new HashMap();
-        getResourceIds().forEach(resId -> {
-                    try {
-                        data.put(resId, NewReadingRuleAPI.getBooleanChartData(getRuleId(), resId, getStartTime(), getEndTime()));
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-        );
 
-        setData("result", data);
+    public String getRuleInsights() throws Exception {
+
+        List<ReadingAlarm> readingAlarms = getReadingAlarms(getRuleId());
+        List<Map<String, Object>> alarmDurationAndCount = getAlarmDurationAndCount(readingAlarms.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList()), startTime, endTime);
+
+        Map<Long, Map<String, Object>> result = alarmDurationAndCount.stream().collect(Collectors.toMap(map -> {
+            Map<String, Object> m = (Map<String, Object>) map.get("resource");
+            return (Long) m.get("id");
+        }, map -> map));
+
+        for (Map.Entry<Long, Map<String, Object>> entry : result.entrySet()) {
+            Long resId = entry.getKey();
+            Map<String, Object> resMap = entry.getValue();
+            resMap.put("booleanChartData", NewReadingRuleAPI.getBooleanChartData(getRuleId(), resId, getStartTime(), getEndTime()));
+        }
+
+        setData("result", result);
         return SUCCESS;
     }
 }

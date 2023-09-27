@@ -1372,4 +1372,18 @@ public class NewAlarmAPI {
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "rule", String.valueOf(ruleId), NumberOperators.EQUALS));
 		return builder.fetchFirst();
 	}
+
+	public static List<ReadingAlarm> getReadingAlarms(Long ruleId) throws Exception {
+		ModuleBean modBean = Constants.getModBean();
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<ReadingAlarm> builder = new SelectRecordsBuilder<ReadingAlarm>()
+				.select(fields)
+				.beanClass(ReadingAlarm.class)
+				.module(module)
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("rule"), String.valueOf(ruleId), NumberOperators.EQUALS));
+
+		return builder.get();
+	}
 }

@@ -1117,7 +1117,7 @@
         <action name="fetchRootCause" class="com.facilio.readingrule.action.ReadingRuleAction" method="rootCauseFetch"/>
         <action name="fetchImpact" class="com.facilio.readingrule.action.ReadingRuleAction" method="impactFetch" />
         <action name="fetchImpactFieldIds" class="com.facilio.readingrule.action.ReadingRuleAction" method="fetchImpactFieldIds" />
-        <action name="getBooleanChartData" class="com.facilio.readingrule.action.ReadingRuleAction" method="getBooleanChartData" />
+        <action name="getRuleInsights" class="com.facilio.readingrule.action.ReadingRuleAction" method="getRuleInsights" />
     </package>
 
     <package name="readingRuleActions" namespace="/api/v3/readingrule/actions" extends="v3Api">

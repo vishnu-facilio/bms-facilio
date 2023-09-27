@@ -2,21 +2,19 @@ package com.facilio.readingrule.util;
 
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
 import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
 import com.facilio.chain.FacilioContext;
-import com.facilio.connected.CommonConnectedUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -320,61 +318,44 @@ public class NewReadingRuleAPI {
     }
 
     public static List<Long[]> getBooleanChartData(Long ruleId, Long resourceId, Long startTime, Long endTime) throws Exception {
-        IConnectedRule rule = CommonConnectedUtil.fetchConnectedRule(ruleId, NSType.READING_RULE);
         ModuleBean modBean = Constants.getModBean();
-        FacilioField result = modBean.getField(rule.getReadingFieldId());
-        FacilioModule readingModule = modBean.getModule(result.getModuleId());
-        Long readingModuleId = readingModule.getModuleId();
-        FacilioField ttime = FieldFactory.getField("ttime", "TTIME", FieldType.NUMBER);
+        FacilioModule readingAlarmOccurrenceModule = modBean.getModule(FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE));
 
-        String ruleReadingsTableName = NewReadingRuleAPI.READING_RULE_FIELD_TABLE_NAME;
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .select(Arrays.asList(ttime, result))
-                .table(ruleReadingsTableName)
-                .andCondition(CriteriaAPI.getCondition(ruleReadingsTableName + ".PARENT_ID", "parentId", resourceId.toString(), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(readingModuleId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime + "," + endTime, DateOperators.BETWEEN))
-                .orderBy("TTIME");
-        List<Map<String, Object>> maps = builder.get();
+        Criteria clearTimeCriteria = new Criteria();
+        clearTimeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("createdTime"), String.valueOf(startTime), NumberOperators.LESS_THAN_EQUAL));
 
-        ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(resourceId, result);
+        Criteria tempCriteria = new Criteria();
+        tempCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("clearedTime"), "" , CommonOperators.IS_EMPTY));
+        tempCriteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("clearedTime"), String.valueOf(endTime), NumberOperators.GREATER_THAN_EQUAL));
+        clearTimeCriteria.andCriteria(tempCriteria);
+
+
+        Criteria timeCriteria = new Criteria();
+        timeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("createdTime"), startTime+ "," + endTime, DateOperators.BETWEEN));
+        timeCriteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("clearedTime"), startTime+ "," + endTime, DateOperators.BETWEEN));
+        timeCriteria.orCriteria(clearTimeCriteria);
+
+        SelectRecordsBuilder<ReadingAlarmOccurrenceContext> builder = new SelectRecordsBuilder<ReadingAlarmOccurrenceContext>()
+                .beanClass(ReadingAlarmOccurrenceContext.class)
+                .select(Arrays.asList(fieldsMap.get("createdTime"), fieldsMap.get("clearedTime")))
+                .module(readingAlarmOccurrenceModule)
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("rule"), Collections.singleton(ruleId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("resource"), Collections.singleton(resourceId), NumberOperators.EQUALS))
+                .andCriteria(timeCriteria)
+                .orderBy("CREATED_TIME");
+
+        List<ReadingAlarmOccurrenceContext> occurrenceContexts = builder.get();
         List<Long[]> data = new ArrayList<>();
-        if (CollectionUtils.isEmpty(maps)) {
-            if ((Boolean) rdm.getValue()) {
-                Long currentTime = DateTimeUtil.utcTimeToOrgTime(System.currentTimeMillis());
-                data.add(new Long[]{startTime, currentTime, currentTime - startTime});
-            }
-            return data;
-        }
-
-        Boolean lastValue = null;
-        boolean started = false;
-        Long[] p = new Long[3];
-        for (Map<String, Object> map : maps) {
-            Boolean ruleResult = (Boolean) map.get("ruleResult");
-            Long ttimeVal = (Long) map.get("ttime");
-            if (started) {
-                if (ruleResult != lastValue) {
-                    if (ruleResult && p[0] == null) {
-                        p[0] = ttimeVal;
-                    } else {
-                        p[1] = ttimeVal;
-                        p[2] = p[1] - p[0];
-                        data.add(p);
-                        p = new Long[3];
-                    }
-                }
-            } else if (ruleResult) {
-                p[0] = ttimeVal;
-                started = true;
-            }
-            lastValue = ruleResult;
-        }
-        if (p[0] != null && p[1] == null && Boolean.TRUE.equals(lastValue)) {
-            p[1] = System.currentTimeMillis();
-            p[2] = p[1] - p[0];
-            data.add(p);
-        }
+        occurrenceContexts.forEach(occ -> {
+            Long[] dataArr = new Long[3]; // 0 startTime of occ, 1 end Time, 2 duration
+            dataArr[0] = occ.getCreatedTime() < startTime ? startTime : occ.getCreatedTime();
+            Long currentTimeMillis = DateTimeUtil.utcTimeToOrgTime(System.currentTimeMillis());
+            Long endLimit = endTime > currentTimeMillis ? currentTimeMillis : endTime;
+            dataArr[1] = occ.getClearedTime() == -1L ? endLimit : occ.getClearedTime();
+            dataArr[2] = dataArr[1] - dataArr[0];
+            data.add(dataArr);
+        });
         return data;
     }
 }
