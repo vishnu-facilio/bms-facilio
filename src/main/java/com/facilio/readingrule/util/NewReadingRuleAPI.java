@@ -349,10 +349,10 @@ public class NewReadingRuleAPI {
         List<Long[]> data = new ArrayList<>();
         occurrenceContexts.forEach(occ -> {
             Long[] dataArr = new Long[3]; // 0 startTime of occ, 1 end Time, 2 duration
-            dataArr[0] = occ.getCreatedTime() < startTime ? startTime : occ.getCreatedTime();
+            dataArr[0] = Math.max(occ.getCreatedTime() , startTime );
             Long currentTimeMillis = DateTimeUtil.utcTimeToOrgTime(System.currentTimeMillis());
             Long endLimit = endTime > currentTimeMillis ? currentTimeMillis : endTime;
-            dataArr[1] = occ.getClearedTime() == -1L ? endLimit : occ.getClearedTime();
+            dataArr[1] = occ.getClearedTime() == -1L ? endLimit : Math.min(occ.getClearedTime(), endTime);
             dataArr[2] = dataArr[1] - dataArr[0];
             data.add(dataArr);
         });

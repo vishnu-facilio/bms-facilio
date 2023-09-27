@@ -146,17 +146,18 @@ public class ReadingRuleAction extends V3Action {
         List<ReadingAlarm> readingAlarms = getReadingAlarms(getRuleId());
         List<Map<String, Object>> alarmDurationAndCount = getAlarmDurationAndCount(readingAlarms.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList()), startTime, endTime);
 
-        Map<Long, Map<String, Object>> result = alarmDurationAndCount.stream().collect(Collectors.toMap(map -> {
+        Map<Long, Map<String, Object>> result = Optional.ofNullable(alarmDurationAndCount).orElseGet(ArrayList::new).stream().collect(Collectors.toMap(map -> {
             Map<String, Object> m = (Map<String, Object>) map.get("resource");
             return (Long) m.get("id");
         }, map -> map));
-
         for (Map.Entry<Long, Map<String, Object>> entry : result.entrySet()) {
             Long resId = entry.getKey();
             Map<String, Object> resMap = entry.getValue();
             resMap.put("booleanChartData", NewReadingRuleAPI.getBooleanChartData(getRuleId(), resId, getStartTime(), getEndTime()));
         }
-        addAssetNames(result);
+        if (!result.isEmpty()) {
+            addAssetNames(result);
+        }
         setData("result", result);
         return SUCCESS;
     }
