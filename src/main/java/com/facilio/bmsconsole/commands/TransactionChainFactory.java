@@ -6492,13 +6492,10 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain getAddOrUpdateDashboardFilterChain(boolean newFlow) {
+	public static FacilioChain getAddOrUpdateDashboardFilterChain() {
 		FacilioChain c=getDefaultChain();
 		c.addCommand(new AddOrUpdateDashboardFilterCommand());
 		c.addCommand(new AddOrUpdateDashboardUserFilterCommand());
-		if(newFlow){
-			c.addCommand(new AddOrUpdateDashboardFieldMappingCommand());
-		}
 		return c;
 	}
 	public static FacilioChain getNewAddOrUpdateDashboardFilterChain(boolean newFlow) {

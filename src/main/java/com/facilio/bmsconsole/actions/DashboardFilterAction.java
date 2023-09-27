@@ -82,7 +82,7 @@ public class DashboardFilterAction extends FacilioAction{
 	
 	public String addOrUpdateDashboardFilters() throws Exception
 	{
-		FacilioChain dbFilterUpdateChain=TransactionChainFactory.getAddOrUpdateDashboardFilterChain(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2));
+		FacilioChain dbFilterUpdateChain=TransactionChainFactory.getAddOrUpdateDashboardFilterChain();
 		FacilioContext context=dbFilterUpdateChain.getContext();
 		DashboardFilterContext dashboardFilter=getDashboardFilter();
 		context.put(ContextNames.DASHBOARD_FILTER, dashboardFilter);
