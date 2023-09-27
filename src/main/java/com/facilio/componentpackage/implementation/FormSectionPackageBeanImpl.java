@@ -79,10 +79,11 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
 
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(form.getModuleId());
+        String sectionName = StringUtils.isNotEmpty(component.getName()) ? component.getName() : ("Default Section");
 
         sectionElement.element(PackageConstants.MODULENAME).text(module.getName());
         sectionElement.element(PackageConstants.FormXMLComponents.FORM_NAME).text(form.getName());
-        sectionElement.element(PackageConstants.FormXMLComponents.SECTION_NAME).text(component.getName());
+        sectionElement.element(PackageConstants.FormXMLComponents.SECTION_NAME).text(sectionName);
         sectionElement.element(PackageConstants.SEQUENCE_NUMBER).text(String.valueOf(component.getSequenceNumber()));
         sectionElement.element(PackageConstants.FormXMLComponents.SECTION_TYPE).text(component.getSectionTypeEnum() != null ? component.getSectionTypeEnum().name() : null);
         sectionElement.element(PackageConstants.FormXMLComponents.SUB_FORM_DEFAULT_VALUE).text(component.getSubFormValueStr());
@@ -95,8 +96,10 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
             FacilioField lookupField = moduleBean.getField(component.getLookupFieldId());
             XMLBuilder subFormElement = sectionElement.element(PackageConstants.FormXMLComponents.SUB_FORM);
             subFormElement.element(PackageConstants.FormXMLComponents.SUB_FORM_NAME).text(subForm.getName());
-            subFormElement.element(PackageConstants.FormXMLComponents.LOOKUP_FIELD_NAME).text(lookupField.getName());
-            subFormElement.element(PackageConstants.FormXMLComponents.LOOKUP_MODULE_NAME).text(subFormModule.getName());
+            if (lookupField != null) {
+                subFormElement.element(PackageConstants.FormXMLComponents.LOOKUP_FIELD_NAME).text(lookupField.getName());
+                subFormElement.element(PackageConstants.FormXMLComponents.LOOKUP_MODULE_NAME).text(subFormModule.getName());
+            }
         }
     }
 
@@ -280,18 +283,22 @@ public class FormSectionPackageBeanImpl implements PackageBean<FormSection> {
             return null;
         }
 
+        sectionName = StringUtils.isNotEmpty(sectionName) ? sectionName : ("Default Section");
         XMLBuilder subFormElement = sectionElement.getElement(PackageConstants.FormXMLComponents.SUB_FORM);
         if (subFormElement != null) {
             String subFormName, lookupFieldName, lookupModuleName;
             subFormName = subFormElement.getElement(PackageConstants.FormXMLComponents.SUB_FORM_NAME).getText();
-            lookupFieldName = subFormElement.getElement(PackageConstants.FormXMLComponents.LOOKUP_FIELD_NAME).getText();
-            lookupModuleName = subFormElement.getElement(PackageConstants.FormXMLComponents.LOOKUP_MODULE_NAME).getText();
+            lookupFieldName = subFormElement.getElement(PackageConstants.FormXMLComponents.LOOKUP_FIELD_NAME) != null ?
+                    subFormElement.getElement(PackageConstants.FormXMLComponents.LOOKUP_FIELD_NAME).getText() : null;
+            lookupModuleName = subFormElement.getElement(PackageConstants.FormXMLComponents.LOOKUP_MODULE_NAME) != null ?
+                    subFormElement.getElement(PackageConstants.FormXMLComponents.LOOKUP_MODULE_NAME).getText() : null;
 
             FacilioModule lookupModule = moduleBean.getModule(lookupModuleName);
             long lookupModuleId = lookupModule != null ? lookupModule.getModuleId() : -1;
-            FacilioField lookupField = moduleBean.getField(lookupFieldName, lookupModuleName);
+            FacilioField lookupField = (StringUtils.isNotEmpty(lookupFieldName) && StringUtils.isNotEmpty(lookupModuleName)) ?
+                    moduleBean.getField(lookupFieldName, lookupModuleName) : null;
 
-            lookupFieldId = lookupField.getFieldId();
+            lookupFieldId = lookupField != null ? lookupField.getFieldId() : -1;
             subFormId = (MapUtils.isNotEmpty(moduleIdVsFormNameVsFormId) && moduleIdVsFormNameVsFormId.containsKey(lookupModuleId)) ?
                     moduleIdVsFormNameVsFormId.get(lookupModuleId).getOrDefault(subFormName, -1L) : -1;
         }
