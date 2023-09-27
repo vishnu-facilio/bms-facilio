@@ -1,12 +1,20 @@
 package com.facilio.readingrule.action;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.rca.context.RCAScoreReadingContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
@@ -18,9 +26,7 @@ import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.facilio.bmsconsole.util.NewAlarmAPI.getReadingAlarms;
@@ -150,8 +156,29 @@ public class ReadingRuleAction extends V3Action {
             Map<String, Object> resMap = entry.getValue();
             resMap.put("booleanChartData", NewReadingRuleAPI.getBooleanChartData(getRuleId(), resId, getStartTime(), getEndTime()));
         }
-
+        addAssetNames(result);
         setData("result", result);
         return SUCCESS;
     }
+
+    public static void addAssetNames(Map<Long, Map<String, Object>> result) throws Exception {
+
+        Set<Long> assetIds = result.keySet();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+        SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+                .moduleName(module.getName())
+                .beanClass(AssetContext.class)
+                .select(Arrays.asList(FieldFactory.getIdField(module), fieldsMap.get("name")))
+                .table(module.getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(assetIds, module));
+
+        Optional.ofNullable(selectBuilder.get())
+                .orElseGet(ArrayList::new).forEach(asset -> {
+                    Map<String, Object> resMap = result.get(asset.getId());
+                    resMap.put("assetName", asset.getName());
+                });
+    }
+
 }
