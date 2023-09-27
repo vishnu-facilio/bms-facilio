@@ -3418,17 +3418,17 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/flaggedEvent/:id/createworkorder" method="POST">
+    <request path="/api/v3/flaggedEvent/:id/createworkorder" method="GET">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
     </request>
-    <request path="/api/v3/flaggedEvent/:id/takecustody" method="POST">
+    <request path="/api/v3/flaggedEvent/:id/takecustody" method="GET">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
     </request>
-    <request path="/api/v3/flaggedEvent/:id/pass" method="POST">
+    <request path="/api/v3/flaggedEvent/:id/pass" method="GET">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
@@ -3455,5 +3455,18 @@
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
+    </request>
+    <request path="/api/v3/alarms/generateRawAlarms" method="POST">
+        <requestbody type="object">
+            <property name="rawAlarmList" type="array">
+                <items type="object">
+                    <property name="controllerId" type="number"/>
+                    <property name="message" type="string"/>
+                    <property name="occurredTime" type="number"/>
+                    <property name="clearedTime" type="number"/>
+                    <property name="strategy" type="number"/>
+                </items>
+            </property>
+        </requestbody>
     </request>
 </config>
