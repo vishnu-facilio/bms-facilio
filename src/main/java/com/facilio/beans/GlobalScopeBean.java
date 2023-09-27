@@ -4,7 +4,6 @@ import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.datastructure.dag.DAGCache;
-import com.facilio.db.criteria.Criteria;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;

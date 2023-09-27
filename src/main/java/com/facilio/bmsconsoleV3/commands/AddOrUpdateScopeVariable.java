@@ -40,6 +40,7 @@ public class    AddOrUpdateScopeVariable extends FacilioCommand {
                 } else {
                     maxAllowedScopeVariable--;
                     scopeVariableId = scopeBean.addScopeVariable(scopeVariable);
+
                 }
                 if(CollectionUtils.isNotEmpty(globalScopeVariableList) && globalScopeVariableList.size() > maxAllowedScopeVariable) {
                     throw new AllowedLevelExceededException("The maximum limit for creating scopes in the given app has been exceeded");

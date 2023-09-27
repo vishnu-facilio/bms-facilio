@@ -1,21 +1,15 @@
 package com.facilio.beans;
 
-import com.facilio.bmsconsole.context.Permission;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.permission.context.*;
+import com.facilio.permission.context.BasePermissionContext;
+import com.facilio.permission.context.PermissionFieldEnum;
+import com.facilio.permission.context.PermissionSetContext;
+import com.facilio.permission.context.PermissionSetType;
 import com.facilio.permission.context.TypeItem.PermissionSetGroupingItemContext;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public interface PermissionSetBean {
     List<PermissionSetGroupingItemContext> getGroupListItemsForLinkName(String linkName) throws Exception;
@@ -23,7 +17,7 @@ public interface PermissionSetBean {
     List<BasePermissionContext> readPermissionValuesForPermissionSetType(PermissionSetType.Type type, long permissionSetId, Long groupId) throws Exception;
     List<Map<String,Object>> getPermissionValues(PermissionSetType.Type type, Map<String,Long> queryProp, PermissionFieldEnum permissionFieldEnum, Long permissionSetId) throws Exception;
     void deletePermissionsForPermissionSet(Map<String,Long> queryProp, Map<String,FacilioField> fieldsMap,FacilioModule module,Long permissionSetId,String permissionType) throws Exception;
-    void addPermissionsForPermissionSet(Map<String,Object> prop) throws Exception;
+    void addPermissionsForPermissionSet(Map<String,Object> prop, Map<String, Long> insertRecordId) throws Exception;
     void updateUserPermissionSets(long peopleId,List<Long> permissionSetIds) throws Exception;
     List<PermissionSetContext> getUserPermissionSetMapping(long peopleId,boolean fetchOnlyActive) throws Exception;
     void deletePermissionSet(long id) throws Exception;
@@ -35,5 +29,6 @@ public interface PermissionSetBean {
     void updatePermissionSet(PermissionSetContext permissionSetContext) throws Exception;
     boolean permissionSetHasPeopleAssociation(long permissionSetId) throws Exception;
     List<PermissionSetContext> getPermissionSet(List<String> linkNames) throws Exception;
+    PermissionSetContext getPermissionSet(String linkName) throws Exception;
 
 }

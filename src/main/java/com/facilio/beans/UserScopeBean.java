@@ -10,14 +10,17 @@ import java.util.List;
 public interface UserScopeBean {
 
     public List<ScopingConfigCacheContext> getScopingConfig(long scopingId) throws Exception;
+    public List<ScopingConfigCacheContext> getScopingConfig(List<Long> UserScopingConfigIds) throws Exception;
 
     public void deleteScopingConfigForId(long scopingConfigId) throws Exception;
 
     public void addScopingConfigForApp(List<ScopingConfigContext> scoping) throws Exception;
 
+    public long addScopingConfigForApp(ScopingConfigContext scoping, boolean getRecordId) throws Exception;
+
     public void deleteScopingConfig(long scopingId) throws Exception;
 
-    public void addUserScoping(ScopingContext userScoping) throws Exception;
+    public long addUserScoping(ScopingContext userScoping) throws Exception;
 
     public void updateUserScoping(ScopingContext userScoping) throws Exception;
 
@@ -33,7 +36,7 @@ public interface UserScopeBean {
 
     public void updateScopingConfigForUserScoping(List<ScopingConfigContext> userScopingConfigList, Long userScopingId) throws Exception;
 
-    void updatePeopleScoping(Long peopleId,Long scopingId) throws Exception;
+    long updatePeopleScoping(Long peopleId, Long scopingId) throws Exception;
     Long getPeopleScoping(Long peopleId) throws Exception;
 
     public boolean scopingHasPeople(Long scopingId) throws Exception;

@@ -27,20 +27,7 @@ public class RelatedRecordsPermissionSetHandler implements PermissionSetGroupHan
         List<RelatedListPermissionSet> relatedListPermissionSets = new ArrayList<>();
         if(!PageFactory.SKIP_RELATED_LIST_MOD.contains(module.getName())) {
 
-            List<FacilioModule> subModules =
-                    modBean.getSubModules(module.getModuleId(), FacilioModule.ModuleType.BASE_ENTITY,
-                            FacilioModule.ModuleType.Q_AND_A_RESPONSE,
-                            FacilioModule.ModuleType.Q_AND_A
-                    );
-
-            List<String> moduleList = new ArrayList<>();
-
-            moduleList.add(FacilioConstants.ContextNames.ASSET_SPARE_PARTS);
-            moduleList.add(FacilioConstants.MultiResource.NAME);
-            moduleList.add(FacilioConstants.ContextNames.ASSET_DEPRECIATION_REL);
-            if (CollectionUtils.isNotEmpty(subModules)) {
-                subModules = subModules.stream().filter(mod -> !moduleList.contains(mod.getName())).collect(Collectors.toList());
-            }
+            List<FacilioModule> subModules = getFilteredSubModules(module.getModuleId());
 
             if (CollectionUtils.isNotEmpty(subModules)) {
                 for (FacilioModule subModule : subModules) {
@@ -119,5 +106,23 @@ public class RelatedRecordsPermissionSetHandler implements PermissionSetGroupHan
     @Override
     public boolean showParent(Long groupId) throws Exception {
         return CollectionUtils.isNotEmpty(getPermissions(groupId));
+    }
+
+    public List<FacilioModule> getFilteredSubModules(Long moduleId) throws Exception {
+        List<FacilioModule> subModules =
+                Constants.getModBean().getSubModules(moduleId, FacilioModule.ModuleType.BASE_ENTITY,
+                        FacilioModule.ModuleType.Q_AND_A_RESPONSE,
+                        FacilioModule.ModuleType.Q_AND_A
+                );
+
+        List<String> moduleList = new ArrayList<>();
+
+        moduleList.add(FacilioConstants.ContextNames.ASSET_SPARE_PARTS);
+        moduleList.add(FacilioConstants.MultiResource.NAME);
+        moduleList.add(FacilioConstants.ContextNames.ASSET_DEPRECIATION_REL);
+        if (CollectionUtils.isNotEmpty(subModules)) {
+            subModules = subModules.stream().filter(mod -> !moduleList.contains(mod.getName())).collect(Collectors.toList());
+        }
+        return subModules;
     }
 }

@@ -1,6 +1,7 @@
 package com.facilio.componentpackage.constants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PackageConstants {
@@ -696,5 +697,79 @@ public class PackageConstants {
         public static final String FILE_PATH = "File_Path";
         public static final String UNIQUE_FILE_IDENTIFIER = "Unique_File_Identifier";
         public static final String CONTENT_TYPE = "Content_Type";
+    }
+
+    public static class GlobalScopeVariableConstants{
+        public static final String LINK_NAME = "Link_Name";
+        public static final String DISPLAY_NAME = "Display_Name";
+        public static final String DESCRIPTION = "Description";
+        public static final String VALUE_GENERATOR_LINK_NAME = "Value_Generator_Link_Name";
+        public static final String APPLICABLE_MODULE_NAME = "Applicable_Module_Name";
+        public static final String SCOPE_VARIABLE_MODULES_FIELDS_LIST = "Scope_Variable_Modules_Fields_List";
+        public static final String MODULES_FIELD = "Modules_Field";
+        public static final String MODULES_NAME = "Modules_Name";
+        public static final String FIELD_NAME = "Field_Name";
+        public static final String SHOW_SWITCH = "Show_Switch";
+        public static final String STATUS = "Status";
+        public static final String APP_NAME = "App_Name";
+        public static final String DELETED = "Deleted";
+        public static final String TYPE = "Type";
+
+        public static final List<String> DEFAULT_CREATED_GLOBAL_SCOPE_VARIABLE = Arrays.asList(
+                "default_maintenance_site",
+                "default_tenant_user",
+                "default_vendor_user",
+                "default_client_user",
+                "default_remotemonitor_client"
+        );
+    }
+    public static class UserScopingConstants{
+        public static final String LINK_NAME = "Link_Name";
+        public static final String DISPLAY_NAME = "Display_Name";
+        public static final String DESCRIPTION = "Description";
+        public static final String STATUS = "Status";
+    }
+
+    public static class UserScopingConfigConstants{
+        public static final String SCOPE_NAME = "Scope_Name";
+        public static final String MODULE_NAME = "Module_Name";
+        public static final String CRITERIA_ID = "Criteria_Id";
+        public static final String CRITERIA = "Criteria";
+        public static final String FIELD_NAME = "Field_Name";
+        public static final String VALUE = "Value";
+        public static final String OPERATOR_ID = "Operator_Id";
+        public static final String VALUE_GENERATOR = "Value_Generator";
+    }
+
+    public static class PeopleUserScopingConstants{
+        public static final String SCOPE_ID = "Scope_Id";
+        public static final String PEOPLE_ID = "People_Id";
+        public static final String SCOPE_LINK_NAME = "Scope_Link_Name";
+        public static final String PEOPLE_MAIL = "People_Mail";
+    }
+    public static class PermissionSetConstants{
+        public static final String LINK_NAME = "Link_Name";
+        public static final String DISPLAY_NAME = "Display_Name";
+        public static final String DESCRIPTION = "Description";
+        public static final String STATUS = "Status";
+        public static final String IS_PRIVILEGED = "is_Privileged";
+    }
+
+    public static class PermissionSetConfig{
+        public static final String MODULE_NAME = "Module_Name";
+        public static final String PERMISSION_TYPE = "Permission_Type";
+        public static final String TYPE = "Type";
+        public static final String PERMISSION = "Permission";
+        public static final String PERMISSION_SET_LINK_NAME = "Permission_Set_Link_Name";
+
+        public static final String RELATED_MODULE_NAME = "Related_Module_Name";
+        public static final String RELATED_FIELD_NAME = "Related_Field_Name";
+
+        public static final String FIELD_NAME = "Field_Name";
+    }
+
+    public static class PeoplePermissionSetConfig{
+        public static final String PERMISSION_SET_LINK_NAME = "Permission_Set_Link_Name";
+        public static final String PEOPLE_MAIL = "People_Mail";
     }
 }

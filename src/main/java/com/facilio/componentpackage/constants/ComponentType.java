@@ -66,7 +66,14 @@ public enum ComponentType implements FacilioIntEnum {
     READING_RULE(ReadingRulePackageBeanImpl.class,MODULE,Boolean.TRUE),
     READING_KPI(ReadingKpiPackageBeanImpl.class, MODULE,Boolean.FALSE),
     ASSET_READINGS(ReadingsPackageBeanImpl.class,MODULE,Boolean.FALSE),
-    CONNECTOR(ConnectorPackageBeanImpl.class,null,false)
+    CONNECTOR(ConnectorPackageBeanImpl.class,null,false),
+    GLOBAL_SCOPE_VARIABLE(GlobalScopingPackageImpl.class,MODULE,false),
+    USER_SCOPING(UserScopingPackageImpl.class,MODULE, false),
+    USER_SCOPING_CONFIG(UserScopingConfigPackageBeanImpl.class,MODULE, false),
+    PEOPLE_USER_SCOPING_CONFIG(PeopleUserScopingConfigPackageBeanImpl.class,MODULE, false),
+    PERMISSION_SET(PermissionSetPackageImpl.class,MODULE,false),
+    PERMISSION_SET_CONFIG(PermissionSetConfigPackageImpl.class,MODULE,false),
+    PEOPLE_PERMISSION_SET_CONFIG(PeoplePermissionSetConfigPackageImpl.class,MODULE,false),
     ;
 
     public static final List<ComponentType> ORDERED_COMPONENT_TYPE_LIST = Collections.unmodifiableList(initOrderedList());
@@ -124,6 +131,13 @@ public enum ComponentType implements FacilioIntEnum {
             add(READING_RULE);
             add(READING_KPI);
             add(CONNECTOR);
+            add(GLOBAL_SCOPE_VARIABLE);
+            add(USER_SCOPING);
+            add(USER_SCOPING_CONFIG);
+            add(PEOPLE_USER_SCOPING_CONFIG);
+            add(PERMISSION_SET);
+            add(PERMISSION_SET_CONFIG);
+            add(PEOPLE_PERMISSION_SET_CONFIG);
         }};
         return componentOrder;
     }

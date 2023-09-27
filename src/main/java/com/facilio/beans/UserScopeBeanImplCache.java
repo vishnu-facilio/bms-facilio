@@ -52,11 +52,11 @@ public class UserScopeBeanImplCache extends UserScopeBeanImpl implements UserSco
         scopeConfigCache.removeStartsWith(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
     }
 
-    public void updatePeopleScoping(Long peopleId,Long scopingId) throws Exception {
+    public long updatePeopleScoping(Long peopleId, Long scopingId) throws Exception {
         FacilioCache<String, Long> scopeConfigCache = LRUCache.getPeopleScopingCache();
         String key = CacheUtil.PEOPLE_ID_KEY(AccountUtil.getCurrentOrg().getId(),peopleId);
         scopeConfigCache.remove(key);
-        super.updatePeopleScoping(peopleId,scopingId);
+        return super.updatePeopleScoping(peopleId,scopingId);
     }
     public Long getPeopleScoping(Long peopleId) throws Exception {
         FacilioCache<String, Long> scopeConfigCache = LRUCache.getPeopleScopingCache();

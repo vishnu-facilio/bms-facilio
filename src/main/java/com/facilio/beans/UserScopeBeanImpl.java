@@ -4,7 +4,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ScopingConfigCacheContext;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.ScopingContext;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -16,13 +15,15 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,24 @@ public class UserScopeBeanImpl implements UserScopeBean {
                 .table("Scoping_Config")
                 .andCondition(CriteriaAPI.getCondition("SCOPING_ID", "scopingId", String.valueOf(scopingId),
                         NumberOperators.EQUALS));
+
+        return getScopingConfig(selectBuilder);
+    }
+
+    public List<ScopingConfigCacheContext> getScopingConfig(List<Long> UserScopingConfigIds) throws Exception {
+        if(CollectionUtils.isNotEmpty(UserScopingConfigIds)) {
+            FacilioModule module = ModuleFactory.getScopingConfigModule();
+
+            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                    .select(FieldFactory.getScopingConfigFields())
+                    .table("Scoping_Config")
+                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), UserScopingConfigIds, NumberOperators.EQUALS));
+
+            return getScopingConfig(selectBuilder);
+        }
+        return null;
+    }
+    private List<ScopingConfigCacheContext> getScopingConfig(GenericSelectRecordBuilder selectBuilder) throws Exception {
         List<Map<String, Object>> props = selectBuilder.get();
         List<ScopingConfigContext> list = FieldUtil.getAsBeanListFromMapList(props, ScopingConfigContext.class);
         List<ScopingConfigCacheContext> resultList = new ArrayList<>();
@@ -47,7 +66,6 @@ public class UserScopeBeanImpl implements UserScopeBean {
         }
         return null;
     }
-
 
     public void deleteScopingConfigForId(long scopingConfigId) throws Exception {
         GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
@@ -66,6 +84,21 @@ public class UserScopeBeanImpl implements UserScopeBean {
     }
     public void addScopingConfigForApp(List<ScopingConfigContext> scoping) throws Exception {
 
+        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder();
+        List<Map<String, Object>> props = constructScopingConfigProp(insertBuilder,scoping);
+
+        insertBuilder.addRecords(props);
+        insertBuilder.save();
+    }
+
+    public long addScopingConfigForApp(ScopingConfigContext scoping, boolean getRecordId) throws Exception {
+        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder();
+        List<Map<String, Object>> props = constructScopingConfigProp(insertBuilder,Arrays.asList(scoping));
+
+        return insertBuilder.insert(props.get(0));
+    }
+
+    private List<Map<String, Object>> constructScopingConfigProp (GenericInsertRecordBuilder insertBuilder,List<ScopingConfigContext> scoping) throws Exception {
         List<FacilioField> fields = FieldFactory.getScopingConfigFields();
         for (ScopingConfigContext scopingConfig : scoping) {
             if (scopingConfig.getCriteria() == null) {
@@ -74,17 +107,11 @@ public class UserScopeBeanImpl implements UserScopeBean {
             long criteriaId = CriteriaAPI.addCriteria(scopingConfig.getCriteria());
             scopingConfig.setCriteriaId(criteriaId);
         }
-        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                .table(ModuleFactory.getScopingConfigModule().getTableName())
+        insertBuilder.table(ModuleFactory.getScopingConfigModule().getTableName())
                 .fields(fields);
 
-        List<Map<String, Object>> props = FieldUtil.getAsMapList(scoping, ScopingConfigContext.class);
-
-        insertBuilder.addRecords(props);
-        insertBuilder.save();
-
+        return FieldUtil.getAsMapList(scoping, ScopingConfigContext.class);
     }
-
     public void deleteScopingConfig(long scopingId) throws Exception {
         GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
                 .table(ModuleFactory.getScopingConfigModule().getTableName())
@@ -93,7 +120,7 @@ public class UserScopeBeanImpl implements UserScopeBean {
         builder.delete();
     }
 
-    public void addUserScoping(ScopingContext userScoping) throws Exception {
+    public long addUserScoping(ScopingContext userScoping) throws Exception {
         userScoping.setCreatedBy(AccountUtil.getCurrentUser().getOuid());
         userScoping.setCreatedTime(System.currentTimeMillis());
         userScoping.setLinkName(ScopingUtil.constructLinkName(userScoping.getLinkName(),userScoping.getScopeName()));
@@ -102,6 +129,7 @@ public class UserScopeBeanImpl implements UserScopeBean {
                 .fields(FieldFactory.getScopingFields());
         long id = builder.insert(FieldUtil.getAsProperties(userScoping));
         userScoping.setId(id);
+        return id;
     }
 
     public void updateUserScoping(ScopingContext userScoping) throws Exception {
@@ -274,7 +302,7 @@ public class UserScopeBeanImpl implements UserScopeBean {
     }
 
     @Override
-    public void updatePeopleScoping(Long peopleId,Long scopingId) throws Exception {
+    public long updatePeopleScoping(Long peopleId, Long scopingId) throws Exception {
 
         GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
                 .table(ModuleFactory.getPeopleUserScopingModule().getTableName())
@@ -288,8 +316,11 @@ public class UserScopeBeanImpl implements UserScopeBean {
             Map<String, Object> prop = new HashMap<>();
             prop.put("peopleId", peopleId);
             prop.put("userScopingId", scopingId);
-            insertRecordBuilder.insert(prop);
+            long id = insertRecordBuilder.insert(prop);
+
+            return id;
         }
+        return 0;
     }
 
     @Override

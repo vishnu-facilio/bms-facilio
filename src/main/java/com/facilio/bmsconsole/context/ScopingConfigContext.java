@@ -1,13 +1,11 @@
 package com.facilio.bmsconsole.context;
 
-import java.io.Serializable;
-
 import com.facilio.annotations.AnnotationEnums;
 import com.facilio.annotations.ImmutableChildClass;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.operators.Operator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @NoArgsConstructor
 @ImmutableChildClass(className = "ScopingConfigCacheContext",constructorPolicy = AnnotationEnums.ConstructorPolicy.REQUIRE_COPY_CONSTRUCTOR)

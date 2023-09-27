@@ -1,9 +1,6 @@
 package com.facilio.beans;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
-import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -13,14 +10,15 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.permission.config.PermissionSetConstants;
-import com.facilio.permission.context.*;
+import com.facilio.permission.context.BasePermissionContext;
+import com.facilio.permission.context.PermissionFieldEnum;
+import com.facilio.permission.context.PermissionSetContext;
+import com.facilio.permission.context.PermissionSetType;
 import com.facilio.permission.context.TypeItem.GroupingType;
 import com.facilio.permission.context.TypeItem.PermissionSetGroupingItemContext;
 import com.facilio.permission.factory.PermissionSetFieldFactory;
@@ -164,7 +162,7 @@ public class PermissionSetBeanImpl implements PermissionSetBean {
         }
         deleteRecordBuilder.delete();
     }
-    public void addPermissionsForPermissionSet(Map<String,Object> prop) throws Exception {
+    public void addPermissionsForPermissionSet(Map<String,Object> prop, Map<String, Long> insertRecordId) throws Exception {
         BasePermissionContext permission = FieldUtil.getAsBeanFromMap(prop, BasePermissionContext.class);
         if(permission != null) {
             PermissionSetType.Type groupType = permission.getType();
@@ -179,12 +177,12 @@ public class PermissionSetBeanImpl implements PermissionSetBean {
                     queryProp.put(queryField, (Long) prop.get(queryField));
                 }
                 deletePermissionsForPermissionSet(queryProp,fieldsMap,module,permission.getPermissionSetId(), (String) prop.get("permissionType"));
-                insertIntoExtendTables(prop,module);
+                insertIntoExtendTables(prop,module,insertRecordId);
             }
         }
     }
 
-    private void insertIntoExtendTables(Map<String,Object> prop, FacilioModule module) throws Exception {
+    private void insertIntoExtendTables(Map<String,Object> prop, FacilioModule module, Map<String, Long> insertRecordId) throws Exception {
         Map<String,FacilioModule> extendModuleMap = PermissionSetConstants.EXTENDED_MODULE_REL;
         FacilioModule extendModule = module;
         List<FacilioModule> joinModules = new ArrayList<>();
@@ -200,7 +198,10 @@ public class PermissionSetBeanImpl implements PermissionSetBean {
             GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
                     .table(mod.getTableName())
                     .fields(PermissionSetFieldFactory.MODULE_VS_FIELDS.get(mod.getName()));
-            id = insertRecordBuilder.insert(prop);
+            id  = insertRecordBuilder.insert(prop);
+            if(insertRecordId != null){
+                insertRecordId.put(mod.getTableName(), id);
+            }
         }
     }
 
@@ -383,5 +384,19 @@ public class PermissionSetBeanImpl implements PermissionSetBean {
             return permissionSets;
         }
         return null;
+    }
+
+    @Override
+    public PermissionSetContext getPermissionSet(String linkName) throws Exception {
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .select(PermissionSetFieldFactory.getPermissionSetFields())
+                .table(PermissionSetModuleFactory.getPermissionSetModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("LINK_NAME","linkName",linkName,StringOperators.IS));
+        Map<String,Object> prop = selectRecordBuilder.fetchFirst();
+        if(MapUtils.isEmpty(prop)) {
+            throw new IllegalArgumentException("Permission set not found");
+        }
+        PermissionSetContext permissionSet = FieldUtil.getAsBeanFromMap(prop,PermissionSetContext.class);
+        return permissionSet;
     }
 }

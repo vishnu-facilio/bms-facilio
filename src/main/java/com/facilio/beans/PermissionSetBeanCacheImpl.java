@@ -11,9 +11,9 @@ import com.facilio.permission.context.PermissionFieldEnum;
 import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.permission.context.PermissionSetType;
 import com.facilio.permission.util.PermissionSetUtil;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class PermissionSetBeanCacheImpl extends PermissionSetBeanImpl implements PermissionSetBean {
     public List<PermissionSetContext> getUserPermissionSetIds(long peopleId) throws Exception {
@@ -61,9 +61,9 @@ public class PermissionSetBeanCacheImpl extends PermissionSetBeanImpl implements
         super.deletePermissionsForPermissionSet(queryProp,fieldsMap,module,permissionSetId,permissionType);
         cache.removeStartsWith(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
     }
-    public void addPermissionsForPermissionSet(Map<String,Object> prop) throws Exception {
+    public void addPermissionsForPermissionSet(Map<String,Object> prop, Map<String, Long> insertRecordId) throws Exception {
         FacilioCache<String, List<Map<String,Object>>> cache = LRUCache.getPermissionSetsTypePermissionCache();
-        super.addPermissionsForPermissionSet(prop);
+        super.addPermissionsForPermissionSet(prop, insertRecordId);
         cache.removeStartsWith(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
     }
 }
