@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.dashboard;
 
+import com.facilio.bmsconsole.context.DashboardFieldMappingContext;
 import com.facilio.bmsconsole.context.DashboardFilterContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.db.criteria.Criteria;
@@ -184,6 +185,7 @@ public class WidgetDashboardFilterContext extends DashboardWidgetContext
     public Integer filterOrder;
     public DashboardFilterContext dashboardFilter;
     public long widget_id;
+    public List<DashboardFieldMappingContext> fieldMappingMap;
     public List<String> defaultValues;
     public String dashboardUserFilterJson;
     public long criteriaId = -1;

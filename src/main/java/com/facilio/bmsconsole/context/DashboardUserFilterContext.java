@@ -18,10 +18,12 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 	private Map<Object,FacilioField> widgetFieldMap=new HashMap<>();
 	private Map<Object,List<ReportDataPointContext>> readingWidgetFieldMap = new HashMap<>();
+	private Map<Object,FacilioField> filterFieldMap=new HashMap<>();
 	private Map<Object,FacilioField> widgetExcludeFieldMap=new HashMap<>();
 	private Map<Long,String> widgetModuleMap=new HashMap<>();
 	Map<Long,FacilioField>  cascadingFilters;
-public Map<Long, FacilioField> getCascadingFilters() {
+	private List<DashboardFieldMappingContext> fieldMappingMap;
+	public Map<Long, FacilioField> getCascadingFilters() {
 		return cascadingFilters;
 	}
 	public void setCascadingFilters(Map<Long, FacilioField> cascadingFilters) {
@@ -493,6 +495,12 @@ public Map<Long, FacilioField> getCascadingFilters() {
 	}
 	public void setWidgetFieldMap(Map<Object,FacilioField> widgetFieldMap) {
 		this.widgetFieldMap = widgetFieldMap;
+	}
+	public Map<Object,FacilioField> getFilterFieldMap() {
+		return this.filterFieldMap;
+	}
+	public void setFilterFieldMap(Map<Object,FacilioField> filterFieldMap) {
+		this.filterFieldMap = filterFieldMap;
 	}
 	public Map<Long,String> getWidgetModuleMap() {
 		return this.widgetModuleMap;

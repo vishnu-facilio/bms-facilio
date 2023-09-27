@@ -94,7 +94,6 @@ public class DashboardFilterAction extends FacilioAction{
 		{
 			context.put(ContextNames.DASHBOARD_TAB, DashboardUtil.getDashboardTabWithWidgets(dashboardFilter.getDashboardTabId()));
 		}
-		context.put("fieldMappings",dashboardFilter.getFieldMappingMap());
 		dbFilterUpdateChain.execute();
 		return SUCCESS;
 	}

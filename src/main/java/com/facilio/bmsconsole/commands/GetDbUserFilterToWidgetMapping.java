@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.FieldType;
@@ -58,6 +59,14 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 
 			if (widgets != null && userFilters != null) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				for (DashboardUserFilterContext filter : userFilters) {
+					List<DashboardFieldMappingContext> customMappingV2 = DashboardFilterUtil.getFilterMappingsForFilterId(filter.getId());
+					if(customMappingV2 != null && customMappingV2.size() > 0){
+						for(DashboardFieldMappingContext filterMapping: customMappingV2){
+							filter.getFilterFieldMap().put(filterMapping.getModuleId(), modBean.getField(filterMapping.getFieldId()));
+						}
+					}
+				}
 
 				for (DashboardWidgetContext widget : widgets) {
 
@@ -159,7 +168,13 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 						// for all other widget except custom script, map only the filters that apply to
 						// them
 
-						
+						Map<Long, FacilioField> customModulevsFieldMapping = new HashMap<>();
+						List<DashboardFieldMappingContext> customMappingV2 = DashboardFilterUtil.getFilterMappingsForFilterId(filter.getId());
+						if(customMappingV2 != null && customMappingV2.size() > 0){
+							for(DashboardFieldMappingContext filterMapping: customMappingV2){
+								customModulevsFieldMapping.put(filterMapping.getModuleId(), modBean.getField(filterMapping.getFieldId()));
+							}
+						}
 							Map<Long,FacilioField> customAppliesToMapping= DashboardFilterUtil.getUserFilterToWidgetColumnMapping(filter.getId());
 							// Is filter TYPE enum(field obj present) or type lookup (module obj ) present
 							FacilioModule moduleForFilter = filter.getModule();
@@ -179,9 +194,12 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 								else
 								{
 									Long fieldId = DashboardFilterUtil.getFieldForMappingOnWidget(filter.getDashboardUserFilterJson(), widgetModule != null ? widgetModule.getName() : null);
-								 filterApplicableField =DashboardFilterUtil.getFilterApplicableField(moduleForFilter,
-										widgetModule, fieldId != null && fieldId > 0 ? fieldId : null);
-								 
+									if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && customModulevsFieldMapping != null && (customModulevsFieldMapping.containsKey(widgetModule.getModuleId()) || customModulevsFieldMapping.containsKey(widgetModule.getExtendModule().getModuleId()))){
+									 filterApplicableField = customModulevsFieldMapping.get(widgetModule.getModuleId());
+									}
+									else{
+									 filterApplicableField =DashboardFilterUtil.getFilterApplicableField(moduleForFilter,widgetModule, fieldId != null && fieldId > 0 ? fieldId : null);
+									}
 								}
 							
 								if (filterApplicableField != null) {

@@ -3469,4 +3469,8 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v3/files/preview/module/:authToken/token" method="GET">
+        <requestbody type="object">
+        </requestbody>
+    </request>
 </config>

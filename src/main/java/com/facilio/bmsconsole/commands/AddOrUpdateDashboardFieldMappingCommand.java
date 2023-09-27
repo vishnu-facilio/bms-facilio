@@ -23,7 +23,7 @@ public class AddOrUpdateDashboardFieldMappingCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        DashboardFilterContext filter = (DashboardFilterContext) context.get(FacilioConstants.ContextNames.DASHBOARD_FILTER);
+        Long userFilterId = (Long) context.get(FacilioConstants.ContextNames.DASHBOARD_USER_FILTER_ID);
         List<DashboardFieldMappingContext> filterMappings = (List<DashboardFieldMappingContext>) context.get("fieldMappings");
         List<Long> existingIds = new ArrayList<>();
         if(filterMappings != null && !filterMappings.isEmpty()){
@@ -33,7 +33,7 @@ public class AddOrUpdateDashboardFieldMappingCommand extends FacilioCommand {
                     .table(ModuleFactory.getDashboardFieldMappingModule().getTableName())
                     .fields(FieldFactory.getDashboardFieldMappingsFields());
             mappings.setOrgId(AccountUtil.getCurrentOrg().getId());
-            mappings.setDashboardUserFilterId(filter.getDashboardUserFilters().get(0).getId());
+            mappings.setDashboardUserFilterId(userFilterId);
             Map<String, Object> props = FieldUtil.getAsProperties(mappings);
             insertBuilder.addRecord(props);
             insertBuilder.save();
@@ -42,14 +42,14 @@ public class AddOrUpdateDashboardFieldMappingCommand extends FacilioCommand {
             existingIds.add(mappings.getId());
         }
     }
-    List<Long> ids = DashboardFilterUtil.getFilterMappingIdForFilterId(filter.getDashboardUserFilters().get(0).getId()).stream().filter(id -> !existingIds.contains(id)).distinct().collect(Collectors.toList());
-    if(!(ids.isEmpty())){
-        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-                .table(ModuleFactory.getDashboardFieldMappingModule().getTableName())
-                .andCondition(CriteriaAPI.getIdCondition(ids,ModuleFactory.getDashboardFieldMappingModule()));
-        builder.delete();
-    }
 }
+        List<Long> ids = DashboardFilterUtil.getFilterMappingIdForFilterId(userFilterId).stream().filter(id -> !existingIds.contains(id)).distinct().collect(Collectors.toList());
+        if(!(ids.isEmpty())){
+            GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                    .table(ModuleFactory.getDashboardFieldMappingModule().getTableName())
+                    .andCondition(CriteriaAPI.getIdCondition(ids,ModuleFactory.getDashboardFieldMappingModule()));
+            builder.delete();
+        }
         return false;
     }
 }

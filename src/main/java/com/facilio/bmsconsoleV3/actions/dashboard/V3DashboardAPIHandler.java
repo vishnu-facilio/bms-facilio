@@ -734,8 +734,12 @@ public class V3DashboardAPIHandler {
             if (dashboard_filter.getIsTimelineFilterEnabled())
             {
                 long operatorId = dashboard_filter.getDateOperator();
+                String rangeValue = null;
+                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && addToOperators().contains((int) operatorId)){
+                    rangeValue = dashboard_filter.getDateLabel().split(" ")[1];
+                }
                 DateOperators date_operator = (DateOperators) Operator.getOperator((int) operatorId);
-                DateRange dateRange = date_operator.getRange(null);
+                DateRange dateRange = date_operator.getRange(rangeValue);
                 JSONObject timeline_filter = new JSONObject();
                 timeline_filter.put("startTime", placeHolders.containsKey("startTime") ? placeHolders.get("startTime") : dateRange.getStartTime());
                 timeline_filter.put("endTime", placeHolders.containsKey("endTime") ? placeHolders.get("endTime") : dateRange.getEndTime());
@@ -1572,5 +1576,12 @@ public class V3DashboardAPIHandler {
         workflow.setWorkflowV2String(script);
         workflow.setParams(paramsList);
         return WorkflowUtil.addWorkflow(workflow);
+    }
+    private static List<Integer> addToOperators() {
+        List<Integer> operators = new ArrayList<>();
+        operators.add(DateOperators.LAST_N_MONTHS.getOperatorId());
+        operators.add(DateOperators.LAST_N_WEEKS.getOperatorId());
+        operators.add(DateOperators.LAST_N_DAYS.getOperatorId());
+        return operators;
     }
 }
