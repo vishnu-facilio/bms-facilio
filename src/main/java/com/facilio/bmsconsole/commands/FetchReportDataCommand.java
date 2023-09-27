@@ -1786,12 +1786,13 @@ public class FetchReportDataCommand extends FacilioCommand {
                         prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
                         selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)
                                 .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
-                    }else {
-                        currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
-                        prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
-                        selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)
-                                .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
                     }
+//                    else {
+//                        currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
+//                        prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
+//                        selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)
+//                                .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
+//                    }
                 }
                 prevModule = poll;
             }
