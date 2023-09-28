@@ -36,6 +36,10 @@ public class V3ControlActionContext extends V3Context {
     private List<PeopleContext> firstLevelApproval;
     private List<PeopleContext> secondLevelApproval;
     private ControlActionStatus controlActionStatus;
+    private ControlActionExecutionType controlActionExecutionType;
+    private ControlActionStatus scheduleActionStatus;
+    private ControlActionStatus revertActionStatus;
+    private Boolean isSandBox;
     public void setControlActionSourceType(Integer type) {
         if (type != null) {
             this.controlActionSourceType = ControlActionSourceTypeEnum.valueOf(type);
@@ -135,18 +139,55 @@ public class V3ControlActionContext extends V3Context {
         }
         return -1;
     }
+    public void setScheduleActionStatus(Integer status) {
+        if (status != null) {
+            this.scheduleActionStatus = ControlActionStatus.valueOf(status);
+        }
+    }
+
+    public ControlActionStatus getScheduleActionStatusEnum() {
+        return scheduleActionStatus;
+    }
+    public Integer getScheduleActionStatus() {
+        if(scheduleActionStatus != null) {
+            return scheduleActionStatus.getVal();
+        }
+        return -1;
+    }
+    public void setRevertActionStatus(Integer status) {
+        if (status != null) {
+            this.revertActionStatus = ControlActionStatus.valueOf(status);
+        }
+    }
+
+    public ControlActionStatus getRevertActionStatusEnum() {
+        return revertActionStatus;
+    }
+    public Integer getRevertActionStatus() {
+        if(revertActionStatus != null) {
+            return revertActionStatus.getVal();
+        }
+        return -1;
+    }
     public static enum ControlActionStatus implements FacilioIntEnum{
         UNPUBLISHED("Un Published"),
-        PENDING_FIRST_LEVEL_APPROVAL("Pending First Level Approval"),
-        PENDING_SECOND_LEVEL_APPROVED("Pending Second Level Approval"),
-        REJECTED("Rejected"),
-        SCHEDULED("Scheduled"),
-        IN_PROGRESS("In Progress"),
-        PENDING("Pending"),
-        COMPLETED_WITH_ERROR("Completed With Error"),
-        COMPLETED("Completed"),
-        CANCELED("Canceled"),
-        EXPIRED("Expired");
+        PUBLISHED("Published"),
+        WAITING_FOR_FIRST_LEVEL_APPROVAL("Waiting For First Level Approval"),
+        FIRST_LEVEL_APPROVED("First Level Approved"),
+        WAITING_FOR_SECOND_LEVEL_APPROVAL("Waiting For Second Level Approval"),
+        SECOND_LEVEL_APPROVED("Second Level Approved"),
+        COMMAND_GENERATED("Command Generated"),
+        SCHEDULE_ACTION_SCHEDULED("Schedule Action Scheduled"),
+        SCHEDULE_ACTION_IN_PROGRESS("Schedule Action In Progress"),
+        SCHEDULE_ACTION_SUCCESS("Schedule Action Success"),
+        SCHEDULE_ACTION_FAILED("Schedule Action Failed"),
+        SCHEDULE_ACTION_COMPLETED_WITH_ERROR("Schedule Action Completed with Error"),
+        REVERT_ACTION_SCHEDULED("Revert Action Scheduled"),
+        REVERT_ACTION_IN_PROGRESS("Revert Action In Progress"),
+        REVERT_ACTION_SUCCESS("Revert Action Success"),
+        REVERT_ACTION_FAILED("Revert Action Failed"),
+        REVERT_ACTION_COMPLETED_WITH_ERROR("Revert Action Completed with Error"),
+        REJECTED("Rejected");
 
         public String getValue() {
             return this.name;
@@ -159,6 +200,47 @@ public class V3ControlActionContext extends V3Context {
         }
 
         public static ControlActionStatus valueOf(int index) {
+            if (index >= 1 && index <= values().length) {
+                return values()[index - 1];
+            }
+            return null;
+        }
+
+        public int getVal() {
+            return ordinal() + 1;
+        }
+
+    }
+    public void setControlActionExecutionType(Integer type) {
+        if (type != null) {
+            this.controlActionSourceType = ControlActionSourceTypeEnum.valueOf(type);
+        }
+    }
+
+    public ControlActionSourceTypeEnum getControlActionExecutionTypeEnum() {
+        return controlActionSourceType;
+    }
+    public Integer getControlActionExecutionType() {
+        if(controlActionSourceType != null) {
+            return controlActionSourceType.getVal();
+        }
+        return -1;
+    }
+    public static enum ControlActionExecutionType implements FacilioIntEnum{
+        ACTUAL("Actual"),
+        SANDBOX("Sandbox");
+
+        public String getValue() {
+            return this.name;
+        }
+
+        private String name;
+
+        ControlActionExecutionType(String name) {
+            this.name = name;
+        }
+
+        public static ControlActionExecutionType valueOf(int index) {
             if (index >= 1 && index <= values().length) {
                 return values()[index - 1];
             }

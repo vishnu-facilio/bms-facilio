@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.activity;
 
 import com.facilio.activity.ActivityType;
+import com.facilio.bmsconsole.actions.FacilioAction;
 import org.json.simple.JSONObject;
 
-public enum CommandActivityType implements ActivityType {
-
-    STATUS_UPDATE(125) {
+public enum ControlActionActivityType implements ActivityType {
+    STATUS_UPDATE(126) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
@@ -13,7 +13,7 @@ public enum CommandActivityType implements ActivityType {
         }
     };
 
-    private CommandActivityType(int value) {
+    private ControlActionActivityType(int value) {
         // TODO Auto-generated constructor stub
         this.value = value;
     }

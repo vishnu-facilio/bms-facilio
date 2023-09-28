@@ -54,8 +54,6 @@ public class CalendarModule extends BaseModuleConfig{
         defaultCalendarForm.setSections(sectionList);
         defaultCalendarForm.setIsSystemForm(true);
         defaultCalendarForm.setType(FacilioForm.Type.FORM);
-        FormRuleContext singleRule = addCalendarEditDisabilityRule();
-        defaultCalendarForm.setDefaultFormRules(Arrays.asList(singleRule));
         return Collections.singletonList(defaultCalendarForm);
     }
 
@@ -145,8 +143,8 @@ public class CalendarModule extends BaseModuleConfig{
         singleRule.setExecuteType(2);
 
         List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
-        List<FormRuleTriggerFieldContext> triggerFieldContexts = new ArrayList<>();
-        singleRule.setTriggerFields(triggerFieldContexts);
+//        List<FormRuleTriggerFieldContext> triggerFieldContexts = new ArrayList<>();
+//        singleRule.setTriggerFields(triggerFieldContexts);
         FormRuleActionContext filterAction = new FormRuleActionContext();
         filterAction.setActionType(FormActionType.DISABLE_FIELD.getVal());
 
@@ -165,7 +163,7 @@ public class CalendarModule extends BaseModuleConfig{
         actions.add(filterAction);
 
         singleRule.setActions(actions);
-        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
         return singleRule;
     }
 

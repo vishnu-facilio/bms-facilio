@@ -571,12 +571,20 @@ public class CalendarApi {
         }
         java.lang.String suffix = "am";
         if(Integer.parseInt(hr) > 11){
-            hr = java.lang.String.valueOf(Integer.parseInt(hr) - 12);
+            if(Integer.parseInt(hr) == 12){
+                hr = "12";
+            }
+            else {
+                hr = java.lang.String.valueOf(Integer.parseInt(hr) - 12);
+            }
             if(hr.length() == 1){
                 hr = "0"+hr;
             }
 
             suffix = "pm";
+        }
+        if(Integer.parseInt(hr) == 0){
+            hr = "12";
         }
         String time = hr+":"+min+""+suffix;
         return time;

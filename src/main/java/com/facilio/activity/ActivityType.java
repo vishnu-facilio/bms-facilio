@@ -63,8 +63,14 @@ public interface ActivityType {
 		for(ActivityType type : CommandActivityType.values()){
 			activityMap.put(type.getValue(),type);
 		}
+		for(ActivityType type : ControlActionActivityType.values()){
+			activityMap.put(type.getValue(),type);
+		}
+		for(ActivityType type : ControlActionTemplateActivityType.values()){
+			activityMap.put(type.getValue(),type);
+		}
 
-		// Last number = 125
+		// Last number = 127
 
 		return activityMap;
 	}

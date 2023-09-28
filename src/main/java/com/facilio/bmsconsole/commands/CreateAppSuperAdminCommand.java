@@ -129,16 +129,16 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 			clonedUser.setApplicationId(iwmsAppId);
 			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 		}
-		long energyAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
-		if(energyAppId > 0){
-			Role superAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
-					FacilioConstants.DefaultRoleNames.SUPER_ADMIN);
-			clonedUser.setApplicationId(energyAppId);
-			clonedUser.setRole(superAdmin);
-			clonedUser.setRoleId(superAdmin.getRoleId());
-			clonedUser.setApplicationId(energyAppId);
-			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
-		}
+//		long energyAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+//		if(energyAppId > 0){
+//			Role superAdmin = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
+//					FacilioConstants.DefaultRoleNames.SUPER_ADMIN);
+//			clonedUser.setApplicationId(energyAppId);
+//			clonedUser.setRole(superAdmin);
+//			clonedUser.setRoleId(superAdmin.getRoleId());
+//			clonedUser.setApplicationId(energyAppId);
+//			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
+//		}
 
 		context.put(FacilioConstants.ContextNames.USER, user);
 	}

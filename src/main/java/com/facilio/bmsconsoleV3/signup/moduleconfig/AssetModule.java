@@ -119,6 +119,7 @@ public class AssetModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);

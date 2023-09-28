@@ -3460,7 +3460,7 @@ public class ApplicationApi {
 
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, layout.getApplicationId(), null));
-            webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.PORTFOLIO, null, null, 1,null,layout.getApplicationId()));
+            webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.PORTFOLIO, null,"{ \"type\": \"portfolio\" }" , 1,null,layout.getApplicationId()));
             webTabGroups.add(new WebTabGroupContext(webTabs,"Home", "home",  IconType.home.ordinal(),groupOrder++,null,layout.getId(),IconType.home));
             groupNameVsWebTabsMap.put("home", webTabs);
 

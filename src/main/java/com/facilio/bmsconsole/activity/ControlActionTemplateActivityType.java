@@ -3,9 +3,8 @@ package com.facilio.bmsconsole.activity;
 import com.facilio.activity.ActivityType;
 import org.json.simple.JSONObject;
 
-public enum CommandActivityType implements ActivityType {
-
-    STATUS_UPDATE(125) {
+public enum ControlActionTemplateActivityType implements ActivityType {
+    STATUS_UPDATE(127) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
@@ -13,7 +12,7 @@ public enum CommandActivityType implements ActivityType {
         }
     };
 
-    private CommandActivityType(int value) {
+    private ControlActionTemplateActivityType(int value) {
         // TODO Auto-generated constructor stub
         this.value = value;
     }
@@ -27,3 +26,4 @@ public enum CommandActivityType implements ActivityType {
     @Override
     public abstract String constructMessage(JSONObject json);
 }
+

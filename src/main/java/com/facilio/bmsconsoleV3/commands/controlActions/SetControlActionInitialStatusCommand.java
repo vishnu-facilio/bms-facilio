@@ -5,12 +5,11 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.List;
 import java.util.Map;
 
-public class MakeControlActionStatusAsUnpublishedCommand extends FacilioCommand {
+public class SetControlActionInitialStatusCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String,Object> recordMap = (Map<String, Object>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
@@ -22,7 +21,12 @@ public class MakeControlActionStatusAsUnpublishedCommand extends FacilioCommand 
             return false;
         }
         for(V3ControlActionContext controlActionContext : controlActionContextList){
-            controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.UNPUBLISHED.getVal());
+            if(controlActionContext.getControlActionSourceType() == V3ControlActionContext.ControlActionSourceTypeEnum.MANUAL.getVal() || controlActionContext.getControlActionSourceType() == null) {
+                controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.UNPUBLISHED.getVal());
+            }
+            if(controlActionContext.getControlActionSourceType() == V3ControlActionContext.ControlActionSourceTypeEnum.CONTROL_ACTION_TEMPLATE.getVal()){
+                controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.PUBLISHED.getVal());
+            }
         }
         return false;
     }

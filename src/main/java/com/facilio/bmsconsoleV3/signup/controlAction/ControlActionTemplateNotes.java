@@ -1,10 +1,11 @@
-package com.facilio.bmsconsoleV3.signup.moduleconfig;
+package com.facilio.bmsconsoleV3.signup.controlAction;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -16,25 +17,23 @@ import com.facilio.v3.context.Constants;
 
 import java.util.*;
 
-public class UtilityIntegrationCustomerNotesModule extends BaseModuleConfig{
-    public UtilityIntegrationCustomerNotesModule() throws Exception {
-        setModuleName(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_NOTES);
+public class ControlActionTemplateNotes extends BaseModuleConfig {
+    public ControlActionTemplateNotes(){
+        setModuleName(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_NOTES_MODULE_NAME);
     }
-
-    @Override
     public void addData() throws Exception {
 
         ModuleBean modBean = Constants.getModBean();
-        FacilioModule customerModule = modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER);
+        FacilioModule module = modBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
 
         List<FacilioModule> modules = new ArrayList<>();
 
-        FacilioModule UtilityIntegrationCustomerNotesModule = addNotesModule();
-        modules.add(UtilityIntegrationCustomerNotesModule);
+        FacilioModule notesModule = addNotesModule();
+        modules.add(notesModule);
 
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
-        addModuleChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE, customerModule.getName());
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE, module.getName());
         addModuleChain.execute();
 
         addParentField();
@@ -43,7 +42,9 @@ public class UtilityIntegrationCustomerNotesModule extends BaseModuleConfig{
 
     public FacilioModule addNotesModule() throws Exception{
 
-        FacilioModule module = new FacilioModule("utilityIntegrationCustomerNotes", "Utility Customer Notes", "Utility_Integration_Customer_Notes", FacilioModule.ModuleType.NOTES);
+        FacilioModule module = new FacilioModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_NOTES_MODULE_NAME,
+                "Control Action Template Notes", "Control_Action_Template_Notes",
+                FacilioModule.ModuleType.NOTES);
 
         List<FacilioField> fields = new ArrayList<>();
 
@@ -72,17 +73,17 @@ public class UtilityIntegrationCustomerNotesModule extends BaseModuleConfig{
     @Override
     public List<FacilioForm> getModuleForms() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule notesModule = modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_NOTES);
+        FacilioModule notesModule = modBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_NOTES_MODULE_NAME);
 
-        FacilioForm notesForm = new FacilioForm();
-        notesForm.setName("default_utilityCustomerNotes_web");
-        notesForm.setModule(notesModule);
-        notesForm.setDisplayName("Add Notes");
-        notesForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        notesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
-        notesForm.setShowInWeb(true);
-        notesForm.setShowInMobile(true);
-        notesForm.setHideInList(false);
+        FacilioForm meterNotesForm = new FacilioForm();
+        meterNotesForm.setName("default_controlActionTemplateNotes_web");
+        meterNotesForm.setModule(notesModule);
+        meterNotesForm.setDisplayName("Add Notes");
+        meterNotesForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        meterNotesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        meterNotesForm.setShowInWeb(true);
+        meterNotesForm.setShowInMobile(true);
+        meterNotesForm.setHideInList(false);
 
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(notesModule.getName()));
 
@@ -105,17 +106,16 @@ public class UtilityIntegrationCustomerNotesModule extends BaseModuleConfig{
 
         sections.add(configSection);
 
-        notesForm.setSections(sections);
-        notesForm.setIsSystemForm(true);
-        notesForm.setType(FacilioForm.Type.FORM);
+        meterNotesForm.setSections(sections);
+        meterNotesForm.setIsSystemForm(true);
+        meterNotesForm.setType(FacilioForm.Type.FORM);
 
-        return Collections.singletonList(notesForm);
+        return Collections.singletonList(meterNotesForm);
     }
 
     public void addParentField() throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
-        LookupField parentNote = new LookupField(moduleBean.getModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_NOTES), "parentNote", "Parent Note", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "PARENT_NOTE", FieldType.LOOKUP, false, false, true, null, "Parent Note", moduleBean.getModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_NOTES));
+        LookupField parentNote = new LookupField(moduleBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_NOTES_MODULE_NAME), "parentNote", "Parent Note", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "PARENT_NOTE", FieldType.LOOKUP, false, false, true, null, "Parent Note", moduleBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_NOTES_MODULE_NAME));
         moduleBean.addField(parentNote);
     }
 }
-

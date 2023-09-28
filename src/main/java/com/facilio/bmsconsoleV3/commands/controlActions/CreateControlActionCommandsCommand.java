@@ -1,8 +1,15 @@
 package com.facilio.bmsconsoleV3.commands.controlActions;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.activity.ActivityContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.CalendarActivityType;
+import com.facilio.bmsconsole.activity.ControlActionActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsoleV3.actions.V3ControlActionAction;
+import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3ActionContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3CommandsContext;
@@ -13,18 +20,21 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CreateControlActionCommandsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Long controlActionId = (Long) context.get(FacilioConstants.Control_Action.CONTROL_ACTION_ID);
         if(controlActionId == null || controlActionId < 0){
             return false;
@@ -37,13 +47,23 @@ public class CreateControlActionCommandsCommand extends FacilioCommand {
         if(CollectionUtils.isEmpty(assetContextList)){
             return false;
         }
+        V3CommandsContext.ControlActionCommandStatus commandStatus = V3CommandsContext.ControlActionCommandStatus.NOT_SCHEDULED;
+        if(v3ControlActionContext.getControlActionStatus() == V3ControlActionContext.ControlActionStatus.COMMAND_GENERATED.getVal()){
+            v3ControlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getVal());
+            v3ControlActionContext.setScheduleActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getVal());
+            ControlActionAPI.updateControlAction(v3ControlActionContext);
+            ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getValue(),v3ControlActionContext.getId());
+
+            commandStatus = V3CommandsContext.ControlActionCommandStatus.SCHEDULED;
+
+        }
         List<V3CommandsContext> commandsContextList = new ArrayList<>();
         for(V3AssetContext assetContext : assetContextList) {
             List<V3ActionContext> actionContextList = v3ControlActionContext.getActionContextList();
             for (V3ActionContext v3ActionContext : actionContextList) {
-                commandsContextList.add(createCommand(v3ControlActionContext, v3ActionContext, v3ControlActionContext.getScheduledActionDateTime(), assetContext, V3CommandsContext.CommandActionType.SCHEDULED_ACTION));
+                commandsContextList.add(createCommand(v3ControlActionContext, v3ActionContext, v3ControlActionContext.getScheduledActionDateTime(), assetContext, V3CommandsContext.CommandActionType.SCHEDULED_ACTION,commandStatus));
                 if(v3ActionContext.getRevertActionValue() != null && v3ControlActionContext.getRevertActionDateTime() != null){
-                    commandsContextList.add(createCommand(v3ControlActionContext, v3ActionContext, v3ControlActionContext.getRevertActionDateTime(), assetContext, V3CommandsContext.CommandActionType.REVERT_ACTION));
+                    commandsContextList.add(createCommand(v3ControlActionContext, v3ActionContext, v3ControlActionContext.getRevertActionDateTime(), assetContext, V3CommandsContext.CommandActionType.REVERT_ACTION,commandStatus));
                 }
             }
         }
@@ -53,7 +73,7 @@ public class CreateControlActionCommandsCommand extends FacilioCommand {
         context.put(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,v3ControlActionContext);
         return false;
     }
-    public static V3CommandsContext createCommand(V3ControlActionContext controlActionContext, V3ActionContext actionContext, Long actionTime, V3AssetContext assetContext, V3CommandsContext.CommandActionType commandActionType) throws Exception{
+    public static V3CommandsContext createCommand(V3ControlActionContext controlActionContext, V3ActionContext actionContext, Long actionTime, V3AssetContext assetContext, V3CommandsContext.CommandActionType commandActionType,V3CommandsContext.ControlActionCommandStatus commandStatus) throws Exception{
         V3CommandsContext commandsContext = new V3CommandsContext();
         commandsContext.setAction(actionContext);
         commandsContext.setName(constructCommandSubject(actionContext,commandActionType));
@@ -62,7 +82,15 @@ public class CreateControlActionCommandsCommand extends FacilioCommand {
         commandsContext.setAsset(assetContext);
         commandsContext.setActionTime(actionTime);
         commandsContext.setFieldId(actionContext.getReadingFieldId());
-        commandsContext.setControlActionCommandStatus(V3CommandsContext.ControlActionCommandStatus.NOT_SCHEDULED.getVal());
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioField field = moduleBean.getField(actionContext.getReadingFieldId());
+        ReadingDataMeta readingDataMeta =  ReadingsAPI.getReadingDataMeta(assetContext.getId(), field);
+        if(readingDataMeta.getInputType() != ReadingDataMeta.ReadingInputType.CONTROLLER_MAPPED.getValue() ){
+            commandsContext.setControlActionCommandStatus(V3CommandsContext.ControlActionCommandStatus.POINT_NOT_COMMISSIONED.getVal());
+        }
+        else{
+            commandsContext.setControlActionCommandStatus(commandStatus.getVal());
+        }
         commandsContext.setCommandActionType(commandActionType.getVal());
         return commandsContext;
     }

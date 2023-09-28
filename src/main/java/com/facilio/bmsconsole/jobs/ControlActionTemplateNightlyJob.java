@@ -25,7 +25,7 @@ public class ControlActionTemplateNightlyJob extends FacilioJob {
             if(CollectionUtils.isNotEmpty(controlActionTemplateContextList)){
                 Long currentTime = System.currentTimeMillis();
                 ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), ZoneId.systemDefault());
-                dateTime = dateTime.plusMonths(1);
+                dateTime = dateTime.plusDays(5);
                 for(V3ControlActionTemplateContext v3ControlActionTemplateContext : controlActionTemplateContextList){
                     Long generatedUpToTime = ControlActionAPI.getGeneratedUpToTimeForControlActionTemplate(v3ControlActionTemplateContext.getId());
                     dateTime = dateTime.minusDays(1);
