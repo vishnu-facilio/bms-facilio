@@ -69,14 +69,17 @@ public class QAndADisplayLogicActionClass extends V3Action {
 	 public String update() throws Exception {
 		 
 		 V3Util.throwRestException(displayLogic == null || displayLogic.getId() == null || displayLogic.getId() <= 0, ErrorCode.VALIDATION_ERROR, "Display Logic or Id cannot be empty during update");
-		 
-		 FacilioChain addChain = QAndATransactionChainFactory.addOrUpdateDisplayLogicChain();
-		 
-		 addChain.getContext().put(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT, displayLogic);
-	
-		 addChain.execute();
-		 
-		 setData("result", displayLogic);
+
+		 if(displayLogic.getId()!=null && (displayLogic.getCriteria() == null || displayLogic.getCriteria().isEmpty())){
+			delete();
+		 } else {
+			 FacilioChain addChain = QAndATransactionChainFactory.addOrUpdateDisplayLogicChain();
+
+			 addChain.getContext().put(DisplayLogicUtil.DISPLAY_LOGIC_CONTEXT, displayLogic);
+			 addChain.execute();
+
+			 setData("result", displayLogic);
+		 }
 	     return SUCCESS;
 	 }
 	 
