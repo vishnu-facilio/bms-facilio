@@ -19,6 +19,11 @@
             <property name="campusId" type="string"/>
         </requestbody>
     </request>
+    <request path="/api/v2/site/siteInfo">
+        <requestbody type="object">
+            <property name="id" type="string"/>
+        </requestbody>
+    </request>
 <!--    <request path="/api/campus/getBaseSpaceChildren">-->
 <!--        <requestbody type="object">-->
 <!--            <property name="campusId" type="string"/>-->

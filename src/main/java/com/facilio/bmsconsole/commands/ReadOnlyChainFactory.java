@@ -3538,4 +3538,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetRolesAppsCommand());
 		return c;
 	}
+
+	public static FacilioChain getSiteforChildSpaceChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetSiteForChildSpaceCommand());
+		return c;
+	}
 }

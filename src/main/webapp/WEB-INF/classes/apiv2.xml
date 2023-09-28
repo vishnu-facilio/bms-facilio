@@ -7130,6 +7130,7 @@
 	<package name="siteApiv2" namespace="/api/v2/site" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.CampusAction" method="v2SitesList" />
 		<action name="totalArea" class="com.facilio.bmsconsole.actions.CampusAction" method="getSitesTotalArea" />
+		<action name="siteInfo" class="com.facilio.bmsconsole.actions.CampusAction" method="getSiteDetails" />
 	</package>
 
 	<package name="bmsPointsTagging" namespace="/api/v2/bmsPointsTagging/internal" extends="v2Api">

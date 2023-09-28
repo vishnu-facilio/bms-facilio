@@ -216,6 +216,16 @@ public class CampusAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+
+	public String getSiteDetails() throws Exception {
+		FacilioChain getSiteChain = ReadOnlyChainFactory.getSiteforChildSpaceChain();
+		FacilioContext siteChainContext = getSiteChain.getContext();
+		siteChainContext.put("childId",getId());
+		getSiteChain.execute();
+		setResult("site",siteChainContext.get("site"));
+		return SUCCESS;
+	}
+
 	public String v2SitesList() throws Exception {
 		FacilioChain chain = ReadOnlyChainFactory.getSpaceModuleListChain();
 		FacilioContext constructListContext = chain.getContext();
