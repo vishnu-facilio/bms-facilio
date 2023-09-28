@@ -275,7 +275,7 @@ public class CustomModuleTemplatePage implements TemplatePageFactory {
         notesWidgetParam.put("notesModuleName", "cmdnotes");
 
         JSONObject attachmentsWidgetParam = new JSONObject();
-        notesWidgetParam.put("attachmentsModuleName", "cmdattachments");
+        attachmentsWidgetParam.put("attachmentsModuleName", "cmdattachments");
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
