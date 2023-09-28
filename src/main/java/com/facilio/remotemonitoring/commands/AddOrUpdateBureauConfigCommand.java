@@ -1,12 +1,20 @@
 package com.facilio.remotemonitoring.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.MailMessageUtil;
+import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
+import com.facilio.bmsconsoleV3.context.BaseMailMessageContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.LookupOperator;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.remotemonitoring.compute.FlaggedEventUtil;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleBureauEvaluationContext;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleContext;
@@ -16,8 +24,10 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -31,27 +41,32 @@ public class AddOrUpdateBureauConfigCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(flaggedEventRules)) {
             for (FlaggedEventRuleContext flaggedEventRule : flaggedEventRules) {
                 List<FlaggedEventRuleBureauEvaluationContext> bureauConfigs = flaggedEventRule.getFlaggedEventRuleBureauEvaluationContexts();
-                List<ModuleBaseWithCustomFields> dataList = new ArrayList<>();
-                if(CollectionUtils.isNotEmpty(bureauConfigs)) {
-                    if(bureauConfigs.size() > 3) {
+                if (CollectionUtils.isNotEmpty(bureauConfigs)) {
+                    if (bureauConfigs.size() > 3) {
                         throw new IllegalArgumentException("Maximum 3 evaluation teams can be configured for a flagged event");
                     }
-                    int i = 0;
+                    int order = 0;
                     int size = bureauConfigs.size();
-                    for(FlaggedEventRuleBureauEvaluationContext bureauConfig : bureauConfigs) {
-                        ++i;
+                    for (FlaggedEventRuleBureauEvaluationContext bureauConfig : bureauConfigs) {
+                        ++order;
                         flaggedEventRule.setFlaggedEventRuleBureauEvaluationContexts(null);
                         bureauConfig.setFlaggedEventRule(flaggedEventRule);
-                        bureauConfig.setIsFinalTeam(size == i);
-                        bureauConfig.setOrder(i);
-                        if(bureauConfig.getEmailRule() != null) {
+                        bureauConfig.setIsFinalTeam(size == order);
+                        bureauConfig.setOrder(order);
+                        if (bureauConfig.getEmailRule() != null && bureauConfig.getEmailRule().getActions() != null) {
                             Criteria criteria = new Criteria();
-                            criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("flaggedEventRule", FlaggedEventModule.MODULE_NAME),String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
-                            bureauConfig.setEmailRuleId(FlaggedEventUtil.addEmailRule(bureauConfig.getEmailRule(), "Email Notification Rule for Flagged Event Bureau - " + flaggedEventRule.getId(), criteria));
+                            FacilioField bureauDetailField = modBean.getField("currentBureauActionDetail", FlaggedEventModule.MODULE_NAME);
+                            Criteria lookupCriteria = new Criteria();
+                            lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("order", FlaggedEventBureauEvaluationModule.MODULE_NAME), String.valueOf(order), NumberOperators.EQUALS));
+                            criteria.addAndCondition(CriteriaAPI.getCondition(bureauDetailField, lookupCriteria, LookupOperator.LOOKUP));
+                            criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("flaggedEventRule", FlaggedEventModule.MODULE_NAME), String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
+
+                            FieldChangeFieldContext changeFieldContext = new FieldChangeFieldContext();
+                            changeFieldContext.setFieldId(bureauDetailField.getFieldId());
+                            bureauConfig.setEmailRuleId(FlaggedEventUtil.addFieldChangeEmailRule(bureauConfig.getEmailRule(), "Email Notification Rule for Flagged Event Bureau - " + flaggedEventRule.getId(), Arrays.asList(changeFieldContext), criteria));
+                            V3Util.createRecord(modBean.getModule(FlaggedEventBureauEvaluationModule.MODULE_NAME), Arrays.asList(bureauConfig));
                         }
-                        dataList.add(bureauConfig);
                     }
-                    V3Util.createRecord(modBean.getModule(FlaggedEventBureauEvaluationModule.MODULE_NAME),dataList);
                 }
             }
         }

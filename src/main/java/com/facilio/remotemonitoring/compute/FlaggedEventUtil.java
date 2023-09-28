@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
@@ -341,6 +342,24 @@ public class FlaggedEventUtil {
         return null;
     }
 
+    public static Long addFieldChangeEmailRule(WorkflowRuleContext emailRule, String ruleName, List<FieldChangeFieldContext> changingFields, Criteria criteria) throws Exception {
+        emailRule.setRuleType(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION);
+        emailRule.setScheduleType(WorkflowRuleContext.ScheduledRuleType.AFTER);
+        emailRule.setFields(changingFields);
+        WorkflowEventContext workflowEventContext = new WorkflowEventContext();
+        workflowEventContext.setActivityType(EventType.FIELD_CHANGE);
+        workflowEventContext.setModuleName(FlaggedEventModule.MODULE_NAME);
+        emailRule.setEvent(workflowEventContext);
+        emailRule.setCriteria(criteria);
+        emailRule.setName(ruleName);
+        FacilioChain chain = TransactionChainFactory.getAddModuleWorkflowRuleChain();
+        FacilioContext ruleContext = chain.getContext();
+        ruleContext.put(FacilioConstants.ContextNames.MODULE_NAME, FlaggedEventModule.MODULE_NAME);
+        ruleContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, emailRule);
+        chain.execute();
+        Long ruleId = (Long) ruleContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+        return ruleId;
+    }
 
     public static Long addEmailRule(WorkflowRuleContext emailRule, String ruleName, Criteria criteria) throws Exception {
         emailRule.setRuleType(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION);
@@ -373,7 +392,7 @@ public class FlaggedEventUtil {
         FacilioField dateField = modBean.getField("sysCreatedTime", FlaggedEventModule.MODULE_NAME);
         emailRule.setDateField(dateField);
         emailRule.setDateFieldId(dateField.getId());
-        emailRule.setInterval(delay);
+        emailRule.setInterval(delay / 1000);
         FacilioChain chain = TransactionChainFactory.getAddModuleWorkflowRuleChain();
         FacilioContext ruleContext = chain.getContext();
         ruleContext.put(FacilioConstants.ContextNames.MODULE_NAME, FlaggedEventModule.MODULE_NAME);
@@ -401,11 +420,12 @@ public class FlaggedEventUtil {
             FlaggedEventBureauActionsContext action = actionsList.get(0);
             if (action != null) {
                 FlaggedEventContext updateEvent = new FlaggedEventContext();
-                updateEvent.setTeam(action.getTeam());
-                updateEvent.setCurrentBureauActionDetail(action);
-                updateEvent.setAssignedPeople(null);
-                updateEvent.setId(event.getId());
-                V3RecordAPI.updateRecord(updateEvent, modBean.getModule(FlaggedEventModule.MODULE_NAME), Arrays.asList(modBean.getField("team", FlaggedEventModule.MODULE_NAME), modBean.getField("currentBureauActionDetail", FlaggedEventModule.MODULE_NAME),modBean.getField("assignedPeople", FlaggedEventModule.MODULE_NAME)));
+
+                Map<String,Object> prop = new HashMap<>();
+                prop.put("assignedPeople",null);
+                prop.put("currentBureauActionDetail",ImmutableMap.of("id",action.getId()));
+                prop.put("team",ImmutableMap.of("id",action.getTeam().getId()));
+                V3Util.updateBulkRecords(FlaggedEventModule.MODULE_NAME, prop,Collections.singletonList(event.getId()),false);
                 FlaggedEventUtil.updateBureauActionStatus(action.getId(), FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.OPEN);
                 Long nextExecutionTime = (System.currentTimeMillis() + action.getTakeCustodyPeriod()) / 1000;
                 FacilioTimer.scheduleOneTimeJobWithTimestampInSec(action.getId(), RemoteMonitorConstants.FLAGGED_EVENT_BUREAU_TAKE_CUSTODY_JOB, nextExecutionTime, "priority");

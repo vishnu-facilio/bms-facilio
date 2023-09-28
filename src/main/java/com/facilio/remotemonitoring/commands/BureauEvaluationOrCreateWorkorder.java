@@ -8,6 +8,7 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.remotemonitoring.RemoteMonitorConstants;
 import com.facilio.remotemonitoring.beans.AlarmRuleBean;
@@ -51,12 +52,11 @@ public class BureauEvaluationOrCreateWorkorder extends FacilioCommand {
                         if (CollectionUtils.isNotEmpty(bureauActions)) {
                             FlaggedEventBureauActionsContext action = bureauActions.get(0);
                             if(action != null) {
-                                flaggedEvent.setTeam(action.getTeam());
-                                FlaggedEventBureauActionsContext updateAction = new FlaggedEventBureauActionsContext();
-                                updateAction.setId(action.getId());
-                                flaggedEvent.setCurrentBureauActionDetail(updateAction);
-                                flaggedEvent.setStatus(FlaggedEventContext.FlaggedEventStatus.OPEN);
-                                V3RecordAPI.updateRecord(flaggedEvent,modBean.getModule(FlaggedEventModule.MODULE_NAME), Arrays.asList(modBean.getField("team", FlaggedEventModule.MODULE_NAME),modBean.getField("currentBureauActionDetail",FlaggedEventModule.MODULE_NAME),modBean.getField("status",FlaggedEventModule.MODULE_NAME)));
+                                Map<String,Object> prop = new HashMap<>();
+                                prop.put("status",FlaggedEventContext.FlaggedEventStatus.OPEN.getIndex());
+                                prop.put("currentBureauActionDetail",ImmutableMap.of("id",action.getId()));
+                                prop.put("team",ImmutableMap.of("id",action.getTeam().getId()));
+                                V3Util.updateBulkRecords(FlaggedEventModule.MODULE_NAME, prop,Collections.singletonList(flaggedEvent.getId()),false);
 
                                 FlaggedEventUtil.updateBureauActionStatus(action.getId(), FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.OPEN);
                                 if(createWorkorder) {

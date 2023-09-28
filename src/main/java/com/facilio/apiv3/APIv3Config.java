@@ -3877,8 +3877,11 @@ public class APIv3Config {
                 .afterSave(new FlaggedEventClosureCommand(),new ConstructUpdateCustomActivityCommandV3(),
                         new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
                 .postCreate()
-                .afterSave(new FlaggedEventBureauInformationCommand(),new BureauEvaluationOrCreateWorkorder(),new FlaggedEventClosureCommand(),new ConstructAddCustomActivityCommandV3(),
-                        new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
+                .afterSave(new FlaggedEventBureauInformationCommand(),
+                        new BureauEvaluationOrCreateWorkorder(),
+                        new FlaggedEventClosureCommand()
+                )
+                .afterTransaction(new ConstructAddCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
                 .list()
                 .afterFetch(new ComputeTimeRemainingForFlaggedEventCommand())
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEventRule")

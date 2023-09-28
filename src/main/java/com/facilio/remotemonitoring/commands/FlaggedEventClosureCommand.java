@@ -36,8 +36,10 @@ public class FlaggedEventClosureCommand extends FacilioCommand {
                     FlaggedEventRuleClosureConfigContext closureConfig = FlaggedEventUtil.getFlaggedEventClosureConfig(flaggedEventRule.getFlaggedEventRuleClosureConfig().getId());
                     if(closureConfig != null) {
                         if(matchingStatus(closureConfig.getFlaggedEventStatuses(),flaggedEvent.getStatus())) {
-                            flaggedEvent.setStatus(FlaggedEventContext.FlaggedEventStatus.AUTO_CLOSED);
-                            V3RecordAPI.updateRecord(flaggedEvent,modBean.getModule(FlaggedEventModule.MODULE_NAME), Arrays.asList(modBean.getField("status",FlaggedEventModule.MODULE_NAME)));
+                            FlaggedEventContext updateEvent = new FlaggedEventContext();
+                            updateEvent.setId(flaggedEvent.getId());
+                            updateEvent.setStatus(FlaggedEventContext.FlaggedEventStatus.AUTO_CLOSED);
+                            V3RecordAPI.updateRecord(updateEvent,modBean.getModule(FlaggedEventModule.MODULE_NAME), Arrays.asList(modBean.getField("status",FlaggedEventModule.MODULE_NAME)));
                         }
                     }
                 }

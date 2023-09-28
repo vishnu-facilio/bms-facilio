@@ -39,7 +39,9 @@ public class FlaggedEventBureauInformationCommand extends FacilioCommand {
                         List<ModuleBaseWithCustomFields> dataList = new ArrayList<>();
                         for (FlaggedEventRuleBureauEvaluationContext evaluationContext : bureauEvaluations) {
                             FlaggedEventBureauActionsContext bureauActionsContext = FieldUtil.cloneBean(evaluationContext, FlaggedEventBureauActionsContext.class);
-                            bureauActionsContext.setFlaggedEvent(flaggedEvent);
+                            FlaggedEventContext event = new FlaggedEventContext();
+                            event.setId(flaggedEvent.getId());
+                            bureauActionsContext.setFlaggedEvent(event);
                             bureauActionsContext.setEventStatus(FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.NOT_STARTED);
                             bureauActionsContext.setResolutionList(getBureauResolutionList(bureauActionsContext.getId()));
                             bureauActionsContext.setCauseList(getBureauCauseList(bureauActionsContext.getId()));

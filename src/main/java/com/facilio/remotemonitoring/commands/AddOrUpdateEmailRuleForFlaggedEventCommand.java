@@ -44,7 +44,7 @@ public class AddOrUpdateEmailRuleForFlaggedEventCommand extends FacilioCommand {
                 WorkflowRuleContext delayedEmailRule = flaggedEventRule.getDelayedEmailRule();
                 FlaggedEventRuleContext updateFlaggedEventRule = new FlaggedEventRuleContext();
                 updateFlaggedEventRule.setId(flaggedEventRule.getId());
-                if(emailRule != null && flaggedEventRule.shouldSendEmailNotification()) {
+                if(emailRule != null && emailRule.getActions() != null) {
                     Criteria criteria = new Criteria();
                     criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("flaggedEventRule",FlaggedEventModule.MODULE_NAME),String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
                     updateFlaggedEventRule.setEmailNotificationRuleId(FlaggedEventUtil.addEmailRule(emailRule,"Email Notification Rule for Flagged Event from Rule- " + flaggedEventRule.getId(),criteria));

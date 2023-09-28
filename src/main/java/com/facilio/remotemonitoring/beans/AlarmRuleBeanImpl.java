@@ -131,7 +131,7 @@ public class AlarmRuleBeanImpl implements AlarmRuleBean {
                 if(flaggedEventRule.getControllerCriteriaId() != null && flaggedEventRule.getControllerCriteriaId() > 0) {
                     flaggedEventRule.setControllerCriteria(CriteriaAPI.getCriteria(flaggedEventRule.getControllerCriteriaId()));
                 }
-                flaggedEventRule.setFlaggedEventRuleBureauEvaluationContexts(RemoteMonitorUtils.getFlaggedEventBureauEval(flaggedEventRule.getId()));
+                flaggedEventRule.setFlaggedEventRuleBureauEvaluationContexts(RemoteMonitorUtils.getFlaggedEventBureauEval(flaggedEventRule.getId(),true));
                 flaggedEventRule.setFieldMapping(RemoteMonitorUtils.getFlaggedEventRuleWOFieldMapping(flaggedEventRule.getId()));
                 flaggedEventRule.setFlaggedEventRuleClosureConfig(RemoteMonitorUtils.getFlaggedEventRuleClosureConfig(flaggedEventRule.getId()));
             }

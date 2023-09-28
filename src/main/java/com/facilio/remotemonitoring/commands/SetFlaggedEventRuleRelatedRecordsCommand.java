@@ -35,9 +35,10 @@ public class SetFlaggedEventRuleRelatedRecordsCommand extends FacilioCommand {
                 flaggedEventRule.setFlaggedEventRuleAlarmTypeRel(flaggedEventRuleAlarmTypeRels);
                 flaggedEventRule.setFlaggedEventRuleBureauEvaluationContexts(RemoteMonitorUtils.getFlaggedEventBureauEval(flaggedEventRule.getId()));
                 flaggedEventRule.setFieldMapping(RemoteMonitorUtils.getFlaggedEventRuleWOFieldMapping(flaggedEventRule.getId()));
-                flaggedEventRule.setDelayedEmailRule(RemoteMonitorUtils.getDelayedEmailRule(flaggedEventRule));
+                flaggedEventRule.setDelayedEmailRule(RemoteMonitorUtils.getEmailRule(flaggedEventRule.getDelayedEmailRuleOneId()));
                 flaggedEventRule.setFiles(AttachmentsAPI.getAttachments(RemoteMonitorConstants.FLAGGED_EVENT_RULE_ATTACHMENT_MOD_NAME,flaggedEventRuleId,false,null));
                 flaggedEventRule.setFlaggedEventRuleClosureConfig(RemoteMonitorUtils.getFlaggedEventRuleClosureConfig(flaggedEventRuleId));
+                flaggedEventRule.setEmailRule(RemoteMonitorUtils.getEmailRule(flaggedEventRule.getEmailNotificationRuleId()));
             }
         }
         return false;

@@ -38,6 +38,7 @@ public class FlaggedEventBureauActionModule extends SignUpData {
         flaggedEvent.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         flaggedEvent.setLookupModule(modBean.getModule(FlaggedEventModule.MODULE_NAME));
         flaggedEvent.setDefault(true);
+        flaggedEvent.setMainField(true);
         modBean.addField(flaggedEvent);
 
         DateField takeCustodyTimestamp = new DateField();

@@ -38,6 +38,7 @@ public class FlaggedEventBureauEvaluationModule extends SignUpData {
         flaggedEventRule.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         flaggedEventRule.setLookupModule(modBean.getModule(FlaggedEventRuleModule.MODULE_NAME));
         flaggedEventRule.setDefault(true);
+        flaggedEventRule.setMainField(true);
         modBean.addField(flaggedEventRule);
 
         LargeTextField descriptionField = new LargeTextField();

@@ -2,11 +2,13 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.remotemonitoring.signup.FlaggedEventModule;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
@@ -121,7 +123,14 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SURVEY)) {
             modules.add(modBean.getModule(FacilioConstants.Survey.SURVEY_RESPONSE));
         }
-        
+
+        if(AccountUtil.getCurrentTab() != null && AccountUtil.getCurrentTab().getTypeEnum() == WebTabContext.Type.EMAIL_TEMPLATES) {
+            FacilioModule flaggedEventModule = modBean.getModule(FlaggedEventModule.MODULE_NAME);
+            if(flaggedEventModule != null) {
+                modules.add(flaggedEventModule);
+            }
+        }
+
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);

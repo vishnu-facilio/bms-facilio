@@ -24,7 +24,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.*;
 
 public class RemoteMonitorUtils {
-//    public static FlaggedEventRuleClosureConfigContext getFlaggedEventRuleClosureConfig(long flaggedEventRuleId) throws Exception{
+    //    public static FlaggedEventRuleClosureConfigContext getFlaggedEventRuleClosureConfig(long flaggedEventRuleId) throws Exception{
 //        if(flaggedEventRuleId >0){
 //            List<SupplementRecord> supplementRecords = new ArrayList<>();
 //            supplementRecords.add();
@@ -37,8 +37,8 @@ public class RemoteMonitorUtils {
 //        }
 //        return null;
 //    }
-    public static List<FilterRuleCriteriaContext> fetchFilterRuleCriteriaForFilterRule(long filterRuleId) throws Exception{
-        if(filterRuleId >0){
+    public static List<FilterRuleCriteriaContext> fetchFilterRuleCriteriaForFilterRule(long filterRuleId) throws Exception {
+        if (filterRuleId > 0) {
             ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule alarmFilterRuleCriteriaModule = modbean.getModule(AlarmFilterRuleCriteriaModule.MODULE_NAME);
             List<FacilioField> alarmFilterRuleCriteriaModuleFields = modbean.getAllFields(AlarmFilterRuleCriteriaModule.MODULE_NAME);
@@ -46,19 +46,20 @@ public class RemoteMonitorUtils {
                     .module(alarmFilterRuleCriteriaModule)
                     .select(alarmFilterRuleCriteriaModuleFields)
                     .beanClass(FilterRuleCriteriaContext.class)
-                    .andCondition(CriteriaAPI.getCondition("ALARM_FILTER_RULE_ID","alarmFilterRule", String.valueOf(filterRuleId), NumberOperators.EQUALS));
+                    .andCondition(CriteriaAPI.getCondition("ALARM_FILTER_RULE_ID", "alarmFilterRule", String.valueOf(filterRuleId), NumberOperators.EQUALS));
             List<FilterRuleCriteriaContext> alarmFilterRuleCriteriaList = selectBaseline.get();
             return alarmFilterRuleCriteriaList;
         }
         return new ArrayList<>();
     }
+
     public static int deleteExistingFilterRuleCriteriaForFilterRule(long filterRuleId) throws Exception {
         ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule alarmFilterRuleCriteriaModule = modbean.getModule(AlarmFilterRuleCriteriaModule.MODULE_NAME);
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(alarmFilterRuleCriteriaModule.getTableName())
                 .select(Collections.singletonList(FieldFactory.getIdField(alarmFilterRuleCriteriaModule)))
-                .andCondition(CriteriaAPI.getCondition("ALARM_FILTER_RULE_ID","alarmFilterRule",String.valueOf(filterRuleId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("ALARM_FILTER_RULE_ID", "alarmFilterRule", String.valueOf(filterRuleId), NumberOperators.EQUALS));
         List<Map<String, Object>> props = builder.get();
         List<Long> recordIds = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(props)) {
@@ -79,6 +80,9 @@ public class RemoteMonitorUtils {
         return 0;
     }
     public static List<FlaggedEventRuleBureauEvaluationContext> getFlaggedEventBureauEval(Long parentId) throws Exception {
+        return getFlaggedEventBureauEval(parentId,false);
+    }
+    public static List<FlaggedEventRuleBureauEvaluationContext> getFlaggedEventBureauEval(Long parentId,boolean skipMeta) throws Exception {
         if(parentId != null && parentId > -1) {
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE","flaggedEventRule",String.valueOf(parentId),NumberOperators.EQUALS));
@@ -86,11 +90,11 @@ public class RemoteMonitorUtils {
             List<SupplementRecord> supplementRecord = new ArrayList<>();
             supplementRecord.add((SupplementRecord) modBean.getField("troubleShootingTips", FlaggedEventBureauEvaluationModule.MODULE_NAME));
             List<FlaggedEventRuleBureauEvaluationContext> flaggedEventRuleBureauEvaluationList = V3RecordAPI.getRecordsListWithSupplements(FlaggedEventBureauEvaluationModule.MODULE_NAME, null, FlaggedEventRuleBureauEvaluationContext.class, criteria,supplementRecord);
-           if(CollectionUtils.isNotEmpty(flaggedEventRuleBureauEvaluationList)){
+            if(CollectionUtils.isNotEmpty(flaggedEventRuleBureauEvaluationList)){
                for(FlaggedEventRuleBureauEvaluationContext flaggedEventRuleBureauEvaluation : flaggedEventRuleBureauEvaluationList) {
                    Long bureauEvaluationId = flaggedEventRuleBureauEvaluation.getId();
                    Long emailRuleId = flaggedEventRuleBureauEvaluation.getEmailRuleId();
-                   if (emailRuleId != null && emailRuleId > 0) {
+                   if (emailRuleId != null && emailRuleId > 0 && !skipMeta) {
                        WorkflowRuleContext emailRule = new WorkflowRuleContext();
                        List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(emailRuleId);
                        emailRule.setActions(actions);
@@ -181,11 +185,10 @@ public class RemoteMonitorUtils {
         return null;
     }
 
-    public static WorkflowRuleContext getDelayedEmailRule(FlaggedEventRuleContext flaggedEventRule) throws Exception{
-        Long delayedEmailRuleId = flaggedEventRule.getDelayedEmailRuleOneId();
-        if(delayedEmailRuleId != null && delayedEmailRuleId > -1) {
+    public static WorkflowRuleContext getEmailRule(Long ruleId) throws Exception{
+        if(ruleId != null && ruleId > -1) {
             WorkflowRuleContext delayedEmailRule = new WorkflowRuleContext();
-            List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(delayedEmailRuleId);
+            List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
             delayedEmailRule.setActions(actions);
             return delayedEmailRule;
         }
