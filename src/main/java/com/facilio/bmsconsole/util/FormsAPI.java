@@ -433,9 +433,10 @@ public class FormsAPI {
 			List<Map<String, Object>> props = new ArrayList<>();
 			Map<Long, FormSection> sectionMap = new HashMap<>();
 			for (FormSection f: sections) {
-				if (StringUtils.isNotEmpty(f.getName())) {
-					f.setLinkName(f.getName().toLowerCase().replaceAll("[^a-zA-Z0-9_]+", ""));
+				if (StringUtils.isEmpty(f.getName())) {
+					f.setName("Default Section");
 				}
+				f.setLinkName(f.getName().toLowerCase().replaceAll("[^a-zA-Z0-9_]+", ""));
 				f.setId(-1);
 				f.setFormId(formId);
 				f.setOrgId(orgId);
