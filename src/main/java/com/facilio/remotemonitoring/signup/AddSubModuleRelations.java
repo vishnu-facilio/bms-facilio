@@ -24,6 +24,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.remotemonitoring.context.FlaggedEventBureauActionsContext;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xpath.operations.Bool;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +42,8 @@ public class AddSubModuleRelations extends SignUpData {
     public static final String FILTER_ALARM_ACTIVITY = "filterAlarmActivity";
     public static final String FLAGGED_EVENT_ACTIVITY = "flaggedEventActivity";
     public static final String FLAGGED_EVENT_RULE_ACTIVITY = "flaggedEventRuleActivity";
+    public static final String ALARM_ASSET_TAGGING_ACTIVITY = "alarmAssetTaggingActivity";
+
 
     @Override
     public void addData() throws Exception {
@@ -54,6 +57,7 @@ public class AddSubModuleRelations extends SignUpData {
         addFilterRuleActivityModule();
         addFlaggedEventActivityModule();
         addFlaggedEventRuleActivityModule();
+        addAlarmAssetTaggingActivityModule();
 
         PageBuilderConfigUtil.updatePageBuilderModuleSettings(AccountUtil.getCurrentOrg().getId(), new String[] {
                 AlarmTypeModule.MODULE_NAME,
@@ -67,7 +71,8 @@ public class AddSubModuleRelations extends SignUpData {
                 AlarmFilterRuleModule.MODULE_NAME,
                 FilteredAlarmModule.MODULE_NAME,
                 FlaggedEventRuleModule.MODULE_NAME,
-                FlaggedEventModule.MODULE_NAME
+                FlaggedEventModule.MODULE_NAME,
+                AlarmAssetTaggingModule.MODULE_NAME
         });
 
         addSystemButtonsForFlaggedEvent();
@@ -492,6 +497,49 @@ public class AddSubModuleRelations extends SignUpData {
         SignupUtil.addNotesAndAttachmentModule(fetchedModule);
     }
 
+
+    private void addAlarmAssetTaggingActivityModule() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule module = new FacilioModule(ALARM_ASSET_TAGGING_ACTIVITY,
+                "Alarm Asset Tagging Activity",
+                "Custom_Activity",
+                FacilioModule.ModuleType.ACTIVITY
+        );
+        FacilioModule fetchedModule = modBean.getModule(AlarmAssetTaggingModule.MODULE_NAME);
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        NumberField parentId = (NumberField) FieldFactory.getDefaultField("parentId", "Parent", "PARENT_ID", FieldType.NUMBER);
+        fields.add(parentId);
+
+        FacilioField timefield = FieldFactory.getDefaultField("ttime", "Timestamp", "TTIME", FieldType.DATE_TIME);
+
+        fields.add(timefield);
+
+        NumberField type = (NumberField) FieldFactory.getDefaultField("type", "Type", "ACTIVITY_TYPE", FieldType.NUMBER);
+        fields.add(type);
+
+        LookupField doneBy = (LookupField) FieldFactory.getDefaultField("doneBy", "Done By", "DONE_BY_ID", FieldType.LOOKUP);
+        doneBy.setSpecialType("users");
+        fields.add(doneBy);
+
+        FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING);
+
+        fields.add(info);
+
+
+        module.setFields(fields);
+
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain1.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain1.execute();
+
+        modBean.addSubModule(fetchedModule.getModuleId(), module.getModuleId());
+        SignupUtil.addNotesAndAttachmentModule(fetchedModule);
+    }
+
     public static void addSystemButtonsForFlaggedEvent() throws Exception {
         createWorkorderFlaggedEventButton();
         takeCustodyFlaggedEventButton();
@@ -515,6 +563,10 @@ public class AddSubModuleRelations extends SignUpData {
         lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("assignedPeople",FlaggedEventBureauActionModule.MODULE_NAME),(String) null, PeopleOperator.CURRENT_USER));
         lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME),"INHIBIT,UNDER_CUSTODY,ACTION_TAKEN", StringSystemEnumOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("currentBureauActionDetail",FlaggedEventModule.MODULE_NAME), lookupCriteria, LookupOperator.LOOKUP));
+
+        Criteria ruleLookupCriteria = new Criteria();
+        ruleLookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("createWorkorder",FlaggedEventRuleModule.MODULE_NAME),"true", BooleanOperators.IS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("flaggedEventRule",FlaggedEventModule.MODULE_NAME), ruleLookupCriteria, LookupOperator.LOOKUP));
 
         createWorkorderSystemButton.setCriteria(criteria);
         SystemButtonApi.addSystemButton(FlaggedEventModule.MODULE_NAME,createWorkorderSystemButton);

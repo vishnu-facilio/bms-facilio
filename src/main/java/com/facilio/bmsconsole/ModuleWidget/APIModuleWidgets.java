@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.context.WidgetConfigContext;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.remotemonitoring.signup.FlaggedEventModule;
 import com.facilio.v3.annotation.Config;
 
 import java.util.function.Supplier;
@@ -672,6 +673,17 @@ public class APIModuleWidgets {
                 .addWidgetConfig("webTripJourney_5_6","Journey - 5 - 6",WidgetConfigContext.ConfigType.FIXED,5,6,PagesContext.PageLayoutType.WEB)
                 .done()
                 ;
+    }
+    @WidgetsForModule(FlaggedEventModule.MODULE_NAME)
+    public static Supplier<ModuleWidgets> getFlaggedEventWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("evaluationTimeRemaining","Evaluation Time Remaining",PageWidget.WidgetType.EVALUATION_TIME_REMAINING)
+                .addWidgetConfig("evaluationTimeRemaining_11_3","Evaluation Time Remaining - 11 - 3",WidgetConfigContext.ConfigType.FIXED,11,3,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("evaluationTeamDetails","Evaluation Team Details",PageWidget.WidgetType.EVALUATION_TEAM_DETAILS)
+                .addWidgetConfig("evaluationTeamDetails_18_3","Evaluation Team Details - 18 - 3",WidgetConfigContext.ConfigType.FIXED,18,3,PagesContext.PageLayoutType.WEB)
+                .done();
+
     }
 
 }

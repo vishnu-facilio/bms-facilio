@@ -677,20 +677,9 @@ public class ChainUtil {
 
     public static void initRESTAPIHandler(String packageName) throws InvocationTargetException, IllegalAccessException {
         Reflections reflections = new Reflections(ClasspathHelper.forPackage(packageName), new MethodAnnotationsScanner());
-        initRESTAPIHandler(reflections);
-    }
-
-    public static void initRESTAPIHandler(Reflections reflections) throws InvocationTargetException, IllegalAccessException {
-        fillModuleNameMap(reflections);
+        packageName = packageName.replace("\\","");
+        fillModuleNameMap(reflections,packageName);
         fillModuleTypeMap(reflections);
-    }
-
-    public static void initRESTAPIHandlerForStorm(String packageName) throws Exception {
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .forPackages(packageName)
-                .filterInputsBy(new FilterBuilder().includePackage(packageName))
-                .setScanners(new MethodAnnotationsScanner()));
-        initRESTAPIHandler(reflections);
     }
 
     private static void fillModuleTypeMap(Reflections reflections) throws InvocationTargetException, IllegalAccessException {
@@ -714,24 +703,26 @@ public class ChainUtil {
         }
     }
 
-    private static void fillModuleNameMap(Reflections reflections) throws InvocationTargetException, IllegalAccessException {
+    private static void fillModuleNameMap(Reflections reflections,String packageName) throws InvocationTargetException, IllegalAccessException {
         Set<Method> methodsAnnotatedWithModule = reflections.getMethodsAnnotatedWith(Module.class);
         for (Method method: methodsAnnotatedWithModule) {
-            validateHandlerMethod(method);
+            if(method.getDeclaringClass().getPackage().getName().equals(packageName)) {
+                validateHandlerMethod(method);
 
-            Module annotation = method.getAnnotation(Module.class);
-            String moduleName = annotation.value().trim();
-            if (moduleName.isEmpty()) {
-                throw new IllegalStateException("Module name cannot be empty.");
+                Module annotation = method.getAnnotation(Module.class);
+                String moduleName = annotation.value().trim();
+                if (moduleName.isEmpty()) {
+                    throw new IllegalStateException("Module name cannot be empty.");
+                }
+
+                Supplier<V3Config> config = (Supplier<V3Config>) method.invoke(null, null);
+
+                if (MODULE_HANDLER_MAP.containsKey(moduleName)) {
+                    throw new IllegalStateException("Module config already present.");
+                }
+
+                MODULE_HANDLER_MAP.put(moduleName, config);
             }
-
-            Supplier<V3Config> config = (Supplier<V3Config>) method.invoke(null, null);
-
-            if (MODULE_HANDLER_MAP.containsKey(moduleName)) {
-                throw new IllegalStateException("Module config already present.");
-            }
-
-            MODULE_HANDLER_MAP.put(moduleName, config);
         }
     }
 

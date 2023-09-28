@@ -81,6 +81,7 @@ public class WorkflowLogContext extends V3Context {
         APPROVAL_STATE_FLOW(8,RuleType.APPROVAL_STATE_FLOW,"Stateflow Rule"),
         APPROVAL_STATE_TRANSITION(9,RuleType.APPROVAL_STATE_TRANSITION,"State Transition Rule"),
         FLOW(10,RuleType.FLOW,"Flow")
+
         ;
 
         WorkflowLogType(int i,String name) {

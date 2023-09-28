@@ -10,6 +10,10 @@ import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
@@ -109,9 +113,10 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
 
         Map<String, List<PagesContext>> pageMap = new HashMap<>();
 
-        pageMap.put(app.getLinkName(), Arrays.asList(new PagesContext(null, null, "", null, true, false, false)
+        pageMap.put(app.getLinkName(), new ModulePages()
+                .addPage("defaultPage", "Default Page", "", null, true, true, false)
                 .addWebLayout()
-                .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
                 .addWidget("summaryFieldsWidget", "Filtered Alarm Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
@@ -119,6 +124,46 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
                 .sectionDone()
                 .addSection("evaluationTeams", "Evaluation Teams", "List of Evaluation Teams")
                 .addWidget("evaluationTeamsRelated", "Evaluation Teams", PageWidget.WidgetType.RELATED_LIST, "relatedListwidgetViewWidget_6_12", 0, 0, null, getSingleRelatedListForModule(modBean.getModule(FlaggedEventModule.MODULE_NAME), FlaggedEventBureauActionModule.MODULE_NAME,"flaggedEvent"))
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getWidgetGroup())
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("filteredAlarms", "Filtered Alarms", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("filteredAlarms", "Filtered Alarms", "List of filtered alarms")
+                .addWidget("filteredAlarmsRelated", "Filtered Alarms", PageWidget.WidgetType.RELATED_LIST, "relatedListwidgetViewWidget_6_12", 0, 0, null, getSingleRelatedListForModule(modBean.getModule(FlaggedEventModule.MODULE_NAME), FilteredAlarmModule.MODULE_NAME,"flaggedEvent"))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone()
+                .addPage("pageWithEvaluationDetails", "Page With Evaluation Details", "", getGageWithEvaluationDetailCriteria(), true, false, false)
+                .addWebLayout()
+                .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summaryfields", null, null)
+                .addWidget("summaryFieldsWidget", "Flagged Event Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_30_9", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .addWidget("evaluationTimeRemaining", "Evaluation Time Remaining", PageWidget.WidgetType.EVALUATION_TIME_REMAINING, "evaluationTimeRemaining_11_3", 9, 0, null, null)
+                .widgetDone()
+                .addWidget("evaluationTeamDetails", "Evaluation Team Details", PageWidget.WidgetType.EVALUATION_TEAM_DETAILS, "evaluationTeamDetails_18_3", 9, 8, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("evaluationTeams", "Evaluation Teams", "List of Evaluation Teams")
+                .addWidget("evaluationTeamsRelated", "Evaluation Teams", PageWidget.WidgetType.RELATED_LIST, "relatedlistwidgetViewWidget-28*12", 0, 0, null, getSingleRelatedListForModule(modBean.getModule(FlaggedEventModule.MODULE_NAME), FlaggedEventBureauActionModule.MODULE_NAME, "flaggedEvent"))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -143,7 +188,9 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .layoutDone()));
+                .layoutDone()
+                .pageDone()
+                .getCustomPages());
         return pageMap;
     }
 
@@ -243,5 +290,12 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
         return FieldUtil.getAsJSON(widgetGroup);
+    }
+
+    private static Criteria getGageWithEvaluationDetailCriteria() throws Exception {
+        Criteria criteria = new Criteria();
+        Condition condition = CriteriaAPI.getCondition( "currentBureauActionDetail","CURRENT_BUREAU_ACTION", CommonOperators.IS_NOT_EMPTY);
+        criteria.addAndCondition(condition);
+        return  criteria;
     }
 }

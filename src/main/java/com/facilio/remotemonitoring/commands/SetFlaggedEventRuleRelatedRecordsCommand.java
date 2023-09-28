@@ -8,6 +8,8 @@ import com.facilio.remotemonitoring.context.FlaggedEventRuleAlarmTypeRel;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleContext;
 import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
 import com.facilio.v3.context.Constants;
+import com.facilio.workflows.action.WorkflowAction;
+import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -39,6 +41,9 @@ public class SetFlaggedEventRuleRelatedRecordsCommand extends FacilioCommand {
                 flaggedEventRule.setFiles(AttachmentsAPI.getAttachments(RemoteMonitorConstants.FLAGGED_EVENT_RULE_ATTACHMENT_MOD_NAME,flaggedEventRuleId,false,null));
                 flaggedEventRule.setFlaggedEventRuleClosureConfig(RemoteMonitorUtils.getFlaggedEventRuleClosureConfig(flaggedEventRuleId));
                 flaggedEventRule.setEmailRule(RemoteMonitorUtils.getEmailRule(flaggedEventRule.getEmailNotificationRuleId()));
+                if(flaggedEventRule.getWorkflowId() != null && flaggedEventRule.getWorkflowId()>0){
+                    flaggedEventRule.setWorkflowContext(WorkflowUtil.getWorkflowContext(flaggedEventRule.getWorkflowId()));
+                }
             }
         }
         return false;

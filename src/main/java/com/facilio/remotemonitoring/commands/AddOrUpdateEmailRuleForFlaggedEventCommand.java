@@ -17,6 +17,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.remotemonitoring.compute.FlaggedEventUtil;
 import com.facilio.remotemonitoring.context.FlaggedEventContext;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleClosureConfigContext;
@@ -26,6 +27,9 @@ import com.facilio.remotemonitoring.signup.FlaggedEventModule;
 import com.facilio.remotemonitoring.signup.FlaggedEventRuleModule;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.workflowlog.context.WorkflowLogContext;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,10 +69,33 @@ public class AddOrUpdateEmailRuleForFlaggedEventCommand extends FacilioCommand {
                         }
                     }
                 }
-                V3RecordAPI.updateRecord(updateFlaggedEventRule, modBean.getModule(FlaggedEventRuleModule.MODULE_NAME), Arrays.asList(modBean.getField("emailNotificationRuleId",FlaggedEventRuleModule.MODULE_NAME),modBean.getField("delayedEmailRuleOneId",FlaggedEventRuleModule.MODULE_NAME),modBean.getField("delayedEmailRuleTwoId",FlaggedEventRuleModule.MODULE_NAME)));
+                Long workflowId = addWorkflowCriteria(flaggedEventRule);
+                if(workflowId != null) {
+                    updateFlaggedEventRule.setWorkflowId(workflowId);
+                }
+                List<FacilioField> fieldsList = Arrays.asList(modBean.getField("workflowId",FlaggedEventRuleModule.MODULE_NAME),modBean.getField("emailNotificationRuleId",FlaggedEventRuleModule.MODULE_NAME),modBean.getField("delayedEmailRuleOneId",FlaggedEventRuleModule.MODULE_NAME),modBean.getField("delayedEmailRuleTwoId",FlaggedEventRuleModule.MODULE_NAME));
+                V3RecordAPI.updateRecord(updateFlaggedEventRule, modBean.getModule(FlaggedEventRuleModule.MODULE_NAME), fieldsList);
             }
         }
         return false;
     }
 
+    private static Long addWorkflowCriteria(FlaggedEventRuleContext rule) throws Exception {
+        WorkflowContext workflow = rule.getWorkflowContext();
+        if(workflow != null) {
+            workflow.setIsLogNeeded(true);
+            FacilioChain chain = TransactionChainFactory.getAddWorkflowChain();
+            if(workflow.getId() > 0) {
+                chain = TransactionChainFactory.getUpdateWorkflowChain();
+            }
+            FacilioContext context = chain.getContext();
+            context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+            chain.execute();
+            WorkflowContext addedWorkflow = (WorkflowContext) context.get(WorkflowV2Util.WORKFLOW_CONTEXT);
+            if(addedWorkflow != null && addedWorkflow.getId() > 0) {
+                return addedWorkflow.getId();
+            }
+        }
+        return null;
+    }
 }

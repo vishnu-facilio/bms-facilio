@@ -110,7 +110,7 @@ public class FilterAlarmUtil {
             JSONObject input = new JSONObject();
             input.put("orgId", orgId);
             input.put("rawAlarm", FacilioUtil.getAsJSON(rawAlarm));
-            queue.put(getMessageProcessingTopicName(), new FacilioRecord(String.valueOf(orgId), input));
+            queue.put(getMessageProcessingTopicName(), new FacilioRecord(orgId + "#"+ rawAlarm.getController().getId(), input));
         }
     }
 
@@ -127,6 +127,7 @@ public class FilterAlarmUtil {
         filteredAlarm.setSite(rawAlarm.getSite());
         filteredAlarm.setController(rawAlarm.getController());
         filteredAlarm.setRawAlarm(rawAlarm);
+        filteredAlarm.setAsset(rawAlarm.getAsset());
         filteredAlarm.setMessage(rawAlarm.getMessage());
         return filteredAlarm;
     }

@@ -3358,6 +3358,7 @@ public class FacilioConstants {
 			classMap.put(FlaggedEventBureauEvaluationModule.MODULE_NAME, FlaggedEventRuleBureauEvaluationContext.class);
 			classMap.put(FlaggedEventBureauActionModule.MODULE_NAME, FlaggedEventBureauActionsContext.class);
 			classMap.put(BureauInhibitReasonListModule.MODULE_NAME, BureauInhibitReasonListContext.class);
+			classMap.put(AlarmAssetTaggingModule.MODULE_NAME, AlarmAssetTaggingContext.class);
 
 
 			classMap.put(AddSubModuleRelations.ALARM_TYPE_ACTIVITY, ActivityContext.class);

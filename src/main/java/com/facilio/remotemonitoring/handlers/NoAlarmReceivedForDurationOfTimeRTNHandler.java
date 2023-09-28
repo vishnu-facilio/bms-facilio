@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -12,6 +13,7 @@ import com.facilio.remotemonitoring.compute.RawAlarmUtil;
 import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.signup.ControllerAlarmInfoModule;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,6 +46,13 @@ public class NoAlarmReceivedForDurationOfTimeRTNHandler implements AlarmCriteria
             criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_TYPE", "alarmType", String.valueOf(rawAlarm.getAlarmType().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_DEFINITION", "alarmDefinition", String.valueOf(rawAlarm.getAlarmDefinition().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "strategy", String.valueOf(rawAlarm.getStrategy()), NumberOperators.EQUALS));
+
+            if(rawAlarm.getAsset() != null && rawAlarm.getAsset().getId() > 0) {
+                criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(rawAlarm.getAsset().getId()), NumberOperators.EQUALS));
+            } else {
+                criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
+            }
+
             List<ControllerAlarmInfoContext> controllerAlarmInfoList = V3RecordAPI.getRecordsListWithSupplements(ControllerAlarmInfoModule.MODULE_NAME, null, ControllerAlarmInfoContext.class, criteria, null);
             if (CollectionUtils.isNotEmpty(controllerAlarmInfoList)) {
                 ControllerAlarmInfoContext updateControllerAlarmInfo = new ControllerAlarmInfoContext();
@@ -54,6 +63,7 @@ public class NoAlarmReceivedForDurationOfTimeRTNHandler implements AlarmCriteria
             } else {
                 ControllerAlarmInfoContext controllerAlarmInfo = new ControllerAlarmInfoContext();
                 controllerAlarmInfo.setController(rawAlarm.getController());
+                controllerAlarmInfo.setAsset(rawAlarm.getAsset());
                 controllerAlarmInfo.setAlarmDefinition(rawAlarm.getAlarmDefinition());
                 controllerAlarmInfo.setAlarmType(rawAlarm.getAlarmType());
                 controllerAlarmInfo.setAlarmLastReceivedTime(System.currentTimeMillis());

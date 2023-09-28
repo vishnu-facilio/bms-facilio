@@ -135,7 +135,7 @@ public class ClientContactModule extends BaseModuleConfig{
         List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME", FieldType.STRING), true));
 
         FacilioView allView = new FacilioView();
-        allView.setName("all-remotemonitor-clientcontact");
+        allView.setName("all");
         allView.setDisplayName("All Client Contacts");
         allView.setAppLinkNames(Collections.singletonList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         allView.setModuleName(clientContactModule.getName());

@@ -2,6 +2,7 @@ package com.facilio.remotemonitoring.context;
 
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ public class ControllerAlarmInfoContext extends V3Context {
     private Long alarmLastReceivedTime;
     private AlarmStrategy strategy;
     private Boolean filtered;
+    private V3AssetContext asset;
     public AlarmStrategy getStrategyEnum() {
         return strategy;
     }

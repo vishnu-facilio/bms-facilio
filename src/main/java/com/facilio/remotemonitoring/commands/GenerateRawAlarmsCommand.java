@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.bmsconsoleV3.context.V3ClientContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -28,6 +29,7 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.ldap.Control;
 import java.util.Collections;
@@ -62,6 +64,16 @@ public class GenerateRawAlarmsCommand extends FacilioCommand {
                 controller.setId((Long) alarm.get("controllerId"));
                 rawAlarmContext.setController(controller);
                 rawAlarmContext.setSourceType(RawAlarmContext.RawAlarmSourceType.SIMULATOR);
+                if (alarm.containsKey("assetId")){
+                    V3AssetContext asset = new V3AssetContext();
+                    if(alarm.get("assetId") != null) {
+                        String assetId = alarm.get("assetId").toString();
+                        if (StringUtils.isNotEmpty(assetId)) {
+                            asset.setId(Long.parseLong(assetId));
+                            rawAlarmContext.setAsset(asset);
+                        }
+                    }
+                }
                 RawAlarmUtil.pushToStormRawAlarmQueue(rawAlarmContext);
             }
         }

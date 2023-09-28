@@ -616,8 +616,9 @@ public class PageWidget {
 		ONGOING_TIMESHEET_WIDGET("ongoingTimeSheetWidget"),
 		OVERDUE_SERVICE_APPOINTMENTS_WIDGET("overdueServiceAppointmentsWidget"),
 		TODAY_SERVICE_APPOINTMENTS_WIDGET("todayServiceAppointmentsWidget"),
-		OPEN_SERVICE_APPOINTMENTS_WIDGET("openServiceAppointmentsWidget")
-		;
+		OPEN_SERVICE_APPOINTMENTS_WIDGET("openServiceAppointmentsWidget"),
+		EVALUATION_TIME_REMAINING("evaluationTimeRemaining"),
+		EVALUATION_TEAM_DETAILS("evaluationTeamDetails");
 
 		private String name;
 		@Getter

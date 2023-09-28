@@ -3529,6 +3529,7 @@
             <property name="rawAlarmList" type="array">
                 <items type="object">
                     <property name="controllerId" type="number"/>
+                    <property name="assetId" type="number"/>
                     <property name="message" type="string"/>
                     <property name="occurredTime" type="number"/>
                     <property name="clearedTime" type="number"/>

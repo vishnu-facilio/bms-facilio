@@ -208,6 +208,7 @@ public class RemoteMonitorUtils {
             if(CollectionUtils.isNotEmpty(flaggedEventRuleClosureConfigList)){
                 FlaggedEventRuleClosureConfigContext flaggedEventRuleClosureConfig = flaggedEventRuleClosureConfigList.get(0);
                 flaggedEventRuleClosureConfig.setFlaggedEventStatuses(FlaggedEventUtil.getClosureFlaggedEventStatus(flaggedEventRuleClosureConfig.getId()));
+                flaggedEventRuleClosureConfig.setCloseEmailRule(getEmailRule(flaggedEventRuleClosureConfig.getCloseEmailNotificationRuleId()));
                 return  flaggedEventRuleClosureConfig;
             }
         }

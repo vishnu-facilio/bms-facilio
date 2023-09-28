@@ -64,8 +64,8 @@ public class AddOrUpdateBureauConfigCommand extends FacilioCommand {
                             FieldChangeFieldContext changeFieldContext = new FieldChangeFieldContext();
                             changeFieldContext.setFieldId(bureauDetailField.getFieldId());
                             bureauConfig.setEmailRuleId(FlaggedEventUtil.addFieldChangeEmailRule(bureauConfig.getEmailRule(), "Email Notification Rule for Flagged Event Bureau - " + flaggedEventRule.getId(), Arrays.asList(changeFieldContext), criteria));
-                            V3Util.createRecord(modBean.getModule(FlaggedEventBureauEvaluationModule.MODULE_NAME), Arrays.asList(bureauConfig));
                         }
+                        V3Util.createRecord(modBean.getModule(FlaggedEventBureauEvaluationModule.MODULE_NAME), Arrays.asList(bureauConfig));
                     }
                 }
             }

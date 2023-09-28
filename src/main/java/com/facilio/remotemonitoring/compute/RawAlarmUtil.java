@@ -274,6 +274,11 @@ public class RawAlarmUtil {
         criteria.addAndCondition(CriteriaAPI.getCondition("SITE", "site", String.valueOf(rawAlarm.getSite().getId()), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", null, CommonOperators.IS_EMPTY));
         criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "strategy", String.valueOf(rawAlarm.getStrategy()), NumberOperators.EQUALS));
+        if(rawAlarm.getAsset() != null && rawAlarm.getAsset().getId() > 0) {
+            criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(rawAlarm.getAsset().getId()), NumberOperators.EQUALS));
+        } else {
+            criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
+        }
         if(rawAlarm.getId() > -1) {
             criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(rawAlarmModule), String.valueOf(rawAlarm.getId()), NumberOperators.LESS_THAN));
         }

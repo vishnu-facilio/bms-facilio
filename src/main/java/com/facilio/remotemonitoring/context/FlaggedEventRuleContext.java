@@ -7,6 +7,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStringEnum;
 import com.facilio.v3.context.V3Context;
+import com.facilio.workflows.context.WorkflowContext;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,6 +41,8 @@ public class FlaggedEventRuleContext extends V3Context {
     private List<Long> fileIds;
     private List<AttachmentContext> files;
     private FlaggedEventRuleClosureConfigContext flaggedEventRuleClosureConfig;
+    private WorkflowContext workflowContext;
+    private Long workflowId;
     public boolean shouldSendEmailNotification() {
         if(sendEmailNotification == null) {
             return false;

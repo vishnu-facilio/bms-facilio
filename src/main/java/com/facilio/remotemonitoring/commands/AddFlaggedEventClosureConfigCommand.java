@@ -58,6 +58,7 @@ public class AddFlaggedEventClosureConfigCommand extends FacilioCommand {
                     FlaggedEventRuleContext rule = new FlaggedEventRuleContext();
                     rule.setId(flaggedEventRule.getId());
                     closureConfig.setFlaggedEventRule(rule);
+                    closureConfig.setCloseEmailRule(null);
                     FacilioContext closureContext = V3Util.createRecord(modBean.getModule(AddFlaggedEventClosureConfigModule.MODULE_NAME), FieldUtil.getAsProperties(closureConfig));
                     Map<String, List> dataMap = (Map<String, List>) closureContext.get(Constants.RECORD_MAP);
                     List list = dataMap.get(AddFlaggedEventClosureConfigModule.MODULE_NAME);
