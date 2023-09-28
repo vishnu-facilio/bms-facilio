@@ -175,7 +175,7 @@ public class InsuranceModule extends BaseModuleConfig{
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INSURANCE);
 
         for (String appName : appNameList) {
-            ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
             appNameVsPage.put(appName, buildInsurancePage(app, module, false, true));
         }
         return appNameVsPage;

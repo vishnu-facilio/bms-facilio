@@ -88,7 +88,7 @@ public class ClientContactModule extends BaseModuleConfig{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
         for(String appName:appNameList) {
-            ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
             appNameVsPage.put(appName, buildClientContactPage(app, module, false, true));
         }
         return appNameVsPage;
