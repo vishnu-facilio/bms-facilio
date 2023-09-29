@@ -226,7 +226,7 @@ public class PageWidget {
 		GROUP("group"),
 		HISTORY("history"),
 		RULE_DETIALS_WIGET("ruleDetialsWidget"),
-		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
+		RULE_ASSOCIATED_WORK_ORDERS("ruleAssociatedWo"),
 		RULE_RCA("ruleRCA"),
 		HISTORY_LOG("historyLog"),
 		GRAPHICS("graphics"),
@@ -580,9 +580,9 @@ public class PageWidget {
 
 		//Rule Cards
 		ROOT_CAUSE_AND_IMPACT("rootCauseAndImpact"),
-		RULE_ASSETS_ALARM("ruleAssetsAlarm"),
+		RULE_ASSETS_AND_ALARM("ruleAssetsAlarm"),
 		RULE_ALARM_INSIGHT("ruleAlarmInsight"),
-		RULE_WO_DURATION("ruleWoDuration"),
+		RULE_WORK_ORDER_DURATION("ruleWoDuration"),
 		ROOT_CAUSES("rootCauses"),
 		RULE_INSIGHT("ruleInsight"),
 		RULE_LOGS("ruleLogs"),

@@ -3,9 +3,9 @@ package com.facilio.readingrule.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ReadingAlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.enums.RuleJobType;
+import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
 import com.facilio.chain.FacilioContext;
@@ -35,9 +35,12 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.facilio.modules.FieldFactory.getStringField;
 
 @Log4j
 public class NewReadingRuleAPI {
@@ -357,5 +360,143 @@ public class NewReadingRuleAPI {
             data.add(dataArr);
         });
         return data;
+    }
+
+    //summary util
+
+
+    public static List<PagesContext> getSystemPage(ApplicationContext app) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule ruleModule = modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE);
+
+
+        String pageName, pageDisplayName;
+        pageName = ruleModule.getName().toLowerCase().replaceAll("[^a-zA-Z0-9]+", "") + "defaultpage";
+        pageDisplayName = "Default "+ ruleModule.getDisplayName()+" Page ";
+
+        List<PagesContext> rulePages = new ArrayList<>();
+
+        PagesContext ruleTemplatePage = new PagesContext(pageName, pageDisplayName, "", null, true, false, false)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("ruleDetails", null, null)
+                .addWidget("ruleDetails", "Rule Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget-11", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ReadingRules.NEW_READING_RULE, app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("faultDetails", null, null)
+                .addWidget("assetsAndAlarm", null, PageWidget.WidgetType.RULE_ASSETS_AND_ALARM, "webRuleAssetsAndAlarm-30_4", 0, 0, null, null)
+                .widgetDone()
+                .addWidget("rootCauseAndImpact", null, PageWidget.WidgetType.ROOT_CAUSE_AND_IMPACT, "webRootCauseAndImpact-30_3", 4, 0, null, null)
+                .widgetDone()
+                .addWidget("ruleAlarmInsights", null, PageWidget.WidgetType.RULE_ALARM_INSIGHT, "webRuleAlarmInsights-30_5", 7, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("workOrderDetails", null, null)
+                .addWidget("associatedWorkOrders", "Associated Work Orders", PageWidget.WidgetType.RULE_ASSOCIATED_WORK_ORDERS, "webRuleAssociatedWorkOrders-15_6", 0, 0, null, null)
+                .widgetDone()
+                .addWidget("ruleWorkOrderDuration", "Associated Work Orders", PageWidget.WidgetType.RULE_WORK_ORDER_DURATION, "webRuleWorkOrderDuration-15_6", 6, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("ruleInsight", "Rule Insight", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("ruleInsight", null, null)
+                .addWidget("ruleInsight", "Rule Insight", PageWidget.WidgetType.RULE_INSIGHT, "ruleInsight-32_12", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("rootCauses", "Root Causes", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("rootCauses", null, null)
+                .addWidget("rootCauses", "Root Causes", PageWidget.WidgetType.ROOT_CAUSES, "rootCauses-32_12", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("logs", "Logs", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("ruleLogs", null, null)
+                .addWidget("ruleLogs", "Activity Log", PageWidget.WidgetType.RULE_LOGS, "ruleLogs-32_12", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone();
+
+        rulePages.add(ruleTemplatePage);
+
+
+        return rulePages;
+    }
+
+    private static JSONObject getSummaryWidgetDetails(String moduleName, ApplicationContext app) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(moduleName);
+
+        FacilioField description = moduleBean.getField("description", moduleName);
+        FacilioField assetCategory = moduleBean.getField("assetCategory", moduleName);
+
+        FacilioField messageField = getStringField("message", "MESSAGE", module);
+
+        SummaryWidget pageWidget = new SummaryWidget();
+        SummaryWidgetGroup primaryDetailsWidgetGroup = new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, description, 1, 1, 4);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, messageField, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, assetCategory, 2, 2, 1);
+
+        primaryDetailsWidgetGroup.setName("primaryDetails");
+        primaryDetailsWidgetGroup.setDisplayName("Primary Details");
+        primaryDetailsWidgetGroup.setColumns(4);
+
+
+        SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
+
+        List<FacilioField> fields = moduleBean.getAllFields(moduleName);
+        int columnNo = 1, rowNo = 1;
+        for (FacilioField field : fields) {
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1);
+            columnNo++;
+            if(columnNo > 4) {
+                columnNo = 1;
+                rowNo ++;
+            }
+        }
+
+        allFieldsWidgetGroup.setName("otherDetails");
+        allFieldsWidgetGroup.setDisplayName("Other Details");
+        allFieldsWidgetGroup.setColumns(4);
+
+        List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
+        widgetGroupList.add(primaryDetailsWidgetGroup);
+        widgetGroupList.add(allFieldsWidgetGroup);
+
+        pageWidget.setDisplayName("");
+        pageWidget.setModuleId(module.getModuleId());
+        pageWidget.setAppId(app.getId());
+        pageWidget.setGroups(widgetGroupList);
+
+        return FieldUtil.getAsJSON(pageWidget);
+
+    }
+
+    private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan) {
+        if (field != null) {
+            SummaryWidgetGroupFields summaryField = new SummaryWidgetGroupFields();
+            summaryField.setName(field.getName());
+            summaryField.setDisplayName(field.getDisplayName());
+            summaryField.setFieldId(field.getFieldId());
+            summaryField.setRowIndex(rowIndex);
+            summaryField.setColIndex(colIndex);
+            summaryField.setColSpan(colSpan);
+            if (widgetGroup.getFields() == null) {
+                widgetGroup.setFields(new ArrayList<>(Arrays.asList(summaryField)));
+            } else {
+                widgetGroup.getFields().add(summaryField);
+            }
+        }
     }
 }
