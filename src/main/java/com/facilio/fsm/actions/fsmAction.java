@@ -91,7 +91,11 @@ public class fsmAction extends V3Action {
         context.put(FacilioConstants.ContextNames.END_TIME,getEndTime());
         context.put(FacilioConstants.Dispatcher.BOARD_ID,getBoardId());
         context.put(FacilioConstants.ContextNames.SEARCH,getSearch());
-        context.put(FacilioConstants.ContextNames.FILTERS,getFilters());
+        if (StringUtils.isNotEmpty(getFilters())) {
+            JSONParser parser = new JSONParser();
+            JSONObject filterJson = (JSONObject) parser.parse(getFilters());
+            context.put(FacilioConstants.ContextNames.FILTERS, filterJson);
+        }
         context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.PEOPLE);
         chain.execute();
 
