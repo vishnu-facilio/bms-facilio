@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.facilio.modules.FieldFactory.getRuleAlarmDetailsFields;
+import static com.facilio.modules.FieldFactory.getStringField;
 
 public class ReadingRuleTemplatePage implements TemplatePageFactory {
     @Override
@@ -32,13 +33,13 @@ public class ReadingRuleTemplatePage implements TemplatePageFactory {
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("ruleDetails", null, null)
-                .addWidget("ruleDetails", "Rule Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ReadingRules.NEW_READING_RULE))
+                .addWidget("ruleDetails", "Rule Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "webRulePrimaryDetails-11", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ReadingRules.NEW_READING_RULE))
                 .widgetDone()
                 .sectionDone()
                 .addSection("faultDetails", null, null)
                 .addWidget("assetsAndAlarm", null, PageWidget.WidgetType.RULE_ASSETS_ALARM, "webRuleAssetsAndAlarm-30_4", 0, 0, null, null)
                 .widgetDone()
-                .addWidget("rootCauseAndImpact", null, PageWidget.WidgetType.ROOT_CAUSE_AND_IMPACT, "rootCauseAndImpact-30_3", 4, 0, null, null)
+                .addWidget("rootCauseAndImpact", null, PageWidget.WidgetType.ROOT_CAUSE_AND_IMPACT, "webRootCauseAndImpact-30_3", 4, 0, null, null)
                 .widgetDone()
                 .addWidget("ruleAlarmInsights", null, PageWidget.WidgetType.RULE_ALARM_INSIGHT, "webRuleAlarmInsights-30_5", 7, 0, null, null)
                 .widgetDone()
@@ -86,8 +87,7 @@ public class ReadingRuleTemplatePage implements TemplatePageFactory {
         FacilioField description = moduleBean.getField("description", moduleName);
         FacilioField assetCategory = moduleBean.getField("assetCategory", moduleName);
 
-        Map<String, FacilioField> ruleAlarmDetailsFields = FieldFactory.getAsMap(getRuleAlarmDetailsFields());
-        FacilioField messageField = ruleAlarmDetailsFields.get("message");
+        FacilioField messageField = getStringField("message", "MESSAGE", module);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup primaryDetailsWidgetGroup = new SummaryWidgetGroup();
@@ -100,39 +100,27 @@ public class ReadingRuleTemplatePage implements TemplatePageFactory {
         primaryDetailsWidgetGroup.setDisplayName("Primary Details");
         primaryDetailsWidgetGroup.setColumns(4);
 
-        SummaryWidgetGroup rootCauseAndImpactGroup = new SummaryWidgetGroup();
 
-        FacilioField resource = moduleBean.getField("resource", moduleName);
+        SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
-        addSummaryFieldInWidgetGroup(rootCauseAndImpactGroup, resource, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(rootCauseAndImpactGroup, resource, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(rootCauseAndImpactGroup, resource, 1, 1, 1);
+        List<FacilioField> fields = moduleBean.getAllFields(moduleName);
+        int columnNo = 1, rowNo = 1;
+        for (FacilioField field : fields) {
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1);
+            columnNo++;
+            if(columnNo > 4) {
+                columnNo = 1;
+                rowNo ++;
+            }
+        }
 
-        rootCauseAndImpactGroup.setName("rootCauseAndImpact");
-        rootCauseAndImpactGroup.setDisplayName("Root cause & impact");
-        rootCauseAndImpactGroup.setColumns(4);
-//
-//        SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
-//
-//        List<FacilioField> fields = moduleBean.getAllFields(moduleName);
-//        int columnNo = 1, rowNo = 1;
-//        for (FacilioField field : fields) {
-//            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1);
-//            columnNo++;
-//            if(columnNo > 3) {
-//                columnNo = 1;
-//                rowNo ++;
-//            }
-//        }
-//
-//        allFieldsWidgetGroup.setName("fields");
-//        allFieldsWidgetGroup.setDisplayName("Fields");
-//        allFieldsWidgetGroup.setColumns(3);
+        allFieldsWidgetGroup.setName("otherDetails");
+        allFieldsWidgetGroup.setDisplayName("Other Details");
+        allFieldsWidgetGroup.setColumns(4);
 
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(primaryDetailsWidgetGroup);
-//        widgetGroupList.add(otherDetailsWidgetGroup);
-//        widgetGroupList.add(allFieldsWidgetGroup);
+        widgetGroupList.add(allFieldsWidgetGroup);
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());

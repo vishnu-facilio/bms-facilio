@@ -300,8 +300,11 @@ public class APIModuleWidgets {
     @WidgetsForModule(FacilioConstants.ReadingRules.NEW_READING_RULE)
     public static Supplier<ModuleWidgets> getNewReadingRuleWidgets() {
         return () -> new ModuleWidgets()
+                .addModuleWidget("rulePrimaryDetails", "Rule Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET)
+                .addFlexibleWidgetConfig("webRulePrimaryDetails-11", "Rule Details - 11", 11, PagesContext.PageLayoutType.WEB)
+                .done()
                 .addModuleWidget("rootCauseAndImpact", "Root Cause and Impact", PageWidget.WidgetType.ROOT_CAUSE_AND_IMPACT)
-                .addFixedWidgetConfig("rootCauseAndImpact-30_3", "Root Cause and Impact - 30_3", 30, 3, PagesContext.PageLayoutType.WEB)
+                .addFixedWidgetConfig("webRootCauseAndImpact-30_3", "Root Cause and Impact - 30_3", 30, 3, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("ruleAssetsAndAlarm", "Assets And Alarm", PageWidget.WidgetType.RULE_ASSETS_ALARM)
                 .addFixedWidgetConfig("webRuleAssetsAndAlarm-30_4", "Assets And Alarm - 30_4", 30, 4, PagesContext.PageLayoutType.WEB)
