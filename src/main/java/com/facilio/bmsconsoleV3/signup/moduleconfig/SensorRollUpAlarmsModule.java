@@ -1,10 +1,10 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.PagesContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
-import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
-import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -12,7 +12,6 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -20,6 +19,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
 import java.util.*;
+
+import static com.facilio.bmsconsole.util.NewAlarmAPI.getSensorAlarmSystemPage;
 
 public class SensorRollUpAlarmsModule extends BaseModuleConfig{
     public SensorRollUpAlarmsModule() throws Exception{
@@ -261,5 +262,20 @@ public class SensorRollUpAlarmsModule extends BaseModuleConfig{
 
         criteria.addAndCondition(activeAlarm);
         return criteria;
+    }
+
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String> appNames = new ArrayList<>();
+
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,getSensorAlarmSystemPage(app, false,  true));
+        }
+        return appNameVsPage;
     }
 }

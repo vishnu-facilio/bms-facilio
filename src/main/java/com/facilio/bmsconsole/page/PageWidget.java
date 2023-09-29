@@ -514,8 +514,8 @@ public class PageWidget {
 		WO_PLANNED_LABOUR("plannedLabour"),
 		JOB_PLAN_LABOURS("jobplanlabours"),
 
-		MTBA_CARD("mtbaCard"),
-		MTTC_CARD("mttcCard"),
+		MEAN_TIME_BETWEEN_OCCURRENCE("mtbaCard"),
+		MEAN_TIME_TO_CLEAR("mttcCard"),
 		ALARM_DURATION("alarmDuration"),
 		IMPACT_REPORT("impactReport"),
 		IMPACT_INFO("impactInfo"),

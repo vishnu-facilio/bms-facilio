@@ -1,5 +1,8 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.PagesContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -15,6 +18,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
 import java.util.*;
+
+import static com.facilio.bmsconsole.util.NewAlarmAPI.getBMSAlarmSystemPage;
 
 public class BmsAlarmsModule extends BaseModuleConfig{
     public BmsAlarmsModule() throws Exception{
@@ -192,5 +197,20 @@ public class BmsAlarmsModule extends BaseModuleConfig{
         alarmCondition.setCriteriaValue(getSeverityAlarmCriteria(severity, equals));
 
         return alarmCondition;
+    }
+
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String> appNames = new ArrayList<>();
+
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,getBMSAlarmSystemPage(app, false,  true));
+        }
+        return appNameVsPage;
     }
 }
