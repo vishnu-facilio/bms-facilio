@@ -20,7 +20,7 @@ import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
-import static com.facilio.readingrule.util.NewReadingRuleAPI.getNewReadingRuleSystemPage;
+import static com.facilio.connected.CommonConnectedSummaryAPI.getNewReadingRuleSystemPage;
 
 public class NewReadingRulesModule extends BaseModuleConfig {
     public NewReadingRulesModule() {

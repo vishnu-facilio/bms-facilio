@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 
-import static com.facilio.readingrule.util.NewReadingRuleAPI.getNewReadingRuleSystemPage;
+import static com.facilio.connected.CommonConnectedSummaryAPI.getNewReadingRuleSystemPage;
 
 public class ReadingRuleTemplatePage implements TemplatePageFactory {
     @Override

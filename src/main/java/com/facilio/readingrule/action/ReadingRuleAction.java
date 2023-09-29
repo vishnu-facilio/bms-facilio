@@ -23,6 +23,7 @@ import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -144,6 +145,9 @@ public class ReadingRuleAction extends V3Action {
     public String getRuleInsights() throws Exception {
 
         List<ReadingAlarm> readingAlarms = getReadingAlarms(getRuleId());
+        if(CollectionUtils.isEmpty(readingAlarms)){
+            return SUCCESS;
+        }
         List<Map<String, Object>> alarmDurationAndCount = getAlarmDurationAndCount(readingAlarms.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList()), startTime, endTime);
 
         Map<Long, Map<String, Object>> result = Optional.ofNullable(alarmDurationAndCount).orElseGet(ArrayList::new).stream().collect(Collectors.toMap(map -> {
