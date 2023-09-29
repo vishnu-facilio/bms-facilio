@@ -20,7 +20,7 @@ import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
-import static com.facilio.readingrule.util.NewReadingRuleAPI.getSystemPage;
+import static com.facilio.readingrule.util.NewReadingRuleAPI.getNewReadingRuleSystemPage;
 
 public class NewReadingRulesModule extends BaseModuleConfig {
     public NewReadingRulesModule() {
@@ -118,7 +118,7 @@ public class NewReadingRulesModule extends BaseModuleConfig {
 
         for (String appName : appNames) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName,getSystemPage(app));
+            appNameVsPage.put(appName, getNewReadingRuleSystemPage(app, true, false));
         }
         return appNameVsPage;
     }

@@ -365,7 +365,7 @@ public class NewReadingRuleAPI {
     //summary util
 
 
-    public static List<PagesContext> getSystemPage(ApplicationContext app) throws Exception {
+    public static List<PagesContext> getNewReadingRuleSystemPage(ApplicationContext app,  boolean isTemplate, boolean isDefault) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule ruleModule = modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE);
 
@@ -376,7 +376,7 @@ public class NewReadingRuleAPI {
 
         List<PagesContext> rulePages = new ArrayList<>();
 
-        PagesContext ruleTemplatePage = new PagesContext(pageName, pageDisplayName, "", null, true, false, false)
+        PagesContext ruleTemplatePage = new PagesContext(pageName, pageDisplayName, "", null, isTemplate, isDefault, false)
                 .addLayout(PagesContext.PageLayoutType.WEB)
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)

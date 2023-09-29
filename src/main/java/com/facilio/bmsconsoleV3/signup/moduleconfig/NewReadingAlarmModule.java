@@ -1,22 +1,22 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.PagesContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
-import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
-import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.*;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
 import java.util.*;
+
+import static com.facilio.bmsconsole.util.NewAlarmAPI.getReadingAlarmSystemPage;
 
 public class NewReadingAlarmModule extends BaseModuleConfig{
     public NewReadingAlarmModule() throws Exception{
@@ -215,5 +215,20 @@ public class NewReadingAlarmModule extends BaseModuleConfig{
         criteria.addAndCondition(activeAlarm);
 
         return criteria;
+    }
+
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String> appNames = new ArrayList<>();
+
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,getReadingAlarmSystemPage(app, true,  false));
+        }
+        return appNameVsPage;
     }
 }
