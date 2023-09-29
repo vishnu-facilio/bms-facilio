@@ -1,7 +1,10 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -16,6 +19,8 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
+
+import static com.facilio.readingrule.util.NewReadingRuleAPI.getSystemPage;
 
 public class NewReadingRulesModule extends BaseModuleConfig {
     public NewReadingRulesModule() {
@@ -101,5 +106,20 @@ public class NewReadingRulesModule extends BaseModuleConfig {
         columns.add(new ViewField("assetCategory", "Asset Category"));
         columns.add(new ViewField("status", "Status"));
         return columns;
+    }
+
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String> appNames = new ArrayList<>();
+
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,getSystemPage(app));
+        }
+        return appNameVsPage;
     }
 }
