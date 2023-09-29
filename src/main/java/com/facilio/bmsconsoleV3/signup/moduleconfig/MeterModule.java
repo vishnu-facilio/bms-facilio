@@ -49,7 +49,6 @@ public class MeterModule extends BaseModuleConfig{
         addModuleChain.execute();
 
         addModuleLocalId();
-        addParentMeterLookup(meterModule);
         addMeterSubModules(meterModule);
 
     }
@@ -134,13 +133,6 @@ public class MeterModule extends BaseModuleConfig{
         return module;
     }
 
-    private void addParentMeterLookup(FacilioModule meterModule) throws Exception {
-        LookupField parentMeterField = (LookupField) FieldFactory.getField("parentMeter", "Parent Meter", "PARENT_METER_ID", Constants.getModBean().getModule(FacilioConstants.Meter.METER), FieldType.LOOKUP);
-        parentMeterField.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
-        parentMeterField.setLookupModule(meterModule);
-        parentMeterField.setDefault(true);
-        Constants.getModBean().addField(parentMeterField);
-    }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() throws Exception {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
@@ -330,8 +322,7 @@ public class MeterModule extends BaseModuleConfig{
         MeterFormFields.add(utilityTypeField);
         MeterFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 4, 2));
         MeterFormFields.add(new FormField("meterLocation", FacilioField.FieldDisplayType.SPACECHOOSER, "Meter Location", FormField.Required.REQUIRED, 5, 2));
-        MeterFormFields.add(new FormField("parentMeter", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent Meter", FormField.Required.OPTIONAL, "meter", 6, 2));
-        MeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Is Check Meter", FormField.Required.OPTIONAL, 7, 2));
+        MeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Is Check Meter", FormField.Required.OPTIONAL, 6, 2));
 
         FormSection section = new FormSection("Meter Details", 1, MeterFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
@@ -403,7 +394,6 @@ public class MeterModule extends BaseModuleConfig{
         columns.add(new ViewField("meterType", "Meter Type"));
         columns.add(new ViewField("meterLocation", "Meter Location"));
         columns.add(new ViewField("siteId", "Site"));
-        columns.add(new ViewField("parentMeter", "Parent Meter"));
         columns.add(new ViewField("isCheckMeter", "Is Check Meter"));
         columns.add(new ViewField("virtualMeterTemplate", "Virtual Meter Template"));
 
@@ -439,15 +429,15 @@ public class MeterModule extends BaseModuleConfig{
                 .columnDone()
                 .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
                 .addSection("monthlyConsumptionSection", null, null)
-                .addWidget("monthlyConsumptionWidget", "Monthly Consumption", PageWidget.WidgetType.MONTHLY_CONSUMPTION, "webmonthlyconsumption_14_24", 0, 0, null, null)
+                .addWidget("monthlyConsumptionWidget", "Monthly Consumption", PageWidget.WidgetType.MONTHLY_CONSUMPTION, "webmonthlyconsumption_14_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("totalConsumptionSection", null, null)
-                .addWidget("totalConsumptionWidget", "Yearly Consumption", PageWidget.WidgetType.TOTAL_CONSUMPTION, "webtotalconsumption_14_24", 0, 0, null, null)
+                .addWidget("totalConsumptionWidget", "Yearly Consumption", PageWidget.WidgetType.TOTAL_CONSUMPTION, "webtotalconsumption_14_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("peakDemandSection", null, null)
-                .addWidget("peakDemandWidget", "Peak Demand", PageWidget.WidgetType.PEAK_DEMAND, "webpeakDemamd_14_24", 0, 0, null, null)
+                .addWidget("peakDemandWidget", "Peak Demand", PageWidget.WidgetType.PEAK_DEMAND, "webpeakDemamd_14_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -539,15 +529,15 @@ public class MeterModule extends BaseModuleConfig{
                 .columnDone()
                 .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
                 .addSection("monthlyConsumptionSection", null, null)
-                .addWidget("monthlyConsumptionWidget", "Monthly Consumption", PageWidget.WidgetType.MONTHLY_CONSUMPTION, "webmonthlyconsumption_14_24", 0, 0, null, null)
+                .addWidget("monthlyConsumptionWidget", "Monthly Consumption", PageWidget.WidgetType.MONTHLY_CONSUMPTION, "webmonthlyconsumption_14_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("totalConsumptionSection", null, null)
-                .addWidget("totalConsumptionWidget", "Yearly Consumption", PageWidget.WidgetType.TOTAL_CONSUMPTION, "webtotalconsumption_14_24", 0, 0, null, null)
+                .addWidget("totalConsumptionWidget", "Yearly Consumption", PageWidget.WidgetType.TOTAL_CONSUMPTION, "webtotalconsumption_14_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("peakDemandSection", null, null)
-                .addWidget("peakDemandWidget", "Peak Demand", PageWidget.WidgetType.PEAK_DEMAND, "webpeakDemamd_14_24", 0, 0, null, null)
+                .addWidget("peakDemandWidget", "Peak Demand", PageWidget.WidgetType.PEAK_DEMAND, "webpeakDemamd_14_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -716,7 +706,6 @@ public class MeterModule extends BaseModuleConfig{
 
         FacilioField utilityType = moduleBean.getField("utilityType", moduleName);
         FacilioField meterType = moduleBean.getField("meterType", moduleName);
-        FacilioField parentMeter = moduleBean.getField("parentMeter", moduleName);
         FacilioField isCheckMeter = moduleBean.getField("isCheckMeter", moduleName);
         FacilioField description = moduleBean.getField("description", moduleName);
 
@@ -725,8 +714,7 @@ public class MeterModule extends BaseModuleConfig{
 
         addSummaryFieldInWidgetGroup(widgetGroup, utilityType, 1, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, meterType, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, parentMeter, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, isCheckMeter, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, isCheckMeter, 1, 3, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, description, 2, 1, 4);
 
         widgetGroup.setName("meterModuleDetails");

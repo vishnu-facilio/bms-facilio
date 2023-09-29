@@ -29,14 +29,12 @@ public class MeterSupplementsSupplyCommand extends FacilioCommand {
 
         SupplementRecord meterLocationField = (SupplementRecord) fieldsAsMap.get("meterLocation");
         SupplementRecord utilityTypeField = (SupplementRecord) fieldsAsMap.get("utilityType");
-        SupplementRecord parentMeter = (SupplementRecord) fieldsAsMap.get("parentMeter");
         SupplementRecord virtualMeterTemplateField = (SupplementRecord) fieldsAsMap.get("virtualMeterTemplate");
         SupplementRecord sysCreatedBy = (SupplementRecord) fieldsAsMap.get("sysCreatedByPeople");
         SupplementRecord sysModifiedBy = (SupplementRecord) fieldsAsMap.get("sysModifiedByPeople");
 
         supplementFields.add(meterLocationField);
         supplementFields.add(utilityTypeField);
-        supplementFields.add(parentMeter);
         supplementFields.add(virtualMeterTemplateField);
         supplementFields.add(sysCreatedBy);
         supplementFields.add(sysModifiedBy);

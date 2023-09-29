@@ -77,8 +77,16 @@ public class LongTasksBeanImpl implements LongTasksBean {
 		VirtualMeterTemplateContext vmTemplate = (VirtualMeterTemplateContext) V3Util.getRecord(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE, vmTemplateId, null);
 		
 		RelationContext relation = RelationUtil.getRelation(vmTemplate.getRelationShipId(),true);
+
+		List<Object> resourceIdobjList = (List<Object>) data.get(FacilioConstants.ContextNames.RESOURCE_LIST);
+
+		List<Long> resourceIds = new ArrayList<>();
+
+		for (Object resourceIdobj : resourceIdobjList) {
+			resourceIds.add(FacilioUtil.parseLong(resourceIdobj));
+		}
 		
-		Map<Long,V3MeterContext> vmParentMap = vmTemplate.constructParentVsVirtualMeters();
+		Map<Long,V3MeterContext> vmParentMap = vmTemplate.constructParentVsVirtualMeters(resourceIds);
 		
 		for(Long parentId : vmParentMap.keySet()) {
 			

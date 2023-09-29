@@ -217,13 +217,13 @@ public class APIModuleWidgets {
                 .addWidgetConfig("flexiblewebmeterreadings_33", "Meter Readings - 33",WidgetConfigContext.ConfigType.FLEXIBLE,33,-1,PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("monthlyConsumption","Monthly Consumption",PageWidget.WidgetType.MONTHLY_CONSUMPTION)
-                .addWidgetConfig("webmonthlyconsumption_14_24","Monthly Consumption - 14 - 24",WidgetConfigContext.ConfigType.FIXED,14,24, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("webmonthlyconsumption_14_12","Monthly Consumption - 14 - 12",WidgetConfigContext.ConfigType.FIXED,14,12, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("totalConsumption","Total Consumption",PageWidget.WidgetType.TOTAL_CONSUMPTION)
-                .addWidgetConfig("webtotalconsumption_14_24","Total Consumption - 14 - 24",WidgetConfigContext.ConfigType.FIXED,14,24, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("webtotalconsumption_14_12","Total Consumption - 14 - 12",WidgetConfigContext.ConfigType.FIXED,14,12, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("peakDemand","Peak Demand",PageWidget.WidgetType.PEAK_DEMAND)
-                .addWidgetConfig("webpeakDemamd_14_24","Peak Demand - 14 - 24",WidgetConfigContext.ConfigType.FIXED,14,24, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("webpeakDemamd_14_12","Peak Demand - 14 - 12",WidgetConfigContext.ConfigType.FIXED,14,12, PagesContext.PageLayoutType.WEB)
                 .done();
     }
     @WidgetsForModule("virtualMeterTemplate")

@@ -10,6 +10,8 @@ import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import java.util.List;
+
 public class AddWMSMessageForVirtualMeterPopulationCommand extends FacilioCommand {
 
 	@Override
@@ -17,10 +19,12 @@ public class AddWMSMessageForVirtualMeterPopulationCommand extends FacilioComman
 		
 
 	    Long templateId = (Long) context.get("vmTemplateId");
+		List<Long> resourceIds = (List<Long>) context.get("resourceIds");
 		
 		JSONObject json= new JSONObject();
 		
 		json.put(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE_ID, templateId);
+		json.put(FacilioConstants.ContextNames.RESOURCE_LIST, resourceIds);
 		json.put("methodName", "populateVMData");
 		
         Messenger.getMessenger().sendMessage(new Message()
