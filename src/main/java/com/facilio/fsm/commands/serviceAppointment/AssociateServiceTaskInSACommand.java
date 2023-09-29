@@ -1,7 +1,6 @@
 package com.facilio.fsm.commands.serviceAppointment;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -37,7 +36,7 @@ public class AssociateServiceTaskInSACommand extends FacilioCommand {
                 if (tasks != null && !tasks.isEmpty()) {
 
                     List<ServiceAppointmentTaskContext> serviceAppointmentTaskList = new ArrayList<>();
-
+                    List<Long> taskIds = new ArrayList<>();
                     List<ServiceTaskContext> newTasks = (List<ServiceTaskContext>) tasks.get("newTasks");
                     List<Map<String, Object>> associatedTasks = (List<Map<String, Object>>) tasks.get("associatedTasks");
                     if (CollectionUtils.isNotEmpty(newTasks)) {
@@ -48,28 +47,27 @@ public class AssociateServiceTaskInSACommand extends FacilioCommand {
                             Map<String, List<ModuleBaseWithCustomFields>> record = Constants.getRecordMap(taskList);
                             List<ModuleBaseWithCustomFields> serviceTasks = record.get(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
                             serviceTaskList = FieldUtil.getAsMapList(serviceTasks, ServiceTaskContext.class);
-                            List<Long> taskIds = serviceTaskList.stream().map(row -> (long) row.get("id")).collect(Collectors.toList());
-                            if (CollectionUtils.isNotEmpty(associatedTasks)) {
-                                taskIds.addAll(associatedTasks.stream().map(row -> (long) row.get("id")).collect(Collectors.toList()));
-                            }
-                            if (CollectionUtils.isNotEmpty(taskIds)) {
+                            taskIds = serviceTaskList.stream().map(row -> (long) row.get("id")).collect(Collectors.toList());
+                        }}
+                    if (CollectionUtils.isNotEmpty(associatedTasks)) {
+                        taskIds.addAll(associatedTasks.stream().map(row -> (long) row.get("id")).collect(Collectors.toList()));
+                    }
+                    if (CollectionUtils.isNotEmpty(taskIds)) {
                                 for (Long taskId : taskIds) {
                                     ServiceAppointmentTaskContext saTask = new ServiceAppointmentTaskContext();
                                     saTask.setId(taskId);
                                     serviceAppointmentTaskList.add(saTask);
 //                                allServiceTasks.addAll(FieldUtil.getAsBeanListFromMapList(serviceTaskList,ServiceTaskContext.class));
                                 }
-                            }
+                    }
+                    serviceAppointment.setServiceTasks(serviceAppointmentTaskList);
 
-
-                        }
-//                        allServiceTasks.addAll(FieldUtil.getAsBeanListFromMapList(associatedTasks,ServiceTaskContext.class));
-                        serviceAppointment.setServiceTasks(serviceAppointmentTaskList);
-//                        serviceAppointment.setRelations(null);
+                }
+//
                     }
                 }
-            }
-        }
+
+
         return false;
     }
 }

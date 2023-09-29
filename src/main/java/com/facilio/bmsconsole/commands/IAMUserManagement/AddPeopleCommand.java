@@ -64,7 +64,6 @@ public class AddPeopleCommand extends FacilioCommand {
             c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(employee));
             c.execute();
 
-            ShiftAPI.assignDefaultShiftToEmployee(employee.getId());
             user.setPeopleId(employee.getId());
             if(user.getPeople() != null){
                 user.getPeople().setId(employee.getId());

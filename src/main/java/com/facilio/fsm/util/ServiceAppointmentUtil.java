@@ -264,70 +264,74 @@ public class ServiceAppointmentUtil {
             if (Constants.getRecordList(context) != null) {
                 ServiceAppointmentContext existingAppointment = (ServiceAppointmentContext) Constants.getRecordList(context).get(0);
                 if (existingAppointment != null) {
-                    if(existingAppointment.getFieldAgent() != null) {
-                        long agentId = existingAppointment.getFieldAgent().getId();
+                    if(CollectionUtils.isNotEmpty(existingAppointment.getServiceTasks())){
+                        if (existingAppointment.getFieldAgent() != null) {
+                            long agentId = existingAppointment.getFieldAgent().getId();
 
-                        //creating timesheet while starting work
-                        List<TimeSheetContext> ongoingTimeSheets = getOngoingTimeSheets(agentId,appointmentId);
-                        if(CollectionUtils.isNotEmpty(ongoingTimeSheets)){
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Cannot start another work when timesheet is running");
-                        } else {
-                            TimeSheetContext newTimeSheet = new TimeSheetContext();
-                            newTimeSheet.setStartTime(currentTime);
-                            newTimeSheet.setServiceAppointment(existingAppointment);
-                            newTimeSheet.setFieldAgent(existingAppointment.getFieldAgent());
-                            newTimeSheet.setServiceOrder(existingAppointment.getServiceOrder());
-                            Map<String, Object> recordProps = FieldUtil.getAsProperties(newTimeSheet);
-                            List<TimeSheetTaskContext> tasks = new ArrayList<>();
-                            if(CollectionUtils.isNotEmpty(existingAppointment.getServiceTasks())){
-                                for(ServiceAppointmentTaskContext saTask : existingAppointment.getServiceTasks()){
-                                    TimeSheetTaskContext newTask = new TimeSheetTaskContext();
-                                    newTask.setId(saTask.getId());
-                                    tasks.add(newTask);
+                            //creating timesheet while starting work
+                            List<TimeSheetContext> ongoingTimeSheets = getOngoingTimeSheets(agentId, appointmentId);
+                            if (CollectionUtils.isNotEmpty(ongoingTimeSheets)) {
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Cannot start another work when timesheet is running");
+                            } else {
+                                TimeSheetContext newTimeSheet = new TimeSheetContext();
+                                newTimeSheet.setStartTime(currentTime);
+                                newTimeSheet.setServiceAppointment(existingAppointment);
+                                newTimeSheet.setFieldAgent(existingAppointment.getFieldAgent());
+                                newTimeSheet.setServiceOrder(existingAppointment.getServiceOrder());
+                                Map<String, Object> recordProps = FieldUtil.getAsProperties(newTimeSheet);
+                                List<TimeSheetTaskContext> tasks = new ArrayList<>();
+                                if (CollectionUtils.isNotEmpty(existingAppointment.getServiceTasks())) {
+                                    for (ServiceAppointmentTaskContext saTask : existingAppointment.getServiceTasks()) {
+                                        TimeSheetTaskContext newTask = new TimeSheetTaskContext();
+                                        newTask.setId(saTask.getId());
+                                        tasks.add(newTask);
+                                    }
                                 }
+                                recordProps.put("serviceTasks", FieldUtil.getAsMapList(tasks, TimeSheetTaskContext.class));
+                                V3Util.createRecord(timeSheetModule, recordProps);
                             }
-                            recordProps.put("serviceTasks",FieldUtil.getAsMapList(tasks,TimeSheetTaskContext.class));
-                            V3Util.createRecord(timeSheetModule,recordProps);
-                        }
 
-                        //updating agent status to on-site on work start
-                        V3PeopleContext agent = new V3PeopleContext();
-                        agent.setId(agentId);
-                        agent.setStatus(V3PeopleContext.Status.ON_SITE.getIndex());
-                        V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
+                            //updating agent status to on-site on work start
+                            V3PeopleContext agent = new V3PeopleContext();
+                            agent.setId(agentId);
+                            agent.setStatus(V3PeopleContext.Status.ON_SITE.getIndex());
+                            V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
 
-                        existingAppointment.setActualStartTime(currentTime);
-                        ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("inProgress");
-                        if (appointmentStatus == null) {
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Missing in-progress state");
-                        }
-                        existingAppointment.setStatus(appointmentStatus);
-                        V3RecordAPI.updateRecord(existingAppointment, serviceAppointment, updateFields);
-
-                        FacilioField taskField = Constants.getModBean().getField("right", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
-
-                        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                                .select(Collections.singleton(taskField))
-                                .table("SERVICE_APPOINTMENT_TASK_REL")
-                                .andCondition(CriteriaAPI.getCondition("SERVICE_APPOINTMENT_ID", "left", String.valueOf(appointmentId), NumberOperators.EQUALS));
-                        List<Map<String, Object>> maps = selectBuilder.get();
-                        List<Long> taskIds = new ArrayList<>();
-                        List<ModuleBaseWithCustomFields> oldRecords = new ArrayList<>();
-                        List<Map<String,Object>> updateRecordList = new ArrayList<>();
-                        if (CollectionUtils.isNotEmpty(maps)) {
-                            taskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
-                            for(Long taskId : taskIds){
-                                FacilioContext taskContext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, Collections.singletonList(taskId));
-                                ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(taskContext).get(0);
-                                oldRecords.add(existingTask);
-                                Map<String,Object> updateProps = FieldUtil.getAsProperties(existingTask);
-                                ServiceTaskStatusContext taskStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
-                                updateProps.put("status",taskStatus);
-                                updateProps.put("actualStartTime",currentTime);
-                                updateRecordList.add(updateProps);
+                            existingAppointment.setActualStartTime(currentTime);
+                            ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("inProgress");
+                            if (appointmentStatus == null) {
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Missing in-progress state");
                             }
-                            V3Util.processAndUpdateBulkRecords(Constants.getModBean().getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK), oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false,null);
+                            existingAppointment.setStatus(appointmentStatus);
+                            V3RecordAPI.updateRecord(existingAppointment, serviceAppointment, updateFields);
+
+                            FacilioField taskField = Constants.getModBean().getField("right", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TASK);
+
+                            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                                    .select(Collections.singleton(taskField))
+                                    .table("SERVICE_APPOINTMENT_TASK_REL")
+                                    .andCondition(CriteriaAPI.getCondition("SERVICE_APPOINTMENT_ID", "left", String.valueOf(appointmentId), NumberOperators.EQUALS));
+                            List<Map<String, Object>> maps = selectBuilder.get();
+                            List<Long> taskIds = new ArrayList<>();
+                            List<ModuleBaseWithCustomFields> oldRecords = new ArrayList<>();
+                            List<Map<String, Object>> updateRecordList = new ArrayList<>();
+                            if (CollectionUtils.isNotEmpty(maps)) {
+                                taskIds = maps.stream().map(row -> (long) row.get("right")).collect(Collectors.toList());
+                                for (Long taskId : taskIds) {
+                                    FacilioContext taskContext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, Collections.singletonList(taskId));
+                                    ServiceTaskContext existingTask = (ServiceTaskContext) Constants.getRecordList(taskContext).get(0);
+                                    oldRecords.add(existingTask);
+                                    Map<String, Object> updateProps = FieldUtil.getAsProperties(existingTask);
+                                    ServiceTaskStatusContext taskStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
+                                    updateProps.put("status", taskStatus);
+                                    updateProps.put("actualStartTime", currentTime);
+                                    updateRecordList.add(updateProps);
+                                }
+                                V3Util.processAndUpdateBulkRecords(Constants.getModBean().getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK), oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true, false, null);
+                            }
                         }
+                    }else{
+                        throw new FSMException(FSMErrorCode.SA_CANNOT_BE_STARTED);
                     }
                 }
             }

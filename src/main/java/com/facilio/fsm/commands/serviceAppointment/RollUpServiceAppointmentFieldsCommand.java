@@ -71,7 +71,7 @@ public class RollUpServiceAppointmentFieldsCommand extends FacilioCommand {
                         if(serviceAppointment.getTenant() != null){
                             serviceAppointment.setTenant(serviceOrder.getTenant());
                         }
-                        serviceAppointment.setEstimatedDuration((serviceAppointment.getScheduledStartTime() - serviceAppointment.getScheduledEndTime())/1000);
+                        serviceAppointment.setEstimatedDuration((serviceAppointment.getScheduledEndTime() - serviceAppointment.getScheduledStartTime())/1000);
 
                     }
                 }

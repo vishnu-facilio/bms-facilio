@@ -45,6 +45,7 @@ public enum FSMErrorCode {
     SA_RECORD_LOCKED(Severity.ERROR, "Cannot Edit Appointment", "Cannot edit or delete the Appointment as it has already been completed or cancelled"),
     SA_FIELD_UPDATE_PREVENT(Severity.ERROR,"Not Permitted","You are not permitted to edit these details."),
     INVALID_SA(Severity.ERROR, "Invalid Service Appointment", "Please provide valid service appointment id"),
+    SA_CANNOT_BE_STARTED(Severity.ERROR,"Service Appointment cannot be started","Please associate service task to start work"),
 
     // Time Sheet error codes
     TIME_SHEET_NOT_ENOUGH_DETAILS(Severity.ERROR, "Mandatory field missing", "Not enough details to create a timesheet"),

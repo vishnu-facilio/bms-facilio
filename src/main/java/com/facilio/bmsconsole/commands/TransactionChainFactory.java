@@ -5836,6 +5836,7 @@ public class TransactionChainFactory {
 		c.addCommand(new AddPeopleTypeForEmployeeCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
+		c.addCommand(new AddDefaultShiftToEmployeeCommand());
 		c.addCommand(new UpdateScopingForPeopleCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));

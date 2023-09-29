@@ -5,11 +5,10 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fsm.context.ServiceAppointmentContext;
-import com.facilio.fsm.context.ServiceAppointmentTaskContext;
-import com.facilio.fsm.context.ServiceOrderContext;
-import com.facilio.fsm.context.ServiceTaskContext;
+import com.facilio.fsm.context.*;
+import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -20,7 +19,7 @@ import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,19 +42,36 @@ public class SOSTAutoCreateAfterCommand extends FacilioCommand {
         for (ServiceTaskContext task : serviceTasks) {
                     if (task.getServiceOrder() != null && task.getServiceOrder().getId() > 0) {
                         ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, task.getServiceOrder().getId());
-                        if (serviceOrderInfo.isAutoCreateSa()) {
-                            List<MultiLookupField> lookUpfields = new ArrayList<>();
-                            lookUpfields.add((MultiLookupField) fieldMap.get("serviceTasks"));
-                            //fetching all the service appointments which are mapped to the particular service order
-                            SelectRecordsBuilder<ServiceAppointmentContext> selectAppointmentsBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>();
-                            selectAppointmentsBuilder.select(serviceAppointmentFields)
-                                    .module(serviceAppointmentModule)
-                                    .beanClass(ServiceAppointmentContext.class)
-                                    .fetchSupplements(lookUpfields)
-                                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("serviceOrder"), String.valueOf(serviceOrderInfo.getId()), StringOperators.IS));
-                            ServiceAppointmentContext selectAppointments = selectAppointmentsBuilder.fetchFirst();
+                        if (serviceOrderInfo.isAutoCreateSa() || task.getServiceAppointment() != null) {
+                            Map<String, ServiceAppointmentTicketStatusContext> statusMap = ServiceAppointmentUtil.getStatusMap(null);
+                            ServiceAppointmentTicketStatusContext completedStatus = statusMap.get(FacilioConstants.ServiceAppointment.COMPLETED);
+                            ServiceAppointmentTicketStatusContext cancelledStatus = statusMap.get(FacilioConstants.ServiceAppointment.CANCELLED);
+                            List<Long> statusIds = new ArrayList<>();
+                            statusIds.add(completedStatus.getId());
+                            statusIds.add(cancelledStatus.getId());
 
-                            task.setServiceAppointment(selectAppointments);
+
+                            List<MultiLookupField> lookUpfields = new ArrayList<>();
+                                lookUpfields.add((MultiLookupField) fieldMap.get("serviceTasks"));
+                                //fetching all the service appointments which are mapped to the particular service order
+                                SelectRecordsBuilder<ServiceAppointmentContext> selectAppointmentsBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>();
+                                selectAppointmentsBuilder.select(serviceAppointmentFields)
+                                        .module(serviceAppointmentModule)
+                                        .beanClass(ServiceAppointmentContext.class)
+                                        .fetchSupplements(lookUpfields)
+                                        .andCondition(CriteriaAPI.getCondition(fieldMap.get("serviceOrder"), String.valueOf(serviceOrderInfo.getId()), StringOperators.IS))
+                                        .andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), StringUtils.join(statusIds,","), NumberOperators.NOT_EQUALS));
+                                if(task.getServiceAppointment() != null) {
+                                    selectAppointmentsBuilder.andCondition(CriteriaAPI.getIdCondition(task.getServiceAppointment().getId(),serviceAppointmentModule));
+                                }
+//                                else{
+//                                    selectAppointmentsBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("")))
+//                                }
+                                ServiceAppointmentContext selectAppointments = selectAppointmentsBuilder.fetchFirst();
+                                task.setServiceAppointment(selectAppointments);
+
+
+                            ServiceAppointmentContext serviceAppointment = task.getServiceAppointment();
 
                             SelectRecordsBuilder<ServiceTaskContext> selectTasksBuilder = new SelectRecordsBuilder<ServiceTaskContext>();
                             selectTasksBuilder.select(serviceTaskFields)
@@ -64,16 +80,16 @@ public class SOSTAutoCreateAfterCommand extends FacilioCommand {
                                     .andCondition(CriteriaAPI.getCondition(serviceTasksFieldMap.get("serviceOrder"), String.valueOf(serviceOrderInfo.getId()), StringOperators.IS));
                             List<ServiceTaskContext> selectTasks = selectTasksBuilder.get();
                             selectTasks.add(task);
-                            if (selectAppointments != null) {
+                            if (serviceAppointment != null) {
                                 List<ServiceAppointmentTaskContext> data = new ArrayList<>();
-                                data.addAll(selectAppointments.getServiceTasks());
+                                data.addAll(serviceAppointment.getServiceTasks());
                                 for (ServiceTaskContext taskItems : serviceTasks) {
                                     ServiceAppointmentTaskContext appointmentTasks = new ServiceAppointmentTaskContext();
                                     appointmentTasks.setId(taskItems.getId());
                                     data.add(appointmentTasks);
                                 }
-                                selectAppointments.setServiceTasks(data);
-                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, selectAppointments.getId(), FieldUtil.getAsJSON(selectAppointments), null, null, null, null, null, null, null, null,null);
+                                serviceAppointment.setServiceTasks(data);
+                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, serviceAppointment.getId(), FieldUtil.getAsJSON(serviceAppointment), null, null, null, null, null, null, null, null,null);
                             }
                         }
                         }
