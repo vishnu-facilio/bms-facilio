@@ -456,7 +456,7 @@ public class V3RecordAPI {
         updateRecordBuilder.update(data);
     }
 
-    public static boolean markAsDeleteEnabled(FacilioModule module) throws Exception {
+    public static boolean markAsDeleteEnabled(FacilioModule module)  {
         try {
             if (module != null && module.getName() != null) {
                 V3Config v3Config = ChainUtil.getV3Config(module.getName());

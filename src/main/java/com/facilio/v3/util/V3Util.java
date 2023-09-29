@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -491,13 +492,12 @@ public class V3Util {
     public static FacilioContext deleteRecords(String moduleName, Map<String, Object> deleteObj,
                                                Map<String, Object> bodyParams, Map<String, List<Object>> queryParams, boolean restrictredAction) throws Exception {
         FacilioChain deleteChain = ChainUtil.getDeleteChain(moduleName);
+        FacilioModule module = Constants.getModBean().getModule(moduleName);
+
 
         FacilioContext context = deleteChain.getContext();
+        context.put(Constants.MARK_AS_DELETE_BY_PEOPLE, V3RecordAPI.markAsDeleteEnabled(module));
         V3Config v3Config = ChainUtil.getV3Config(moduleName);
-        V3Config.DeleteHandler deleteHandler = v3Config.getDeleteHandler();
-        if(deleteHandler != null && deleteHandler.isMarkAsDeleteByPeople()) {
-            context.put(Constants.MARK_AS_DELETE_BY_PEOPLE, true);
-        }
         Constants.setV3config(context, v3Config);
 
         Constants.setModuleName(context, moduleName);
