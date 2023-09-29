@@ -15,7 +15,7 @@ public class ReadingAlarmTemplatePage implements TemplatePageFactory{
 
     @Override
     public PagesContext getTemplatePage(ApplicationContext app, FacilioModule module) throws Exception {
-        return getReadingAlarmSystemPage(app, true, false).get(0);
+        return getReadingAlarmSystemPage(app, false, true).get(0);
     }
 
 }

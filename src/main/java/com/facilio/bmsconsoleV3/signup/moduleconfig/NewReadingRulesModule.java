@@ -118,7 +118,7 @@ public class NewReadingRulesModule extends BaseModuleConfig {
 
         for (String appName : appNames) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName, getNewReadingRuleSystemPage(app, true, false));
+            appNameVsPage.put(appName, getNewReadingRuleSystemPage(app, false, true));
         }
         return appNameVsPage;
     }

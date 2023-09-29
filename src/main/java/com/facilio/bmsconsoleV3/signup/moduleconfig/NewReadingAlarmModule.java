@@ -227,7 +227,7 @@ public class NewReadingAlarmModule extends BaseModuleConfig{
 
         for (String appName : appNames) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName,getReadingAlarmSystemPage(app, true,  false));
+            appNameVsPage.put(appName,getReadingAlarmSystemPage(app, false,  true));
         }
         return appNameVsPage;
     }

@@ -32,6 +32,7 @@ public class AddCommonModuleWidgetsCommand extends FacilioCommand {
                         .addWidgetConfig("flexiblewebsummaryfieldswidget_26","Summary Fields Widget - 26",WidgetConfigContext.ConfigType.FLEXIBLE,26,-1,PagesContext.PageLayoutType.WEB)
                         .addWidgetConfig("flexiblewebsummaryfieldswidget_20","Summary Fields Widget - 20",WidgetConfigContext.ConfigType.FLEXIBLE,20,-1,PagesContext.PageLayoutType.WEB)
                         .addWidgetConfig("flexiblewebsummaryfieldswidget_33","Summary Fields Widget - 33",WidgetConfigContext.ConfigType.FLEXIBLE,33,-1,PagesContext.PageLayoutType.WEB)
+                        .addWidgetConfig("flexiblewebsummaryfieldswidget_11","Summary Fields Widget - 33",WidgetConfigContext.ConfigType.FLEXIBLE,11,-1,PagesContext.PageLayoutType.WEB)
                     .done()
                     .addModuleWidget("widgetgroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP)
                         .addFlexibleWidgetConfig("flexiblewebwidgetgroup_20","Widget Group - 20", 20, PagesContext.PageLayoutType.WEB)

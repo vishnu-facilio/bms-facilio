@@ -15,7 +15,7 @@ public class ReadingRuleTemplatePage implements TemplatePageFactory {
 
     @Override
     public PagesContext getTemplatePage(ApplicationContext app, FacilioModule module) throws Exception {
-        return getNewReadingRuleSystemPage(app,true, false).get(0);
+        return getNewReadingRuleSystemPage(app,false, true).get(0);
     }
 
 }
