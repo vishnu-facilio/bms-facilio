@@ -3436,11 +3436,11 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Field Service Settings","fieldservice",layout.getId(),203,groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Field Service Settings","fieldservice",layout.getId(),203,groupOrder++,AccountUtil.FeatureLicense.FSM.getFeatureId()));
             webTabs = new ArrayList<>();
-            webTabs.add(new WebTabContext("General Settings","generalsettings",WebTabContext.Type.FSM_GENERAL_SETTINGS,null,appId,null));
-            webTabs.add(new WebTabContext("Dispatcher Console Settings","dispatcherconfig",WebTabContext.Type.DISPATCHER_CONFIG,null,appId,null));
-            webTabs.add(new WebTabContext("Customization","customization",WebTabContext.Type.FSM_CUSTOMIZATION,null,appId,null));
+            webTabs.add(new WebTabContext("General Settings","generalsettings",WebTabContext.Type.FSM_GENERAL_SETTINGS,null,appId,null,AccountUtil.FeatureLicense.FSM.getFeatureId()));
+            webTabs.add(new WebTabContext("Dispatcher Console Settings","dispatcherconfig",WebTabContext.Type.DISPATCHER_CONFIG,null,appId,null,AccountUtil.FeatureLicense.FSM.getFeatureId()));
+            webTabs.add(new WebTabContext("Customization","customization",WebTabContext.Type.FSM_CUSTOMIZATION,null,appId,null,AccountUtil.FeatureLicense.FSM.getFeatureId()));
 
             groupNameVsWebTabsMap.put("fieldservice",webTabs);
 
