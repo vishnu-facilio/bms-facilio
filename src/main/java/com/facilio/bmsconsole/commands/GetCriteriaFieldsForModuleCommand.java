@@ -39,7 +39,28 @@ public class GetCriteriaFieldsForModuleCommand extends FacilioCommand {
                 fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
             }
             else {
-                switch (moduleName) {   //add module specific fields in switch cases
+                switch (moduleName) {
+                    case FacilioConstants.ContextNames.WORK_ORDER://add module specific fields in switch cases
+                        fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
+                        break;
+                    case FacilioConstants.ContextNames.ASSET:
+                        fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
+                        break;
+                    case FacilioConstants.ContextNames.SITE:
+                        fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
+                        break;
+                    case FacilioConstants.ContextNames.FLOOR:
+                        fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
+                        break;
+                    case FacilioConstants.ContextNames.BUILDING:
+                        fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
+                        break;
+                    case FacilioConstants.ContextNames.SPACE:
+                        fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
+                        break;
+                    case FacilioConstants.ContextNames.JOB_PLAN:
+                        fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
+                        break;
                     default:
                         fields = null;
                 }
