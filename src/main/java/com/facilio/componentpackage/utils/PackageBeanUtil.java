@@ -1111,7 +1111,8 @@ public class PackageBeanUtil {
                     case PUSH_NOTIFICATION:
                         XMLBuilder pushNotificationElement = originalTemplateElement.element(PackageConstants.VALUE_ELEMENT);
                         long appId = ((PushNotificationTemplate) templateContext).getApplication();
-                        String appLinkName = appId > 0 ? ApplicationApi.getApplicationForId(appId).getLinkName() : null;
+                        ApplicationContext application = appId > 0 ? ApplicationApi.getApplicationForId(appId) : null;
+                        String appLinkName = application != null ? application.getLinkName() : FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP;
                         JSONObject obj = ((PushNotificationTemplate) templateContext).getOriginalTemplate();
                         UserNotificationContext userNotification = UserNotificationContext.instance(obj);
                         String moduleName = (String) ((JSONObject)obj.get("notification")).get("module_name");
