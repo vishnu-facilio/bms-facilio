@@ -1,5 +1,9 @@
 package com.facilio.sandbox.command;
 
+import com.facilio.backgroundactivity.util.BackgroundActivityAPI;
+import com.facilio.backgroundactivity.util.BackgroundActivityService;
+import com.facilio.backgroundactivity.util.BackgroundActivityUtil;
+import com.facilio.backgroundactivity.util.ChildActivityService;
 import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.constants.FacilioConstants;
@@ -15,6 +19,9 @@ import org.json.simple.JSONObject;
 import java.time.ZoneId;
 
 public class AddDefaultSignupDataAndCreationInstallationCommand extends FacilioCommand {
+    BackgroundActivityService backgroundActivityService = null;
+
+    ChildActivityService childActivityService = null;
     @Override
     public boolean executeCommand(Context context) throws Exception {
         SandboxConfigContext sandboxConfig = (SandboxConfigContext) context.get(SandboxConstants.SANDBOX);
@@ -28,10 +35,15 @@ public class AddDefaultSignupDataAndCreationInstallationCommand extends FacilioC
         content.put(SandboxConstants.PRODUCTION_DOMAIN_NAME, context.get(SandboxConstants.PRODUCTION_DOMAIN_NAME));
         content.put("methodName", "addDefaultSignupDataToSandbox");
         content.put("startTime", DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata"))+"");
+        backgroundActivityService= new BackgroundActivityService(sandboxConfig.getId(),"sandbox","sandbox Id: #"+sandboxConfig.getId(),"Call to Ims started for sandboxId:" + + sandboxConfig.getId());
         Messenger.getMessenger().sendMessage(new Message()
                 .setKey(LongRunningTaskHandler.KEY+"/"+ DateTimeUtil.getCurrenTime())
                 .setOrgId(sandboxConfig.getSandboxOrgId())
                 .setContent(content));
+        backgroundActivityService = new BackgroundActivityService(BackgroundActivityAPI.parentActivityForRecordIdAndType(sandboxConfig.getId(),"sandbox"));
+        if(backgroundActivityService != null) {
+            backgroundActivityService.updateActivity(0,"####Sandbox Org Signup Started for sandboxId--" + sandboxConfig.getId());
+        }
         return false;
     }
 }

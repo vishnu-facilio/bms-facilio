@@ -1,22 +1,26 @@
 package com.facilio.sandbox.utils;
 
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.backgroundactivity.util.BackgroundActivityAPI;
+import com.facilio.backgroundactivity.util.BackgroundActivityService;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
-import com.facilio.bmsconsole.util.SharingAPI;
-import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SharingAPI;
+import com.facilio.componentpackage.bean.OrgSwitchBean;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.transaction.NewTransactionService;
+import com.facilio.function.Unchecked;
+import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -25,15 +29,12 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.sandbox.context.SandboxConfigContext;
 import com.facilio.util.RequestUtil;
-import com.facilio.wmsv2.endpoint.Broadcaster;
-import com.facilio.wmsv2.message.WebMessage;
 import com.opensymphony.xwork2.ActionContext;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -41,6 +42,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.facilio.backgroundactivity.util.BackgroundActivityAPI.isActivityLicenseEnabled;
 
 @Log4j
 public class SandboxAPI {
@@ -132,9 +135,9 @@ public class SandboxAPI {
                 .collect(Collectors.toList());
         FacilioModule sandboxSharingModule = ModuleFactory.getSandboxSharingModule();
         List<FacilioField> sandboxSharingFields = FieldFactory.getSandboxSharingFields();
-        Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharing(sandboxIds, sandboxSharingModule,
-                SingleSharingContext.class, sandboxSharingFields);
         if (!CollectionUtils.isEmpty(props)) {
+            Map<Long, SharingContext<SingleSharingContext>> sharingMap = SharingAPI.getSharing(sandboxIds, sandboxSharingModule,
+                    SingleSharingContext.class, sandboxSharingFields);
             List<SandboxConfigContext> sandboxList = FieldUtil.getAsBeanListFromMapList(props, SandboxConfigContext.class);
             for (SandboxConfigContext sandboxConfig : sandboxList) {
                 setSandboxDomain(sandboxConfig);
@@ -222,16 +225,32 @@ public class SandboxAPI {
         }
         return false;
     }
-
-    public static void sendSandboxProgress(SandboxConfigContext sandboxConfigContext) throws Exception {
-        JSONObject json = FieldUtil.getAsJSON(sandboxConfigContext);
-        WebMessage msg = new WebMessage();
-        msg.setTopic("__migration__/" + sandboxConfigContext.getOrgId() + "/" + sandboxConfigContext.getSandboxOrgId() + "/sandbox");
-        msg.setOrgId(sandboxConfigContext.getOrgId());
-        msg.setContent(json);
-        Broadcaster.getBroadcaster().sendMessage(msg);
+    public static void sendSandboxProgress(Integer percentage, Long recordId, String message) throws Exception {
+        BackgroundActivityService backgroundActivityService = new BackgroundActivityService(BackgroundActivityAPI.parentActivityForRecordIdAndType(recordId, "sandbox"));
+        if (backgroundActivityService != null) {
+            backgroundActivityService.updateActivity(percentage, message);
+        }
     }
-
+    public static void sendSandboxProgress(Integer percentage, Long recordId, String message, long sourceOrgId) throws Exception {
+        OrgSwitchBean orgSwitchBean = (OrgSwitchBean) BeanFactory.lookup("OrgSwitchBean", sourceOrgId);
+        try{
+            NewTransactionService.newTransactionWithReturn(() -> orgSwitchBean.sendSandboxProgress(percentage, recordId, message));
+        }catch (Exception ex){
+            LOGGER.info("Exception while sending Sandbox progress"+ex);
+        }
+    }
+    public static void changeSandboxStatus(SandboxConfigContext sandboxConfigContext, long sourceOrgId) throws Exception {
+        OrgSwitchBean orgSwitchBean = (OrgSwitchBean) BeanFactory.lookup("OrgSwitchBean", sourceOrgId);
+        try {
+            NewTransactionService.newTransactionWithReturn(() -> orgSwitchBean.changeSandboxStatus(sandboxConfigContext));
+        }catch (Exception ex){
+            LOGGER.info("Exception while changing Sandbox progress"+ex);
+        }
+    }
+    public static SandboxConfigContext getSandboxById(long sandboxId, long sourceOrgId) throws Exception {
+        OrgSwitchBean orgSwitchBean = (OrgSwitchBean) BeanFactory.lookup("OrgSwitchBean", sourceOrgId);
+        return NewTransactionService.newTransactionWithReturn(() -> orgSwitchBean.getSandboxById(sandboxId));
+    }
     public static long getSandboxIdBySourceAndTargetOrgId(Long sourceOrgId, Long targetOrgId) throws Exception {
         FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

@@ -33,6 +33,7 @@ public class BackgroundActivityUtil {
         if(MapUtils.isNotEmpty(activityConfigs)) {
             for (Map.Entry<String, Object> entry : activityConfigs.entrySet()) {
                 String activity = entry.getKey();
+                availableActivities.add(activity);
                 Map<String,Map<Integer,Map<String,String>>> statusMap = (Map<String, Map<Integer,Map<String,String>>>) entry.getValue();
                 if(statusMap.containsKey("status")) {
                     Map<Integer,Map<String,String>> map = statusMap.get("status");

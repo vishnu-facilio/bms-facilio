@@ -27,13 +27,12 @@ public class UnzipPackageFileCommand extends FacilioCommand {
 		File file = (File) context.get(PackageConstants.FILE);
 		Long fileId = (Long) context.get(PackageConstants.FILE_ID);
 		Long sourceOrgId = (Long) context.getOrDefault(PackageConstants.SOURCE_ORG_ID, -1L);
-		Long targetOrgId = (Long) context.getOrDefault(PackageConstants.TARGET_ORG_ID, -1L);
 
 		File packageZipFile;
 		if (file != null) {
 			packageZipFile = file;
 		} else {
-			packageZipFile = PackageFileUtil.getPackageZipFile(fileId, sourceOrgId, targetOrgId);
+			packageZipFile = PackageFileUtil.getPackageZipFile(fileId, sourceOrgId);
 		}
 		context.put(PackageConstants.FILE, packageZipFile);
 
