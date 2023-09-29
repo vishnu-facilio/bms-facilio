@@ -79,7 +79,7 @@ public interface ActivityType {
 		for (ActivityType type: ServiceAppointmentActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Last number = 149
+		// Last number = 150
 
 		return activityMap;
 	}
