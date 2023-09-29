@@ -153,13 +153,20 @@ public class VendorsModule extends BaseModuleConfig{
     }
     @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
-
         Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
-        String appName=FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP;
+
+        String[] appNames=new String[]{
+                FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
+                FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
+                FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP
+        };
+
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VENDORS);
-        ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        appNameVsPage.put(appName,buildVendorPage(app,module,false,true));
+        FacilioModule module = modBean.getModule(getModuleName());
+        for(String appName:appNames){
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,buildVendorPage(app,module,false,true));
+        }
 
         return appNameVsPage;
     }
@@ -317,14 +324,20 @@ public class VendorsModule extends BaseModuleConfig{
         }
     }
     private static JSONObject getWidgetGroup() throws Exception {
+        JSONObject notesWidgetParam = new JSONObject();
+        notesWidgetParam.put("notesModuleName", "vendorsNotes");
+
+        JSONObject attachmentsWidgetParam = new JSONObject();
+        attachmentsWidgetParam.put("attachmentsModuleName", "vendorsAttachments");
+
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("comments", "Comments", "")
-                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_27", 0, 0, null, null)
+                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_27", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, "flexiblewebattachment_27", 0, 0, null, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, "flexiblewebattachment_27", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

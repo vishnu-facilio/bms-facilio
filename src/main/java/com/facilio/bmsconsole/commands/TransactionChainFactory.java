@@ -81,7 +81,11 @@ import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingR
 import com.facilio.readingrule.faulttowo.command.*;
 import com.facilio.relation.command.AddOrUpdateRelationCommand;
 import com.facilio.relation.command.DeleteRelationCommand;
+import com.facilio.remotemonitoring.commands.AddRMSetupTabsAndTabGroups;
+import com.facilio.remotemonitoring.commands.AddRemoteMonitoringApp;
 import com.facilio.storm.command.StormAddEventPayloadCommand;
+import com.facilio.remotemonitoring.commands.AddRMRolesAndUsersCommand;
+import com.facilio.remotemonitoring.commands.AddRMTabsAndTabGroups;
 import com.facilio.storm.command.StormHistoricalProxyCommand;
 import com.facilio.storm.command.StormInstructionPublishCommand;
 import com.facilio.trigger.context.TriggerType;
@@ -109,6 +113,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
 			c.addCommand(new AddCommonModuleWidgetsCommand());
+			c.addCommand(addRemoteMonitoringApplication());
 			c.addCommand(new AddSignupDataCommandV3());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
 			c.addCommand(new AddDefaultBundleCommand());
@@ -119,6 +124,7 @@ public class TransactionChainFactory {
 			c.addCommand(addEmployeePortalChain());
 			c.addCommand(new AddEnergyApp());
 			c.addCommand(addScopingChain());
+			c.addCommand(addRemoteMonitoringApplicationMeta());
 			c.addCommand(new AssignShiftToUserCommand());
 			c.addCommand(new DefaultPermissionSetCommand());
 			return c;
@@ -131,6 +137,20 @@ public class TransactionChainFactory {
 		c.addCommand(new AddMaintenanceApplicationDefaultForms());
 		c.addCommand(new AddDefaultRolesMaintenanceApp());
 		c.addCommand(new AddMaintenanceAppRelatedApplicationsCommand());
+		return c;
+	}
+
+	public static FacilioChain addRemoteMonitoringApplication() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddRemoteMonitoringApp());
+		c.addCommand(new AddRMRolesAndUsersCommand());
+		return c;
+	}
+
+	public static FacilioChain addRemoteMonitoringApplicationMeta() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddRMTabsAndTabGroups());
+		c.addCommand(new AddRMSetupTabsAndTabGroups());
 		return c;
 	}
 
@@ -6477,13 +6497,10 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain getAddOrUpdateDashboardFilterChain(boolean newFlow) {
+	public static FacilioChain getAddOrUpdateDashboardFilterChain() {
 		FacilioChain c=getDefaultChain();
 		c.addCommand(new AddOrUpdateDashboardFilterCommand());
 		c.addCommand(new AddOrUpdateDashboardUserFilterCommand());
-		if(newFlow){
-			c.addCommand(new AddOrUpdateDashboardFieldMappingCommand());
-		}
 		return c;
 	}
 	public static FacilioChain getNewAddOrUpdateDashboardFilterChain(boolean newFlow) {

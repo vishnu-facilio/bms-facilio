@@ -323,6 +323,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "azure-test-production-scheduler" ]; then
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     cp $FACILIO_HOME/deployment-files/log4j-azure-test-scheduler.properties $CLASSES_DIR/log4j.properties    
     cp $FACILIO_HOME/deployment-files/awsprops-azure-test-scheduler.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/imsTopicInfo-azure.yml $CONF_DIR/fms/imsTopicInfo.yml
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     echo "copied service file is =======" >> /home/facilio/deployment.log
     echo "$(<FACILIO_HOME/deployment-files/service-stage.yml)" >> /home/facilio/deployment.log
@@ -332,7 +333,8 @@ fi
 if [ "$DEPLOYMENT_GROUP_NAME" = "azure-deployment" ] || [ "$DEPLOYMENT_GROUP_NAME" = "azure-test-production-user" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
-    cp $FACILIO_HOME/deployment-files/log4j-azure-test-user.properties $CLASSES_DIR/log4j.properties            
+    cp $FACILIO_HOME/deployment-files/log4j-azure-test-user.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/deployment-files/clientAppConfig-stage.yml $CONF_DIR/clientAppConfig.yml
     cp $FACILIO_HOME/deployment-files/awsprops-azure-test-user.properties $CONF_DIR/awsprops.properties
     cp $FACILIO_HOME/deployment-files/imsTopicInfo-azure.yml $CONF_DIR/fms/imsTopicInfo.yml
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
@@ -378,7 +380,7 @@ fi
 if [ "$DEPLOYMENT_GROUP_NAME" = "stage-scheduler-uk" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/awsprops-stage-scheduler-uk.properties $CONF_DIR/awsprops.properties
-    cp $FACILIO_HOME/deployment-files/clientAppConfig-stage.yml $CONF_DIR/clientAppConfig.ymlOapp
+    cp $FACILIO_HOME/deployment-files/clientAppConfig-stage.yml $CONF_DIR/clientAppConfig.yml
     cp $FACILIO_HOME/deployment-files/log4j-stage-scheduler-uk.properties $CLASSES_DIR/log4j.properties
     cp $FACILIO_HOME/deployment-files/service-uk.yml $CONF_DIR/service.yml
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log

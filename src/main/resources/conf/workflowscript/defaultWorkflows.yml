@@ -1939,8 +1939,10 @@
   description: 'meter monthly consumption card'
   usage: 'meter summary'
   workflow: 'Map monthlyConsumption(Number meterId, String utilityTypeName){ 
-  currentMonth = new NameSpace("date").getMonthRange();
-  lastMonth = new NameSpace("date").getDateRange("Last Month");
+  currentMonth = new NameSpace("date").getDateRange("Current Month upto now");
+  diff = currentMonth.getEndTime() - currentMonth.getStartTime();
+  lastMonth = new NameSpace("dateRange").create(currentMonth.getStartTime(), currentMonth.getEndTime() ,"Previous Period",2);
+  lastMonth = new NameSpace("dateRange").create(lastMonth.getStartTime(),lastMonth.getStartTime() + diff);
   res = {};
   if(utilityTypeName == "Gas Meter") {
       db = {
@@ -2099,20 +2101,46 @@
   description: 'meter total consumption card'
   usage: 'meter summary'
   workflow: 'Map totalConsumption(Number meterId, String utilityTypeName){ 
+  currentYear = new NameSpace("date").getDateRange("Current Year upto now");
+  diff = currentYear.getEndTime() - currentYear.getStartTime();
+  lastYear = new NameSpace("dateRange").create(currentYear.getStartTime(), currentYear.getEndTime() ,"Previous Period",2);
+  lastYear = new NameSpace("dateRange").create(lastYear.getStartTime(),lastYear.getStartTime() + diff);
+ 
   res = {};
   if(utilityTypeName == "Gas Meter") {
       db = {
-        criteria : [parentId == meterId],
+        criteria : [parentId == meterId && ttime == currentYear],
         field : "gasVolumeAccumulatorDelta",
         aggregation : "sum",
       };
-      res.put("totalConsumption",Module("gasdata").fetch(db));
+      thisYearTotal = Module("gasdata").fetch(db);
+      res.put("totalConsumption",thisYearTotal);
       
       db1 = {
+        criteria : [parentId == meterId && ttime == lastYear],
+        field : "gasVolumeAccumulatorDelta",
+        aggregation : "sum",
+      };
+      lastYearTotal = Module("gasdata").fetch(db1);
+      res.put("lastYearConsumption",lastYearTotal);
+      
+      percentDiff = 0;
+      scaleVal = 0;
+      if(lastYearTotal != 0 && thisYearTotal != 0 && thisYearTotal > lastYearTotal){
+      percentDiff = ((thisYearTotal - lastYearTotal)/lastYearTotal)*100;
+      scaleVal = 1;
+      }
+      else if(lastYearTotal != 0 && thisYearTotal !=0 && lastYearTotal > thisYearTotal){
+      percentDiff = ((lastYearTotal - thisYearTotal)/lastYearTotal)*100;
+      }
+      res.put("percentDifference",percentDiff);
+      res.put("scale",scaleVal );
+      
+      db2 = {
         criteria : [parentId == meterId && gasVolumeAccumulatorDelta != null],
         field : "ttime",
       };
-      date = Module("gasdata").fetch(db1);
+      date = Module("gasdata").fetch(db2);
       if(date != null) {
         datetime = date[0];
         format = "MMM dd, yyyy hh:mm a";
@@ -2126,17 +2154,38 @@
   }
   else if(utilityTypeName == "Water Meter") {
       db = {
-        criteria : [parentId == meterId],
+        criteria : [parentId == meterId && ttime == currentYear],
         field : "waterVolumeAccumulatorDelta",
         aggregation : "sum",
       };
-      res.put("totalConsumption",Module("waterdata").fetch(db));
+      thisYearTotal = Module("waterdata").fetch(db);
+      res.put("totalConsumption",thisYearTotal);
       
       db1 = {
+        criteria : [parentId == meterId && ttime == lastYear],
+        field : "waterVolumeAccumulatorDelta",
+        aggregation : "sum",
+      };
+      lastYearTotal = Module("waterdata").fetch(db1);
+      res.put("lastYearConsumption",lastYearTotal);
+      
+      percentDiff = 0;
+      scaleVal = 0;
+      if(lastYearTotal != 0 && thisYearTotal != 0 && thisYearTotal > lastYearTotal){
+      percentDiff = ((thisYearTotal - lastYearTotal)/lastYearTotal)*100;
+      scaleVal = 1;
+      }
+      else if(lastYearTotal != 0 && thisYearTotal !=0 && lastYearTotal > thisYearTotal){
+      percentDiff = ((lastYearTotal - thisYearTotal)/lastYearTotal)*100;
+      }
+      res.put("percentDifference",percentDiff);
+      res.put("scale",scaleVal );
+      
+      db2 = {
         criteria : [parentId == meterId && waterVolumeAccumulatorDelta != null],
         field : "ttime",
       };
-      date = Module("waterdata").fetch(db1);
+      date = Module("waterdata").fetch(db2);
       if(date != null) {
         datetime = date[0];
         format = "MMM dd, yyyy hh:mm a";
@@ -2150,17 +2199,38 @@
   }
   else if(utilityTypeName == "Electricity Meter") {
       db = {
-        criteria : [parentId == meterId],
+        criteria : [parentId == meterId && ttime == currentYear],
         field : "totalEnergyConsumptionDelta",
         aggregation : "sum",
       };
-      res.put("totalConsumption",Module("electricitydata").fetch(db));
+      thisYearTotal = Module("electricitydata").fetch(db);
+      res.put("totalConsumption",thisYearTotal);
       
       db1 = {
+        criteria : [parentId == meterId && ttime == lastYear],
+        field : "totalEnergyConsumptionDelta",
+        aggregation : "sum",
+      };
+      lastYearTotal = Module("electricitydata").fetch(db1);
+      res.put("lastYearConsumption",lastYearTotal);
+      
+      percentDiff = 0;
+      scaleVal = 0;
+      if(lastYearTotal != 0 && thisYearTotal != 0 && thisYearTotal > lastYearTotal){
+      percentDiff = ((thisYearTotal - lastYearTotal)/lastYearTotal)*100;
+      scaleVal = 1;
+      }
+      else if(lastYearTotal != 0 && thisYearTotal !=0 && lastYearTotal > thisYearTotal){
+      percentDiff = ((lastYearTotal - thisYearTotal)/lastYearTotal)*100;
+      }
+      res.put("percentDifference",percentDiff);
+      res.put("scale",scaleVal );
+      
+      db2 = {
         criteria : [parentId == meterId && totalEnergyConsumptionDelta != null],
         field : "ttime",
       };
-      date = Module("electricitydata").fetch(db1);
+      date = Module("electricitydata").fetch(db2);
       if(date != null) {
         datetime = date[0];
         format = "MMM dd, yyyy hh:mm a";
@@ -2174,17 +2244,38 @@
   }
   else if(utilityTypeName == "Heat Meter") {
       db = {
-        criteria : [parentId == meterId],
+        criteria : [parentId == meterId && ttime == currentYear],
         field : "thermalEnergyAccumulatorDelta",
         aggregation : "sum",
       };
-      res.put("totalConsumption",Module("heatdata").fetch(db));
+      thisYearTotal = Module("heatdata").fetch(db);
+      res.put("totalConsumption",thisYearTotal);
       
       db1 = {
+        criteria : [parentId == meterId && ttime == lastYear],
+        field : "thermalEnergyAccumulatorDelta",
+        aggregation : "sum",
+      };
+      lastYearTotal = Module("heatdata").fetch(db1);
+      res.put("lastYearConsumption",lastYearTotal);
+      
+      percentDiff = 0;
+      scaleVal = 0;
+      if(lastYearTotal != 0 && thisYearTotal != 0 && thisYearTotal > lastYearTotal){
+      percentDiff = ((thisYearTotal - lastYearTotal)/lastYearTotal)*100;
+      scaleVal = 1;
+      }
+      else if(lastYearTotal != 0 && thisYearTotal !=0 && lastYearTotal > thisYearTotal){
+      percentDiff = ((lastYearTotal - thisYearTotal)/lastYearTotal)*100;
+      }
+      res.put("percentDifference",percentDiff);
+      res.put("scale",scaleVal );
+      
+      db2 = {
         criteria : [parentId == meterId && thermalEnergyAccumulatorDelta != null],
         field : "ttime",
       };
-      date = Module("heatdata").fetch(db1);
+      date = Module("heatdata").fetch(db2);
       if(date != null) {
         datetime = date[0];
         format = "MMM dd, yyyy hh:mm a";
@@ -2198,17 +2289,38 @@
   }
   else if(utilityTypeName == "BTU Meter") {
       db = {
-        criteria : [parentId == meterId],
+        criteria : [parentId == meterId && ttime == currentYear],
         field : "CHWConsumptionAccumulatorDelta",
         aggregation : "sum",
       };
-      res.put("totalConsumption",Module("btudata").fetch(db));
+      thisYearTotal = Module("btudata").fetch(db);
+      res.put("totalConsumption",thisYearTotal);
       
       db1 = {
+        criteria : [parentId == meterId && ttime == lastYear],
+        field : "CHWConsumptionAccumulatorDelta",
+        aggregation : "sum",
+      };
+      lastYearTotal = Module("btudata").fetch(db1);
+      res.put("lastYearConsumption",lastYearTotal);
+      
+      percentDiff = 0;
+      scaleVal = 0;
+      if(lastYearTotal != 0 && thisYearTotal != 0 && thisYearTotal > lastYearTotal){
+      percentDiff = ((thisYearTotal - lastYearTotal)/lastYearTotal)*100;
+      scaleVal = 1;
+      }
+      else if(lastYearTotal != 0 && thisYearTotal !=0 && lastYearTotal > thisYearTotal){
+      percentDiff = ((lastYearTotal - thisYearTotal)/lastYearTotal)*100;
+      }
+      res.put("percentDifference",percentDiff);
+      res.put("scale",scaleVal );
+      
+      db2 = {
         criteria : [parentId == meterId && CHWConsumptionAccumulatorDelta != null],
         field : "ttime",
       };
-      date = Module("btudata").fetch(db1);
+      date = Module("btudata").fetch(db2);
       if(date != null) {
         datetime = date[0];
         format = "MMM dd, yyyy hh:mm a";
@@ -2227,19 +2339,21 @@
   description: 'meter peak demand card'
   usage: 'meter summary'
   workflow: 'Map peakDemand(Number meterId, String utilityTypeName){ 
+  currentYear = new NameSpace("date").getDateRange("Current Year");
+  lastYear = new NameSpace("date").getDateRange("Last Year");
   res = {};
   if(utilityTypeName == "Gas Meter") {
       db = {
-        criteria : [parentId == meterId],
+        criteria : [parentId == meterId && ttime == currentYear],
         field : "flowRate",
         aggregation : "max",
       };
-      peak = Module("gasdata").fetch(db);
-      res.put("peakDemand",peak);
+      thisYearPeak = Module("gasdata").fetch(db);
+      res.put("peakDemand",thisYearPeak);
       
-      if(peak != null) {
+      if(thisYearPeak != null) {
         db1 = {
-          criteria : [parentId == meterId && flowRate == peak],
+          criteria : [parentId == meterId && flowRate == thisYearPeak && ttime == currentYear],
           field : "ttime",
         };
         date = Module("gasdata").fetch(db1);
@@ -2250,21 +2364,56 @@
           res.put("peakTime",formattedTime);
         }
       }
+      
+      db2 = {
+        criteria : [parentId == meterId && ttime == lastYear],
+        field : "flowRate",
+        aggregation : "max",
+      };
+      lastYearPeak = Module("gasdata").fetch(db2);
+      res.put("lastYearPeakDemand",lastYearPeak);
+      
+      if(lastYearPeak != null) {
+        db3 = {
+          criteria : [parentId == meterId && flowRate == lastYearPeak && ttime == lastYear],
+          field : "ttime",
+        };
+        lastYearDate = Module("gasdata").fetch(db3);
+        if(lastYearDate != null) {
+          datetime = lastYearDate[0];
+          format = "MMM dd, yyyy hh:mm a";
+          formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
+          res.put("lastYearPeakTime",formattedTime);
+        }
+      }
+      
+      percentDiff = 0;
+      scaleVal = 0;
+      if(lastYearPeak != 0 && thisYearPeak != 0 && thisYearPeak > lastYearPeak){
+      percentDiff = ((thisYearPeak - lastYearPeak)/lastYearPeak)*100;
+      scaleVal = 1;
+      }
+      else if(lastYearPeak != 0 && thisYearPeak !=0 && lastYearPeak > thisYearPeak){
+      percentDiff = ((lastYearPeak - thisYearPeak)/lastYearPeak)*100;
+      }
+      res.put("percentDifference",percentDiff);
+      res.put("scale",scaleVal );
+      
       res.put("readingName", "flowRate");
       res.put("widgetName", "Maximum Flow");
   }
   else if(utilityTypeName == "Water Meter") {
       db = {
-        criteria : [parentId == meterId],
+        criteria : [parentId == meterId && ttime == currentYear],
         field : "flowRate",
         aggregation : "max",
       };
-      peak = Module("waterdata").fetch(db);
-      res.put("peakDemand",peak);
+      thisYearPeak = Module("waterdata").fetch(db);
+      res.put("peakDemand",thisYearPeak);
       
-      if(peak != null) {
+      if(thisYearPeak != null) {
         db1 = {
-          criteria : [parentId == meterId && flowRate == peak],
+          criteria : [parentId == meterId && flowRate == thisYearPeak && ttime == currentYear],
           field : "ttime",
         };
         date = Module("waterdata").fetch(db1);
@@ -2275,21 +2424,56 @@
           res.put("peakTime",formattedTime);
         }
       }
+      
+      db2 = {
+        criteria : [parentId == meterId && ttime == lastYear],
+        field : "flowRate",
+        aggregation : "max",
+      };
+      lastYearPeak = Module("waterdata").fetch(db2);
+      res.put("lastYearPeakDemand",lastYearPeak);
+      
+      if(lastYearPeak != null) {
+        db3 = {
+          criteria : [parentId == meterId && flowRate == lastYearPeak && ttime == lastYear],
+          field : "ttime",
+        };
+        lastYearDate = Module("waterdata").fetch(db3);
+        if(lastYearDate != null) {
+          datetime = lastYearDate[0];
+          format = "MMM dd, yyyy hh:mm a";
+          formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
+          res.put("lastYearPeakTime",formattedTime);
+        }
+      }
+      
+      percentDiff = 0;
+      scaleVal = 0;
+      if(lastYearPeak != 0 && thisYearPeak != 0 && thisYearPeak > lastYearPeak){
+      percentDiff = ((thisYearPeak - lastYearPeak)/lastYearPeak)*100;
+      scaleVal = 1;
+      }
+      else if(lastYearPeak != 0 && thisYearPeak !=0 && lastYearPeak > thisYearPeak){
+      percentDiff = ((lastYearPeak - thisYearPeak)/lastYearPeak)*100;
+      }
+      res.put("percentDifference",percentDiff);
+      res.put("scale",scaleVal );
+      
       res.put("readingName", "flowRate");
       res.put("widgetName", "Maximum Flow");
   }
   else if(utilityTypeName == "Electricity Meter") {
       db = {
-        criteria : [parentId == meterId],
+        criteria : [parentId == meterId && ttime == currentYear],
         field : "totalDemand",
         aggregation : "max",
       };
-      peak = Module("electricitydata").fetch(db);
-      res.put("peakDemand",peak);
+      thisYearPeak = Module("electricitydata").fetch(db);
+      res.put("peakDemand",thisYearPeak);
       
-      if(peak != null) {
+      if(thisYearPeak != null) {
         db1 = {
-          criteria : [parentId == meterId && totalDemand == peak],
+          criteria : [parentId == meterId && totalDemand == thisYearPeak && ttime == currentYear],
           field : "ttime",
         };
         date = Module("electricitydata").fetch(db1);
@@ -2300,21 +2484,56 @@
           res.put("peakTime",formattedTime);
         }
       }
+      
+      db2 = {
+        criteria : [parentId == meterId && ttime == lastYear],
+        field : "totalDemand",
+        aggregation : "max",
+      };
+      lastYearPeak = Module("electricitydata").fetch(db2);
+      res.put("lastYearPeakDemand",lastYearPeak);
+      
+      if(lastYearPeak != null) {
+        db3 = {
+          criteria : [parentId == meterId && totalDemand == lastYearPeak && ttime == lastYear],
+          field : "ttime",
+        };
+        lastYearDate = Module("electricitydata").fetch(db3);
+        if(lastYearDate != null) {
+          datetime = lastYearDate[0];
+          format = "MMM dd, yyyy hh:mm a";
+          formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
+          res.put("lastYearPeakTime",formattedTime);
+        }
+      }
+      
+      percentDiff = 0;
+      scaleVal = 0;
+      if(lastYearPeak != 0 && thisYearPeak != 0 && thisYearPeak > lastYearPeak){
+      percentDiff = ((thisYearPeak - lastYearPeak)/lastYearPeak)*100;
+      scaleVal = 1;
+      }
+      else if(lastYearPeak != 0 && thisYearPeak !=0 && lastYearPeak > thisYearPeak){
+      percentDiff = ((lastYearPeak - thisYearPeak)/lastYearPeak)*100;
+      }
+      res.put("percentDifference",percentDiff);
+      res.put("scale",scaleVal );
+      
       res.put("readingName", "totalDemand");
       res.put("widgetName", "Peak Demand");
   }
   else if(utilityTypeName == "Heat Meter") {
       db = {
-        criteria : [parentId == meterId],
+        criteria : [parentId == meterId && ttime == currentYear],
         field : "thermalPower",
         aggregation : "max",
       };
-      peak = Module("heatdata").fetch(db);
-      res.put("peakDemand",peak);
+      thisYearPeak = Module("heatdata").fetch(db);
+      res.put("peakDemand",thisYearPeak);
       
-      if(peak != null) {
+      if(thisYearPeak != null) {
         db1 = {
-          criteria : [parentId == meterId && thermalPower == peak],
+          criteria : [parentId == meterId && thermalPower == thisYearPeak && ttime == currentYear],
           field : "ttime",
         };
         date = Module("heatdata").fetch(db1);
@@ -2325,21 +2544,56 @@
           res.put("peakTime",formattedTime);
         }
       }
+      
+      db2 = {
+        criteria : [parentId == meterId && ttime == lastYear],
+        field : "thermalPower",
+        aggregation : "max",
+      };
+      lastYearPeak = Module("heatdata").fetch(db2);
+      res.put("lastYearPeakDemand",lastYearPeak);
+      
+      if(lastYearPeak != null) {
+        db3 = {
+          criteria : [parentId == meterId && thermalPower == lastYearPeak && ttime == lastYear],
+          field : "ttime",
+        };
+        lastYearDate = Module("heatdata").fetch(db3);
+        if(lastYearDate != null) {
+          datetime = lastYearDate[0];
+          format = "MMM dd, yyyy hh:mm a";
+          formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
+          res.put("lastYearPeakTime",formattedTime);
+        }
+      }
+      
+      percentDiff = 0;
+      scaleVal = 0;
+      if(lastYearPeak != 0 && thisYearPeak != 0 && thisYearPeak > lastYearPeak){
+      percentDiff = ((thisYearPeak - lastYearPeak)/lastYearPeak)*100;
+      scaleVal = 1;
+      }
+      else if(lastYearPeak != 0 && thisYearPeak !=0 && lastYearPeak > thisYearPeak){
+      percentDiff = ((lastYearPeak - thisYearPeak)/lastYearPeak)*100;
+      }
+      res.put("percentDifference",percentDiff);
+      res.put("scale",scaleVal );
+      
       res.put("readingName", "thermalPower");
       res.put("widgetName", "Peak Thermal Power");
   }
   else if(utilityTypeName == "BTU Meter") {
       db = {
-        criteria : [parentId == meterId],
+        criteria : [parentId == meterId && ttime == currentYear],
         field : "flowRate",
         aggregation : "max",
       };
-      peak = Module("btudata").fetch(db);
-      res.put("peakDemand",peak);
+      thisYearPeak = Module("btudata").fetch(db);
+      res.put("peakDemand",thisYearPeak);
       
-      if(peak != null) {
+      if(thisYearPeak != null) {
         db1 = {
-          criteria : [parentId == meterId && flowRate == peak],
+          criteria : [parentId == meterId && flowRate == thisYearPeak && ttime == currentYear],
           field : "ttime",
         };
         date = Module("btudata").fetch(db1);
@@ -2350,6 +2604,41 @@
           res.put("peakTime",formattedTime);
         }
       }
+      
+      db2 = {
+        criteria : [parentId == meterId && ttime == lastYear],
+        field : "flowRate",
+        aggregation : "max",
+      };
+      lastYearPeak = Module("btudata").fetch(db2);
+      res.put("lastYearPeakDemand",lastYearPeak);
+      
+      if(lastYearPeak != null) {
+        db3 = {
+          criteria : [parentId == meterId && flowRate == lastYearPeak && ttime == lastYear],
+          field : "ttime",
+        };
+        lastYearDate = Module("btudata").fetch(db3);
+        if(lastYearDate != null) {
+          datetime = lastYearDate[0];
+          format = "MMM dd, yyyy hh:mm a";
+          formattedTime = new NameSpace("date").getFormattedTime(datetime, format);
+          res.put("lastYearPeakTime",formattedTime);
+        }
+      }
+      
+      percentDiff = 0;
+      scaleVal = 0;
+      if(lastYearPeak != 0 && thisYearPeak != 0 && thisYearPeak > lastYearPeak){
+      percentDiff = ((thisYearPeak - lastYearPeak)/lastYearPeak)*100;
+      scaleVal = 1;
+      }
+      else if(lastYearPeak != 0 && thisYearPeak !=0 && lastYearPeak > thisYearPeak){
+      percentDiff = ((lastYearPeak - thisYearPeak)/lastYearPeak)*100;
+      }
+      res.put("percentDifference",percentDiff);
+      res.put("scale",scaleVal );
+      
       res.put("readingName", "flowRate");
       res.put("widgetName", "Maximum Flow");
   }

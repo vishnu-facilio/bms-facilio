@@ -2,6 +2,7 @@ package com.facilio.apiv3;
 
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.alarms.AgentAlarmContext;
+import com.facilio.agentv2.controller.Controller;
 import com.facilio.alarms.sensor.commands.FetchSensorRuleSummaryCommand;
 import com.facilio.alarms.sensor.commands.PrepareSensorRuleForUpdateCommand;
 import com.facilio.alarms.sensor.commands.UpdateSensorRuleCommand;
@@ -83,7 +84,6 @@ import com.facilio.bmsconsoleV3.commands.jobplan.ValidationForJobPlanCategory;
 import com.facilio.bmsconsoleV3.commands.jobplanSection.AddCriteriaForJobPlanSectionInputOptionsBeforeFetchCommand;
 import com.facilio.bmsconsoleV3.commands.jobplanTask.AddCriteriaForJobPlanTaskInputOptionsBeforeFetchCommand;
 import com.facilio.bmsconsoleV3.commands.labour.*;
-import com.facilio.bmsconsoleV3.commands.meter.*;
 import com.facilio.bmsconsoleV3.commands.moves.UpdateEmployeeInDesksCommandV3;
 import com.facilio.bmsconsoleV3.commands.moves.ValidateMovesCommand;
 import com.facilio.bmsconsoleV3.commands.people.*;
@@ -237,12 +237,14 @@ import com.facilio.readingkpi.commands.update.NullFieldIdAndModuleIdForDynamicKp
 import com.facilio.readingkpi.context.KpiLoggerContext;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.readingkpi.context.ReadingKpiLogsContext;
-import com.facilio.readingrule.command.LoadSupplementsForConnectedRuleLogs;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.context.ReadingRuleLogsContext;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.faultimpact.FaultImpactNameSpaceFieldContext;
 import com.facilio.relation.context.RelationDataContext;
+import com.facilio.remotemonitoring.commands.*;
+import com.facilio.remotemonitoring.context.*;
+import com.facilio.remotemonitoring.signup.*;
 import com.facilio.util.FacilioUtil;
 import com.facilio.utility.commands.*;
 import com.facilio.utility.context.*;
@@ -264,7 +266,9 @@ import com.facilio.workflowlog.context.WorkflowVersionHistoryContext;
 import org.apache.commons.chain.Command;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -3215,6 +3219,7 @@ public class APIv3Config {
         return () -> new V3Config(DataLogContextV3.class, null)
                 .list()
                 .beforeFetch(new FetchAgentDataLoggerSupplementsCommand() )
+                .summary()
                 .build();
     }
     @Module(FacilioConstants.ContextNames.AGENT_DATA_PROCESSING_LOGGER)
@@ -3333,8 +3338,8 @@ public class APIv3Config {
                 .beforeDelete(TransactionChainFactoryV3.getUtilityTypeBeforeDeleteChain())
                 .build();
     }
-    
-    
+
+
     @Module(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE)
     public static Supplier<V3Config> getVirtualMeterTemplate() {
         return () -> new V3Config(VirtualMeterTemplateContext.class, null)
@@ -3352,7 +3357,7 @@ public class APIv3Config {
                 .afterFetch(TransactionChainFactoryV3.getVirtualMeterTemplateSummaryAfterFetchChain())
                 .build();
     }
-    
+
     @Module(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE_READING)
     public static Supplier<V3Config> getVirtualMeterTemplateReading() {
         return () -> new V3Config(VirtualMeterTemplateReadingContext.class, null)
@@ -3366,8 +3371,8 @@ public class APIv3Config {
     }
 
     @Module(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGS)
-    public static Supplier<V3Config> getWorkflowRuleLogs(){
-        return () -> new V3Config(WorkflowRuleLogContext.class,null)
+    public static Supplier<V3Config> getWorkflowRuleLogs() {
+        return () -> new V3Config(WorkflowRuleLogContext.class, null)
                 .list()
                 .afterFetch(new GetWorkflowRuleActionLogs())
                 .build();
@@ -3491,6 +3496,27 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module(AlarmCategoryModule.MODULE_NAME)
+    public static Supplier<V3Config> getAlarmCategoryModule(){
+        return () -> new V3Config(AlarmDefinitionMappingContext.class,null)
+                .summary()
+                .fetchSupplement(AlarmCategoryModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmCategoryModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmCategoryModule.MODULE_NAME,"sysModifiedByPeople")
+                .list()
+                .fetchSupplement(AlarmCategoryModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmCategoryModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmCategoryModule.MODULE_NAME,"sysModifiedByPeople")
+                .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_CATEGORY_ACTIVITY))
+                .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_CATEGORY_ACTIVITY))
+                .delete()
+                .markAsDeleteByPeople()
+                .build();
+    }
 
     @Module(FacilioConstants.UTILITY_INTEGRATION_TIER_ITEMS)
     public static Supplier<V3Config> getUtilityTierItems() {
@@ -3569,5 +3595,452 @@ public class APIv3Config {
                 .fetchSupplement(FacilioConstants.UTILITY_DISPUTE, "resolvedBy")
                 .build();
     }
+    @Module(AlarmDefinitionModule.MODULE_NAME)
+    public static Supplier<V3Config> getAlarmDefinitionModule(){
+        return () -> new V3Config(AlarmDefinitionMappingContext.class,null)
+                .summary()
+                .fetchSupplement(AlarmDefinitionModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmDefinitionModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmDefinitionModule.MODULE_NAME,"sysModifiedByPeople")
+                .list()
+                .fetchSupplement(AlarmDefinitionModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmDefinitionModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmDefinitionModule.MODULE_NAME,"sysModifiedByPeople")
+                .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_DEFINITION_ACTIVITY))
+                .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_DEFINITION_ACTIVITY))
+                .delete()
+                .markAsDeleteByPeople()
+                .build();
+    }
 
+    @Module(AlarmDefinitionMappingModule.MODULE_NAME)
+    public static Supplier<V3Config> getAlarmDefinitionMapping(){
+        return () -> new V3Config(AlarmDefinitionMappingContext.class,null)
+                .list()
+                .fetchSupplement(AlarmDefinitionMappingModule.MODULE_NAME,"alarmDefinition")
+                .fetchSupplement(AlarmDefinitionMappingModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmDefinitionMappingModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmDefinitionMappingModule.MODULE_NAME,"sysModifiedByPeople")
+                .summary()
+                .fetchSupplement(AlarmDefinitionMappingModule.MODULE_NAME,"alarmDefinition")
+                .fetchSupplement(AlarmDefinitionMappingModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmDefinitionMappingModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmDefinitionMappingModule.MODULE_NAME,"sysModifiedByPeople")
+                .create()
+                .beforeSave(new AlarmDefinitionValidationCommand(), new AlarmDefinitionMappingInvalidateCacheCommand())
+                .afterSave(new ConstructAddCustomActivityCommandV3(),
+                new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_DEFINITION_MAPPING_ACTIVITY))
+                .update()
+                .beforeSave(new AlarmDefinitionValidationCommand(),new AlarmDefinitionMappingInvalidateCacheCommand())
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_DEFINITION_MAPPING_ACTIVITY))
+                .delete()
+                .markAsDeleteByPeople()
+                .afterDelete(new AlarmDefinitionMappingInvalidateCacheCommand())
+                .build();
+    }
+
+    @Module(RawAlarmModule.MODULE_NAME)
+    public static Supplier<V3Config> getRawAlarmModule(){
+        return () -> new V3Config(RawAlarmContext.class,null)
+                .list()
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"client")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"site")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"alarmType")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"alarmDefinition")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"alarmCategory")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"controller")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"sysModifiedByPeople")
+                .summary()
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"client")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"site")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"alarmType")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"alarmDefinition")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"alarmCategory")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"controller")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"sysModifiedByPeople")
+                .delete()
+                .markAsDeleteByPeople()
+                .create()
+                .afterSave(new ConstructAddCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.RAW_ALARM_ACTIVITY))
+                .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.RAW_ALARM_ACTIVITY))
+                .build();
+    }
+
+    @Module(AlarmTypeModule.MODULE_NAME)
+    public static Supplier<V3Config> getAlarmTypeModule(){
+        return () -> new V3Config(AlarmTypeContext.class,null)
+                .summary()
+                .fetchSupplement(AlarmTypeModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmTypeModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmTypeModule.MODULE_NAME,"sysModifiedByPeople")
+                .list()
+                .fetchSupplement(AlarmTypeModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmTypeModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmTypeModule.MODULE_NAME,"sysModifiedByPeople")
+                .create()
+                .beforeSave(new ValidateAlarmTypeCommand())
+                .afterSave(new ConstructAddCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_TYPE_ACTIVITY))
+                .update()
+                .beforeSave(new ValidateAlarmTypeCommand())
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_TYPE_ACTIVITY))
+                .delete()
+                .afterDelete(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        String moduleName = Constants.getModuleName(context);
+                        Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+                        List<AlarmTypeContext> alarmTypes = recordMap.get(moduleName);
+                        if(CollectionUtils.isNotEmpty(alarmTypes)) {
+                            for(AlarmTypeContext alarmType : alarmTypes) {
+                                if(alarmType.isUncategorisedAlarm()) {
+                                    throw new IllegalArgumentException("Deleting undefined alarm type is not allowed");
+                                }
+                            }
+                        }
+                        return false;
+                    }
+                })
+                .markAsDeleteByPeople()
+                .build();
+    }
+
+    @Module(AlarmDefinitionTaggingModule.MODULE_NAME)
+    public static Supplier<V3Config> getAlarmDefinitionTaggingModule(){
+        return () -> new V3Config(AlarmDefinitionTaggingContext.class,null)
+                .create()
+                .beforeSave(new ValidateAlarmDefinitionTaggingModule())
+                .afterSave(new AlarmDefinitionTaggingInvalidateCacheCommand(),new ConstructAddCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_DEFINITION_TAGGING_ACTIVITY))
+                .update()
+                .beforeSave(new ValidateAlarmDefinitionTaggingModule())
+                .afterSave(new AlarmDefinitionTaggingInvalidateCacheCommand(),new ConstructUpdateCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_DEFINITION_TAGGING_ACTIVITY))
+                .list()
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"alarmType")
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"alarmDefinition")
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"alarmCategory")
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"controllerType")
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"sysModifiedByPeople")
+                .summary()
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"alarmType")
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"alarmDefinition")
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"alarmCategory")
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"controllerType")
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmDefinitionTaggingModule.MODULE_NAME,"sysModifiedByPeople")
+                .delete()
+                .markAsDeleteByPeople()
+                .afterDelete(new AlarmDefinitionTaggingInvalidateCacheCommand())
+                .build();
+    }
+
+    @Module(AlarmFilterRuleModule.MODULE_NAME)
+    public static Supplier<V3Config> getAlarmFilterRuleModule(){
+        return () -> new V3Config(AlarmFilterRuleContext.class,null)
+                .create()
+                .beforeSave(new AddSiteAndControllerCriteriaCommand())
+                .afterSave(new AlarmFilterRuleInvalidateCacheCommand(),new DeleteScheduledJobsForAlarmRule(),new AddAlarmFilterRuleCriteriaCommand(),new AlarmNotReceivedForDurationJobScheduler(),
+                        new ConstructAddCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_FILTER_RULE_ACTIVITY))
+                .update()
+                .beforeSave(new AddSiteAndControllerCriteriaCommand())
+                .afterSave(new AlarmFilterRuleInvalidateCacheCommand(),new DeleteScheduledJobsForAlarmRule(),new DeleteExistingCriteriaForFilterRuleCommand(),new AddAlarmFilterRuleCriteriaCommand(),new AlarmNotReceivedForDurationJobScheduler(),
+                        new ConstructUpdateCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_FILTER_RULE_ACTIVITY))
+                .list()
+                .fetchSupplement(AlarmFilterRuleModule.MODULE_NAME,"alarmType")
+                .fetchSupplement(AlarmFilterRuleModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmFilterRuleModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmFilterRuleModule.MODULE_NAME,"sysModifiedByPeople")
+                .summary()
+                .fetchSupplement(AlarmFilterRuleModule.MODULE_NAME,"alarmType")
+                .fetchSupplement(AlarmFilterRuleModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmFilterRuleModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmFilterRuleModule.MODULE_NAME,"sysModifiedByPeople")
+                .afterFetch(ReadOnlyChainFactoryV3.getAlarmFilterRuleSummaryAfterFetchChain())
+                .delete()
+                .markAsDeleteByPeople()
+                .afterDelete(new AlarmFilterRuleInvalidateCacheCommand(),new DeleteScheduledJobsForAlarmRule())
+                .build();
+    }
+
+    @Module(AlarmFilterRuleCriteriaModule.MODULE_NAME)
+    public static Supplier<V3Config> getAlarmFilterRuleCriteriaModule(){
+        return () -> new V3Config(FilterRuleCriteriaContext.class,null)
+                .create()
+                .update()
+                .list()
+                .fetchSupplement(AlarmFilterRuleCriteriaModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmFilterRuleCriteriaModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmFilterRuleCriteriaModule.MODULE_NAME,"sysModifiedByPeople")
+                .fetchSupplement(AlarmFilterRuleCriteriaModule.MODULE_NAME,"alarmDefinition")
+                .summary()
+                .fetchSupplement(AlarmFilterRuleCriteriaModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmFilterRuleCriteriaModule.MODULE_NAME,"sysModifiedByPeople")
+                .fetchSupplement(AlarmFilterRuleCriteriaModule.MODULE_NAME,"client")
+                .fetchSupplement(AlarmFilterRuleCriteriaModule.MODULE_NAME,"alarmDefinition")
+                .delete()
+                .markAsDeleteByPeople()
+                .build();
+    }
+
+    @Module(FilteredAlarmModule.MODULE_NAME)
+    public static Supplier<V3Config> getFilteredAlarmModule(){
+        return () -> new V3Config(FilteredAlarmContext.class,null)
+                .update()
+                .afterSave(new ConstructAddCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.FILTER_ALARM_ACTIVITY))
+                .create()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.FILTER_ALARM_ACTIVITY))
+                .list()
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"site")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"client")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"controller")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"alarmCategory")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"alarmType")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"rawAlarm")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"flaggedEventRule")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"flaggedEvent")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"sysModifiedByPeople")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"alarmFilterRule")
+                .delete()
+                .markAsDeleteByPeople()
+                .summary()
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"site")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"client")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"controller")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"alarmCategory")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"alarmType")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"rawAlarm")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"flaggedEventRule")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"flaggedEvent")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"sysModifiedByPeople")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"alarmFilterRule")
+                .build();
+    }
+
+    @Module(FlaggedEventRuleModule.MODULE_NAME)
+    public static Supplier<V3Config> getFlaggedEventRuleModule() {
+        return () -> new V3Config(FlaggedEventRuleContext.class,null)
+                .create()
+                .beforeSave(new AddFlaggedEventRuleSiteAndControllerCriteriaCommand())
+                .afterSave(new AddFlaggedEventClosureConfigCommand(),new DeleteAndAddRuleAttachmentsCommand(), new DeleteFlaggedEventEmailNotificationRuleCommand(),new FlaggedEventRuleInvalidateCacheCommand(),
+                        new AddFlaggedEventRuleAlarmTypeCommand(), new DeleteFlaggedEventRuleJob(),
+                        new FlaggedEventRuleJobScheduler(), new AddOrUpdateFlaggedEventWorkorderFieldMappingCommand(),
+                        new AddOrUpdateEmailRuleForFlaggedEventCommand(), new DeleteBureauEvaluationCommand(),new AddOrUpdateBureauConfigCommand(),
+                        new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_RULE_ACTIVITY))
+                .update()
+                .beforeSave(new AddFlaggedEventRuleSiteAndControllerCriteriaCommand())
+                .afterSave(new AddFlaggedEventClosureConfigCommand(),new DeleteAndAddRuleAttachmentsCommand(), new DeleteFlaggedEventEmailNotificationRuleCommand(),new FlaggedEventRuleInvalidateCacheCommand(),
+                        new AddFlaggedEventRuleAlarmTypeCommand(),new DeleteFlaggedEventRuleJob(),
+                        new FlaggedEventRuleJobScheduler(), new AddOrUpdateFlaggedEventWorkorderFieldMappingCommand(),
+                        new AddOrUpdateEmailRuleForFlaggedEventCommand(), new DeleteBureauEvaluationCommand(),new AddOrUpdateBureauConfigCommand(),
+                        new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_RULE_ACTIVITY))
+                .list()
+                .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"client")
+                .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"sysModifiedByPeople")
+                .summary()
+                .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"client")
+                .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"sysModifiedByPeople")
+                .afterFetch(ReadOnlyChainFactoryV3.getFlaggedEventRuleSummaryAfterFetchChain())
+                .delete()
+                .markAsDeleteByPeople()
+                .afterDelete(new DeleteBureauEvaluationCommand(),new DeleteFlaggedEventEmailNotificationRuleCommand(),
+                        new FlaggedEventRuleInvalidateCacheCommand(),new AddFlaggedEventRuleAlarmTypeCommand(),
+                        new DeleteFlaggedEventRuleJob())
+                .build();
+    }
+
+    @Module(FlaggedEventModule.MODULE_NAME)
+    public static Supplier<V3Config> getFlaggedEventModule(){
+        return () -> new V3Config(FlaggedEventContext.class,null)
+                .create()
+                .afterSave(new FlaggedEventBureauInformationCommand(),new BureauEvaluationOrCreateWorkorder(),new FlaggedEventClosureCommand(), new ConstructAddCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
+                .preCreate()
+                .afterSave(new FlaggedEventClosureCommand(),new ConstructAddCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
+                .update()
+                .afterSave(new FlaggedEventClosureCommand(),new ConstructUpdateCustomActivityCommandV3(),
+                        new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
+                .postCreate()
+                .afterSave(new FlaggedEventBureauInformationCommand(),
+                        new BureauEvaluationOrCreateWorkorder(),
+                        new FlaggedEventClosureCommand()
+                )
+                .afterTransaction(new ConstructAddCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
+                .list()
+                .afterFetch(new ComputeTimeRemainingForFlaggedEventCommand())
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEventRule")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEvent")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"client")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"controller")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"sysModifiedByPeople")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"currentBureauActionDetail")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"team")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"assignedPeople")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"workorder")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"bureauCloseIssues")
+                .summary()
+                .afterFetch(new ComputeTimeRemainingForFlaggedEventCommand())
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEventRule")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEvent")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"client")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"controller")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"sysModifiedByPeople")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"currentBureauActionDetail")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"team")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"assignedPeople")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"workorder")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"bureauCloseIssues")
+                .delete()
+                .markAsDeleteByPeople()
+                .build();
+    }
+
+    @Module(FlaggedEventAlarmTypeRelModule.MODULE_NAME)
+    public static Supplier<V3Config> getFlaggedEventRuleAlarmTypeRelModule(){
+        return () -> new V3Config(FlaggedEventRuleAlarmTypeRel.class,null)
+                .create()
+                .update()
+                .list()
+                .fetchSupplement(FlaggedEventAlarmTypeRelModule.MODULE_NAME,"alarmType")
+                .summary()
+                .fetchSupplement(FlaggedEventAlarmTypeRelModule.MODULE_NAME,"alarmType")
+                .delete()
+                .markAsDeleteByPeople()
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.CONTROLLER)
+    public static Supplier<V3Config> getControllerModule(){
+        return () -> new V3Config(Controller.class,null)
+                .create()
+                .update()
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.CONTROLLER,"category")
+                .fetchSupplement(FacilioConstants.ContextNames.CONTROLLER,"identifiedLocation")
+                .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.CONTROLLER,"category")
+                .fetchSupplement(FacilioConstants.ContextNames.CONTROLLER,"identifiedLocation")
+                .delete()
+                .build();
+    }
+    @Module(ControllerAlarmInfoModule.MODULE_NAME)
+    public static Supplier<V3Config> getControllerInfoModule(){
+        return () -> new V3Config(ControllerAlarmInfoContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .markAsDeleteByPeople()
+                .build();
+    }
+
+    @Module(FlaggedEventBureauEvaluationModule.MODULE_NAME)
+    public static Supplier<V3Config> getFlaggedEventBureauEvaluationModule(){
+        return () -> new V3Config(FlaggedEventRuleBureauEvaluationContext.class,null)
+                .create()
+                .afterSave(new DeleteBureauInhibitReasonListCommand(), new AddOrUpdateBureauInhibitReasonListCommand())
+                .update()
+                .afterSave(new DeleteBureauInhibitReasonListCommand(), new AddOrUpdateBureauInhibitReasonListCommand())
+                .list()
+                .summary()
+                .delete()
+                .afterDelete(new DeleteBureauInhibitReasonListCommand())
+                .build();
+    }
+
+    @Module(FlaggedEventBureauActionModule.MODULE_NAME)
+    public static Supplier<V3Config> getFlaggedEventBureauActionModule(){
+        return () -> new V3Config(FlaggedEventBureauActionsContext.class,null)
+                .create()
+                .afterSave(new AddOrUpdateBureauActionListCommand())
+                .update()
+                .afterSave(new AddOrUpdateBureauActionListCommand())
+                .list()
+                .fetchSupplement(FlaggedEventBureauActionModule.MODULE_NAME,"assignedPeople")
+                .fetchSupplement(FlaggedEventBureauActionModule.MODULE_NAME,"team")
+                .fetchSupplement(FlaggedEventBureauActionModule.MODULE_NAME,"troubleShootingTips")
+                .summary()
+                .fetchSupplement(FlaggedEventBureauActionModule.MODULE_NAME,"assignedPeople")
+                .fetchSupplement(FlaggedEventBureauActionModule.MODULE_NAME,"team")
+                .fetchSupplement(FlaggedEventBureauActionModule.MODULE_NAME,"troubleShootingTips")
+                .afterFetch(new ReadOnlyChainFactoryV3().getFlaggedEventActionSummaryAfterFetchChain())
+                .delete()
+                .build();
+    }
+    @Module(BureauInhibitReasonListModule.MODULE_NAME)
+    public static Supplier<V3Config> getBureauInhibitReasonListModule(){
+        return () -> new V3Config(BureauInhibitReasonListContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module(BureauCauseListModule.MODULE_NAME)
+    public static Supplier<V3Config> getBureauCauseListModule(){
+        return () -> new V3Config(BureauCauseListContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module(BureauResolutionListModule.MODULE_NAME)
+    public static Supplier<V3Config> getBureauResolutionListModule(){
+        return () -> new V3Config(BureauResolutionListContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module(BureauCloseIssueReasonOptionListModule.MODULE_NAME)
+    public static Supplier<V3Config> getBureauCloseIssueReasonOptionListModule(){
+        return () -> new V3Config(BureauCloseIssueReasonOptionContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module(AddFlaggedEventClosureConfigModule.MODULE_NAME)
+    public static Supplier<V3Config> getFlaggedEventClosureConfigModule(){
+        return () -> new V3Config(FlaggedEventRuleClosureConfigContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
 }

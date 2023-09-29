@@ -13,6 +13,41 @@
         </requestbody>
     </request>
 
+
+    <request path="/api/campus/spaceInsights">
+        <requestbody type="object">
+            <property name="campusId" type="string"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/site/siteInfo">
+        <requestbody type="object">
+            <property name="id" type="string"/>
+        </requestbody>
+    </request>
+<!--    <request path="/api/campus/getBaseSpaceChildren">-->
+<!--        <requestbody type="object">-->
+<!--            <property name="campusId" type="string"/>-->
+<!--        </requestbody>-->
+<!--    </request>-->
+
+    <request path="/api/building/spaceInsights">
+        <requestbody type="object">
+            <property name="buildingId" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/floor/spaceInsights">
+        <requestbody type="object">
+            <property name="floorId" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/space/spaceInsights">
+        <requestbody type="object">
+            <property name="spaceId" type="string"/>
+        </requestbody>
+    </request>
+
     <request path="/api/v3/modules/data/create">
         <requestbody type="v3fields"/>
     </request>
@@ -3385,6 +3420,74 @@
     <request path="/api/v1/setup/quotesetting/delete" method="POST">
         <requestbody type="object">
             <property name="delete" type="boolean" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/flaggedEvent/:id/createworkorder" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/flaggedEvent/:id/takecustody" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/flaggedEvent/:id/pass" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/flaggedEvent/:id/inhibit" method="POST">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="inhibitReasonId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/flaggedEvent/:id/close" method="POST">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="closeIssueValues" type="array">
+                <items type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/flaggedEvent/:id/closeButtonDetail" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/alarms/generateRawAlarms" method="POST">
+        <requestbody type="object">
+            <property name="rawAlarmList" type="array">
+                <items type="object">
+                    <property name="controllerId" type="number"/>
+                    <property name="message" type="string"/>
+                    <property name="occurredTime" type="number"/>
+                    <property name="clearedTime" type="number"/>
+                    <property name="strategy" type="number"/>
+                </items>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/files/preview/module/:authToken/token" method="GET">
+        <requestbody type="object">
+        </requestbody>
+    </request>
+
+
+    <request path="/api/v2/point/configureAll" method="POST">
+        <requestbody>
+            <property name="agentId" type="number"/>
+            <property name="recordIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="controllerType" type="number"/>
+            <property name="interval" type="number"/>
         </requestbody>
     </request>
 

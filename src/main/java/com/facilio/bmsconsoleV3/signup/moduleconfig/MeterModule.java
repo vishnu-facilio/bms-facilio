@@ -333,7 +333,7 @@ public class MeterModule extends BaseModuleConfig{
         MeterFormFields.add(new FormField("parentMeter", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent Meter", FormField.Required.OPTIONAL, "meter", 6, 2));
         MeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Is Check Meter", FormField.Required.OPTIONAL, 7, 2));
 
-        FormSection section = new FormSection("", 1, MeterFormFields, false);
+        FormSection section = new FormSection("Meter Details", 1, MeterFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         MeterForm.setSections(Collections.singletonList(section));
         MeterForm.setIsSystemForm(true);
@@ -443,7 +443,7 @@ public class MeterModule extends BaseModuleConfig{
                 .widgetDone()
                 .sectionDone()
                 .addSection("totalConsumptionSection", null, null)
-                .addWidget("totalConsumptionWidget", "Total Consumption", PageWidget.WidgetType.TOTAL_CONSUMPTION, "webtotalconsumption_14_24", 0, 0, null, null)
+                .addWidget("totalConsumptionWidget", "Yearly Consumption", PageWidget.WidgetType.TOTAL_CONSUMPTION, "webtotalconsumption_14_24", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("peakDemandSection", null, null)
@@ -543,7 +543,7 @@ public class MeterModule extends BaseModuleConfig{
                 .widgetDone()
                 .sectionDone()
                 .addSection("totalConsumptionSection", null, null)
-                .addWidget("totalConsumptionWidget", "Total Consumption", PageWidget.WidgetType.TOTAL_CONSUMPTION, "webtotalconsumption_14_24", 0, 0, null, null)
+                .addWidget("totalConsumptionWidget", "Yearly Consumption", PageWidget.WidgetType.TOTAL_CONSUMPTION, "webtotalconsumption_14_24", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("peakDemandSection", null, null)
@@ -735,10 +735,12 @@ public class MeterModule extends BaseModuleConfig{
 
 
         FacilioField meterLocation = moduleBean.getField("meterLocation",moduleName);
+        FacilioField site = moduleBean.getField("siteId",moduleName);
 
         SummaryWidgetGroup locationWidgetGroup = new SummaryWidgetGroup();
 
         addSummaryFieldInWidgetGroup(locationWidgetGroup, meterLocation, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(locationWidgetGroup, site, 1, 2, 1);
 
         locationWidgetGroup.setName("locationDetails");
         locationWidgetGroup.setDisplayName("Location");
@@ -798,14 +800,16 @@ public class MeterModule extends BaseModuleConfig{
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
         FacilioField utilityType = moduleBean.getField("utilityType", moduleName);
+        FacilioField site = moduleBean.getField("siteId",moduleName);
         FacilioField vmTemplate = moduleBean.getField("virtualMeterTemplate", moduleName);
         FacilioField meterType = moduleBean.getField("meterType", moduleName);
         FacilioField description = moduleBean.getField("description", moduleName);
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
         addSummaryFieldInWidgetGroup(widgetGroup, utilityType, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, vmTemplate, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, meterType, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, site, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, vmTemplate, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, meterType, 1, 4, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, description, 2, 1, 4);
         widgetGroup.setName("moduleDetails");
         widgetGroup.setDisplayName("General Information");

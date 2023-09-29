@@ -37,6 +37,7 @@ public class AddAgentDataCommand extends FacilioCommand {
             FacilioModule agentDataModule = modbean.getModule(FacilioConstants.ContextNames.AGENT_DATA_LOGGER);
             if(agentDataModule != null && agentDataModule.getModuleId() > 0 ){
                 PublishType publishType = (PublishType) context.get(AgentConstants.PUBLISH_TYPE);
+                int payloadIndex = (int) context.get(AgentKeys.PAYLOAD_INDEX);
                 if(publishType == PublishType.TIMESERIES || publishType == PublishType.COV){
                     long startTime = (long) context.get(AgentKeys.START_TIME);
                     Map<String,String>errorPoints =  (Map<String,String>) context.get("errorPoints");
@@ -68,6 +69,7 @@ public class AddAgentDataCommand extends FacilioCommand {
                     datalog.setEndTime(System.currentTimeMillis());
                     datalog.setAgent(agent);
                     datalog.setController(controller);
+                    datalog.setPayloadIndex(payloadIndex);
                     String errorMessage = null;
                     if(errorPoints.size() > 3){
                         errorMessage = "Error occured for Points : "+ String.join(", ",(errorPoints.keySet().stream().limit(3).collect(Collectors.toSet()))) + " + " + (errorPoints.size() - 3) +" more";

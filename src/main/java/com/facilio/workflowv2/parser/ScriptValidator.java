@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.remotemonitoring.signup.RawAlarmModule;
 import com.facilio.scriptengine.autogens.WorkflowV2Parser;
 import com.facilio.scriptengine.context.*;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
@@ -231,6 +232,7 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add("sensoralarm");
         scriptWhiteListedModules.add("agent");
         scriptWhiteListedModules.add("points");
+        scriptWhiteListedModules.add(RawAlarmModule.MODULE_NAME);
     }
 
     @Override

@@ -54,7 +54,7 @@ public enum ComponentType implements FacilioIntEnum {
     NAMED_CRITERIA(NamedCriteriaPackageBeanImpl.class, MODULE, false),
     CUSTOM_BUTTON(CustomButtonPackageBeanImpl.class, MODULE, false),
     RELATIONSHIP(RelationshipPackageBeanImpl.class, MODULE, false),
-    STATE_FLOW(StateFlowPackageBeanImpl.class,MODULE,false),
+    STATE_FLOW(StateFlowPackageBeanImpl.class,MODULE,true),
     STATE_TRANSITION(StateTransitionPackageBeanImpl.class,MODULE,false),
     NOTIFICATION(NotificationPackageBeanImpl.class,MODULE,false),
     APPROVAL_STATE_FLOW(ApprovalStateFlowPackageBeanImpl.class,MODULE,false),
@@ -147,4 +147,16 @@ public enum ComponentType implements FacilioIntEnum {
         return packageClass;
     }
 
+    public static final List<ComponentType> PICKLIST_COMPONENTS = new ArrayList<ComponentType>(){{
+        add(PEOPLE);
+        add(USER);
+        add(TICKET_STATUS);
+        add(ASSET_CATEGORY);
+        add(ASSET_DEPARTMENT);
+        add(ASSET_TYPE);
+        add(TICKET_CATEGORY);
+        add(TICKET_TYPE);
+        add(TICKET_PRIORITY);
+        add(SPACE_CATEGORY);
+    }};
 }

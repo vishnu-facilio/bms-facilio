@@ -68,6 +68,7 @@ public class AssetModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         allView.setAppLinkNames(appLinkNames);
 
@@ -104,6 +105,7 @@ public class AssetModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         assetView.setAppLinkNames(appLinkNames);
 
@@ -719,6 +721,7 @@ public class AssetModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         assetView.setAppLinkNames(appLinkNames);
 
@@ -832,7 +835,7 @@ public class AssetModule extends BaseModuleConfig{
         assetForm.setName("default_asset_web");
         assetForm.setModule(assetModule);
         assetForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        assetForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        assetForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
 
         List<FormField> assetFormFields = new ArrayList<>();
         assetFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, "name", 1, 1));

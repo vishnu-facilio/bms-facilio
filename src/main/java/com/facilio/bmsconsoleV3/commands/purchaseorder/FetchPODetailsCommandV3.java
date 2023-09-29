@@ -45,7 +45,7 @@ public class FetchPODetailsCommandV3 extends FacilioCommand {
 
             PurchaseOrderAPI.setLineItemsV3(purchaseOrderContext);
             purchaseOrderContext.setTermsAssociated(PurchaseOrderAPI.fetchAssociatedTermsV3(purchaseOrderContext.getId()));
-            QuotationAPI.setTaxSplitUp(purchaseOrderContext, purchaseOrderContext.getLineItems());
+            QuotationAPI.setTaxSplitUp(purchaseOrderContext, purchaseOrderContext.getLineItems(), context);
         }
         return false;
     }

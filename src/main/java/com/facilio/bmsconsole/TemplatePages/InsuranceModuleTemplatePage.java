@@ -38,14 +38,19 @@ public class InsuranceModuleTemplatePage implements TemplatePageFactory{
                 .layoutDone();
     }
     private static JSONObject getWidgetGroup(boolean isMobile) throws Exception {
+        JSONObject notesWidgetParam = new JSONObject();
+        notesWidgetParam.put("notesModuleName", "insurancenotes");
+        JSONObject attachmentsWidgetParam = new JSONObject();
+        attachmentsWidgetParam.put("attachmentsModuleName", "insuranceattachments");
+
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Notes", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 0, null, null)
+                .addWidget("commentwidget", "Notes", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 0, null, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
         return FieldUtil.getAsJSON(widgetGroup);

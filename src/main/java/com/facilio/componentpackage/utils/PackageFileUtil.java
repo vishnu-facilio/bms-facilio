@@ -1,10 +1,12 @@
 package com.facilio.componentpackage.utils;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.componentpackage.command.CreateXMLPackageCommand;
-import com.facilio.componentpackage.command.UnzipPackageFileCommand;
 import com.facilio.componentpackage.context.PackageFileContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.google.common.io.Files;
@@ -77,9 +79,9 @@ public class PackageFileUtil {
         return fileId;
     }
     public static File getPackageZipFile(Long fileId, Long orgId, Long targetOrgId) throws Exception {
-        AccountUtil.setCurrentAccount(orgId);
+        accountSwitch(orgId);
         try (InputStream inputStream = FacilioFactory.getFileStoreFromOrg(orgId).readFile(fileId)) {
-            AccountUtil.setCurrentAccount(targetOrgId);
+            accountSwitch(targetOrgId);
             String dirPath = System.getProperties().getProperty("java.io.tmpdir") + File.separator + "sandbox"+ File.separator + "Unzipped-Package-Files";
             String path = dirPath + File.separator +fileId+".zip";
             File file = new File(path);
@@ -98,6 +100,12 @@ public class PackageFileUtil {
             }
             return file;
         }
+    }
+    public static void accountSwitch(long orgId) throws Exception {
+        Organization org = IAMOrgUtil.getOrg(orgId);
+        User superAdminUser = AccountUtil.getOrgBean().getSuperAdmin(orgId);
+        Account account = new Account(org, superAdminUser);
+        AccountUtil.setCurrentAccount(account);
     }
 
     public static String readFileContent(String filePath) throws IOException {

@@ -511,6 +511,7 @@ public class AgentAction extends AgentActionV2 {
     }
 
     private static String getFacilioConfig(String domainName, com.facilio.agentv2.FacilioAgent agent) {
+        //TODO: Remove certificate/key path here, once agent(facilio, niagara) changes goes live
         StringBuilder builder = new StringBuilder("clientId=").append(agent.getName()).append(System.lineSeparator())
                 .append("privateKeyFile=facilio-private.key").append(System.lineSeparator())
                 .append("certificateFile=facilio.crt").append(System.lineSeparator())

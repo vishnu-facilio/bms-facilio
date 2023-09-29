@@ -673,6 +673,30 @@ public class FacilioChainFactory {
 		c.addCommand(new GetSiteReportCards());
 		return c;
 	}
+	public static FacilioChain getSiteInsights() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForSite());
+		c.addCommand(new GetSpaceInsightsCommand());
+		return c;
+	}
+	public static FacilioChain getBuildingInsights() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForBuilding());
+		c.addCommand(new GetSpaceInsightsCommand());
+		return c;
+	}
+	public static FacilioChain getSpaceInsights() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForSpace());
+		c.addCommand(new GetSpaceInsightsCommand());
+		return c;
+	}
+	public static FacilioChain getFloorInsights() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForFloor());
+		c.addCommand(new GetSpaceInsightsCommand());
+		return c;
+	}
 	
 	public static FacilioChain getTenantReportCardsChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
@@ -836,6 +860,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetAllSpaceCommand());
 		return c;
 	}

@@ -173,6 +173,8 @@ public class FacilioProperties {
     private static int maxProcessorThreads;
 
     private static String isNewVersion;
+    @Getter
+    private static String stableEnvironment;
 
     public static boolean isNewVersion() {
         return Boolean.parseBoolean(isNewVersion);
@@ -255,6 +257,7 @@ public class FacilioProperties {
     @Getter
     private static String proxyJwtTokenSecret;
 
+
     static {
         try {
             loadProperties();
@@ -317,7 +320,10 @@ public class FacilioProperties {
                     defaultTransactionTimeout = -1;
                 }
             }
-
+            stableEnvironment = PROPERTIES.getProperty("stable.env");
+            if(StringUtils.isEmpty(stableEnvironment)) {
+                stableEnvironment = getEnvironment();
+            }
             db = PROPERTIES.getProperty("db.name");
             dbClass = PROPERTIES.getProperty("db.class");
             appDomain = PROPERTIES.getProperty("app.domain");

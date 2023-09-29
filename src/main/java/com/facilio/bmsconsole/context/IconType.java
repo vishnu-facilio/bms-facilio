@@ -50,7 +50,10 @@ public enum IconType implements FacilioStringEnum {
     controls("Controls"),
     energy_benchmark("Energy_Benchmark"),
     diagnostics("Diagnostics"),
-    utility("Utility");
+    utility("Utility"),
+    raw_alarm("Raw Alarm"),
+    filtered_alarms("Filtered Alarms"),
+    flagged_events("Flagged Events");
 
     private static final Map<String, IconType> ICON_NAME_VS_TYPE = initIconNamevsType();
 

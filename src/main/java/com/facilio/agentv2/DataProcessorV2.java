@@ -79,7 +79,7 @@ public class DataProcessorV2 {
     }
 
 
-    public boolean processRecord(JSONObject payload, EventUtil eventUtil, FacilioAgent agent,long recordId,int partitionId,String messageSource) {
+    public boolean processRecord(JSONObject payload, EventUtil eventUtil, FacilioAgent agent,long recordId,int partitionId,String messageSource,int payloadIndex) {
         boolean processStatus = false;
         try {
 
@@ -150,7 +150,7 @@ public class DataProcessorV2 {
                         controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp + "#" + messagePartition);
 
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
-                        processStatus = processTimeSeries(agent, timeSeriesPayload, timeseriesController, true,recordId,partitionId,messageSource,publishType);
+                        processStatus = processTimeSeries(agent, timeSeriesPayload, timeseriesController, true,recordId,partitionId,messageSource,publishType,payloadIndex);
                     } else {
                         //add datalog table entry with this exception
                         LOGGER.info("Duplicate message for controller id : " + timeseriesController.getId() +
@@ -165,7 +165,7 @@ public class DataProcessorV2 {
                     } else {
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, null);
                     }
-                    processStatus = processTimeSeries(agent, timeSeriesPayload, controller, false,recordId,partitionId,messageSource,publishType);
+                    processStatus = processTimeSeries(agent, timeSeriesPayload, controller, false,recordId,partitionId,messageSource,publishType,payloadIndex);
                     break;
                     //processTimeSeries(payload,)
                 case AGENT_EVENTS:
@@ -239,9 +239,9 @@ public class DataProcessorV2 {
     private boolean processAck(FacilioAgent agent, JSONObject payload) {
         try {
             payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
+            IotMessage iotMessage = IotMessageApiV2.getIotMessage(AckUtil.getMessageIdFromPayload(payload));
             if (containsCheck(AgentConstants.CONTROLLER, payload)) {
                 Controller controller = AgentConstants.getControllerBean().getController(payload, agent.getId());
-                IotMessage iotMessage = IotMessageApiV2.getIotMessage(AckUtil.getMessageIdFromPayload(payload));
                 //for modbus device points are sent as ACK's,
                 //so redirecting to devicePoints from ack
                 if (iotMessage.getCommand()== FacilioCommand.CONFIGURE.asInt()
@@ -254,6 +254,8 @@ public class DataProcessorV2 {
                 if (AckUtil.handleConfigurationAndSubscription(iotMessage, controller, payload)) {
                     return true;
                 }
+            } else if (iotMessage.getCommand() == FacilioCommand.CONFIGURE_ALL_POINTS.asInt() && containsCheck(AgentConstants.DATA, payload)) {
+                    return AckUtil.configureAllPoints(payload, agent);
             } else {
                 return AckUtil.processAgentAck(payload, agent.getId(), orgId);
             }
@@ -427,18 +429,20 @@ public class DataProcessorV2 {
         return false;
     }
 
-    private boolean processTimeSeries(FacilioAgent agent, JSONObject payload, Controller controller, boolean isTimeSeries,long recordId,int partitionId,String messageSource,PublishType publishType) throws Exception {
+    private boolean processTimeSeries(FacilioAgent agent, JSONObject payload, Controller controller, boolean isTimeSeries,long recordId,int partitionId,String messageSource,PublishType publishType,int payloadIndex) throws Exception {
+        long startTime = System.currentTimeMillis();
+
         try {
             FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
             FacilioContext context = chain.getContext();
-            context.put(AgentConstants.RECORD_ID,recordId);
-            context.put(AgentConstants.PARTITION_ID,partitionId);
+            context.put(AgentConstants.RECORD_ID, recordId);
+            context.put(AgentConstants.PARTITION_ID, partitionId);
             context.put(AgentConstants.AGENT, agent);
             context.put(AgentConstants.IS_NEW_AGENT, true);
-            context.put(AgentConstants.MESSAGE_SOURCE,messageSource);
-            context.put(AgentConstants.PUBLISH_TYPE,publishType);
-            context.put(AgentKeys.START_TIME,System.currentTimeMillis());
-            //TODO
+            context.put(AgentConstants.MESSAGE_SOURCE, messageSource);
+            context.put(AgentConstants.PUBLISH_TYPE, publishType);
+            context.put(AgentKeys.START_TIME, startTime);
+            context.put(AgentKeys.PAYLOAD_INDEX,payloadIndex);
             if (controller != null) {
                 context.put(AgentConstants.CONTROLLER, controller);
                 context.put(AgentConstants.CONTROLLER_ID, controller.getId());
@@ -478,8 +482,7 @@ public class DataProcessorV2 {
             /*ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             bean.processNewTimeSeries(payload,controllerTs);*/
         } catch (Exception e) {
-            addAgentDataLogForError(e,recordId,agent.getId(),controller.getId(),messageSource,partitionId,payload,publishType);
-
+            addAgentDataLogForError(e, recordId, agent.getId(), controller.getId(), messageSource, partitionId, payload, publishType, startTime,payloadIndex);
 
             LOGGER.info("Exception while processing timeseries data ", e);
             //add log
@@ -487,7 +490,7 @@ public class DataProcessorV2 {
         return false;
     }
 
-    private void addAgentDataLogForError(Exception e,long recordId,long agentId,long controllerId,String messageSource,int partitionId,JSONObject payload,PublishType publishType) throws Exception {
+    private void addAgentDataLogForError(Exception e,long recordId,long agentId,long controllerId,String messageSource,int partitionId,JSONObject payload,PublishType publishType,long startTime,int payloadIndex) throws Exception {
 
         DataLogContextV3 datalog = new DataLogContextV3();
         datalog.setRecordId(recordId);
@@ -499,6 +502,9 @@ public class DataProcessorV2 {
         datalog.setMessageStatus(DataLogContextV3.Agent_Message_Status.FAILURE.getKey());
         datalog.setErrorStackTrace(e.toString());
         datalog.setPublishType(publishType.asInt());
+        datalog.setStartTime(startTime);
+        datalog.setEndTime(System.currentTimeMillis());
+        datalog.setPayloadIndex(payloadIndex);
 
         ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule agentDataModule = modbean.getModule(FacilioConstants.ContextNames.AGENT_DATA_LOGGER);

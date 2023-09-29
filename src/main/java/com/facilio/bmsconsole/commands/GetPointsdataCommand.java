@@ -45,6 +45,11 @@ public class GetPointsdataCommand extends FacilioCommand {
         controllerIds = (List<Long>) context.get("controllerIds");
         controllerType = (Integer) context.get("controllerType");
         agentId = (Long) context.get("agentId");
+
+        Integer limit = null;
+        if(context.containsKey("limit")){
+            limit = Integer.parseInt(context.get("limit").toString());
+        }
         if(context.containsKey("controllerId")) {
             controllerId = (Long) context.get("controllerId");
         }
@@ -53,6 +58,9 @@ public class GetPointsdataCommand extends FacilioCommand {
         GetPointRequest point = new GetPointRequest();
         if (filterCriteria != null){
             point.withCriteria(filterCriteria);
+        }
+        if(limit!=null){
+            point.limit(limit);
         }
         sanityCheck(point);
         PointsAPI.pointFilter(PointsAPI.PointStatus.valueOf(status), point);

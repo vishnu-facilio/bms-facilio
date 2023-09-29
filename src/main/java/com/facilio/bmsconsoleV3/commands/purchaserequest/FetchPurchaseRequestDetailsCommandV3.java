@@ -62,7 +62,7 @@ public class FetchPurchaseRequestDetailsCommandV3 extends FacilioCommand {
 						CurrencyUtil.checkAndFillBaseCurrencyToRecord(lineItem, currencyInfo);
 					}
         			purchaseRequestContext.setTermsAssociated(PurchaseOrderAPI.fetchAssociatedPrTerms(purchaseRequestContext.getId()));
-					QuotationAPI.setTaxSplitUp(purchaseRequestContext, purchaseRequestContext.getLineItems());
+					QuotationAPI.setTaxSplitUp(purchaseRequestContext, purchaseRequestContext.getLineItems(), context);
         		} 	
             }
         }

@@ -863,6 +863,10 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 
 		return reportTypeInt;
 	}
+	public static long getReportModuleId(long reportId) throws Exception {
+		ReportContext reportContext =  ReportUtil.getReport(reportId,true);
+		return reportContext.getModuleId();
+	}
 	
 	public static List<ReportContext> fetchAllReportsByType(Integer reportType) throws Exception{
 		List<ReportContext> reportList = new ArrayList<ReportContext>();

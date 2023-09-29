@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AggregationColumnMetaContext;
@@ -695,6 +696,21 @@ public class FetchReportDataCommand extends FacilioCommand {
                 }
                 newSelectBuilder.andCondition(CriteriaAPI.getEqualsCondition(xAggrField, xValues));
             }
+            if(dp.getV2Criteria() != null){
+                if(dp.getParentReadingModule() != null) {
+                    FacilioField parent_field = FieldFactory.getIdField(dp.getParentReadingModule());
+                    if(dp.getyAxis().getField() != null)
+                    {
+                        Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(dp.getyAxis().getField().getModule().getName()));
+                        FacilioField child_field = fieldsMap.get("parentId");
+                        applyJoin(new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), dp.getParentReadingModule(), newSelectBuilder);
+                        Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(dp.getV2Criteria(), dp.getParentReadingModule());
+                        if(parent_criteria != null) {
+                            newSelectBuilder.andCriteria(parent_criteria);
+                        }
+                    }
+                }
+            }
             boolean noMatch = applyFilters(report, dp, newSelectBuilder);
             if (noMatch) {
                 return Collections.EMPTY_LIST;
@@ -1010,7 +1026,8 @@ public class FetchReportDataCommand extends FacilioCommand {
         }
     }
 
-    private List<List<ReportDataPointContext>> groupDataPoints(List<ReportDataPointContext> dataPoints, boolean handleBooleanField, ReportType reportType, AggregateOperator aggregateOperator, DateRange dateRange) throws Exception {
+    private List<List<ReportDataPointContext>> groupDataPoints(List<ReportDataPointContext> dataPoints, boolean handleBooleanField, ReportType reportType, AggregateOperator aggregateOperator, DateRange dateRange) throws Exception
+    {
         if (dataPoints != null && !dataPoints.isEmpty()) {
             if ((FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 173l)) {
                 if ((reportType != null && reportType == ReportType.READING_REPORT)
@@ -1124,7 +1141,8 @@ public class FetchReportDataCommand extends FacilioCommand {
                     Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy()) &&                                        // Order BY should be same
                     rdp.isHandleEnum() == dataPoint.isHandleEnum() &&                                            // Both should be of same type
                     isSameTable(rdp, dataPoint) &&                                                    //Both should have same table alias - case of pivot table
-                    rdp.isRightInclusive() == dataPoint.isRightInclusive()
+                    rdp.isRightInclusive() == dataPoint.isRightInclusive() &&
+                    Objects.equals(rdp.getV2Criteria() , dataPoint.getV2Criteria())
             ) {
                 OrderByFunction rdpFunc = rdp.getOrderByFuncEnum() == null ? OrderByFunction.NONE : rdp.getOrderByFuncEnum();
                 OrderByFunction dataPointFunc = dataPoint.getOrderByFuncEnum() == null ? OrderByFunction.NONE : dataPoint.getOrderByFuncEnum();
@@ -1752,7 +1770,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                      * this code is used by all the orgs and tightly coupled with the pivots (so making any change can affect other orgs
                      * pivot , thats the reason we are adding OrgId check here , once its stable after testing, will remove the orgId check
                      */
-                    if((AccountUtil.getCurrentOrg().getId() == 965) && moduleVsAlias.containsKey(lookupFieldClone.getModule().getName())){
+                    if(moduleVsAlias.containsKey(lookupFieldClone.getModule().getName())){
                         lookupFieldClone.setTableAlias(moduleVsAlias.get(lookupFieldClone.getModule().getName()));
                     }
                     String LookupJoinOn = lookupFieldClone.getCompleteColumnName() + " = " + currentModuleAlias + ".ID";
@@ -1762,18 +1780,19 @@ public class FetchReportDataCommand extends FacilioCommand {
                      * this code is used by all the orgs and tightly coupled with the pivots (so making any change can affect other orgs
                      * pivot , thats the reason we are adding OrgId check here , once its stable after testing, will remove the orgId check
                      */
-                    if((AccountUtil.getCurrentOrg().getId() == 965) && !moduleVsAlias.containsKey(poll.getName()))
+                    if(!moduleVsAlias.containsKey(poll.getName()))
                     {
                         currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
                         prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
                         selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)
                                 .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
-                    }else if(!(AccountUtil.getCurrentOrg().getId() == 965)){
-                        currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
-                        prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
-                        selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)
-                                .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
                     }
+//                    else {
+//                        currentModuleAlias = getAndSetModuleAlias(poll.getName() + "_" + facilioField.getName());
+//                        prevModuleAlias = getAndSetModuleAlias(prevModule.getName() + "_" + facilioField.getName());
+//                        selectBuilder.leftJoin(poll.getTableName() + " " + currentModuleAlias)
+//                                .on(prevModuleAlias + ".ID = " + currentModuleAlias + ".ID");
+//                    }
                 }
                 prevModule = poll;
             }

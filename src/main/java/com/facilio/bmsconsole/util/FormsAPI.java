@@ -39,12 +39,8 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.FacilioException;
 import com.facilio.ims.handler.AuditLogHandler;
-import com.facilio.modules.FacilioModule;
+import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
@@ -61,20 +57,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -450,9 +433,10 @@ public class FormsAPI {
 			List<Map<String, Object>> props = new ArrayList<>();
 			Map<Long, FormSection> sectionMap = new HashMap<>();
 			for (FormSection f: sections) {
-				if (StringUtils.isNotEmpty(f.getName())) {
-					f.setLinkName(f.getName().toLowerCase().replaceAll("[^a-zA-Z0-9_]+", ""));
+				if (StringUtils.isEmpty(f.getName())) {
+					f.setName("Default Section");
 				}
+				f.setLinkName(f.getName().toLowerCase().replaceAll("[^a-zA-Z0-9_]+", ""));
 				f.setId(-1);
 				f.setFormId(formId);
 				f.setOrgId(orgId);
@@ -2203,7 +2187,8 @@ public class FormsAPI {
 	public static void addDefaultSubForm(FacilioForm defaultForm) throws Exception {
 
 		List<FacilioForm> subFormList = defaultForm.getSubFormList();
-		String moduleName = defaultForm.getModule().getName();
+		FacilioModule formModule = defaultForm.getModule();
+		String moduleName = formModule.getName();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		FacilioChain chain = ReadOnlyChainFactory.getSubFormModulesChain();
@@ -2283,7 +2268,7 @@ public class FormsAPI {
 		FormSection subFormSection = new FormSection();
 		subFormSection.setSubFormId(defaultSubForm.getId());
 		subFormSection.setSectionType(FormSection.SectionType.SUB_FORM);
-		subFormSection.setName("Subform");
+		subFormSection.setName(StringUtils.isNotEmpty(defaultSubForm.getDisplayName())?defaultSubForm.getDisplayName():"Subform");
 		subFormSection.setShowLabel(true);
 		subFormSection.setSequenceNumber(defaultForm.getSections().size()+1);
 

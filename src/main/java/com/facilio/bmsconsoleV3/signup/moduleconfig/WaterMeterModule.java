@@ -72,7 +72,7 @@ public class WaterMeterModule extends BaseModuleConfig{
         waterMeterFormFields.add(new FormField("parentMeter", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent Meter", FormField.Required.OPTIONAL, "meter", 6, 2));
         waterMeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Is Check Meter", FormField.Required.OPTIONAL, 7, 2));
 
-        FormSection section = new FormSection("", 1, waterMeterFormFields, false);
+        FormSection section = new FormSection("Water Meter Details", 1, waterMeterFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         WaterMeterForm.setSections(Collections.singletonList(section));
         WaterMeterForm.setIsSystemForm(true);

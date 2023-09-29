@@ -319,6 +319,11 @@ public class GetPointRequest {
     		this.limit = limit;
     		return this;
     }
+
+    public GetPointRequest offset(int offset) {
+        this.offset = offset;
+        return this;
+    }
     
     public GetPointRequest orderBy(String orderBy) {
 		this.orderBy = orderBy;

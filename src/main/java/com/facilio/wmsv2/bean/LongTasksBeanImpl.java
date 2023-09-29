@@ -11,6 +11,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.command.PackageChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageContext;
+import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fms.message.Message;
 import com.facilio.iam.accounts.util.IAMAppUtil;
@@ -148,7 +149,6 @@ public class LongTasksBeanImpl implements LongTasksBean {
 			signupChain.execute();
 
 			LOGGER.info("####Sandbox - Completed Sandbox Org creation");
-			AccountUtil.cleanCurrentAccount();
 			content.put(SandboxConstants.SANDBOX_ID, sandboxId);
 			content.put(PackageConstants.SOURCE_ORG_ID, productionOrgId);
 			content.put("methodName", "createPackageForSandboxData");
@@ -163,7 +163,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 	}
 	@Override
 	public void createPackageForSandboxData(JSONObject data) throws Exception {
-		AccountUtil.setCurrentAccount(((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
+		PackageFileUtil.accountSwitch(((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
 		try {
 			SandboxConfigContext sandboxConfigContext = SandboxAPI.getSandboxById(((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue());
 			boolean fromAdminTool = (Boolean) data.getOrDefault(PackageConstants.FROM_ADMIN_TOOL, false);
@@ -196,7 +196,6 @@ public class LongTasksBeanImpl implements LongTasksBean {
 				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
 				return;
 			}
-			AccountUtil.cleanCurrentAccount();
 			content.put("methodName", "installPackageForSandboxData");
 			content.put("startTime", DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")) + "");
 			content.put(PackageConstants.SOURCE_ORG_ID, sandboxConfigContext.getOrgId());
@@ -213,7 +212,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 
 	@Override
 	public void installPackageForSandboxData(JSONObject data) throws Exception {
-		AccountUtil.setCurrentAccount(((Number)data.get(PackageConstants.TARGET_ORG_ID)).longValue());
+		PackageFileUtil.accountSwitch(((Number)data.get(PackageConstants.TARGET_ORG_ID)).longValue());
 		SandboxConfigContext sandboxConfigContext = null;
 		List<Integer> skipComponents = (List<Integer>) data.getOrDefault(PackageConstants.SKIP_COMPONENTS,new ArrayList<>());
 		try {
@@ -228,7 +227,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 			LOGGER.info("####Sandbox - Completed Package Deployment");
 			AccountUtil.cleanCurrentAccount();
 			try {
-				AccountUtil.setCurrentAccount(((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
+				PackageFileUtil.accountSwitch(((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
 				sandboxConfigContext = SandboxAPI.getSandboxById(((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue());
 				if(sandboxConfigContext == null){
 					LOGGER.error("####Sandbox - Error occurred while changing status to Success");
@@ -237,14 +236,13 @@ public class LongTasksBeanImpl implements LongTasksBean {
 				sandboxConfigContext.setStatus(SandboxConfigContext.SandboxStatus.ACTIVE);
 				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
 				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
-				AccountUtil.cleanCurrentAccount();
 			}catch(Exception e){
 				LOGGER.error("####Sandbox - Error occurred while changing status ",e);
 			}
 		}catch(Exception e){
 			try {
 				LOGGER.info("####Sandbox - Error while  Package Deployment");
-				AccountUtil.setCurrentAccount(((Number) data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
+				PackageFileUtil.accountSwitch(((Number) data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
 				sandboxConfigContext = SandboxAPI.getSandboxById(((Number) data.get(SandboxConstants.SANDBOX_ID)).longValue());
 				if (sandboxConfigContext == null) {
 					LOGGER.error("####Sandbox - Error occurred while changing status to Failed");
@@ -253,7 +251,6 @@ public class LongTasksBeanImpl implements LongTasksBean {
 				sandboxConfigContext.setStatus(SandboxConfigContext.SandboxStatus.INSTALL_FAILED);
 				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
 				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
-				AccountUtil.cleanCurrentAccount();
 			} catch(Exception ex){
 				LOGGER.error("####Sandbox - Error occurred while changing status", ex);
 			}

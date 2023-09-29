@@ -26,17 +26,15 @@ import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.xml.builder.XMLBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONString;
-import org.json.XML;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
     @Override
@@ -67,6 +65,12 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
         commitmentCriteria.addAndCondition(CriteriaAPI.getCondition("PARENT_RULE_ID", "parentRuleId", String.valueOf(slaRule.getId()), NumberOperators.EQUALS));
         List<WorkflowRuleContext> commitments = WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE, true, commitmentCriteria, null, null);
         XMLBuilder commitmentBuilder = element.element(PackageConstants.WorkFlowRuleConstants.COMMITMENTS);
+
+        Criteria slaCriteria = slaRule.getCriteria();
+        if (slaCriteria != null){
+                element.addElement(PackageBeanUtil.constructBuilderFromCriteria(slaCriteria, element.element(PackageConstants.CriteriaConstants.CRITERIA), slaRule.getModuleName()));
+        }
+
         if (CollectionUtils.isNotEmpty(commitments)) {
 
             for (WorkflowRuleContext slaWorkflowCommitment : commitments) {
@@ -78,9 +82,6 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                         .text(commitment.getActivityTypeEnum() != null ? commitment.getActivityTypeEnum().name() : null);
                 commitmentBuilder.element(PackageConstants.WorkFlowRuleConstants.PARENT_RULE).text(slaRule.getName());
                 commitmentBuilder.element(PackageConstants.WorkFlowRuleConstants.RULE_TYPE).text(commitment.getRuleTypeEnum().name());
-                if (criteria!=null) {
-                    commitmentBuilder.addElement(PackageBeanUtil.constructBuilderFromCriteria(criteria, element.element(PackageConstants.CriteriaConstants.CRITERIA), commitment.getModuleName()));
-                }
                 if (criteria != null) {
                     commitmentBuilder.addElement(PackageBeanUtil.constructBuilderFromCriteria(criteria, element.element(PackageConstants.CriteriaConstants.CRITERIA), commitment.getModuleName()));
                 }
@@ -147,7 +148,48 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                 templateElement.element(PackageConstants.WorkFlowRuleConstants.IS_FTL).text(String.valueOf(templateJson.get("ftl")));
                 if (templateJson.get("workflow") != null) {
                     XMLBuilder workflow = templateElement.element(PackageConstants.WorkFlowRuleConstants.WORKFLOW);
-                    workflow.element(PackageConstants.WorkFlowRuleConstants.EXPRESSIONS).text(String.valueOf(((HashMap) templateJson.get("workflow")).get("expressions")));
+
+                    Object workflowJson = templateJson.get("workflow");
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    String workflowString = objectMapper.writeValueAsString(workflowJson);
+                    org.json.JSONObject jsonWorkflow = new org.json.JSONObject(workflowString);
+                    org.json.JSONArray expressionArray = jsonWorkflow.getJSONArray("expressions");
+                    XMLBuilder expressionsElement = workflow.element(PackageConstants.WorkFlowRuleConstants.EXPRESSIONS);
+                    for (Object obj : expressionArray){
+                        XMLBuilder expressionElement = expressionsElement.element("Expression");
+                        org.json.JSONObject expressionObj = (org.json.JSONObject) obj;
+                        String constant = expressionObj.opt("constant") != null ?  expressionObj.get("constant").toString() : null;
+                        String name = expressionObj.opt("name") != null ? expressionObj.get("name").toString() : null;
+                        if (StringUtils.isNotEmpty(constant)){
+                            expressionElement.element("Constant").text(constant);
+                        }
+                        if (StringUtils.isNotEmpty(name)){
+                            expressionElement.element("Name").text(name);
+                        }
+
+                        String aggregateString = expressionObj.opt("aggregateString") != null ?  expressionObj.get("aggregateString").toString() : null;
+                        String fieldName = expressionObj.opt("fieldName") != null ? expressionObj.get("fieldName").toString() : null;
+                        String moduleName = expressionObj.opt("moduleName") != null ?  expressionObj.get("moduleName").toString() : null;
+                        org.json.JSONObject criteria = expressionObj.opt("criteria") != null ? new org.json.JSONObject(expressionObj.get("criteria").toString()) : null;
+                        JSONObject expressionSimple = new JSONObject();
+                        if (criteria != null) {
+                            for (String key : criteria.keySet()) {
+                                expressionSimple.put(key, criteria.get(key));
+                            }
+                            Criteria expresionCriteria = FieldUtil.getAsBeanFromJson(expressionSimple, Criteria.class);
+                            expressionElement.addElement(PackageBeanUtil.constructBuilderFromCriteria(expresionCriteria, actionElements.element(PackageConstants.CriteriaConstants.CRITERIA), moduleName));
+                        }
+                        if (StringUtils.isNotEmpty(aggregateString)){
+                            expressionElement.element("AggregateString").text(aggregateString);
+                        }
+                        if (StringUtils.isNotEmpty(fieldName)){
+                            expressionElement.element("FieldName").text(fieldName);
+                        }
+                        if (StringUtils.isNotEmpty(moduleName)){
+                            expressionElement.element("ModuleName").text(moduleName);
+                        }
+                    }
+
                     XMLBuilder parameterBuilder = workflow.element(PackageConstants.WorkFlowRuleConstants.PARAMETERS);
                     List<Map<String, Object>> parameterMap = (List<Map<String, Object>>) ((HashMap) templateJson.get("workflow")).get("parameters");
                     List<ParameterContext> parameterList = FieldUtil.getAsBeanListFromMapList(parameterMap, ParameterContext.class);
@@ -311,14 +353,37 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                         XMLBuilder emailWorkflowElement = templateElement.getElement(PackageConstants.WorkFlowRuleConstants.WORKFLOW);
                         WorkflowContext workflowParamExp = new WorkflowContext();
                         if (emailWorkflowElement != null) {
-                            try {
-                                JSONParser parser = new JSONParser();
-                                String expString = emailWorkflowElement.getElement(PackageConstants.WorkFlowRuleConstants.EXPRESSIONS).getText();
-                                JSONArray expArray = (JSONArray) parser.parse(expString);
-                                workflowParamExp.setExpressions(expArray);
-                            } catch (Exception e) {
+                            XMLBuilder expressionsBuilder = emailWorkflowElement.getElement(PackageConstants.WorkFlowRuleConstants.EXPRESSIONS);
+                            List<XMLBuilder> expressionBuilder = expressionsBuilder.getElementList("Expression");
+                            JSONArray expressionArray = new JSONArray();
 
+                            for (XMLBuilder expression : expressionBuilder){
+                                Map<String,Object> expressionProps = new HashMap<>();
+                                if (expression.getElement("Constant") != null){
+                                    expressionProps.put("constant",expression.getElement("Constant").getText());
+                                }
+                                if (expression.getElement("Name") != null){
+                                    expressionProps.put("name",expression.getElement("Name").getText());
+                                }
+                                if (expression.getElement("AggregateString") != null){
+                                    expressionProps.put("aggregateString",expression.getElement("AggregateString").getText());
+                                }
+                                if (expression.getElement("FieldName") != null){
+                                    expressionProps.put("fieldName",expression.getElement("FieldName").getText());
+                                }
+                                if (expression.getElement("ModuleName") != null){
+                                    expressionProps.put("moduleName",expression.getElement("ModuleName").getText());
+                                }
+                                XMLBuilder criteriaElement = expression.getElement(PackageConstants.CriteriaConstants.CRITERIA);
+                                if (criteriaElement != null){
+                                    Criteria criteria = PackageBeanUtil.constructCriteriaFromBuilder(criteriaElement);
+                                    expressionProps.put("criteria",criteria);
+                                }
+                                expressionArray.add(expressionProps);
                             }
+
+                            workflowParamExp.setExpressions(expressionArray);
+
                             XMLBuilder parameterBuilder = emailWorkflowElement.getElement(PackageConstants.WorkFlowRuleConstants.PARAMETERS);
                             List<ParameterContext> parameterContexts = new ArrayList<>();
                             if (parameterBuilder != null) {

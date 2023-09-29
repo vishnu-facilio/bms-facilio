@@ -48,7 +48,12 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3PeopleContext peopleContext : props) {
                 peopleIdMap.put(peopleContext.getId(), -1L);
-                peopleIdVsPeopleMail.put(peopleContext.getId(), peopleContext.getEmail());
+                // PeopleMail & PeopleName are nullable columns
+                if (StringUtils.isNotEmpty(peopleContext.getEmail())) {
+                    peopleIdVsPeopleMail.put(peopleContext.getId(), peopleContext.getEmail());
+                } else if (StringUtils.isNotEmpty(peopleContext.getName())) {
+                    peopleIdVsPeopleMail.put(peopleContext.getId(), peopleContext.getName());
+                }
             }
             PackageUtil.addPeopleConfigForXML(peopleIdVsPeopleMail);
         }
@@ -258,7 +263,10 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
             XMLBuilder element = idVsData.getValue();
             V3PeopleContext peopleContext = constructPeopleContextFromBuilder(element, roleNameVsRoleId);
 
-            peopleMailVsUniqueIdentifier.put(peopleContext.getEmail(), idVsData.getKey());
+            String keyForPeopleMailVsUniqueIdentifier = StringUtils.isNotEmpty(peopleContext.getEmail()) ? peopleContext.getEmail() : (StringUtils.isNotEmpty(peopleContext.getName()) ? peopleContext.getName() : null);
+            if (StringUtils.isNotEmpty(keyForPeopleMailVsUniqueIdentifier)) {
+                peopleMailVsUniqueIdentifier.put(keyForPeopleMailVsUniqueIdentifier, idVsData.getKey());
+            }
             V3PeopleContext.PeopleType peopleTypeEnum = peopleContext.getPeopleTypeEnum();
             peopleTypeEnum = peopleTypeEnum != null ? peopleTypeEnum : V3PeopleContext.PeopleType.OTHERS;
 
@@ -273,12 +281,13 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
                 others.add(peopleContext);
             } else if (PEOPLE_TYPE_LIST.contains(peopleTypeEnum)){
                 XMLBuilder additionalProp = element.getElement(PackageConstants.UserConstants.ADDITIONAL_PROPS);
+                String primaryContactName = additionalProp.getElement(PackageConstants.UserConstants.PRIMARY_CONTACT_NAME).getText();
                 String primaryContactEmail = additionalProp.getElement(PackageConstants.UserConstants.PRIMARY_CONTACT_EMAIL).getText();
                 boolean primaryContact = Boolean.parseBoolean(additionalProp.getElement(PackageConstants.UserConstants.IS_PRIMARY_CONTACT).getText());
 
                 Map<String, Object> dataProp = new HashMap<>();
                 dataProp.put("primaryContactEmail", primaryContactEmail);
-                dataProp.put("primaryContactName", additionalProp.getElement(PackageConstants.UserConstants.PRIMARY_CONTACT_NAME).getText());
+                dataProp.put("primaryContactName", primaryContactName);
                 dataProp.put("primaryContactPhone", additionalProp.getElement(PackageConstants.UserConstants.PRIMARY_CONTACT_PHONE).getText());
 
                 if (primaryContact) {
@@ -294,7 +303,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
                         if (primaryContact) {
                             tenants.add(dataProp);
                         } else {
-                            tenantMailVsContactMails.computeIfAbsent(primaryContactEmail, k -> new ArrayList<>()).add(peopleContext.getEmail());
+                            constructParentMailVsContactMails(tenantMailVsContactMails, primaryContactEmail, primaryContactName, peopleContext);
                         }
                         break;
 
@@ -302,7 +311,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
                         if (primaryContact) {
                             vendors.add(dataProp);
                         } else {
-                            vendorMailVsContactMails.computeIfAbsent(primaryContactEmail, k -> new ArrayList<>()).add(peopleContext.getEmail());
+                            constructParentMailVsContactMails(vendorMailVsContactMails, primaryContactEmail, primaryContactName, peopleContext);
                         }
                         break;
 
@@ -310,7 +319,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
                         if (primaryContact) {
                             clients.add(dataProp);
                         } else {
-                            clientMailVsContactMails.computeIfAbsent(primaryContactEmail, k -> new ArrayList<>()).add(peopleContext.getEmail());
+                            constructParentMailVsContactMails(clientMailVsContactMails, primaryContactEmail, primaryContactName, peopleContext);
                         }
                         break;
 
@@ -320,14 +329,17 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
             }
         }
 
+        // PeopleMail & PeopleName are nullable columns - So Storing Mail/Name in peopleMailVsPeopleId
+        // And handled similarly in all cases which involves PeopleMail
+
         // Add all people with OTHERS type
         List<Map<String, Object>> othersMapList = FieldUtil.getAsMapList(others, V3PeopleContext.class);
-        Map<String, Long> peopleMailVsPeopleId = bulkAddModuleRecords(FacilioConstants.ContextNames.PEOPLE, othersMapList, V3PeopleContext.class, "email");
+        Map<String, Long> peopleMailVsPeopleId = bulkAddModuleRecords(FacilioConstants.ContextNames.PEOPLE, othersMapList, V3PeopleContext.class, "email", "name");
 
         // Add Tenants, Vendors, Clients
-        Map<String, Long> tenantsMap = bulkAddModuleRecords(FacilioConstants.ContextNames.TENANT, tenants, V3TenantContext.class, "primaryContactEmail");
-        Map<String, Long> vendorsMap = bulkAddModuleRecords(FacilioConstants.ContextNames.VENDORS, vendors, V3VendorContext.class, "primaryContactEmail");
-        Map<String, Long> clientsMap = bulkAddModuleRecords(FacilioConstants.ContextNames.CLIENT, clients, V3ClientContext.class, "primaryContactEmail");
+        Map<String, Long> tenantsMap = bulkAddModuleRecords(FacilioConstants.ContextNames.TENANT, tenants, V3TenantContext.class, "primaryContactEmail", "primaryContactName");
+        Map<String, Long> vendorsMap = bulkAddModuleRecords(FacilioConstants.ContextNames.VENDORS, vendors, V3VendorContext.class, "primaryContactEmail", "primaryContactName");
+        Map<String, Long> clientsMap = bulkAddModuleRecords(FacilioConstants.ContextNames.CLIENT, clients, V3ClientContext.class, "primaryContactEmail", "primaryContactName");
 
         // Convert People to respective types
         convertPeopleToEmployee(peopleMailVsPeopleId, employeeMails);
@@ -414,7 +426,12 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
 
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3PeopleContext peopleContext : props) {
-                peopleMailVsPeopleId.put(peopleContext.getEmail(), peopleContext.getId());
+                // PeopleMail & PeopleName are nullable columns
+                if (StringUtils.isNotEmpty(peopleContext.getEmail())) {
+                    peopleMailVsPeopleId.put(peopleContext.getEmail(), peopleContext.getId());
+                } else if (StringUtils.isNotEmpty(peopleContext.getName())) {
+                    peopleMailVsPeopleId.put(peopleContext.getName(), peopleContext.getId());
+                }
             }
             PackageUtil.addPeopleConfigForContext(peopleMailVsPeopleId);
         }
@@ -463,6 +480,17 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         return peopleContext;
     }
 
+    private static void constructParentMailVsContactMails(Map<String, List<String>> parentMailVsContactMails, String email, String name, V3PeopleContext peopleContext) {
+        String key = StringUtils.isNotEmpty(email) ? email : (StringUtils.isNotEmpty(name) ? name : null);
+        String value  = StringUtils.isNotEmpty(peopleContext.getEmail()) ? peopleContext.getEmail() : (StringUtils.isNotEmpty(peopleContext.getName()) ? peopleContext.getName() : null);
+
+        if (StringUtils.isEmpty(key) || StringUtils.isEmpty(value)) {
+            return;
+        }
+
+        parentMailVsContactMails.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+    }
+
     private static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordProps(String moduleName, Class<?> clazz) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(moduleName);
@@ -478,7 +506,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         return recordMap;
     }
 
-    private static Map<String, Long> bulkAddModuleRecords(String moduleName, List<Map<String, Object>> props, Class<?> clazz, String mailFieldName) throws Exception {
+    private static Map<String, Long> bulkAddModuleRecords(String moduleName, List<Map<String, Object>> props, Class<?> clazz, String mailFieldName, String secondaryFieldName) throws Exception {
         if (CollectionUtils.isEmpty(props)) {
             return new HashMap<>();
         }
@@ -495,6 +523,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
             for (Map<String, Object> record : addedRecordsMap) {
                 Long id = (Long) record.get("id");
                 String primaryContactEmail = record.containsKey(mailFieldName) ? String.valueOf(record.get(mailFieldName)) : null;
+                primaryContactEmail = (StringUtils.isEmpty(primaryContactEmail) && record.containsKey(secondaryFieldName)) ? String.valueOf(record.get(secondaryFieldName)) : primaryContactEmail;
 
                 if (id != null && id > 0 && StringUtils.isNotEmpty(primaryContactEmail)) {
                     recordMap.put(primaryContactEmail, id);

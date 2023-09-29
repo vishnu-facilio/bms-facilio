@@ -828,14 +828,13 @@ public class ReportFactoryFields {
 		FacilioModule facilioModule = bean.getModule(moduleName);
 
 		List<FacilioField> allFields = bean.getAllFields(moduleName);
-//		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(bean.getAllFields(moduleName));		
 		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
 		Set<FacilioModule> lookUpModules = new HashSet<>();
 
 		// collect lookup modules , also replace special lookups(basespace/resource)
 		// with child lookups
 		FacilioField site_field = FieldFactory.getSiteField(facilioModule);
-		if(site_field != null){
+		if(site_field != null && moduleName != null && !moduleName.equals("inspectionResponse")){
 			selectedFields.add(site_field);
 		}
 		for (FacilioField field : allFields) {
@@ -846,8 +845,8 @@ public class ReportFactoryFields {
 					FacilioModule lookupModule = lookupField.getLookupModule();
 					lookUpModules.add(lookupModule);
 
-					if (lookupModule.getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
-							|| lookupModule.getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
+					if ((lookupModule.getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
+							|| lookupModule.getName().equals(FacilioConstants.ContextNames.RESOURCE))) {
 						LookupField siteField = (LookupField) field.clone();
 						selectedFields.add(siteField);
 

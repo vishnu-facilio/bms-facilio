@@ -5868,4 +5868,20 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setTableName("Asset_Categories_Feature_Activation");
 		return module;
 	}
+
+	public static FacilioModule getflaggedEventWorkorderTemplateFieldMappingModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("flaggedEventWorkorderTemplateFieldMapping");
+		module.setDisplayName("Flagged Event Workorder Template Field Mapping");
+		module.setTableName("Flagged_Event_Workorder_Template_Field_Mapping");
+		return module;
+	}
+
+	public static FacilioModule getFlaggedEventClosureStatusModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("flaggedEventClosureStatusModule");
+		module.setDisplayName("Flagged Event Closure Status Module");
+		module.setTableName("Flagged_Event_Closure_Config_Status");
+		return module;
+	}
 }

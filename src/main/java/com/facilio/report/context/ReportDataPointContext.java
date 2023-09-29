@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.facilio.bmsconsoleV3.context.report.ReportDynamicKpiContext;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -82,6 +83,15 @@ public class ReportDataPointContext implements  Cloneable{
 		this.buildingId = buildingId;
 	}
 
+	public FacilioModule getParentReadingModule() {
+		return parentReadingModule;
+	}
+
+	public void setParentReadingModule(FacilioModule parentReadingModule) {
+		this.parentReadingModule = parentReadingModule;
+	}
+
+	public FacilioModule parentReadingModule;
 	public List<Long> getDp_parent_ids() {
 		return dp_parent_ids;
 	}
@@ -174,7 +184,16 @@ public class ReportDataPointContext implements  Cloneable{
 	public void setCriteria(Criteria criteria) {
 		this.criteria = criteria;
 	}
-	
+
+	public Criteria getV2Criteria() {
+		return v2Criteria;
+	}
+
+	public void setV2Criteria(Criteria v2Criteria) {
+		this.v2Criteria = v2Criteria;
+	}
+
+	private Criteria v2Criteria;
 	private Criteria otherCriteria;
 	public void setOtherCriteria(Criteria otherCriteria) {
 		this.otherCriteria = otherCriteria;

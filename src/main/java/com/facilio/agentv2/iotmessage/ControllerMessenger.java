@@ -38,6 +38,7 @@ public class ControllerMessenger {
 
     /**
      * use this for point relates functionality
+     *
      * @param points
      * @param command
      * @return
@@ -48,7 +49,7 @@ public class ControllerMessenger {
             throw new Exception("Exception occurred, points map is empty");
         }
         long controllerId = (long) points.get(0).getControllerId();
-        LOGGER.info("Point Context value :"+points);
+        LOGGER.info("Point Context value :" + points);
         return constructNewIotMessage(AgentConstants.getControllerBean().getControllerFromDb(controllerId), command, points, null);
     }
 
@@ -60,7 +61,8 @@ public class ControllerMessenger {
         context.put(AgentConstants.DATA_INTERVAL, interval);
         return constructNewIotMessage(controller, command, points, context);
     }
-    private static IotData constructNewIotMessage(List<Point> points, FacilioCommand command,Controller controller) throws Exception {
+
+    private static IotData constructNewIotMessage(List<Point> points, FacilioCommand command, Controller controller) throws Exception {
         if ((points == null) || (points.isEmpty())) {
             throw new Exception("Exception occurred, points map is empty");
         }
@@ -91,7 +93,7 @@ public class ControllerMessenger {
         AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
         FacilioAgent agent = agentBean.getAgent(agentId);
         if (agent != null) {
-            if( ! agent.getConnected()){
+            if (!agent.getConnected()) {
                 throw new Exception("Agent is not connected");
             }
             iotData.setAgentId(agentId);
@@ -99,15 +101,15 @@ public class ControllerMessenger {
             iotData.setCommand(command.asInt());
             JSONObject object = new JSONObject();
             if (command == FacilioCommand.SET) {
-            		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_OLD_AGENT);
-            		String isOldAgent = orgInfo.get(FacilioConstants.OrgInfoKeys.IS_OLD_AGENT);
-            		if (isOldAgent != null && isOldAgent.equals("true")) {
-            			constructMessageForOldAgent(controller, command, points, object);
-            		}
+                Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.IS_OLD_AGENT);
+                String isOldAgent = orgInfo.get(FacilioConstants.OrgInfoKeys.IS_OLD_AGENT);
+                if (isOldAgent != null && isOldAgent.equals("true")) {
+                    constructMessageForOldAgent(controller, command, points, object);
+                }
             }
             if (object.isEmpty()) {
-	            	object.put(AgentConstants.COMMAND, command.asInt());
-	            	object.put(AgentConstants.CONTROLLER_TYPE, controller.getControllerType());
+                object.put(AgentConstants.COMMAND, command.asInt());
+                object.put(AgentConstants.CONTROLLER_TYPE, controller.getControllerType());
                 JSONObject controllerJson = controller.getChildJSON();
                 controllerJson.put(AgentConstants.NAME, controller.getName());
                 object.put(AgentConstants.CONTROLLER, controllerJson);
@@ -127,76 +129,82 @@ public class ControllerMessenger {
 	            			JSONObject pointdatum = (JSONObject) pointsDatumObject;
 	            			Point point = points.get(pointsData.indexOf(pointdatum));
                             String actionName = point.getActionName();
-                            if(actionName == null || actionName.equals(AgentConstants.OVERRIDE) || actionName.equals(AgentConstants.EMERGENCY_OVERRIDE)) {
+                            if (actionName == null || actionName.equals(AgentConstants.OVERRIDE) || actionName.equals(AgentConstants.EMERGENCY_OVERRIDE)) {
                                 pointdatum.put(AgentConstants.VALUE, point.getValue());
                             }
-                            if(point.getOverrideTimeInMillis()!=0){
+                            if (point.getOverrideTimeInMillis() != 0) {
                                 pointdatum.put(AgentConstants.OVERRIDE_MILLIS, point.getOverrideTimeInMillis());
                             }
-	            			pointdatum.put("controlId", point.getControlActionId());
-	            			if(point.getCommandRetryCount() != null) {
-	            				pointdatum.put("retryCount", point.getCommandRetryCount());
-	            			}
-                            if(actionName != null) {
+                            pointdatum.put("controlId", point.getControlActionId());
+                            if (point.getCommandRetryCount() != null) {
+                                pointdatum.put("retryCount", point.getCommandRetryCount());
+                            }
+                            if (actionName != null) {
                                 pointdatum.put(AgentConstants.ACTION_NAME, actionName);
                             }
-	            			if(pointdatum.containsKey(AgentConstants.DEVICE_ID)){
-	            				pointdatum.remove(AgentConstants.DEVICE_ID);
-	            			}
-	            		}
-	            		object.put(AgentConstants.POINTS, pointsData);
-	            		break;
-	            	case SUBSCRIBE:
-	            	case CONFIGURE:
-	            	case REMOVE:
-	            	case UNSUBSCRIBE:
-	            	case GET:
+                            if (pointdatum.containsKey(AgentConstants.DEVICE_ID)) {
+                                pointdatum.remove(AgentConstants.DEVICE_ID);
+                            }
+                        }
+                        object.put(AgentConstants.POINTS, pointsData);
+                        break;
+                    case SUBSCRIBE:
+                    case CONFIGURE:
+                    case REMOVE:
+                    case UNSUBSCRIBE:
+                    case GET:
                     case ADD_POINTS:
-	            		JSONArray pointsArray = MessengerUtil.getPointsData(points);
+                        JSONArray pointsArray = MessengerUtil.getPointsData(points);
                         LOGGER.info("JSON Array: " + pointsArray);
                         if (context != null && context.containsKey(AgentConstants.DATA_INTERVAL)) {
                             object.put(AgentConstants.DATA_INTERVAL, Integer.parseInt(context.get(AgentConstants.DATA_INTERVAL).toString()));
                         }
-	            		object.put(AgentConstants.POINTS, pointsArray);
-	            		break;
-	            		//
+                        object.put(AgentConstants.POINTS, pointsArray);
+                        break;
+                    //
                     case RESTART:
-	            		break;
-	            	case PROPERTY:
-	            		object.put(AgentConstants.PROPERTY, context.get(AgentConstants.PROPERTY));
-	            	case STATS:
-	            		break;
-	            	case UPGRADE:
-	            		break;
-	            	case THREAD_DUMP:
-	            		break;
-	            	case ADD_CONTROLLER:
-	            		break;
-	            	case DISCOVER_POINTS:
-                        if(agent.getAgentTypeEnum() == AgentType.FACILIO &&  (controller.getControllerType() == FacilioControllerType.BACNET_IP.asInt() || controller.getControllerType() == ControllerType.OPC_UA.getKey() ||
-                                controller.getControllerType() == ControllerType.OPC_DA.getKey())){
-                            object.put(AgentConstants.TIMEOUT_SEC, 300); // 5 mins
-                        } else if(agent.getDiscoverPointsTimeOut()>0){
-                            object.put(AgentConstants.TIMEOUT,agent.getDiscoverPointsTimeOut());
+                        break;
+                    case PROPERTY:
+                        object.put(AgentConstants.PROPERTY, context.get(AgentConstants.PROPERTY));
+                    case STATS:
+                        break;
+                    case UPGRADE:
+                        break;
+                    case THREAD_DUMP:
+                        break;
+                    case ADD_CONTROLLER:
+                        break;
+                    case DISCOVER_POINTS:
+                        if (agent.getAgentTypeEnum() == AgentType.FACILIO &&
+                                (controller.getControllerType() == FacilioControllerType.BACNET_IP.asInt()
+                                        || controller.getControllerType() == ControllerType.OPC_UA.getKey()
+                                        || controller.getControllerType() == ControllerType.OPC_DA.getKey())) {
+                            int interval = 300; // 5 mins - default
+                            if (context!=null && context.containsKey(AgentConstants.TIMEOUT_SEC)) {
+                                interval = Integer.parseInt(context.get(AgentConstants.TIMEOUT_SEC).toString());
+                            }
+                            object.put(AgentConstants.TIMEOUT_SEC, interval);
+                        } else if (agent.getDiscoverPointsTimeOut() > 0) {
+                            object.put(AgentConstants.TIMEOUT, agent.getDiscoverPointsTimeOut());
                         }
-	            		break;
-	            	case EDIT_CONTROLLER:
-	            		break;
-	            	case CONTROLLER_STATUS:
-	            		break;
-	            	case DISCOVER_CONTROLLERS:
-                        if(agent.getDiscoverControllersTimeOut()>0) {
+                        break;
+                    case EDIT_CONTROLLER:
+                        break;
+                    case CONTROLLER_STATUS:
+                        break;
+                    case DISCOVER_CONTROLLERS:
+                        if (agent.getDiscoverControllersTimeOut() > 0) {
                             object.put(AgentConstants.TIMEOUT, agent.getDiscoverControllersTimeOut());
                         }
-	            		break;
-	            	}
-            	
+                        break;
+                }
+
             }
-            
-	        	object.put("timestamp", System.currentTimeMillis());
-	        	object.put("agent", agent.getName());
-	        	object.put(AgentConstants.AGENT_ID, agent.getId()); // Agent_Id key must be changed to camelcase.
-        	
+
+            object.put("timestamp", System.currentTimeMillis());
+            object.put("agent", agent.getName());
+            object.put(AgentConstants.AGENT_ID, agent.getId()); // Agent_Id key must be changed to camelcase.
+
             String objString = object.toJSONString();
             if (objString.length() > MAX_BUFFER) {
                 List<IotMessage> messages = new ArrayList<>();
@@ -231,36 +239,43 @@ public class ControllerMessenger {
         }
         return iotData;
     }
-    
+
     @SuppressWarnings("unchecked")
-	private static void constructMessageForOldAgent(Controller controller, FacilioCommand facilioCommand, List<Point> points, JSONObject object) throws Exception {
-		
-		IotCommandType command = IotCommandType.getCommandType(facilioCommand.toString());
-		object.put("command", command.getName());
-		
-		object.put("deviceName", controller.getName());
-		object.put("type", controller.getControllerType());
-		object.put("subnetPrefix", 1l);
-		object.put("broadcastAddress", "1");
-		
-		List<Map<String, Object>> instances = FieldUtil.getAsMapList(points, Point.class);
-		instances.forEach(instance -> instance.put("instance", instance.get("name")));
-		
-		ControllerContext oldController = new ControllerContext();
-		oldController.setControllerType(controller.getControllerType());
-		JSONArray pointsList = ProtocolUtil.getPointsToPublish(oldController, instances, command);
-		object.put("points", pointsList);
+    private static void constructMessageForOldAgent(Controller controller, FacilioCommand facilioCommand, List<Point> points, JSONObject object) throws Exception {
+
+        IotCommandType command = IotCommandType.getCommandType(facilioCommand.toString());
+        object.put("command", command.getName());
+
+        object.put("deviceName", controller.getName());
+        object.put("type", controller.getControllerType());
+        object.put("subnetPrefix", 1l);
+        object.put("broadcastAddress", "1");
+
+        List<Map<String, Object>> instances = FieldUtil.getAsMapList(points, Point.class);
+        instances.forEach(instance -> instance.put("instance", instance.get("name")));
+
+        ControllerContext oldController = new ControllerContext();
+        oldController.setControllerType(controller.getControllerType());
+        JSONArray pointsList = ProtocolUtil.getPointsToPublish(oldController, instances, command);
+        object.put("points", pointsList);
     }
 
-public static boolean discoverPoints(long controllerId) throws Exception {
-            IotData iotData = constructNewIotMessage(AgentConstants.getControllerBean().getControllerFromDb(controllerId), FacilioCommand.DISCOVER_POINTS);
-            MessengerUtil.addAndPublishNewAgentData(iotData);
-            return true;
-}
+    public static boolean discoverPoints(long controllerId) throws Exception {
+        IotData iotData = constructNewIotMessage(AgentConstants.getControllerBean().getControllerFromDb(controllerId), FacilioCommand.DISCOVER_POINTS);
+        MessengerUtil.addAndPublishNewAgentData(iotData);
+        return true;
+    }
 
-    public static boolean discoverPoints(Controller controller){
+    public static boolean discoverPoints(Controller controller, int timeout) {
         try {
-            IotData iotData = constructNewIotMessage(controller, FacilioCommand.DISCOVER_POINTS);
+            IotData iotData;
+            if(timeout > 0){
+                FacilioContext context = new FacilioContext();
+                context.put(AgentConstants.TIMEOUT_SEC, timeout);
+                iotData = constructNewIotMessage(controller, FacilioCommand.DISCOVER_POINTS, null, context);
+            } else {
+                iotData = constructNewIotMessage(controller, FacilioCommand.DISCOVER_POINTS);
+            }
             MessengerUtil.addAndPublishNewAgentData(iotData);
             return true;
         } catch (Exception e) {
@@ -286,9 +301,9 @@ public static boolean discoverPoints(long controllerId) throws Exception {
     }
 
     public static void setValue(Point point) throws Exception {
-    	setValue(Collections.singletonList(point));
+        setValue(Collections.singletonList(point));
     }
-    
+
     public static void setValue(List<Point> points) throws Exception {
         IotData iotData = constructNewIotMessage(points, FacilioCommand.SET);
         MessengerUtil.addAndPublishNewAgentData(iotData);

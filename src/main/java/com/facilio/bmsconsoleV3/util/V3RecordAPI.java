@@ -16,10 +16,12 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.util.CurrencyUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import com.facilio.v3.util.ChainUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -39,7 +41,7 @@ public class V3RecordAPI {
         InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
                 .module(module)
                 .fields(fields);
-        if(isLocalIdNeeded) {
+        if (isLocalIdNeeded) {
             insertRecordBuilder.withLocalId();
         }
         if (isChangeSetNeeded != null && isChangeSetNeeded) {
@@ -68,13 +70,13 @@ public class V3RecordAPI {
                 .module(module)
                 .fields(fields)
                 .andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
-        if(isChangeSetNeeded != null && isChangeSetNeeded) {
+        if (isChangeSetNeeded != null && isChangeSetNeeded) {
             updateRecordBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
         }
-        if(updateSupplements != null && updateSupplements) {
+        if (updateSupplements != null && updateSupplements) {
             List<SupplementRecord> supplements = new ArrayList<>();
             CommonCommandUtil.handleFormDataAndSupplement(fields, data.getData(), supplements);
-            if(!supplements.isEmpty()) {
+            if (!supplements.isEmpty()) {
                 updateRecordBuilder.updateSupplements(supplements);
             }
         }
@@ -90,15 +92,15 @@ public class V3RecordAPI {
 
     public static boolean checkChangeSet(List<UpdateChangeSet> changes, String fieldName, String moduleName) throws Exception {
 
-        if(CollectionUtils.isNotEmpty(changes)) {
+        if (CollectionUtils.isNotEmpty(changes)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
             FacilioField field = modBean.getField(fieldName, moduleName);
-            if(field == null) {
+            if (field == null) {
                 throw new RESTException(ErrorCode.RESOURCE_NOT_FOUND, "Invalid Field");
             }
-            for(UpdateChangeSet change : changes) {
-                if(change.getFieldId() == field.getFieldId()) {
+            for (UpdateChangeSet change : changes) {
+                if (change.getFieldId() == field.getFieldId()) {
                     return true;
                 }
             }
@@ -119,19 +121,28 @@ public class V3RecordAPI {
         return modBean.getField(fieldName, modName);
     }
 
-    public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, Long recId) throws Exception {
+    public static <T extends ModuleBaseWithCustomFields> T getRecord(String modName, Long recId) throws Exception {
         return getRecord(modName, recId, null);
     }
-    
-    public static <T extends ModuleBaseWithCustomFields> T getRecord (Long moduleId, Long recId) throws Exception {
-    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+    public static <T extends ModuleBaseWithCustomFields> T getRecord(Long moduleId, Long recId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         return getRecord(modBean.getModule(moduleId).getName(), recId, null);
     }
 
-    public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, long recId, Class<T> beanClass) throws Exception {
-       return getRecord(modName, recId, beanClass, false);
+    public static <T extends ModuleBaseWithCustomFields> T getRecord(String modName, long recId, Class<T> beanClass) throws Exception {
+        return getRecord(modName, recId, beanClass, false);
     }
 
+    public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, long recId, Class<T> beanClass, Collection<SupplementRecord> supplements) throws Exception {
+        List<T> records = constructBuilder(modName, Collections.singletonList(recId), beanClass, null, supplements).get();
+        if(CollectionUtils.isNotEmpty(records)) {
+            return records.get(0);
+        }
+        else {
+            return null;
+        }
+    }
     public static <T extends ModuleBaseWithCustomFields> T getRecord (String modName, long recId, Class<T> beanClass, boolean skipScoping) throws Exception {
         List<T> records = constructBuilder(modName, Collections.singletonList(recId), beanClass, skipScoping).get();
         if(CollectionUtils.isNotEmpty(records)) {
@@ -433,4 +444,32 @@ public class V3RecordAPI {
         }
     }
 
+
+    public static void updateRecord(V3Context data, FacilioModule module, List<FacilioField> fields,List<Long> ids) throws Exception {
+        Criteria idCriteria = new Criteria();
+        idCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module),StringUtils.join(ids,","),NumberOperators.EQUALS));
+        UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<>()
+                .module(module)
+                .fields(fields);
+        updateRecordBuilder.andCriteria(idCriteria);
+        updateRecordBuilder.ignoreSplNullHandling();
+        updateRecordBuilder.update(data);
+    }
+
+    public static boolean markAsDeleteEnabled(FacilioModule module) throws Exception {
+        try {
+            if (module != null && module.getName() != null) {
+                V3Config v3Config = ChainUtil.getV3Config(module.getName());
+                if (v3Config != null) {
+                    V3Config.DeleteHandler deleteHandler = v3Config.getDeleteHandler();
+                    if (deleteHandler != null && deleteHandler.isMarkAsDeleteByPeople()) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

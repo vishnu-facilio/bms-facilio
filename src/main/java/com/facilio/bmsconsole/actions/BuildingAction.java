@@ -273,6 +273,17 @@ public class BuildingAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+
+	public String getSpaceInsights() throws Exception{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME,"building");
+		context.put(FacilioConstants.ContextNames.ID, getBuildingId());
+		FacilioChain buildingInsights = FacilioChainFactory.getBuildingInsights();
+		buildingInsights.execute(context);
+		setReports((JSONObject) context.get(FacilioConstants.ContextNames.COUNT));
+
+		return SUCCESS;
+	}
 	
 	private List<Map<String, Object>> getSpaceCategorySummary() throws Exception {
 

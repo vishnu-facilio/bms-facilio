@@ -74,6 +74,9 @@ import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.qa.context.*;
+import com.facilio.remotemonitoring.context.*;
+import com.facilio.remotemonitoring.context.AlarmCategoryContext;
+import com.facilio.remotemonitoring.signup.*;
 import com.facilio.service.FacilioService;
 import com.facilio.taskengine.common.JobConstants;
 import com.facilio.v3.V3Builder.V3Config;
@@ -343,6 +346,7 @@ public class FacilioConstants {
 		public static final String FORM_SECTION_SEQUENCE_NUMBER = "formSectionSequenceNumber";
 		public static final String NEXT_FORM_SECTION_ID = "nextFormSectionId";
 		public static final String SEQUENCE_NUMBER = "sequenceNumber";
+		public static final String EMAIL_REGEX = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
 	}
 
 
@@ -389,6 +393,8 @@ public class FacilioConstants {
 		//public static final String RESOURCE_ID = "resourceId";
 		public static final String EMAIL = "email";
 		public static final String IS_WEBTAB_PERMISSION = "isWebTabPermission";
+
+		public static final String NOTES_MODULE_NAME = "notesModuleName";
         public static final String WORK_ORDER_FEATURE_SETTINGS_LIST = "workOrderFeatureSettingsList";
 		public static final String WORK_ORDER_FEATURE_SETTINGS_LIST_MAP = "workOrderFeatureSettingsListMap";
 		public static final String WORK_ORDER_FEATURE_SETTINGS_TYPE = "workOrderFeatureSettingsType";
@@ -913,6 +919,8 @@ public class FacilioConstants {
 		public static final String ATTACHMENT_FILE_NAME = "attachmentFileName";
 		public static final String ATTACHMENT_ID_LIST = "attachmentIds";
 		public static final String ATTACHMENT_MODULE_NAME = "attachmentModuleName";
+		public static final String ATTACHMENTS_MODULE_NAME = "attachmentsModuleName";
+
 		public static final String ATTACHMENT_MAP_FILE_LIST = "attachmentsMapFiles";
 		public static final String CURRENT_TIME = "currentTime";
 
@@ -1035,6 +1043,7 @@ public class FacilioConstants {
 		public static final String DASHBOARD_FOLDER = "dashboardFolder";
 		public static final String DASHBOARD_PUBLISH_STATUS = "dashboardPublishStatus";
 		public static final String DASHBOARD_FILTER = "dashboardFilter";
+		public static final String DASHBOARD_USER_FILTER_ID = "dashboardUserFilterId";
 		public static final String DASHBOARD_WIDGET_TIMELINE_FILTER = "widgetTimelineFilter";
 		public static final String WIDGET = "widget";
 
@@ -3254,6 +3263,34 @@ public class FacilioConstants {
 			classMap.put(UTILITY_INTEGRATION_CUSTOMER_ACTIVITY,ActivityContext.class);
 			classMap.put(UTILITY_INTEGRATION_BILL_ACTIVITY,ActivityContext.class);
 			classMap.put(UTILITY_DISPUTE_ACTIVITY,ActivityContext.class);
+			classMap.put(AlarmTypeModule.MODULE_NAME, AlarmTypeContext.class);
+			classMap.put(AlarmCategoryModule.MODULE_NAME, AlarmCategoryContext.class);
+			classMap.put(AlarmDefinitionModule.MODULE_NAME, AlarmDefinitionContext.class);
+			classMap.put(AlarmDefinitionMappingModule.MODULE_NAME, AlarmDefinitionMappingContext.class);
+			classMap.put(AlarmFilterRuleModule.MODULE_NAME, AlarmFilterRuleContext.class);
+			classMap.put(FilteredAlarmModule.MODULE_NAME, FilteredAlarmContext.class);
+			classMap.put(FlaggedEventRuleModule.MODULE_NAME, FlaggedEventRuleContext.class);
+			classMap.put(FlaggedEventModule.MODULE_NAME, FlaggedEventContext.class);
+			classMap.put(AlarmDefinitionTaggingModule.MODULE_NAME, AlarmDefinitionTaggingContext.class);
+			classMap.put(AlarmFilterRuleCriteriaModule.MODULE_NAME, FilterRuleCriteriaContext.class);
+			classMap.put(RawAlarmModule.MODULE_NAME, RawAlarmContext.class);
+			classMap.put(FlaggedEventAlarmTypeRelModule.MODULE_NAME, FlaggedEventRuleAlarmTypeRel.class);
+			classMap.put(ControllerAlarmInfoModule.MODULE_NAME, ControllerAlarmInfoContext.class);
+			classMap.put(FlaggedEventBureauEvaluationModule.MODULE_NAME, FlaggedEventRuleBureauEvaluationContext.class);
+			classMap.put(FlaggedEventBureauActionModule.MODULE_NAME, FlaggedEventBureauActionsContext.class);
+			classMap.put(BureauInhibitReasonListModule.MODULE_NAME, BureauInhibitReasonListContext.class);
+
+
+			classMap.put(AddSubModuleRelations.ALARM_TYPE_ACTIVITY, ActivityContext.class);
+			classMap.put(AddSubModuleRelations.ALARM_CATEGORY_ACTIVITY, ActivityContext.class);
+			classMap.put(AddSubModuleRelations.ALARM_DEFINITION_ACTIVITY, ActivityContext.class);
+			classMap.put(AddSubModuleRelations.ALARM_DEFINITION_MAPPING_ACTIVITY, ActivityContext.class);
+			classMap.put(AddSubModuleRelations.ALARM_DEFINITION_TAGGING_ACTIVITY, ActivityContext.class);
+			classMap.put(AddSubModuleRelations.ALARM_FILTER_RULE_ACTIVITY, ActivityContext.class);
+			classMap.put(AddSubModuleRelations.RAW_ALARM_ACTIVITY, ActivityContext.class);
+			classMap.put(AddSubModuleRelations.FILTER_ALARM_ACTIVITY, ActivityContext.class);
+			classMap.put(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY, ActivityContext.class);
+			classMap.put(AddSubModuleRelations.FLAGGED_EVENT_RULE_ACTIVITY, ActivityContext.class);
 
 			classMap.put(Meter.METER, V3MeterContext.class);
 			classMap.put(Meter.ELECTRICITY_METER, V3ElectricityUtilityMeterContext.class);
@@ -3632,6 +3669,7 @@ public class FacilioConstants {
 		public static final String ML_BMS_POINTS_TAGGING_JOB = "MLBmsPointsTaggingJob";
 
 		public static final String DATA_LOG_DELETE_RECORDS_JOB = "DeleteDataLogsRecordsJob";
+		public static final String DATA_UN_MODELED_RECORDS_JOB = "DeleteUnModeledRecordsJob";
 
 	}
 
@@ -3694,6 +3732,8 @@ public class FacilioConstants {
 		public static final String SERVICE_APP = "service";
 		public static final String IWMS_APP = "iwms";
 		public static final String ENERGY_APP = "energy";
+		public static final String REMOTE_MONITORING = "remotemonitor";
+
 	}
 
 	public static class DefaultRoleNames {
@@ -3717,6 +3757,8 @@ public class FacilioConstants {
 		public static final String EMPLOYEE_ADMIN = "Employee Admin";
 
 		public static final String IWMS_ADMIN = "IWMS Admin";
+
+		public static final String REMOTE_MONITORING_ADMIN = "Remote Monitoring Admin";
 
 	}
 

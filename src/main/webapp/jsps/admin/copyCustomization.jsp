@@ -27,6 +27,10 @@
     <td class="table-head"><h4>Target OrgId</h4></td>
     <td><input type="text" id="targetOrgId" required class="input-field"></td>
   </tr>
+  <tr id="oldVsNewMailRow">
+    <td class="table-head"><h4>Old vs New Mail</h4></td>
+    <td><textarea id="oldVsNewMail" placeholder="{'1':2, '3':4}" rows="10" cols="30"></textarea></td>
+  </tr>
   <tr id="fileRow">
     <td class="table-head"><h4>File Upload</h4></td>
     <td>
@@ -53,6 +57,7 @@
     $("#sourceOrgIdRow").toggle(showFileRadioChecked);
     $("#targetOrgIdRow").toggle(!showFileRadioChecked);
     $("#fileRow").toggle(!showFileRadioChecked);
+    $("#oldVsNewMailRow").toggle(!showFileRadioChecked);
   }
 
   function sendAjax() {
@@ -90,6 +95,7 @@
       formData.append('file', file);
       formData.append('fromAdminTool', true);
       formData.append('targetOrgId', $('#targetOrgId').val());
+      formData.append('oldVsNewPeopleMail', $('#oldVsNewMail').val());
 
       $.ajax({
         url: "/admin/installPackage",

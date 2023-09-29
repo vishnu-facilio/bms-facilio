@@ -185,8 +185,8 @@ public class V3MeterContext extends V3Context {
 	@Getter
 	public static enum MeterType implements FacilioIntEnum {
 
-		PHYSICAL("physical"),
-		VIRTUAL("virtual");
+		PHYSICAL("Physical"),
+		VIRTUAL("Virtual");
 
 		public int getVal() {
 			return ordinal() + 1;

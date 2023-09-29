@@ -442,6 +442,7 @@ public class PageWidget {
 		TENANT_PRIMARY_CONTACT("tenantprimarycontact"),
 		TENANT_WORKORDERS("tenantworkorders"),
 		TENANT_BOOKINGS("tenantbookings"),
+		TENANT_UPCOMING_BOOKING("tenantupcomingbooking"),
 		TENANT_DETAIL_CONTACT("tenantdetailcontact"),
 		TENANT_DESCRIPTION("tenantdescription"),
 		ASSOCIATED_TERMS("associatedterms"),
@@ -468,6 +469,7 @@ public class PageWidget {
 		TENANT_UNIT_SPECIAL_WIDGET("tenantunitspecialwidget"),
 		TENANT_UNIT_TENANT("tenantunittenant"),
 		TENANT_UNIT_WORKORDER("tenantunitworkorder"),
+		TENANT_UNIT_RECENTLY_CLOSED_WORKORDER("tenantunitrecentlyclosedworkorder"),
 		TENANT_UNIT_LOCATION("tenantunitlocation"),
 		TENANT_UNIT_PHOTO("tenantunitphoto"),
 		RECEIVABLE_RECEIPTS("receivablereceipts"),
@@ -583,8 +585,19 @@ public class PageWidget {
 		RULE_WO_DURATION("ruleWoDuration"),
 		ROOT_CAUSES("rootCauses"),
 		RULE_INSIGHT("ruleInsight"),
-		RULE_LOGS("ruleLogs");
+		RULE_LOGS("ruleLogs"),
 
+		SPACE_LOCATION("spaceLocation"),
+		SPACE_INSIGHTS("spaceInsights"),
+		WEATHER_CARD("weatherCard",AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
+		DEPRECIATION_ANALYSIS("depreciationAnalysis",AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
+		HOURLY_FORECAST("hourlyForecast",AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
+		BUILDINGS("buildings"),
+		SPACES("spaces"),
+		SUB_SPACES("subSpaces"),
+		FLOORS("floors"),
+		TENANT_RECENTLY_CLOSED_WORKORDER("tenantrecentlyclosedworkorder");
+		;
 
 		private String name;
 		@Getter

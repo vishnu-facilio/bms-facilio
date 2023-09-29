@@ -19,4 +19,7 @@ public interface Topics {
         String multiImport = "__multi_import__";
         String multiImportErrorRecords = "__multi_import_error_records__";
     }
+    interface FlaggedEventCreation {
+        String flaggedEventTopic = "__flaggedEvent__";
+    }
 }

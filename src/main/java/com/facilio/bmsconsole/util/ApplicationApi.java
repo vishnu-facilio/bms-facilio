@@ -1208,17 +1208,11 @@ public class ApplicationApi {
             configJSON.put("type", "log");
             webTabs.add(new WebTabContext("Command Log", "log", WebTabContext.Type.CUSTOM, null,
                     layout.getApplicationId(), configJSON));
-//            configJSON = new JSONObject();
-//            configJSON.put("type", "agent_data");
-//            webTabs.add(new WebTabContext("Agent Data", "data", WebTabContext.Type.CUSTOM, null,
-//                    layout.getApplicationId(), configJSON));
 
-            AgentDataLoggerModule agentModule = new AgentDataLoggerModule();
-            agentModule.addData();
             configJSON = new JSONObject();
+
             configJSON.put("type", "logs");
-            webTabs.add(new WebTabContext("Logs", "logs", WebTabContext.Type.CUSTOM,
-                    Arrays.asList(modBean.getModule("agentDataLogger").getModuleId()), layout.getApplicationId(), configJSON));
+            webTabs.add(new WebTabContext("Logs", "logs", WebTabContext.Type.CUSTOM,null,layout.getApplicationId(), configJSON));
 
 
             groupNameVsWebTabsMap.put("agent", webTabs);
@@ -2028,7 +2022,7 @@ public class ApplicationApi {
             webTabGroups.add(new WebTabGroupContext("Office", "office", layout.getId(), 29, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Floor Map", "floor-map", WebTabContext.Type.INDOOR_FLOORPLAN, null, layout.getApplicationId(), null));
-            webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"portfolio\" }", 1,null,layout.getApplicationId()));
+            webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.PORTFOLIO, null, null, 1,null,layout.getApplicationId()));
             webTabs.add(new WebTabContext("Rooms", "rooms", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("rooms").getModuleId()), layout.getApplicationId(), null));
             webTabs.add(new WebTabContext("Desks", "desks", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("desks").getModuleId()), layout.getApplicationId(), null));
             webTabs.add(new WebTabContext("Parkings", "parkings", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule("parkingstall").getModuleId()), layout.getApplicationId(), null));
@@ -2892,9 +2886,7 @@ public class ApplicationApi {
                 .table(ModuleFactory.getWebTabModule().getTableName())
                 .select(FieldFactory.getWebTabFields())
                 .andCondition(CriteriaAPI.getCondition("TYPE", "type",
-                        String.valueOf(WebTabContext.Type.CUSTOM.getIndex()), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("CONFIG", "config", String.valueOf("portfolio"),
-                        StringOperators.CONTAINS));
+                        String.valueOf(WebTabContext.Type.PORTFOLIO.getIndex()), NumberOperators.EQUALS));
         List<Map<String, Object>> tabs = new ArrayList<>();
         if (moduleNamesList.contains(moduleName)) {
             tabs = tabBuilder.get();
@@ -3447,7 +3439,7 @@ public class ApplicationApi {
 
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, layout.getApplicationId(), null));
-            webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"portfolio\" }", 1,null,layout.getApplicationId()));
+            webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.PORTFOLIO, null, null, 1,null,layout.getApplicationId()));
             webTabGroups.add(new WebTabGroupContext(webTabs,"Home", "home",  IconType.home.ordinal(),groupOrder++,null,layout.getId(),IconType.home));
             groupNameVsWebTabsMap.put("home", webTabs);
 

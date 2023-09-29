@@ -72,10 +72,15 @@ public class CreateAgentCommand extends AgentV2Command {
         }
         JobContext dataLogsJob =  FacilioTimer.getJob(currentOrg.getOrgId(),FacilioConstants.Job.DATA_LOG_DELETE_RECORDS_JOB);
         if(dataLogsJob == null){
-            AgentUtilV2.scheduleDataLogDeleteJob(currentOrg.getOrgId());
+            AgentUtilV2.scheduleDataLogDeleteJob(currentOrg.getOrgId(), FacilioConstants.Job.DATA_LOG_DELETE_RECORDS_JOB);
         }
         if (agentType != AgentType.NIAGARA && agentType != AgentType.FACILIO) {
             agentBean.schedulePointsDataMissingJob(agent);
+        }
+        JobContext unModeledJob = FacilioTimer.getJob(currentOrg.getOrgId(),FacilioConstants.Job.DATA_UN_MODELED_RECORDS_JOB);
+        if(unModeledJob == null){
+            AgentUtilV2.scheduleDataLogDeleteJob(currentOrg.getOrgId(), FacilioConstants.Job.DATA_UN_MODELED_RECORDS_JOB);
+            LOGGER.info("Added DeleteUnModeledRecordsJob");
         }
     }
 

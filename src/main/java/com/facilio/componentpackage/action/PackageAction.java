@@ -9,8 +9,11 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.command.PackageChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageContext;
+import com.facilio.componentpackage.utils.PackageUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import lombok.Getter;
@@ -26,6 +29,8 @@ import java.util.Map;
 
 @Getter @Setter @Log4j
 public class PackageAction extends FacilioAction {
+    private Map<String, String> oldVsNewPeopleMailMap;
+    private String oldVsNewPeopleMail;
     private boolean fromAdminTool = false;
     private List<Integer> skipComponents;
     private int packageType = 1;
@@ -114,6 +119,14 @@ public class PackageAction extends FacilioAction {
 
     public String installPackage() throws Exception{
         AccountUtil.setCurrentAccount(targetOrgId);
+
+        if (StringUtils.isNotEmpty(oldVsNewPeopleMail)) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            oldVsNewPeopleMailMap = objectMapper.readValue(oldVsNewPeopleMail, Map.class);
+
+            PackageUtil.setUserConfigFromAdminTool();
+            PackageUtil.addOldVsNewPeopleMail(oldVsNewPeopleMailMap);
+        }
 
         LOGGER.info("####Sandbox - Initiating Package Deployment");
         FacilioChain deployPackageChain = PackageChainFactory.getDeployPackageChain();

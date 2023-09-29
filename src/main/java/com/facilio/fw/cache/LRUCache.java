@@ -14,6 +14,8 @@ import com.facilio.datastructure.dag.DAGCache;
 import com.facilio.ns.context.NameSpaceCacheContext;
 import com.facilio.permission.context.BasePermissionContext;
 import com.facilio.permission.context.PermissionSetContext;
+import com.facilio.remotemonitoring.context.*;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
@@ -62,6 +64,16 @@ public class LRUCache {
 	private static FacilioCache<String, Object> controllerCache = new PubSubLRUCache<>("controllerCache", 5000);
 	private static FacilioCache<String, Object> appDomainBrandingCache = new PubSubLRUCache<>("appDomainBrandingCache", 100);
 
+	private static FacilioCache<String, AlarmTypeContext> alarmTypeCache = new PubSubLRUCache<>("alarmTypeCache", 100);
+
+	private static FacilioCache<String, List<AlarmDefinitionMappingContext>> alarmDefinitionMappingCache = new PubSubLRUCache<>("alarmDefinitionMappingCache", 1000);
+
+	private static FacilioCache<String, List<AlarmDefinitionTaggingContext>> alarmDefinitionTaggingCache = new PubSubLRUCache<>("alarmDefinitionTaggingCache", 1000);
+	private static FacilioCache<String, List<AlarmFilterRuleContext>> alarmFilterRuleCache = new PubSubLRUCache<>("alarmFilterRuleCache", 500);
+
+	private static FacilioCache<String, List<FlaggedEventRuleContext>> flaggedEventsRuleCache = new PubSubLRUCache<>("flaggedEventsRuleCache", 500);
+
+	private static FacilioCache<String, FlaggedEventRuleContext> flaggedEventRuleCache = new PubSubLRUCache<>("flaggedEventRuleCache", 500);
 	public static void purgeAllCache() {
 		RedisManager.purgeAllCache();
 	}
@@ -171,4 +183,29 @@ public class LRUCache {
 	}
 	public static FacilioCache<String, Object> getControllerCache() {return controllerCache;}
 	public static FacilioCache<String, Object> getAppDomainBrandingCache() {return appDomainBrandingCache;}
+
+
+
+
+	public static FacilioCache<String, AlarmTypeContext> getAlarmTypeCache() {
+		return alarmTypeCache;
+	}
+	public static FacilioCache<String, List<AlarmDefinitionMappingContext>> getAlarmDefinitionMappingCache() {
+		return alarmDefinitionMappingCache;
+	}
+
+	public static FacilioCache<String, List<AlarmDefinitionTaggingContext>> getAlarmDefinitionTaggingCache() {
+		return alarmDefinitionTaggingCache;
+	}
+	public static FacilioCache<String, List<AlarmFilterRuleContext>> getAlarmFilterRuleCache() {
+		return alarmFilterRuleCache;
+	}
+
+	public static FacilioCache<String, List<FlaggedEventRuleContext>> getFlaggedEventsRuleCache() {
+		return flaggedEventsRuleCache;
+	}
+	public static FacilioCache<String, FlaggedEventRuleContext> getFlaggedEventRuleCache() {
+		return flaggedEventRuleCache;
+	}
+
 }

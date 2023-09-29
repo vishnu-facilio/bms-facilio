@@ -233,6 +233,7 @@ public void setCardCustomScriptFilters(DashboardCustomScriptFilter cardCustomScr
 		dataOptionsJson.put("conditionalFormatting", conditionalFormatting);
 		dataOptionsJson.put("scriptModeInt",getScriptModeInt());
 		dataOptionsJson.put("customScriptId",getCustomScriptId());
+		dataOptionsJson.put("parentId",getParentId());
 
 		
 		

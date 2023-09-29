@@ -7130,6 +7130,7 @@
 	<package name="siteApiv2" namespace="/api/v2/site" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.CampusAction" method="v2SitesList" />
 		<action name="totalArea" class="com.facilio.bmsconsole.actions.CampusAction" method="getSitesTotalArea" />
+		<action name="siteInfo" class="com.facilio.bmsconsole.actions.CampusAction" method="getSiteDetails" />
 	</package>
 
 	<package name="bmsPointsTagging" namespace="/api/v2/bmsPointsTagging/internal" extends="v2Api">
@@ -7698,5 +7699,24 @@
 	<package name="ruleCriteria" namespace="/api/v2/criteria" extends="v2Api">
 		<action name="getConditions" class="com.facilio.bmsconsole.actions.RuleCriteriaAction" method="getCondition"></action>
 		<action name="getRecordValue" class="com.facilio.bmsconsole.actions.RuleCriteriaAction" method="getRecordValue"></action>
+	</package>
+
+	<package name="ruleList" namespace="/api/v2/ruleList" extends="v2Api">
+		<action name="flaggedEvent/ruleStatus/*" class="com.facilio.remotemonitoring.action.RuleAction" method="updateFlaggedEventRuleStatus">
+			<param name="moduleName">flaggedEvent</param>
+			<param name="id">{1}</param>
+			<param name="permission">
+				PATCH:UPDATE
+			</param>
+			<param name="checkPermission">true</param>
+		</action>
+		<action name="alarmFilterRule/ruleStatus/*" class="com.facilio.remotemonitoring.action.RuleAction" method="updateAlarmFilterRuleStatus">
+			<param name="moduleName">alarmFilterRule</param>
+			<param name="id">{1}</param>
+			<param name="permission">
+				PATCH:UPDATE
+			</param>
+			<param name="checkPermission">true</param>
+		</action>
 	</package>
 </struts>

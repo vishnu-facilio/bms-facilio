@@ -1,10 +1,12 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.modules.FacilioIntEnum;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum ControllerType {
+public enum ControllerType implements FacilioIntEnum {
 	MISC(0, "Misc", true),
 
 	BACNET_IP(1,"BACnet Ip", true),
@@ -44,6 +46,14 @@ public enum ControllerType {
 		this.label = label;
 		this.configurable = configurable;
 	}
+	public Integer getIndex() {
+		return getKey();
+	}
+
+	@Override
+	public String getValue() {
+		return label;
+	}
 
 	public  int getKey(){
 		return key;
@@ -56,7 +66,7 @@ public enum ControllerType {
 	public  boolean isConfigurable() {
 		return configurable;
 	}
-	
+
 	public static ControllerType valueOf(int value) {
 		return TYPE_MAP.get(value);
 	}

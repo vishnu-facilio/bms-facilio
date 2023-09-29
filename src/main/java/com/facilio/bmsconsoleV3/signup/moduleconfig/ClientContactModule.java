@@ -9,15 +9,16 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.ClientContactModuleUtil;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -44,6 +45,16 @@ public class ClientContactModule extends BaseModuleConfig{
         groupDetails.put("views", clientContact);
         groupVsViews.add(groupDetails);
 
+        ArrayList<FacilioView> remoteMonitorClientContact = new ArrayList<>();
+        remoteMonitorClientContact.add(getAllRemoteMonitorClientContacts().setOrder(1));
+
+        Map<String, Object> rmGroupDetails = new HashMap<>();
+        rmGroupDetails.put("name", "systemviews");
+        rmGroupDetails.put("displayName", "System Views");
+        rmGroupDetails.put("moduleName", FacilioConstants.ContextNames.CLIENT_CONTACT);
+        rmGroupDetails.put("views", remoteMonitorClientContact);
+        groupVsViews.add(rmGroupDetails);
+
         return groupVsViews;
     }
 
@@ -68,6 +79,12 @@ public class ClientContactModule extends BaseModuleConfig{
         Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
         List<String>  appNameList=new ArrayList<>();
         appNameList.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
         for(String appName:appNameList) {
@@ -99,6 +116,21 @@ public class ClientContactModule extends BaseModuleConfig{
                 .pageDone().getCustomPages();
     }
 
+    private static FacilioView getAllRemoteMonitorClientContacts() {
+
+        FacilioModule clientContactModule = ModuleFactory.getClientContactModule();
+
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME", FieldType.STRING), true));
+
+        FacilioView allView = new FacilioView();
+        allView.setName("all-remotemonitor-clientcontact");
+        allView.setDisplayName("All Client Contacts");
+        allView.setAppLinkNames(Collections.singletonList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        allView.setModuleName(clientContactModule.getName());
+        allView.setSortFields(sortFields);
+        return allView;
+    }
+
     private static FacilioView getAllClientContacts() {
 
         FacilioModule clientContactModule = ModuleFactory.getClientContactModule();
@@ -125,8 +157,7 @@ public class ClientContactModule extends BaseModuleConfig{
         clientContactForm.setName("default_clientcontact_web");
         clientContactForm.setModule(clientContactModule);
         clientContactForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        clientContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
-
+        clientContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         List<FormField> clientContactFormFields = new ArrayList<>();
         clientContactFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         clientContactFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.OPTIONAL, 2, 1));
@@ -143,4 +174,20 @@ public class ClientContactModule extends BaseModuleConfig{
 
         return Collections.singletonList(clientContactForm);
     }
+
+    @Override
+    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        List<ScopeVariableModulesFields> scopeConfigList;
+
+        ScopeVariableModulesFields remoteMonitorApp = new ScopeVariableModulesFields();
+        remoteMonitorApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_remotemonitor_client"));
+        remoteMonitorApp.setModuleId(module.getModuleId());
+        remoteMonitorApp.setFieldName("client");
+
+        scopeConfigList = Arrays.asList(remoteMonitorApp);
+        return scopeConfigList;
+    }
+
 }

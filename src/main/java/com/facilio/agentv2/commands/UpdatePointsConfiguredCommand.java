@@ -45,6 +45,7 @@ public class UpdatePointsConfiguredCommand extends AgentV2Command {
                     .fields(FieldFactory.getPointFields())
                     .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getPointModule()));
             int rowsAffected = builder.update(toUpdate);
+            context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsAffected);
 
             if (rowsAffected > 0) {
             	List<FacilioField> childPointFields = new ArrayList<FacilioField>();
@@ -55,24 +56,14 @@ public class UpdatePointsConfiguredCommand extends AgentV2Command {
             		childPointModule = PointsAPI.getPointModule(FacilioControllerType.valueOf(0));
             	}
             	childPointFields = PointsAPI.getChildPointFields(FacilioControllerType.valueOf(controllerType));
-            	
-            	// temp handling..TODO remove by handling extended update
+
+                LOGGER.info("childPointFields -->" + childPointFields);
             	String modName = childPointModule.getName();
             	childPointFields = childPointFields.stream().filter(p -> p.getModule().getName() == modName)
             											   .collect(Collectors.toList());
-            	
-                GenericUpdateRecordBuilder builder1 = new GenericUpdateRecordBuilder()
-                        .table(childPointModule.getTableName())
-                        .fields(childPointFields)
-                        .andCondition(CriteriaAPI.getIdCondition(ids, childPointModule));
-                int childRowsAffected = builder1.update(toUpdate);
-
-                context.put(FacilioConstants.ContextNames.ROWS_UPDATED, childRowsAffected);
-                if (childRowsAffected > 0) {
-                    return true;
-                } else {
-                    throw new Exception(" child points updation can't be zero ");
-                }
+            	LOGGER.info("filtered fields -->" + childPointFields);
+                LOGGER.info("moduleName -->"+ modName );
+                return true;
             } else {
                 throw new Exception(" No points updated, context ->" + context);
             }

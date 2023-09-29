@@ -15,7 +15,9 @@ topics:
       - { key: __agent__/point/alarm/org/#, handler: com.facilio.ims.handler.agent.ClearPointAlarmHandler }
       - { key: __one_time_job_for_scheduled_rule__/#/#, handler: com.facilio.ims.handler.AddOneTimeJobForScheduledRuleHandler, recordTimeout: 60 }
       - { key: task_deviation_createWorkOrder/#, handler: com.facilio.ims.handler.workorder.TaskDeviationWorkOrderHandler, recordTimeout: 60 }
-      - { key: __flow_logs__/#, handler: com.facilio.ims.handler.FlowLogHandler,recordTimeout: 60 }
+      - { key: __flow_logs__/#, handler: com.facilio.ims.handler.FlowLogHandler, recordTimeout: 60 }
+      - { key: __flaggedEvent__/#, handler: com.facilio.remotemonitoring.wms.FlaggedEventHandler, recordTimeout: 120 }
+
   - topic: default-single
     keys:
       - { key: email-process/#, handler: com.facilio.ims.handler.EmailProcessHandler, recordTimeout: 60 }

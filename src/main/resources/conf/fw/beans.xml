@@ -56,4 +56,6 @@
 	<bean name="AgentBean" class="com.facilio.agentv2.cacheimpl.AgentBeanCacheImpl"/>
 	<bean name="ControllerBean" class="com.facilio.agentv2.cacheimpl.ControllerBeanCacheImpl"/>
 
+	<bean name="AlarmBean" class="com.facilio.remotemonitoring.beans.AlarmRuleBeanCacheImpl"/>
+
 </beans>

@@ -1,5 +1,6 @@
 package com.facilio.componentpackage.implementation;
 
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
@@ -20,7 +21,10 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +63,38 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
         element.element(PackageConstants.WorkFlowRuleConstants.EXECUTION_ORDER).text(String.valueOf(stateflow.getExecutionOrder()));
         element.element(PackageConstants.WorkFlowRuleConstants.STATUS).text(String.valueOf(stateflow.isActive()));
         element.element(PackageConstants.WorkFlowRuleConstants.ON_SUCCESS).text(String.valueOf(stateflow.isOnSuccess()));
+        String diagramJson = StateFlowRulesAPI.getStateFlowContext(stateflow.getId()).getDiagramJson();
+        JSONObject jsonObject = null;
+        try{
+            jsonObject = StringUtils.isNotEmpty(diagramJson) ? new JSONObject(diagramJson) : null;
+        }catch (Exception e){
+
+        }
+        if (jsonObject != null) {
+            XMLBuilder diagramElement = element.element("DiagramElement");
+            XMLBuilder statesElement = diagramElement.element("States");
+            diagramElement.element("Version").text(jsonObject.get("version").toString());
+            diagramElement.element("Zoom").text(jsonObject.get("zoom").toString());
+            JSONArray jsonArray = jsonObject.getJSONArray("states");
+            for (Object obj : jsonArray) {
+                JSONObject jsonObj = (JSONObject) obj;
+                XMLBuilder stateElement = statesElement.element("State");
+                long stateId = jsonObj.getLong("stateId");
+                String name = TicketAPI.getStatus(stateId).getStatus();
+                stateElement.attribute("name", name);
+                stateElement.attribute("x", jsonObj.get("x").toString());
+                stateElement.attribute("y", jsonObj.get("y").toString());
+                XMLBuilder anchorsElement = stateElement.element("Anchors");
+                JSONArray anchorArray = jsonObj.getJSONArray("anchors");
+                for (int i = 0; i < anchorArray.length(); i++) {
+                    XMLBuilder anchorElement = anchorsElement.element("Anchor");
+                    Object transitionId = anchorArray.get(i).equals(null) ? null :  anchorArray.get(i);
+                    String transitionName = transitionId != null ? WorkflowRuleAPI.getWorkflowRule(Long.parseLong(transitionId.toString())).getName() : null;
+                    anchorElement.attribute("positionNo", String.valueOf(i));
+                    anchorElement.attribute("transitionName", transitionName);
+                }
+            }
+        }
 
         if (stateflow.getCriteria() != null) {
             element.addElement(PackageBeanUtil.constructBuilderFromCriteria(stateflow.getCriteria(), element.element(PackageConstants.CriteriaConstants.CRITERIA), stateflow.getModuleName()));
@@ -101,7 +137,17 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
 
     @Override
     public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
-
+        for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
+            long stateflowId = idVsData.getKey();
+            XMLBuilder stateFlowElement = idVsData.getValue();
+            String moduleName = stateFlowElement.getElement(PackageConstants.MODULENAME).getText();
+            String stateflowName = stateFlowElement.getElement(PackageConstants.NAME).getText();
+            Map<String,Long> stateNameVsId = PackageBeanUtil.getStateNameVsId(moduleName);
+            Map<String,Long> transitionNameVsId = PackageBeanUtil.getStateTransitionNameVsId(moduleName,stateflowName);
+            StateFlowRuleContext stateFlowRule = constructDiagramFromBuilder(stateFlowElement, stateNameVsId, transitionNameVsId);
+            stateFlowRule.setId(stateflowId);
+            addOrUpdateStateflow(stateFlowRule);
+        }
     }
 
     @Override
@@ -134,11 +180,14 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(stateFlowRuleContext.getModuleId());
 
-        WorkflowRuleContext existingStateflow =  WorkflowRuleAPI.getWorkflowRule(stateFlowRuleContext.getName(),module,
-                stateFlowRuleContext.getRuleTypeEnum(),false);
 
-        if (existingStateflow != null){
-            stateFlowRuleContext.setId(existingStateflow.getId());
+        if (stateFlowRuleContext.getId() <= 0 && stateFlowRuleContext.isDefaltStateFlow()) {
+            WorkflowRuleContext existingStateflow = WorkflowRuleAPI.getWorkflowRule(stateFlowRuleContext.getName(), module,
+                    stateFlowRuleContext.getRuleTypeEnum(), false);
+
+            if (existingStateflow != null) {
+                stateFlowRuleContext.setId(existingStateflow.getId());
+            }
         }
 
         FacilioContext context = chain.getContext();
@@ -192,4 +241,60 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
 
         return stateFlowRuleContext;
     }
+
+    public StateFlowRuleContext constructDiagramFromBuilder(XMLBuilder stateflowElement, Map<String, Long> statusNameVsId, Map<String,Long> transitionNameVsId){
+
+        StateFlowRuleContext stateFlowRule = new StateFlowRuleContext();
+
+        XMLBuilder diagramBuilder = stateflowElement.getElement("DiagramElement");
+        String diagramString = null;
+        if (diagramBuilder != null) {
+            JSONObject diagramJson = new JSONObject();
+            String version = diagramBuilder.getElement("Version").getText();
+            String zoom = diagramBuilder.getElement("Zoom").getText();
+            XMLBuilder statesBuilder = diagramBuilder.getElement("States");
+            List<XMLBuilder> stateBuilder = statesBuilder.getElementList("State");
+            List<Map<String,Object>> stateArray = new ArrayList<>();
+
+            for (XMLBuilder builder : stateBuilder) {
+                Map<String, Object> statesMap = new HashMap<>();
+                String name = builder.getAttribute("name");
+                Long x = Long.parseLong(builder.getAttribute("x"));
+                Long y = Long.parseLong(builder.getAttribute("y"));
+                statesMap.put("x", x);
+                statesMap.put("y", y);
+                XMLBuilder anchorsBuilder = builder.getElement("Anchors");
+                List<XMLBuilder> anchorBuilder = anchorsBuilder.getElementList("Anchor");
+
+                JSONArray anchorArray = new JSONArray();
+                for (XMLBuilder anchor : anchorBuilder) {
+                    int positionNo = Integer.parseInt(anchor.getAttribute("positionNo"));
+                    String transitionName = anchor.getAttribute("transitionName");
+                    anchorArray.put(positionNo, transitionNameVsId.get(transitionName));
+                }
+
+                statesMap.put("anchors", anchorArray);
+                statesMap.put("stateId", statusNameVsId.get(name));
+                stateArray.add(statesMap);
+            }
+
+            diagramJson.put("states", stateArray);
+            diagramJson.put("version", version);
+            diagramJson.put("zoom", zoom);
+
+            diagramString = diagramJson.toString();
+
+        }
+
+
+        String name = stateflowElement.getElement(PackageConstants.NAME).getText();
+        String moduleName = stateflowElement.getElement(PackageConstants.MODULENAME).getText();
+
+        stateFlowRule.setName(name);
+        stateFlowRule.setModuleName(moduleName);
+        stateFlowRule.setDiagramJson(diagramString);
+
+        return stateFlowRule;
+    }
+
 }

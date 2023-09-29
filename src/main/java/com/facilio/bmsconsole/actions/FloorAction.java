@@ -232,7 +232,16 @@ public class FloorAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
-	
+	public String  getSpaceInsights() throws Exception{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getFloorId());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME,"floor");
+		FacilioChain floorInsights = FacilioChainFactory.getFloorInsights();
+		floorInsights.execute(context);
+		setReports((JSONObject) context.get(FacilioConstants.ContextNames.COUNT));
+
+		return SUCCESS;
+	}
 	public List getFormlayout()
 	{
 		return FormLayout.getNewFloorLayout(fields);

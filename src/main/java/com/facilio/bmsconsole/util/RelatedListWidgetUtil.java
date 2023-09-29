@@ -21,6 +21,10 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.remotemonitoring.signup.AlarmFilterRuleCriteriaModule;
+import com.facilio.remotemonitoring.signup.AlarmFilterRuleModule;
+import com.facilio.remotemonitoring.signup.FlaggedEventBureauActionModule;
+import com.facilio.remotemonitoring.signup.FlaggedEventModule;
 import com.facilio.util.FacilioUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
@@ -220,6 +224,9 @@ public class RelatedListWidgetUtil {
             }
             else {
                 switch (module.getName()) {
+                    case AlarmFilterRuleModule.MODULE_NAME:
+                        moduleTypes.add(FacilioModule.ModuleType.SUB_ENTITY);
+                        break;
                     default:
                 }
             }
@@ -240,6 +247,13 @@ public class RelatedListWidgetUtil {
                 modulesToRemove.add(FacilioConstants.UTILITY_INTEGRATION_METER);
                 modulesToRemove.add(FacilioConstants.UTILITY_DISPUTE);
 
+                break;
+            case AlarmFilterRuleModule.MODULE_NAME:
+                modulesToAdd.add(AlarmFilterRuleCriteriaModule.MODULE_NAME);
+                break;
+            case FlaggedEventModule.MODULE_NAME:
+                modulesToRemove.add(FacilioConstants.ContextNames.WORK_ORDER);
+                modulesToAdd.add(FlaggedEventBureauActionModule.MODULE_NAME);
                 break;
             default:
         }

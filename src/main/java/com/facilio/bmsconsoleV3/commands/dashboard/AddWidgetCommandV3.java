@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands.dashboard;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.V2ReportAction;
+import com.facilio.bmsconsole.commands.AddOrUpdateDashboardFieldMappingCommand;
 import com.facilio.bmsconsole.commands.FetchReportDataCommand;
 import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -373,6 +374,11 @@ public class AddWidgetCommandV3 extends FacilioCommand {
                     props = FieldUtil.getAsProperties(filter_widget);
                     insertBuilder.addRecord(props);
                     insertBuilder.save();
+
+                    AddOrUpdateDashboardFieldMappingCommand fieldMappingCommand = new AddOrUpdateDashboardFieldMappingCommand();
+                    context.put(FacilioConstants.ContextNames.DASHBOARD_USER_FILTER_ID,props.get("id"));
+                    context.put("fieldMappings",filter_widget.getFieldMappingMap());
+                    fieldMappingCommand.executeCommand(context);
                 }
                 else{
                     FacilioChain dbFilterUpdateChain=TransactionChainFactory.getNewAddOrUpdateDashboardFilterChain(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2));
@@ -388,7 +394,6 @@ public class AddWidgetCommandV3 extends FacilioCommand {
                     {
                         filterContext.put(FacilioConstants.ContextNames.DASHBOARD_TAB, DashboardUtil.getDashboardTabWithWidgets(dashboardFilter.getDashboardTabId()));
                     }
-                    filterContext.put("fieldMappings",dashboardFilter.getFieldMappingMap());
                     dbFilterUpdateChain.execute();
                 }
             }

@@ -13,6 +13,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,7 +26,7 @@ public class GetPageForRecordCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long recordId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-        if(recordId <= 0){
+        if (recordId <= 0) {
             LOGGER.error("Record Id can't be Null");
             throw new IllegalArgumentException("Record Id can't be null");
         }
@@ -52,23 +53,21 @@ public class GetPageForRecordCommand extends FacilioCommand {
         List<PagesContext>  customPages = CustomPageAPI.getAllCustomPage(appId, module.getModuleId(), layoutType);
         boolean criteriaflag = false;
 
-        if (CollectionUtils.isNotEmpty(customPages)) {
+        FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(customPages), "Page(s) not configured for module - "+moduleName);
 
-            for (PagesContext customPage : customPages) {
+        for (PagesContext customPage : customPages) {
 
-                if (customPage.getIsDefaultPage() || customPage.getCriteria() == null) {
+            if (customPage.getIsDefaultPage() || customPage.getCriteria() == null) {
+                context.put(FacilioConstants.CustomPage.PAGE_ID, customPage.getId());
+                context.put(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
+                break;
+            } else {
+                recordMap = FieldUtil.getAsProperties(CriteriaAPI.setLookupFieldsData(customPage.getCriteria(), recordMap));
+                criteriaflag = customPage.getCriteria().computePredicate(recordMap).evaluate(((ArrayList<ModuleBaseWithCustomFields>) recordMap.get(moduleName)).get(0));
+                if (criteriaflag) {
                     context.put(FacilioConstants.CustomPage.PAGE_ID, customPage.getId());
                     context.put(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
                     break;
-                }
-                else {
-                    recordMap=FieldUtil.getAsProperties(CriteriaAPI.setLookupFieldsData(customPage.getCriteria(),recordMap));
-                    criteriaflag = customPage.getCriteria().computePredicate(recordMap).evaluate(((ArrayList<ModuleBaseWithCustomFields>)recordMap.get(moduleName)).get(0));
-                    if (criteriaflag) {
-                        context.put(FacilioConstants.CustomPage.PAGE_ID, customPage.getId());
-                        context.put(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
-                        break;
-                    }
                 }
             }
         }

@@ -85,6 +85,13 @@ public class SpaceAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.SPACE_CATEGORY, getCategoryId());
 		}
 
+		if (getSearch() != null) {
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "space.name");
+			searchObj.put("query", getSearch());
+			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+		}
+
 		if (getPage() > 0) { // Added the check to maintain backward compatibility
 			JSONObject pagination = new JSONObject();
 			pagination.put("page", getPage());
@@ -265,6 +272,17 @@ public class SpaceAction extends FacilioAction {
 		setReports(reports);
 		setReportcards((JSONArray) context.get(FacilioConstants.ContextNames.REPORT_CARDS));
 		
+		return SUCCESS;
+	}
+
+	public String getSpaceInsights() throws Exception{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getSpaceId());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME,"space");
+		FacilioChain spaceInsights = FacilioChainFactory.getSpaceInsights();
+		spaceInsights.execute(context);
+		setReports((JSONObject) context.get(FacilioConstants.ContextNames.COUNT));
+
 		return SUCCESS;
 	}
 	

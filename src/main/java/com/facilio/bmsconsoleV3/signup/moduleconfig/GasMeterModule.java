@@ -72,7 +72,7 @@ public class GasMeterModule extends BaseModuleConfig{
         gasMeterFormFields.add(new FormField("parentMeter", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent Meter", FormField.Required.OPTIONAL, "meter", 6, 2));
         gasMeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Is Check Meter", FormField.Required.OPTIONAL, 7, 2));
 
-        FormSection section = new FormSection("", 1, gasMeterFormFields, false);
+        FormSection section = new FormSection("Gas Meter Details", 1, gasMeterFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         GasMeterForm.setSections(Collections.singletonList(section));
         GasMeterForm.setIsSystemForm(true);

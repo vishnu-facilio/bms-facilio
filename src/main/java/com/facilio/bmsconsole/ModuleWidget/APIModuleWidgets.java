@@ -329,4 +329,250 @@ public class APIModuleWidgets {
                 .done();
 
     }
+
+    @WidgetsForModule("space")
+    public static Supplier<ModuleWidgets> getSpaceWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("spaceInsights","Space Insights", PageWidget.WidgetType.SPACE_INSIGHTS)
+                .addWidgetConfig("webSpaceInsights_19_7","Space Insights - 19 - 7", WidgetConfigContext.ConfigType.FIXED,19,7, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS)
+                .addWidgetConfig("webOperatingHours_19_5","Operating Hours - 19 - 5", WidgetConfigContext.ConfigType.FIXED,19,5, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("subSpaces","Sub Spaces", PageWidget.WidgetType.SUB_SPACES)
+                .addWidgetConfig("flexibleWebSubSpaces_32","Sub Spaces - 32", WidgetConfigContext.ConfigType.FLEXIBLE,32,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("readings","Readings", PageWidget.WidgetType.READINGS)
+                .done()
+
+                .addModuleWidget("commandsWidget","Commands Widget", PageWidget.WidgetType.COMMANDS_WIDGET)
+                .done()
+
+                .addModuleWidget("relatedReadings","Related Readings", PageWidget.WidgetType.RELATED_READINGS)
+                .done()
+
+                .addModuleWidget("plannedMaintenance","Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE)
+                .done()
+
+                .addModuleWidget("unplannedMaintenance","UnPlanned Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE)
+                .done()
+
+                .addModuleWidget("workorderInsights","Workorder Insights", PageWidget.WidgetType.WORKORDER_INSIGHT)
+                .done()
+
+                .addModuleWidget("recentlyClosedPM","Recently Closed PM", PageWidget.WidgetType.RECENTLY_CLOSED_PM)
+                .done()
+
+                .addModuleWidget("safetyPlanHazards","Safety Plan Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD)
+                .done()
+
+                .addModuleWidget("safetyPlanPrecautions","Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .done();
+    }
+    @WidgetsForModule("floor")
+    public static Supplier<ModuleWidgets> getFloorWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("spaceInsights","Space Insights", PageWidget.WidgetType.SPACE_INSIGHTS)
+                .done()
+
+                .addModuleWidget("spaceOperatingHours","Space Operating Hours", PageWidget.WidgetType.OPERATING_HOURS)
+                .done()
+
+                .addModuleWidget("spaces","Spaces", PageWidget.WidgetType.SPACES)
+                .addWidgetConfig("flexibleWebSpaces_32","Spaces - 32", WidgetConfigContext.ConfigType.FLEXIBLE,32,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("readings","Readings", PageWidget.WidgetType.READINGS)
+                .done()
+
+                .addModuleWidget("commandsWidget","Commands Widget", PageWidget.WidgetType.COMMANDS_WIDGET)
+                .done()
+
+                .addModuleWidget("relatedReadings","Related Readings", PageWidget.WidgetType.RELATED_READINGS)
+                .done()
+
+                .addModuleWidget("plannedMaintenance","Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE)
+                .done()
+
+                .addModuleWidget("unplannedMaintenance","UnPlanned Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE)
+                .done()
+
+                .addModuleWidget("workorderInsights","Workorder Insights", PageWidget.WidgetType.WORKORDER_INSIGHT)
+                .done()
+
+                .addModuleWidget("recentlyClosedPM","Recently Closed PM", PageWidget.WidgetType.RECENTLY_CLOSED_PM)
+                .done()
+
+                .addModuleWidget("safetyPlanHazards","Safety Plan Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD)
+                .done()
+
+                .addModuleWidget("safetyPlanPrecautions","Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .done();
+    }
+
+    @WidgetsForModule("building")
+    public static Supplier<ModuleWidgets> getBuildingWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("spaceInsights","Space Insights", PageWidget.WidgetType.SPACE_INSIGHTS)
+                .done()
+
+                .addModuleWidget("spaceOperatingHours","Space Operating Hours", PageWidget.WidgetType.OPERATING_HOURS)
+                .done()
+
+
+                .addModuleWidget("floors","Floors", PageWidget.WidgetType.FLOORS)
+                .addWidgetConfig("flexibleWebFloors_32","Floors - 32", WidgetConfigContext.ConfigType.FLEXIBLE,32,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("spaces","Spaces", PageWidget.WidgetType.SPACES)
+                .done()
+
+                .addModuleWidget("readings","Readings", PageWidget.WidgetType.READINGS)
+                .done()
+
+                .addModuleWidget("commandsWidget","Commands Widget", PageWidget.WidgetType.COMMANDS_WIDGET)
+                .done()
+
+                .addModuleWidget("relatedReadings","Related Readings", PageWidget.WidgetType.RELATED_READINGS)
+                .done()
+
+                .addModuleWidget("plannedMaintenance","Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE)
+                .done()
+
+                .addModuleWidget("unplannedMaintenance","UnPlanned Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE)
+                .done()
+
+                .addModuleWidget("workorderInsights","Workorder Insights", PageWidget.WidgetType.WORKORDER_INSIGHT)
+                .done()
+
+                .addModuleWidget("recentlyClosedPM","Recently Closed PM", PageWidget.WidgetType.RECENTLY_CLOSED_PM)
+                .done()
+
+                .addModuleWidget("safetyPlanHazards","Safety Plan Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD)
+                .done()
+
+                .addModuleWidget("safetyPlanPrecautions","Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .done();
+    }
+
+
+    @WidgetsForModule("site")
+    public static Supplier<ModuleWidgets> getSiteWidgets() {
+        return () -> new ModuleWidgets()
+
+                .addModuleWidget("spaceLocation","Space Location", PageWidget.WidgetType.SPACE_LOCATION)
+                .addWidgetConfig("webSpaceLocation_19_3","Space Location - 19 - 3", WidgetConfigContext.ConfigType.FIXED,19,3, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("spaceInsights","Space Insights", PageWidget.WidgetType.SPACE_INSIGHTS)
+                .addWidgetConfig("webSpaceInsights_19_6","Space Insights - 19 - 6", WidgetConfigContext.ConfigType.FIXED,19,6, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS)
+                .addWidgetConfig("webOperatingHours_19_3","Operating Hours - 19 - 3", WidgetConfigContext.ConfigType.FIXED,19,3, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("weatherCard","Weather card", PageWidget.WidgetType.WEATHER_CARD)
+                .addWidgetConfig("webWeatherCard_28_4","Weather Card - 28 - 4", WidgetConfigContext.ConfigType.FIXED,28,4, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("depreciationAnalysis","Depreciation Analysis", PageWidget.WidgetType.DEPRECIATION_ANALYSIS)
+                .addWidgetConfig("webDepreciationAnalysis_28_8","Depreciation Analysis - 28 - 8", WidgetConfigContext.ConfigType.FIXED,28,8, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("hourlyForecast","Hourly forecast", PageWidget.WidgetType.HOURLY_FORECAST)
+                .addWidgetConfig("flexibleWebHourlyForecast_32","Hourly forecast - 32", WidgetConfigContext.ConfigType.FLEXIBLE,32,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("buildings","Buildings", PageWidget.WidgetType.BUILDINGS)
+                .addWidgetConfig("flexibleWebBuildings_32","Buildings - 32", WidgetConfigContext.ConfigType.FLEXIBLE,32,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("spaces","Spaces", PageWidget.WidgetType.SPACES)
+                .done()
+
+                .addModuleWidget("readings","Readings", PageWidget.WidgetType.READINGS)
+                .done()
+
+                .addModuleWidget("commandsWidget","Commands Widget", PageWidget.WidgetType.COMMANDS_WIDGET)
+                .done()
+
+                .addModuleWidget("relatedReadings","Related Readings", PageWidget.WidgetType.RELATED_READINGS)
+                .done()
+
+                .addModuleWidget("plannedMaintenance","Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE)
+                .done()
+
+                .addModuleWidget("unplannedMaintenance","UnPlanned Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE)
+                .done()
+
+                .addModuleWidget("workorderInsights","Workorder Insights", PageWidget.WidgetType.WORKORDER_INSIGHT)
+                .done()
+
+                .addModuleWidget("recentlyClosedPM","Recently Closed PM", PageWidget.WidgetType.RECENTLY_CLOSED_PM)
+                .done()
+
+                .addModuleWidget("safetyPlanHazards","Safety Plan Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD)
+                .done()
+
+                .addModuleWidget("safetyPlanPrecautions","Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .done();
+         }
+    @WidgetsForModule(FacilioConstants.ContextNames.TENANT)
+    public static Supplier<ModuleWidgets> getTenantWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("webtenantdetailcontactwidget", "Tenant Detail Contact", PageWidget.WidgetType.TENANT_DETAIL_CONTACT)
+                .addWidgetConfig("webtenantdetailcontactwidget_13_6","Tenant Detail Contact - 13 - 6",WidgetConfigContext.ConfigType.FIXED,13,6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantdetailoverviewwidget", "Tenant Detail Overview", PageWidget.WidgetType.TENANT_DETAIL_OVERVIEW)
+                .addWidgetConfig("webtenantdetailoverviewwidget_13_6","Tenant Detail Overview - 13 - 6",WidgetConfigContext.ConfigType.FIXED,13,6,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantspecialwidget","Tenant Special Widget",PageWidget.WidgetType.TENANT_SPECIAL_WIDGET)
+                .addWidgetConfig("webtenantspecialwidget_31_9","Tenant Special Widget - 31 - 9",WidgetConfigContext.ConfigType.FIXED,31,9,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantworkorderswidget","Tenant WorkOrders",PageWidget.WidgetType.TENANT_WORKORDERS)
+                .addWidgetConfig("webtenantworkorders_13_3","Tenant WorkOrders -13 -3",WidgetConfigContext.ConfigType.FIXED,13,3,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantrecentlyclosedworkorderwidget","Recently Closed Work order",PageWidget.WidgetType.TENANT_RECENTLY_CLOSED_WORKORDER)
+                .addWidgetConfig("webtenantrecentlyclosedworkorder_23_3","Recently Closed Work order -23 -3",WidgetConfigContext.ConfigType.FIXED,23,3,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantfacilitybookingwidget","Facility Bookings",PageWidget.WidgetType.TENANT_BOOKINGS)
+                .addWidgetConfig("webtenantfacilitybookingwidget_13_3","Facility Bookings -13 -3",WidgetConfigContext.ConfigType.FIXED,13,3,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantupcomingfacilitybookingwidget","Upcoming Facility Booking",PageWidget.WidgetType.TENANT_UPCOMING_BOOKING)
+                .addWidgetConfig("webtenantupcomingfacilitybookingwidget_10_3","Upcoming Facility Booking -10 -3",WidgetConfigContext.ConfigType.FIXED,10,3,PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.VENDOR_QUOTES)
+    public static Supplier<ModuleWidgets> getVendorQuoteTemplateWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("vendorQuoteAllQuoteItems", "Vendor Quoted Items", PageWidget.WidgetType.VENDOR_QUOTES_LINE_ITEMS)
+                .addFlexibleWidgetConfig("flexiblewebvendorquoteditems_30","Vendor Quoted Items -30",30,PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)
+    public static Supplier<ModuleWidgets> getTenantUnitWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("webtenantunitoccupantwidget", "Occupant", PageWidget.WidgetType.TENANT_UNIT_TENANT)
+                .addFlexibleWidgetConfig("webtenantunitoccupantwidget_13","Occupant -13",13, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantunitlocationwidget", "Location Details", PageWidget.WidgetType.TENANT_UNIT_LOCATION)
+                .addFlexibleWidgetConfig("webtenantunitlocationwidget_13","Location Details - 13",13,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantunithistorywidget", "Tenant  History", PageWidget.WidgetType.TENANT_UNIT_SPECIAL_WIDGET)
+                .addFlexibleWidgetConfig("webtenantunithistorywidget_32","Tenant History -32",32,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantunitinsightswidget","Insights",PageWidget.WidgetType.TENANT_UNIT_OVERVIEW)
+                .addFlexibleWidgetConfig("webtenantunitinsightswidget_20","Insights - 20",20,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantunitworkorderswidget","Tenant Unit Workorders",PageWidget.WidgetType.TENANT_UNIT_WORKORDER)
+                .addFlexibleWidgetConfig("webtenantunitworkorderswidget_13","Tenant Unit Workorders - 13",13,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantunitrecentlyclosedworkorderwidget","Recently Closed Workorder",PageWidget.WidgetType.TENANT_UNIT_RECENTLY_CLOSED_WORKORDER)
+                .addFlexibleWidgetConfig("webtenantunitrecentlyclosedworkorderwidget_23","Recently Closed Workorder - 23",23,PagesContext.PageLayoutType.WEB)
+                .done();
+    }
 }

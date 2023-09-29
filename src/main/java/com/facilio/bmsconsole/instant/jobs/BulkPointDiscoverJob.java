@@ -17,10 +17,11 @@ public class BulkPointDiscoverJob extends InstantJob {
     @Override
     public void execute(FacilioContext facilioContext) throws Exception {
         List<Long> ids =  (ArrayList)facilioContext.get(AgentConstants.RECORD_IDS);
+        Integer timeout =  (Integer) facilioContext.get(AgentConstants.TIMEOUT_SEC);
         Objects.requireNonNull(ids);
-        FacilioUtil.throwIllegalArgumentException(ids.size()<=0, "Ids can't be empty");
+        FacilioUtil.throwIllegalArgumentException(ids.isEmpty(), "Ids can't be empty");
         for(Long id : ids){
-            AgentConstants.getControllerBean().discoverPoint(id);
+            AgentConstants.getControllerBean().discoverPoint(id, timeout);
             Thread.sleep(WAIT_TIME_MS);
         }
 

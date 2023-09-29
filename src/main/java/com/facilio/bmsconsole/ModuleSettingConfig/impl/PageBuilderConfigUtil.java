@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.ModuleSettingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.remotemonitoring.signup.*;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
@@ -34,9 +35,25 @@ public class PageBuilderConfigUtil {
             moduleList.add(modBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME));
             moduleList.add(modBean.getModule("vendors"));
             moduleList.add(modBean.getModule("insurance"));
-
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.CLIENT));
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.SITE));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.BUILDING));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.FLOOR));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.SPACE));
+            moduleList.add(modBean.getModule(AlarmTypeModule.MODULE_NAME));
+            moduleList.add(modBean.getModule(AlarmDefinitionModule.MODULE_NAME));
+            moduleList.add(modBean.getModule(AlarmCategoryModule.MODULE_NAME));
+            moduleList.add(modBean.getModule(AlarmDefinitionTaggingModule.MODULE_NAME));
+            moduleList.add(modBean.getModule(AlarmDefinitionMappingModule.MODULE_NAME));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.CONTROLLER));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.CLIENT));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT));
+            moduleList.add(modBean.getModule(AlarmFilterRuleModule.MODULE_NAME));
+            moduleList.add(modBean.getModule(FilteredAlarmModule.MODULE_NAME));
+            moduleList.add(modBean.getModule(FlaggedEventRuleModule.MODULE_NAME));
+            moduleList.add(modBean.getModule(FlaggedEventModule.MODULE_NAME));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.TENANT));
 
             if (CollectionUtils.isNotEmpty(moduleList)) {
                 List<Long> moduleIds = moduleList.stream().filter(Objects::nonNull).map(FacilioModule::getModuleId).collect(Collectors.toList());

@@ -6,6 +6,7 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.Condition;
 import org.json.simple.JSONObject;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +14,8 @@ import java.util.Set;
 public interface ControllerBean {
 
     public Controller getController(JSONObject payload, long agentId) throws Exception;
+
+    public List<Controller> getControllers(int type, long agentId) throws Exception;
 
     public long addController(Controller controller);
 
@@ -50,22 +53,22 @@ public interface ControllerBean {
 
     public List<Map<String, Object>> getControllerData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception;
 
-    public List<Map<String,Object>> getControllerTypes(Long agentId) throws Exception;
+    public List<Map<String, Object>> getControllerTypes(Long agentId) throws Exception;
 
     public List<Map<String, Object>> getControllerFilterData(Long agentId, Integer controllerType) throws Exception;
 
-    public Controller getControllerByName(Long agentId,String deviceName) throws Exception;
+    public Controller getControllerByName(Long agentId, String deviceName) throws Exception;
 
     public List<Controller> getControllersByNames(Long agentId, Set<String> deviceNames, FacilioControllerType controllerType) throws Exception;
 
     public List<Controller> getControllersByNames(Long agentId, Set<String> deviceNames) throws Exception;
 
-    public boolean discoverPoint(long controllerId) throws Exception;
+    public void discoverPoint(long controllerId, int timeout) throws Exception;
 
     public Controller getController(Long controllerId, Long agentId) throws Exception;
 
-    public List<Controller> getControllers(List<Long> controllerIds,Long agentId) throws Exception;
+    public List<Controller> getControllers(List<Long> controllerIds, Long agentId) throws Exception;
 
-    public List<?extends Controller> getControllersToAdd(long agentId, FacilioControllerType controllerType, List<? extends Controller> controllerList) throws Exception;
+    public List<? extends Controller> getControllersToAdd(long agentId, FacilioControllerType controllerType, List<? extends Controller> controllerList) throws Exception;
 
 }

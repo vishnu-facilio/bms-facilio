@@ -254,9 +254,10 @@
 	<job name="inspectionMonitoringToolJob" classname="com.facilio.bmsconsole.jobs.InspectionMonitoringToolJob" transactionTimeout="300000"/>
 
 	<job name='getVerifiedEmailAddressFromAWS' classname='com.facilio.bmsconsole.jobs.GetVerifiedEmailAddressFromAWSJob' transactionTimeout='900000'/>
-	<!-- Delete dataLog records-->
 
+	<!-- Delete dataLog records-->
 	<job name="DeleteDataLogsRecordsJob" classname="com.facilio.bmsconsole.jobs.DeleteDataLogsRecordsJob" transactionTimeout="7200000"/>
+	<job name="DeleteUnModeledRecordsJob" classname="com.facilio.bmsconsole.jobs.DeleteUnModeledRecordsJob" transactionTimeout="7200000"/>
 
 	<job name="DeleteWorkflowRuleLogsRecordsJob" classname="com.facilio.bmsconsole.jobs.DeleteWorkflowRuleLogsRecordsJob" transactionTimeout="600000"/>
 	<job name="calendarNightlyJob" classname="com.facilio.bmsconsole.jobs.CalendarNightlyJob" transactionTimeout="600000"/>
@@ -271,4 +272,17 @@
 	<job name='UtilityOngoingMonitoring' classname = 'com.facilio.bmsconsole.jobs.UtilityOngoingMonitoringJob' transactionTimeout='900000'/>
 	<job name='UtilityBillMissingDisputeJob' classname = 'com.facilio.bmsconsole.jobs.UtilityBillMissingDisputeJob' transactionTimeout='900000'/>
 
+	<job name="AlarmOpenForDurationOfTimeJob" classname="com.facilio.remotemonitoring.jobs.AlarmOpenForDurationOfTimeJob" transactionTimeout="300000"/>
+
+	<job name="ClearAlarmJob" classname="com.facilio.remotemonitoring.jobs.ClearAlarmJob" transactionTimeout="300000"/>
+
+	<job name="AlarmNotReceivedJob" classname="com.facilio.remotemonitoring.jobs.AlarmNotReceivedJob" transactionTimeout="300000"/>
+
+	<job name="FlaggedEventScheduledJob" classname="com.facilio.remotemonitoring.jobs.FlaggedEventScheduledJob" transactionTimeout="300000"/>
+
+	<job name="FlaggedEventBureauTakeCustodyJob" classname="com.facilio.remotemonitoring.jobs.FlaggedEventBureauTakeCustodyJob" transactionTimeout="300000"/>
+
+	<job name="FlaggedEventBureauTakeActionJob" classname="com.facilio.remotemonitoring.jobs.FlaggedEventBureauTakeActionJob" transactionTimeout="300000"/>
+
+	<job name="FlaggedEventAutoClosureJob" classname="com.facilio.remotemonitoring.jobs.FlaggedEventAutoClosureJob" transactionTimeout="300000"/>
 </scheduler>

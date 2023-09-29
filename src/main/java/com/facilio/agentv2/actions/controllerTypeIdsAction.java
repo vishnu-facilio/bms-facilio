@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -16,69 +19,36 @@ import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
 
+@Getter
+@Setter
 public class controllerTypeIdsAction extends IdsAction {
 
     private static final Logger LOGGER = LogManager.getLogger(controllerTypeIdsAction.class.getName());
 
     private List<Map<String,Object>> instances = null;
     
-    
-    public List<Map<String, Object>> getInstances() {
-		return instances;
-	}
-
-	public void setInstances(List<Map<String, Object>> instances) {
-		this.instances = instances;
-	}
-
-	public Integer getControllerType() {
-        return controllerType;
-    }
-
-    public void setControllerType(Integer controllerType) {
-        this.controllerType = controllerType;
-    }
-
     @NotNull
     @Min(value = 0, message = "controllerType can't be less than 1")
     @Max(99)
     private Integer controllerType;
-    
-    
+
+    private Long agentId = -1L;
     private Boolean logical=false;
-
-    public Boolean getLogical() {
-		return logical;
-	}
-
-	public void setLogical(Boolean logical) {
-		this.logical = logical;
-	}
-
     List<Long> controllerIds;
-
-    public List<Long> getControllerIds() {
-        return controllerIds;
-    }
-
-    public void setControllerIds(List<Long> controllerIds) {
-        this.controllerIds = controllerIds;
-    }
-
-    @Getter
-    @Setter
     private int interval = -1;
 
-	public String configurePointsAndMakeController() {
+	public String configurePoints() {
         try {
             List<Long> pointIds = getRecordIds();
-            if (!pointIds.isEmpty()) {
-                PointsAPI.configurePointsAndMakeController(pointIds, FacilioControllerType.valueOf(getControllerType()), getLogical(), getInterval());
+            JSONObject filterJSON = getFilterJSON();
+            if (!pointIds.isEmpty() || !filterJSON.isEmpty()) {
+                PointsAPI.configurePoints(agentId, pointIds, getControllerIds(), FacilioControllerType.valueOf(getControllerType()), getLogical(),
+                        getInterval(), filterJSON);
                 setResponseCode(HttpURLConnection.HTTP_OK);
                 setResult(AgentConstants.RESULT, SUCCESS);
                 ok();
             } else {
-                throw new Exception(" ids can't be empty");
+                throw new Exception("Point ids or filter criteria can't be empty");
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred while configuring controller", e);
@@ -87,6 +57,29 @@ public class controllerTypeIdsAction extends IdsAction {
             internalError();
         }
         return SUCCESS;
+    }
+
+    public String configureAllPoints() {
+        try {
+            PointsAPI.configureAllPoints(getAgentId(), getRecordIds(), FacilioControllerType.valueOf(getControllerType()), getInterval());
+            setResponseCode(HttpURLConnection.HTTP_OK);
+            setResult(AgentConstants.RESULT, SUCCESS);
+            ok();
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while configuring controller", e);
+            setResult(AgentConstants.RESULT, ERROR);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            internalError();
+        }
+        return SUCCESS;
+    }
+
+    private JSONObject getFilterJSON() throws ParseException {
+        if(getFilters()!=null){
+            JSONParser parser = new JSONParser();
+            return (JSONObject) parser.parse(getFilters());
+        }
+        return new JSONObject();
     }
 
     public String removePoints() {

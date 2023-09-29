@@ -41,6 +41,16 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 
 		List<Integer> skipComponents = (List<Integer>) context.getOrDefault(PackageConstants.SKIP_COMPONENTS, new ArrayList<>());
 
+		// Add PickList Modules data to ThreadLocal even if a component is not present in PACKAGE_CONFIG_XML
+		if (CollectionUtils.isNotEmpty(allComponents)) {
+			List<ComponentType> componentTypeList = allComponents.stream().map(component -> ComponentType.valueOf(component.getAttribute(PackageConstants.PackageXMLConstants.COMPONENT_TYPE))).collect(Collectors.toList());
+
+			Collection<ComponentType> picklistComponentsNotInPackageConfig = CollectionUtils.subtract(ComponentType.PICKLIST_COMPONENTS, componentTypeList);
+			for (ComponentType componentType : picklistComponentsNotInPackageConfig) {
+				componentType.getPackageComponentClassInstance().addPickListConf();
+			}
+		}
+
 		for(XMLBuilder component : allComponents) {
 			ComponentType componentType = ComponentType.valueOf(component.getAttribute(PackageConstants.PackageXMLConstants.COMPONENT_TYPE));
 			if(componentType.getComponentClass() == null || skipComponents.contains(componentType.getIndex())) {

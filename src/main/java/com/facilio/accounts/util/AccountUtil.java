@@ -618,8 +618,9 @@ public class AccountUtil {
 		WEAVE(151,getExponentValue(24),LicenseMapping.GROUP3LICENSE),//2^24
 		METER(152, getExponentValue(25), new String[]{FacilioConstants.Meter.METER,FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE}, LicenseMapping.GROUP3LICENSE),//2^25
 		WIZARD_RESOURCE_FILTER(153,getExponentValue(26),LicenseMapping.GROUP3LICENSE),//2^26
-		UTILITY_INTEGRATION(154,getExponentValue(27),new String[]{FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,FacilioConstants.UTILITY_INTEGRATION_BILLS,FacilioConstants.UTILITY_INTEGRATION_TARIFF,FacilioConstants.UTILITY_DISPUTE}, LicenseMapping.GROUP3LICENSE),//2^25
-		SANDBOX(155,getExponentValue(28),LicenseMapping.GROUP3LICENSE);//2^28
+		UTILITY_INTEGRATION(154,getExponentValue(27),new String[]{FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,FacilioConstants.UTILITY_INTEGRATION_BILLS,FacilioConstants.UTILITY_INTEGRATION_TARIFF,FacilioConstants.UTILITY_DISPUTE}, LicenseMapping.GROUP3LICENSE),//2^27
+		SANDBOX(155,getExponentValue(28),LicenseMapping.GROUP3LICENSE),//2^28
+		REMOTE_MONITORING(156,getExponentValue(29),LicenseMapping.GROUP3LICENSE);//2^29
 
         public int featureId;
 		private long license;

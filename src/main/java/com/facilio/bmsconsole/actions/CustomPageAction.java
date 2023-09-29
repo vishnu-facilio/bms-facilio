@@ -72,34 +72,23 @@ public class CustomPageAction extends FacilioAction {
         setResult(FacilioConstants.CustomPage.CUSTOM_PAGES, FieldUtil.getAsJSONArray(customPages, PagesContext.class));
         return SUCCESS;
     }
-    public String fetchPageForRecord()throws Exception{
-
-        boolean isNewPage = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PAGE_BUILDER) &&
-                ModuleSettingConfigUtil.isConfigEnabledForModule(moduleName, FacilioConstants.SettingConfigurationContextNames.PAGE_BUILDER);
-        if(isNewPage || showNewPageBuilder) {
-            try {
-                FacilioChain chain = ReadOnlyChainFactory.getPageForRecordChain();
-                FacilioContext context = chain.getContext();
-                context.put(FacilioConstants.ContextNames.APP_ID, getAppId());
-                context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
-                context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-                context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
-                context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, false);
-                context.put(FacilioConstants.CustomPage.TAB_NAME, getTabName());
-                chain.execute();
-                customPage = (PagesContext) context.get(FacilioConstants.CustomPage.CUSTOM_PAGE);
-                setResult("isNewPage", true);
-                setResult(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
-            }
-            catch (Exception e) {
-                //temp hanlding of exception in fetching  new page
-                //TODO remove once every module is migrated with default page for all apps
-                LOGGER.error("Error occured while fetch new page for module -- "+moduleName+" and appId -- "+appId +" ##error, "+e);
-                customPage = null;
-            }
+    public String fetchPageForRecord()throws Exception {
+        try {
+            FacilioChain chain = ReadOnlyChainFactory.getPageForRecordChain();
+            FacilioContext context = chain.getContext();
+            context.put(FacilioConstants.ContextNames.APP_ID, getAppId());
+            context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+            context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
+            context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, false);
+            context.put(FacilioConstants.CustomPage.TAB_NAME, getTabName());
+            chain.execute();
+            customPage = (PagesContext) context.get(FacilioConstants.CustomPage.CUSTOM_PAGE);
+            setResult("isNewPage", true);
+            setResult(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
         }
-
-        if(customPage == null) {
+        catch (Exception e) {
+            LOGGER.info("Exception occured while fetching page for record or page not configured for module -" +moduleName);
             setResult("isNewPage", false);
         }
         return SUCCESS;

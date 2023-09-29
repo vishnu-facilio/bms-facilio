@@ -10,6 +10,7 @@ import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.lonWorks.LonWorksPointContext;
 import com.facilio.agentv2.misc.MiscPoint;
@@ -270,39 +271,62 @@ public class PointsAPI {
         return false;
     }
 
+    public static void configurePoints(long agentId, List<Long> pointIds, List<Long> controllerIds,  FacilioControllerType controllerType, boolean logical, int interval, JSONObject filters) throws Exception {
+        int controllersCount = controllerIds.size();
+        List<Point> points = new ArrayList<>();
+        if (filters.isEmpty() && controllersCount <= 1) {
+            points = new GetPointRequest().ofType(controllerType).fromIds(pointIds).getPoints();
+            controllersCount = getControllerIdVsPointsMap(points).keySet().size(); //In case selected controllers is zero and not configure all points using criteria
+            if (points.isEmpty()) {
+                throw new Exception("No points found in DB for ids->" + pointIds);
+            }
+        }
+        if (!filters.isEmpty() || controllersCount > 1) {
+            scheduleConfigurePointsInstanceJob(agentId, pointIds, controllerIds, controllerType, logical, interval, filters);
+        } else {
+            configurePoints(controllerType, logical, interval, points);
+        }
+    }
 
-    public static void configurePointsAndMakeController(List<Long> pointIds, FacilioControllerType controllerType, boolean logical, int interval) throws Exception {
-        if ((pointIds != null) && (!pointIds.isEmpty())) {
-            List<Point> dBPoints = new GetPointRequest().ofType(controllerType).fromIds(pointIds).getPoints();
-            int controllersCount = getControllerIdVsPointsMap(dBPoints).keySet().size();
-            if(controllersCount > 1) {
-                FacilioContext context = new FacilioContext();
-                context.put(AgentConstants.POINT_IDS, pointIds);
-                context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
-                context.put(AgentConstants.DATA_INTERVAL, interval);
-                context.put(AgentConstants.LOGICAL, logical);
-                FacilioTimer.scheduleInstantJob("BulkConfigurePointsJob", context);
-            } else {
-                List<Point> points = new GetPointRequest().ofType(controllerType).fromIds(pointIds).getPoints();
-                if(points != null && (!points.isEmpty())){
-                    long controllerId = points.get(0).getControllerId();
-                    long agentId = points.get(0).getAgentId();
-                    FacilioChain chain = TransactionChainFactory.getConfigurePointAndProcessControllerV2Chain();
-                    FacilioContext context = chain.getContext();
-                    context.put(AgentConstants.CONTROLLER_ID, controllerId);
-                    context.put(AgentConstants.AGENT_ID, agentId);
-                    context.put(AgentConstants.POINTS, points);
-                    context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
-                    context.put(AgentConstants.DATA_INTERVAL, interval);
-                    context.put(AgentConstants.LOGICAL, logical);
-                    chain.execute();
-                } else {
-                    throw new Exception("No points found in DB for ids->" + pointIds);
+    private static void scheduleConfigurePointsInstanceJob(long agentId, List<Long> pointIds, List<Long> controllerIds, FacilioControllerType controllerType, boolean logical, int interval, JSONObject filters) throws Exception {
+        FacilioContext context = new FacilioContext();
+        context.put(AgentConstants.FILTERS, filters);
+        context.put(AgentConstants.POINT_IDS, pointIds);
+        context.put(AgentConstants.AGENT_ID, agentId);
+        context.put(AgentConstants.CONTROLLERIDS, controllerIds);
+        context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
+        context.put(AgentConstants.DATA_INTERVAL, interval);
+        context.put(AgentConstants.LOGICAL, logical);
+        FacilioTimer.scheduleInstantJob("BulkConfigurePointsJob", context);
+    }
+
+    private static void configurePoints(FacilioControllerType controllerType, boolean logical, int interval, List<Point> points) throws Exception {
+        long controllerId = points.get(0).getControllerId();
+        long agentId = points.get(0).getAgentId();
+        FacilioChain chain = TransactionChainFactory.getConfigurePointAndProcessControllerV2Chain();
+        FacilioContext context = chain.getContext();
+        context.put(AgentConstants.CONTROLLER_ID, controllerId);
+        context.put(AgentConstants.AGENT_ID, agentId);
+        context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
+        context.put(AgentConstants.POINTS, points);
+        context.put(AgentConstants.DATA_INTERVAL, interval);
+        context.put(AgentConstants.LOGICAL, logical);
+        chain.execute();
+    }
+
+    public static void configureAllPoints(Long agentId, List<Long> controllerIds, FacilioControllerType controllerType, int interval) throws Exception {
+        List<JSONObject> controllers = new ArrayList<>();
+        if(controllerIds!=null && !controllerIds.isEmpty()){
+            for (Long controllerId : controllerIds) {
+                Controller controller = AgentConstants.getControllerBean().getController(controllerId, agentId);
+                if(controller!=null){
+                    JSONObject childJson = controller.getChildJSON();
+                    childJson.put(AgentConstants.NAME, controller.getName());
+                    controllers.add(childJson);
                 }
             }
-        } else {
-            throw new Exception("PointIds can't be null or empty ->" + pointIds);
         }
+        AgentMessenger.configureAll(controllers, interval, agentId, controllerType);
     }
 
     private static void sendConfigurePointCommand(List<Point> points, Controller controller) throws Exception {
@@ -402,12 +426,12 @@ public class PointsAPI {
         return false;
     }
 
-    private static boolean updatePointsConfigurationComplete(Long controllerId,List<String> pointNames) throws Exception {
+    private static boolean updatePointsConfigurationComplete(Controller controller,List<String> pointNames, int interval) throws Exception {
         FacilioChain chain = TransactionChainFactory.pointsConfigurationComplete();
         FacilioContext context = chain.getContext();
-        Controller controller = AgentConstants.getControllerBean().getControllerFromDb(controllerId);
-        context.put(AgentConstants.POINT_NAMES,pointNames);
-        context.put(AgentConstants.CONTROLLER,controller);
+        context.put(AgentConstants.DATA_INTERVAL, interval);
+        context.put(AgentConstants.POINT_NAMES, pointNames);
+        context.put(AgentConstants.CONTROLLER, controller);
         chain.execute();
         return false;
     }
@@ -826,21 +850,21 @@ public class PointsAPI {
         return ((point.getResourceId() != null) && (point.getCategoryId() != null) && (point.getFieldId() != null));
     }
 
-    public static boolean handlePointConfigurationAndSubscription(FacilioCommand command, long controllerId, List<String> pointNames) throws Exception {
+    public static boolean handlePointConfigurationAndSubscription(FacilioCommand command, Controller controller, List<String> pointNames, int interval) throws Exception {
         if ((command != FacilioCommand.SUBSCRIBE) && (command != FacilioCommand.CONFIGURE)) {
             return false;
         }
         if (!pointNames.isEmpty()) {
             switch (command) {
                 case CONFIGURE:
-                    return PointsAPI.updatePointsConfigurationComplete(controllerId,pointNames);
+                    return PointsAPI.updatePointsConfigurationComplete(controller, pointNames, interval);
                 case SUBSCRIBE:
-                    return PointsAPI.updatePointSubsctiptionComplete(controllerId,pointNames);
+                    return PointsAPI.updatePointSubsctiptionComplete(controller.getId(), pointNames);
                 default:
                     return false;
             }
         } else {
-            throw new Exception(" point ids cant be empty while ack processing for->" + command.toString());
+            throw new Exception("Point ids cant be empty while ack processing for controller "+  controller.getName() + " --> " + command);
         }
     }
 

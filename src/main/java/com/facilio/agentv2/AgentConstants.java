@@ -24,6 +24,7 @@ public class AgentConstants
     //controller constants
     public static final String NAME = "name";
     public static final String DATA_INTERVAL = "interval";
+    public static final String POINT_ALARM_INTERVAL = "pointAlarmInterval";
     public static final String WRITABLE = "writable";
     public static final String AGENT_WRITABLE = "agentWritable";
     public static final String ACTIVE = "active";
@@ -333,6 +334,14 @@ public class AgentConstants
     public static final String COMMISSIONINGLOG_CONTROLLER = "commissioninglogcontroller";
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String AGENT_SOURCE_TYPE = "agentSourceType";
+    public static final String FILTER_INSTANCE_TYPES = "filterInstanceTypes";
+    public static final String FILTERS = "filters";
+    public static final String CONFIGURE_POINTS_COUNT = "configurePointsCount";
+
+    //Points status
+    public static final String UNCONFIGURED = "UNCONFIGURED";
+    public static final String CONFIGURED = "CONFIGURED";
+    public static final String COMMISSIONED = "COMMISSIONED";
 
 
     public static AgentBean getAgentBean() throws Exception {

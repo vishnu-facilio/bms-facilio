@@ -61,6 +61,7 @@ public class AgentKeys
     public static final String MSG_STATUS = "msgStatus";
     public static final String START_TIME = "startTime";
     public static final String FINISH_TIME = "finishTime";
+    public static final String PAYLOAD_INDEX = "payloadIndex";
 
     public static final String STATUS = "status";
     public static final String AUTH_KEY = "authKey";

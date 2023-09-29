@@ -5,9 +5,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.service.FacilioHttpUtilsFW;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-
 import com.facilio.util.FacilioUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -27,7 +27,7 @@ public class DownloadCertFile {
     private static final Logger LOGGER = LogManager.getLogger(DownloadCertFile.class.getName());
     private static final String FACILIO_CERT_FILE = "facilio.crt";
     private static final String FACILIO_PRIVATE_KEY = "facilio-private.key";
-    public static final String FACILIO_CONFIG = "facilio.config";
+    public static final String ROOT_CRT = "root.crt";
 
 
     public static InputStream getCertKeyZipInputStream(String type) {
@@ -59,7 +59,7 @@ public class DownloadCertFile {
 		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
 			addToZip(out, directoryName + FACILIO_CERT_FILE, certificateResult.getCertificatePem());
 			addToZip(out, directoryName + FACILIO_PRIVATE_KEY, certificateResult.getKeyPair().getPrivateKey());
-            //addToZip(out, directoryName + "facilio.config", getFacilioConfig(policyName, agent.getName()));
+            addToZip(out, directoryName + ROOT_CRT, getRootCaCertificate());
 			out.finish();
 			out.flush();
 			FileStore fs = FacilioFactory.getFileStore();
@@ -69,20 +69,11 @@ public class DownloadCertFile {
 		}
 		return fileId;
 	}
-    
-/*    private static String getConfigFile(String policyName, String agentName) throws IOException {
-        Properties properties = new Properties();
-        properties.put("endpoint","avzdxo3ow2ja2-ats.iot.us-west-2.amazonaws.com"); //TODO read from aws-props
-        properties.put("privateKeyFile",FACILIO_PRIVATE_KEY);
-        properties.put("certificateFile",FACILIO_CERT_FILE);
-        properties.put("privateKeyName",FACILIO_PRIVATE_KEY);
-        properties.put("certName",FACILIO_CERT_FILE);
-        properties.put("topic",policyName);
-        properties.put("clientId",agentName);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        properties.store(outputStream,null);
-        return outputStream.toString();
-    }*/
+
+    public static String getRootCaCertificate() throws Exception {
+        String url = "https://www.amazontrust.com/repository/AmazonRootCA1.pem";
+        return FacilioHttpUtilsFW.doHttpGet(url, null, null);
+    }
 
     public static void downloadFileFromUrl(String fileName, String fileUrl)
             throws MalformedURLException, IOException {

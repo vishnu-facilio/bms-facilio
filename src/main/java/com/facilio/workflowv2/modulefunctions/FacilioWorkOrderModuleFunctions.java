@@ -149,6 +149,75 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		throw new RuntimeException("Input not of expected type.");
 	}
 
+	/**
+	 * In script this function would look like,
+	 * updatePreOpenWorkOrderField(workOrderId, fieldName, value)
+	 *
+	 *
+	 */
+	public String updatePreOpenWorkOrderField(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
+		String functionParamsMessage = " | This function takes in (workOrderId, fieldName, value) only";
+
+		if(objects.size() < 4){
+			if(objects.size() == 1) { // calling empty function
+				throw new RuntimeException("(workOrderId, fieldName, value parameters) are required." + functionParamsMessage);
+			}
+			throw new RuntimeException("Please check the parameters." + functionParamsMessage);
+		}else if(objects.size() > 4){
+			throw new RuntimeException("Excess parameters aren't allowed." + functionParamsMessage);
+		}
+
+		//objects[moduleName, workOrderId, fieldName, value]
+		Object workOrderId = objects.get(1);
+		Object fieldName = objects.get(2);
+		Object value = objects.get(3);
+		if ((workOrderId instanceof Long || workOrderId instanceof Integer) && fieldName instanceof String && value instanceof HashMap) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+			List<FacilioField> woFieldsList = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+			Map<String, FacilioField> woFieldsMap = FieldFactory.getAsMap(woFieldsList);
+
+			if (woFieldsMap.get(fieldName) == null){
+				throw new RuntimeException("WorkOrder field doesn't exist." + fieldName);
+			}
+
+			SelectRecordsBuilder<V3WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<V3WorkOrderContext>()
+					.module(woModule)
+					.select(Collections.singleton(woFieldsMap.get("subject")))
+					.beanClass(V3WorkOrderContext.class)
+					.andCondition(CriteriaAPI.getIdCondition((Long) workOrderId, woModule))
+					.skipModuleCriteria();
+
+			List<V3WorkOrderContext> workOrderContextList = selectRecordsBuilder.get();
+
+			if(CollectionUtils.isEmpty(workOrderContextList)){
+				return "No WorkOrder found with ID: " + workOrderId;
+			}
+
+			V3WorkOrderContext workOrderContext = workOrderContextList.get(0);
+
+			Map<String, Object>  valueMap= (HashMap) value;
+ 			Map<String, Object> updateMap = new HashMap<>();
+			updateMap.put((String) fieldName, valueMap.get(fieldName));
+
+			V3WorkOrderContext updateWorkOrderContext = FieldUtil.getAsBeanFromMap(updateMap, V3WorkOrderContext.class);
+
+			UpdateRecordBuilder<V3WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<V3WorkOrderContext>()
+					.module(woModule)
+					.fields(Collections.singletonList(woFieldsMap.get(fieldName)))
+					.andCondition(CriteriaAPI.getIdCondition((Long) workOrderId, woModule))
+					.skipModuleCriteria();
+			int updated = updateRecordBuilder.update(updateWorkOrderContext);
+
+			if(updated > 0) {
+				return "Updated WorkOrder with ID: " + workOrderContext.getId();
+			}else {
+				return "Not Updated the WorkOrder with ID: " + workOrderContext.getId();
+			}
+		}
+		throw new RuntimeException("Input not of expected type.");
+	}
+
 	@Override
 	public void add(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 
@@ -173,9 +242,9 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 				scriptContext.incrementTotalInsertCount();
 			}
 		}
-		
+
 	}
-	
+
 	public long addWorkOrderContext(WorkOrderContext workorder) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

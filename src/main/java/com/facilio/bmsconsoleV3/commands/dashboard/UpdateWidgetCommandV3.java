@@ -1,15 +1,18 @@
 package com.facilio.bmsconsoleV3.commands.dashboard;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.AddOrUpdateDashboardFieldMappingCommand;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
+import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -102,7 +105,27 @@ public class UpdateWidgetCommandV3 extends FacilioCommand {
                                 .andCondition(CriteriaAPI.getIdCondition(updatewidget.getId(), ModuleFactory.getWidgetCardModule()));
                         Map<String, Object> props = FieldUtil.getAsProperties(widgetCardContext, true);
                         updateWidgetCard.update(props);
-                    } else if (updatewidget.getType() == DashboardWidgetContext.WidgetType.SECTION.getValue()) {
+                    }
+                    else if(updatewidget.getType().equals(DashboardWidgetContext.WidgetType.FILTER.getValue())){
+
+                        WidgetDashboardFilterContext filterWidgetContext = (WidgetDashboardFilterContext) updatewidget;
+                        if(filterWidgetContext.getDashboardFilterId() > 0){
+                            filterWidgetContext.setWidget_id(filterWidgetContext.getId());
+                            GenericUpdateRecordBuilder updateWidgetFilter = new GenericUpdateRecordBuilder()
+                                    .table(ModuleFactory.getDashboardUserFilterModule().getTableName())
+                                    .fields(FieldFactory.getDashboardUserFilterFields())
+                                    .andCondition(CriteriaAPI.getCondition("WIDGET_ID","widget_id", String.valueOf(filterWidgetContext.getId()), NumberOperators.EQUALS));
+
+                            Map<String, Object> props = FieldUtil.getAsProperties(filterWidgetContext, true);
+                            updateWidgetFilter.update(props);
+
+                            AddOrUpdateDashboardFieldMappingCommand fieldMappingCommand = new AddOrUpdateDashboardFieldMappingCommand();
+                            context.put(FacilioConstants.ContextNames.DASHBOARD_USER_FILTER_ID,props.get("userFilterId"));
+                            context.put("fieldMappings",filterWidgetContext.getFieldMappingMap());
+                            fieldMappingCommand.executeCommand(context);
+                        }
+                    }
+                    else if (updatewidget.getType() == DashboardWidgetContext.WidgetType.SECTION.getValue()) {
                         WidgetSectionContext widget_section = (WidgetSectionContext) updatewidget;
                         GenericUpdateRecordBuilder updateWidgetSection = new GenericUpdateRecordBuilder()
                                 .table(ModuleFactory.getWidgetSectionModule().getTableName())

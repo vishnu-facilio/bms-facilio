@@ -101,7 +101,8 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
 
         if (component.getSectionId() > 0) {
             FormSection section = PackageBeanUtil.getSectionFromId(component.getSectionId());
-            formFieldElement.element(PackageConstants.FormXMLComponents.SECTION_NAME).text(section.getName());
+            String sectionName = StringUtils.isNotEmpty(section.getName()) ? section.getName() : ("Default Section");
+            formFieldElement.element(PackageConstants.FormXMLComponents.SECTION_NAME).text(sectionName);
         }
 
         if (component.getFieldId() > 0) {
@@ -316,6 +317,7 @@ public class FormFieldPackageBeanImpl implements PackageBean<FormField> {
 
         XMLBuilder sectionElement = formFieldElement.getElement(PackageConstants.FormXMLComponents.SECTION_NAME);
         sectionName = sectionElement != null ? sectionElement.getText() : null;
+        sectionName = StringUtils.isNotEmpty(sectionName) ? sectionName : ("Default Section");
         sectionId = (MapUtils.isNotEmpty(formIdVsSectionNameVsSectionId) && formIdVsSectionNameVsSectionId.containsKey(formId) && StringUtils.isNotEmpty(sectionName)) ?
                 formIdVsSectionNameVsSectionId.get(formId).getOrDefault(sectionName, -1L) : -1;
 
