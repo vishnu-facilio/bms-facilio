@@ -272,6 +272,7 @@ public class FacilioConstants {
 		public static final String NAME = "name";
 		public static final String TYPE_SPECIFIC_FIELDS_MAP = "typeSpecificFieldsMap";
 		public static final String FIXED_FIELD_NAMES = "fixedFieldNames";
+		public static final String CUSTOMIZATION = "customization";
 		public static final String FIXED_SELECTABLE_FIELD_NAMES = "fixedSelectableFieldNames";
 	}
 

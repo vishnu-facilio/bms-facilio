@@ -1,6 +1,7 @@
 package com.facilio.fields.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fields.context.SortableField;
@@ -15,6 +16,8 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,9 +31,13 @@ public class SortableFieldsResponseCommand extends FacilioCommand {
         List<FacilioField> fieldsList = (List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS);
         fieldsList = CollectionUtils.isNotEmpty(fieldsList) ? fieldsList : new ArrayList<>();
         addIdField(module, fieldsList); // add id field
-        removePickListLookupFields(fieldsList); // filter lookUp Fields if module is of PICK_LIST
+        removeNonPickListLookupFields(fieldsList); // filter lookup Fields other than that of moduleType - PICK_LIST
 
         List<SortableField> sortableFields = fieldsList.stream().map(SortableField::new).collect(Collectors.toList());
+
+        sortableFields.sort(Comparator.comparing(SortableField::isMainField).reversed()
+                .thenComparing(SortableField::getDisplayName));
+
         context.put(FacilioConstants.ContextNames.FIELDS, sortableFields);
 
         return false;
@@ -41,7 +48,7 @@ public class SortableFieldsResponseCommand extends FacilioCommand {
         idField.setDisplayName(FieldUtil.getRecordIdFieldName(module));
         fields.add(idField);
     }
-    private static void removePickListLookupFields(List<FacilioField> fields) {
+    private static void removeNonPickListLookupFields(List<FacilioField> fields) {
         if (CollectionUtils.isNotEmpty(fields)) {
             fields.removeIf(field -> field.getDataTypeEnum() == FieldType.LOOKUP &&
                     ((LookupField) field).getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST);

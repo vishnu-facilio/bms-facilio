@@ -1650,6 +1650,13 @@
         </requestbody>
     </request>
 
+    <request path="/api/v2/fields/config/:fieldListType/:moduleName">
+        <urlparams>
+            <property name="fieldListType" type="string" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v1/setup/customPage/tabs/reorder">
         <requestbody type="object">
             <property name="previousId" type="number"/>

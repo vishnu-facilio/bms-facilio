@@ -147,6 +147,7 @@ public class AddCustomPageCommand extends FacilioCommand {
         boolean isClonePage = (boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_CLONE_PAGE, false);
         if (!isClonePage && (isSystem == null || !isSystem) && (customPage.getIsTemplate() == null || !customPage.getIsTemplate())) {
             PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), null);
+//            PagesUtil.addConnectedAppSummaryTabs(customPage.getId(), moduleId);
 //            PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), PagesContext.PageLayoutType.MOBILE);
         }
         context.put(FacilioConstants.CustomPage.PAGE_ID,customPage.getId());
