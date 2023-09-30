@@ -142,7 +142,7 @@
     <package name="events" extends="fsmApi" namespace="/api/fsm/events">
         <action name="list" class="com.facilio.fsm.actions.fsmAction" method="eventsList"/>
     </package>
-    <package name="mapView" extends="fsmApi" namespace="/api/fsm/mapview">
+    <package name="mapView" extends="fsmApi" namespace="/api/fsm/mapView">
         <action name="data" class="com.facilio.fsm.actions.fsmAction" method="mapViewData"/>
     </package>
     <package name="service" extends="fsmApi" namespace="/api/fsm/serviceappointment">

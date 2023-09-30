@@ -147,10 +147,10 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         cancelledState.setStatus(FacilioConstants.ServiceAppointment.CANCELLED);
         cancelledState.setDisplayName("Cancelled");
         cancelledState.setColor("danger");
-        inProgressState.setBackgroundColor("var(--colors-background-semantic-red-subtle)");
-        inProgressState.setBackgroundColorHover("var(--colors-background-semantic-red-light)");
-        inProgressState.setTextColor("var(--colors-text-default)");
-        inProgressState.setTextColorHover("var(--colors-text-inverse-default)");
+        cancelledState.setBackgroundColor("var(--colors-background-semantic-red-subtle)");
+        cancelledState.setBackgroundColorHover("var(--colors-background-semantic-red-light)");
+        cancelledState.setTextColor("var(--colors-text-default)");
+        cancelledState.setTextColorHover("var(--colors-text-inverse-default)");
         cancelledState.setTypeCode(3);
         cancelledState.setRecordLocked(true);
         cancelledState.setDeleteLocked(true);
