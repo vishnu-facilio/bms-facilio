@@ -278,6 +278,7 @@ public class RecordAPI {
 					secondaryLabel,
 					fourthLabel,
 					isResource ? ResourceAPI.getResourceSubModuleFromType((Integer) prop.get("resourceType")) : null
+					,null,null,null
 			));
 		}
 		return options;

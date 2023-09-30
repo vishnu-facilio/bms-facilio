@@ -38,7 +38,11 @@ public class ConstructPickListOptionCommand extends FacilioCommand {
             FacilioField secondaryField = (FacilioField) context.get(FacilioConstants.PickList.SECONDARY_FIELD);
             FacilioField fourthField = (FacilioField) context.get(FacilioConstants.PickList.FOURTH_FIELD);
             FacilioField subModuleField = (FacilioField) context.get(FacilioConstants.PickList.SUBMODULE_FIELD);
-            pickList = constructFieldOptionsFromRecords(records, defaultField, secondaryField , fourthField, subModuleField);
+            FacilioField colorField = (FacilioField) context.get(FacilioConstants.PickList.COLOR_FIELD);
+            FacilioField accentField = (FacilioField) context.get(FacilioConstants.PickList.ACCENT_FIELD);
+            String severityLevel = (String) context.get(FacilioConstants.PickList.SEVERITY_LEVEL);
+
+            pickList = constructFieldOptionsFromRecords(records, defaultField, secondaryField , fourthField, subModuleField,colorField,accentField,severityLevel);
             int pickListRecordCount = pickList == null ? 0 : pickList.size();
             boolean localSearch = true;
             JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
@@ -55,7 +59,7 @@ public class ConstructPickListOptionCommand extends FacilioCommand {
 
     }
 
-    public static List<FieldOption<Long>> constructFieldOptionsFromRecords (List<Map<String, Object>> records, FacilioField defaultField, FacilioField secondaryField,FacilioField fourthField, FacilioField subModuleField) throws Exception {
+    public static List<FieldOption<Long>> constructFieldOptionsFromRecords (List<Map<String, Object>> records, FacilioField defaultField, FacilioField secondaryField,FacilioField fourthField, FacilioField subModuleField,FacilioField colorField,FacilioField accentField,String severityLevel) throws Exception {
 
         if (CollectionUtils.isEmpty(records)) {
             return null;
@@ -67,18 +71,23 @@ public class ConstructPickListOptionCommand extends FacilioCommand {
         FacilioField secondaryFieldLookupPrimary = getMainFieldOfLookup(secondaryField, modBean);
         FacilioField subModuleFieldLookupPrimary = getMainFieldOfLookup(subModuleField, modBean);
         FacilioField fourthFieldLookupPrimary = getMainFieldOfLookup(fourthField, modBean);
+        FacilioField colorFieldLookupPrimary = getMainFieldOfLookup(colorField, modBean);
+        FacilioField accentFieldLookupPrimary = getMainFieldOfLookup(accentField, modBean);
         for (Map<String, Object> prop : records) {
             Long id = (Long) prop.get("id");
             Object primaryLabel = getValue(prop, defaultField, defaultFieldLookupPrimary);
             Object secondaryLabel = secondaryField == null ? null : getValue(prop, secondaryField, secondaryFieldLookupPrimary);
             Object fourthLabel = fourthField == null ? null : getValue(prop , fourthField ,fourthFieldLookupPrimary);
             String subModuleLabel = subModuleField == null ? null : String.valueOf(getValue(prop, subModuleField, subModuleFieldLookupPrimary));
-            options.add(new FieldOption<>(
-                    id,
+            String color = colorField == null ? null :(String) getValue(prop , colorField ,colorFieldLookupPrimary);
+            String accent = accentField == null ? null :(String) getValue(prop , accentField ,accentFieldLookupPrimary);
+
+            options.add(new FieldOption<>(id,
                     primaryLabel,
                     secondaryLabel,
                     fourthLabel,
-                    subModuleLabel
+                    subModuleLabel,
+                    color,accent,severityLevel
             ));
         }
         return options;

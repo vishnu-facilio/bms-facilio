@@ -316,6 +316,9 @@ public class FacilioConstants {
 		public static final String SECONDARY_FIELD = "secondaryField";
 		public static final String SUBMODULE_FIELD ="subModuleField";
 		public static final String FOURTH_FIELD = "fourthField";
+		public static final String COLOR_FIELD = "colorField";
+		public static final String ACCENT_FIELD = "accent";
+		public static final String SEVERITY_LEVEL = "severityLevel";
 		public static final String LOCAL_SEARCH = "localSearch";
 	}
 

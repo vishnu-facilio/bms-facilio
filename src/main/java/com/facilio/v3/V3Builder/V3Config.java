@@ -833,6 +833,10 @@ public class V3Config implements V3Builder {
         private FacilioField secondaryField;
         private FacilioField subModuleField;
         private FacilioField fourthField;
+        private FacilioField colorField;
+        private FacilioField accent;
+        private String severityLevel;
+
         private Command beforeFetchCommand;
         private Command afterFetchCommand;
         private V3Builder parent;
@@ -881,6 +885,24 @@ public class V3Config implements V3Builder {
             try {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 subModuleField = modBean.getField(fieldName, moduleName);
+            } catch (Exception ex) {}
+            return this;
+        }
+
+        @Override
+        public PickListBuilder setColorField(String moduleName, String fieldName) {
+            try {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                colorField = modBean.getField(fieldName, moduleName);
+            } catch (Exception ex) {}
+            return this;
+        }
+
+        @Override
+        public PickListBuilder setAccentField(String moduleName, String fieldName) {
+            try {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                accent = modBean.getField(fieldName, moduleName);
             } catch (Exception ex) {}
             return this;
         }
@@ -950,7 +972,17 @@ public class V3Config implements V3Builder {
         public FacilioField getFourthField(){
             return fourthField;
         }
+        public FacilioField getColorField() {
+            return colorField;
+        }
 
+        public FacilioField getAccent() {
+            return accent;
+        }
+
+        public String getSeverityLevel() {
+            return severityLevel;
+        }
         public void setSecondaryField(FacilioField secondaryField) {
             this.secondaryField = secondaryField;
         }
@@ -960,9 +992,13 @@ public class V3Config implements V3Builder {
         public void setSubModuleField(FacilioField subModuleField) {
             this.subModuleField = subModuleField;
         }
-
         public void setMainField(FacilioField mainField) {
             this.mainField = mainField;
+        }
+        @Override
+        public PickListHandler setSeverityLevel(String severityLevel) {
+            this.severityLevel = severityLevel;
+            return this;
         }
     }
 

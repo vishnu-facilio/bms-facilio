@@ -40,6 +40,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
@@ -226,6 +227,9 @@ public class ChainUtil {
         FacilioField secondaryField = null;
         FacilioField subModuleField = null;
         FacilioField fouthField = null;
+        FacilioField colorField = null;
+        FacilioField accentField = null;
+        String severityLevel = null;
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         FacilioContext context = nonTransactionChain.getContext();
@@ -240,6 +244,9 @@ public class ChainUtil {
                 secondaryField = pickListHandler.getSecondaryField();
                 subModuleField = pickListHandler.getSubModuleField();
                 fouthField = pickListHandler.getFourthField();
+                colorField = pickListHandler.getColorField();
+                accentField = pickListHandler.getAccent();
+                severityLevel = pickListHandler.getSeverityLevel();
             }
         }
 
@@ -257,7 +264,15 @@ public class ChainUtil {
         if(fouthField != null ){
             context.put(FacilioConstants.PickList.FOURTH_FIELD,fouthField);
         }
-
+        if(colorField!=null){
+            context.put(FacilioConstants.PickList.COLOR_FIELD,colorField);
+        }
+        if( accentField!=null){
+            context.put(FacilioConstants.PickList.ACCENT_FIELD,accentField);
+        }
+        if(StringUtils.isNotEmpty(severityLevel)){
+            context.put(FacilioConstants.PickList.SEVERITY_LEVEL,severityLevel);
+        }
         nonTransactionChain.addCommand(new LoadMainFieldCommand());
 
         addIfNotNull(nonTransactionChain, beforeFetchCommand);

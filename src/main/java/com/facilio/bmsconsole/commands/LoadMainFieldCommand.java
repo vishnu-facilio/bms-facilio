@@ -50,6 +50,10 @@
 		if(fouthField != null){
 			selectFields.add(fouthField);
 		}
+		FacilioField colorField = (FacilioField) context.get(FacilioConstants.PickList.COLOR_FIELD);
+		if(colorField != null){
+			selectFields.add(colorField);
+		}
 
 		if (CollectionUtils.isNotEmpty(supplements)) {
 			context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplements);
