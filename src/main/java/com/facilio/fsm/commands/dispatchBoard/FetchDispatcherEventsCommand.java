@@ -126,6 +126,9 @@ public class FetchDispatcherEventsCommand extends FacilioCommand {
                         dispatcherTOEvent.setTimeOff(timeOffEvent);
                         TimeOffTypeContext timeOffType = timeOffEvent.getType();
                         dispatcherTOEvent.setBackgroundColor(timeOffType.getColor());
+                        dispatcherTOEvent.setTextColor(timeOffType.getTextColor());
+                        dispatcherTOEvent.setBackgroundColorHover(timeOffType.getColor());
+                        dispatcherTOEvent.setTextColorHover(timeOffType.getTextColor());
                         pplEvents.add(dispatcherTOEvent);
                     }
                 }
@@ -142,6 +145,8 @@ public class FetchDispatcherEventsCommand extends FacilioCommand {
                         ServiceAppointmentTicketStatusContext saStatus = saEvent.getStatus();
                         dispatcherSAEvent.setBackgroundColor(saStatus.getBackgroundColor());
                         dispatcherSAEvent.setTextColor(saStatus.getTextColor());
+                        dispatcherSAEvent.setBackgroundColorHover(saStatus.getBackgroundColorHover());
+                        dispatcherSAEvent.setTextColorHover(saStatus.getTextColorHover());
                         pplEvents.add(dispatcherSAEvent);
                     }
                 }

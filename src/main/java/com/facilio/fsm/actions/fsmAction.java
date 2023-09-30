@@ -29,6 +29,7 @@ import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import com.facilio.v3.util.FilterUtil;
 import com.facilio.v3.util.V3Util;
 import lombok.Getter;
 import lombok.Setter;
@@ -63,7 +64,6 @@ public class fsmAction extends V3Action {
     private LocationContext endLocation;
     private long peopleId;
     private Long timeSheetId;
-
     private JSONArray serviceTasks;
 
     public String getViewName() {
@@ -138,6 +138,23 @@ public class fsmAction extends V3Action {
         context.put(FacilioConstants.ContextNames.ORDER_TYPE,getOrderType());
         chain.execute();
         setData((JSONObject) context.get(FacilioConstants.ContextNames.DATA));
+        return SUCCESS;
+    }
+    public String mapViewData() throws Exception {
+        FacilioChain chain = FSMReadOnlyChainFactory.fetchDispatcherMapDataChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.START_TIME,getStartTime());
+        context.put(FacilioConstants.ContextNames.END_TIME,getEndTime());
+        context.put(FacilioConstants.Dispatcher.BOARD_ID,getBoardId());
+        context.put(FacilioConstants.ContextNames.SEARCH,getSearch());
+        if (StringUtils.isNotEmpty(getFilters())) {
+            JSONParser parser = new JSONParser();
+            JSONObject filterJson = (JSONObject) parser.parse(getFilters());
+            context.put(FacilioConstants.ContextNames.FILTERS, filterJson);
+        }
+        chain.execute();
+        setData(FacilioConstants.Dispatcher.EVENTS,context.get(FacilioConstants.Dispatcher.EVENTS));
+        setData(FacilioConstants.Dispatcher.RESOURCES,context.get(FacilioConstants.Dispatcher.RESOURCES));
         return SUCCESS;
     }
     public String fetchDispatcherBoardList() throws Exception{

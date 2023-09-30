@@ -1849,20 +1849,6 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-    public static List<FacilioField> getSystemFieldsWithPeopleLookUp(FacilioModule module, boolean includeModified) throws Exception { // Why is it point fields?
-        List<FacilioField> fields = new ArrayList<>();
-
-        fields.add(getSystemField("sysCreatedTime", module));
-        fields.add(getSystemPeopleField("sysCreatedBy", module));
-
-        if (includeModified && (module == null || (module.getTypeEnum() != FacilioModule.ModuleType.LOOKUP_REL_MODULE && module.getTypeEnum() != FacilioModule.ModuleType.ENUM_REL_MODULE))) {
-            fields.add(getSystemField("sysModifiedTime", module));
-            fields.add(getSystemPeopleField("sysModifiedBy", module));
-        }
-
-        return fields;
-    }
-
     private static final List<String> systemFields = Collections.unmodifiableList(FieldFactory.getSystemPointFields(null).stream().map(FacilioField::getName).collect(Collectors.toList()));
 
     public static boolean isSystemField(String fieldName) {
@@ -1871,26 +1857,6 @@ public class FieldFactory extends BaseFieldFactory {
 
     public static List<String> getSystemFieldNames() {
         return systemFields;
-    }
-
-    public static FacilioField getSystemPeopleField(String fieldName, FacilioModule module) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-        switch (fieldName) {
-            case "sysCreatedBy":
-                LookupField createdBy = getField("sysCreatedBy", "Created By", "SYS_CREATED_BY", module, FieldType.LOOKUP);
-                createdBy.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
-                createdBy.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
-                createdBy.setDefault(true);
-                return createdBy;
-            case "sysModifiedBy":
-                LookupField modifiedBy = getField("sysModifiedBy", "Modified By", "SYS_MODIFIED_BY", module, FieldType.LOOKUP);
-                modifiedBy.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
-                modifiedBy.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
-                modifiedBy.setDefault(true);
-                return modifiedBy;
-        }
-        return null;
     }
     public static FacilioField getSystemField(String fieldName, FacilioModule module) {
         switch (fieldName) {

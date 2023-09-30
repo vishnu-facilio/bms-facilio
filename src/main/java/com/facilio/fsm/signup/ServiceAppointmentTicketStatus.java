@@ -38,8 +38,11 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
 
         fields.add(new StringField(serviceAppointmentTicketStatus,"backgroundColor","Background Color",FacilioField.FieldDisplayType.TEXTBOX,"BACKGROUND_COLOR",FieldType.STRING,true,false,true,false));
 
-        fields.add(new StringField(serviceAppointmentTicketStatus,"textColor","Text Color",FacilioField.FieldDisplayType.TEXTBOX,"TEXT_COLOR",FieldType.STRING,false,false,true,false));
+        fields.add(new StringField(serviceAppointmentTicketStatus,"textColor","Text Color",FacilioField.FieldDisplayType.TEXTBOX,"TEXT_COLOR",FieldType.STRING,false,true,true,false));
 
+        fields.add(new StringField(serviceAppointmentTicketStatus,"backgroundColorHover","Background Color on Hover",FacilioField.FieldDisplayType.TEXTBOX,"BACKGROUND_COLOR_HOVER",FieldType.STRING,true,false,true,false));
+
+        fields.add(new StringField(serviceAppointmentTicketStatus,"textColorHover","Text Color on Hover",FacilioField.FieldDisplayType.TEXTBOX,"TEXT_COLOR_HOVER",FieldType.STRING,true,false,true,false));
 
         NumberField typeCode = FieldFactory.getDefaultField("typeCode", "Type", "STATUS_TYPE", FieldType.NUMBER);
         typeCode.setDefault(true);
@@ -75,8 +78,10 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         scheduledState.setStatus(FacilioConstants.ServiceAppointment.SCHEDULED);
         scheduledState.setDisplayName("Scheduled");
         scheduledState.setColor("default");
-        scheduledState.setBackgroundColor("#51049F");
-        scheduledState.setTextColor("#ffffff");
+        scheduledState.setBackgroundColor("var(--colors-background-neutral-grey-01-light)");
+        scheduledState.setBackgroundColorHover("var(--colors-background-neutral-grey-01-darker)");
+        scheduledState.setTextColor("var(--colors-text-default)");
+        scheduledState.setTextColorHover("var(--colors-text-inverse-default)");
         scheduledState.setTypeCode(1);
         scheduledState.setRecordLocked(false);
         scheduledState.setDeleteLocked(false);
@@ -87,8 +92,10 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         dispatchedState.setStatus(FacilioConstants.ServiceAppointment.DISPATCHED);
         dispatchedState.setDisplayName("Dispatched");
         dispatchedState.setColor("default");
-        dispatchedState.setBackgroundColor("#C70566");
-        dispatchedState.setTextColor("#ffffff");
+        dispatchedState.setBackgroundColor("var(--colors-background-accent-violet-light)");
+        dispatchedState.setBackgroundColorHover("var(--colors-background-accent-violet-dark)");
+        dispatchedState.setTextColor("var(--colors-text-default)");
+        dispatchedState.setTextColorHover("var(--colors-text-inverse-default)");
         dispatchedState.setTypeCode(1);
         dispatchedState.setRecordLocked(false);
         dispatchedState.setDeleteLocked(false);
@@ -98,8 +105,10 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         enRouteState.setStatus(FacilioConstants.ServiceAppointment.EN_ROUTE);
         enRouteState.setDisplayName("En Route");
         enRouteState.setColor("warning");
-        enRouteState.setBackgroundColor("#0492AE");
-        enRouteState.setTextColor("#ffffff");
+        enRouteState.setBackgroundColor("var(--colors-background-accent-yellow-light)");
+        enRouteState.setBackgroundColorHover("var(--colors-icon-accent-yellow)");
+        enRouteState.setTextColor("var(--colors-text-default)");
+        enRouteState.setTextColorHover("var(--colors-text-default)");
         enRouteState.setTypeCode(1);
         enRouteState.setRecordLocked(false);
         enRouteState.setDeleteLocked(true);
@@ -109,9 +118,11 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
 
         inProgressState.setStatus(FacilioConstants.ServiceAppointment.IN_PROGRESS);
         inProgressState.setDisplayName("In Progress");
-        inProgressState.setBackgroundColor("#F7BA02");
         inProgressState.setColor("information");
-        inProgressState.setTextColor("#000000");
+        inProgressState.setBackgroundColor("var(--colors-background-accent-blue-light)");
+        inProgressState.setBackgroundColorHover("var(--colors-background-accent-blue-dark)");
+        inProgressState.setTextColor("var(--colors-text-default)");
+        inProgressState.setTextColorHover("var(--colors-text-inverse-default)");
         inProgressState.setTypeCode(2);
         inProgressState.setRecordLocked(false);
         inProgressState.setDeleteLocked(true);
@@ -122,8 +133,10 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         completedState.setStatus(FacilioConstants.ServiceAppointment.COMPLETED);
         completedState.setDisplayName("Completed");
         completedState.setColor("success");
-        completedState.setBackgroundColor("#058545");
-        completedState.setTextColor("#ffffff");
+        completedState.setBackgroundColor("var(--colors-background-semantic-green-light)");
+        completedState.setBackgroundColorHover("var(--colors-background-semantic-green-medium)");
+        completedState.setTextColor("var(--colors-text-default)");
+        completedState.setTextColorHover("var(--colors-text-default)");
         completedState.setTypeCode(3);
         completedState.setRecordLocked(true);
         completedState.setDeleteLocked(true);
@@ -134,8 +147,10 @@ public class ServiceAppointmentTicketStatus extends BaseModuleConfig {
         cancelledState.setStatus(FacilioConstants.ServiceAppointment.CANCELLED);
         cancelledState.setDisplayName("Cancelled");
         cancelledState.setColor("danger");
-        cancelledState.setBackgroundColor("#D12806");
-        cancelledState.setTextColor("#ffffff");
+        inProgressState.setBackgroundColor("var(--colors-background-semantic-red-subtle)");
+        inProgressState.setBackgroundColorHover("var(--colors-background-semantic-red-light)");
+        inProgressState.setTextColor("var(--colors-text-default)");
+        inProgressState.setTextColorHover("var(--colors-text-inverse-default)");
         cancelledState.setTypeCode(3);
         cancelledState.setRecordLocked(true);
         cancelledState.setDeleteLocked(true);

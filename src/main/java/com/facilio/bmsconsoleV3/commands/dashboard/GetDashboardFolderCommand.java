@@ -30,8 +30,7 @@ public class GetDashboardFolderCommand extends FacilioCommand {
     {
         DashboardListPropsContext dashboard_list_prop = (DashboardListPropsContext) context.get("dashboard_list_prop");
         List<DashboardFolderContext> dashboard_folder_list = new ArrayList<>();
-        boolean newFlow = context.containsKey("newFlow");
-        getDashboardFolderList(dashboard_list_prop.getAppId(), dashboard_folder_list, newFlow);
+        getDashboardFolderList(dashboard_list_prop.getAppId(), dashboard_folder_list);
         if (dashboard_folder_list != null) {
             List<Long> folder_ids = dashboard_folder_list.stream().map(a -> a.getId()).collect(Collectors.toList());
             dashboard_list_prop.setFolders(dashboard_folder_list);
@@ -40,7 +39,7 @@ public class GetDashboardFolderCommand extends FacilioCommand {
         return false;
     }
 
-    private void getDashboardFolderList(Long appId, List<DashboardFolderContext> dashboard_folder_list, boolean newFlow)throws Exception
+    private void getDashboardFolderList(Long appId, List<DashboardFolderContext> dashboard_folder_list)throws Exception
     {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getDashboardFolderFields())

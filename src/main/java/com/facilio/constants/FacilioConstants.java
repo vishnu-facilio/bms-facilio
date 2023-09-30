@@ -208,7 +208,6 @@ public class FacilioConstants {
 
 	public static class Module {
 		public static final String SYS_FIELDS_NEEDED = "sysFieldsNeeded";
-		public static final String USE_PEOPLE_LOOKUP = "usePeopleLookup";
 		public static final String IGNORE_MODIFIED_SYS_FIELDS = "ignoreModifiedSysFields";
 		public static final String SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK = "skipExistingModuleWithSameNameCheck";
 	}
@@ -4721,9 +4720,7 @@ public class FacilioConstants {
 		public static final String PRIORITY = "priority";
 		public static final String RESPONSE_DUE_STATUS = "responseDueStatus";
 		public static final String RESOLUTION_DUE_STATUS = "resolutionDueStatus";
-
 		public static final String SKIP_VALIDATION = "skipValidation";
-//		public static final String IS_TASK_ADD= "isTaskAdd";
 	}
 
 	public static class ServiceOrder{

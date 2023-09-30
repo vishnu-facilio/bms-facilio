@@ -26,7 +26,6 @@ public class EnableOauth2 extends SignUpData {
     @Override
     public void addData() throws Exception {
         AppDomain developerApp = IAMAppUtil.getAppDomain(FacilioProperties.getDeveloperAppDomain());
-        if(developerApp != null) {
             ApplicationContext developerApplication = new ApplicationContext(AccountUtil.getCurrentOrg().getOrgId(), "Developer", false, developerApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.DEVELOPER_APP, ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Developer Apis", ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
 
             List<FacilioField> fields = FieldFactory.getApplicationFields();
@@ -63,6 +62,5 @@ public class EnableOauth2 extends SignUpData {
                 clonedUser.setApplicationId(devAppId);
                 AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
             }
-        }
     }
 }

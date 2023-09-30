@@ -20,13 +20,12 @@ public class AddDefaultFieldsForSystemModulesCommand extends FacilioCommand {
         // For now the behaviour is we'll add system fields for all modules in the list. If few modules doesn't need system fields, put them in a separate list and call the chain
         boolean addSysFields = (boolean) context.getOrDefault(FacilioConstants.Module.SYS_FIELDS_NEEDED, false);
         boolean ignoreModifiedSysFields = (boolean) context.getOrDefault(FacilioConstants.Module.IGNORE_MODIFIED_SYS_FIELDS, false);
-        boolean usePeopleLookup = (boolean) context.getOrDefault(FacilioConstants.Module.USE_PEOPLE_LOOKUP, false);
         if (addSysFields) {
             List<FacilioModule> modules = CommonCommandUtil.getModules(context);
             if (CollectionUtils.isNotEmpty(modules)) {
                 for (FacilioModule module : modules) {
                     List<FacilioField> fields = module.getFields() == null ? new ArrayList<>() : new ArrayList<>(module.getFields());
-                    List<FacilioField> sysFields = usePeopleLookup ? FieldFactory.getSystemFieldsWithPeopleLookUp(module, !ignoreModifiedSysFields) : FieldFactory.getSystemPointFields(module, !ignoreModifiedSysFields);
+                    List<FacilioField> sysFields = FieldFactory.getSystemPointFields(module, !ignoreModifiedSysFields);
                     sysFields.forEach(f -> f.setDefault(true));
                     fields.addAll(sysFields);
                     module.setFields(fields);

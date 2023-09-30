@@ -856,52 +856,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         return sharingContext;
     }
 
-
-    private static void addStateFlow() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule serviceAppointmentModule = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
-        FacilioStatus scheduledStatus = new FacilioStatus();
-        scheduledStatus.setStatus("scheduled");
-        scheduledStatus.setDisplayName("Scheduled");
-        scheduledStatus.setTypeCode(1);
-        TicketAPI.addStatus(scheduledStatus, serviceAppointmentModule);
-
-        FacilioStatus dispatchedStatus = new FacilioStatus();
-        dispatchedStatus.setStatus("dispatched");
-        dispatchedStatus.setDisplayName("Dispatched");
-        dispatchedStatus.setTypeCode(2);
-        TicketAPI.addStatus(dispatchedStatus, serviceAppointmentModule);
-
-        FacilioStatus inProgressStatus = new FacilioStatus();
-        inProgressStatus.setStatus("inProgress");
-        inProgressStatus.setDisplayName("In Progress");
-        inProgressStatus.setTypeCode(3);
-        TicketAPI.addStatus(inProgressStatus, serviceAppointmentModule);
-
-        FacilioStatus completedStatus = new FacilioStatus();
-        completedStatus.setStatus("completed");
-        completedStatus.setDisplayName("Completed");
-        completedStatus.setTypeCode(4);
-        TicketAPI.addStatus(completedStatus, serviceAppointmentModule);
-
-        FacilioStatus cannotCompleteStatus = new FacilioStatus();
-        cannotCompleteStatus.setStatus("cannotComplete");
-        cannotCompleteStatus.setDisplayName("Cannot Complete");
-        cannotCompleteStatus.setTypeCode(5);
-        TicketAPI.addStatus(cannotCompleteStatus, serviceAppointmentModule);
-
-        StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
-        stateFlowRuleContext.setName("Default Stateflow");
-        stateFlowRuleContext.setModuleId(serviceAppointmentModule.getModuleId());
-        stateFlowRuleContext.setModule(serviceAppointmentModule);
-        stateFlowRuleContext.setActivityType(EventType.CREATE);
-        stateFlowRuleContext.setExecutionOrder(1);
-        stateFlowRuleContext.setStatus(true);
-        stateFlowRuleContext.setDefaltStateFlow(true);
-        stateFlowRuleContext.setDefaultStateId(scheduledStatus.getId());
-        stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
-        WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
-    }
     private static void addServiceAppointmentSkillModule() throws Exception{
         List<FacilioModule> modules = new ArrayList<>();
         ModuleBean modBean = Constants.getModBean();

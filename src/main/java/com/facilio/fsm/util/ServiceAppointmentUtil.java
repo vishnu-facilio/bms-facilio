@@ -1150,4 +1150,66 @@ public class ServiceAppointmentUtil {
         return appointmentCostMap;
 
     }
+
+    public static SelectRecordsBuilder<ServiceAppointmentContext> getServiceAppointments(FacilioModule module,List<FacilioField> selectFields,List<LookupField>lookUpfields,Criteria serverCriteria,String sortBy,Criteria filterCriteria,Criteria searchCriteria)throws Exception{
+        SelectRecordsBuilder<ServiceAppointmentContext> selectRecordsBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>()
+                .module(module)
+                .select(selectFields)
+                .beanClass(ServiceAppointmentContext.class);
+        if(org.apache.commons.collections4.CollectionUtils.isNotEmpty(lookUpfields)){
+            selectRecordsBuilder.fetchSupplements(lookUpfields);
+        }
+
+        if(serverCriteria != null) {
+            selectRecordsBuilder.andCriteria(serverCriteria);
+        }
+
+        if(sortBy != null) {
+            selectRecordsBuilder.orderBy(sortBy);
+        }
+
+        if (filterCriteria != null) {
+            selectRecordsBuilder.andCriteria(filterCriteria);
+        }
+
+        if (searchCriteria != null) {
+            selectRecordsBuilder.andCriteria(searchCriteria);
+        }
+        return selectRecordsBuilder;
+    }
+
+
+    public static Long getServiceAppointmentsCount(FacilioModule module,Criteria serverCriteria,String sortBy,Criteria filterCriteria,Criteria searchCriteria) throws Exception {
+
+        FacilioField id = FieldFactory.getIdField(module);
+        List<FacilioField> selectFields = new ArrayList<>();
+        selectFields.add(id);
+
+        List<LookupField>lookUpfields = new ArrayList<>();
+
+        SelectRecordsBuilder<ServiceAppointmentContext> selectRecordsBuilder = getServiceAppointments(module,selectFields,lookUpfields,serverCriteria,sortBy,filterCriteria,searchCriteria);
+        selectRecordsBuilder
+                .select(new HashSet<>())
+                .module(module)
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, id);
+
+        List<ServiceAppointmentContext> props = selectRecordsBuilder.get();
+
+
+        long count = 0;
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(props)) {
+            count = props.get(0).getId();
+        }
+        return count;
+    }
+
+    public static List<ServiceAppointmentContext> getServiceAppointmentsList(FacilioModule module,List<FacilioField> selectFields,List<LookupField>lookUpfields,Criteria serverCriteria,String sortBy,Criteria filterCriteria,Criteria searchCriteria,int perPage,int offset) throws Exception{
+
+        SelectRecordsBuilder<ServiceAppointmentContext> selectRecordsBuilder = getServiceAppointments(module,selectFields,lookUpfields,serverCriteria,sortBy,filterCriteria,searchCriteria);
+
+        selectRecordsBuilder
+                .limit(perPage)
+                .offset(offset);
+        return selectRecordsBuilder.get();
+    }
 }

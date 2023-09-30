@@ -13,8 +13,11 @@ public class DispatcherEventContext {
     private ServiceAppointmentContext serviceAppointmentContext;
     private boolean allowResize = false;
     private boolean allowReschedule = false;
-    private String backgroundColor = "#058545";
-    private String textColor;
+    private String backgroundColor = "var(--colors-background-accent-violet-light)";
+    private String textColor = "var(--colors-text-default)";
+    private String backgroundColorHover = "var(--colors-background-accent-violet-dark";
+    private String textColorHover = "var(--colors-text-inverse-default)";
+
     private EventType eventType;
     public Integer getEventType() {
         if (eventType != null) {

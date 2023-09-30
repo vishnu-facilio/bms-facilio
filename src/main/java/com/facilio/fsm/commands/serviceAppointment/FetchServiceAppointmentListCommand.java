@@ -116,7 +116,7 @@ public class FetchServiceAppointmentListCommand extends FacilioCommand {
 
             List<ServiceAppointmentContext> serviceAppointments = new ArrayList<>();
             if (CollectionUtils.isEmpty(selectFields)) {
-                selectFields = moduleBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+                selectFields = serviceAppointmentFields;
             }
 
             if (sortBy != null && !sortBy.isEmpty()) {
@@ -131,7 +131,7 @@ public class FetchServiceAppointmentListCommand extends FacilioCommand {
         Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);
         Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
 
-        List<ServiceAppointmentContext> serviceAppointmentList = getServiceAppointmentsList(module,selectFields,lookUpfields,serverCriteria,sortBy,filterCriteria,searchCriteria,perPage,offset);
+        List<ServiceAppointmentContext> serviceAppointmentList = ServiceAppointmentUtil.getServiceAppointmentsList(module,selectFields,lookUpfields,serverCriteria,sortBy,filterCriteria,searchCriteria,perPage,offset);
 
         if (CollectionUtils.isNotEmpty(serviceAppointmentList)) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointmentList) {
@@ -141,7 +141,7 @@ public class FetchServiceAppointmentListCommand extends FacilioCommand {
             }
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("serviceAppointment", serviceAppointments);
-            jsonObject.put("count", getServiceAppointmentsCount(module,serverCriteria,sortBy,filterCriteria,searchCriteria));
+            jsonObject.put("count", ServiceAppointmentUtil.getServiceAppointmentsCount(module,serverCriteria,sortBy,filterCriteria,searchCriteria));
 
             context.put(FacilioConstants.ContextNames.DATA, jsonObject);
 
@@ -149,61 +149,6 @@ public class FetchServiceAppointmentListCommand extends FacilioCommand {
     }
     private static boolean isLookupField(FacilioField field){
         return field.getDataTypeEnum() == FieldType.LOOKUP;
-    }
-
-
-
-    private static SelectRecordsBuilder<ServiceAppointmentContext> getServiceAppointments(FacilioModule module,List<FacilioField> selectFields,List<LookupField>lookUpfields,Criteria serverCriteria,String sortBy,Criteria filterCriteria,Criteria searchCriteria)throws Exception{
-        SelectRecordsBuilder<ServiceAppointmentContext> selectRecordsBuilder = new SelectRecordsBuilder<ServiceAppointmentContext>()
-                .module(module)
-                .select(selectFields)
-                .beanClass(ServiceAppointmentContext.class)
-                .fetchSupplements(lookUpfields)
-                .andCriteria(serverCriteria)
-                .orderBy(sortBy);
-        if (filterCriteria != null) {
-            selectRecordsBuilder.andCriteria(filterCriteria);
-        }
-
-        if (searchCriteria != null) {
-            selectRecordsBuilder.andCriteria(searchCriteria);
-        }
-        return selectRecordsBuilder;
-    }
-
-
-    public static Long getServiceAppointmentsCount(FacilioModule module,Criteria serverCriteria,String sortBy,Criteria filterCriteria,Criteria searchCriteria) throws Exception {
-
-        FacilioField id = FieldFactory.getIdField(module);
-        List<FacilioField> selectFields = new ArrayList<>();
-        selectFields.add(id);
-
-        List<LookupField>lookUpfields = new ArrayList<>();
-
-        SelectRecordsBuilder<ServiceAppointmentContext> selectRecordsBuilder = getServiceAppointments(module,selectFields,lookUpfields,serverCriteria,sortBy,filterCriteria,searchCriteria);
-        selectRecordsBuilder
-                .select(new HashSet<>())
-                .module(module)
-                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, id);
-
-        List<ServiceAppointmentContext> props = selectRecordsBuilder.get();
-
-
-        long count = 0;
-        if (CollectionUtils.isNotEmpty(props)) {
-            count = props.get(0).getId();
-        }
-        return count;
-    }
-
-    public static List<ServiceAppointmentContext> getServiceAppointmentsList(FacilioModule module,List<FacilioField> selectFields,List<LookupField>lookUpfields,Criteria serverCriteria,String sortBy,Criteria filterCriteria,Criteria searchCriteria,int perPage,int offset) throws Exception{
-
-        SelectRecordsBuilder<ServiceAppointmentContext> selectRecordsBuilder = getServiceAppointments(module,selectFields,lookUpfields,serverCriteria,sortBy,filterCriteria,searchCriteria);
-
-        selectRecordsBuilder
-                .limit(perPage)
-                .offset(offset);
-        return selectRecordsBuilder.get();
     }
 
 }
