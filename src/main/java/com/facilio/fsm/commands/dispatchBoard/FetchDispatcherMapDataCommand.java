@@ -11,10 +11,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fsm.context.DispatcherEventContext;
-import com.facilio.fsm.context.DispatcherSettingsContext;
-import com.facilio.fsm.context.ServiceAppointmentContext;
-import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
+import com.facilio.fsm.context.*;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -39,6 +36,8 @@ public class FetchDispatcherMapDataCommand extends FacilioCommand {
         String search = (String) context.get(FacilioConstants.ContextNames.SEARCH);
 
         // fetching people list
+        List<DispatcherResourceContext> resources = new ArrayList<>();
+
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule peopleModule = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
         List<FacilioField> allPeopleFields = moduleBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
@@ -80,7 +79,14 @@ public class FetchDispatcherMapDataCommand extends FacilioCommand {
 
         SelectRecordsBuilder<V3PeopleContext> peopleBuilder = V3PeopleAPI.getPeopleSelectBuilder(peopleModule,peopleSelectFields,peopleSupplementFields,peopledefaultCriteria,null,peopleFilterCriteria,peopleSearchCriteria);
         List<V3PeopleContext> people = peopleBuilder.get();
-        context.put(FacilioConstants.Dispatcher.RESOURCES,people);
+        if(CollectionUtils.isNotEmpty(people)) {
+            for (V3PeopleContext resource : people) {
+                DispatcherResourceContext dispatcherResource = new DispatcherResourceContext();
+                dispatcherResource.setPeople(resource);
+                resources.add(dispatcherResource);
+            }
+        }
+        context.put(FacilioConstants.Dispatcher.RESOURCES,resources);
 
         // fetching events list
         List<DispatcherEventContext> events = new ArrayList<>();
