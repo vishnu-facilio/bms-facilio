@@ -535,7 +535,7 @@ public class PageWidget {
 
 		CALENDAR_FIELDS_WIDGET("calendarFieldsWidget"),
 		CALENDAR_EVENT_VIEW("calendarEventView"),
-		CONRTOL_ACTION_CRITERIA("controlActionCriteria"),
+		CRITERIA_LIST_VIEW("criteriaListView"),
 		RESPONSE_DUE_DATE("responseduedate"),
 		TIME_DETAILS("timedetails"),
 		UTILITY_INTEGRATION_BILL_PREVIEW("utilityIntegrationBillPreviewWidget"),
@@ -581,8 +581,8 @@ public class PageWidget {
 		SPACES("spaces"),
 		SUB_SPACES("subSpaces"),
 		FLOORS("floors"),
-		TENANT_RECENTLY_CLOSED_WORKORDER("tenantrecentlyclosedworkorder");
-		;
+		TENANT_RECENTLY_CLOSED_WORKORDER("tenantrecentlyclosedworkorder"),
+		CALENDAR_EVENT_LIST("calendarEventList");
 
 		private String name;
 		@Getter
