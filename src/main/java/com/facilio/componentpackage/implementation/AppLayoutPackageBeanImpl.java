@@ -222,6 +222,7 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
     }
 
     private ApplicationLayoutContext getLayoutFromXMLComponent(XMLBuilder layoutElement, Map<String, Long> appNameVsAppId) {
+        // TODO - APP_TYPE to be removed from table & constraint
         String appType, appLinkName, layoutTypeStr, deviceTypeStr;
         ApplicationLayoutContext.LayoutDeviceType layoutDeviceType;
         ApplicationLayoutContext.AppLayoutType layoutType;
@@ -239,7 +240,7 @@ public class AppLayoutPackageBeanImpl implements PackageBean<ApplicationLayoutCo
         layoutDeviceType = StringUtils.isNotEmpty(deviceTypeStr) ? ApplicationLayoutContext.LayoutDeviceType.valueOf(deviceTypeStr) : null;
         applicationId = appNameVsAppId.containsKey(appLinkName) ? appNameVsAppId.get(appLinkName) : -1;
 
-        layoutContext = new ApplicationLayoutContext(applicationId, layoutType, layoutDeviceType, appType);
+        layoutContext = new ApplicationLayoutContext(applicationId, layoutType, layoutDeviceType, appLinkName);
         layoutContext.setVersionNumber(versionNumber);
 
         return layoutContext;
