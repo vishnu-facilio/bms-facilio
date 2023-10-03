@@ -60,6 +60,7 @@ public enum FSMErrorCode {
     TRIP_CANNOT_BE_STARTED(Severity.ERROR,"Trip cannot be started","You currently have an active trip in progress. To manage your ongoing trip, please navigate to the associated service appointment.{0}"),
     TRIP_TIME_MISMATCH(Severity.ERROR, "Time range is invalid", "Trip should have valid time range."),
     TRIP_RECORD_LOCKED(Severity.ERROR,"Cannot Edit/Delete Trip","Cannot edit or delete an ongoing trip"),
+    TRIP_CANNOT_BE_CREATED(Severity.ERROR,"Trip cannot be created","Please make sure that trip created for a past or current moment."),
     //Service Task error codes
     TASK_RECORD_LOCKED(Severity.ERROR,"Cannot Edit/Delete Task","Cannot edit or delete Service Task after start work"),
     UPDATE_PREVENT(Severity.ERROR, "Not Permitted", "You are not permitted to edit these details."),

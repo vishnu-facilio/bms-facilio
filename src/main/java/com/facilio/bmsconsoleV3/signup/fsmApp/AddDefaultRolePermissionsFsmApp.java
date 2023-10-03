@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AddDefaultRolesFsmApp extends FacilioCommand {
+public class AddDefaultRolePermissionsFsmApp extends FacilioCommand {
 
     private static final Map<String, Long> moduleTabPermissions = NewPermissionUtil.getPermissions(WebTabContext.Type.MODULE.getIndex());
     private static final Map<String, Long> customTabPermissions = NewPermissionUtil.getPermissions(WebTabContext.Type.CUSTOM.getIndex());
@@ -202,10 +202,10 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
                         + moduleTabPermissions.get("READ")
                         + moduleTabPermissions.get("UPDATE")
                         + moduleTabPermissions.get("EXPORT")
-                        + moduleTabPermissions.get("COMPLETE_SERVICE_ORDER")
+                        + moduleTabPermissions.get("COMPLETE")
                         + moduleTabPermissions.get("MANAGE_SERVICE_TASKS")
-                        + moduleTabPermissions.get("CLOSE_SERVICE_ORDER")
-                        + moduleTabPermissions.get("CANCEL_SERVICE_ORDER")
+                        + moduleTabPermissions.get("CLOSE")
+                        + moduleTabPermissions.get("CANCEL")
                         + moduleTabPermissions.get("MANAGE_INVENTORY_AND_SERVICE")
                         + moduleTabPermissions.get("MANAGE_INVENTORY_REQUEST")
                         ;
@@ -217,7 +217,7 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
                 + moduleTabPermissions.get("UPDATE")
                 + moduleTabPermissions.get("CANCEL")
                 + moduleTabPermissions.get("DISPATCH")
-                + moduleTabPermissions.get("EXECUTE_SERVICE_TASKS_ALL")
+                + moduleTabPermissions.get("EXECUTE")
                 + moduleTabPermissions.get("EXPORT")
                 + moduleTabPermissions.get("MANAGE_INVENTORY_AND_SERVICE")
                 + moduleTabPermissions.get("MANAGE_SERVICE_TASKS")
@@ -228,14 +228,14 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
         permission += moduleTabPermissions.get("CREATE")
                 + moduleTabPermissions.get("READ")
                 + moduleTabPermissions.get("UPDATE")
-                + moduleTabPermissions.get("CLOSE_ALL");
+                + moduleTabPermissions.get("CLOSE");
         dispatcherRolePermissions.put(FacilioConstants.TimeSheet.TIME_SHEET, permission);
 
         permission = 0L; // TODO: Reinitialize
         permission += moduleTabPermissions.get("CREATE")
                 + moduleTabPermissions.get("READ")
                 + moduleTabPermissions.get("UPDATE")
-                + moduleTabPermissions.get("COMPLETE_ALL");
+                + moduleTabPermissions.get("COMPLETE");
         dispatcherRolePermissions.put(FacilioConstants.Trip.TRIP, permission);
 
         permission = 0L; // TODO: Reinitialize
@@ -320,23 +320,23 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
 
         permission = 0L; // TODO: Reinitialize
         permission += moduleTabPermissions.get("READ_OWN")
-                + moduleTabPermissions.get("EXECUTE_SERVICE_TASKS_OWN")
+                + moduleTabPermissions.get("EXECUTE")
                 + moduleTabPermissions.get("EXPORT")
                 + moduleTabPermissions.get("MANAGE_INVENTORY_AND_SERVICE")
                 + moduleTabPermissions.get("MANAGE_INVENTORY_REQUEST");
         fieldAgentRolePermissions.put(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, permission);
 
         permission = 0L; // TODO: Reinitialize
-        permission += moduleTabPermissions.get("CREATE_OWN")
-                + moduleTabPermissions.get("UPDATE_OWN")
-                + moduleTabPermissions.get("CLOSE_OWN")
+        permission += moduleTabPermissions.get("CREATE")
+                + moduleTabPermissions.get("UPDATE")
+                + moduleTabPermissions.get("CLOSE")
                 + moduleTabPermissions.get("READ_OWN");
         fieldAgentRolePermissions.put(FacilioConstants.TimeSheet.TIME_SHEET, permission);
 
         permission = 0L; // TODO: Reinitialize
-        permission += moduleTabPermissions.get("CREATE_OWN")
-                + moduleTabPermissions.get("UPDATE_OWN")
-                + moduleTabPermissions.get("COMPLETE_OWN")
+        permission += moduleTabPermissions.get("CREATE")
+                + moduleTabPermissions.get("UPDATE")
+                + moduleTabPermissions.get("COMPLETE")
                 + moduleTabPermissions.get("READ_OWN");
         fieldAgentRolePermissions.put(FacilioConstants.Trip.TRIP, permission);
 
@@ -392,20 +392,20 @@ public class AddDefaultRolesFsmApp extends FacilioCommand {
 
         permission = 0L; // TODO: Reinitialize
         permission += moduleTabPermissions.get("READ_OWN")
-                + moduleTabPermissions.get("EXECUTE_SERVICE_TASKS_OWN");
+                + moduleTabPermissions.get("EXECUTE");
         assistantFieldAgentRolePermissions.put(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, permission);
 
         permission = 0L; // TODO: Reinitialize
-        permission += moduleTabPermissions.get("CREATE_OWN")
-                + moduleTabPermissions.get("UPDATE_OWN")
-                + moduleTabPermissions.get("CLOSE_OWN")
+        permission += moduleTabPermissions.get("CREATE")
+                + moduleTabPermissions.get("UPDATE")
+                + moduleTabPermissions.get("CLOSE")
                 + moduleTabPermissions.get("READ_OWN");
         assistantFieldAgentRolePermissions.put(FacilioConstants.TimeSheet.TIME_SHEET, permission);
 
         permission = 0L; // TODO: Reinitialize
-        permission += moduleTabPermissions.get("CREATE_OWN")
-                + moduleTabPermissions.get("UPDATE_OWN")
-                + moduleTabPermissions.get("COMPLETE_OWN")
+        permission += moduleTabPermissions.get("CREATE")
+                + moduleTabPermissions.get("UPDATE")
+                + moduleTabPermissions.get("COMPLETE")
                 + moduleTabPermissions.get("READ_OWN");
         assistantFieldAgentRolePermissions.put(FacilioConstants.Trip.TRIP, permission);
 

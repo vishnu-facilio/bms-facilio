@@ -3660,4 +3660,58 @@
          <property name="positionType" type="number"/>
        </requestbody>
     </request>
+    <request path="/api/fsm/serviceappointment/list" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="viewName" type="string"/>
+            <property name="boardId" type="number"/>
+            <property name="orderBy" type="string"/>
+            <property name="orderType" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/fsm/board/list" method="GET"/>
+    <request path="/api/v3/people/util/shiftDetailsForCurrentDay" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/fsm/homePage/mobile" method="GET"/>
+    <request path="/api/v3/serviceAppointment/associateTask" method="POST">
+        <requestbody type="object">
+            <property name="serviceTasks" type="array">
+                <items type="number"/>
+            </property>
+            <property name="appointmentId" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/serviceAppointment/dispatch" method="POST">
+        <requestbody type="object">
+            <property name="appointmentId" type="number"/>
+            <property name="fieldAgentId" type="number"/>
+            <property name="scheduledEndTime" type="number"/>
+            <property name="scheduledStartTime" type="number"/>
+            <property name="skipValidation" type="boolean"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/serviceAppointment/tripDetails" method="GET">
+        <urlparams>
+            <property name="appointmentId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/serviceAppointment/fetchTaskList" method="GET">
+        <urlparams>
+            <property name="timeSheetId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/employee/workschedule" method="GET">
+        <urlparams>
+            <property name="peopleId" type="number"/>
+            <property name="startTime" type="number"/>
+            <property name="endTime" type="number"/>
+        </urlparams>
+    </request>
+
+
 </config>

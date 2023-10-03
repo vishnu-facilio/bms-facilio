@@ -76,24 +76,16 @@ public class NewPermissionUtil {
         moduleTabType.put("DELETE_OWN", 16384L);
         moduleTabType.put("UPDATE_WORKORDER_TASK", 32768L);
         moduleTabType.put("CONTROL", 65536L);
-        moduleTabType.put("CANCEL_SERVICE_ORDER", 131072L);
-        moduleTabType.put("COMPLETE_SERVICE_ORDER", 262144L);
-        moduleTabType.put("CLOSE_SERVICE_ORDER", 524288L);
-        moduleTabType.put("EXECUTE_SERVICE_TASKS_ALL",1048576L);
-        moduleTabType.put("EXECUTE_SERVICE_TASKS_OWN",2097152L);
-        moduleTabType.put("CANCEL", 4194304L);
-        moduleTabType.put("DISPATCH",8388608L);
-        moduleTabType.put("VIEW_PRICING",16777216L);
-        moduleTabType.put("CREATE_OWN",33554432L);
-        moduleTabType.put("CLOSE_ALL",67108864L);
-        moduleTabType.put("CLOSE_OWN",134217728L);
-        moduleTabType.put("MANAGE_SERVICE_TASKS", 268435456L);
-        moduleTabType.put("MANAGE_INVENTORY_AND_SERVICE",536870912L);
-        moduleTabType.put("MANAGE_INVENTORY_REQUEST",1073741824L);
-        moduleTabType.put("CLONE",2147483648L);
-        moduleTabType.put("COMPLETE_ALL",4294967296L);
-        moduleTabType.put("COMPLETE_OWN",8589934592L);
-        //moduleTabType.put("READ_TASK", 131072);
+        moduleTabType.put("EXECUTE",131072L);
+        moduleTabType.put("CANCEL", 262144L);
+        moduleTabType.put("DISPATCH",524288L);
+        moduleTabType.put("VIEW_PRICING",1048576L);
+        moduleTabType.put("CLOSE",2097152L);
+        moduleTabType.put("MANAGE_SERVICE_TASKS", 4194304L);
+        moduleTabType.put("MANAGE_INVENTORY_AND_SERVICE",8388608L);
+        moduleTabType.put("MANAGE_INVENTORY_REQUEST",16777216L);
+        moduleTabType.put("CLONE",33554432L);
+        moduleTabType.put("COMPLETE",67108864L);
         return moduleTabType;
     }
 
@@ -409,9 +401,9 @@ public class NewPermissionUtil {
         permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
         permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
         permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
-        permissions.add(new Permission("COMPLETE_SERVICE_ORDER", "Complete Work", moduleTabType.get("COMPLETE_SERVICE_ORDER"), null));
-        permissions.add(new Permission("CLOSE_SERVICE_ORDER", "Close", moduleTabType.get("CLOSE_SERVICE_ORDER"), null));
-        permissions.add(new Permission("CANCEL_SERVICE_ORDER", "Cancel", moduleTabType.get("CANCEL_SERVICE_ORDER"), null));
+        permissions.add(new Permission("COMPLETE", "Complete", moduleTabType.get("COMPLETE"), null));
+        permissions.add(new Permission("CLOSE", "Close", moduleTabType.get("CLOSE"), null));
+        permissions.add(new Permission("CANCEL", "Cancel", moduleTabType.get("CANCEL"), null));
         permissions.add(new Permission("MANAGE_SERVICE_TASKS", "Manage Tasks", moduleTabType.get("MANAGE_SERVICE_TASKS"), null));
         permissions.add(new Permission("MANAGE_INVENTORY_AND_SERVICE", "Manage Inventory & Service", moduleTabType.get("MANAGE_INVENTORY_AND_SERVICE"), null));
         permissions.add(new Permission("MANAGE_INVENTORY_REQUEST", "Manage Inventory Request", moduleTabType.get("MANAGE_INVENTORY_REQUEST"), null));
@@ -429,10 +421,7 @@ public class NewPermissionUtil {
         permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
         permissions.add(new Permission("CANCEL", "Cancel", moduleTabType.get("CANCEL"), null));
         permissions.add(new Permission("DISPATCH", "Dispatch", moduleTabType.get("DISPATCH"), null));
-        List<Permission> executeTaskGroups = new ArrayList<>();
-        executeTaskGroups.add(new Permission("EXECUTE_SERVICE_TASKS_ALL", "All", moduleTabType.get("EXECUTE_SERVICE_TASKS_ALL"), null));
-        executeTaskGroups.add(new Permission("EXECUTE_SERVICE_TASKS_OWN", "Own", moduleTabType.get("EXECUTE_SERVICE_TASKS_OWN"), null));
-        permissions.add(new PermissionGroup("Execute Task", executeTaskGroups));
+        permissions.add(new Permission("EXECUTE", "Execute", moduleTabType.get("EXECUTE"), null));
         permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
         permissions.add(new Permission("MANAGE_INVENTORY_AND_SERVICE", "Manage Inventory & Service", moduleTabType.get("MANAGE_INVENTORY_AND_SERVICE"), null));
         permissions.add(new Permission("MANAGE_SERVICE_TASKS", "Manage Task", moduleTabType.get("MANAGE_SERVICE_TASKS"), null));
@@ -447,22 +436,9 @@ public class NewPermissionUtil {
         readGroupPermissions.add(new Permission("READ", "All", moduleTabType.get("READ"), null));
         readGroupPermissions.add(new Permission("READ_OWN", "Own", moduleTabType.get("READ_OWN"), null));
         permissions.add(new PermissionGroup("Read", readGroupPermissions));
-
-        List<Permission> createPermissions = new ArrayList<>();
-        createPermissions.add(new Permission("CREATE", "All", moduleTabType.get("CREATE"), null));
-        createPermissions.add(new Permission("CREATE_OWN", "Own", moduleTabType.get("CREATE_OWN"), null));
-        permissions.add(new PermissionGroup("Create", createPermissions));
-
-        List<Permission> updatePermissions = new ArrayList<>();
-        updatePermissions.add(new Permission("UPDATE", "All", moduleTabType.get("UPDATE"), null));
-        updatePermissions.add(new Permission("UPDATE_OWN", "Own", moduleTabType.get("UPDATE_OWN"), null));
-        permissions.add(new PermissionGroup("Update", updatePermissions));
-
-        List<Permission> closePermissions = new ArrayList<>();
-        closePermissions.add(new Permission("CLOSE_ALL", "All", moduleTabType.get("CLOSE_ALL"), null));
-        closePermissions.add(new Permission("CLOSE_OWN", "Own", moduleTabType.get("CLOSE_OWN"), null));
-        permissions.add(new PermissionGroup("Close", closePermissions));
-
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("CLOSE", "Close", moduleTabType.get("CLOSE"), null));
         permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
         permissionMap.put(FacilioConstants.TimeSheet.TIME_SHEET, permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
@@ -473,22 +449,9 @@ public class NewPermissionUtil {
         readPermissionGroup.add(new Permission("READ", "All", moduleTabType.get("READ"), null));
         readPermissionGroup.add(new Permission("READ_OWN", "Own", moduleTabType.get("READ_OWN"), null));
         permissions.add(new PermissionGroup("Read", readPermissionGroup));
-
-        List<Permission> createGroup = new ArrayList<>();
-        createGroup.add(new Permission("CREATE", "All", moduleTabType.get("CREATE"), null));
-        createGroup.add(new Permission("CREATE_OWN", "Own", moduleTabType.get("CREATE_OWN"), null));
-        permissions.add(new PermissionGroup("Create", createGroup));
-
-        List<Permission> updateGroups = new ArrayList<>();
-        updateGroups.add(new Permission("UPDATE", "All", moduleTabType.get("UPDATE"), null));
-        updateGroups.add(new Permission("UPDATE_OWN", "Own", moduleTabType.get("UPDATE_OWN"), null));
-        permissions.add(new PermissionGroup("Update", updateGroups));
-
-        List<Permission> completeGroups = new ArrayList<>();
-        completeGroups.add(new Permission("COMPLETE_ALL", "All", moduleTabType.get("COMPLETE_ALL"), null));
-        completeGroups.add(new Permission("COMPLETE_OWN", "Own", moduleTabType.get("COMPLETE_OWN"), null));
-        permissions.add(new PermissionGroup("Complete Work", completeGroups));
-
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("COMPLETE", "Complete", moduleTabType.get("COMPLETE"), null));
         permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
         permissionMap.put(FacilioConstants.Trip.TRIP, permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);

@@ -294,7 +294,6 @@ public class FieldServiceManagementV3Config {
                 .update()
                 .beforeSave(FsmTransactionChainFactoryV3.getServiceAppointmentBeforeUpdateChain())
                 .afterSave(FsmTransactionChainFactoryV3.getServiceAppointmentAfterUpdateChain())
-//                .afterTransaction(new AddActivitiesCommand(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY))
                 .list()
                 .beforeFetch(new FetchServiceAppointmentSupplementsCommand())
                 .summary()
@@ -354,6 +353,7 @@ public class FieldServiceManagementV3Config {
                 .summary()
                 .beforeFetch(new FetchTripSupplementsCommand())
                 .delete()
+                .beforeDelete(FsmTransactionChainFactoryV3.getTripBeforeDeleteChain())
                 .afterDelete(new AddTripServiceAppointmentActivity())
                 .build();
     }
@@ -362,8 +362,10 @@ public class FieldServiceManagementV3Config {
     public static Supplier<V3Config> getTripLocationHistory(){
         return () -> new V3Config(TripContext.class,null)
                 .create()
+                .afterSave(new UpdatePeopleLocationFromTripCommand())
                 .update()
                 .list()
+                .beforeFetch(new FetchLocationHistorySupplements())
                 .summary()
                 .delete()
                 .build();

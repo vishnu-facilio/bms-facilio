@@ -258,6 +258,12 @@ public class FsmTransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getTripBeforeDeleteChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CheckRecordLockForTripCommand());
+        return c;
+    }
+
     public static FacilioChain getTimeOffBeforeCreateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());

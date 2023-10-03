@@ -222,7 +222,7 @@ public class TripModule extends BaseModuleConfig {
                 .widgetDone()
                 .sectionDone()
                 .addSection("tripJourney",null,null)
-                .addWidget("tripJourneyWidget","Journey",PageWidget.WidgetType.TRIP_JOURNEY,"tripJourney_22_6",0,0,null,null)
+                .addWidget("tripJourneyWidget","Journey",PageWidget.WidgetType.TRIP_JOURNEY,"webTripJourney_22_6",0,0,null,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

@@ -11,13 +11,11 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
-import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.bmsconsoleV3.util.V3ModuleAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
@@ -29,7 +27,7 @@ import java.util.Map;
 public class AddFsmApplicationDefaultViews extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-//        if(!SignupUtil.fsmAppSignup()) {
+
             ApplicationContext fsm = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FSM_APP);
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<String> sysModuleNames = V3ModuleAPI.getSystemModuleNamesForApp(fsm.getLinkName());
@@ -62,7 +60,6 @@ public class AddFsmApplicationDefaultViews extends FacilioCommand {
                     }
                 }
             }
-//        }
         return false;
     }
     private void addViewsAndColumns(String moduleName,Long groupId,String viewName,ModuleBean modBean,ApplicationContext fsm) throws Exception {
@@ -83,7 +80,6 @@ public class AddFsmApplicationDefaultViews extends FacilioCommand {
         FacilioView view = ViewAPI.getView(viewName, moduleId, orgId, fsm.getId());
         if(view == null) {
             view = ViewFactory.getView(module, viewName, modBean);
-            //view = FieldUtil.cloneBean(viewFromFactory,FacilioView.class);
             if(view != null) {
                 view.setName("fsm_" + view.getName());
                 view.setAppId(fsm.getId());

@@ -106,7 +106,6 @@ public class TransactionChainFactory {
     }
 
 		public static FacilioChain getOrgSignupChain() {
-			Boolean isFSMEnabled = FacilioProperties.getFsmApp();
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddDefaultLicenseCommand());
 			c.addCommand(new AddDefaultModulesCommand());
@@ -126,9 +125,7 @@ public class TransactionChainFactory {
 //			c.addCommand(new AddMaintenanceAppConfigCommand());
 			//c.addCommand(new AddDefaultWoTimelineCommand());
 			c.addCommand(addMaintenanceApplication());
-			if(isFSMEnabled){
-				c.addCommand(addFSMApplication());
-			}
+			c.addCommand(addFSMApplication());
 			c.addCommand(addEmployeePortalChain());
 			c.addCommand(new AddEnergyApp());
 			c.addCommand(addScopingChain());
@@ -143,7 +140,7 @@ public class TransactionChainFactory {
 		c.addCommand(new AddFsmApplicationLayout());
 		c.addCommand(new AddFsmApplicationDefaultViews());
 		c.addCommand(new AddFsmApplicationDefaultForms());
-		c.addCommand(new AddDefaultRolesFsmApp());
+		c.addCommand(new AddDefaultRolePermissionsFsmApp());
 		c.addCommand(new AddFsmAppRelatedApplicationsCommand());
 		return c;
 	}

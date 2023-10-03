@@ -8,7 +8,6 @@ import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
 
 import java.util.*;
 

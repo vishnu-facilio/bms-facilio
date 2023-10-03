@@ -24,13 +24,19 @@ public class ValidateAndRollUpTripCommand extends FacilioCommand {
         EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
         if(CollectionUtils.isNotEmpty(trips)) {
             for (TripContext trip : trips) {
-                if (trip.getStartTime()>0 && trip.getEndTime() >0) {
-                    if (trip.getStartTime() > trip.getEndTime()) {
+                if (trip.getStartTime()>0  && trip.getEndTime() >0) {
+                    if(trip.getStartTime()<=trip.getCurrentTime() && trip.getEndTime()<=trip.getCurrentTime()) {
+                        if (trip.getStartTime() > trip.getEndTime()) {
+                            throw new FSMException(FSMErrorCode.TRIP_TIME_MISMATCH);
+                        }
+                        trip.setStatus(ServiceAppointmentUtil.getTripStatus(FacilioConstants.Trip.COMPLETED));
+                        Long duration = trip.getEndTime() - trip.getStartTime();
+                        trip.setTripDuration(duration / 1000);
+                    }else{
                         throw new FSMException(FSMErrorCode.TRIP_TIME_MISMATCH);
                     }
-                    trip.setStatus(ServiceAppointmentUtil.getTripStatus(FacilioConstants.Trip.COMPLETED));
-                    Long duration = trip.getEndTime() - trip.getStartTime();
-                    trip.setTripDuration(duration/1000);
+                }else if(trip.getStartTime()>trip.getCurrentTime()){
+                    throw new FSMException(FSMErrorCode.TRIP_CANNOT_BE_CREATED);
                 }
                 if(eventType == EventType.EDIT){
                     Map<Long,Object> oldTrips = (Map<Long,Object>) oldRecordMap.get(context.get("moduleName"));

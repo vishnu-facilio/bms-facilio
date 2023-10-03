@@ -132,19 +132,8 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         }
 
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FSM)) {
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.WORK_TYPE));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_SKILL));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK));
             modules.add(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS));
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES));
             modules.add(modBean.getModule(FacilioConstants.TimeOff.TIME_OFF));
-            modules.add(modBean.getModule(FacilioConstants.LocationHistory.LOCATION_HISTORY));
             modules.add(modBean.getModule(FacilioConstants.Territory.TERRITORY));
             modules.add(modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
             modules.add(modBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET));

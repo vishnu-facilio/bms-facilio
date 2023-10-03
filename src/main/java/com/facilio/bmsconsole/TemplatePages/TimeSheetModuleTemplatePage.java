@@ -34,7 +34,7 @@ public class TimeSheetModuleTemplatePage implements TemplatePageFactory {
                 .widgetDone()
                 .sectionDone()
                 .addSection("timeSheetTaskList",null,null)
-                .addWidget("timeSheetTaskListWidget","Tasks",PageWidget.WidgetType.TIMESHEET_TASKS,"timesheettasks_23_12",0,0,null,null)
+                .addWidget("timeSheetTaskListWidget","Tasks",PageWidget.WidgetType.TIMESHEET_TASKS,"webTimeSheetTasks_23_12",0,0,null,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

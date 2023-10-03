@@ -229,13 +229,11 @@ public class fsmAction extends V3Action {
                 successMsg.put("message","Trip Ended Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.START_WORK:
-            case FacilioConstants.ServiceAppointment.START_WORK_OWN:
                 FacilioChain startSAChain = FsmTransactionChainFactoryV3.startSAChain();
                 startSAChain.execute(context);
                 successMsg.put("message","Service Appointment Started Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.COMPLETE:
-            case FacilioConstants.ServiceAppointment.COMPLETE_OWN:
                 FacilioChain completeSAChain = FsmTransactionChainFactoryV3.completeSAChain();
                 completeSAChain.execute(context);
                 successMsg.put("message","Service Appointment Completed Successfully");
@@ -325,9 +323,6 @@ public class fsmAction extends V3Action {
                 resumeTaskChain.execute(context);
                 successMsg.put("message","Service Task Resumed Successfully");
                 break;
-//            case FacilioConstants.ServiceAppointment.REOPEN:
-//                ServiceTaskUtil.moveToInProgress(getRecordId());
-//                break;
             case FacilioConstants.ServiceAppointment.COMPLETE:
                 FacilioChain completeTaskChain = FsmTransactionChainFactoryV3.completeTaskChain();
                 completeTaskChain.execute(context);

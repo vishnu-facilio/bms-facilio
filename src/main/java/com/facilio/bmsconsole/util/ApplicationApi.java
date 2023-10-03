@@ -111,9 +111,6 @@ public class ApplicationApi {
         else if(appLinkName.equals("energy")){
             appLinkName = FacilioConstants.ApplicationLinkNames.ENERGY_APP;
         }
-        else if (appLinkName.equals("fsm")) {
-            appLinkName = FacilioConstants.ApplicationLinkNames.FSM_APP;
-        }
         if(appLinkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP) && !skipCheck) {
             appLinkName = SignupUtil.getSignupApplicationLinkName();
         }
@@ -1606,19 +1603,21 @@ public class ApplicationApi {
                 webTabGroupContext.setId(webGroupId);
                 List<WebTabContext> tabs = defaultTabsAndTabGroups.getGroupNameVsTabsMap(layout.getApplicationId(), layout.getId())
                         .get(webTabGroupContext.getRoute());
-                for (WebTabContext webTabContext : tabs) {
-                    WebTabContext webtab = getWebTabForApplication(layout.getApplicationId(), webTabContext.getRoute());
-                    long tabId = 0l;
-                    if (webtab != null) {
-                        tabId = webtab.getId();
-                    } else {
-                        chain = TransactionChainFactory.getAddOrUpdateTabChain();
-                        chainContext = chain.getContext();
-                        chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
-                        chain.execute();
-                        tabId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_ID);
+                if (CollectionUtils.isNotEmpty(tabs)){
+                    for (WebTabContext webTabContext : tabs) {
+                        WebTabContext webtab = getWebTabForApplication(layout.getApplicationId(), webTabContext.getRoute());
+                        long tabId = 0l;
+                        if (webtab != null) {
+                            tabId = webtab.getId();
+                        } else {
+                            chain = TransactionChainFactory.getAddOrUpdateTabChain();
+                            chainContext = chain.getContext();
+                            chainContext.put(FacilioConstants.ContextNames.WEB_TAB, webTabContext);
+                            chain.execute();
+                            tabId = (long) chainContext.get(FacilioConstants.ContextNames.WEB_TAB_ID);
+                        }
+                        webTabContext.setId(tabId);
                     }
-                    webTabContext.setId(tabId);
                 }
                 if (CollectionUtils.isNotEmpty(tabs) && !webTabGroupContext.getName().equals("ONLY_TABS")) {
                     chain = TransactionChainFactory.getCreateAndAssociateTabGroupChain();
@@ -3291,6 +3290,7 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
 
+
 //            webTabGroups.add(new WebTabGroupContext("Developer Space", "developerspace", layout.getId(), 3, groupOrder++));
 //            webTabs = new ArrayList<>();
 //            webTabs.add(new WebTabContext("API Setup", "apisetup", WebTabContext.Type.API_SETUP, null, appId, null));
@@ -3555,7 +3555,6 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Sandbox","sandbox", WebTabContext.Type.SANDBOX,null,appId,null,AccountUtil.FeatureLicense.SANDBOX.getFeatureId()));
 
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
-
 
 
             for (WebTabGroupContext webTabGroupContext : webTabGroups) {

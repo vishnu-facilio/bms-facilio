@@ -90,7 +90,6 @@ import org.json.simple.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.facilio.constants.FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION;
 //import com.facilio.custom.CustomController;
 
 public class FacilioConstants {
@@ -3386,7 +3385,7 @@ public class FacilioConstants {
 			classMap.put(ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY,ActivityContext.class);
 			classMap.put(TimeSheet.TIME_SHEET_ACTIVITY,ActivityContext.class);
 			classMap.put(Trip.TRIP_ACTIVITY,ActivityContext.class);
-			classMap.put(SERVICE_INVENTORY_RESERVATION, ServiceInventoryReservationContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, ServiceInventoryReservationContext.class);
 			classMap.put(TimeOff.TIME_OFF_ACTIVITY, ActivityContext.class);
 			classMap.put(FieldServiceManagement.SERVICE_TASK, ServiceTaskContext.class);
 			classMap.put(FieldServiceManagement.SERVICE_TASK_STATUS, ServiceTaskStatusContext.class);
@@ -3853,10 +3852,8 @@ public class FacilioConstants {
 		public static final String MAINTENANCE_MANAGER = "CAFM Manager";
 		public static final String MAINTENANCE_TECHNICIAN = "CAFM Technician";
 
-		public static final String FSM_MANAGER = "FSM Manager";
 
 		public static final String FSM_DISPATCHER = "Dispatcher";
-		public static final String FSM_TECHNICIAN = "FSM Technician";
 		public static final String FIELD_AGENT = "Field Agent";
 		public static final String ASSISTANT_FIELD_AGENT = "Assistant Field Agent";
 		public static final String STOREROOM_MANAGER = "Storeroom Manager";
@@ -4689,7 +4686,6 @@ public class FacilioConstants {
 		public static final String SERVICE_APPOINTMENT_ACTIVITY = "serviceAppointmentActivity";
 		public static final String SERVICE_APPOINTMENT_SKILL = "serviceAppointmentSkill";
 		public static final String SERVICE_APPOINTMENT_TICKET_STATUS = "serviceAppointmentTicketStatus";
-		public static final String SERVICE_APPOINTMENT_STATUS = "serviceAppointmentStatus";
 		public static final String SERVICE_APPOINTMENT_NOTES = "serviceAppointmentNotes";
 		public static final String SERVICE_APPOINTMENT_ATTACHMENTS = "serviceAppointmentAttachments";
 		public static final String SCHEDULED = "scheduled";
@@ -4704,21 +4700,17 @@ public class FacilioConstants {
 		public static final String REDISPATCH = "redispatch";
 		public static final String RESCHEDULE = "reschedule";
 		public static final String COMPLETE = "complete";
-		public static final String COMPLETE_OWN = "completeOwn";
 		public static final String CANCEL = "cancel";
 		public static final String PAUSE = "pause";
 		public static final String RESUME = "resume";
-		public static final String REOPEN = "reopen";
 		public static final String SCHEDULED_START_TIME = "scheduledStartTime";
 		public static final String SCHEDULED_END_TIME = "scheduledEndTime";
 		public static final String START_TRIP = "startTrip";
 		public static final String START_WORK = "startWork";
-		public static final String START_WORK_OWN = "startWorkOwn";
 		public static final String END_TRIP = "endTrip";
 		public static final String ACTUAL_START_TIME = "actualStartTime";
 		public static final String SERVICE_APPOINTMENT_STATUS_ACTIONS = "serviceAppointmentStatusActions";
 		public static final String PRIORITY = "priority";
-		public static final String RESPONSE_DUE_STATUS = "responseDueStatus";
 		public static final String RESOLUTION_DUE_STATUS = "resolutionDueStatus";
 		public static final String SKIP_VALIDATION = "skipValidation";
 	}

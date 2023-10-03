@@ -59,7 +59,7 @@ import com.facilio.v3.context.Constants;
 
 public class AddJobPlanModule extends BaseModuleConfig{
 	
-	public static List<String> jobPlanSupportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP, FacilioConstants.ApplicationLinkNames.IWMS_APP);
+	public static List<String> jobPlanSupportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.IWMS_APP);
 	
     public AddJobPlanModule(){
         setModuleName(FacilioConstants.ContextNames.JOB_PLAN);

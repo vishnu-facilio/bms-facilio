@@ -974,7 +974,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .addTab("serviceAppointmentServiceTasks", "Service Task",PageTabContext.TabType.SINGLE_WIDGET_TAB,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceAppointmentServiceTasks", null, null)
-                .addWidget("serviceAppointmentServiceTasksWidget", "Service Task", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "serviceappointmentservicetasks_50_12", 0, 0, null, null)
+                .addWidget("serviceAppointmentServiceTasksWidget", "Service Task", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "webServiceAppointmentServiceTasks_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -983,7 +983,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .addTab("serviceAppointmentPlans", "Plans",PageTabContext.TabType.SINGLE_WIDGET_TAB,  true, AccountUtil.FeatureLicense.INVENTORY)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceAppointmentPlans", null, null)
-                .addWidget("serviceAppointmentPlansWidget", "Plans", PageWidget.WidgetType.SERVICE_APPOINTMENT_PLANS, "serviceappointmentplans_50_12", 0, 0, null, null)
+                .addWidget("serviceAppointmentPlansWidget", "Plans", PageWidget.WidgetType.SERVICE_APPOINTMENT_PLANS, "webServiceAppointmentPlans_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -992,7 +992,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .addTab("serviceAppointmentActuals", "Actuals",PageTabContext.TabType.SINGLE_WIDGET_TAB,  true, AccountUtil.FeatureLicense.INVENTORY)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceAppointmentActuals", null, null)
-                .addWidget("serviceAppointmentActualsWidget", "Actuals", PageWidget.WidgetType.SERVICE_APPOINTMENT_ACTUALS, "serviceappointmentactuals_50_12", 0, 0, null, null)
+                .addWidget("serviceAppointmentActualsWidget", "Actuals", PageWidget.WidgetType.SERVICE_APPOINTMENT_ACTUALS, "webServiceAppointmentActuals_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -1001,7 +1001,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .addTab("serviceAppointmentTimeSheet", "Time Sheet",PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceAppointmentTimeSheet", null, null)
-                .addWidget("serviceAppointmentTimeSheetWidget", "Time Sheet", PageWidget.WidgetType.SERVICE_APPOINTMENT_TIMESHEET, "serviceappointmenttimesheet_50_12", 0, 0, null, null)
+                .addWidget("serviceAppointmentTimeSheetWidget", "Time Sheet", PageWidget.WidgetType.SERVICE_APPOINTMENT_TIMESHEET, "webServiceAppointmentTimeSheet_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -1010,7 +1010,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .addTab("serviceAppointmentTrip", "Trip",PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceAppointmentTrip", null, null)
-                .addWidget("serviceAppointmentTripWidget", "Trip", PageWidget.WidgetType.SERVICE_APPOINTMENT_TRIP, "serviceappointmenttrip_50_12", 0, 0, null, null)
+                .addWidget("serviceAppointmentTripWidget", "Trip", PageWidget.WidgetType.SERVICE_APPOINTMENT_TRIP, "webServiceAppointmentTrip_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -1237,8 +1237,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             startWork.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
             startWork.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
             startWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-//            startWork.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-            startWork.setPermission("EXECUTE_SERVICE_TASKS_ALL");
+            startWork.setPermission("EXECUTE");
             startWork.setPermissionRequired(true);
             Criteria startWorkCriteria = new Criteria();
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(dispatchedStatus.getId()), PickListOperators.IS));
@@ -1248,22 +1247,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
             startWork.setCriteria(startWorkCriteria);
             SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,startWork);
-
-            SystemButtonRuleContext startWorkOwn = new SystemButtonRuleContext();
-            startWorkOwn.setName("Start Work");
-            startWorkOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-            startWorkOwn.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK_OWN);
-            startWorkOwn.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-            startWorkOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
-            startWorkOwn.setPermissionRequired(true);
-            Criteria startWorkOwnCriteria = new Criteria();
-            startWorkOwnCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(dispatchedStatus.getId()), PickListOperators.IS));
-            startWorkOwnCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.IS));
-            startWorkOwnCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
-            startWorkOwnCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
-            startWorkOwn.setCriteria(startWorkOwnCriteria);
-            SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,startWorkOwn);
-
         }
 
         ServiceAppointmentTicketStatusContext inProgressStatus = statusMap.get(FacilioConstants.ServiceAppointment.IN_PROGRESS);
@@ -1273,8 +1256,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             complete.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
             complete.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
             complete.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-//            complete.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-            complete.setPermission("EXECUTE_SERVICE_TASKS_ALL");
+            complete.setPermission("EXECUTE");
             complete.setPermissionRequired(true);
             Criteria completeCriteria = new Criteria();
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(inProgressStatus.getId()), PickListOperators.IS));
@@ -1285,23 +1267,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.ACTUAL_START_TIME), CommonOperators.IS_NOT_EMPTY));
             complete.setCriteria(completeCriteria);
             SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,complete);
-
-            SystemButtonRuleContext completeOwn = new SystemButtonRuleContext();
-            completeOwn.setName("Complete");
-            completeOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-            completeOwn.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE_OWN);
-            completeOwn.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-            completeOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
-            completeOwn.setPermissionRequired(true);
-            Criteria completeOwnCriteria = new Criteria();
-            completeOwnCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(inProgressStatus.getId()), PickListOperators.IS));
-            completeOwnCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.IS));
-            completeOwnCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
-            completeOwnCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
-            completeOwnCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.ACTUAL_START_TIME), CommonOperators.IS_NOT_EMPTY));
-            completeOwn.setCriteria(completeOwnCriteria);
-            SystemButtonApi.addSystemButton(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,completeOwn);
-
         }
 
         if(dispatchedStatus != null) {
@@ -1396,7 +1361,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         startWork.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         startWork.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
         startWork.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        startWork.setPermission("EXECUTE_SERVICE_TASKS_ALL");
+        startWork.setPermission("EXECUTE");
         startWork.setPermissionRequired(true);
         Criteria startWorkCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.DISPATCHED);
         if(startWorkCriteria!=null){
@@ -1404,26 +1369,12 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         }
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,startWork);
 
-        SystemButtonRuleContext startWorkButton = new SystemButtonRuleContext();
-        startWorkButton.setName("Start Work");
-        startWorkButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        startWorkButton.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
-        startWorkButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        startWorkButton.setPermission("EXECUTE_SERVICE_TASKS_ALL");
-        startWorkButton.setPermissionRequired(true);
-        startWorkCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.DISPATCHED);
-        if(startWorkCriteria!=null){
-            startWorkButton.setCriteria(startWorkCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,startWorkButton);
-
-
         SystemButtonRuleContext pause = new SystemButtonRuleContext();
         pause.setName("Pause Work");
         pause.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
         pause.setIdentifier(FacilioConstants.ServiceAppointment.PAUSE);
         pause.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        pause.setPermission("EXECUTE_SERVICE_TASKS_ALL");
+        pause.setPermission("EXECUTE");
         pause.setPermissionRequired(true);
         Criteria pauseCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
         if(pauseCriteria!=null) {
@@ -1431,25 +1382,12 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         }
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,pause);
 
-        SystemButtonRuleContext pauseButton = new SystemButtonRuleContext();
-        pauseButton.setName("Pause Work");
-        pauseButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        pauseButton.setIdentifier(FacilioConstants.ServiceAppointment.PAUSE);
-        pauseButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        pauseButton.setPermission("EXECUTE_SERVICE_TASKS_ALL");
-        pauseButton.setPermissionRequired(true);
-        pauseCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
-        if(pauseCriteria!=null) {
-            pauseButton.setCriteria(pauseCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,pauseButton);
-
         SystemButtonRuleContext resume = new SystemButtonRuleContext();
         resume.setName("Resume Work");
         resume.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         resume.setIdentifier(FacilioConstants.ServiceAppointment.RESUME);
         resume.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        resume.setPermission("EXECUTE_SERVICE_TASKS_ALL");
+        resume.setPermission("EXECUTE");
         resume.setPermissionRequired(true);
         Criteria resumeCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.ON_HOLD);
         if(resumeCriteria!=null){
@@ -1457,158 +1395,18 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         }
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,resume);
 
-        SystemButtonRuleContext resumeButton = new SystemButtonRuleContext();
-        resumeButton.setName("Resume Work");
-        resumeButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        resumeButton.setIdentifier(FacilioConstants.ServiceAppointment.RESUME);
-        resumeButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        resumeButton.setPermission("EXECUTE_SERVICE_TASKS_ALL");
-        resumeButton.setPermissionRequired(true);
-        resumeCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.ON_HOLD);
-        if(resumeCriteria!=null){
-            resumeButton.setCriteria(resumeCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,resumeButton);
-
         SystemButtonRuleContext complete = new SystemButtonRuleContext();
         complete.setName("Complete");
         complete.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         complete.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
         complete.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        complete.setPermission("EXECUTE_SERVICE_TASKS_ALL");
+        complete.setPermission("EXECUTE");
         complete.setPermissionRequired(true);
         Criteria completeCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
         if(completeCriteria!=null){
             complete.setCriteria(completeCriteria);
         }
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,complete);
-
-        SystemButtonRuleContext completeButton = new SystemButtonRuleContext();
-        completeButton.setName("Complete");
-        completeButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        completeButton.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
-        completeButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        completeButton.setPermission("EXECUTE_SERVICE_TASKS_ALL");
-        completeButton.setPermissionRequired(true);
-        completeCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
-        if(completeCriteria!=null){
-            completeButton.setCriteria(completeCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,completeButton);
-
-        SystemButtonRuleContext startWorkOwn = new SystemButtonRuleContext();
-        startWorkOwn.setName("Start Work");
-        startWorkOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        startWorkOwn.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
-        startWorkOwn.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        startWorkOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
-        startWorkOwn.setPermissionRequired(true);
-        startWorkCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.DISPATCHED);
-        if(startWorkCriteria!=null){
-            startWorkCriteria.andCriteria(getFieldAgentCriteria());
-            startWorkOwn.setCriteria(startWorkCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,startWorkOwn);
-
-        SystemButtonRuleContext startWorkOwnButton = new SystemButtonRuleContext();
-        startWorkOwnButton.setName("Start Work");
-        startWorkOwnButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        startWorkOwnButton.setIdentifier(FacilioConstants.ServiceAppointment.START_WORK);
-        startWorkOwnButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        startWorkOwnButton.setPermission("EXECUTE_SERVICE_TASKS_OWN");
-        startWorkOwnButton.setPermissionRequired(true);
-        startWorkCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.DISPATCHED);
-        if(startWorkCriteria!=null){
-            startWorkCriteria.andCriteria(getFieldAgentCriteria());
-            startWorkOwnButton.setCriteria(startWorkCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,startWorkOwnButton);
-
-        SystemButtonRuleContext pauseOwn = new SystemButtonRuleContext();
-        pauseOwn.setName("Pause Work");
-        pauseOwn.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        pauseOwn.setIdentifier(FacilioConstants.ServiceAppointment.PAUSE);
-        pauseOwn.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        pauseOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
-        pauseOwn.setPermissionRequired(true);
-        pauseCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
-        if(pauseCriteria!=null) {
-            pauseCriteria.andCriteria(getFieldAgentCriteria());
-            pauseOwn.setCriteria(pauseCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,pauseOwn);
-
-        SystemButtonRuleContext pauseOwnButton = new SystemButtonRuleContext();
-        pauseOwnButton.setName("Pause Work");
-        pauseOwnButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        pauseOwnButton.setIdentifier(FacilioConstants.ServiceAppointment.PAUSE);
-        pauseOwnButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        pauseOwnButton.setPermission("EXECUTE_SERVICE_TASKS_OWN");
-        pauseOwnButton.setPermissionRequired(true);
-        pauseCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
-        if(pauseCriteria!=null) {
-            pauseCriteria.andCriteria(getFieldAgentCriteria());
-            pauseOwnButton.setCriteria(pauseCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,pauseOwnButton);
-
-        SystemButtonRuleContext resumeOwn = new SystemButtonRuleContext();
-        resumeOwn.setName("Resume Work");
-        resumeOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        resumeOwn.setIdentifier(FacilioConstants.ServiceAppointment.RESUME);
-        resumeOwn.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        resumeOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
-        resumeOwn.setPermissionRequired(true);
-        resumeCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.ON_HOLD);
-        if(resumeCriteria!=null){
-            resumeCriteria.andCriteria(getFieldAgentCriteria());
-            resumeOwn.setCriteria(resumeCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,resumeOwn);
-
-
-        SystemButtonRuleContext resumeOwnButton = new SystemButtonRuleContext();
-        resumeOwnButton.setName("Resume Work");
-        resumeOwnButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        resumeOwnButton.setIdentifier(FacilioConstants.ServiceAppointment.RESUME);
-        resumeOwnButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        resumeOwnButton.setPermission("EXECUTE_SERVICE_TASKS_OWN");
-        resumeOwnButton.setPermissionRequired(true);
-        resumeCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.ON_HOLD);
-        if(resumeCriteria!=null){
-            resumeCriteria.andCriteria(getFieldAgentCriteria());
-            resumeOwnButton.setCriteria(resumeCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,resumeOwnButton);
-
-        SystemButtonRuleContext completeOwn = new SystemButtonRuleContext();
-        completeOwn.setName("Complete");
-        completeOwn.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        completeOwn.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
-        completeOwn.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        completeOwn.setPermission("EXECUTE_SERVICE_TASKS_OWN");
-        completeOwn.setPermissionRequired(true);
-        completeCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
-        if(completeCriteria!=null){
-            completeCriteria.andCriteria(getFieldAgentCriteria());
-            completeOwn.setCriteria(completeCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,completeOwn);
-
-        SystemButtonRuleContext completeOwnButton = new SystemButtonRuleContext();
-        completeOwnButton.setName("Complete");
-        completeOwnButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        completeOwnButton.setIdentifier(FacilioConstants.ServiceAppointment.COMPLETE);
-        completeOwnButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        completeOwnButton.setPermission("EXECUTE_SERVICE_TASKS_OWN");
-        completeOwnButton.setPermissionRequired(true);
-        completeCriteria = getCriteria(FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS);
-        if(completeCriteria!=null){
-            completeCriteria.andCriteria(getFieldAgentCriteria());
-            completeOwnButton.setCriteria(completeCriteria);
-        }
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,completeOwnButton);
-
     }
     private static Criteria getCriteria(String status) throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1623,40 +1421,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         return null;
     }
 
-    public static Criteria getFieldAgentCriteria() throws Exception {
-        ModuleBean moduleBean = Constants.getModBean();
-
-        LookupField fieldAgent = new LookupField();
-        fieldAgent.setName("fieldAgent");
-        fieldAgent.setColumnName("PEOPLE_ID");
-        fieldAgent.setDataType(FieldType.LOOKUP);
-        fieldAgent.setModule(moduleBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
-        fieldAgent.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE));
-
-        Condition loggedInPeopleCondition = new Condition();
-        loggedInPeopleCondition.setField(fieldAgent);
-        loggedInPeopleCondition.setOperator(PickListOperators.IS);
-        loggedInPeopleCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_PEOPLE);
-
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(loggedInPeopleCondition);
-
-        LookupField serviceAppointment = new LookupField();
-        serviceAppointment.setName("serviceAppointment");
-        serviceAppointment.setColumnName("SERVICE_APPOINTMENT");
-        serviceAppointment.setDataType(FieldType.LOOKUP);
-        serviceAppointment.setModule(moduleBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK));
-        serviceAppointment.setLookupModule(moduleBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
-
-        Condition serviceAppointmentCondition = new Condition();
-        serviceAppointmentCondition.setField(serviceAppointment);
-        serviceAppointmentCondition.setOperator(LookupOperator.LOOKUP);
-        serviceAppointmentCondition.setCriteriaValue(criteria);
-
-        Criteria serviceAppointmentCriteria = new Criteria();
-        serviceAppointmentCriteria.addAndCondition(serviceAppointmentCondition);
-        return serviceAppointmentCriteria;
-    }
     public static Criteria getTrackGeoLocationCriteria() throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
 

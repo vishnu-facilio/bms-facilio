@@ -32,7 +32,7 @@ public class TimeOffModuleTemplatePage implements TemplatePageFactory {
                 .addTab("timeoffsummary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("timeoffsummaryfields", null, null)
-                .addWidget("timeoffsummaryfieldswidget", "Time Off Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.TimeOff.TIME_OFF))
+                .addWidget("timeoffsummaryfieldswidget", "Time Off Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.TimeOff.TIME_OFF))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -52,7 +52,7 @@ public class TimeOffModuleTemplatePage implements TemplatePageFactory {
 
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app,String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -97,7 +97,7 @@ public class TimeOffModuleTemplatePage implements TemplatePageFactory {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);

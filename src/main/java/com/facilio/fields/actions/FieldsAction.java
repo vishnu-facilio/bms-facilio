@@ -29,7 +29,6 @@ public class FieldsAction extends FacilioAction {
     private boolean isOneLevelFields;
 
 
-
     public String fetchFilterFields() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getAdvancedFilterFieldsChain();
         FacilioContext context = chain.getContext();

@@ -40,9 +40,6 @@ public class ServiceOrderAction extends V3Action {
         put("closeSO", FacilioConstants.ServiceOrder.CLOSED);
     }};
 
-    public String systemActions() throws Exception{
-        return updateServiceOrders();
-    }
 
     public String updateServiceOrders()throws Exception{
         if(orderId == null){

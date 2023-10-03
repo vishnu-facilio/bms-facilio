@@ -106,7 +106,14 @@ public class GetAllModulesCommand extends FacilioCommand {
 			FacilioConstants.UTILITY_INTEGRATION_BILLS,
 			FacilioConstants.UTILITY_INTEGRATION_TARIFF,
 			FacilioConstants.UTILITY_DISPUTE,
-			FacilioConstants.LocationHistory.LOCATION_HISTORY
+			FacilioConstants.LocationHistory.LOCATION_HISTORY,
+			FacilioConstants.TimeOff.TIME_OFF,
+			FacilioConstants.Territory.TERRITORY,
+			FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,
+			FacilioConstants.TimeSheet.TIME_SHEET,
+			ContextNames.FieldServiceManagement.SERVICE_ORDER,
+			ContextNames.CLIENT_CONTACT,
+			FacilioConstants.Trip.TRIP
 
 	});
 

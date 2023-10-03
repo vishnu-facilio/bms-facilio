@@ -139,10 +139,8 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 //			clonedUser.setApplicationId(energyAppId);
 //			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 //		}
-		Boolean isFSMEnabled = FacilioProperties.getFsmApp();
-		if(isFSMEnabled){
-			long fsmAppId = ApplicationApi
-					.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FSM_APP);
+
+		long fsmAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FSM_APP);
 			if (fsmAppId > 0) {
 				Role fsmAdminRole = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
 						FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
@@ -151,7 +149,7 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 				clonedUser.setApplicationId(fsmAppId);
 				AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 			}
-		}
+
 
 		context.put(FacilioConstants.ContextNames.USER, user);
 	}

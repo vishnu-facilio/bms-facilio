@@ -205,7 +205,7 @@ public class TerritoryModule extends BaseModuleConfig {
                 .widgetDone()
                 .sectionDone()
                 .addSection("territoryGeography", null, null)
-                .addWidget("territoryGeographyWidget", "Geography", PageWidget.WidgetType.GEOGRAPHY, "fixedterritorygeography_22_6", 0, 0, null, null)
+                .addWidget("territoryGeographyWidget", "Geography", PageWidget.WidgetType.GEOGRAPHY, "webGeography_22_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -214,7 +214,7 @@ public class TerritoryModule extends BaseModuleConfig {
                 .addTab("territorySites","Sites",PageTabContext.TabType.SIMPLE, true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("sites", null, null)
-                .addWidget("sites", "Sites", PageWidget.WidgetType.TERRITORY_SITES, "flexiblewebterritorysites_50", 0, 0, null, null)
+                .addWidget("sites", "Sites", PageWidget.WidgetType.TERRITORY_SITES, "flexibleSites_50", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -223,7 +223,7 @@ public class TerritoryModule extends BaseModuleConfig {
                 .addTab("territoryFieldAgent","Field Agents",PageTabContext.TabType.SIMPLE, true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("fieldAgents", null, null)
-                .addWidget("fieldAgents", "Field Agents", PageWidget.WidgetType.FIELD_AGENTS, "flexibleterritoryfieldagents_50", 0, 0, null, null)
+                .addWidget("fieldAgents", "Field Agents", PageWidget.WidgetType.FIELD_AGENTS, "flexibleFieldAgents_50", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -260,7 +260,7 @@ public class TerritoryModule extends BaseModuleConfig {
         SummaryWidgetGroup GeneralInfoWidgetGroup = new SummaryWidgetGroup();
 
         addSummaryFieldInWidgetGroup(GeneralInfoWidgetGroup, nameField, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(GeneralInfoWidgetGroup, descriptionField, 1, 2, 3);
+        addSummaryFieldInWidgetGroup(GeneralInfoWidgetGroup, descriptionField, 1, 2, 1);
 
         SummaryWidgetGroup sysDetailsWidgetGroup=new SummaryWidgetGroup();
 

@@ -839,7 +839,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         completeWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         completeWork.setIdentifier("completeWork");
         completeWork.setPermissionRequired(true);
-        completeWork.setPermission("COMPLETE_SERVICE_ORDER");
+        completeWork.setPermission("COMPLETE");
         completeWork.setCriteria(inprogressCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, completeWork);
 
@@ -852,7 +852,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         closeCompleteWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         closeCompleteWork.setIdentifier("closeSO");
         closeCompleteWork.setPermissionRequired(true);
-        closeCompleteWork.setPermission("CLOSE_SERVICE_ORDER");
+        closeCompleteWork.setPermission("CLOSE");
         closeCompleteWork.setCriteria(completedCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, closeCompleteWork);
 
@@ -870,7 +870,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         cancelWork.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         cancelWork.setIdentifier("cancelSO");
         cancelWork.setPermissionRequired(true);
-        cancelWork.setPermission("CANCEL_SERVICE_ORDER");
+        cancelWork.setPermission("CANCEL");
         cancelWork.setCriteria(cancelButtonCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, cancelWork);
 
@@ -882,7 +882,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ACTIVITY);
-        return Collections.singletonList(new PagesContext(null, null, "", null, isTemplate, isDefault, false)
+        return Collections.singletonList(new PagesContext("serviceOrder", "Default Service Order Page", "", null, isTemplate, isDefault, false)
                 .addWebLayout()
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
@@ -891,7 +891,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
-                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 4, null, getWidgetGroup(false))
+                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getWidgetGroup(false))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -899,7 +899,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .addTab("serviceTask", "Service Task", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("task", null, null)
-                .addWidget("taskList", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0, null, null)
+                .addWidget("taskList", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webTaskList_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -907,7 +907,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .addTab("appointment", "Service Appointment", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("appointments", null, null)
-                .addWidget("appointments", "Appointments", PageWidget.WidgetType.SERVICE_ORDER_APPOINTMENTS, "appointments_50_12", 0, 0, null, null)
+                .addWidget("appointments", "Appointments", PageWidget.WidgetType.SERVICE_ORDER_APPOINTMENTS, "webAppointments_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -915,7 +915,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .addTab("plans", "Plans", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("plans", null, null)
-                .addWidget("plans", "Plans", PageWidget.WidgetType.SERVICE_ORDER_PLANS, "plans_50_12", 0, 0, null, null)
+                .addWidget("plans", "Plans", PageWidget.WidgetType.SERVICE_ORDER_PLANS, "webPlans_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -923,7 +923,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .addTab("actuals", "Actuals", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("actuals", null, null)
-                .addWidget("actuals", "Actuals", PageWidget.WidgetType.SERVICE_ORDER_ACTUALS, "actuals_50_12", 0, 0, null, null)
+                .addWidget("actuals", "Actuals", PageWidget.WidgetType.SERVICE_ORDER_ACTUALS, "webActuals_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

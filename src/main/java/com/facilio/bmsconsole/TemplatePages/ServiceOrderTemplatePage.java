@@ -5,7 +5,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -33,59 +32,59 @@ public class ServiceOrderTemplatePage implements TemplatePageFactory {
         if(app.getDomainType() == AppDomain.AppDomainType.FACILIO.getIndex()) {
             return  new PagesContext(null, null,"", null, true, false, false)
                     .addWebLayout()
-                    .addTab("summary", "SUMMARY",  PageTabContext.TabType.SIMPLE,true, null)
+                    .addTab("summary", "Summary",  PageTabContext.TabType.SIMPLE,true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                    .addSection("summaryfields", null, null)
-                    .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(serviceOrderModule.getName()))
+                    .addSection("summaryFields", null, null)
+                    .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,serviceOrderModule.getName()))
                     .widgetDone()
                     .sectionDone()
                     .addSection("widgetGroup", null, null)
-                    .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 4, null, getWidgetGroup(false))
+                    .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getWidgetGroup(false))
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("appointments", "SERVICE APPOINTMENT", PageTabContext.TabType.SIMPLE, true, null)
+                    .addTab("appointments", "Service Appointment", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("appointments", null, null)
-                    .addWidget("appointments", "Appointments", PageWidget.WidgetType.SERVICE_ORDER_APPOINTMENTS, "appointments_50_12", 0, 0,  null, null)
+                    .addWidget("appointments", "Appointments", PageWidget.WidgetType.SERVICE_ORDER_APPOINTMENTS, "webAppointments_50_12", 0, 0,  null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("appointment", "SERVICE APPOINTMENT", PageTabContext.TabType.SIMPLE, true, null)
+                    .addTab("appointment", "Service Appointment", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("task", null, null)
-                    .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
+                    .addWidget("taskList", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webTaskList_50_12", 0, 0,  null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("plans", "PLANS", PageTabContext.TabType.SIMPLE, true, null)
+                    .addTab("plans", "Plans", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("task", null, null)
-                    .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
+                    .addWidget("taskList", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webTaskList_50_12", 0, 0,  null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("actuals", "ACTUALS", PageTabContext.TabType.SIMPLE, true, null)
+                    .addTab("actuals", "Actuals", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("task", null, null)
-                    .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
+                    .addWidget("taskList", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webTaskList_50_12", 0, 0,  null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("related", "RELATED", PageTabContext.TabType.SIMPLE, true, null)
+                    .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
-                    .addSection("relatedlist", null, null)
-                    .addWidget("bulkRelatedList", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(modBean.getModule(FacilioConstants.ContextNames.QUOTE)))
+                    .addSection("relatedList", null, null)
+                    .addWidget("bulkRelatedList", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(modBean.getModule(FacilioConstants.ContextNames.QUOTE)))
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("history", "HISTORY", PageTabContext.TabType.SIMPLE, true, null)
+                    .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("activity", null, null)
                     .addWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0,  historyWidgetParam, null)
@@ -97,59 +96,59 @@ public class ServiceOrderTemplatePage implements TemplatePageFactory {
         } else {
             return  new PagesContext(null, null,"", null, true, false, false)
                     .addWebLayout()
-                    .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
+                    .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                    .addSection("summaryfields", null, null)
-                    .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(serviceOrderModule.getName()))
+                    .addSection("summaryFields", null, null)
+                    .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,serviceOrderModule.getName()))
                     .widgetDone()
                     .sectionDone()
                     .addSection("widgetGroup", null, null)
-                    .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 4, null, getWidgetGroup(false))
+                    .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getWidgetGroup(false))
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("task", "TASK", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                    .addTab("task", "Task", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("task", null, null)
-                    .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
+                    .addWidget("taskList", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webTaskList_50_12", 0, 0,  null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("serviceTask", "SERVICE TASK", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                    .addTab("serviceTask", "Service Task", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("task", null, null)
-                    .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0,  null, null)
+                    .addWidget("taskList", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webTaskList_50_12", 0, 0,  null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("plans", "PLANS", PageTabContext.TabType.SINGLE_WIDGET_TAB,  true, AccountUtil.FeatureLicense.INVENTORY)
+                    .addTab("plans", "Plans", PageTabContext.TabType.SINGLE_WIDGET_TAB,  true, AccountUtil.FeatureLicense.INVENTORY)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("plans", null, null)
-                    .addWidget("plans", "Plans", PageWidget.WidgetType.SERVICE_ORDER_PLANS, "plans_50_12", 0, 0,  null, null)
+                    .addWidget("plans", "Plans", PageWidget.WidgetType.SERVICE_ORDER_PLANS, "webPlans_50_12", 0, 0,  null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("actuals", "ACTUALS", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
+                    .addTab("actuals", "Actuals", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("actuals", null, null)
-                    .addWidget("actuals", "Actuals", PageWidget.WidgetType.SERVICE_ORDER_ACTUALS, "actuals_50_12", 0, 0,  null, null)
+                    .addWidget("actuals", "Actuals", PageWidget.WidgetType.SERVICE_ORDER_ACTUALS, "webActuals_50_12", 0, 0,  null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("related", "RELATED", PageTabContext.TabType.SIMPLE, true, null)
+                    .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
-                    .addSection("relatedlist", null, null)
+                    .addSection("relatedList", null, null)
                     .addWidget("bulkRelatedList", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(modBean.getModule(FacilioConstants.ContextNames.QUOTE)))
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("history", "HISTORY", PageTabContext.TabType.SIMPLE, true, null)
+                    .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("activity", null, null)
                     .addWidget("activity", "Activity", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0,  historyWidgetParam, null)
@@ -161,7 +160,7 @@ public class ServiceOrderTemplatePage implements TemplatePageFactory {
         }
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app,String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -172,7 +171,6 @@ public class ServiceOrderTemplatePage implements TemplatePageFactory {
 
         FacilioField sourceTypeField = moduleBean.getField("sourceType", moduleName);
         FacilioField maintenanceTypeField = moduleBean.getField("maintenancetype", moduleName);
-//        FacilioField priorityField = moduleBean.getField("priority", moduleName);
         FacilioField acsaField = moduleBean.getField("autoCreateSa", moduleName);
 
         FacilioField descriptionField = moduleBean.getField("description", moduleName);
@@ -209,9 +207,9 @@ public class ServiceOrderTemplatePage implements TemplatePageFactory {
         addSummaryFieldInWidgetGroup(widgetGroup, statusField, 1 , 3, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, priorityField, 1 , 4, 1);
 
-        addSummaryFieldInWidgetGroup(widgetGroup, sourceTypeField, 2 , 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, maintenanceTypeField, 2 , 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, acsaField, 2 , 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sourceTypeField, 2 , 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, maintenanceTypeField, 2 , 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, acsaField, 2 , 3, 1);
 
         addSummaryFieldInWidgetGroup(widgetGroup, descriptionField, 3 , 1, 4);
 
@@ -251,7 +249,7 @@ public class ServiceOrderTemplatePage implements TemplatePageFactory {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
@@ -278,14 +276,20 @@ public class ServiceOrderTemplatePage implements TemplatePageFactory {
     }
 
     private static JSONObject getWidgetGroup(boolean isMobile) throws Exception {
+        JSONObject commentWidgetParam = new JSONObject();
+        commentWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_NOTES);
+
+        JSONObject attachmentWidgetParam = new JSONObject();
+        attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ATTACHMENTS);
+
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 4, null, null)
+                .addWidget("commentWidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 0,commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 4, null, null)
+                .addWidget("attachmentWidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 0,attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

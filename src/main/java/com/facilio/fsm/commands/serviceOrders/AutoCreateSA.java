@@ -35,7 +35,6 @@ public class AutoCreateSA extends FacilioCommand {
         for(ServiceOrderContext order : serviceOrders) {
 
             if(order.isAutoCreateSa()){
-//                List<ServiceTaskContext> serviceTaskList = (List<ServiceTaskContext>) order.getRelations().get("serviceTask").get(0).getData();
                 ServiceAppointmentContext sa = new ServiceAppointmentContext();
                 sa.setAppointmentType(ServiceAppointmentContext.AppointmentType.SERVICE_WORK_ORDER);
                 sa.setName(order.getName());
@@ -43,8 +42,6 @@ public class AutoCreateSA extends FacilioCommand {
                 sa.setScheduledStartTime(order.getPreferredStartTime());
                 sa.setScheduledEndTime(order.getPreferredEndTime());
                 sa.setServiceOrder(order);
-//                sa.setActualStartTime(order.getActualStartTime());
-//                sa.setActualEndTime(order.getActualEndTime());
                 V3SiteContext site = order.getSite();
                 if (site != null) {
                     V3SiteContext siteObj = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SITE,site.getId(), V3SiteContext.class);
@@ -55,7 +52,6 @@ public class AutoCreateSA extends FacilioCommand {
                     }
                     sa.setTerritory(siteObj.getTerritory());
                 }
-//                List<ServiceTaskContext> serviceTaskList= order.getServiceTask();
                 //fetch the list of all tasks against the service order
 
                 FacilioContext socontext = V3Util.getSummary(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, Collections.singletonList(order.getId()));
@@ -78,7 +74,6 @@ public class AutoCreateSA extends FacilioCommand {
             }
         }
             recordList.addAll(serviceAppointmentList);
-        //getting null pointer error here after status change
             V3Util.createRecord(serviceAppointmentModule,recordList);
         }
 

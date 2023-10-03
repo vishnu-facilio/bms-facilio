@@ -68,14 +68,17 @@ public class UpdatePeopleLocationHistoryCommand extends FacilioCommand {
                 fieldList.add(batteryInfo);
                 fieldList.add(signalInfo);
 
-                V3PeopleContext peopleContext = new V3PeopleContext();
-                peopleContext.setId(peopleId);
-                peopleContext.setLastSyncTime(time);
-                peopleContext.setCurrentLocation(location);
-                peopleContext.setBatteryInfo(battery_info);
-                peopleContext.setSignalInfo(signal_info);
-                V3RecordAPI.updateRecord(peopleContext, modBean.getModule(FacilioConstants.ContextNames.PEOPLE), fieldList);
-
+                V3PeopleContext pplRecord = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,peopleId);
+                Long peopleLastSyncTime = pplRecord.getLastSyncTime();
+                if(time > peopleLastSyncTime) {
+                    V3PeopleContext peopleContext = new V3PeopleContext();
+                    peopleContext.setId(peopleId);
+                    peopleContext.setLastSyncTime(time);
+                    peopleContext.setCurrentLocation(location);
+                    peopleContext.setBatteryInfo(battery_info);
+                    peopleContext.setSignalInfo(signal_info);
+                    V3RecordAPI.updateRecord(peopleContext, modBean.getModule(FacilioConstants.ContextNames.PEOPLE), fieldList);
+                }
             }
 
         return false;

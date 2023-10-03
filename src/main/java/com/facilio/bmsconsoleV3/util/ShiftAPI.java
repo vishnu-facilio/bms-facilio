@@ -112,8 +112,6 @@ public class ShiftAPI {
 
         V3PeopleContext people = new V3PeopleContext();
         people.setId(peopleID);
-//        V3EmployeeContext emp = new V3EmployeeContext();
-//        emp.setId(peopleID);
 
         ShiftSlot defaultShiftSlot = new ShiftSlot(people, shift, UNLIMITED_PERIOD, UNLIMITED_PERIOD);
         addSlots(Collections.singletonList(defaultShiftSlot));
