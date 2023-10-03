@@ -49,7 +49,7 @@ public class DeleteSATaskRelCommand extends FacilioCommand {
                         }
                     }
                     else {
-                        throw new FSMException(FSMErrorCode.RECORD_LOCKED);
+                        throw new FSMException(FSMErrorCode.TASK_RECORD_LOCKED);
                     }
                 }
                 Criteria criteria = new Criteria();

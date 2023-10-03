@@ -82,7 +82,9 @@ public class SOSTAutoCreateAfterCommand extends FacilioCommand {
                             selectTasks.add(task);
                             if (serviceAppointment != null) {
                                 List<ServiceAppointmentTaskContext> data = new ArrayList<>();
-                                data.addAll(serviceAppointment.getServiceTasks());
+                                if(serviceAppointment.getServiceTasks() != null) {
+                                    data.addAll(serviceAppointment.getServiceTasks());
+                                }
                                 for (ServiceTaskContext taskItems : serviceTasks) {
                                     ServiceAppointmentTaskContext appointmentTasks = new ServiceAppointmentTaskContext();
                                     appointmentTasks.setId(taskItems.getId());

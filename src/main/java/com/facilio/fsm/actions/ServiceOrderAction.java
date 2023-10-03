@@ -44,14 +44,6 @@ public class ServiceOrderAction extends V3Action {
         return updateServiceOrders();
     }
 
-    public String fetchStatusActions() throws Exception{
-        FacilioChain chain = FsmTransactionChainFactoryV3.getStatusBasedActions();
-        FacilioContext context = chain.getContext();
-        context.put(FacilioConstants.ContextNames.STATUS, status);
-        chain.execute();
-        setData(FacilioConstants.ServiceOrder.SERVICE_ORDER_STATUS_ACTIONS,FieldUtil.getAsJSON(context.get("buttons")));
-        return V3Action.SUCCESS;
-    }
     public String updateServiceOrders()throws Exception{
         if(orderId == null){
             throw new FSMException(FSMErrorCode.SO_ID_NOT_EMPTY);

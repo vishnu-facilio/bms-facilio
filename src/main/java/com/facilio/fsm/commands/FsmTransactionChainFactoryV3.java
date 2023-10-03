@@ -201,12 +201,6 @@ public class FsmTransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain getStatusBasedActions() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new StatusBasedActions());
-        return c;
-    }
-
     public static FacilioChain getTimeSheetBeforeCreateChain() {
         FacilioChain c= getDefaultChain();
         c.addCommand(new SetLocalIdCommandV3());

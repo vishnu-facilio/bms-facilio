@@ -38,11 +38,11 @@ public class CheckRecordLockForTimeSheetCommand extends FacilioCommand {
                 TimeSheetStatusContext status = V3RecordAPI.getRecord(FacilioConstants.TimeSheet.TIME_SHEET_STATUS, timeSheet.getStatus().getId(),TimeSheetStatusContext.class);
                 if (eventType == EventType.EDIT) {
                     if (status.isRecordLocked()) {
-                        throw new FSMException(FSMErrorCode.RECORD_LOCKED);
+                        throw new FSMException(FSMErrorCode.TIMESHEET_RECORD_LOCKED);
                     }
                 } else if (eventType == EventType.DELETE) {
                     if (status.isDeleteLocked()) {
-                        throw new FSMException(FSMErrorCode.RECORD_LOCKED);
+                        throw new FSMException(FSMErrorCode.TIMESHEET_RECORD_LOCKED);
                     }
                 }
             }

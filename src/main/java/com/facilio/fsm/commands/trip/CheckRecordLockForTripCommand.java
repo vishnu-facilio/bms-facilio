@@ -38,11 +38,11 @@ public class CheckRecordLockForTripCommand extends FacilioCommand {
                 TripStatusContext status = V3RecordAPI.getRecord(FacilioConstants.Trip.TRIP_STATUS, trip.getStatus().getId(),TripStatusContext.class);
                 if (eventType == EventType.EDIT) {
                     if (status.isRecordLocked()) {
-                        throw new FSMException(FSMErrorCode.RECORD_LOCKED);
+                        throw new FSMException(FSMErrorCode.TRIP_RECORD_LOCKED);
                     }
                 } else if (eventType == EventType.DELETE) {
                     if (status.isDeleteLocked()) {
-                        throw new FSMException(FSMErrorCode.RECORD_LOCKED);
+                        throw new FSMException(FSMErrorCode.TRIP_RECORD_LOCKED);
                     }
                 }
             }

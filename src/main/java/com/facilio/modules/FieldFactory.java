@@ -1913,7 +1913,6 @@ public class FieldFactory extends BaseFieldFactory {
         return null;
     }
 
-
     private static final List<String> baseModuleSystemFields = Collections.unmodifiableList(FieldFactory.getBaseModuleSystemFields(null).stream().map(FacilioField::getName).collect(Collectors.toList()));
 
     public static boolean isBaseModuleSystemField(String fieldName) {
@@ -12351,14 +12350,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("type", "SHARING_TYPE", module, FieldType.NUMBER));
         return fields;
     }
-
-    public static List<FacilioField> getServiceAppointmentsTasksFields() {
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(getField("serviceAppointment", "SERVICE_APPOINTMENT_ID", null, FieldType.LOOKUP));
-        fields.add(getField("serviceTask", "SERVICE_TASK_ID", null, FieldType.LOOKUP));
-        return fields;
-    }
-
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:
