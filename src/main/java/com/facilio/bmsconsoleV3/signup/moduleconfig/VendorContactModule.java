@@ -8,8 +8,11 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -31,6 +34,7 @@ public class VendorContactModule extends BaseModuleConfig{
     public void addData() throws Exception {
         addActivityModuleForVendorContacts();
         SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.ContextNames.VENDOR_CONTACT));
+        addSystemButtons();
     }
 
     @Override
@@ -368,6 +372,16 @@ public class VendorContactModule extends BaseModuleConfig{
                 .widgetGroupSectionDone();
 
         return FieldUtil.getAsJSON(widgetGroup);
+    }
+    public static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editButton = new SystemButtonRuleContext();
+        editButton.setName("Edit");
+        editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editButton.setIdentifier("edit");
+        editButton.setPermissionRequired(true);
+        editButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_CONTACT, editButton);
     }
 }
 

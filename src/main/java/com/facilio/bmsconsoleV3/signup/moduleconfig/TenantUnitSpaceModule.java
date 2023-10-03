@@ -10,8 +10,11 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -25,7 +28,11 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
     public TenantUnitSpaceModule(){
         setModuleName(FacilioConstants.ContextNames.TENANT_UNIT_SPACE);
     }
-
+    @Override
+    public void addData() throws Exception {
+        super.addData();
+        addSystemButtons();
+    }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
@@ -35,7 +42,6 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
         ArrayList<FacilioView> tenantUnitSpace = new ArrayList<FacilioView>();
         tenantUnitSpace.add(getAllTenantUnitSpace().setOrder(order++));
         tenantUnitSpace.add(getAllTenantUnitSpaceDetailsView().setOrder(order++));
-
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
         groupDetails.put("displayName", "System Views");
@@ -184,7 +190,7 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
                 .addSection("occupant", null, null)
                 .addWidget("tenantdetailcontactwidget", "Occupant", PageWidget.WidgetType.TENANT_UNIT_TENANT, "webtenantunitoccupantwidget_3", 0, 0,null,null )
                 .widgetDone()
-                .addWidget("tenanthistorywidget", "Tenant History", PageWidget.WidgetType.TENANT_UNIT_SPECIAL_WIDGET, "webtenantunithistorywidget_6", 0, 0,null,null)
+                .addWidget("tenanthistorywidget", "Tenant History", PageWidget.WidgetType.TENANT_UNIT_SPECIAL_WIDGET, "webtenantunithistorywidget_6", 0, 0,getTenantHistoryWidgetConfig(),null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -324,5 +330,29 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
 
         return FieldUtil.getAsJSON(widgetGroup);
     }
+    public static JSONObject getTenantHistoryWidgetConfig(){
+        JSONObject tenantHistory = new JSONObject();
+        tenantHistory.put("viewName","tenanthistory");
+        tenantHistory.put("viewModuleName","tenant");
+        return tenantHistory;
+    }
+    public static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editButton = new SystemButtonRuleContext();
+        editButton.setName("Edit");
+        editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editButton.setIdentifier("edit");
+        editButton.setPermissionRequired(true);
+        editButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, editButton);
 
+        SystemButtonRuleContext createWorkorderButton = new SystemButtonRuleContext();
+        createWorkorderButton.setName("Create Work order");
+        createWorkorderButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createWorkorderButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        createWorkorderButton.setIdentifier("createWorkorder");
+        createWorkorderButton.setPermissionRequired(true);
+        createWorkorderButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TENANT_UNIT_SPACE, createWorkorderButton);
+    }
 }

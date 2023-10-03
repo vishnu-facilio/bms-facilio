@@ -7,8 +7,11 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -25,6 +28,10 @@ public class TenantContactModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.TENANT_CONTACT);
     }
 
+    @Override
+    public void addData() throws Exception {
+        addSystemButtons();
+    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -288,6 +295,16 @@ public class TenantContactModule extends BaseModuleConfig{
 
 
         return FieldUtil.getAsJSON(widgetGroup);
+    }
+    public static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editButton = new SystemButtonRuleContext();
+        editButton.setName("Edit");
+        editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editButton.setIdentifier("edit");
+        editButton.setPermissionRequired(true);
+        editButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TENANT_CONTACT, editButton);
     }
 
 

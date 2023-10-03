@@ -33,7 +33,7 @@ public class TenantUnitModuleTemplatePage implements TemplatePageFactory{
                 .addSection("occupant", null, null)
                 .addWidget("tenantdetailcontactwidget", "Occupant", PageWidget.WidgetType.TENANT_UNIT_TENANT, "webtenantunitoccupantwidget_3", 0, 0,null,null )
                 .widgetDone()
-                .addWidget("tenanthistorywidget", "Tenant History", PageWidget.WidgetType.TENANT_UNIT_SPECIAL_WIDGET, "webtenantunithistorywidget_6", 0, 0,null,null)
+                .addWidget("tenanthistorywidget", "Tenant History", PageWidget.WidgetType.TENANT_UNIT_SPECIAL_WIDGET, "webtenantunithistorywidget_6", 0, 0,getTenantHistoryWidgetConfig(),null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -170,5 +170,11 @@ public class TenantUnitModuleTemplatePage implements TemplatePageFactory{
 
 
         return FieldUtil.getAsJSON(widgetGroup);
+    }
+    public static JSONObject getTenantHistoryWidgetConfig(){
+        JSONObject tenantHistory = new JSONObject();
+        tenantHistory.put("viewName","tenanthistory");
+        tenantHistory.put("viewModuleName","tenant");
+        return tenantHistory;
     }
 }

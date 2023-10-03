@@ -10,20 +10,21 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -35,7 +36,13 @@ public class TenantModule extends BaseModuleConfig{
     }
 
     @Override
-    public List<Map<String, Object>> getViewsAndGroups() {
+    public void addData() throws Exception {
+        super.addData();
+        addSystemButtons();
+    }
+
+    @Override
+    public List<Map<String, Object>> getViewsAndGroups() throws Exception {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;
 
@@ -43,6 +50,8 @@ public class TenantModule extends BaseModuleConfig{
         ArrayList<FacilioView> tenant = new ArrayList<FacilioView>();
         tenant.add(getAllTenantsView().setOrder(order++));
         tenant.add(getActiveTenantsView().setOrder(order++));
+        tenant.add(getHiddenTenantsHistoryView().setOrder(order++));
+
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
@@ -100,6 +109,40 @@ public class TenantModule extends BaseModuleConfig{
         activeTenantsView.setAppLinkNames(appLinkNames);
 
         return activeTenantsView;
+    }
+    public static FacilioView getHiddenTenantsHistoryView() throws Exception {
+        FacilioView tenantHistoryView = new FacilioView();
+        tenantHistoryView.setName("tenanthistory");
+        tenantHistoryView.setDisplayName("Tenant History");
+        tenantHistoryView.setHidden(true);
+
+
+        FacilioModule tenantModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.TENANT);
+        List<FacilioField> allFields =  Constants.getModBean().getAllFields(tenantModule.getName());
+
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+        String[] viewFieldNames = new String[]{"name","primaryContactName","primaryContactPhone","inTime","outTime"};
+        List<ViewField> viewFields = new ArrayList<>();
+
+        for(String viewFieldName:viewFieldNames){
+            FacilioField field = fieldMap.get(viewFieldName);
+            JSONObject columnCustomization = getColumnWidth(field);
+            ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
+            viewField.setFieldId(field.getFieldId());
+            viewField.setFieldName(field.getName());
+            viewField.setCustomization(columnCustomization);
+            viewFields.add(viewField);
+
+        }
+
+        tenantHistoryView.setFields(viewFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        tenantHistoryView.setAppLinkNames(appLinkNames);
+        return tenantHistoryView;
     }
 
     private static Condition getTenantStateCondition(String state) {
@@ -378,5 +421,55 @@ public class TenantModule extends BaseModuleConfig{
 
 
         return FieldUtil.getAsJSON(widgetGroup);
+    }
+    private static JSONObject getColumnWidth(FacilioField field){
+        JSONObject jsonObject = new JSONObject();
+        Integer columnWidth = null;
+        switch (field.getName()){
+            case "name":
+                columnWidth = 132;
+                break;
+            case "primaryContactName":
+                columnWidth = 174;
+                break;
+            case "primaryContactPhone":
+                columnWidth = 146;
+                break;
+            case "inTime":
+            case "outTime":
+                columnWidth = 140;
+                break;
+        }
+        jsonObject.put("columnWidth",columnWidth);
+        return jsonObject;
+
+    }
+    public static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editButton = new SystemButtonRuleContext();
+        editButton.setName("Edit");
+        editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editButton.setIdentifier("edit");
+        editButton.setPermissionRequired(true);
+        editButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TENANT, editButton);
+
+        SystemButtonRuleContext createWorkorderButton = new SystemButtonRuleContext();
+        createWorkorderButton.setName("Create Work order");
+        createWorkorderButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createWorkorderButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        createWorkorderButton.setIdentifier("createWorkorder");
+        createWorkorderButton.setPermissionRequired(true);
+        createWorkorderButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TENANT, createWorkorderButton);
+
+        SystemButtonRuleContext addTenantContactButton = new SystemButtonRuleContext();
+        addTenantContactButton.setName("Add Tenant Contact");
+        addTenantContactButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addTenantContactButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addTenantContactButton.setIdentifier("addTenantContact");
+        addTenantContactButton.setPermissionRequired(true);
+        addTenantContactButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TENANT, addTenantContactButton);
     }
 }
