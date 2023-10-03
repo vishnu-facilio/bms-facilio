@@ -54,7 +54,6 @@ public class ChartOfAccountModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -70,7 +69,7 @@ public class ChartOfAccountModule extends BaseModuleConfig{
         chartOfAccountForm.setName("default_"+ FacilioConstants.ContextNames.Budget.CHART_OF_ACCOUNT +"_web");
         chartOfAccountForm.setModule(chartOfAccountModule);
         chartOfAccountForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        chartOfAccountForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
+        chartOfAccountForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         List<FormField> chartOfAccountFormFields = new ArrayList<>();
         chartOfAccountFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

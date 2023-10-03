@@ -58,7 +58,6 @@ public class AdminDocumentsModule extends BaseModuleConfig{
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         allView.setAppLinkNames(appLinkNames);
 
@@ -76,7 +75,7 @@ public class AdminDocumentsModule extends BaseModuleConfig{
         adminDocumentsForm.setName("default_"+ FacilioConstants.ContextNames.Tenant.ADMIN_DOCUMENTS +"_web");
         adminDocumentsForm.setModule(adminDocumentsModule);
         adminDocumentsForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        adminDocumentsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
+        adminDocumentsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> adminDocumentsFormFields = new ArrayList<>();
         adminDocumentsFormFields.add(new FormField("title", FacilioField.FieldDisplayType.TEXTBOX, "Title", FormField.Required.REQUIRED, 1, 1));

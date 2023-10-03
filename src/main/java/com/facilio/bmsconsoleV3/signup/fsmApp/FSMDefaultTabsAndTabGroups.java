@@ -13,9 +13,6 @@ import org.apache.log4j.LogManager;
 import java.util.*;
 
 public class FSMDefaultTabsAndTabGroups {
-    private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(com.facilio.bmsconsoleV3.signup.maintenanceApp.DefaultTabsAndTabGroups.class.getName());
-    public FSMDefaultTabsAndTabGroups(){
-    }
 
     private List<Long> getModuleIdsListFromModuleNames(List<String> moduleNames) throws Exception {
         List<Long> moduleIds = new ArrayList<>();

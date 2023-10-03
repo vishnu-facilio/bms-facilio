@@ -61,7 +61,6 @@ public class FacilityBookingModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
         allView.setAppLinkNames(appLinkNames);
 
@@ -78,7 +77,7 @@ public class FacilityBookingModule extends BaseModuleConfig{
         facilityBookingForm.setName("default_"+ FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING +"_web");
         facilityBookingForm.setModule(facilityBookingModule);
         facilityBookingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        facilityBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
+        facilityBookingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP));
 
         List<FormField> facilityBookingFormDefaultFields = new ArrayList<>();
         facilityBookingFormDefaultFields.add(new FormField("facility", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Facility", FormField.Required.REQUIRED, "facility",1, 1));

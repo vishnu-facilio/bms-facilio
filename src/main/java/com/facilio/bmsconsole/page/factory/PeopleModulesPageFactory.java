@@ -39,9 +39,6 @@ public class PeopleModulesPageFactory extends PageFactory {
 			return page;
 		}
 
-		Tab tab3=page.new Tab("Skill");
-		page.addTab(tab3);
-
 		Tab tab2 = page.new Tab("Related");
 		boolean isRelationshipNeeded = addRelationshipSection(page, tab2, record.getModuleId());
 		Section tab2Sec1 = getRelatedListSectionObj(page);

@@ -57,13 +57,11 @@ public class AssociateServiceTaskInSACommand extends FacilioCommand {
                                     ServiceAppointmentTaskContext saTask = new ServiceAppointmentTaskContext();
                                     saTask.setId(taskId);
                                     serviceAppointmentTaskList.add(saTask);
-//                                allServiceTasks.addAll(FieldUtil.getAsBeanListFromMapList(serviceTaskList,ServiceTaskContext.class));
                                 }
                     }
                     serviceAppointment.setServiceTasks(serviceAppointmentTaskList);
 
                 }
-//
                     }
                 }
 

@@ -39,11 +39,11 @@ public class CheckRecordLockCommand extends FacilioCommand {
                 ServiceAppointmentTicketStatusContext status = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS, serviceAppointment.getStatus().getId());
                 if (eventType == EventType.EDIT) {
                     if (status.isRecordLocked()) {
-                        throw new FSMException(FSMErrorCode.RECORD_LOCKED);
+                        throw new FSMException(FSMErrorCode.SA_RECORD_LOCKED);
                     }
                 } else if (eventType == EventType.DELETE) {
                     if (status.isDeleteLocked()) {
-                        throw new FSMException(FSMErrorCode.RECORD_LOCKED);
+                        throw new FSMException(FSMErrorCode.SA_RECORD_LOCKED);
                     }
                 }
             }
