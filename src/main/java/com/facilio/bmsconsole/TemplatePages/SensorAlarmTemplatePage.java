@@ -4,7 +4,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 
-import static com.facilio.bmsconsole.util.NewAlarmAPI.getSensorAlarmSystemPage;
+import static com.facilio.connected.CommonConnectedSummaryAPI.getSensorAlarmSystemPage;
 
 public class SensorAlarmTemplatePage implements TemplatePageFactory {
     @Override

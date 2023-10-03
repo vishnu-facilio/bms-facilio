@@ -19,7 +19,7 @@ import com.facilio.modules.fields.LookupField;
 
 import java.util.*;
 
-import static com.facilio.bmsconsole.util.NewAlarmAPI.getBMSAlarmSystemPage;
+import static com.facilio.connected.CommonConnectedSummaryAPI.getBMSAlarmSystemPage;
 
 public class BmsAlarmsModule extends BaseModuleConfig{
     public BmsAlarmsModule() throws Exception{

@@ -20,7 +20,7 @@ import com.facilio.modules.fields.LookupField;
 
 import java.util.*;
 
-import static com.facilio.bmsconsole.util.NewAlarmAPI.getSensorAlarmSystemPage;
+import static com.facilio.connected.CommonConnectedSummaryAPI.getSensorAlarmSystemPage;
 
 public class SensorRollUpAlarmsModule extends BaseModuleConfig{
     public SensorRollUpAlarmsModule() throws Exception{

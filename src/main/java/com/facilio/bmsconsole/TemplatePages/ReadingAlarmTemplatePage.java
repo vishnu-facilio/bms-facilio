@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 
-import static com.facilio.bmsconsole.util.NewAlarmAPI.getReadingAlarmSystemPage;
+import static com.facilio.connected.CommonConnectedSummaryAPI.getReadingAlarmSystemPage;
 
 public class ReadingAlarmTemplatePage implements TemplatePageFactory{
     @Override

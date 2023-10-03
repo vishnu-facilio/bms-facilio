@@ -16,7 +16,8 @@ import com.facilio.modules.fields.LookupField;
 
 import java.util.*;
 
-import static com.facilio.bmsconsole.util.NewAlarmAPI.getReadingAlarmSystemPage;
+import static com.facilio.connected.CommonConnectedSummaryAPI.getReadingAlarmSystemPage;
+
 
 public class NewReadingAlarmModule extends BaseModuleConfig{
     public NewReadingAlarmModule() throws Exception{
