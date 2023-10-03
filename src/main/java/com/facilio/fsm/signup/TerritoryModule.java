@@ -35,7 +35,7 @@ public class TerritoryModule extends BaseModuleConfig {
 //        addTerritoryLookupInPeople();
         addTerritoryLookupInSite();
         addActivityModuleForTerritory();
-        addPeopleTerritoryModule();
+//        addPeopleTerritoryModule();
         addTerritoriesField();
         SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.Territory.TERRITORY));
     }
