@@ -1896,9 +1896,18 @@
     </package>
 
     <package name="v2Analytics" namespace="/api/v3/analytics" extends="v3Api">
+        <action name="list" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="list"/>
         <action name="criteria/module" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="getModuleFromCategory"/>
         <action name="fetch" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="fetchOld"/>
         <action name="create" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="create"/>
+        <action name="update" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="update"/>
+        <action name="delete/*" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="delete">
+            <param name="reportId">{1}</param>
+        </action>
+        <action name="edit/*" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="edit">
+            <param name="reportId">{1}</param>
+        </action>
+        <action name="dimension/modes" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="getAllReportModes"/>
     </package>
     <package name="remotemonitor" extends="v3Api" namespace="/api/v3/alarms">
         <action name="generateRawAlarms" class="com.facilio.remotemonitoring.action.RawAlarmAction" method="generateRawAlarms"/>

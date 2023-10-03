@@ -5884,4 +5884,12 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setTableName("Flagged_Event_Closure_Config_Status");
 		return module;
 	}
+	public static FacilioModule getV2ReportModule()throws Exception
+	{
+		FacilioModule module = new FacilioModule();
+		module.setName("report1_v2");
+		module.setDisplayName("Report1 V2");
+		module.setTableName("Report1_V2");
+		return module;
+	}
 }

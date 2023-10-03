@@ -477,4 +477,30 @@
     <request path="/api/v3/analytics/create" method="POST">
         <requestbody type="object"></requestbody>
     </request>
+    <request path="/api/v3/analytics/update" method="PUT">
+        <requestbody type="object"></requestbody>
+    </request>
+    <request path="/api/v3/analytics/delete/:reportId" method="DELETE">
+        <urlparams>
+            <property name="reportId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/analytics/edit/:reportId" method="GET">
+        <urlparams>
+            <property name="reportId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v3/analytics/dimension/modes" method="GET">
+        <urlparams/>
+    </request>
+    <request path="/api/v3/analytics/list" method="GET">
+        <urlparams>
+            <property name="withCount" type="boolean"></property>
+            <property name="orderType" type="string"></property>
+            <property name="page" type="number"></property>
+            <property name="perPage" type="number"></property>
+            <property name="folderId" type="number"></property>
+        </urlparams>
+    </request>
 </config>

@@ -573,7 +573,7 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 	public static List<ReportContext> getReportsFromFolderId(long folderId, List<FacilioField> selectFields) throws Exception {
 		return getReportsFromFolderId(folderId, selectFields, true, false);
 	}
-	private static List<Long> getLoggedInUserGroupIds () {
+	public static List<Long> getLoggedInUserGroupIds () {
 		List<Long> objs = new ArrayList<Long>();
 		try {
 			List<Group> myGroups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());

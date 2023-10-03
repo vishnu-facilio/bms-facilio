@@ -54,7 +54,7 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
             yAxis.setField(measureField.getModule(), measureField);
             yAxis.setAggr(measure.getAggr());
             dataPoint.setyAxis(yAxis);
-
+            dataPoint.setCriteriaType(measure.getCriteriaType() > 0 ? measure.getCriteriaType() : V2MeasuresContext.Criteria_Type.ALL.getIndex());
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(measureField.getModule().getName()));
             V2AnalyticsOldUtil.setXAndDateFields(dataPoint, report.getReportModeEnum(), fieldMap);
             String moduleName = measure.getModuleName();

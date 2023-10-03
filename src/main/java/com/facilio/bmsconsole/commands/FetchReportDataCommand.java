@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
+import com.facilio.analytics.v2.context.V2MeasuresContext;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AggregationColumnMetaContext;
@@ -696,7 +697,8 @@ public class FetchReportDataCommand extends FacilioCommand {
                 }
                 newSelectBuilder.andCondition(CriteriaAPI.getEqualsCondition(xAggrField, xValues));
             }
-            if(dp.getV2Criteria() != null){
+            if(dp.getCriteriaType() == V2MeasuresContext.Criteria_Type.CRITERIA.getIndex() && dp.getV2Criteria() != null)
+            {
                 if(dp.getParentReadingModule() != null) {
                     FacilioField parent_field = FieldFactory.getIdField(dp.getParentReadingModule());
                     if(dp.getyAxis().getField() != null)

@@ -17,6 +17,7 @@ public class V2PopulateAnalyticsDataCommand extends FacilioCommand {
         ReportContext report_context = new ReportContext();
         if(v2_report_context != null)
         {
+            report_context.setId(v2_report_context.getId() > 0 ? v2_report_context.getId() : -1l);
             report_context.setAppId(AccountUtil.getCurrentApp() != null ? AccountUtil.getCurrentApp().getId() : -1L);
             report_context.setName(v2_report_context.getName());
             report_context.setDescription(v2_report_context.getDescription());

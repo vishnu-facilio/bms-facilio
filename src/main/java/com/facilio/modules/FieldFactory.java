@@ -8754,6 +8754,20 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getV2ReportModuleFields()throws Exception
+    {
+        FacilioModule module = ModuleFactory.getV2ReportModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+
+        fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
+        fields.add(getField("dimensionsJson", "DIMENSIONS", module, FieldType.STRING));
+        fields.add(getField("measuresJson", "MEASURES", module, FieldType.STRING));
+        fields.add(getField("timeFilterJson", "TIMELINE_FILTER", module, FieldType.STRING));
+        fields.add(getField("groupByJson", "GROUP_BY", module, FieldType.STRING));
+
+        return fields;
+    }
 //	public static List<FacilioField> getModulesFields(){
 //		FacilioModule module = ModuleFactory.getModuleModule();
 //		List<FacilioField> fields = new ArrayList<>();
