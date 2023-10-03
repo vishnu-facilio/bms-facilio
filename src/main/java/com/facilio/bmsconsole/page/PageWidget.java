@@ -704,7 +704,11 @@ public class PageWidget {
 		INDUCTION_TEMPLATE_INSIGHT_SUMMARY("inductionTemplateInsightSummary"),
 		INDUCTION_TEMPLATE_TRIGGERS("inductionTemplateTriggers"),
 		INDUCTION_RESPONSE_SUMMARY("inductionResponseSummary"),
-		INVENTORY_USAGE("inventoryUsage");
+		INVENTORY_USAGE("inventoryUsage"),
+		PM_PLANNER_TRIGGER_DETAILS_WIDGET("pmPlannerTriggerDetailsWidget"),
+		PM_RESOURCE_PLANNER_DETAILS_WIDGET("pmResourcePlannerDetailsWidget"),
+		PM_SCHEDULER_DETAILS_WIDGET("pmSchedulerDetailsWidget")
+		;
 
 		private String name;
 		@Getter

@@ -255,7 +255,7 @@ public class AddPmV2ModuleAndFields extends SignUpData {
     private void addSiteFieldIntoPlannedMaintenanceModule(ModuleBean moduleBean, long orgId, FacilioModule plannedMaintenanceModule,
                                                           FacilioModule plannedMaintenanceSiteModule) throws Exception {
         /* sites Field */
-        MultiLookupField sitesField = FieldFactory.getDefaultField("sites", null, null, FieldType.MULTI_LOOKUP);
+        MultiLookupField sitesField = FieldFactory.getDefaultField("sites", "Sites", null, FieldType.MULTI_LOOKUP);
         sitesField.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
         sitesField.setRequired(true);
         sitesField.setDisabled(false);

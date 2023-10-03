@@ -189,4 +189,12 @@ public class APIWidgetConfig {
                 .build();
     }
 
+    @WidgetType(PageWidget.WidgetType.PM_PLANNER_TRIGGER_DETAILS_WIDGET)
+    public static Supplier<WidgetConfig> getPmPlannerTriggerWidgetCRUD() {
+        return () ->  new WidgetConfig()
+                .summary()
+                .fetchCommand(ReadOnlyChainFactory.getPmPlannerTriggerWidgetDetails())
+                .build();
+    }
+
 }

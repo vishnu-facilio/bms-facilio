@@ -2,28 +2,30 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
-import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
-import com.facilio.bmsconsole.context.PlannedMaintenance;
+import com.facilio.bmsconsole.TemplatePages.PlannedMaintenanceTemplatePageFactory;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.bmsconsole.util.PMStatus;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanModule;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+
+import static com.facilio.bmsconsole.util.SystemButtonApi.addSystemButton;
 
 import java.util.*;
 
@@ -78,7 +80,7 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
         allView.setName("inactive");
         allView.setDisplayName("Unpublished");
         allView.setCriteria(criteria);
-        
+
         allView.setAppLinkNames(AddJobPlanModule.jobPlanSupportedApps);
 
         FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", plannedMaintenanceModule);
@@ -181,6 +183,150 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
 
     }
 
+    /**
+     * Page builder
+     **/
+
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        Map<String, List<PagesContext>> appNameVsPages = new HashMap<>();
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+
+
+        FacilioModule plannedMaintenanceModule = modBean.getModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
+
+        for (String appName : appLinkNames) {
+            appNameVsPages.put(appName, createPlannedMaintenanceDefaultPage(ApplicationApi.getApplicationForLinkName(appName), plannedMaintenanceModule, false, true));
+        }
+        return appNameVsPages;
+    }
+
+    private List<PagesContext> createPlannedMaintenanceDefaultPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+
+        String pageName, pageDisplayName;
+        pageName = module.getName().toLowerCase().replaceAll("[^a-zA-Z0-9]+", "") + "defaultpage";
+        pageDisplayName = "Default " + module.getDisplayName() + " Page ";
+
+
+        return new ModulePages()
+                .addPage(pageName, pageDisplayName, "", null, isTemplate, isDefault, true)
+                .addWebLayout()
+
+                // Summary Tab
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+
+                .addSection("summaryfields", null, null)
+                .addWidget("plannedMaintenanceSummaryFieldsWidget", "Planned Maintenance Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET,
+                        "flexiblewebsummaryfieldswidget_3", 0, 0, null,
+                        PlannedMaintenanceTemplatePageFactory.getPMDetailsSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .addWidget("workOrderDetailsSummaryFieldsWidget", "Work Order Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET,
+                        "flexiblewebsummaryfieldswidget_4", 0, 0, null,
+                        PlannedMaintenanceTemplatePageFactory.getPMWorkorderDetailsSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, PlannedMaintenanceTemplatePageFactory.getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                // Planner Tab
+                .addTab("planner", "Planner", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("pmPlannerDetailsSection", null, null)
+                .addWidget("pmPlannerTriggerDetailsWidget", null, PageWidget.WidgetType.PM_PLANNER_TRIGGER_DETAILS_WIDGET,
+                        "flexiblewebpmPlannerTriggerDetails_4", 0, 0, null,
+                        null)
+                .widgetDone()
+                .addWidget("ppResourcePlannerDetailsWidget", null, PageWidget.WidgetType.PM_RESOURCE_PLANNER_DETAILS_WIDGET,
+                        "flexiblewebpmResourcePlannerDetails_7", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                // Scheduler tab
+                .addTab("scheduler", "Scheduler", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("pmSchedulerDetailsSection", null, null)
+                .addWidget("pmSchedulerDetailsWidget", null, PageWidget.WidgetType.PM_SCHEDULER_DETAILS_WIDGET,
+                        "flexiblewebpmSchedulerDetails_11", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
+                .pageDone()
+                .getCustomPages();
+    }
+
+    @Override
+    public void addData() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule plannedMaintenanceModule = modBean.getModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
+        List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fieldList);
+        addSystemButtons(modBean, plannedMaintenanceModule, fieldsMap);
+    }
+
+    private static void addSystemButtons(ModuleBean modBean, FacilioModule plannedMaintenanceModule, Map<String, FacilioField> fieldsMap) throws Exception {
+
+        SystemButtonRuleContext editButton = new SystemButtonRuleContext();
+        editButton.setName("Edit");
+        editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editButton.setIdentifier("edit");
+        editButton.setPermissionRequired(true);
+        editButton.setPermission("UPDATE");
+        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, editButton);
+
+
+        Criteria publishButtonCriteria = new Criteria();
+        publishButtonCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("pmStatus"), PlannedMaintenance.PMStatus.IN_ACTIVE.getVal()+"",NumberOperators.EQUALS));
+        SystemButtonRuleContext publishButton = new SystemButtonRuleContext();
+        publishButton.setName("Publish");
+        publishButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        publishButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        publishButton.setIdentifier("publishPM");
+        publishButton.setPermissionRequired(true);
+        publishButton.setPermission("UPDATE");
+        publishButton.setCriteria(publishButtonCriteria);
+        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, publishButton);
+
+
+
+        Criteria unPublishButtonCriteria = new Criteria();
+        unPublishButtonCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("pmStatus"), PlannedMaintenance.PMStatus.ACTIVE.getVal()+"",NumberOperators.EQUALS));
+        SystemButtonRuleContext unPublishButton = new SystemButtonRuleContext();
+        unPublishButton.setName("Unpublish");
+        unPublishButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        unPublishButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        unPublishButton.setIdentifier("unpublishPM");
+        unPublishButton.setPermissionRequired(true);
+        unPublishButton.setPermission("UPDATE");
+        unPublishButton.setCriteria(unPublishButtonCriteria);
+        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, unPublishButton);
+
+        SystemButtonRuleContext viewWorkOrdersButton = new SystemButtonRuleContext();
+        viewWorkOrdersButton.setName("View Work Orders");
+        viewWorkOrdersButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        viewWorkOrdersButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        viewWorkOrdersButton.setIdentifier("viewWorkOrders");
+        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, viewWorkOrdersButton);
+    }
 
 }
 

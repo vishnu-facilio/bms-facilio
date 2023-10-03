@@ -665,7 +665,7 @@ public class APIModuleWidgets {
                 .done();
     }
     @WidgetsForModule(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)
-    public static Supplier<ModuleWidgets> getTenantUnitWidgets(){
+    public static Supplier<ModuleWidgets> getTenantUnitWidgets() {
         return () -> new ModuleWidgets()
                 .addModuleWidget("webtenantunitoccupantwidget", "Occupant", PageWidget.WidgetType.TENANT_UNIT_TENANT)
                 .addFlexibleWidgetConfig("webtenantunitoccupantwidget_3","Occupant - 3",3, PagesContext.PageLayoutType.WEB)
@@ -953,6 +953,22 @@ public class APIModuleWidgets {
     public static Supplier<ModuleWidgets> getQuoteWidgets() {
         return  () -> new ModuleWidgets()
                 .addModuleWidget("pdfViewer" , "Pdf Viewer",PageWidget.WidgetType.PDF_VIEWER)
+                .done();
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE)
+    public static Supplier<ModuleWidgets> getPlannedMaintenanceWidgets(){
+        return () -> new ModuleWidgets()
+
+                .addModuleWidget("webpmPlannerTriggerDetailsWidget","PM Planner Trigger Details Widget", PageWidget.WidgetType.PM_PLANNER_TRIGGER_DETAILS_WIDGET)
+                .addFlexibleWidgetConfig("flexiblewebpmPlannerTriggerDetails_4", "PM Planner Trigger Details Widget - 4",4, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("webpmResourcePlannerDetailsWidget","PM Resource Planner Details Widget", PageWidget.WidgetType.PM_RESOURCE_PLANNER_DETAILS_WIDGET)
+                .addFlexibleWidgetConfig("flexiblewebpmResourcePlannerDetails_7", "PM Resource Planner Details Widget - 7",7, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("pmSchedulerDetailsWidget","PM Scheduler Details Widget", PageWidget.WidgetType.PM_SCHEDULER_DETAILS_WIDGET)
+                .addFlexibleWidgetConfig("flexiblewebpmSchedulerDetails_11", "PM Scheduler Details Widget - 11",11, PagesContext.PageLayoutType.WEB)
                 .done();
     }
 }

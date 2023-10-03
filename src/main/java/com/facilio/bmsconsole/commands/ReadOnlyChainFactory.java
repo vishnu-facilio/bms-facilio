@@ -3636,4 +3636,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new FetchFilteredRelationListCommand());
 		return chain;
 	}
+
+	public static FacilioChain getPmPlannerTriggerWidgetDetails() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetPmPlannerTriggerWidgetCommand());
+		return c;
+	}
 }
