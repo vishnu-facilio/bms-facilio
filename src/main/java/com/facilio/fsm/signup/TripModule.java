@@ -20,7 +20,6 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
 import com.facilio.fsm.context.TripStatusContext;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.fw.BeanFactory;
@@ -214,22 +213,22 @@ public class TripModule extends BaseModuleConfig {
         historyWidgetParam.put("activityModuleName", FacilioConstants.Trip.TRIP_ACTIVITY);
 
         return new ModulePages()
-                .addPage("trip", "Trip", "", null, isTemplate, isDefault, false)
+                .addPage("trip", "Default Trip Page", "", null, isTemplate, isDefault, false)
                 .addWebLayout()
-                .addTab("tripsummary", "Summary",PageTabContext.TabType.SIMPLE,  true, null)
+                .addTab("tripSummary", "Summary",PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("tripsummaryfields", null, null)
-                .addWidget("tripsummaryfieldswidget", "Trip Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Trip.TRIP))
+                .addSection("tripSummaryFields", null, null)
+                .addWidget("tripSummaryFieldsWidget", "Trip Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.Trip.TRIP))
                 .widgetDone()
                 .sectionDone()
-                .addSection("tripjourney",null,null)
-                .addWidget("tripjourneywidget","Journey",PageWidget.WidgetType.TRIP_JOURNEY,"tripJourney_22_6",0,0,null,null)
+                .addSection("tripJourney",null,null)
+                .addWidget("tripJourneyWidget","Journey",PageWidget.WidgetType.TRIP_JOURNEY,"tripJourney_22_6",0,0,null,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addTab("triphistory", "History",PageTabContext.TabType.SIMPLE,  true, null)
+                .addTab("tripHistory", "History",PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
@@ -243,7 +242,7 @@ public class TripModule extends BaseModuleConfig {
 
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app,String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -291,7 +290,7 @@ public class TripModule extends BaseModuleConfig {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
@@ -326,11 +325,11 @@ public class TripModule extends BaseModuleConfig {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
+                .addWidget("commentWidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentsWidgetParam, null)
+                .addWidget("attachmentWidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

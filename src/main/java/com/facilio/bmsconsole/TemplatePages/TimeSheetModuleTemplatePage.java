@@ -3,8 +3,6 @@ package com.facilio.bmsconsole.TemplatePages;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -29,20 +27,20 @@ public class TimeSheetModuleTemplatePage implements TemplatePageFactory {
 
         return new PagesContext(null, null, "", null, true, false, false)
                 .addWebLayout()
-                .addTab("timesheetsummary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("timeSheetSummary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("timesheetsummaryfields", null, null)
-                .addWidget("timesheetysummaryfieldswidget", "Time Sheet Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.TimeSheet.TIME_SHEET))
+                .addSection("timeSheetSummaryFields", null, null)
+                .addWidget("timeSheetSummaryFieldsWidget", "Time Sheet Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.TimeSheet.TIME_SHEET))
                 .widgetDone()
                 .sectionDone()
-                .addSection("timesheettasklist",null,null)
-                .addWidget("timesheettasklistwidget","Tasks",PageWidget.WidgetType.TIMESHEET_TASKS,"timesheettasks_23_12",0,0,null,null)
+                .addSection("timeSheetTaskList",null,null)
+                .addWidget("timeSheetTaskListWidget","Tasks",PageWidget.WidgetType.TIMESHEET_TASKS,"timesheettasks_23_12",0,0,null,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addTab("timesheethistory", "History",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("timeSheetHistory", "History",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
@@ -56,7 +54,7 @@ public class TimeSheetModuleTemplatePage implements TemplatePageFactory {
 
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -103,7 +101,7 @@ public class TimeSheetModuleTemplatePage implements TemplatePageFactory {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
@@ -138,11 +136,11 @@ public class TimeSheetModuleTemplatePage implements TemplatePageFactory {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
+                .addWidget("commentWidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
+                .addWidget("attachmentWidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

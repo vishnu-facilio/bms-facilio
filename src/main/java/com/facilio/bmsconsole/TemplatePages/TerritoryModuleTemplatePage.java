@@ -3,13 +3,10 @@ package com.facilio.bmsconsole.TemplatePages;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.json.simple.JSONObject;
 
@@ -31,20 +28,20 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
 
         return new PagesContext(null, null, "", null, true, false, false)
                 .addWebLayout()
-                .addTab("territorysummary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("territorySummary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("territorysummaryfields", null, null)
-                .addWidget("territorysummaryfieldswidget", "Territory", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Territory.TERRITORY))
+                .addSection("territorySummaryFields", null, null)
+                .addWidget("territorySummaryFieldsWidget", "Territory", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.Territory.TERRITORY))
                 .widgetDone()
                 .sectionDone()
-                .addSection("territorygeograpy", null, null)
-                .addWidget("territorygeograpywidget", "Geography", PageWidget.WidgetType.GEOGRAPHY, "fixedterritorygeography_22_6", 0, 0, null, null)
+                .addSection("territoryGeography", null, null)
+                .addWidget("territoryGeographyWidget", "Geography", PageWidget.WidgetType.GEOGRAPHY, "fixedterritorygeography_22_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addTab("territorysites","Sites",PageTabContext.TabType.SIMPLE,true,null)
+                .addTab("territorySites","Sites",PageTabContext.TabType.SIMPLE,true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("sites", null, null)
                 .addWidget("sites", "Sites", PageWidget.WidgetType.TERRITORY_SITES, "flexiblewebterritorysites_50", 0, 0, null, null)
@@ -53,16 +50,16 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
 
-                .addTab("territoryfieldagent","Field Agents",PageTabContext.TabType.SIMPLE,true,null)
+                .addTab("territoryFieldAgent","Field Agents",PageTabContext.TabType.SIMPLE,true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("fieldagents", null, null)
-                .addWidget("fieldagents", "Field Agents", PageWidget.WidgetType.FIELD_AGENTS, "flexibleterritoryfieldagents_50", 0, 0, null, null)
+                .addSection("fieldAgents", null, null)
+                .addWidget("fieldAgents", "Field Agents", PageWidget.WidgetType.FIELD_AGENTS, "flexibleterritoryfieldagents_50", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addTab("territoryhistory", "History",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("territoryHistory", "History",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
@@ -77,7 +74,7 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
 
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app,String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -116,7 +113,7 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
@@ -151,11 +148,11 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
+                .addWidget("commentWidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
+                .addWidget("attachmentWidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

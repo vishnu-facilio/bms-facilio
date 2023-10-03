@@ -10,7 +10,6 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -20,8 +19,6 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.util.ServiceOrderAPI;
@@ -116,7 +113,6 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
     private FacilioModule constructServiceOrderNotesModule(ModuleBean modBean, long orgId, FacilioModule serviceOrderModule) throws Exception {
-        ModuleBean bean = Constants.getModBean();
         FacilioModule serviceOrderNotesModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_NOTES, "ServiceOrder Notes",
                 "ServiceOrder_Notes", FacilioModule.ModuleType.NOTES, null,
                 null);
@@ -168,7 +164,6 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
     private FacilioModule addServiceOrderAttachmentsModule(ModuleBean modBean, long orgId, FacilioModule serviceOrderModule) throws Exception {
-        ModuleBean bean = Constants.getModBean();
         FacilioModule serviceOrderAttachmentsModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ATTACHMENTS, "Service Order Attachments",
                 "ServiceOrder_Attachments", FacilioModule.ModuleType.ATTACHMENTS, null,
                 null);
@@ -806,101 +801,21 @@ public class ServiceOrderModule extends BaseModuleConfig {
         return groupVsViews;
     }
 
-
-    private static void addStateFlow() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
-        if (serviceOrderModule != null && serviceOrderModule.getModuleId() > 0) {
-            String New = addStateForServiceOrderStateFlow("New");
-            String inProgress = addStateForServiceOrderStateFlow("In Progress");
-            String completed = addStateForServiceOrderStateFlow("Completed");
-            String cannotComplete = addStateForServiceOrderStateFlow("Cannot Complete");
-            String closed = addStateForServiceOrderStateFlow("Closed");
-//            String onHold = addStateForServiceOrderStateFlow("On Hold");
-            String cancelled = addStateForServiceOrderStateFlow("Cancelled");
-            long stateFlowId = addServiceOrdersStateFlow(New);
-            if (stateFlowId > 0) {
-                // transition from unPublished to awaitingVendorQuotes
-                Criteria completedCriteria = new Criteria();
-                completedCriteria.addAndCondition(CriteriaAPI.getCondition("ServiceOrders.IS_ALL_SA_COMPLETED", "isAllSACompleted", String.valueOf(true), BooleanOperators.IS));
-                addStateFlowTransitions(serviceOrderModule, stateFlowId, inProgress, completed, "Complete ServiceOrder", completedCriteria, false);
-                Criteria inProgressCriteria = new Criteria();
-                inProgressCriteria.addAndCondition(CriteriaAPI.getCondition("ServiceOrders.IS_TASK_INITIATED", "isTaskInitiated", String.valueOf(true), BooleanOperators.IS));
-                addStateFlowTransitions(serviceOrderModule, stateFlowId, New, inProgress, "Initiate ServiceOrder", inProgressCriteria, false);
-                addStateFlowTransitions(serviceOrderModule, stateFlowId, inProgress, cannotComplete, "Cannot Complete", null, true);
-                addStateFlowTransitions(serviceOrderModule, stateFlowId, completed, closed, "Close ServiceOrder", null, true);
-                addStateFlowTransitions(serviceOrderModule, stateFlowId, New, cancelled, "Cancel ServiceOrder", null, true);
-                //IS_TASK_INITIATED
-            }
-        }
-    }
-
-    private static void addStateFlowTransitions(FacilioModule serviceOrderModule, long stateFlowId, String fromState, String toState, String transitionName, Criteria criteria, Boolean transitionType) throws Exception {
-        StateflowTransitionContext transition = new StateflowTransitionContext();
-        transition.setActivityType(EventType.STATE_TRANSITION);
-        transition.setRuleType(WorkflowRuleContext.RuleType.STATE_RULE);
-        transition.setType(transitionType ? AbstractStateTransitionRuleContext.TransitionType.NORMAL : AbstractStateTransitionRuleContext.TransitionType.CONDITIONED);
-        transition.setStatus(true);
-        transition.setName(transitionName);
-        transition.setModuleId(serviceOrderModule.getModuleId());
-        transition.setStateFlowId(stateFlowId);
-        FacilioStatus fromStatus = TicketAPI.getStatus(serviceOrderModule, fromState);
-        FacilioStatus toStatus = TicketAPI.getStatus(serviceOrderModule, toState);
-
-        if (fromStatus != null) {
-            transition.setFromStateId(fromStatus.getId());
-        }
-        if (toStatus != null) {
-            transition.setToStateId(toStatus.getId());
-        }
-        transition.setCriteria(criteria);
-        FacilioChain chain = TransactionChainFactory.getAddOrUpdateStateFlowTransition();
-        chain.getContext().put(FacilioConstants.ContextNames.WORKFLOW_RULE, transition);
-        chain.getContext().put(FacilioConstants.ContextNames.MODULE, serviceOrderModule);
-        chain.execute();
-    }
-
-    private static String addStateForServiceOrderStateFlow(String stateDisplayName) throws Exception {
-        FacilioStatus state = new FacilioStatus();
-        state.setDisplayName(stateDisplayName);
-        state.setTypeCode(1);
-        state.setRecordLocked(false);
-        state.setTimerEnabled(false);
-        state.setRequestedState(false);
-        FacilioChain chain = TransactionChainFactory.getAddOrUpdateTicketStatusChain();
-        chain.getContext().put(FacilioConstants.ContextNames.TICKET_STATUS, state);
-        chain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
-        chain.execute();
-        return state.getStatus();
-    }
-
-    private static long addServiceOrdersStateFlow(String defaultState) throws Exception {
-        StateFlowRuleContext stateFlow = new StateFlowRuleContext();
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioStatus defaultStatus = TicketAPI.getStatus(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER), defaultState);
-        if (defaultStatus != null) {
-            stateFlow.setName("Default Stateflow");
-            stateFlow.setModuleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
-            stateFlow.setDefaultStateId(defaultStatus.getId());
-            stateFlow.setDefaltStateFlow(true);
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition("ServiceOrders.NAME", "name", null, CommonOperators.IS_NOT_EMPTY));
-            stateFlow.setCriteria(criteria);
-            FacilioChain chain = TransactionChainFactory.getAddOrUpdateStateFlow();
-            chain.getContext().put(FacilioConstants.ContextNames.RECORD, stateFlow);
-            chain.execute();
-            return stateFlow.getId();
-        }
-        return -1;
-    }
-
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
-        Map<String, List<PagesContext>> pageTemp = new HashMap<>();
-        pageTemp.put(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP, getSystemPage());
-        pageTemp.put(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, getSystemPage());
-        pageTemp.put(FacilioConstants.ApplicationLinkNames.FSM_APP, getSystemPage());
 
-        return pageTemp;
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        List<String> appNames = new ArrayList<>();
+        appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
+
+        Map<String, List<PagesContext>> appNameVsPage = new HashMap<>();
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName, getSystemPage(app, module, false, true));
+        }
+        return appNameVsPage;
     }
 
     private static Boolean addSystemButtons() throws Exception {
@@ -962,17 +877,17 @@ public class ServiceOrderModule extends BaseModuleConfig {
         return false;
     }
 
-    private static List<PagesContext> getSystemPage() throws Exception {
+    private static List<PagesContext> getSystemPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ACTIVITY);
-        return Collections.singletonList(new PagesContext(null, null, "", null, true, false, false)
+        return Collections.singletonList(new PagesContext(null, null, "", null, isTemplate, isDefault, false)
                 .addWebLayout()
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("summaryfields", null, null)
-                .addWidget("summaryFieldsWidget", "Service Order Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(serviceOrderModule.getName()))
+                .addSection("summaryFields", null, null)
+                .addWidget("summaryFieldsWidget", "Service Order Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,serviceOrderModule.getName()))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -984,7 +899,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .addTab("serviceTask", "Service Task", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("task", null, null)
-                .addWidget("tasklist", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0, null, null)
+                .addWidget("taskList", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webtasklist_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -1013,14 +928,6 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-//                .addTab("related", "Related", true, null)
-//                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
-//                .addSection("relatedlist", null, null)
-//                .addWidget("bulkRelatedList", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(FacilioConstants.ContextNames.QUOTE))
-//                .widgetDone()
-//                .sectionDone()
-//                .columnDone()
-//                .tabDone()
                 .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("activity", null, null)
@@ -1033,13 +940,12 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 ;
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
         List<FacilioField> serviceOrderFields = moduleBean.getAllFields(FacilioConstants.ContextNames.SERVICE_ORDER);
         Map<String, FacilioField> serviceOrderFieldsMap = FieldFactory.getAsMap(serviceOrderFields);
 
-        FacilioField nameField = serviceOrderFieldsMap.get("name");
         FacilioField categoryField = serviceOrderFieldsMap.get("category");
         FacilioField statusField = serviceOrderFieldsMap.get("status");
         FacilioField priorityField = serviceOrderFieldsMap.get("priority");
@@ -1053,20 +959,12 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField assetField = serviceOrderFieldsMap.get("asset");
         FacilioField fieldAgentField = serviceOrderFieldsMap.get("fieldAgent");
 
-//        FacilioField agentNameField = serviceOrderFieldsMap.get("role", FacilioConstants.ContextNames.PEOPLE);
-
-//        SummaryWidgetGroupFields secondLevelLookupField = new SummaryWidgetGroupFields();
-//        secondLevelLookupField.setParentLookupFieldId(fieldAgentField.getFieldId());
-//        secondLevelLookupField.setFieldId(agentNameField.getFieldId());
-//        secondLevelLookupField.setDisplayName();
-
         FacilioField vendorField = serviceOrderFieldsMap.get("vendor");
         FacilioField clientField = serviceOrderFieldsMap.get("client");
         FacilioField prefStartTimeField = serviceOrderFieldsMap.get("preferredStartTime");
         FacilioField prefEndTimeField = serviceOrderFieldsMap.get("preferredEndTime");
         FacilioField resolutionDueDurationField = serviceOrderFieldsMap.get("resolutionDueDuration");
         FacilioField resolutionDueDateField = serviceOrderFieldsMap.get("resolutionDueDate");
-//        FacilioField resolutionDueStatusField = serviceOrderFieldsMap.get("status");
         FacilioField sysCreatedByField = serviceOrderFieldsMap.get("sysCreatedBy");
         FacilioField sysCreatedTimeField = serviceOrderFieldsMap.get("sysCreatedTime");
         FacilioField sysModifiedByField = serviceOrderFieldsMap.get("sysModifiedBy");
@@ -1167,7 +1065,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         pageWidget.setName("serviceOrderDetails");
         pageWidget.setDisplayName("Service Order Details");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
@@ -1202,11 +1100,11 @@ public class ServiceOrderModule extends BaseModuleConfig {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 4, commentWidgetParam, null)
+                .addWidget("commentWidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 4, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 4, attachmentWidgetParam, null)
+                .addWidget("attachmentWidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 4, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

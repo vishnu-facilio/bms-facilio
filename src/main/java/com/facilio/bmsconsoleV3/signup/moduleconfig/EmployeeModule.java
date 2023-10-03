@@ -1,8 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.CreateDefaultPageCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -45,7 +43,6 @@ public class EmployeeModule extends BaseModuleConfig{
         ArrayList<FacilioView> employee = new ArrayList<FacilioView>();
         employee.add(getAllHiddenEmployees().setOrder(order++));
         employee.add(getAllEmployees().setOrder(order++));
-//        employee.add(getAllEmployeesForFsm());
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
@@ -87,20 +84,6 @@ public class EmployeeModule extends BaseModuleConfig{
         allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
         return allView;
     }
-//    private static FacilioView getAllEmployeesForFsm(){
-//
-//        FacilioModule employeeModule = ModuleFactory.getEmployeeModule();
-//
-//        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
-//
-//        FacilioView allView = new FacilioView();
-//        allView.setName("all-employees");
-//        allView.setDisplayName("All Employees");
-//        allView.setModuleName(employeeModule.getName());
-//        allView.setSortFields(sortFields);
-//        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP));
-//        return allView;
-//    }
 
     @Override
     public List<FacilioForm> getModuleForms() throws Exception {
@@ -136,15 +119,11 @@ public class EmployeeModule extends BaseModuleConfig{
         employeeForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> employeeFormFields = new ArrayList<>();
-        // check this
         employeeFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.FILE, "Upload Photo",FormField.Required.OPTIONAL, 1,2));
         employeeFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 2, 2));
-        //
         employeeFormFields.add(new FormField("phone", FacilioField.FieldDisplayType.PHONE, "Phone", FormField.Required.REQUIRED, 3, 2));
         employeeFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.REQUIRED, 4, 2));
         employeeFormFields.add(new FormField("designation", FacilioField.FieldDisplayType.TEXTBOX, "Designation", FormField.Required.REQUIRED, 5, 2));
-
-        // CHANGE CURRENCY FIELD
         employeeFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.TEXTBOX, "Rate per Hour", FormField.Required.OPTIONAL, 6, 2));
         employeeFormFields.add(new FormField("dispatchable", FacilioField.FieldDisplayType.DECISION_BOX, "Dispatchable", FormField.Required.OPTIONAL, 7, 2));
         employeeFormFields.add(new FormField("trackGeoLocation", FacilioField.FieldDisplayType.DECISION_BOX, "Track Geolocation", FormField.Required.OPTIONAL, 8, 2));
@@ -226,18 +205,18 @@ public class EmployeeModule extends BaseModuleConfig{
     private static List<PagesContext> createEmployeePage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
         ModuleBean bean = Constants.getModBean();
         return new ModulePages()
-                .addPage("employee", "Employee","", null, isTemplate, isDefault, false)
+                .addPage("employee", "Default Employee Page","", null, isTemplate, isDefault, true)
                 .addWebLayout()
-                .addTab("employeesummary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("employeeSummary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("employeesummaryfields", null, null)
-                .addWidget("employeesummaryfieldswidget", "Employee Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfiledswidget_22", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.EMPLOYEE))
+                .addSection("employeeSummaryFields", null, null)
+                .addWidget("employeeSummaryFieldsWidget", "Employee Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfiledswidget_22", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.ContextNames.EMPLOYEE))
                 .widgetDone()
                 .sectionDone()
-                .addSection("employeelocationstatus", null, null)
-                .addWidget("employeelastknowlocationwidget", "Last Known Location", PageWidget.WidgetType.LAST_KNOW_LOCATION, "weblastknowlocation_22_6", 0, 0, null, null)
+                .addSection("employeeLocationStatus", null, null)
+                .addWidget("employeeLastKnowLocationWidget", "Last Known Location", PageWidget.WidgetType.LAST_KNOW_LOCATION, "weblastknowlocation_22_6", 0, 0, null, null)
                 .widgetDone()
-                .addWidget("employeecurrentstatuswidget", "Employee Current Status", PageWidget.WidgetType.CURRENT_STATUS, "webcurrentstatus_22_6", 6, 0, null, null)
+                .addWidget("employeeCurrentStatusWidget", "Employee Current Status", PageWidget.WidgetType.CURRENT_STATUS, "webcurrentstatus_22_6", 6, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -247,38 +226,38 @@ public class EmployeeModule extends BaseModuleConfig{
                 .columnDone()
                 .tabDone()
 
-                .addTab("employeeskill", "Skill",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("employeeSkill", "Skill",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("employeeskill", null, null)
-                .addWidget("employeeskillwidget", "Skill", PageWidget.WidgetType.SKILL, "flexiblewebskill_48", 0, 0, null, null)
+                .addSection("employeeSkill", null, null)
+                .addWidget("employeeSkillWidget", "Skill", PageWidget.WidgetType.SKILL, "flexiblewebskill_48", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addTab("employeeworkschedule", "Work Schedule",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("employeeWorkSchedule", "Work Schedule",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("employeeworkschedule", null, null)
-                .addWidget("employeeworkschedulewidget", "Work Schedule", PageWidget.WidgetType.WORK_SCHEDULE, "flexiblewebworkschedule_50", 0, 0, null, null)
+                .addSection("employeeWorkSchedule", null, null)
+                .addWidget("employeeWorkScheduleWidget", "Work Schedule", PageWidget.WidgetType.WORK_SCHEDULE, "flexiblewebworkschedule_50", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addTab("employeerelated", "Related",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("employeeRelated", "Related",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("employeerelationships", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("employeebulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
+                .addSection("employeeRelationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("employeeBulkRelationshipWidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
-                .addSection("employeerelatedlist", "Related List", "List of related records across modules")
-                .addWidget("employeebulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(bean.getModule(FacilioConstants.ContextNames.EMPLOYEE)))
+                .addSection("employeeRelatedList", "Related List", "List of related records across modules")
+                .addWidget("employeeBulkRelatedList", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(bean.getModule(FacilioConstants.ContextNames.EMPLOYEE)))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addTab("employeehistory", "History",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("employeeHistory", "History",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_50", 0, 0, null, getHistoryWidgetGroup(false))
@@ -289,7 +268,7 @@ public class EmployeeModule extends BaseModuleConfig{
                 .layoutDone()
                 .pageDone().getCustomPages();
     }
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -320,7 +299,7 @@ public class EmployeeModule extends BaseModuleConfig{
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
@@ -355,11 +334,11 @@ public class EmployeeModule extends BaseModuleConfig{
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
+                .addWidget("commentWidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
+                .addWidget("attachmentWidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 
@@ -373,11 +352,11 @@ public class EmployeeModule extends BaseModuleConfig{
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("fieldUpdate", "Field Update", "")
-                .addWidget("fieldUpdatewidget", "Field Update", PageWidget.WidgetType.ACTIVITY, isMobile ? "flexiblemobilecomment_8" : "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
+                .addWidget("fieldUpdateWidget", "Field Update", PageWidget.WidgetType.ACTIVITY, isMobile ? "flexiblemobilecomment_8" : "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("location", "Location", "")
-                .addWidget("locationwidget", "Location", PageWidget.WidgetType.EMPLOYEE_LOCATION, isMobile ? "flexiblemobileattachment_8" : "flexiblewebactivity_50", 0, 0, null, null)
+                .addWidget("locationWidget", "Location", PageWidget.WidgetType.EMPLOYEE_LOCATION, isMobile ? "flexiblemobileattachment_8" : "flexiblewebemployeelocation_50", 0, 0, null, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

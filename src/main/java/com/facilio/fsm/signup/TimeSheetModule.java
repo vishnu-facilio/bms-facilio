@@ -19,14 +19,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.EnumOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
-import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
-import com.facilio.qa.context.ResponseContext;
 import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
@@ -111,7 +106,6 @@ public class TimeSheetModule extends BaseModuleConfig {
         addTimeSheetTasksField();
         addActivityModuleForTimeSheet();
         SignupUtil.addNotesAndAttachmentModule(timeSheetModule);
-//        addStateFlow();
         addSystemButtons();
 
     }
@@ -217,22 +211,22 @@ public class TimeSheetModule extends BaseModuleConfig {
         historyWidgetParam.put("activityModuleName", FacilioConstants.TimeSheet.TIME_SHEET_ACTIVITY);
 
         return new ModulePages()
-                .addPage("timeSheet", "Time Sheet", "", null, isTemplate, isDefault, false)
+                .addPage("timeSheet", "Default Time Sheet Page", "", null, isTemplate, isDefault, false)
                 .addWebLayout()
-                .addTab("timesheetsummary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("timeSheetSummary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("timesheetsummaryfields", null, null)
-                .addWidget("timesheetysummaryfieldswidget", "Time Sheet Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.TimeSheet.TIME_SHEET))
+                .addSection("timeSheetSummaryFields", null, null)
+                .addWidget("timeSheetSummaryFieldsWidget", "Time Sheet Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.TimeSheet.TIME_SHEET))
                 .widgetDone()
                 .sectionDone()
-                .addSection("timesheettasklist",null,null)
-                .addWidget("timesheettasklistwidget","Tasks",PageWidget.WidgetType.TIMESHEET_TASKS,"timesheettasks_23_12",0,0,null,null)
+                .addSection("timeSheetTaskList",null,null)
+                .addWidget("timeSheetTaskListWidget","Tasks",PageWidget.WidgetType.TIMESHEET_TASKS,"timesheettasks_23_12",0,0,null,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addTab("timesheethistory", "History",PageTabContext.TabType.SIMPLE,  true, null)
+                .addTab("timeSheetHistory", "History",PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
@@ -246,7 +240,7 @@ public class TimeSheetModule extends BaseModuleConfig {
 
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -293,7 +287,7 @@ public class TimeSheetModule extends BaseModuleConfig {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
@@ -328,80 +322,15 @@ public class TimeSheetModule extends BaseModuleConfig {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
+                .addWidget("commentWidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
+                .addWidget("attachmentWidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 
         return FieldUtil.getAsJSON(widgetGroup);
-    }
-
-    private void addStateFlow() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule timeSheetModule = modBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
-
-
-        FacilioStatus inProgressStatus = new FacilioStatus();
-        inProgressStatus.setStatus("inProgress");
-        inProgressStatus.setDisplayName("In Progress");
-        inProgressStatus.setTypeCode(1);
-        TicketAPI.addStatus(inProgressStatus, timeSheetModule);
-
-        FacilioStatus completedStatus = new FacilioStatus();
-        completedStatus.setStatus("completed");
-        completedStatus.setDisplayName("Completed");
-        completedStatus.setTypeCode(2);
-        completedStatus.setRecordLocked(true);
-        TicketAPI.addStatus(completedStatus, timeSheetModule);
-
-        StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
-        stateFlowRuleContext.setName("Default Stateflow");
-        stateFlowRuleContext.setModuleId(timeSheetModule.getModuleId());
-        stateFlowRuleContext.setModule(timeSheetModule);
-        stateFlowRuleContext.setActivityType(EventType.CREATE);
-        stateFlowRuleContext.setExecutionOrder(1);
-        stateFlowRuleContext.setStatus(true);
-        stateFlowRuleContext.setDefaltStateFlow(true);
-        stateFlowRuleContext.setDefaultStateId(inProgressStatus.getId());
-        stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
-        WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
-
-        Criteria completionCriteria = new Criteria();
-        completionCriteria.addAndCondition(CriteriaAPI.getCondition("END_TIME", "endTime", null, CommonOperators.IS_NOT_EMPTY));
-
-        addStateflowTransitionContext(timeSheetModule, stateFlowRuleContext, "Complete Inspection", inProgressStatus,completedStatus, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,completionCriteria,null);
-    }
-
-    private StateflowTransitionContext addStateflowTransitionContext(FacilioModule module,StateFlowRuleContext parentStateFlow,String name,FacilioStatus fromStatus,FacilioStatus toStatus,AbstractStateTransitionRuleContext.TransitionType transitionType,Criteria criteria,List<ActionContext> actions) throws Exception {
-
-        StateflowTransitionContext stateFlowTransitionContext = new StateflowTransitionContext();
-        stateFlowTransitionContext.setName(name);
-        stateFlowTransitionContext.setModule(module);
-        stateFlowTransitionContext.setModuleId(module.getModuleId());
-        stateFlowTransitionContext.setActivityType(EventType.CREATE);
-        stateFlowTransitionContext.setExecutionOrder(1);
-        stateFlowTransitionContext.setButtonType(1);
-        stateFlowTransitionContext.setFromStateId(fromStatus.getId());
-        stateFlowTransitionContext.setToStateId(toStatus.getId());
-        stateFlowTransitionContext.setRuleType(WorkflowRuleContext.RuleType.STATE_RULE);
-        stateFlowTransitionContext.setType(transitionType);
-        stateFlowTransitionContext.setStateFlowId(parentStateFlow.getId());
-        stateFlowTransitionContext.setCriteria(criteria);
-
-        WorkflowRuleAPI.addWorkflowRule(stateFlowTransitionContext);
-
-        if (actions != null && !actions.isEmpty()) {
-            actions = ActionAPI.addActions(actions, stateFlowTransitionContext);
-            if(stateFlowTransitionContext != null) {
-                ActionAPI.addWorkflowRuleActionRel(stateFlowTransitionContext.getId(), actions);
-                stateFlowTransitionContext.setActions(actions);
-            }
-        }
-
-        return stateFlowTransitionContext;
     }
 
     public List<FacilioForm> getModuleForms() throws Exception {

@@ -28,9 +28,10 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
             List<String> appNames = new ArrayList<>();
             appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
             appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            appNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
             PagesUtil.addSystemPages(moduleName, getCustomModuleDefaultPagesForApps(module, appNames));
         } catch (Exception e) {
-            LOGGER.info("Error occured while creating default page for the module -- " + moduleName + ", error message - " + e.getMessage());
+            LOGGER.info("Error occurred while creating default page for the module -- " + moduleName + ", error message - " + e.getMessage());
         }
         return false;
     }
@@ -39,7 +40,7 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
         Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
         for (String appName : appNames) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName,createCustomPage(app, module, false,true));
+            appNameVsPage.put(appName,createCustomPage(app, module, true,false));
         }
         return appNameVsPage;
     }
@@ -68,10 +69,10 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
             return   new ModulePages()
                     .addPage(pageName, pageDisplayName,"", null, isTemplate, isDefault, false)
                     .addWebLayout()
-                    .addTab("summary", "SUMMARY",PageTabContext.TabType.SIMPLE,  true, null)
+                    .addTab("summary", "Summary",PageTabContext.TabType.SIMPLE,  true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                    .addSection("summaryfields", null, null)
-                    .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(module.getName()))
+                    .addSection("summaryFields", null, null)
+                    .addWidget("summaryFieldsWidget", "Summary", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,module.getName()))
                     .widgetDone()
                     .sectionDone()
                     .addSection("widgetGroup", null, null)
@@ -80,10 +81,10 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("task", "TASK",PageTabContext.TabType.SIMPLE,  true, null)
+                    .addTab("task", "Task",PageTabContext.TabType.SIMPLE,  true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("task", "Tasks", "List of Tasks created for this Service Order")
-                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0,  null, null)
+                    .addWidget("bulkRelationshipWidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0,  null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -97,10 +98,10 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
             return    new ModulePages()
                     .addPage(pageName, pageDisplayName,"", null, isTemplate, isDefault, false)
                     .addWebLayout()
-                    .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
+                    .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                    .addSection("summaryfields", null, null)
-                    .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(module.getName()))
+                    .addSection("summaryFields", null, null)
+                    .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,module.getName()))
                     .widgetDone()
                     .sectionDone()
                     .addSection("widgetGroup", null, null)
@@ -109,10 +110,10 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
                     .sectionDone()
                     .columnDone()
                     .tabDone()
-                    .addTab("task", "TASK",PageTabContext.TabType.SIMPLE,  true, null)
+                    .addTab("task", "Task",PageTabContext.TabType.SIMPLE,  true, null)
                     .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("task", "Tasks", "List of Tasks created for this Service Order")
-                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0,  null, null)
+                    .addWidget("bulkRelationshipWidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0,  null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -123,7 +124,7 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
         }
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -134,8 +135,7 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
 
         FacilioField sourceTypeField = moduleBean.getField("sourceType", moduleName);
         FacilioField maintenanceTypeField = moduleBean.getField("maintenancetype", moduleName);
-//        FacilioField priorityField = moduleBean.getField("priority", moduleName);
-        FacilioField acsaField = moduleBean.getField("autoCreateSa", moduleName);
+        FacilioField autoCreateSaField = moduleBean.getField("autoCreateSa", moduleName);
 
         FacilioField descriptionField = moduleBean.getField("description", moduleName);
 
@@ -173,7 +173,7 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
 
         addSummaryFieldInWidgetGroup(widgetGroup, sourceTypeField, 2 , 2, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, maintenanceTypeField, 2 , 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, acsaField, 2 , 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, autoCreateSaField, 2 , 4, 1);
 
         addSummaryFieldInWidgetGroup(widgetGroup, descriptionField, 3 , 1, 4);
 
@@ -213,7 +213,7 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
@@ -243,11 +243,11 @@ public class ServiceOrderDefaultPageCommand extends FacilioCommand {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 4, null, null)
+                .addWidget("commentWidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 4, null, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 4, null, null)
+                .addWidget("attachmentWidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 4, null, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

@@ -1,6 +1,5 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.accounts.dto.AppDomain;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -9,7 +8,6 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
@@ -224,18 +222,18 @@ public class VendorContactModule extends BaseModuleConfig{
     private static List<PagesContext> createVendorPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
 
         return new ModulePages()
-                .addPage("vendor", "Vendor","", null, isTemplate, isDefault, false)
+                .addPage("vendor", "Default Vendor Page","", null, isTemplate, isDefault, false)
                 .addWebLayout()
-                .addTab("vendorsummary", "SUMMARY",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("vendorSummary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("vendorsummaryfields", null, null)
-                .addWidget("vendorsummaryfieldswidget", "Vendor Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfiledswidget_22", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.ContextNames.VENDOR_CONTACT))
+                .addSection("vendorSummaryFields", null, null)
+                .addWidget("vendorSummaryFieldsWidget", "Vendor Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfiledswidget_22", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.ContextNames.VENDOR_CONTACT))
                 .widgetDone()
                 .sectionDone()
-                .addSection("vendorlocationstatus", null, null)
-                .addWidget("vendorlastknowlocationwidget", "Last Known Location", PageWidget.WidgetType.VENDOR_CONTACT_LAST_KNOW_LOCATION, "webvendorcontactlastknowlocation_22_6", 0, 0, null, null)
+                .addSection("vendorLocationStatus", null, null)
+                .addWidget("vendorLastKnowLocationWidget", "Last Known Location", PageWidget.WidgetType.VENDOR_CONTACT_LAST_KNOW_LOCATION, "webvendorcontactlastknowlocation_22_6", 0, 0, null, null)
                 .widgetDone()
-                .addWidget("vendorcurrentstatuswidget", "Vendor Current Status", PageWidget.WidgetType.VENDOR_CONATCT_CURRENT_STATUS, "webvendorcontactcurrentstatus_22_6", 6, 0, null, null)
+                .addWidget("vendorCurrentStatusWidget", "Vendor Current Status", PageWidget.WidgetType.VENDOR_CONATCT_CURRENT_STATUS, "webvendorcontactcurrentstatus_22_6", 6, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -245,39 +243,27 @@ public class VendorContactModule extends BaseModuleConfig{
                 .columnDone()
                 .tabDone()
 
-                .addTab("vendorskill", "SKILL",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("vendorSkill", "Skill",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("vendorskill", null, null)
-                .addWidget("vendorskillwidget", "Skill", PageWidget.WidgetType.VENDOR_CONTACT_SKILL, "flexiblewebvendorcontactskill_48", 0, 0, null, null)
+                .addSection("vendorSkill", null, null)
+                .addWidget("vendorSkillWidget", "Skill", PageWidget.WidgetType.VENDOR_CONTACT_SKILL, "flexiblewebvendorcontactskill_48", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
 
-                .addTab("vendorworkschedule", "WORK SCHEDULE",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("vendorWorkSchedule", "Work Schedule",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("vendorworkschedule", null, null)
-                .addWidget("vendorworkschedulewidget", "Work Schedule", PageWidget.WidgetType.VENDOR_CONTACT_WORK_SCHEDULE, "flexiblewebvendorcontactworkschedule_50", 0, 0, null, null)
+                .addSection("vendorWorkSchedule", null, null)
+                .addWidget("vendorWorkScheduleWidget", "Work Schedule", PageWidget.WidgetType.VENDOR_CONTACT_WORK_SCHEDULE, "flexiblewebvendorcontactworkschedule_50", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-//                .addTab("vendorrelated", "RELATED", true, null)
-//                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-//                .addSection("vendorrelationships", "Relationships", "List of relationships and types between records across modules")
-//                .addWidget("vendorbulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0, null, null)
-//                .widgetDone()
-//                .sectionDone()
-//                .addSection("vendorrelatedlist", "Related List", "List of related records across modules")
-//                .addWidget("vendorbulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 4, null, RelatedListWidgetUtil.addAllRelatedModuleToWidget(FacilioConstants.ContextNames.VENDOR_CONTACT))
-//                .widgetDone()
-//                .sectionDone()
-//                .columnDone()
-//                .tabDone()
 
-                .addTab("vendorhistory", "HISTORY",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("vendorHistory", "History",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_50", 0, 0, null, getHistoryWidgetGroup(false))
@@ -291,14 +277,13 @@ public class VendorContactModule extends BaseModuleConfig{
 
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
         FacilioField nameField = moduleBean.getField("name", moduleName);
         FacilioField phoneField = moduleBean.getField("phone", moduleName);
         FacilioField emailField = moduleBean.getField("email", moduleName);
-        FacilioField roleField = moduleBean.getField("roleId", moduleName);
         FacilioField dispatchableField = moduleBean.getField("dispatchable", moduleName);
         FacilioField trackGeoLocationField = moduleBean.getField("trackGeoLocation", moduleName);
 
@@ -321,7 +306,7 @@ public class VendorContactModule extends BaseModuleConfig{
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
@@ -356,11 +341,11 @@ public class VendorContactModule extends BaseModuleConfig{
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
+                .addWidget("commentWidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
+                .addWidget("attachmentWidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 
@@ -374,11 +359,11 @@ public class VendorContactModule extends BaseModuleConfig{
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("fieldUpdate", "Field Update", "")
-                .addWidget("fieldUpdatewidget", "Field Update", PageWidget.WidgetType.ACTIVITY, isMobile ? "flexiblemobilecomment_8" : "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
+                .addWidget("fieldUpdateWidget", "Field Update", PageWidget.WidgetType.ACTIVITY, isMobile ? "flexiblemobilecomment_8" : "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("location", "Location", "")
-                .addWidget("locationwidget", "Location", PageWidget.WidgetType.VENDOR_LOCATION, isMobile ? "flexiblemobileattachment_8" : "flexiblewebactivity_50", 0, 0, null, null)
+                .addWidget("locationWidget", "Location", PageWidget.WidgetType.VENDOR_LOCATION, isMobile ? "flexiblemobileattachment_8" : "flexiblewebvendorlocation_50", 0, 0, null, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

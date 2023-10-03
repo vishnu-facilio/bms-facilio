@@ -9,7 +9,6 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
@@ -32,10 +31,8 @@ public class TerritoryModule extends BaseModuleConfig {
 
     public void addData() throws Exception {
         addTerritoryModule();
-//        addTerritoryLookupInPeople();
         addTerritoryLookupInSite();
         addActivityModuleForTerritory();
-//        addPeopleTerritoryModule();
         addTerritoriesField();
         SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.Territory.TERRITORY));
     }
@@ -82,14 +79,6 @@ public class TerritoryModule extends BaseModuleConfig {
         addModuleChain.execute();
     }
 
-//    private void addTerritoryLookupInPeople() throws Exception {
-//        ModuleBean modBean = Constants.getModBean();
-//        LookupField territoryLookup = new LookupField(modBean.getModule(FacilioConstants.ContextNames.PEOPLE), FacilioConstants.Territory.TERRITORY, "Territory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "TERRITORY_ID", FieldType.LOOKUP, false, false, true, false, "Territory", modBean.getModule(FacilioConstants.Territory.TERRITORY));
-//        FacilioChain chain = TransactionChainFactory.getAddFieldsChain();
-//        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PEOPLE);
-//        chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(territoryLookup));
-//        chain.execute();
-//    }
 
     private void addTerritoryLookupInSite() throws Exception {
         ModuleBean modBean = Constants.getModBean();
@@ -207,22 +196,22 @@ public class TerritoryModule extends BaseModuleConfig {
         historyWidgetParam.put("activityModuleName", FacilioConstants.Territory.TERRITORY_ACTIVITY);
 
         return new ModulePages()
-                .addPage("territory", "Territory","", null, isTemplate, isDefault, false)
+                .addPage("territory", "Default Territory Page","", null, isTemplate, isDefault, false)
                 .addWebLayout()
-                .addTab("territorysummary", "Summary",PageTabContext.TabType.SIMPLE,  true, null)
+                .addTab("territorySummary", "Summary",PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("territorysummaryfields", null, null)
-                .addWidget("territorysummaryfieldswidget", "Territory", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Territory.TERRITORY))
+                .addSection("territorySummaryFields", null, null)
+                .addWidget("territorySummaryFieldsWidget", "Territory", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.Territory.TERRITORY))
                 .widgetDone()
                 .sectionDone()
-                .addSection("territorygeograpy", null, null)
-                .addWidget("territorygeograpywidget", "Geography", PageWidget.WidgetType.GEOGRAPHY, "fixedterritorygeography_22_6", 0, 0, null, null)
+                .addSection("territoryGeography", null, null)
+                .addWidget("territoryGeographyWidget", "Geography", PageWidget.WidgetType.GEOGRAPHY, "fixedterritorygeography_22_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addTab("territorysites","Sites",PageTabContext.TabType.SIMPLE, true,null)
+                .addTab("territorySites","Sites",PageTabContext.TabType.SIMPLE, true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("sites", null, null)
                 .addWidget("sites", "Sites", PageWidget.WidgetType.TERRITORY_SITES, "flexiblewebterritorysites_50", 0, 0, null, null)
@@ -231,16 +220,16 @@ public class TerritoryModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addTab("territoryfieldagent","Field Agents",PageTabContext.TabType.SIMPLE, true,null)
+                .addTab("territoryFieldAgent","Field Agents",PageTabContext.TabType.SIMPLE, true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("fieldagents", null, null)
-                .addWidget("fieldagents", "Field Agents", PageWidget.WidgetType.FIELD_AGENTS, "flexibleterritoryfieldagents_50", 0, 0, null, null)
+                .addSection("fieldAgents", null, null)
+                .addWidget("fieldAgents", "Field Agents", PageWidget.WidgetType.FIELD_AGENTS, "flexibleterritoryfieldagents_50", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
 
-                .addTab("territoryhistory", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("territoryHistory", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_50", 0, 0, historyWidgetParam, null)
@@ -256,7 +245,7 @@ public class TerritoryModule extends BaseModuleConfig {
 
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -295,7 +284,7 @@ public class TerritoryModule extends BaseModuleConfig {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);
@@ -330,11 +319,11 @@ public class TerritoryModule extends BaseModuleConfig {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
+                .addWidget("commentWidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
+                .addWidget("attachmentWidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 
@@ -382,24 +371,6 @@ public class TerritoryModule extends BaseModuleConfig {
         return allView;
     }
 
-    private void addPeopleTerritoryModule() throws Exception {
-        List<FacilioModule> modules = new ArrayList<>();
-        ModuleBean modBean = Constants.getModBean();
-        FacilioModule territoryModule = modBean.getModule(FacilioConstants.Territory.TERRITORY);
-        FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-        FacilioModule peopleTerritoryModule = new FacilioModule(FacilioConstants.Territory.PEOPLE_TERRITORY,"People Territories","PEOPLE_TERRITORY_REL",FacilioModule.ModuleType.SUB_ENTITY,true);
-        List<FacilioField> fields = new ArrayList<>();
-        LookupField peopleField = new LookupField(peopleTerritoryModule,"left","People",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"PEOPLE_ID",FieldType.LOOKUP,true,false,true,true,"People",peopleModule);
-        fields.add(peopleField);
-        LookupField territoryField = new LookupField(peopleTerritoryModule,"right","Territories", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"TERRITORY_ID",FieldType.LOOKUP,true,false,true,false,"Territories",territoryModule);
-        fields.add(territoryField);
-        peopleTerritoryModule.setFields(fields);
-        modules.add(peopleTerritoryModule);
-        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
-        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
-        addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
-        addModuleChain.execute();
-    }
     private void addTerritoriesField() throws Exception{
         ModuleBean modBean = Constants.getModBean();
         List<FacilioField>fields = new ArrayList<>();

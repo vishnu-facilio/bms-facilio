@@ -31,6 +31,7 @@ public class ValidateTimeSheetCommand extends FacilioCommand {
                 if (timeSheet.getStartTime() != null && timeSheet.getEndTime() != null) {
 
                     timeSheet.setStatus(ServiceAppointmentUtil.getTimeSheetStatus(FacilioConstants.TimeSheet.COMPLETED));
+                    timeSheet.setDuration((timeSheet.getEndTime()-timeSheet.getStartTime())/1000);
                     if (timeSheet.getStartTime() > timeSheet.getEndTime()) {
                         throw new FSMException(FSMErrorCode.TIME_SHEET_TIME_MISMATCH);
                     }
