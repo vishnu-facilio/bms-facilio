@@ -6749,6 +6749,9 @@
 			<param name="permission">ALL</param>
             <param name="setupTab">NOTIFICATIONS,APPROVALS</param>
 			</action>
+		<action name="fetchListDashboard" class="com.facilio.bmsconsole.actions.ApplicationAction"
+				method="getAllApplicationBasedOnDashboard">
+		</action>
 		<action name="markAsDefault" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="markApplicationAsDefault" />
 		<action name="fetchDetails" class="com.facilio.bmsconsole.actions.ApplicationAction"

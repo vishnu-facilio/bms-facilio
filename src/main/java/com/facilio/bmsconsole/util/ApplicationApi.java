@@ -2928,6 +2928,28 @@ public class ApplicationApi {
                 CriteriaAPI.getCondition("Application.APPLICATION_NAME", "name", "Facilio", StringOperators.IS));
         return getFilteredApplications(FieldUtil.getAsBeanListFromMapList(appbuilder.get(), ApplicationContext.class));
     }
+    public static List<ApplicationContext> getApplicationsContainsTabTypes(List<Integer> tabTypeIds) throws Exception {
+
+        GenericSelectRecordBuilder tabBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabModule().getTableName())
+                .select(FieldFactory.getWebTabFields())
+                .andCondition(CriteriaAPI.getCondition("TYPE", "type",
+                        StringUtils.join(tabTypeIds,","), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> tabs = tabBuilder.get();
+        List<Long> appIdsList = new ArrayList<>();
+        GenericSelectRecordBuilder appBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getApplicationModule().getTableName())
+                .select(FieldFactory.getApplicationFields());
+        if (CollectionUtils.isNotEmpty(tabs)) {
+            List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(tabs, WebTabContext.class);
+            appIdsList = webTabs.stream().map(WebTabContext::getApplicationId).collect(Collectors.toList());
+        }
+        if (CollectionUtils.isNotEmpty(appIdsList)) {
+            appBuilder.andCondition(CriteriaAPI.getIdCondition(appIdsList, ModuleFactory.getApplicationModule()));
+        }
+        return getFilteredApplications(FieldUtil.getAsBeanListFromMapList(appBuilder.get(), ApplicationContext.class));
+    }
 
     public static void addAppRoleMapping(long roleId, long appId) throws Exception {
         RoleApp roleApp = new RoleApp(appId, roleId);

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.facilio.accounts.dto.Organization;
@@ -10,6 +11,7 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.chain.FacilioChain;
@@ -259,6 +261,16 @@ public class ApplicationAction extends FacilioAction {
 
 		chain.execute();
 
+		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));
+		return SUCCESS;
+	}
+	public String getAllApplicationBasedOnDashboard() throws Exception {
+
+		FacilioChain chain = ReadOnlyChainFactory.getAllApplicationBasedOnDashboardChain();
+		List<Integer> tabTypeIds = Arrays.asList(WebTabContext.Type.DASHBOARD.getIndex(),WebTabContext.Type.NEW_DASHBOARD.getIndex());
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.WEB_TABS,tabTypeIds);
+		chain.execute();
 		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));
 		return SUCCESS;
 	}
