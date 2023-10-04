@@ -53,6 +53,7 @@ public enum TeamOperator implements Operator<String> {
                     .on("FacilioGroupMembers.GROUPID = FacilioGroups.ID")
                     .beanClass(Group.class)
                     .andCondition(CriteriaAPI.getCondition("FacilioGroupMembers.PEOPLE_ID","peopleId", String.valueOf(AccountUtil.getCurrentUser().getPeopleId()),NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("FacilioGroupMembers.SYS_DELETED","memberDeleted", "",CommonOperators.IS_EMPTY))
                     .andCondition(CriteriaAPI.getCondition("FacilioGroups.SYS_DELETED","deleted","",CommonOperators.IS_EMPTY));
             List<Group> groups = groupBuilder.get();
             if(CollectionUtils.isNotEmpty(groups)) {
@@ -71,7 +72,7 @@ public enum TeamOperator implements Operator<String> {
                         StringBuilder builder = new StringBuilder();
                         builder.append(teamField.getCompleteColumnName());
                         builder.append(" IN (");
-                        builder.append("SELECT FacilioGroups.ID FROM FacilioGroupMembers INNER JOIN FacilioGroups ON FacilioGroups.ID = FacilioGroupMembers.GROUPID WHERE FacilioGroups.SYS_DELETED IS NULL AND PEOPLE_ID = ");
+                        builder.append("SELECT FacilioGroups.ID FROM FacilioGroupMembers INNER JOIN FacilioGroups ON FacilioGroups.ID = FacilioGroupMembers.GROUPID WHERE FacilioGroups.SYS_DELETED IS NULL AND FacilioGroupMembers.SYS_DELETED IS NULL AND PEOPLE_ID = ");
                         builder.append(AccountUtil.getCurrentUser().getPeopleId());
                         builder.append(")");
                         return builder.toString();
