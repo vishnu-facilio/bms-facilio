@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.signup.calendar;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
@@ -19,12 +20,11 @@ import java.util.Map;
 
 public class CalendarModulePostAction extends BaseModuleConfig {
     public CalendarModulePostAction(){
-        setModuleName(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
+        setModuleName(FacilioConstants.Calendar.CALENDAR_EVENT_MAPPING_MODULE_NAME);
     }
 
     @Override
-    public void addData() throws Exception {
-        super.addData();
+    public void addForms(List<ApplicationContext> allApplications) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
         Map<String, FacilioForm> forms = FormsAPI.getFormsFromDB(module.getName(), Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
