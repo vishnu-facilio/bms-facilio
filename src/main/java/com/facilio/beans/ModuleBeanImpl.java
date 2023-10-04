@@ -1800,7 +1800,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw new IllegalArgumentException("Module Type cannot be null during addition of modules");
 		}
 		
-		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, HIDE_FROM_PARENTS, MODULE_TYPE, DATA_INTERVAL, DESCRIPTION, CREATED_BY, CREATED_TIME, STATE_FLOW_ENABLED, IS_CUSTOM, IS_TRASH_ENABLED, MODIFIED_TIME, CRITERIA_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, HIDE_FROM_PARENTS, MODULE_TYPE, DATA_INTERVAL, DESCRIPTION, CREATED_BY, CREATED_TIME, STATE_FLOW_ENABLED, IS_CUSTOM, IS_TRASH_ENABLED, MODIFIED_TIME, CRITERIA_ID, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		ResultSet rs = null;
 		try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setLong(1, getOrgId());
@@ -1881,7 +1881,12 @@ public class ModuleBeanImpl implements ModuleBean {
 			else {
 				pstmt.setNull(16, Types.BIGINT);
 			}
-			
+			if (module.isModuleHidden()) {
+				pstmt.setBoolean(17, module.isModuleHidden());
+			} else {
+				pstmt.setNull(17, Types.BOOLEAN);
+			}
+
 			if (pstmt.executeUpdate() < 1) {
 				throw new Exception("Unable to add Module");
 			}
@@ -2128,7 +2133,6 @@ public class ModuleBeanImpl implements ModuleBean {
 
 	@Override
 	public List<FacilioModule> getModuleList(Criteria criteria) throws Exception {
-		List<FacilioModule> moduleList = new ArrayList<>();
 		FacilioModule moduleModule = ModuleFactory.getModuleModule();
 		List<FacilioField> moduleFields = FieldFactory.getModuleFields();
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(moduleFields);
@@ -2143,6 +2147,10 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 
 		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isEmpty(props)) {
+			return null;
+		}
+
 		for (Map<String, Object> prop : props) {
 			if (prop.containsKey("createdBy")) {
 				IAMUser user = new IAMUser();
@@ -2150,7 +2158,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				prop.put("createdBy", user);
 			}
 		}
-		moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
+		List<FacilioModule> moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
 		Map<Long, FacilioModule> moduleIdVsObj = moduleList.stream().collect(Collectors.toMap(FacilioModule::getModuleId, Function.identity()));
 		int index = 0;
 		for (Map<String, Object> prop : props) {

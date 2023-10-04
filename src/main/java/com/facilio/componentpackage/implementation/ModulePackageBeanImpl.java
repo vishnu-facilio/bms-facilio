@@ -1,5 +1,6 @@
 package com.facilio.componentpackage.implementation;
 
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.componentpackage.constants.PackageConstants.ModuleXMLConstants;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
@@ -9,6 +10,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.constants.FacilioConstants;
@@ -26,6 +28,8 @@ import com.facilio.beans.ModuleBean;
 import lombok.extern.log4j.Log4j;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Log4j
 public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
@@ -45,7 +49,6 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
 
         int fromIndex = 0;
         int toIndex = Math.min(ids.size(), 250);
-        ModuleBean moduleBean = Constants.getModBean();
 
         List<Long> idsSubList;
         while (fromIndex < ids.size()) {
@@ -54,7 +57,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
             FacilioField moduleIdField = FieldFactory.getModuleIdField(ModuleFactory.getModuleModule());
             moduleIdCriteria.addAndCondition(CriteriaAPI.getCondition(moduleIdField, idsSubList, NumberOperators.EQUALS));
 
-            List<FacilioModule> moduleList = moduleBean.getModuleList(moduleIdCriteria);
+            List<FacilioModule> moduleList = getModuleList(moduleIdCriteria);
             if (CollectionUtils.isNotEmpty(moduleList)) {
                 moduleList.forEach(module -> moduleIdVsModuleMap.put(module.getModuleId(), module));
             }
@@ -74,6 +77,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
         moduleElement.element(ModuleXMLConstants.MODULE_TYPE).text(String.valueOf(component.getType()));
         moduleElement.element(PackageConstants.IS_CUSTOM).text(String.valueOf(component.isCustom()));
         moduleElement.element(ModuleXMLConstants.STATEFLOW_ENABLED).text(String.valueOf(component.isStateFlowEnabled()));
+        moduleElement.element(FacilioConstants.ContextNames.IS_HIDDEN_MODULE).text(String.valueOf(component.isModuleHidden()));
     }
 
     @Override
@@ -159,7 +163,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         String name, displayName, description;
-        boolean stateFlowEnabled;
+        boolean stateFlowEnabled, isHiddenModule;
         int moduleType;
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
@@ -172,8 +176,9 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
                         FacilioModule.ModuleType.BASE_ENTITY.getValue();
                 displayName = moduleElement.getElement(PackageConstants.DISPLAY_NAME).getText();
                 stateFlowEnabled = Boolean.parseBoolean(moduleElement.getElement(ModuleXMLConstants.STATEFLOW_ENABLED).getText());
+                isHiddenModule = Boolean.parseBoolean(moduleElement.getElement(FacilioConstants.ContextNames.IS_HIDDEN_MODULE).getText());
 
-                long newModuleId = addModule(name, displayName, description, moduleType, stateFlowEnabled);
+                long newModuleId = addModule(name, displayName, description, moduleType, stateFlowEnabled, isHiddenModule);
                 uniqueIdentifierVsComponentId.put(idVsData.getKey(), newModuleId);
             }
         }
@@ -183,7 +188,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
     @Override
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         String name, displayName, description;
-        boolean stateFlowEnabled, isCustom;
+        boolean stateFlowEnabled, isCustom, isHiddenModule;
 
         for (Map.Entry<Long, XMLBuilder> idVsComponent : idVsXMLComponents.entrySet()) {
             XMLBuilder moduleElement = idVsComponent.getValue();
@@ -193,9 +198,10 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
             displayName = moduleElement.getElement(PackageConstants.DISPLAY_NAME).getText();
             stateFlowEnabled = Boolean.parseBoolean(moduleElement.getElement(ModuleXMLConstants.STATEFLOW_ENABLED).getText());
             isCustom = Boolean.parseBoolean(moduleElement.getElement(PackageConstants.IS_CUSTOM).getText());
+            isHiddenModule = Boolean.parseBoolean(moduleElement.getElement(FacilioConstants.ContextNames.IS_HIDDEN_MODULE).getText());
 
             if (isCustom) {
-                updateModule(name, displayName, description, stateFlowEnabled);
+                updateModule(name, displayName, description, stateFlowEnabled, isHiddenModule);
             }
         }
     }
@@ -234,7 +240,7 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
         return moduleIdVsParentIds;
     }
 
-    private long addModule(String name, String displayName, String description, Integer moduleType, boolean stateFlowEnabled) throws Exception {
+    private long addModule(String name, String displayName, String description, Integer moduleType, boolean stateFlowEnabled, boolean isHiddenModule) throws Exception {
         FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
 
         FacilioContext context = addModulesChain.getContext();
@@ -247,13 +253,15 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
         context.put(FacilioConstants.ContextNames.FAILURE_REPORTING_ENABLED, false);
         context.put(PackageConstants.USE_LINKNAME_FROM_CONTEXT, true);
         context.put(FacilioConstants.Module.SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK, true);
+        context.put(FacilioConstants.ContextNames.IS_HIDDEN_MODULE, isHiddenModule);
+
         addModulesChain.execute();
 
         FacilioModule newModule = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
         return newModule.getModuleId();
     }
 
-    private long updateModule(String moduleName, String displayName, String description, boolean stateFlowEnabled) throws Exception {
+    private long updateModule(String moduleName, String displayName, String description, boolean stateFlowEnabled, boolean isHiddenModule) throws Exception {
         FacilioChain updateModulesChain = TransactionChainFactory.getUpdateModuleChain();
 
         FacilioContext context = updateModulesChain.getContext();
@@ -261,10 +269,38 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
         context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
         context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, displayName);
         context.put(FacilioConstants.ContextNames.STATE_FLOW_ENABLED, stateFlowEnabled);
+        context.put(FacilioConstants.ContextNames.IS_HIDDEN_MODULE, isHiddenModule);
 
         updateModulesChain.execute();
 
         FacilioModule facilioModule = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
         return facilioModule.getModuleId();
+    }
+
+    public List<FacilioModule> getModuleList(Criteria criteria) throws Exception {
+        FacilioModule moduleModule = ModuleFactory.getModuleModule();
+        List<FacilioField> moduleFields = FieldFactory.getModuleFields();
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .table(moduleModule.getTableName())
+                .select(moduleFields);
+
+        if (criteria != null && !criteria.isEmpty()) {
+            selectBuilder.andCriteria(criteria);
+        }
+
+        List<Map<String, Object>> props = selectBuilder.get();
+
+        if (CollectionUtils.isNotEmpty(props)) {
+            for (Map<String, Object> prop : props) {
+                if (prop.containsKey("createdBy")) {
+                    IAMUser user = new IAMUser();
+                    user.setId((long) prop.get("createdBy"));
+                    prop.put("createdBy", user);
+                }
+            }
+            return FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
+        }
+        return null;
     }
 }

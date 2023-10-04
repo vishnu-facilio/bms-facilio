@@ -464,20 +464,15 @@ public class FormRulePackageUtil {
             FormRuleAPI.setFormRuleActionAndTriggerFieldContext(formRuleContexts);
             FormRuleAPI.setFormRuleCriteria(formRuleContexts);
 
-            if (CollectionUtils.isNotEmpty(formRuleContexts)) {
-
-                for(FormRuleContext defaultRule :formRuleContexts){
-                    if(CollectionUtils.isEmpty(defaultRule.getActions())){
-                        continue;
-                    }
-                    if((defaultRule.getTriggerTypeEnum()== FormRuleContext.TriggerType.FIELD_UPDATE)&&CollectionUtils.isEmpty(defaultRule.getTriggerFields())){
-                        continue;
-                    }
-                    ruleIdVsFormRule.put(defaultRule.getId(), defaultRule);
+            for(FormRuleContext defaultRule :formRuleContexts){
+                if(CollectionUtils.isEmpty(defaultRule.getActions())){
+                    continue;
                 }
-
+                if((defaultRule.getTriggerTypeEnum()== FormRuleContext.TriggerType.FIELD_UPDATE)&&CollectionUtils.isEmpty(defaultRule.getTriggerFields())){
+                    continue;
+                }
+                ruleIdVsFormRule.put(defaultRule.getId(), defaultRule);
             }
-
 
             fromIndex = toIndex;
             toIndex = Math.min((toIndex + 250), ids.size());
@@ -559,6 +554,9 @@ public class FormRulePackageUtil {
                             XMLBuilder triggerFieldElement = triggerFieldElementsList.element(PackageConstants.FormRuleConstants.TRIGGER_FIELD);
                             triggerFieldElement.element(PackageConstants.MODULENAME).text(moduleName);
                             triggerFieldElement.element(PackageConstants.FormXMLComponents.FACILIO_FIELD_NAME).text(formField.getName());
+                            triggerFieldElement.element(PackageConstants.FormRuleConstants.FORM_FIELD_DISPLAY_NAME).text(formField.getDisplayName());
+                        }else{
+                            XMLBuilder triggerFieldElement = triggerFieldElementsList.element(PackageConstants.FormRuleConstants.TRIGGER_FIELD);
                             triggerFieldElement.element(PackageConstants.FormRuleConstants.FORM_FIELD_DISPLAY_NAME).text(formField.getDisplayName());
                         }
                     }

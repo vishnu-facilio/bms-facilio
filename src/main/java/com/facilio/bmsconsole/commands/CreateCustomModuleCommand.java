@@ -19,6 +19,7 @@ public class CreateCustomModuleCommand extends FacilioCommand {
 		Boolean stateFlowEnabled = (Boolean) context.get(FacilioConstants.ContextNames.STATE_FLOW_ENABLED);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		boolean useLinkNameFromContext = (boolean) context.getOrDefault(MetaMigrationConstants.USE_LINKNAME_FROM_CONTEXT, false);
+		boolean isHiddenModule = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_HIDDEN_MODULE, false);
 
 		if(displayName != null && !displayName.isEmpty()) {
 			FacilioModule module = new FacilioModule();
@@ -36,6 +37,7 @@ public class CreateCustomModuleCommand extends FacilioCommand {
 			}
 			module.setCustom(true);
 			module.setType(moduleType);
+			module.setStatus(isHiddenModule);
 
 			context.put("should_suppress_exception", true);
 

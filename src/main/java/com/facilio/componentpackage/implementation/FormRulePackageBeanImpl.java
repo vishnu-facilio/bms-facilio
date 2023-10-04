@@ -192,9 +192,9 @@ public class FormRulePackageBeanImpl implements PackageBean<FormRuleContext> {
 
         // trigger fields
         XMLBuilder triggerFieldsElementsList = ruleElement.getElement(PackageConstants.FormRuleConstants.TRIGGER_FIELDS_LIST);
-        if (triggerFieldsElementsList != null) {
+        List<XMLBuilder> triggerFieldsElementList = ruleElement.getElementList(PackageConstants.FormRuleConstants.TRIGGER_FIELD);
+        if (triggerFieldsElementsList != null && triggerFieldsElementList!=null) {
             List<FormRuleTriggerFieldContext> triggerFieldList = new ArrayList<>();
-            List<XMLBuilder> triggerFieldsElementList = ruleElement.getElementList(PackageConstants.FormRuleConstants.TRIGGER_FIELD);
             for (XMLBuilder triggerFieldElement : triggerFieldsElementList) {
                 FormRuleTriggerFieldContext triggerFieldContext = new FormRuleTriggerFieldContext();
                 long fieldId = -1;
