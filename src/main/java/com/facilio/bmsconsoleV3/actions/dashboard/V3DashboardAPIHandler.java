@@ -999,12 +999,11 @@ public class V3DashboardAPIHandler {
             if(selected_values != null && selected_values.size() > 0 && (!"".equals(selected_values.get(0)) && !"all".equals(selected_values.get(0))))
             {
                 FacilioField applied_widget_field = widget_and_field.getValue();
-                if((operatorId == null && applied_widget_field !=null && applied_widget_field.getName() != null &&
+                operatorId = PickListOperators.IS.getOperatorId();
+                if((applied_widget_field !=null && applied_widget_field.getName() != null &&
                         (applied_widget_field.getName().equals(FacilioConstants.ContextNames.RESOURCE)
                                 || applied_widget_field.getName().equals(FacilioConstants.ContextNames.SPACE)))){
                     operatorId = BuildingOperator.BUILDING_IS.getOperatorId();
-                }else{
-                    operatorId = 36;
                 }
                 Operator operator = Operator.getOperator(operatorId != null && operatorId > 0 ? operatorId : 36);
                 Condition condition = new Condition();

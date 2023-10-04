@@ -1912,9 +1912,15 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 					}
 				}
 			}
-			if (records_list != null) {
-				List<LinkedHashMap> firstNElementsList = records_list.stream().limit(limit).collect(Collectors.toList());
-				dataresult.put("records", firstNElementsList);
+			if (records_list != null)
+			{
+				Boolean isExport = (Boolean ) context.get("isExport");
+				if(isExport != null && isExport){
+					dataresult.put("records", records_list);
+				}else{
+					List<LinkedHashMap> firstNElementsList = records_list.stream().limit(limit).collect(Collectors.toList());
+					dataresult.put("records", firstNElementsList);
+				}
 				return dataresult;
 			} else {
 				return dataresult;
