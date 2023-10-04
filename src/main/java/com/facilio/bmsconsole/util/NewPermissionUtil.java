@@ -1080,7 +1080,7 @@ public class NewPermissionUtil {
                 }
                 return maps;
             }
-            case 104: {
+            case 105: {
                 Map<String, Long> maps = new HashMap<>();
                 for (String key : dispatcherBoardTabType.keySet()) {
                     maps.put(key, Long.valueOf(dispatcherBoardTabType.get(key).toString()));
