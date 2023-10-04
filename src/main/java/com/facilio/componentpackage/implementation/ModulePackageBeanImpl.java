@@ -220,7 +220,6 @@ public class ModulePackageBeanImpl implements PackageBean<FacilioModule>  {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .table(moduleModule.getTableName())
                 .select(Collections.singletonList(moduleIdField))
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(1), NumberOperators.NOT_EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("custom"), String.valueOf(fetchCustom), BooleanOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("tableName"), "AssetCustomModuleData", StringOperators.ISN_T))
                 .andCondition(CriteriaAPI.getCondition(fieldsMap.get("type"), StringUtils.join(PackageBeanUtil.INCLUDE_MODULE_TYPES, ","), NumberOperators.EQUALS));

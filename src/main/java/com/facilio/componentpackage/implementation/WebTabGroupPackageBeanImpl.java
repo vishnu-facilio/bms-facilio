@@ -65,7 +65,6 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
             ApplicationContext application = ApplicationApi.getApplicationForId(layoutContext.getApplicationId());
 
             XMLBuilder applicationLayoutElement = webTabGroupElement.element(PackageConstants.AppXMLConstants.LAYOUT);
-            applicationLayoutElement.element(PackageConstants.AppXMLConstants.APP_TYPE).text(layoutContext.getAppType());
             applicationLayoutElement.element(PackageConstants.AppXMLConstants.APP_LINK_NAME).text(application.getLinkName());
             applicationLayoutElement.element(PackageConstants.AppXMLConstants.DEVICE_TYPE).text(layoutContext.getLayoutDeviceTypeEnum().name());
         }
@@ -226,7 +225,6 @@ public class WebTabGroupPackageBeanImpl implements PackageBean<WebTabGroupContex
 
         XMLBuilder layoutElement = tabGroupElement.getElement(PackageConstants.AppXMLConstants.LAYOUT);
         if (layoutElement != null) {
-            appType = layoutElement.getElement(PackageConstants.AppXMLConstants.APP_TYPE).getText();
             deviceTypeStr = layoutElement.getElement(PackageConstants.AppXMLConstants.DEVICE_TYPE).getText();
             appLinkName = layoutElement.getElement(PackageConstants.AppXMLConstants.APP_LINK_NAME).getText();
 

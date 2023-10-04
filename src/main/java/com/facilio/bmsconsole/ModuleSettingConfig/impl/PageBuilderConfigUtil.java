@@ -35,6 +35,9 @@ public class PageBuilderConfigUtil {
             moduleList.add(modBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME));
             moduleList.add(modBean.getModule("vendors"));
             moduleList.add(modBean.getModule("insurance"));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING));
+
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.CLIENT));
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT));
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.SITE));

@@ -8,12 +8,13 @@ import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.componentpackage.bean.OrgSwitchBean;
 import com.facilio.componentpackage.command.PackageChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageContext;
-import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fms.message.Message;
+import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.ims.endpoint.Messenger;
 import com.facilio.ims.handler.LongRunningTaskHandler;
@@ -111,16 +112,17 @@ public class LongTasksBeanImpl implements LongTasksBean {
 		}
 	}
 	@Override
-	public void addDefaultSignupDataToSandbox(JSONObject data){
+	public void addDefaultSignupDataToSandbox(JSONObject data) throws Exception {
+		long productionOrgId = ((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue();
+		long sandboxOrgId = ((Number)data.get(PackageConstants.TARGET_ORG_ID)).longValue();
+		long sandboxId = ((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue();
 		try {
 			JSONObject content = new JSONObject();
-			long productionOrgId = ((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue();
-			long sandboxOrgId = ((Number)data.get(PackageConstants.TARGET_ORG_ID)).longValue();
-			long sandboxId = ((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue();
 			String productionDomainName = String.valueOf(data.get(SandboxConstants.PRODUCTION_DOMAIN_NAME));
 			Map<String, Object> sandboxOrgData = (Map<String, Object>)data.get(SandboxConstants.SANDBOX_ORG);
 			Map<String, Object> signupData = (Map<String, Object>)data.get(FacilioConstants.ContextNames.SIGNUP_INFO);
 			Map<String, Object> userData = (Map<String, Object>)data.get(SandboxConstants.SANDBOX_ORG_USER);
+			SandboxAPI.sendSandboxProgress( 5, sandboxId, "Org-Creation started for sandbox", productionOrgId);
 			JSONObject signupDataJson = SandboxUtil.getSandboxSignUpDataParser(signupData);
 			Organization sandBoxOrg = SandboxUtil.constructSandboxOrganizationFromMap(sandboxOrgData);
 			IAMUser iamUser = SandboxUtil.constructSandboxIAMUserFromMap(userData);
@@ -147,7 +149,7 @@ public class LongTasksBeanImpl implements LongTasksBean {
 			signupContext.put("orgId", sandboxOrgId);
 			signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupDataJson);
 			signupChain.execute();
-
+			SandboxAPI.sendSandboxProgress( 20, sandboxId, "Org-Creation done for sandbox", productionOrgId);
 			LOGGER.info("####Sandbox - Completed Sandbox Org creation");
 			content.put(SandboxConstants.SANDBOX_ID, sandboxId);
 			content.put(PackageConstants.SOURCE_ORG_ID, productionOrgId);
@@ -159,13 +161,15 @@ public class LongTasksBeanImpl implements LongTasksBean {
 					.setContent(content));
 		}catch (Exception e){
 			LOGGER.error("####Sandbox - Error While Creating Sandbox Org",e);
+			SandboxAPI.sendSandboxProgress( 5, sandboxId, "Org-Creation Failed for sandbox", productionOrgId);
 		}
 	}
 	@Override
 	public void createPackageForSandboxData(JSONObject data) throws Exception {
-		PackageFileUtil.accountSwitch(((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
+		long productionOrgId = ((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue();
+		long sandboxId = ((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue();
 		try {
-			SandboxConfigContext sandboxConfigContext = SandboxAPI.getSandboxById(((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue());
+			SandboxConfigContext sandboxConfigContext = SandboxAPI.getSandboxById(sandboxId, productionOrgId);
 			boolean fromAdminTool = (Boolean) data.getOrDefault(PackageConstants.FROM_ADMIN_TOOL, false);
 			if (sandboxConfigContext == null) {
 				LOGGER.info("####Sandbox --context is null, returning without creating and installing package");
@@ -184,16 +188,19 @@ public class LongTasksBeanImpl implements LongTasksBean {
 				context.put(PackageConstants.SKIP_COMPONENTS, skipComponents);
 				context.put(PackageConstants.PACKAGE_TYPE, PackageContext.PackageType.SANDBOX);
 				context.put(PackageConstants.FROM_ADMIN_TOOL, fromAdminTool);
+				context.put(SandboxConstants.SANDBOX_ID, sandboxId);
 				createPackageChain.execute();
 				content.put(PackageConstants.FILE_ID, SandboxAPI.getRecentPackageId(sandboxConfigContext.getSubDomain()));
 				LOGGER.info("####Sandbox - Completed Package creation");
 				sandboxConfigContext.setStatus(SandboxConfigContext.SandboxStatus.UPGRADE_IN_PROGRESS);
+
 				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
-				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
+				SandboxAPI.sendSandboxProgress( 50, sandboxId, "Package creation done for sandbox");
 			} catch (Exception e) {
 				sandboxConfigContext.setStatus(SandboxConfigContext.SandboxStatus.PACKAGE_FAILED);
+
 				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
-				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
+				SandboxAPI.sendSandboxProgress( 20, sandboxId, "Sandbox failed at package creation");
 				return;
 			}
 			content.put("methodName", "installPackageForSandboxData");
@@ -212,45 +219,37 @@ public class LongTasksBeanImpl implements LongTasksBean {
 
 	@Override
 	public void installPackageForSandboxData(JSONObject data) throws Exception {
-		PackageFileUtil.accountSwitch(((Number)data.get(PackageConstants.TARGET_ORG_ID)).longValue());
-		SandboxConfigContext sandboxConfigContext = null;
+		long productionOrgId = ((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue();
+		long sandboxOrgId = ((Number)data.get(PackageConstants.TARGET_ORG_ID)).longValue();
+		long sandboxId = ((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue();
 		List<Integer> skipComponents = (List<Integer>) data.getOrDefault(PackageConstants.SKIP_COMPONENTS,new ArrayList<>());
+		SandboxConfigContext sandboxConfigContext = null;
 		try {
 			LOGGER.info("####Sandbox - Initiating Package Deployment");
 			FacilioChain deployPackageChain = PackageChainFactory.getDeployPackageChain();
 			FacilioContext deployContext = deployPackageChain.getContext();
 			deployContext.put(PackageConstants.FILE_ID, ((Number)data.get(PackageConstants.FILE_ID)).longValue());
-			deployContext.put(PackageConstants.SOURCE_ORG_ID, ((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
-			deployContext.put(PackageConstants.TARGET_ORG_ID, ((Number)data.get(PackageConstants.TARGET_ORG_ID)).longValue());
+			deployContext.put(PackageConstants.SOURCE_ORG_ID, productionOrgId);
+			deployContext.put(PackageConstants.TARGET_ORG_ID, sandboxOrgId);
 			deployContext.put(PackageConstants.SKIP_COMPONENTS, skipComponents);
+			deployContext.put(SandboxConstants.SANDBOX_ID, sandboxId);
 			deployPackageChain.execute();
 			LOGGER.info("####Sandbox - Completed Package Deployment");
-			AccountUtil.cleanCurrentAccount();
 			try {
-				PackageFileUtil.accountSwitch(((Number)data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
-				sandboxConfigContext = SandboxAPI.getSandboxById(((Number)data.get(SandboxConstants.SANDBOX_ID)).longValue());
-				if(sandboxConfigContext == null){
-					LOGGER.error("####Sandbox - Error occurred while changing status to Success");
-					return;
-				}
+				sandboxConfigContext = SandboxAPI.getSandboxById(sandboxId, productionOrgId);
 				sandboxConfigContext.setStatus(SandboxConfigContext.SandboxStatus.ACTIVE);
-				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
-				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
+				SandboxAPI.changeSandboxStatus(sandboxConfigContext, productionOrgId);
+				SandboxAPI.sendSandboxProgress( 100, sandboxId, "Data Installation done for sandbox", productionOrgId);
 			}catch(Exception e){
 				LOGGER.error("####Sandbox - Error occurred while changing status ",e);
 			}
 		}catch(Exception e){
 			try {
 				LOGGER.info("####Sandbox - Error while  Package Deployment");
-				PackageFileUtil.accountSwitch(((Number) data.get(PackageConstants.SOURCE_ORG_ID)).longValue());
-				sandboxConfigContext = SandboxAPI.getSandboxById(((Number) data.get(SandboxConstants.SANDBOX_ID)).longValue());
-				if (sandboxConfigContext == null) {
-					LOGGER.error("####Sandbox - Error occurred while changing status to Failed");
-					return;
-				}
+				sandboxConfigContext = SandboxAPI.getSandboxById(sandboxId, productionOrgId);
 				sandboxConfigContext.setStatus(SandboxConfigContext.SandboxStatus.INSTALL_FAILED);
-				SandboxAPI.changeSandboxStatus(sandboxConfigContext);
-				SandboxAPI.sendSandboxProgress(sandboxConfigContext);
+				SandboxAPI.changeSandboxStatus( sandboxConfigContext, productionOrgId);
+				SandboxAPI.sendSandboxProgress(50, sandboxId, "Data Installation Failed for sandbox", productionOrgId);
 			} catch(Exception ex){
 				LOGGER.error("####Sandbox - Error occurred while changing status", ex);
 			}

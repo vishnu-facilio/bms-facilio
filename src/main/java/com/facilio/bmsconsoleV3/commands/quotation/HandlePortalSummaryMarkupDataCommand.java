@@ -36,7 +36,7 @@ public class HandlePortalSummaryMarkupDataCommand extends FacilioCommand {
         ApplicationContext app = AccountUtil.getCurrentApp();
 
 
-        if(app != null && (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) || (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) || (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP))) {
+        if(app != null && app.getLinkName() != null && ((app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP)) || (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) || (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP)))) {
 
             String moduleName = Constants.getModuleName(context);
             Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);

@@ -2,8 +2,10 @@ package com.facilio.workflows.action;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import com.facilio.bmsconsoleV3.util.LicensingInfoUtil;
+import com.facilio.ims.handler.AuditLogHandler;
 import com.facilio.constants.FacilioConstants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Priority;
@@ -23,6 +25,8 @@ import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class WorkflowAction extends FacilioAction {
 
@@ -339,10 +343,30 @@ public class WorkflowAction extends FacilioAction {
 		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddOrUpdateScheduledWorkflowChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+		addAuditLogs(scheduledWorkflow);
 //		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
-	
+
+	private void addAuditLogs(ScheduledWorkflowContext scheduledWorkflow){
+
+		String type = scheduledWorkflow.getCreatedTime() ==  scheduledWorkflow.getModifiedTime() ? "created":"updated";
+		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Scheduler {%s} has been %s ", scheduledWorkflow.getName(),type),
+				null,
+				AuditLogHandler.RecordType.SETTING,
+				"Scheduler",scheduledWorkflow.getId())
+				.setActionType(scheduledWorkflow.getId() > 0 ? AuditLogHandler.ActionType.UPDATE : AuditLogHandler.ActionType.ADD)
+				.setLinkConfig(((Function<Void, String>) o -> {
+					JSONArray array = new JSONArray();
+					JSONObject json = new JSONObject();
+					json.put("id", scheduledWorkflow.getId());
+					json.put("navigateTo", "Scheduler");
+					array.add(json);
+					return array.toJSONString();
+				}).apply(null))
+		);
+	}
+
 	public String deleteScheduledWorkflow() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
@@ -351,6 +375,15 @@ public class WorkflowAction extends FacilioAction {
 		FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteScheduledWorkflowChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+
+		ScheduledWorkflowContext scheduledWorkflowContext = (ScheduledWorkflowContext) context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT);
+		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Scheduler %s has been deleted.",scheduledWorkflowContext.getName()),
+				null,
+				AuditLogHandler.RecordType.SETTING,
+				"Scheduler",scheduledWorkflowContext.getId())
+				.setActionType(AuditLogHandler.ActionType.DELETE)
+		);
+
 		return SUCCESS;
 	}
 	

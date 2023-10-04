@@ -1,6 +1,5 @@
 package com.facilio.componentpackage.command;
 
-import com.facilio.bundle.utils.BundleConstants;
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
 import com.facilio.componentpackage.constants.ComponentType;
@@ -12,14 +11,13 @@ import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.componentpackage.utils.PackageUtil;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.sandbox.utils.SandboxAPI;
+import com.facilio.sandbox.utils.SandboxConstants;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -42,8 +40,13 @@ public class CreateXMLPackageCommand extends FacilioCommand implements PostTrans
 		packageConfigXML.element(PackageConstants.VERSION).text(String.valueOf(packageContext.getVersion()));
 		packageConfigXML.element(PackageConstants.TYPE).text(String.valueOf(packageContext.getType()));
 		XMLBuilder componentsConfigXML = packageConfigXML.element(PackageConstants.PackageXMLConstants.COMPONENTS);
+		long sandboxId = (long) context.getOrDefault(SandboxConstants.SANDBOX_ID, -1L);
 
 		Map<ComponentType, List<PackageChangeSetMappingContext>> typeVsComponents = PackageUtil.getAllPackageChangsets(packageContext.getId());
+		float i = 20;
+		int count = typeVsComponents.size();
+		float parts = (float) 30 /count;
+		int progress;
 		for(Map.Entry<ComponentType, List<PackageChangeSetMappingContext>> typeVsComponent : typeVsComponents.entrySet()) {
 			ComponentType componentType = typeVsComponent.getKey();
 			if(componentType.getComponentClass() == null) {
@@ -76,6 +79,11 @@ public class CreateXMLPackageCommand extends FacilioCommand implements PostTrans
 			componentConfigXML.attr(PackageConstants.PackageXMLConstants.COMPONENT_TYPE, componentType.getValue());
 			componentConfigXML.text(componentType.getValue() + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.XML_FILE_EXTN);
 			LOGGER.info("####Sandbox - Completed Packaging ComponentType - " + componentType.name());
+			if(sandboxId > -1L) {
+				i = i + parts;
+				progress = (int)i;
+				SandboxAPI.sendSandboxProgress(progress, sandboxId, "Packaging done for component name--> "+ componentType.name());
+			}
 		}
 		rootFolder.addFile(PackageConstants.PACKAGE_CONF_FILE_NAME + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.XML_FILE_EXTN, new PackageFileContext(PackageConstants.PACKAGE_CONF_FILE_NAME, PackageConstants.XML_FILE_EXTN, packageConfigXML));
 

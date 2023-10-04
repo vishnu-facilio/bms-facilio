@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.UserOperators;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.*;
@@ -19,6 +20,7 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -33,6 +35,63 @@ public class ConstructObjectFromConditions extends FacilioCommand {
     private static final int minSize = 10;
 
     private  JSONArray conditions=new JSONArray();
+    private static final Map<String,String> dayOfWeek=new HashMap<String,String>(){{
+        put("1","Monday");
+        put("2","Tuesday");
+        put("3","Wednesday");
+        put("4","Thursday");
+        put("5","Friday");
+        put("6","Saturday");
+        put("7","Sunday");
+    }};
+
+    private static final Map<String,String> dayOfMonth=new HashMap<String,String>(){{
+        put("1","1st day");
+        put("2","2nd day");
+        put("3","3rd day");
+        put("4","4th day");
+        put("5","5th day");
+        put("6","6th day");
+        put("7","7th day");
+        put("8","8th day");
+        put("9","9th day");
+        put("10","10th day");
+        put("11","11th day");
+        put("12","12th day");
+        put("13","13th day");
+        put("14","14th day");
+        put("15","15th day");
+        put("16","16th day");
+        put("17","17th day");
+        put("18","18th day");
+        put("19","19th day");
+        put("20","20th day");
+        put("21","21st day");
+        put("22","22nd day");
+        put("23","23rd day");
+        put("24","24th day");
+        put("25","25th day");
+        put("26","26th day");
+        put("27","27th day");
+        put("28","28th day");
+        put("29","29th day");
+        put("30","30th day");
+        put("31","31st day");
+    }};
+    private static final Map<String,String> month=new HashMap<String,String>(){{
+        put("1","January");
+        put("2","February");
+        put("3","March");
+        put("4","April");
+        put("5","May");
+        put("6","June");
+        put("7","July");
+        put("8","August");
+        put("9","September");
+        put("10","October");
+        put("11","November");
+        put("12","December");
+    }};
     @Override
     public boolean executeCommand(Context context) throws Exception {
        String moduleName= (String) context.getOrDefault(FacilioConstants.ContextNames.MODULE_NAME,null);
@@ -71,7 +130,7 @@ public class ConstructObjectFromConditions extends FacilioCommand {
             conditionObj.put("lookupModuleName",lookupModuleName);
 
             Criteria criteriaValue=condition.getCriteriaValue();
-            conditionObj.put("CriteriaValue",constructCondition(lookupModuleName,criteriaValue.getConditions().get("1")));
+            conditionObj.put("criteriaValue",constructCondition(lookupModuleName,criteriaValue.getConditions().get("1")));
 
 
         }else if(condition.getValue()!=null){
@@ -79,7 +138,7 @@ public class ConstructObjectFromConditions extends FacilioCommand {
 
             FacilioField field= Constants.getModBean().getField(fieldName,moduleName);
             conditionObj.put("displayName",field.getDisplayName());
-
+            conditionObj.put("dataType",field.getDataTypeEnum().name());
             if(field instanceof LookupField || field instanceof MultiLookupField) {
                 String lookupModuleName;
 
@@ -149,10 +208,20 @@ public class ConstructObjectFromConditions extends FacilioCommand {
                 }
             }
             else{
+                if(condition.getOperator() instanceof DateOperators){
+                    conditionObj.put("value",handlingForDateOperator(condition.getOperatorId(),condition.getValue()));
+                }
+                else {
                     conditionObj.put("value", Stream.of(condition.getValue().split(","))
                             .map(String::trim)
                             .collect(Collectors.toList()));
+                }
             }
+        }
+        else{
+            FacilioField field= Constants.getModBean().getField(fieldName,moduleName);
+            conditionObj.put("dataType",field.getDataTypeEnum().name());
+            conditionObj.put("displayName",field.getDisplayName());
         }
         return conditionObj;
 
@@ -169,8 +238,8 @@ public class ConstructObjectFromConditions extends FacilioCommand {
 
             List<String> stringList=new ArrayList<String>(Arrays.asList(condition.getValue().trim().split(",")));
             if(condition.getValue().contains(FacilioConstants.Criteria.LOGGED_IN_USER)){
-
-                currentUser.put("value",FacilioConstants.Criteria.LOGGED_IN_USER);
+                currentUser.put("value",AccountUtil.getCurrentUser().getId());
+                currentUser.put("label","Current User");
                 stringList.remove(FacilioConstants.Criteria.LOGGED_IN_USER);
 
             }
@@ -286,5 +355,50 @@ public class ConstructObjectFromConditions extends FacilioCommand {
             } else {
                 return ids.subList(0, minSize);
             }
+    }
+
+    public static List<String> handlingForDateOperator(int operatorId,String value){
+        List<String> replacedValues=new ArrayList<>();
+        if(operatorId == DateOperators.HOURS_OF_DAY.getOperatorId()){
+           replacedValues=getDataOperatorValues(null,value,"hour");
+        }
+        else if(operatorId==DateOperators.DAY_OF_WEEK.getOperatorId())
+        {
+                replacedValues=getDataOperatorValues(dayOfWeek,value,null);
+        }
+        else if(operatorId==DateOperators.DAY_OF_MONTH.getOperatorId())
+        {
+            replacedValues=getDataOperatorValues(dayOfMonth,value,null);
+        }
+        else if(operatorId==DateOperators.MONTH.getOperatorId())
+        {
+                replacedValues=getDataOperatorValues(month,value,null);
+        }
+        else if(operatorId==DateOperators.WEEK_OF_YEAR.getOperatorId())
+        {
+            replacedValues=getDataOperatorValues(null,value,"week");
+        }else{
+            replacedValues=Stream.of(value.split(","))
+                    .map(String::trim)
+                    .collect(Collectors.toList());
+        }
+        return replacedValues;
+    }
+    public static List<String> getDataOperatorValues(Map<String,String> map,String value,String addString){
+        List<String> values=Stream.of(value.split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
+        for(int i=0;i< values.size();i++){
+            if(StringUtils.isEmpty(addString)) {
+                values.set(i, map.get(values.get(i)));
+            }else{
+                if(values.get(i).equals("1")){
+                    values.set(i,values.get(i)+" "+addString);
+                }else{
+                    values.set(i,values.get(i)+" "+addString+"s");
+                }
+            }
+        }
+        return values;
     }
 }

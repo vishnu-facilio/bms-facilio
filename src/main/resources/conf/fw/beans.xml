@@ -58,4 +58,6 @@
 
 	<bean name="AlarmBean" class="com.facilio.remotemonitoring.beans.AlarmRuleBeanCacheImpl"/>
 
+	<bean name="OrgSwitchBean" class="com.facilio.componentpackage.bean.OrgSwitchBeanImpl"/>
+
 </beans>

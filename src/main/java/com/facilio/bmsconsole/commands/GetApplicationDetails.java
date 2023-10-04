@@ -1,32 +1,29 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.NewPermission;
-import com.facilio.aws.util.FacilioProperties;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.WebTabContext.Type;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Context;
-
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.WebTabContext.Type;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.collections4.CollectionUtils;
 import lombok.SneakyThrows;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GetApplicationDetails extends FacilioCommand {
 	@SneakyThrows
@@ -51,6 +48,11 @@ public class GetApplicationDetails extends FacilioCommand {
 		ApplicationContext application = null;
 		if (appId <= 0) {
 			appId = AccountUtil.getCurrentUser().getApplicationId();
+		}
+		if(roleId == null || roleId == 0){
+			if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null) {
+				roleId = AccountUtil.getCurrentUser().getRole().getRoleId();
+			}
 		}
 		application = ApplicationApi.getApplicationForId(appId);
 		if (application != null) {
@@ -110,6 +112,7 @@ public class GetApplicationDetails extends FacilioCommand {
 										webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab,roleId));
 									}else{
 										webtab.setPermission(NewPermissionUtil.getPermissions(webtab.getType(), moduleName));
+										webtab.setPermission(NewPermissionUtil.getTabPermissions(webtab, roleId));
 									}
 									if (webtab.getTypeEnum() == Type.SETTINGS) {
 										if(V3PermissionUtil.isFeatureEnabled()){

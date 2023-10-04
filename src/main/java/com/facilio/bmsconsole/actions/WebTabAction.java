@@ -76,6 +76,9 @@ public class WebTabAction extends FacilioAction {
     @Setter
     private boolean fetchSetupTabs=false;
 
+    @Getter @Setter
+    private boolean checkBool = false;
+
     public String addOrUpdateTabGroup() throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabGroup();
         FacilioContext context = chain.getContext();
@@ -198,7 +201,7 @@ public class WebTabAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.APPLICATION_ID, getAppId());
         context.put(FacilioConstants.ContextNames.FILTER_SET_UP_TAP,isFilterSetUpTab());
         context.put(FacilioConstants.ContextNames.FETCH_SETUP_TABS,isFetchSetupTabs());
-
+        context.put(FacilioConstants.ContextNames.CHECK_BOOL,isCheckBool());
         context.put(FacilioConstants.ContextNames.ROLE_ID,roleId);
         chain.execute();
 

@@ -9,12 +9,17 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.ims.handler.AuditLogHandler;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class SLAAction extends FacilioAction {
 
@@ -235,10 +240,30 @@ public class SLAAction extends FacilioAction {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.SLA_ENTITY, slaEntity);
+
+        SLAEntityContext slaEntityLog = FieldUtil.cloneBean(slaEntity, SLAEntityContext.class);
+
         chain.execute();
 
+        long slaEntityId = (long) context.get(FacilioConstants.ContextNames.ID);
         setResult(FacilioConstants.ContextNames.SLA_ENTITY, context.get(FacilioConstants.ContextNames.SLA_ENTITY));
 
+        String type= slaEntityLog.getId() > 0 ? "modified" : "created";
+        sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("SLA Entity {%s} has been %s for %s module", slaEntityLog.getName(),type, moduleName),
+                slaEntityLog.getDescription(),
+                AuditLogHandler.RecordType.SETTING,
+                "AutomationRule",slaEntityId)
+                .setActionType(slaEntityLog.getId() > 0 ? AuditLogHandler.ActionType.UPDATE : AuditLogHandler.ActionType.ADD)
+                .setLinkConfig(((Function<Void, String>) o -> {
+                    JSONArray array = new JSONArray();
+                    JSONObject json = new JSONObject();
+                    json.put("id", slaEntityId);
+                    json.put("moduleName", moduleName);
+                    json.put("navigateTo", "AutomationRule");
+                    array.add(json);
+                    return array.toJSONString();
+                }).apply(null))
+        );
         return SUCCESS;
     }
 
@@ -270,8 +295,30 @@ public class SLAAction extends FacilioAction {
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.SLA_POLICY, context.get(FacilioConstants.ContextNames.SLA_POLICY));
-
+        sendAuditLog(slaPolicy);
         return SUCCESS;
+    }
+
+    public void sendAuditLog(SLAPolicyContext slaPolicy) throws Exception {
+
+        String type = slaPolicy.getCreatedTime() == slaPolicy.getModifiedTime() ? "created":"updated";
+        sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("SLA Rule {%s} has been %s for %s module", slaPolicy.getName(),type, slaPolicy.getModuleName()),
+                slaPolicy.getDescription(),
+                AuditLogHandler.RecordType.SETTING,
+                "AutomationRule",slaPolicy.getId())
+                .setActionType(slaPolicy.getCreatedTime()==slaPolicy.getModifiedTime() ? AuditLogHandler.ActionType.ADD : AuditLogHandler.ActionType.UPDATE)
+                .setLinkConfig(((Function<Void, String>) o -> {
+                    JSONArray array = new JSONArray();
+                    JSONObject json = new JSONObject();
+                    json.put("id", slaPolicy.getId());
+                    json.put("moduleName", moduleName);
+                    json.put("ruleType",slaPolicy.getRuleType());
+                    json.put("navigateTo", "AutomationRule");
+                    array.add(json);
+                    return array.toJSONString();
+                }).apply(null))
+        );
+
     }
 
     public String getSLAPolicyWithChildren() throws Exception {

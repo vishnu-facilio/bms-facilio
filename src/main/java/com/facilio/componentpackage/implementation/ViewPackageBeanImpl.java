@@ -492,7 +492,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
             String startFieldName = calendarViewElement.getElement(PackageConstants.ViewConstants.START_DATE_FIELD_NAME).getText();
             FacilioField startField = moduleBean.getField(startFieldName, moduleName);
             startFieldId = startField != null ? startField.getFieldId() : -1;
-            if (calendarViewElement.getElement(PackageConstants.ViewConstants.START_DATE_FIELD_NAME) != null) {
+            if (calendarViewElement.getElement(PackageConstants.ViewConstants.END_DATE_FIELD_NAME) != null) {
                 String endFieldName = calendarViewElement.getElement(PackageConstants.ViewConstants.END_DATE_FIELD_NAME).getText();
                 FacilioField endField = moduleBean.getField(endFieldName, moduleName);
                 endFieldId = endField != null ? endField.getFieldId() : -1;

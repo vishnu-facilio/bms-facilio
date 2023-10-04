@@ -53,6 +53,8 @@ operators: #Names of enum class that implements Operator Ifc with field types
     enumClassName: com.facilio.db.criteria.operators.SiteOperator
   - types: [ LOOKUP,MULTI_LOOKUP ]
     enumClassName: com.facilio.db.criteria.operators.PeopleOperator
+  - types: [ LOOKUP ]
+    enumClassName: com.facilio.db.criteria.operators.TeamOperator
 
 validators:
   - type: STRING

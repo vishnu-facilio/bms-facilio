@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MutableConfigOverride;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.NonNull;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -89,11 +90,13 @@ public class FieldUtil {
 	private static final ObjectMapper NON_DEFAULT_MAPPER = new ObjectMapper()
 													.setSerializationInclusion(Include.NON_DEFAULT)
 													.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-													.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+													.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+													.registerModule(new JavaTimeModule());
 
 	private static final ObjectMapper DEFAULT_MAPPER = new ObjectMapper()
 			.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-			.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+			.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+			.registerModule(new JavaTimeModule());
 
 	static {
 		for (Class classObj : FacilioConstants.ContextNames.getAllClasses()) {

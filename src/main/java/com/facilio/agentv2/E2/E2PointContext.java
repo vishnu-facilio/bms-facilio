@@ -197,7 +197,11 @@ public class E2PointContext extends Point implements Serializable {
 
     public enum PropDataType implements FacilioIntEnum {
         ANALOG(0,"Analog"),
-        DIGITAL(1,"Digital");
+        DIGITAL(1,"Digital"),
+
+        INTEGER(2,"Integer"),
+
+        TIME(3,"Time");
 
         private String name;
         private int value;

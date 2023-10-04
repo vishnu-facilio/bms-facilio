@@ -247,13 +247,17 @@ public class TemplateAPI {
 			id = addServiceRequestSatisfactionSurveyTemplate ((ServiceRequestSatisfactionSurveyRuleTemplateContext) template);
 			template.setId (id);
 		}
+//		else if (template instanceof PdfTemplate){
+//			id = addPdfTemplate((PdfTemplate) template);
+//			template.setId(id);
+//		}
+		
 		if (template.getAttachments() != null) {
 			TemplateAttachmentUtil.addAttachments(template.getId(), template.getAttachments());
 		}
 		
 		return id;
 	}
-	
 
 	public static void setAttachments(List<Map<String, Object>> attachmentsJson, Template emailTemplate) {
 		if (CollectionUtils.isNotEmpty(attachmentsJson)) {
@@ -609,6 +613,15 @@ public class TemplateAPI {
 					template = getServiceRequestSatisfactionSurveyTemplateFromMap(templateMap);
 				}
 			}break;
+//			case PDF_TEMPLATE:
+//			{
+//				List<Map<String, Object>> extendedProps = getExtendedProps(ModuleFactory.getPdfTemplatesModule(), FieldFactory.getPdfTemplateFields(), id);
+//				if (CollectionUtils.isNotEmpty(extendedProps)) {
+//					templateMap.putAll(extendedProps.get(0));
+//					template = PdfTemplateUtil.getPdfTemplateMap(templateMap);
+//				}
+//			}break;
+			
 			default: break;
 		}
 		

@@ -268,7 +268,9 @@ public class BackgroundActivityAPI {
             context.put(Constants.MESSAGE,message);
             context.put(Constants.PARENT_ACTIVITY_ID,parentActivityId);
             chain.execute();
-            BackgroundActivityAPI.refreshActivity(parentActivityId);
+            if(parentActivityId != null && parentActivityId > -1 ) {
+                BackgroundActivityAPI.refreshActivity(parentActivityId);
+            }
             return (Long) context.get(Constants.ACTIVITY_ID);
         } catch (Exception e) {
             LOGGER.error("Error while adding background activity in new transaction",e);

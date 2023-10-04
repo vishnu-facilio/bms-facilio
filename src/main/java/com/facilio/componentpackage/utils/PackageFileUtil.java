@@ -1,11 +1,15 @@
 package com.facilio.componentpackage.utils;
 
+import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.componentpackage.bean.OrgSwitchBean;
 import com.facilio.componentpackage.context.PackageFileContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
+import com.facilio.db.transaction.NewTransactionService;
+import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -78,10 +82,9 @@ public class PackageFileUtil {
 
         return fileId;
     }
-    public static File getPackageZipFile(Long fileId, Long orgId, Long targetOrgId) throws Exception {
-        accountSwitch(orgId);
-        try (InputStream inputStream = FacilioFactory.getFileStoreFromOrg(orgId).readFile(fileId)) {
-            accountSwitch(targetOrgId);
+    public static File getPackageZipFile(Long fileId, Long sourceOrgId) throws Exception {
+        OrgSwitchBean orgSwitchBean = (OrgSwitchBean) BeanFactory.lookup("OrgSwitchBean", sourceOrgId);
+        try (InputStream inputStream = NewTransactionService.newTransactionWithReturn(() -> orgSwitchBean.getParentOrgFile(sourceOrgId, fileId))){
             String dirPath = System.getProperties().getProperty("java.io.tmpdir") + File.separator + "sandbox"+ File.separator + "Unzipped-Package-Files";
             String path = dirPath + File.separator +fileId+".zip";
             File file = new File(path);

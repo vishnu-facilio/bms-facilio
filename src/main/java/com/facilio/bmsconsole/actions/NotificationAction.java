@@ -3,8 +3,12 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
+import com.facilio.bmsconsole.util.AuditLogUtil;
+import com.facilio.ims.handler.AuditLogHandler;
 import org.apache.commons.chain.Command;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
@@ -128,7 +132,7 @@ public class NotificationAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-	
+
 	private String result;
 	public String getResult() {
 		return result;
@@ -242,6 +246,25 @@ public class NotificationAction extends ActionSupport {
 			workFlow.setId(workflowId);
 			WorkflowRuleAPI.updateWorkflowRule(workFlow);
 			setResult("success");
+			WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(workflowId);
+			if (workflowRule != null) {
+				String moduleName = workflowRule.getModuleName();
+				AuditLogUtil.sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Automation Rule {%s} has been %s for %s module", workflowRule.getName(), "Turned off", moduleName),
+						null,
+						AuditLogHandler.RecordType.SETTING,
+						"AutomationRule", workflowId)
+						.setActionType(AuditLogHandler.ActionType.MISCELLANEOUS)
+						.setLinkConfig(((Function<Void, String>) o -> {
+							JSONArray array = new JSONArray();
+							JSONObject json = new JSONObject();
+							json.put("id", workflowId);
+							json.put("moduleName", moduleName);
+							json.put("navigateTo", "AutomationRule");
+							array.add(json);
+							return array.toJSONString();
+						}).apply(null))
+				);
+			}
 		}
 		return SUCCESS;
 	}
@@ -253,6 +276,25 @@ public class NotificationAction extends ActionSupport {
 			workFlow.setId(workflowId);
 			WorkflowRuleAPI.updateWorkflowRule(workFlow);
 			setResult("success");
+			WorkflowRuleContext workflowRule = WorkflowRuleAPI.getWorkflowRule(workflowId);
+			if (workflowRule != null) {
+				String moduleName = workflowRule.getModuleName();
+				AuditLogUtil.sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Automation Rule {%s} has been %s for %s module", workflowRule.getName(), "Turned on", moduleName),
+						null,
+						AuditLogHandler.RecordType.SETTING,
+						"AutomationRule", workflowId)
+						.setActionType(AuditLogHandler.ActionType.MISCELLANEOUS)
+						.setLinkConfig(((Function<Void, String>) o -> {
+							JSONArray array = new JSONArray();
+							JSONObject json = new JSONObject();
+							json.put("id", workflowId);
+							json.put("moduleName", moduleName);
+							json.put("navigateTo", "AutomationRule");
+							array.add(json);
+							return array.toJSONString();
+						}).apply(null))
+				);
+			}
 		}
 		return SUCCESS;
 	}

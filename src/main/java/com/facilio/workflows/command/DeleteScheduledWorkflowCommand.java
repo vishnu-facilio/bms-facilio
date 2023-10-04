@@ -2,6 +2,8 @@ package com.facilio.workflows.command;
 
 import java.util.Map;
 
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.command.FacilioCommand;
@@ -22,6 +24,8 @@ public class DeleteScheduledWorkflowCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		ScheduledWorkflowContext scheduledWorkflowContext = (ScheduledWorkflowContext)context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT);
+		ScheduledWorkflowContext scheduledWorkflow = getScheduler(scheduledWorkflowContext.getId());
+		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT,scheduledWorkflow);
 		
 		FacilioTimer.deleteJob(scheduledWorkflowContext.getId(), WorkflowV2Util.SCHEDULED_WORKFLOW_JOB_NAME);
 
@@ -38,4 +42,17 @@ public class DeleteScheduledWorkflowCommand extends FacilioCommand {
 		return false;
 	}
 
+	public static ScheduledWorkflowContext getScheduler(long id) throws Exception{
+		if (id <= 0){
+			return null;
+		}
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getScheduledWorkflowModule().getTableName())
+				.select(FieldFactory.getScheduledWorkflowFields())
+				.andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getScheduledWorkflowModule()));
+
+		ScheduledWorkflowContext scheduledWorkflow = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), ScheduledWorkflowContext.class);
+		return scheduledWorkflow;
+	}
 }

@@ -189,6 +189,15 @@ public class ReportDataPointContext implements  Cloneable{
 		return v2Criteria;
 	}
 
+	public int getCriteriaType() {
+		return criteriaType;
+	}
+
+	public void setCriteriaType(int criteriaType) {
+		this.criteriaType = criteriaType;
+	}
+
+	public int criteriaType;
 	public void setV2Criteria(Criteria v2Criteria) {
 		this.v2Criteria = v2Criteria;
 	}

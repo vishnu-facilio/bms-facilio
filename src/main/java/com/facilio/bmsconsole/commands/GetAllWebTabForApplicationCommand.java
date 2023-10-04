@@ -5,10 +5,10 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -18,7 +18,6 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.stream.Collectors;
 
 public class GetAllWebTabForApplicationCommand extends FacilioCommand {
@@ -28,6 +27,7 @@ public class GetAllWebTabForApplicationCommand extends FacilioCommand {
         boolean filterSetUpTab=(boolean)context.get((FacilioConstants.ContextNames.FILTER_SET_UP_TAP));
         boolean fetchSetupTabs=(boolean)context.get((FacilioConstants.ContextNames.FETCH_SETUP_TABS));
         Long roleId=(Long) context.get((FacilioConstants.ContextNames.ROLE_ID));
+        boolean boolCheck = (boolean)context.getOrDefault(FacilioConstants.ContextNames.CHECK_BOOL,false);
         WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
 
         ApplicationContext application = null;
@@ -72,6 +72,9 @@ public class GetAllWebTabForApplicationCommand extends FacilioCommand {
                         webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab,roleId));
                     } else{
                         webtab.setPermission(NewPermissionUtil.getPermissions(webtab.getType(), moduleName));
+                        if(boolCheck){
+                            webtab.setPermission(NewPermissionUtil.getTabPermissions(webtab,roleId));
+                        }
                     }
 
 

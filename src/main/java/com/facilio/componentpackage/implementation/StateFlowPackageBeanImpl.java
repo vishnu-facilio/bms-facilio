@@ -88,8 +88,9 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
                 JSONArray anchorArray = jsonObj.getJSONArray("anchors");
                 for (int i = 0; i < anchorArray.length(); i++) {
                     XMLBuilder anchorElement = anchorsElement.element("Anchor");
-                    Object transitionId = anchorArray.get(i).equals(null) ? null :  anchorArray.get(i);
-                    String transitionName = transitionId != null ? WorkflowRuleAPI.getWorkflowRule(Long.parseLong(transitionId.toString())).getName() : null;
+                    Object transitionId = (anchorArray.get(i) == null || anchorArray.get(i).equals(null)) ? null :  anchorArray.get(i);
+                    WorkflowRuleContext rule = transitionId != null ? WorkflowRuleAPI.getWorkflowRule(Long.parseLong(transitionId.toString())) : null;
+                    String transitionName = rule != null ? rule.getName() : null;
                     anchorElement.attribute("positionNo", String.valueOf(i));
                     anchorElement.attribute("transitionName", transitionName);
                 }

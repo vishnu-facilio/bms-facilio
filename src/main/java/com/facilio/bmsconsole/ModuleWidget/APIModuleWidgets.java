@@ -572,4 +572,49 @@ public class APIModuleWidgets {
                 .addFlexibleWidgetConfig("webtenantunitrecentlyclosedworkorderwidget_23","Recently Closed Workorder - 23",23,PagesContext.PageLayoutType.WEB)
                 .done();
     }
+    
+    @WidgetsForModule(FacilioConstants.ContextNames.SERVICE_REQUEST)
+    public static Supplier<ModuleWidgets> getServiceRequestWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("servicerequestemailthread", "Service Request Email Thread", PageWidget.WidgetType.SR_EMAIL_THREAD)
+                .addWidgetConfig("flexibleservicerequestemailthread_50","Service Request Email Thread - 50",WidgetConfigContext.ConfigType.FLEXIBLE,50,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("servicerequestdetailswidget", "Service Request Details Widget", PageWidget.WidgetType.SR_DETAILS_WIDGET)
+                .addWidgetConfig("servicerequestdetails_50_3","Service Request Details Widget - 50 - 3",WidgetConfigContext.ConfigType.FLEXIBLE,50,3,PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY)
+    public static Supplier<ModuleWidgets> getFacilityWidgets(){
+        return ()->new ModuleWidgets()
+                .addModuleWidget("facilityphotos","Facility Photos",PageWidget.WidgetType.FACILITY_PHOTOS)
+                .addFixedWidgetConfig("webfacilityphotos_15_12","Facility Photos 15 - 12",15,12,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("facilityfeatures","Facility Features",PageWidget.WidgetType.FACILITY_FEATURES)
+                .addFlexibleWidgetConfig("flexiblewebfacilityfeatures_12","Facility Features - 12",12,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("facilityslotinformation","Facility Slot Information",PageWidget.WidgetType.FACILITY_SLOT_INFORMATION)
+                .addFixedWidgetConfig("webfacilityslotinformation_49_12","Facility Slot Information - 49 - 12",49,12,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("facilityspecialavailability","Facility Special Availability",PageWidget.WidgetType.FACILITY_SPECIAL_AVAILABILITY)
+                .addFlexibleWidgetConfig("flexiblewebfacilityspecialavalability_28","Facility Special Availability - 28",28,PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING)
+    public static Supplier<ModuleWidgets> getFacilityBookingWidgets(){
+        return ()->new ModuleWidgets()
+                .addModuleWidget("bookinginfo","Booking Info",PageWidget.WidgetType.BOOKING_INFO)
+                .addFixedWidgetConfig("webbookinginfo_5_12","Booking Info - 5 - 12",5,12,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("slotinformation","Booking Slot Information",PageWidget.WidgetType.BOOKING_SLOT_INFORMATION)
+                .addFlexibleWidgetConfig("flexiblewebbookinginfo_12","Booking Slot Information - 12",12,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("bookinginternalattendees","Booking Internal attendees",PageWidget.WidgetType.BOOKING_INTERNAL_ATTENDEES)
+                .addFlexibleWidgetConfig("flexiblewebbookinginternalattendees_12","Booking Internal attendees - 12",12,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("bookingexternalattendees","Booking External Attendees",PageWidget.WidgetType.BOOKING_EXTERNAL_ATTENDEES)
+                .addFlexibleWidgetConfig("flexiblewebbookingexternalattendees_12","Booking External Attendees - 12",12,PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
+    }
 }

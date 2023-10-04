@@ -16,8 +16,8 @@
 /internal/migration
 /internal/moduleMigration
 /internal/mlResponseParser
-/internal/updateClientBuild
 /api/v3/internal/dc/lookup
+/internal/updateClientBuild
 /api/v3/internal/dc/add
 /api/v3/internal/dc/deleteDevicePassCode
 /api/v3/internal/dc/markCodeAsConnected
@@ -783,7 +783,7 @@
 /api/v3/iot/data/push
 /api/v3/agent/:fetchAgent
 /api/v3/agent/connections
-/api/v3/modules/:ModuleName
+/api/v3/modules/:moduleName
 /api/controller/processEvent
 /api/v4/:moduleName/:moduleName
 /api/v4/:moduleName
@@ -1565,7 +1565,7 @@
 /api/v2/mv/getMVProjectWidgetResult
 /api/v2/conditionalFormatting/getConditionalFormattingResult
 /api/v2/controlAction/setReadingValue
-/api/v2/controlAction/setReadingValueForSpace,
+/api/v2/controlAction/setReadingValueForSpace
 /api/v2/controlAction/getControlGroups
 /api/v2/controlAction/getControlGroupMeta
 /api/v2/controlAction/getControlActionCommands
@@ -1605,7 +1605,7 @@
 /api/v2/kpi/getAllKPICategories
 /api/v2/kpi/status
 /api/v2/kpi/viewer/violations
-/api/v2/kpi/viewer/:kpiViewerList]
+/api/v2/kpi/viewer/:kpiViewerList
 /api/v2/kpi/category/add
 /api/v2/kpi/category/update
 /api/v2/kpi/category/delete
@@ -2294,7 +2294,8 @@
 /api/v2/workorderServiceList/parent/getState
 /api/v2/workorderServiceList/parent/:getAttendanceDetails
 /api/v2/attendance/:workorderServiceList
-/api/v2/attendance/add, /api/v2/attendance/getState
+/api/v2/attendance/add
+/api/v2/attendance/getState
 /api/v2/attendance/:getAttendanceDetails
 /api/v2/attendance/view/:attendanceList
 /api/v2/attendanceTransaction/view/:attendanceTransactionList
@@ -2367,7 +2368,7 @@
 /api/v2/deviceclient/connect
 /api/v2/deviceclient/generatecode
 /api/v2/deviceclient/validatecode
-[/api/v2/devices/add
+/api/v2/devices/add
 /api/v2/devices/connect
 /api/v2/devices/update
 /api/v2/devices/list
@@ -2457,7 +2458,7 @@
 /api/v2/workpermit/details
 /api/v2/workpermit/:getWorkPermitList
 /api/v2/occupants/view/:getOccupantsList
-[/api/v2/occupants/add
+/api/v2/occupants/add
 /api/v2/occupants/update
 /api/v2/occupants/delete
 /api/v2/occupants/details
@@ -2742,8 +2743,6 @@
 /api/v3/dashboard/rule/update
 /api/v3/dashboard/rule/runMigrationForWidgetLinkName
 /api/v3/dashboard/rule/execute
-
-
 /api/v3/file/preview/public
 /api/v2/publicFile/addPublicFile
 /api/v2/publicFile/addPublicUrlForFile
@@ -2790,4 +2789,8 @@
 /api/v2/readings/meter/add
 /api/v2/readings/utilitytype
 /api/v3/virtualMeterTemplate/publish
-
+/api/v1/setup/pdftemplates/addOrUpdate/:moduleName
+/api/v1/setup/pdftemplates/list/:moduleName
+/api/v1/setup/pdftemplates/delete
+/api/v1/setup/pdftemplates/view/:moduleName/:id
+/api/v1/setup/pdftemplates/preview/:id/:recordId

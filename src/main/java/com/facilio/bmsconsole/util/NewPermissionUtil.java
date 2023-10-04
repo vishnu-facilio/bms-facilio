@@ -1,31 +1,23 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.WebTabContext.Type;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+
+import java.util.*;
 
 @Log4j
 public class NewPermissionUtil {
@@ -964,5 +956,56 @@ public class NewPermissionUtil {
             }
         }
         return actionList;
+    }
+    
+    public static List<Permission> getTabPermissions(WebTabContext webTab,Long roleId) throws Exception {
+        List<Permission> tabPermissionList = new ArrayList<>();
+        List<Permission> permissions = webTab.getPermission();
+        long tabId = webTab.getId();
+        List<NewPermission> newPermissionsList = webTab.getPermissions();
+        long tabPermissionValue = 0;
+        if(CollectionUtils.isNotEmpty(newPermissionsList)) {
+            for (NewPermission newPermission : newPermissionsList) {
+                if(newPermission != null && newPermission.getRoleId() == roleId){
+                    tabPermissionValue = newPermission.getPermission();
+                }
+            }
+        }
+
+        if(CollectionUtils.isNotEmpty(permissions) && tabId > 0 && roleId > 0){
+            for (Permission permission:permissions) {
+                if(permission instanceof PermissionGroup){
+                    List<Permission> permGroup = null;
+                    permGroup = ((PermissionGroup) permission).getPermissions();
+                    if(CollectionUtils.isNotEmpty(permGroup)) {
+                        List<Permission> permissionsGroupList = new ArrayList<>();
+                        for (Permission perm : permGroup) {
+                            permissionsGroupList.add(getConstructedPermissionObj(perm, tabPermissionValue));
+                        }
+                        PermissionGroup permissionGroup = new PermissionGroup(permission.getDisplayName(), permissionsGroupList);
+                        tabPermissionList.add(permissionGroup);
+                    }
+                }else {
+                    tabPermissionList.add(getConstructedPermissionObj(permission, tabPermissionValue));
+                }
+            }
+        }
+        return tabPermissionList;
+    }
+
+    public static Permission getConstructedPermissionObj(Permission permission, long tabPermissionValue) throws Exception {
+        if(permission != null) {
+            Permission permissionObj = new Permission(permission.getActionName(), permission.getDisplayName());
+            long permissionValue = permission.getValue();
+
+            if (tabPermissionValue > 0 && permissionValue > 0) {
+                long computedPermValue = permissionValue & tabPermissionValue;
+                boolean groupPermEnabled = computedPermValue != 0 && computedPermValue == permissionValue;
+                permissionObj.setEnabled(groupPermEnabled);
+            }
+            permissionObj.setValue(permission.getValue());                      // Set permission value
+            return permissionObj;
+        }
+        return new Permission();
     }
 }

@@ -17,6 +17,8 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
+import java.util.Map;
+
 import static com.facilio.db.criteria.CriteriaAPI.updateConditionField;
 
 public class AddOrUpdateSLAEntityCommand extends FacilioCommand {
@@ -71,9 +73,12 @@ public class AddOrUpdateSLAEntityCommand extends FacilioCommand {
     }
 
     private void addSLAEntity(SLAEntityContext slaEntity) throws Exception {
+        Map<String, Object> slaEntityMap = FieldUtil.getAsProperties(slaEntity);
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getSLAEntityModule().getTableName())
                 .fields(FieldFactory.getSLAEntityFields());
-        builder.insert(FieldUtil.getAsProperties(slaEntity));
+        builder.insert(slaEntityMap);
+
+        slaEntity.setId((long) slaEntityMap.get("id"));
     }
 }

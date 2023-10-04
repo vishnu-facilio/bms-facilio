@@ -67,11 +67,9 @@ public class GenerateApiFromXml {
                                         for (int k = 0; k < actionElementNode.getLength(); k++) {
                                             NamedNodeMap attributeNodeMap = actionElementNode.item(k).getAttributes();
                                             String finalString = namespaceString + "/" + attributeNodeMap.getNamedItem("name").getNodeValue();
-                                            int i = 0;
                                             String name = ":attr";
                                             while(finalString.contains("*")) {
-                                                i = i + 1;
-                                                finalString = StringUtils.replaceOnce(finalString, "*", name + i);
+                                                finalString = StringUtils.replaceOnce(finalString, "*", name);
                                             }
                                             System.out.println(finalString);
                                         }

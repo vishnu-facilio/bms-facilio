@@ -165,6 +165,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.GLIMPSE, getGlimpseModule());
 		moduleMap.put(ContextNames.MODULE_CONFIGURATION, getModuleConfigurationModule());
 		moduleMap.put(ContextNames.GLIMPSE_FIELDS, getGlimpseFieldsModule());
+		moduleMap.put("pdfTemplates", getPDFTemplatesModule());
 
 		return moduleMap;
 	}
@@ -5883,5 +5884,21 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setDisplayName("Flagged Event Closure Status Module");
 		module.setTableName("Flagged_Event_Closure_Config_Status");
 		return module;
+	}
+	public static FacilioModule getV2ReportModule()throws Exception
+	{
+		FacilioModule module = new FacilioModule();
+		module.setName("report1_v2");
+		module.setDisplayName("Report1 V2");
+		module.setTableName("Report1_V2");
+		return module;
+	}
+
+	public static FacilioModule getPDFTemplatesModule() {
+		FacilioModule pdfTemplatesModule = new FacilioModule();
+		pdfTemplatesModule.setName("pdfTemplates");
+		pdfTemplatesModule.setDisplayName("PDF Templates");
+		pdfTemplatesModule.setTableName("PDF_Templates");
+		return pdfTemplatesModule;
 	}
 }

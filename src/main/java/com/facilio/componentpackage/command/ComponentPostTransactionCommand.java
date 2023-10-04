@@ -1,15 +1,17 @@
 package com.facilio.componentpackage.command;
 
-import com.facilio.componentpackage.context.PackageFolderContext;
-import com.facilio.componentpackage.context.PackageFileContext;
-import com.facilio.componentpackage.constants.PackageConstants;
-import com.facilio.componentpackage.constants.ComponentType;
-import com.facilio.componentpackage.utils.PackageUtil;
-import org.apache.commons.collections4.MapUtils;
-import com.facilio.xml.builder.XMLBuilder;
 import com.facilio.command.FacilioCommand;
-import org.apache.commons.chain.Context;
+import com.facilio.componentpackage.constants.ComponentType;
+import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.componentpackage.context.PackageFileContext;
+import com.facilio.componentpackage.context.PackageFolderContext;
+import com.facilio.componentpackage.utils.PackageUtil;
+import com.facilio.sandbox.utils.SandboxAPI;
+import com.facilio.sandbox.utils.SandboxConstants;
+import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,9 +28,21 @@ public class ComponentPostTransactionCommand extends FacilioCommand {
         List<XMLBuilder> allComponents = packageConfigXML.getElement(PackageConstants.PackageXMLConstants.COMPONENTS)
                 .getFirstLevelElementListForTagName(PackageConstants.PackageXMLConstants.COMPONENT);
         PackageFolderContext componentsFolder = rootFolder.getFolder(PackageConstants.COMPONENTS_FOLDER_NAME);
+        long sandboxId = (long) context.getOrDefault(SandboxConstants.SANDBOX_ID, -1L);
+        long sourceOrgId = (long) context.getOrDefault(PackageConstants.SOURCE_ORG_ID, -1L);
 
         List<Integer> skipComponents = (List<Integer>) context.getOrDefault(PackageConstants.SKIP_COMPONENTS, new ArrayList<>());
 
+        float i = 90;
+        int count = 0;
+        for (XMLBuilder component : allComponents) {
+            ComponentType componentType = ComponentType.valueOf(component.getAttribute(PackageConstants.PackageXMLConstants.COMPONENT_TYPE));
+            if (componentType.isPostTransactionRequired()) {
+                count++;
+            }
+        }
+        float parts = (float) 10 /count;
+        int progress;
         for(XMLBuilder component : allComponents) {
             ComponentType componentType = ComponentType.valueOf(component.getAttribute(PackageConstants.PackageXMLConstants.COMPONENT_TYPE));
             if (componentType.getComponentClass() == null || !componentType.isPostTransactionRequired() || skipComponents.contains(componentType.getIndex())) {
@@ -55,6 +69,11 @@ public class ComponentPostTransactionCommand extends FacilioCommand {
             }
 
             LOGGER.info("####Sandbox - Completed PostTransaction for ComponentType - " + componentType.name());
+            if(sandboxId > -1L) {
+                i = i + parts;
+                progress = (int)i;
+                SandboxAPI.sendSandboxProgress(progress, sandboxId, "Post Transaction done for component name--> "+ componentType.name(), sourceOrgId);
+            }
         }
 
         return false;
