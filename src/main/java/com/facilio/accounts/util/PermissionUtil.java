@@ -409,7 +409,53 @@ public class PermissionUtil {
 
 														criteria = new Criteria();
 														criteria.addAndCondition(requestedForCondition);
-													} else {
+													} else if (moduleName.equals(ContextNames.SERVICE_ORDER)) {
+														Condition fieldAgentCondition = new Condition();
+														fieldAgentCondition.setColumnName("ServiceOrders.FIELD_AGENT");
+														fieldAgentCondition.setFieldName("fieldAgent");
+														fieldAgentCondition.setOperator(PickListOperators.IS);
+														fieldAgentCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_PEOPLE);
+
+														criteria = new Criteria();
+														criteria.addAndCondition(fieldAgentCondition);
+													}else if (moduleName.equals(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)) {
+														Condition fieldAgentCondition = new Condition();
+														fieldAgentCondition.setColumnName("SERVICE_APPOINTMENT.PEOPLE_ID");
+														fieldAgentCondition.setFieldName("fieldAgent");
+														fieldAgentCondition.setOperator(PickListOperators.IS);
+														fieldAgentCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_PEOPLE);
+
+														criteria = new Criteria();
+														criteria.addAndCondition(fieldAgentCondition);
+													}else if (moduleName.equals(FacilioConstants.TimeOff.TIME_OFF)) {
+														Condition fieldAgentCondition = new Condition();
+														fieldAgentCondition.setColumnName("Time_Off.PEOPLE_ID");
+														fieldAgentCondition.setFieldName("people");
+														fieldAgentCondition.setOperator(PickListOperators.IS);
+														fieldAgentCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_PEOPLE);
+
+														criteria = new Criteria();
+														criteria.addAndCondition(fieldAgentCondition);
+													}else if (moduleName.equals(FacilioConstants.Trip.TRIP)) {
+														Condition fieldAgentCondition = new Condition();
+														fieldAgentCondition.setColumnName("TRIP.PEOPLE_ID");
+														fieldAgentCondition.setFieldName("people");
+														fieldAgentCondition.setOperator(PickListOperators.IS);
+														fieldAgentCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_PEOPLE);
+
+														criteria = new Criteria();
+														criteria.addAndCondition(fieldAgentCondition);
+													}else if (moduleName.equals(FacilioConstants.TimeSheet.TIME_SHEET)) {
+														Condition fieldAgentCondition = new Condition();
+														fieldAgentCondition.setColumnName("TIME_SHEET.PEOPLE_ID");
+														fieldAgentCondition.setFieldName("fieldAgent");
+														fieldAgentCondition.setOperator(PickListOperators.IS);
+														fieldAgentCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_PEOPLE);
+
+														criteria = new Criteria();
+														criteria.addAndCondition(fieldAgentCondition);
+													}
+													else {
 														Condition userCondition = new Condition();
 														boolean isPlanned = false;
 														if (moduleName.equals("planned")) {
