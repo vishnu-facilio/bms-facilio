@@ -804,7 +804,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
         List<String> appNames = new ArrayList<>();
         appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
@@ -882,7 +882,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ACTIVITY);
-        return Collections.singletonList(new PagesContext("serviceOrder", "Default Service Order Page", "", null, isTemplate, isDefault, false)
+        return new ModulePages()
+                .addPage("serviceOrder", "Default Service Order Page", "", null, isTemplate, isDefault, false)
                 .addWebLayout()
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
@@ -915,7 +916,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .addTab("plans", "Plans", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("plans", null, null)
-                .addWidget("plans", "Plans", PageWidget.WidgetType.SERVICE_ORDER_PLANS, "webPlans_50_12", 0, 0, null, null)
+                .addWidget("servicePlans", "Plans", PageWidget.WidgetType.SERVICE_ORDER_PLANS, "webServicePlans_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -923,7 +924,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .addTab("actuals", "Actuals", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("actuals", null, null)
-                .addWidget("actuals", "Actuals", PageWidget.WidgetType.SERVICE_ORDER_ACTUALS, "webActuals_50_12", 0, 0, null, null)
+                .addWidget("serviceActuals", "Actuals", PageWidget.WidgetType.SERVICE_ORDER_ACTUALS, "webServiceActuals_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -936,8 +937,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .layoutDone())
-                ;
+                .layoutDone()
+                .pageDone().getCustomPages();
     }
 
     private static JSONObject getSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {
