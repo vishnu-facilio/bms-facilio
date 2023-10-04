@@ -33,6 +33,7 @@ public class TerritoryModule extends BaseModuleConfig {
         addTerritoryModule();
         addTerritoryLookupInSite();
         addActivityModuleForTerritory();
+        addPeopleTerritoryModule();
         addTerritoriesField();
         SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.Territory.TERRITORY));
     }
@@ -385,6 +386,24 @@ public class TerritoryModule extends BaseModuleConfig {
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PEOPLE);
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
         chain.execute();
+    }
+    private void addPeopleTerritoryModule() throws Exception {
+        List<FacilioModule> modules = new ArrayList<>();
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule territoryModule = modBean.getModule(FacilioConstants.Territory.TERRITORY);
+        FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        FacilioModule peopleTerritoryModule = new FacilioModule(FacilioConstants.Territory.PEOPLE_TERRITORY,"People Territories","PEOPLE_TERRITORY_REL",FacilioModule.ModuleType.SUB_ENTITY,true);
+        List<FacilioField> fields = new ArrayList<>();
+        LookupField peopleField = new LookupField(peopleTerritoryModule,"left","People",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"PEOPLE_ID",FieldType.LOOKUP,true,false,true,true,"People",peopleModule);
+        fields.add(peopleField);
+        LookupField territoryField = new LookupField(peopleTerritoryModule,"right","Territories", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"TERRITORY_ID",FieldType.LOOKUP,true,false,true,false,"Territories",territoryModule);
+        fields.add(territoryField);
+        peopleTerritoryModule.setFields(fields);
+        modules.add(peopleTerritoryModule);
+        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+        addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
+        addModuleChain.execute();
     }
 
 }
