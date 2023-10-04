@@ -316,13 +316,13 @@ public class APIModuleWidgets {
                 .addFixedWidgetConfig("webRuleWorkOrderDuration_15_6", "Rule Work Order Duration - 15 - 6", 15, 6, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("rootCauses", "Root Causes", PageWidget.WidgetType.ROOT_CAUSES)
-                .addFixedWidgetConfig("rootCauses_32_12", "Root Causes - 32 - 12", 32, 12, PagesContext.PageLayoutType.WEB)
+                .addFixedWidgetConfig("webRootCauses_32_12", "Root Causes - 32 - 12", 32, 12, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("ruleInsight", "Rule Insight", PageWidget.WidgetType.RULE_INSIGHT)
-                .addFixedWidgetConfig("ruleInsight_32_12", "Rule Insight - 32 - 12", 32, 12, PagesContext.PageLayoutType.WEB)
+                .addFixedWidgetConfig("webRuleInsight_32_12", "Rule Insight - 32 - 12", 32, 12, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("ruleLogs", "Rule Logs", PageWidget.WidgetType.RULE_LOGS)
-                .addFixedWidgetConfig("ruleLogs_32_12", "Rule Logs - 32 - 12", 60, 12, PagesContext.PageLayoutType.WEB)
+                .addFixedWidgetConfig("webRuleLogs_32_12", "Rule Logs - 32 - 12", 60, 12, PagesContext.PageLayoutType.WEB)
                 .done();
 
     }
