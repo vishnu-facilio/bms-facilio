@@ -3293,6 +3293,7 @@ public class APIv3Config {
                 .summary()
                 .list()
                 .beforeFetch(TransactionChainFactoryV3.getCalendarEventMappingBeforeListChain())
+                .afterFetch(TransactionChainFactoryV3.getCalendarEventMappingAfterListChain())
                 .build();
     }
     @Module(FacilioConstants.Calendar.CALENDAR_TIME_SLOT_MODULE_NAME)
@@ -3388,7 +3389,7 @@ public class APIv3Config {
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getControlActionBeforeUpdateChain())
                 .afterSave(TransactionChainFactoryV3.getControlActionAfterUpdateChain())
-                .afterTransaction(new CallToCommandGenerationCommand())
+                //.afterTransaction(new CallToCommandGenerationCommand())
                 .delete().markAsDeleteByPeople()
                 .beforeDelete(TransactionChainFactoryV3.getControlActionBeforeDeleteChain())
                 .summary()
@@ -3405,8 +3406,10 @@ public class APIv3Config {
                 .update()
                 .delete().markAsDeleteByPeople()
                 .summary()
+                .beforeFetch(TransactionChainFactoryV3.getActionBeforeListChain())
                 .afterFetch(TransactionChainFactoryV3.getActionAfterSummaryCommand())
                 .list()
+                .beforeFetch(TransactionChainFactoryV3.getActionBeforeListChain())
                 .afterFetch(TransactionChainFactoryV3.getActionAfterSummaryCommand())
                 .build();
     }
@@ -3414,10 +3417,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getCommand(){
         return () -> new V3Config(V3CommandsContext.class,null)
                 .create()
-                .beforeSave(TransactionChainFactoryV3.getCommandsBeforeCreateChain())
-                .afterSave(TransactionChainFactoryV3.getCommandsAfterSaveChain())
                 .update()
-                .afterSave(TransactionChainFactoryV3.getCommandsAfterSaveChain())
                 .delete().markAsDeleteByPeople()
                 .summary()
                 .afterFetch(TransactionChainFactoryV3.getCommandsAfterSummaryChain())
@@ -3432,11 +3432,11 @@ public class APIv3Config {
                 .create()
                 .beforeSave(TransactionChainFactoryV3.getControlActionTemplateBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getControlActionTemplateAfterSaveChain())
-                .afterTransaction(new CallToControlActionGenerationCommand())
+                //.afterTransaction(new CallToControlActionGenerationCommand())
                 .update()
                 .beforeSave(TransactionChainFactoryV3.getControlActionTemplateBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getControlActionTemplateAfterSaveChain())
-                .afterTransaction(new CallToControlActionGenerationCommand())
+                //.afterTransaction(new CallToControlActionGenerationCommand())
                 .delete().markAsDeleteByPeople()
                 .beforeDelete(TransactionChainFactoryV3.getControlActionTemplateBeforeDeleteChain())
                 .summary()

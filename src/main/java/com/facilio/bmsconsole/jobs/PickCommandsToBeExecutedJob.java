@@ -20,10 +20,14 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
+import com.facilio.util.FacilioUtil;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 
 import java.util.Collections;
@@ -37,9 +41,20 @@ public class PickCommandsToBeExecutedJob extends FacilioJob {
     public void execute(JobContext jobContext) throws Exception {
         Long actionTime = jobContext.getExecutionTime()*1000;
         Long controlActionId = jobContext.getJobId();
+        String jobName = jobContext.getJobName();
         V3ControlActionContext controlActionContext = ControlActionAPI.getControlAction(controlActionId);
         if(controlActionContext == null){
             throw new IllegalArgumentException("Control Action is Empty - #"+controlActionId);
+        }
+        if(jobName.equals("PickCommandsToBeExecutedScheduledAction")){
+            controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_IN_PROGRESS.getVal());
+            controlActionContext.setScheduleActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_IN_PROGRESS.getVal());
+            V3Util.updateBulkRecords(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME, FacilioUtil.getAsMap(FieldUtil.getAsJSON(controlActionContext)), Collections.singletonList(controlActionContext.getId()),false);
+        }
+        if(jobName.equals("PickCommandsToBeExecutedRevertAction")){
+            controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_IN_PROGRESS.getVal());
+            controlActionContext.setRevertActionStatus(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_IN_PROGRESS.getVal());
+            V3Util.updateBulkRecords(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME, FacilioUtil.getAsMap(FieldUtil.getAsJSON(controlActionContext)), Collections.singletonList(controlActionContext.getId()),false);
         }
         List<V3CommandsContext> commandsContextList = ControlActionAPI.pickCommandsToBeExecuted(controlActionId,actionTime);
         if(CollectionUtils.isEmpty(commandsContextList)){
@@ -48,51 +63,36 @@ public class PickCommandsToBeExecutedJob extends FacilioJob {
         List<V3ActionContext> actionContextList = controlActionContext.getActionContextList();
         Map<Long,V3ActionContext> actionContextMap = actionContextList.stream().collect(Collectors.toMap(V3ActionContext::getId,Function.identity()));
 
-       // if(validateControlActionApproval(controlActionContext)){
-            for(V3CommandsContext commandsContext : commandsContextList){
-                JSONObject info = new JSONObject();
-                info.put(FacilioConstants.ContextNames.VALUES,V3CommandsContext.ControlActionCommandStatus.IN_PROGRESS);
-                ActivityContext activityContext = new ActivityContext();
-                activityContext.setParentId(commandsContext.getId());
-                activityContext.setTtime(System.currentTimeMillis());
-                activityContext.setType(CommandActivityType.STATUS_UPDATE.getValue());
-                activityContext.setInfo(info);
-                activityContext.setDoneBy(AccountUtil.getCurrentUser());
-                FacilioContext context = new FacilioContext();
-                context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, Collections.singletonList(activityContext));
-                FacilioCommand command = new AddActivitiesCommandV3(FacilioConstants.Control_Action.COMMAND_ACTIVITY_MODULE_NAME);
-                command.executeCommand(context);
-                V3ActionContext actionContext = actionContextMap.get(commandsContext.getAction().getId());
-                ControlActionAPI.setReadingValueForCommand(commandsContext,actionContext);
-            }
-            //Todo validate IotMessageAPI.setReadingValueForV3CommandContext()
-            //Todo ask agent team abt the value of command (setValue())
-            IoTMessageAPI.setReadingValueForV3CommandContext(commandsContextList);
-        for(V3CommandsContext commandsContext : commandsContextList){
-            JSONObject info = new JSONObject();
-            info.put(FacilioConstants.ContextNames.VALUES,V3CommandsContext.ControlActionCommandStatus.PENDING);
-            ActivityContext activityContext = new ActivityContext();
-            activityContext.setParentId(commandsContext.getId());
-            activityContext.setTtime(System.currentTimeMillis());
-            activityContext.setType(CommandActivityType.STATUS_UPDATE.getValue());
-            activityContext.setInfo(info);
-            activityContext.setDoneBy(AccountUtil.getCurrentUser());
-            FacilioContext context = new FacilioContext();
-            context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, Collections.singletonList(activityContext));
-            FacilioCommand command = new AddActivitiesCommandV3(FacilioConstants.Control_Action.COMMAND_ACTIVITY_MODULE_NAME);
-            command.executeCommand(context);
-            V3ActionContext actionContext = actionContextMap.get(commandsContext.getAction().getId());
-            ControlActionAPI.setReadingValueForCommand(commandsContext,actionContext);
-        }
+       if(validateControlActionApproval(controlActionContext)) {
+           for (V3CommandsContext commandsContext : commandsContextList) {
+               V3ActionContext actionContext = actionContextMap.get(commandsContext.getAction().getId());
+               ControlActionAPI.setReadingValueForCommand(commandsContext, actionContext);
+               ControlActionAPI.updateCommand(commandsContext);
+               if(commandsContext.getControlActionCommandStatus() == V3CommandsContext.ControlActionCommandStatus.POINT_NOT_COMMISSIONED.getVal()){
+                   commandsContextList.remove(commandsContext);
+               }
+               else {
+                   ControlActionAPI.addCommandActivity(V3CommandsContext.ControlActionCommandStatus.IN_PROGRESS.getValue(), commandsContext.getId());
+               }
+               if (controlActionContext.getControlActionExecutionType() == V3ControlActionContext.ControlActionExecutionType.SANDBOX.getVal()) {
+                   validateExecutionForSandBox(commandsContext);
+               }
+           }
 
-//        }
-//        else{
-//            for(V3CommandsContext commandsContext : commandsContextList){
-//                commandsContext.setControlActionCommandStatus(V3CommandsContext.ControlActionCommandStatus.FAILED.getVal());
-//                commandsContext.setErrorMsg("Approval Pending");
-//                ControlActionAPI.updateCommand(commandsContext);
-//            }
-//        }
+           //Todo validate IotMessageAPI.setReadingValueForV3CommandContext()
+           //Todo ask agent team abt the value of command (setValue())
+           if (controlActionContext.getControlActionExecutionType() == V3ControlActionContext.ControlActionExecutionType.ACTUAL.getVal()) {
+               IoTMessageAPI.setReadingValueForV3CommandContext(commandsContextList);
+           }
+       }
+        else{
+            for(V3CommandsContext commandsContext : commandsContextList){
+                commandsContext.setControlActionCommandStatus(V3CommandsContext.ControlActionCommandStatus.FAILED.getVal());
+                commandsContext.setErrorMsg("Approval Pending");
+                ControlActionAPI.updateCommand(commandsContext);
+                ControlActionAPI.addCommandActivity(V3CommandsContext.ControlActionCommandStatus.FAILED.getValue(),commandsContext.getId());
+            }
+        }
 
 
     }
@@ -101,5 +101,10 @@ public class PickCommandsToBeExecutedJob extends FacilioJob {
             return true;
         }
         return false;
+    }
+    public void validateExecutionForSandBox(V3CommandsContext commandsContext) throws Exception{
+        commandsContext.setAfterValue(commandsContext.getSetValue());
+        commandsContext.setControlActionCommandStatus(V3CommandsContext.ControlActionCommandStatus.SUCCESS.getVal());
+        ControlActionAPI.addCommandActivity(V3CommandsContext.ControlActionCommandStatus.SCHEDULED.getValue(),commandsContext.getId());
     }
 }

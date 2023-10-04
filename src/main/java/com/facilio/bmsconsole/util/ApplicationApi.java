@@ -1,56 +1,52 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import com.facilio.accounts.dto.*;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
+import com.facilio.accounts.dto.AppDomain.GroupType;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleBean;
 import com.facilio.beans.UserScopeBean;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.DefaultTabsAndTabGroups;
-
-import com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataLoggerModule;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.cache.CacheUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.cache.FacilioCache;
 import com.facilio.fw.cache.LRUCache;
+import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.identity.client.IdentityClient;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
-import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.facilio.beans.ModuleBean;
-import com.facilio.accounts.dto.AppDomain.AppDomainType;
-import com.facilio.accounts.dto.AppDomain.GroupType;
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.fw.BeanFactory;
-import com.facilio.iam.accounts.util.IAMAppUtil;
-import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.modules.fields.FacilioField;
 import org.json.simple.JSONObject;
 import org.reflections.Reflections;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ApplicationApi {
 
@@ -1130,7 +1126,7 @@ public class ApplicationApi {
         if(workplaceApp.getId() >0)
         {
             //Workplace App Layout
-            ApplicationLayoutContext workplaceLayout = new ApplicationLayoutContext(workplaceApp.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE,
+            ApplicationLayoutContext workplaceLayout = new ApplicationLayoutContext(workplaceApp.getId(), ApplicationLayoutContext.AppLayoutType.DUAL,
                     ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.IWMS_APP);
             addApplicationLayout(workplaceLayout);
             addWorkplaceAppWebTabs(workplaceLayout);
@@ -2928,6 +2924,28 @@ public class ApplicationApi {
                 CriteriaAPI.getCondition("Application.APPLICATION_NAME", "name", "Facilio", StringOperators.IS));
         return getFilteredApplications(FieldUtil.getAsBeanListFromMapList(appbuilder.get(), ApplicationContext.class));
     }
+    public static List<ApplicationContext> getApplicationsContainsTabTypes(List<Integer> tabTypeIds) throws Exception {
+
+        GenericSelectRecordBuilder tabBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getWebTabModule().getTableName())
+                .select(FieldFactory.getWebTabFields())
+                .andCondition(CriteriaAPI.getCondition("TYPE", "type",
+                        StringUtils.join(tabTypeIds,","), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> tabs = tabBuilder.get();
+        List<Long> appIdsList = new ArrayList<>();
+        GenericSelectRecordBuilder appBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getApplicationModule().getTableName())
+                .select(FieldFactory.getApplicationFields());
+        if (CollectionUtils.isNotEmpty(tabs)) {
+            List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(tabs, WebTabContext.class);
+            appIdsList = webTabs.stream().map(WebTabContext::getApplicationId).collect(Collectors.toList());
+        }
+        if (CollectionUtils.isNotEmpty(appIdsList)) {
+            appBuilder.andCondition(CriteriaAPI.getIdCondition(appIdsList, ModuleFactory.getApplicationModule()));
+        }
+        return getFilteredApplications(FieldUtil.getAsBeanListFromMapList(appBuilder.get(), ApplicationContext.class));
+    }
 
     public static void addAppRoleMapping(long roleId, long appId) throws Exception {
         RoleApp roleApp = new RoleApp(appId, roleId);
@@ -3438,7 +3456,7 @@ public class ApplicationApi {
 
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, layout.getApplicationId(), null));
-            webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.PORTFOLIO, null, null, 1,null,layout.getApplicationId()));
+            webTabs.add(new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.PORTFOLIO, null,"{ \"type\": \"portfolio\" }" , 1,null,layout.getApplicationId()));
             webTabGroups.add(new WebTabGroupContext(webTabs,"Home", "home",  IconType.home.ordinal(),groupOrder++,null,layout.getId(),IconType.home));
             groupNameVsWebTabsMap.put("home", webTabs);
 

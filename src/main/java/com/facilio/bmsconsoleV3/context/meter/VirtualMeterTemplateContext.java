@@ -94,10 +94,8 @@ public class VirtualMeterTemplateContext extends V3Context{
 		return null;
 	}
 	
-	public Map<Long,V3MeterContext> constructParentVsVirtualMeters() throws Exception {
-		
-		List<Long> resourceIds = resolveScopeAndGetParentResources();
-		
+	public Map<Long,V3MeterContext> constructParentVsVirtualMeters(List<Long> resourceIds) throws Exception {
+
 		Map<Long,V3MeterContext> generatedMeterContext = new HashMap<>();
 		
 		for(Long resourceId : resourceIds) {

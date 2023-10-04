@@ -17,12 +17,18 @@ public class V3EventTimeSlotContext extends V3Context {
     private Integer endMin;
     private Long startMinMilliSecond;
     private Long endMinMilliSecond;
-//    public Integer getStartMin(){
-//        return convertMillisecondsToMinute(getStartMinMilliSecond());
-//    }
-//    public Integer getEndMin(){
-//        return convertMillisecondsToMinute(getEndMinMilliSecond());
-//    }
+    public Integer getStartMin(){
+        if(startMin == null) {
+            return convertMillisecondsToMinute(getStartMinMilliSecond());
+        }
+        return startMin;
+    }
+    public Integer getEndMin(){
+        if(endMin == null) {
+            return convertMillisecondsToMinute(getEndMinMilliSecond());
+        }
+        return endMin;
+    }
     public Integer convertMillisecondsToMinute(Long milliSecond){
         ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(milliSecond), ZoneId.systemDefault());
         return dateTime.getHour()*60+dateTime.getMinute();

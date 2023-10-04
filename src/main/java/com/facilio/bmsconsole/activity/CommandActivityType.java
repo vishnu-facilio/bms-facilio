@@ -9,7 +9,7 @@ public enum CommandActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return "Status Changed To "+json.get("values");
+            return "Changed Status To "+json.get("values");
         }
     };
 

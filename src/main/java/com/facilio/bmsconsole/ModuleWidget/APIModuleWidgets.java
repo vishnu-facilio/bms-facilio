@@ -217,13 +217,13 @@ public class APIModuleWidgets {
                 .addWidgetConfig("flexiblewebmeterreadings_33", "Meter Readings - 33",WidgetConfigContext.ConfigType.FLEXIBLE,33,-1,PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("monthlyConsumption","Monthly Consumption",PageWidget.WidgetType.MONTHLY_CONSUMPTION)
-                .addWidgetConfig("webmonthlyconsumption_14_24","Monthly Consumption - 14 - 24",WidgetConfigContext.ConfigType.FIXED,14,24, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("webmonthlyconsumption_14_12","Monthly Consumption - 14 - 12",WidgetConfigContext.ConfigType.FIXED,14,12, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("totalConsumption","Total Consumption",PageWidget.WidgetType.TOTAL_CONSUMPTION)
-                .addWidgetConfig("webtotalconsumption_14_24","Total Consumption - 14 - 24",WidgetConfigContext.ConfigType.FIXED,14,24, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("webtotalconsumption_14_12","Total Consumption - 14 - 12",WidgetConfigContext.ConfigType.FIXED,14,12, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("peakDemand","Peak Demand",PageWidget.WidgetType.PEAK_DEMAND)
-                .addWidgetConfig("webpeakDemamd_14_24","Peak Demand - 14 - 24",WidgetConfigContext.ConfigType.FIXED,14,24, PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("webpeakDemamd_14_12","Peak Demand - 14 - 12",WidgetConfigContext.ConfigType.FIXED,14,12, PagesContext.PageLayoutType.WEB)
                 .done();
     }
     @WidgetsForModule("virtualMeterTemplate")
@@ -240,21 +240,24 @@ public class APIModuleWidgets {
     public static Supplier<ModuleWidgets> getCalendarWidgets(){
         return () -> new ModuleWidgets()
                 .addModuleWidget("calendarEventView" , "Calendar Event View",PageWidget.WidgetType.CALENDAR_EVENT_VIEW)
-                .addFixedWidgetConfig("webCalendarEventViewWidget-47*12", "Full Width Calendar Event View Widget - 47*12",47,12, PagesContext.PageLayoutType.WEB)
+                .addFixedWidgetConfig("webCalendarEventView_47_12", "Calendar Event View - 47 - 12",47,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("calendarEventList","Calendar Event List",PageWidget.WidgetType.CALENDAR_EVENT_LIST)
+                .addFixedWidgetConfig("webCalendarEventList_28_12","Calendar Event List - 28 - 12",28,12,PagesContext.PageLayoutType.WEB)
                 .done();
     }
     @WidgetsForModule(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME)
     public static Supplier<ModuleWidgets> getControlActionWidgets(){
         return () -> new ModuleWidgets()
-                .addModuleWidget("controlActionCriteriaView","Control Action Criteria View",PageWidget.WidgetType.CONRTOL_ACTION_CRITERIA)
-                .addFixedWidgetConfig("webControlActionCriteriaViewWidget-28*6", "Half Width Control Action Criteria View Widget - 28*6",28,6, PagesContext.PageLayoutType.WEB)
+                .addModuleWidget("criteriaListView","Criteria List View",PageWidget.WidgetType.CRITERIA_LIST_VIEW)
+                .addFixedWidgetConfig("webCriteriaListView_28_6", "Criteria List View - 28 - 6",28,6, PagesContext.PageLayoutType.WEB)
                 .done()
                 ;
     }
     @WidgetsForModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME)
     public static Supplier<ModuleWidgets> getControlActionTemplateWidgets(){
         return () -> new ModuleWidgets()
-                .addModuleWidget("controlActionTemplateCriteriaView","Control Action Template Criteria View",PageWidget.WidgetType.CONRTOL_ACTION_CRITERIA)
+                .addModuleWidget("criteriaListView","Criteria List View",PageWidget.WidgetType.CRITERIA_LIST_VIEW)
                 .done()
                 ;
     }

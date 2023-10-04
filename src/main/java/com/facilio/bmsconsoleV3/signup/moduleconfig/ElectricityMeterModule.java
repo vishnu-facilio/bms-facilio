@@ -69,8 +69,7 @@ public class ElectricityMeterModule extends BaseModuleConfig{
         electricityMeterFormFields.add(utilityTypeField);
         electricityMeterFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 4, 2));
         electricityMeterFormFields.add(new FormField("meterLocation", FacilioField.FieldDisplayType.SPACECHOOSER, "Meter Location", FormField.Required.REQUIRED, 5, 2));
-        electricityMeterFormFields.add(new FormField("parentMeter", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Parent Meter", FormField.Required.OPTIONAL, "meter", 6, 2));
-        electricityMeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Is Check Meter", FormField.Required.OPTIONAL, 7, 2));
+        electricityMeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Is Check Meter", FormField.Required.OPTIONAL, 6, 2));
 
         FormSection section = new FormSection("Electricity Meter Details", 1, electricityMeterFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);

@@ -7,6 +7,7 @@ import static com.facilio.bmsconsole.commands.TransactionChainFactory.getAddCate
 import java.util.Collections;
 
 import com.facilio.alarms.sensor.commands.*;
+import com.facilio.bmsconsole.activity.InActivateControlActionTemplateCommand;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.Calendar.*;
 import com.facilio.bmsconsoleV3.commands.asset.*;
@@ -3707,8 +3708,13 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getPublishVirtualMeterTemplateChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new AddWMSMessageForVirtualMeterPopulationCommand());
         c.addCommand(new MarkVMAsPublishedCommand());
+        return c;
+    }
+
+    public static FacilioChain getGenerateVirtualMeterChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddWMSMessageForVirtualMeterPopulationCommand());
         return c;
     }
 
@@ -3820,13 +3826,14 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getControlActionBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddCriteriaForControlActionCommand());
-        c.addCommand(new MakeControlActionStatusAsUnpublishedCommand());
+        c.addCommand(new SetControlActionInitialStatusCommand());
         return c;
     }
 
     public static FacilioChain getControlActionAfterSaveChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddActionCommand());
+        c.addCommand(new setInitialApprovalStatusForControlActionCommand());
         c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         c.addCommand(new AddActivitiesCommandV3(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME));
         return c;
@@ -3834,11 +3841,10 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getControlActionBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new UnPublishControlActionOnEditCommand());
         c.addCommand(new AddCriteriaForControlActionCommand());
         c.addCommand(new AddActionCommand());
-        c.addCommand(new MakeControlActionStatusAsUnpublishedCommand());
-        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
-        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME));
+        c.addCommand(new StatusUpdateOnApprovalProcessCommand());
         return c;
     }
 
@@ -3882,15 +3888,10 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain getCommandsBeforeCreateChain() {
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new MarkCommandStatusAsNotScheduledCommand());
-        return c;
-    }
 
     public static FacilioChain getActionAfterSummaryCommand() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new FetchReadingFieldDetailsCommand());
+        //c.addCommand(new FetchReadingFieldDetailsCommand());
         return c;
     }
 
@@ -3901,18 +3902,12 @@ public class TransactionChainFactoryV3 {
     }
     public static FacilioChain getCommandsAfterListChain(){
         FacilioChain c = getDefaultChain();
-        c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
+        //c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
         return c;
     }
     public static FacilioChain getCommandsAfterSummaryChain(){
         FacilioChain c = getDefaultChain();
-        c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
-        return c;
-    }
-    public static FacilioChain getCommandsAfterSaveChain(){
-        FacilioChain c = getDefaultChain();
-        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
-        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.Control_Action.COMMAND_ACTIVITY_MODULE_NAME));
+        //c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
         return c;
     }
     public static FacilioChain getControlActionBeforeListChain(){
@@ -3939,6 +3934,8 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getControlActionTemplateBeforeSaveChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddCriteriaFromControlActionTemplateCommand());
+        c.addCommand(new SetControlActionExecutionTypeCommand());
+        c.addCommand(new MakeControlActionTemplateStatusAsInActiveCommand());
         return c;
     }
     public static FacilioChain getEventBeforeFetchChain(){
@@ -3951,7 +3948,36 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FetchSupplementsForCalendarEventMappingCommand());
         return c;
     }
-
+    public static FacilioChain getCalendarEventMappingAfterListChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FillTimeSlotForCalendarEventMappingContext());
+        return c;
+    }
+    public static FacilioChain getPublishControlActionChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new PublishControlActionCommand());
+        return chain;
+    }
+    public static FacilioChain getUnPublishControlActionChain(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new UnPublishControlActionCommand());
+        return chain;
+    }
+    public static FacilioChain getActivateControlActionTemplateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ActivateControlActionTemplateCommand());
+        return c;
+    }
+    public static FacilioChain getInActivateControlActionTemplateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new InActivateControlActionTemplateCommand());
+        return c;
+    }
+    public static FacilioChain getActionBeforeListChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchSupplementsForActionCommand());
+        return c;
+    }
 
     public static FacilioChain addQuotationSetting(){
         FacilioChain c=getDefaultChain();

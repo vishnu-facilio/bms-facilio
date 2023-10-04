@@ -3,27 +3,29 @@ package com.facilio.bmsconsoleV3.signup.controlAction;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.SystemButtonApi;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.modules.fields.StringField;
+import com.facilio.modules.fields.*;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import lombok.extern.log4j.Log4j;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Log4j
 public class AddControlActionTemplateModule extends SignUpData {
@@ -34,7 +36,9 @@ public class AddControlActionTemplateModule extends SignUpData {
         FacilioModule controlActionTemplate = constructControlActionTemplateModule(modBean,orgId);
         addControlActionTemplateToControlAction(modBean,controlActionTemplate,orgId);
         constructControlActionTemplateActivityModule(controlActionTemplate,modBean);
+        constructControlActionTemplateAttachmentModule(controlActionTemplate,modBean);
         addNightlyJob();
+        addSystemButtons();
     }
     public FacilioModule constructControlActionTemplateModule(ModuleBean moduleBean,long orgId) throws Exception{
         List<FacilioModule> modules = new ArrayList<>();
@@ -56,6 +60,11 @@ public class AddControlActionTemplateModule extends SignUpData {
         LookupField calendar = SignupUtil.getLookupField(controlActionTemplate,calendarModule,"calendar","Calendar","CALENDAR_ID",null,
                 FacilioField.FieldDisplayType.LOOKUP_SIMPLE,false,false,true,orgId);
         fields.add(calendar);
+
+        SystemEnumField controlActionTemplateStatus = SignupUtil.getSystemEnumField(controlActionTemplate,"controlActionTemplateStatus","Template Status","CONTROL_ACTION_TEMPLATE_STATUS","ControlActionTemplateStatus",
+                FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
+        fields.add(controlActionTemplateStatus);
+
         controlActionTemplate.setFields(fields);
         modules.add(controlActionTemplate);
 
@@ -73,6 +82,33 @@ public class AddControlActionTemplateModule extends SignUpData {
                     "CONTROL_ACTION_TEMPLATES_ID", null,FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false,false,true,orgId);
             modBean.addField(controlActionTemplateField);
         }
+    }
+    private static void addSystemButtons() throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        SystemButtonRuleContext activateControlActionTemplate = new SystemButtonRuleContext();
+        activateControlActionTemplate.setName("Publish");
+        activateControlActionTemplate.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        activateControlActionTemplate.setIdentifier("Publish");
+        activateControlActionTemplate.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria  activationCriteria = new Criteria();
+        activationCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionTemplateStatus"),String.valueOf(V3ControlActionTemplateContext.ControlActionTemplateStatus.IN_ACTIVE.getIndex()), EnumOperators.IS));
+        activateControlActionTemplate.setCriteria(activationCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,activateControlActionTemplate);
+
+        SystemButtonRuleContext  inactivateControlActionTemplate = new SystemButtonRuleContext();
+        inactivateControlActionTemplate.setName("Un Publish");
+        inactivateControlActionTemplate.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        inactivateControlActionTemplate.setIdentifier("Un Publish");
+        inactivateControlActionTemplate.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria unPublishCriteria = new Criteria();
+        unPublishCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionTemplateStatus"),String.valueOf(V3ControlActionTemplateContext.ControlActionTemplateStatus.ACTIVE.getIndex()), EnumOperators.IS));
+        inactivateControlActionTemplate.setCriteria(unPublishCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,inactivateControlActionTemplate);
+
     }
     public void addNightlyJob() throws Exception {
 
@@ -105,5 +141,30 @@ public class AddControlActionTemplateModule extends SignUpData {
         addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
         addModuleChain1.execute();
         moduleBean.addSubModule(controlActionTemplateModule.getModuleId(), module.getModuleId());
+    }
+    private FacilioModule constructControlActionTemplateAttachmentModule(FacilioModule controlActionTemplateModule, ModuleBean moduleBean) throws Exception{
+        FacilioModule module = new FacilioModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_ATTACHMENT_MODULE_NAME,
+                "Control Action Template Attachments", "Control_Action_Template_Attachments",
+                FacilioModule.ModuleType.ATTACHMENTS);
+
+        List<FacilioField> fields = new ArrayList<>();
+
+        NumberField fileId = new NumberField(module, "fileId", "File ID", FacilioField.FieldDisplayType.NUMBER, "FILE_ID", FieldType.NUMBER, true, false, true, true);
+        fields.add(fileId);
+
+        NumberField parentId = new NumberField(module, "parentId", "Parent", FacilioField.FieldDisplayType.NUMBER, "PARENT_CONTROL_ACTION_TEMPLATE", FieldType.NUMBER, true, false, true, null);
+        fields.add(parentId);
+
+        NumberField createdTime = new NumberField(module, "createdTime", "Created Time", FacilioField.FieldDisplayType.NUMBER, "CREATED_TIME", FieldType.NUMBER, true, false, true, null);
+        fields.add(createdTime);
+
+        module.setFields(fields);
+
+        FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+        addModuleChain1.execute();
+
+        moduleBean.addSubModule(controlActionTemplateModule.getModuleId(), module.getModuleId());
+        return module;
     }
 }

@@ -27,7 +27,6 @@ public class V3MeterContext extends V3Context {
 	private String uniqueId;
 	private V3UtilityTypeContext utilityType;
 	private MeterType meterType;
-	private V3MeterContext parentMeter;
 	private V3BaseSpaceContext meterLocation;
 	private String manufacturer;
 	private String model;
@@ -56,14 +55,6 @@ public class V3MeterContext extends V3Context {
 		this.utilityType = utilityType;
 	}
 
-
-	public V3MeterContext getParentMeter() {
-		return parentMeter;
-	}
-
-	public void setParentMeter(V3MeterContext parentMeter) {
-		this.parentMeter = parentMeter;
-	}
 
 	public V3BaseSpaceContext getMeterLocation() {
 		return meterLocation;

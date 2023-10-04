@@ -68,8 +68,6 @@ public class GetModulesListCommand extends FacilioCommand {
 			FacilioConstants.UTILITY_INTEGRATION_METER,
 			FacilioConstants.UTILITY_INTEGRATION_BILLS,
 			FacilioConstants.UTILITY_DISPUTE,
-
-			FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE,
 			FacilioConstants.Calendar.CALENDAR_MODULE_NAME,
 			FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
 

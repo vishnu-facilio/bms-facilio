@@ -1,18 +1,27 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.activity.ActivityContext;
+import com.facilio.bmsconsole.activity.CommandActivityType;
+import com.facilio.bmsconsole.activity.ControlActionActivityType;
+import com.facilio.bmsconsole.activity.ControlActionTemplateActivityType;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3CommandsContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.*;
 import org.apache.commons.collections4.CollectionUtils;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.KeyFactorySpi;
 import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -313,6 +322,17 @@ public class ControlActionAPI {
         return builder.update(controlActionContext);
 
     }
+    public static int updateControlActionTemplate(V3ControlActionTemplateContext controlActionTemplateContext) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+        List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+
+        UpdateRecordBuilder<V3ControlActionTemplateContext> builder = new UpdateRecordBuilder<V3ControlActionTemplateContext>()
+                .module(module)
+                .fields(fieldList)
+                .andCondition(CriteriaAPI.getIdCondition(controlActionTemplateContext.getId(),module));
+        return builder.update(controlActionTemplateContext);
+    }
     public static boolean checkForControlActionCompletedStatus(Long controlActionId) throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
@@ -331,22 +351,78 @@ public class ControlActionAPI {
         }
         return false;
     }
-    public static V3ControlActionContext.ControlActionStatus getCompletionTypeOfControlAction(Long controlActionId) throws Exception{
+//    public static V3ControlActionContext.ControlActionStatus getCompletionTypeOfControlAction(Long controlActionId) throws Exception{
+//        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//        FacilioModule module = modBean.getModule(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
+//        List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
+//        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fieldList);
+//        SelectRecordsBuilder<V3CommandsContext> builder = new SelectRecordsBuilder<V3CommandsContext>()
+//                .module(module)
+//                .select(fieldList)
+//                .beanClass(V3CommandsContext.class)
+//                .andCondition(CriteriaAPI.getCondition(fieldMap.get("controlAction"),String.valueOf(controlActionId),NumberOperators.EQUALS))
+//                .andCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionCommandStatus"),String.valueOf(V3CommandsContext.ControlActionCommandStatus.SUCCESS.getVal()),NumberOperators.NOT_EQUALS));
+//        List<V3CommandsContext> commandsContextList = builder.get();
+//        if(CollectionUtils.isEmpty(commandsContextList)){
+//            return V3ControlActionContext.ControlActionStatus.COMPLETED;
+//        }
+//        return V3ControlActionContext.ControlActionStatus.COMPLETED_WITH_ERROR;
+//    }
+    public static List<V3CommandsContext> getCommandsOfControlAction(Long controlActionId) throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
         List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fieldList);
+
         SelectRecordsBuilder<V3CommandsContext> builder = new SelectRecordsBuilder<V3CommandsContext>()
                 .module(module)
                 .select(fieldList)
                 .beanClass(V3CommandsContext.class)
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("controlAction"),String.valueOf(controlActionId),NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionCommandStatus"),String.valueOf(V3CommandsContext.ControlActionCommandStatus.SUCCESS.getVal()),NumberOperators.NOT_EQUALS));
-        List<V3CommandsContext> commandsContextList = builder.get();
-        if(CollectionUtils.isEmpty(commandsContextList)){
-            return V3ControlActionContext.ControlActionStatus.COMPLETED;
-        }
-        return V3ControlActionContext.ControlActionStatus.COMPLETED_WITH_ERROR;
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("controlAction"),String.valueOf(controlActionId),NumberOperators.EQUALS));
+
+        return builder.get();
+    }
+    public static void addControlActionActivity(String activityValue,Long controlActionId) throws Exception{
+        JSONObject info = new JSONObject();
+        info.put(FacilioConstants.ContextNames.VALUES, activityValue);
+        ActivityContext activityContext = new ActivityContext();
+        activityContext.setParentId(controlActionId);
+        activityContext.setTtime(System.currentTimeMillis());
+        activityContext.setType(ControlActionActivityType.STATUS_UPDATE.getValue());
+        activityContext.setInfo(info);
+        activityContext.setDoneBy(AccountUtil.getCurrentUser());
+        FacilioContext context1 = new FacilioContext();
+        context1.put(FacilioConstants.ContextNames.ACTIVITY_LIST, Collections.singletonList(activityContext));
+        FacilioCommand command = new AddActivitiesCommandV3(FacilioConstants.Control_Action.CONTROL_ACTION_ACTIVITY_MODULE_NAME);
+        command.executeCommand(context1);
+    }
+    public static void addCommandActivity(String activityValue, Long commandId) throws Exception{
+        JSONObject info = new JSONObject();
+        info.put(FacilioConstants.ContextNames.VALUES, activityValue);
+        ActivityContext activityContext = new ActivityContext();
+        activityContext.setParentId(commandId);
+        activityContext.setTtime(System.currentTimeMillis());
+        activityContext.setType(CommandActivityType.STATUS_UPDATE.getValue());
+        activityContext.setInfo(info);
+        activityContext.setDoneBy(AccountUtil.getCurrentUser());
+        FacilioContext context1 = new FacilioContext();
+        context1.put(FacilioConstants.ContextNames.ACTIVITY_LIST, Collections.singletonList(activityContext));
+        FacilioCommand command = new AddActivitiesCommandV3(FacilioConstants.Control_Action.COMMAND_ACTIVITY_MODULE_NAME);
+        command.executeCommand(context1);
+    }
+    public static void addControlActionTemplateActivity(String activityValue, Long controlActionTemplateId) throws Exception{
+        JSONObject info = new JSONObject();
+        info.put(FacilioConstants.ContextNames.VALUES, activityValue);
+        ActivityContext activityContext = new ActivityContext();
+        activityContext.setParentId(controlActionTemplateId);
+        activityContext.setTtime(System.currentTimeMillis());
+        activityContext.setType(ControlActionTemplateActivityType.STATUS_UPDATE.getValue());
+        activityContext.setInfo(info);
+        activityContext.setDoneBy(AccountUtil.getCurrentUser());
+        FacilioContext context1 = new FacilioContext();
+        context1.put(FacilioConstants.ContextNames.ACTIVITY_LIST, Collections.singletonList(activityContext));
+        FacilioCommand command = new AddActivitiesCommandV3(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME);
+        command.executeCommand(context1);
     }
 
 

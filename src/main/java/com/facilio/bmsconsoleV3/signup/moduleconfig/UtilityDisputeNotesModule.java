@@ -80,7 +80,7 @@ public class UtilityDisputeNotesModule extends BaseModuleConfig{
         notesForm.setModule(notesModule);
         notesForm.setDisplayName("Add Notes");
         notesForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        notesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        notesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
         notesForm.setShowInWeb(true);
         notesForm.setShowInMobile(true);
         notesForm.setHideInList(false);

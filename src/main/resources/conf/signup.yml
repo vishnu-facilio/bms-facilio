@@ -454,6 +454,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.calendarSlots.AddCalendarSlotModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.CalendarEventModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.CalendarModule
+  - com.facilio.bmsconsoleV3.signup.calendar.CalendarModulePostAction
 
   #ControlActionModule
   - com.facilio.bmsconsoleV3.signup.controlAction.AddControlActionModule
@@ -462,7 +463,8 @@ classes:
   - com.facilio.bmsconsoleV3.signup.controlAction.ControlActionModule
   - com.facilio.bmsconsoleV3.signup.controlAction.ControlActionTemplateModule
   - com.facilio.bmsconsoleV3.signup.controlAction.CommandModule
-
+  - com.facilio.bmsconsoleV3.signup.controlAction.ControlActionNotes
+  - com.facilio.bmsconsoleV3.signup.controlAction.ControlActionTemplateNotes
 
   #Adding Flow log modules
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddFlowLogModules

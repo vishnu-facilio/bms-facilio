@@ -60,13 +60,19 @@ public class V3CalendarSlotsContext extends V3Context{
             return hr+":"+min;
         }
         String suffix = "am";
-        if(Integer.parseInt(hr) > 11){
+        if(Integer.parseInt(hr) == 12){
+            suffix = "pm";
+        }
+        if(Integer.parseInt(hr) > 12){
             hr = String.valueOf(Integer.parseInt(hr) - 12);
             if(hr.length() == 1){
                 hr = "0"+hr;
             }
 
             suffix = "pm";
+        }
+        if(Integer.parseInt(hr) == 0){
+            hr = "12";
         }
         String time = hr+":"+min+""+suffix;
         return time;

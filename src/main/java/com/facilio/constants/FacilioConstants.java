@@ -82,6 +82,8 @@ import com.facilio.taskengine.common.JobConstants;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.util.ChainUtil;
+import com.sun.jna.platform.unix.solaris.LibKstat;
+import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -3313,7 +3315,7 @@ public class FacilioConstants {
 			classMap.put(Calendar.EVENT_ACTIVITY_MODULE,ActivityContext.class);
 			classMap.put(Control_Action.CONTROL_ACTION_ACTIVITY_MODULE_NAME, ActivityContext.class);
 			classMap.put(Control_Action.CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME, ActivityContext.class);
-			classMap.put(Control_Action.CONTROL_ACTION_MODULE_NAME,ActivityContext.class);
+			classMap.put(Control_Action.COMMAND_ACTIVITY_MODULE_NAME,ActivityContext.class);
 
 
 			for (QuestionType type : QuestionType.values()) {
@@ -4486,6 +4488,9 @@ public class FacilioConstants {
 		public static final String CONTROL_ACTION_ACTIVITY_MODULE_NAME = "controlActionActivity";
 		public static final String CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME = "controlActionTemplateActivity";
 		public static final String CONTROL_ACTION_NOTES_MODULE_NAME = "controlActionNotes";
+		public static final String CONTROL_ACTION_ATTACHMENT_MODULE_NAME = "controlActionAttachment";
+		public static final String CONTROL_ACTION_TEMPLATE_NOTES_MODULE_NAME = "controlActionTemplateNotes";
+		public static final String CONTROL_ACTION_TEMPLATE_ATTACHMENT_MODULE_NAME = "controlActionTemplateAttachment";
 		public static final String COMMAND_ACTIVITY_MODULE_NAME = "commandActivity";
 	}
 

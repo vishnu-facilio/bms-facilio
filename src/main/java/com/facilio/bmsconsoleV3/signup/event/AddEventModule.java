@@ -94,17 +94,25 @@ public class AddEventModule extends SignUpData {
         isSpecific.setFalseVal("Relative");
         fields.add(isSpecific);
 
-        NumberField seasonStartMonth = SignupUtil.getNumberField(eventModule,"seasonStartMonth","Season Start Month","SEASON_START_MONTH",
-                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
+        SystemEnumField seasonStartMonth = SignupUtil.getSystemEnumField(eventModule,"seasonStartMonth","Season Start Month","SEASON_START_MONTH",
+                "MonthValueEnum", FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(seasonStartMonth);
+
+//        NumberField seasonStartMonth = SignupUtil.getNumberField(eventModule,"seasonStartMonth","Season Start Month","SEASON_START_MONTH",
+//                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
+//        fields.add(seasonStartMonth);
 
         NumberField seasonStartDate = SignupUtil.getNumberField(eventModule,"seasonStartDate","Season Start Date","SEASON_START_DATE",
                 FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
         fields.add(seasonStartDate);
 
-        NumberField seasonEndMonth = SignupUtil.getNumberField(eventModule,"seasonEndMonth","Season End Month","SEASON_END_MONTH",
-                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
+        SystemEnumField seasonEndMonth = SignupUtil.getSystemEnumField(eventModule,"seasonEndMonth","Season End Month","SEASON_END_MONTH",
+                "MonthValueEnum", FacilioField.FieldDisplayType.TEXTBOX,false,false,true,orgId);
         fields.add(seasonEndMonth);
+
+//        NumberField seasonEndMonth = SignupUtil.getNumberField(eventModule,"seasonEndMonth","Season End Month","SEASON_END_MONTH",
+//                FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);
+//        fields.add(seasonEndMonth);
 
         NumberField seasonEndDate = SignupUtil.getNumberField(eventModule,"seasonEndDate","Season End Date","SEASON_END_DATE",
                 FacilioField.FieldDisplayType.SELECTBOX,false,false,true,orgId);

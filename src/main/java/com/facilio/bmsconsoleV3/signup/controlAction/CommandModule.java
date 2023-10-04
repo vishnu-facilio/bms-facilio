@@ -25,7 +25,7 @@ public class CommandModule extends BaseModuleConfig {
         groupDetails.put("name", "systemviews");
         groupDetails.put("displayName", "System Views");
         groupDetails.put("moduleName", FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
-        groupDetails.put("appLinkNames", Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        groupDetails.put("appLinkNames", Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
         groupDetails.put("views", controlAction);
         groupVsViews.add(groupDetails);
         return groupVsViews;
@@ -35,7 +35,7 @@ public class CommandModule extends BaseModuleConfig {
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Commands");
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
 
 
         List<ViewField> fields = new ArrayList<>();

@@ -46,13 +46,13 @@ public class V3CommandsContext extends V3Context {
         return -1;
     }
     public static enum ControlActionCommandStatus implements FacilioIntEnum{
+        SCHEDULED("Scheduled"),
         NOT_SCHEDULED("Not Scheduled"),
         CANCELED("Canceled"),
         IN_PROGRESS("In Progess"),
-        PENDING("Pending"),
-        TIMED_OUT("Timed Out"),
         FAILED("Failed"),
-        SUCCESS("Success");
+        SUCCESS("Success"),
+        POINT_NOT_COMMISSIONED("Point Not Commissioned");
 
         public String getValue() {
             return this.name;

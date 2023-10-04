@@ -68,6 +68,7 @@ public class ClientModule extends BaseModuleConfig{
         appNameList.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CLIENT);

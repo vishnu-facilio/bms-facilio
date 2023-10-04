@@ -3516,4 +3516,29 @@
     <request path="/api/v1/setup/modules/resource/setting/glimpse" method="GET">
         <requestbody type="object" />
     </request>
+    <request path="/api/v3/ControlAction/publishV3ControlAction" method="POST">
+        <requestbody type="object">
+            <property name="controlActionId" type="number"></property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/ControlAction/unPublishV3ControlAction" method="POST">
+        <requestbody type="object">
+            <property name="controlActionId" type="number"></property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/ControlActionTemplate/activate" method="POST">
+        <requestbody type="object">
+            <property name="controlActionTemplateId" type="number"></property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/ControlActionTemplate/inActivate" method="POST">
+        <requestbody type="object">
+            <property name="controlActionTemplateId" type="number"></property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/application/fetchListDashboard" method="GET">
+        <requestbody type="object">
+        </requestbody>
+    </request>
 </config>

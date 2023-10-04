@@ -1,23 +1,34 @@
 package com.facilio.bmsconsoleV3.signup.controlAction;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.SystemButtonApi;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.flowengine.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
+import com.facilio.utility.context.UtilityDisputeContext;
 import org.joda.time.DateTimeField;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class AddControlActionModule extends SignUpData {
 
@@ -31,11 +42,13 @@ public class AddControlActionModule extends SignUpData {
         addApprovalFieldToControlActionModule(modBean,orgId,controlActionModule,controlActionFirstLevelApproval,controlActionSecondLevelApproval);
         modBean.addSubModule(controlActionModule.getModuleId(),controlActionFirstLevelApproval.getModuleId());
         modBean.addSubModule(controlActionModule.getModuleId(),controlActionSecondLevelApproval.getModuleId());
+        //addDefaultStateFlowForControlActionModule(controlActionModule);
         FacilioModule actionModule = constructActionModule(modBean,orgId,controlActionModule);
         FacilioModule commandModule = constructCommandModule(modBean,orgId,controlActionModule,actionModule);
         constructControlActionActivityModule(controlActionModule,modBean);
-        constructControlActionNotesModule(modBean,orgId,controlActionModule);
+        constructControlActionAttachmentModule(controlActionModule,modBean);
         constructCommandActivityModule(commandModule,modBean);
+        addSystemButtons();
     }
     private FacilioModule constructControlActionModule(ModuleBean moduleBean, long orgId) throws Exception{
         List<FacilioModule> modules = new ArrayList<>();
@@ -97,6 +110,29 @@ public class AddControlActionModule extends SignUpData {
                 FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
         fields.add(controlActionStatus);
 
+        SystemEnumField scheduleActionStatus = SignupUtil.getSystemEnumField(controlActionModule,"scheduleActionStatus","Schedule Action Status","SCHEDULE_ACTION_STATUS","ControlActionStatus",
+                FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
+        fields.add(scheduleActionStatus);
+
+        SystemEnumField revertActionStatus = SignupUtil.getSystemEnumField(controlActionModule,"revertActionStatus","Revert Action Status","REVERT_ACTION_STATUS","ControlActionStatus",
+                FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
+        fields.add(revertActionStatus);
+
+        SystemEnumField controlActionExecutionType = SignupUtil.getSystemEnumField(controlActionModule,"controlActionExecutionType","Execution Type","CONTROL_ACTION_EXECUTION_TYPE",
+                "ControlActionExecutionType", FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
+        fields.add(controlActionExecutionType);
+
+//        LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Control Action Status", "MODULE_STATE", controlActionModule, FieldType.LOOKUP);
+//        moduleStateField.setDefault(true);
+//        moduleStateField.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+//        moduleStateField.setLookupModule(moduleBean.getModule("ticketstatus"));
+//        fields.add(moduleStateField);
+//
+//        FacilioField stateFlowIdField = FieldFactory.getField("stateFlowId", "State Flow Id", "STATE_FLOW_ID", controlActionModule, FieldType.NUMBER);
+//        stateFlowIdField.setDefault(true);
+//        stateFlowIdField.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
+//        fields.add(stateFlowIdField);
+
         LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE",FieldType.LOOKUP);
         createdByPeople.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
         fields.add(createdByPeople);
@@ -115,6 +151,186 @@ public class AddControlActionModule extends SignUpData {
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.execute();
         return controlActionModule;
+    }
+    private void addDefaultStateFlowForControlActionModule(FacilioModule controlActionModule) throws Exception {
+        FacilioStatus unPublished = getFacilioStatus(controlActionModule, "unPublished", "Un Published", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus published = getFacilioStatus(controlActionModule, "Published", "Published", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus waitingForFirstLevelApproval = getFacilioStatus(controlActionModule, "1stLevelPending", "Waiting For First level Approval", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus firstLevelApproved = getFacilioStatus(controlActionModule, "1stLevelApproved", "First Level Approved", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus waitingForSecondLevelApproval = getFacilioStatus(controlActionModule, "2ndLevelPending", "Waiting For Second Level Approval", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus secondLevelApproved = getFacilioStatus(controlActionModule, "2ndLevelApproved", "Second Level Approved", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus commandGenerated = getFacilioStatus(controlActionModule, "commandGenerated", "CommandGenerated", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus scheduleActionScheduled = getFacilioStatus(controlActionModule, "schActionScheduled", "Schedule Action Scheduled", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus scheduleActionInProgress = getFacilioStatus(controlActionModule, "schActionInProgress", "Schedule Action In Progress", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus scheduleActionSuccess = getFacilioStatus(controlActionModule, "schActionSuccess", "Schedule Action Success", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus scheduleActionFailed = getFacilioStatus(controlActionModule, "schActionFailed", "Schedule Action Failed", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus scheduleActionCompletedWithError = getFacilioStatus(controlActionModule, "schActPartial", "Scheduled Action Completed with Error", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus revertActionScheduled = getFacilioStatus(controlActionModule, "revActionScheduled", "Revert Action Scheduled", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus revertActionInProgress = getFacilioStatus(controlActionModule, "revActionInProgress", "Revert Action In Progress", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus revertActionSuccess = getFacilioStatus(controlActionModule, "revActionSuccess", "Revert Action Success", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus revertActionFailed = getFacilioStatus(controlActionModule, "revActionFailed", "Revert Action Failed", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus revertActionCompletedWithError = getFacilioStatus(controlActionModule, "revActionPartial", "Revert Action Completed with Error", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+        FacilioStatus rejected = getFacilioStatus(controlActionModule, "rejected", "Rejected", FacilioStatus.StatusType.OPEN, Boolean.FALSE);
+
+        StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
+        stateFlowRuleContext.setName("Default Stateflow");
+        stateFlowRuleContext.setModuleId(controlActionModule.getModuleId());
+        stateFlowRuleContext.setModule(controlActionModule);
+        stateFlowRuleContext.setActivityType(EventType.CREATE);
+        stateFlowRuleContext.setExecutionOrder(1);
+        stateFlowRuleContext.setStatus(true);
+        stateFlowRuleContext.setDefaltStateFlow(true);
+        stateFlowRuleContext.setDefaultStateId(unPublished.getId());
+        stateFlowRuleContext.setRuleType(WorkflowRuleContext.RuleType.STATE_FLOW);
+        WorkflowRuleAPI.addWorkflowRule(stateFlowRuleContext);
+
+        Criteria unPublishedCriteria = new Criteria();
+        unPublishedCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.UNPUBLISHED.getIndex()), EnumOperators.IS));
+
+        Criteria publishedCriteria = new Criteria();
+        publishedCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.PUBLISHED.getIndex()), EnumOperators.IS));
+
+        Criteria waitingForFirstLevelApprovalCriteria = new Criteria();
+        waitingForFirstLevelApprovalCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.WAITING_FOR_FIRST_LEVEL_APPROVAL.getIndex()), EnumOperators.IS));
+
+        Criteria firstLevelApprovedCriteria = new Criteria();
+        firstLevelApprovedCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.FIRST_LEVEL_APPROVED.getIndex()), EnumOperators.IS));
+
+        Criteria waitingForSecondLevelApprovalCriteria = new Criteria();
+        waitingForSecondLevelApprovalCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.WAITING_FOR_SECOND_LEVEL_APPROVAL.getIndex()), EnumOperators.IS));
+
+        Criteria secondLevelApprovedCriteria = new Criteria();
+        secondLevelApprovedCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.SECOND_LEVEL_APPROVED.getIndex()), EnumOperators.IS));
+
+        Criteria commandGeneratedCriteria = new Criteria();
+        commandGeneratedCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.COMMAND_GENERATED.getIndex()), EnumOperators.IS));
+
+        Criteria scheduleActionScheduledCriteria = new Criteria();
+        scheduleActionScheduledCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getIndex()), EnumOperators.IS));
+
+        Criteria scheduleActionInProgressCriteria = new Criteria();
+        scheduleActionInProgressCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_IN_PROGRESS.getIndex()), EnumOperators.IS));
+
+        Criteria scheduleActionSuccessCriteria = new Criteria();
+        scheduleActionSuccessCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SUCCESS.getIndex()), EnumOperators.IS));
+
+        Criteria scheduleActionFailedCriteria = new Criteria();
+        scheduleActionFailedCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_FAILED.getIndex()), EnumOperators.IS));
+
+        Criteria scheduleActionCompletedWithErrorCriteria = new Criteria();
+        scheduleActionCompletedWithErrorCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_COMPLETED_WITH_ERROR.getIndex()), EnumOperators.IS));
+
+        Criteria revertActionScheduledCriteria = new Criteria();
+        revertActionScheduledCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_SCHEDULED.getIndex()), EnumOperators.IS));
+
+        Criteria revertActionInProgressCriteria = new Criteria();
+        revertActionInProgressCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_IN_PROGRESS.getIndex()), EnumOperators.IS));
+
+        Criteria revertActionSuccessCriteria = new Criteria();
+        revertActionSuccessCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_SUCCESS.getIndex()), EnumOperators.IS));
+
+        Criteria revertActionFailedCriteria = new Criteria();
+        revertActionFailedCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_FAILED.getIndex()), EnumOperators.IS));
+
+        Criteria revertActionCompletedWithErrorCriteria = new Criteria();
+        revertActionCompletedWithErrorCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_COMPLETED_WITH_ERROR.getIndex()), EnumOperators.IS));
+
+        Criteria rejectedCriteria = new Criteria();
+        rejectedCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "controlActionStatus", String.valueOf(V3ControlActionContext.ControlActionStatus.REJECTED.getIndex()), EnumOperators.IS));
+
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Publish", unPublished, published, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,publishedCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "First Level Approval Pending", published, waitingForFirstLevelApproval, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,waitingForFirstLevelApprovalCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "First level Approved", waitingForFirstLevelApproval, firstLevelApproved, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,firstLevelApprovedCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Second Level Approval Pending", firstLevelApproved, waitingForSecondLevelApproval, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,waitingForSecondLevelApprovalCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Second Level Approved", waitingForSecondLevelApproval, secondLevelApproved, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,secondLevelApprovedCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Command Generation", secondLevelApproved, commandGenerated, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,commandGeneratedCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Scheduling Schedule Action", commandGenerated, scheduleActionScheduled, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,scheduleActionScheduledCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Schedule Action In Progress", scheduleActionScheduled, scheduleActionInProgress, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,scheduleActionInProgressCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Schedule Action Success", scheduleActionInProgress, scheduleActionSuccess, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,scheduleActionSuccessCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Schedule Action Failed", scheduleActionInProgress, scheduleActionFailed, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,scheduleActionFailedCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Schedule Action With Error", scheduleActionInProgress, scheduleActionCompletedWithError, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,scheduleActionCompletedWithErrorCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Scheduling Revert Action", scheduleActionSuccess, revertActionScheduled, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,revertActionScheduledCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Scheduling Revert Action", scheduleActionFailed, revertActionScheduled, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,revertActionScheduledCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Scheduling Revert Action", scheduleActionCompletedWithError, revertActionScheduled, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,revertActionScheduledCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Revert Action In progress", revertActionScheduled, revertActionInProgress, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,revertActionInProgressCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Revert Action Success", revertActionInProgress, revertActionSuccess, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,revertActionSuccessCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Revert Action Failed", revertActionInProgress, revertActionFailed, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,revertActionFailedCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Revert Action With Error", revertActionInProgress, revertActionCompletedWithError, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,revertActionCompletedWithErrorCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Reject", waitingForFirstLevelApproval, rejected, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,rejectedCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Reject", waitingForSecondLevelApproval, rejected, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,rejectedCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Un Publish", rejected, unPublished, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,unPublishedCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Un Publish", published, unPublished, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,unPublishedCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Command Generation", published, commandGenerated, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,commandGeneratedCriteria,null);
+        addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Command Generation", firstLevelApproved, commandGenerated, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,commandGeneratedCriteria,null);
+
+    }
+    private static void addSystemButtons() throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        SystemButtonRuleContext unPublishControlAction = new SystemButtonRuleContext();
+        unPublishControlAction.setName("Un Publish");
+        unPublishControlAction.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        unPublishControlAction.setIdentifier("Un Publish");
+        unPublishControlAction.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria unPublishCriteria = new Criteria();
+        unPublishCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.PUBLISHED.getIndex()), EnumOperators.IS));
+        unPublishCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.REJECTED.getIndex()), EnumOperators.IS));
+        unPublishControlAction.setCriteria(unPublishCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,unPublishControlAction);
+
+        SystemButtonRuleContext publishControlAction = new SystemButtonRuleContext();
+        publishControlAction.setName("Publish");
+        publishControlAction.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        publishControlAction.setIdentifier("Publish");
+        publishControlAction.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria publishCriteria = new Criteria();
+        publishCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.UNPUBLISHED.getIndex()), EnumOperators.IS));
+        publishControlAction.setCriteria(publishCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,publishControlAction);
+
+    }
+
+    private FacilioStatus getFacilioStatus(FacilioModule module, String status, String displayName, FacilioStatus.StatusType status1, Boolean timerEnabled) throws Exception {
+
+        FacilioStatus statusObj = new FacilioStatus();
+        statusObj.setStatus(status);
+        statusObj.setDisplayName(displayName);
+        statusObj.setTypeCode(status1.getIntVal());
+        statusObj.setTimerEnabled(timerEnabled);
+        TicketAPI.addStatus(statusObj, module);
+
+        return statusObj;
+    }
+    private StateflowTransitionContext addStateflowTransitionContext(FacilioModule module, StateFlowRuleContext parentStateFlow, String name, FacilioStatus fromStatus, FacilioStatus toStatus, AbstractStateTransitionRuleContext.TransitionType transitionType, Criteria criteria, List<ActionContext> actions) throws Exception {
+
+        StateflowTransitionContext stateFlowTransitionContext = new StateflowTransitionContext();
+        stateFlowTransitionContext.setName(name);
+        stateFlowTransitionContext.setModule(module);
+        stateFlowTransitionContext.setModuleId(module.getModuleId());
+        stateFlowTransitionContext.setActivityType(EventType.STATE_TRANSITION);
+        stateFlowTransitionContext.setExecutionOrder(1);
+        stateFlowTransitionContext.setButtonType(1);
+        stateFlowTransitionContext.setFromStateId(fromStatus.getId());
+        stateFlowTransitionContext.setToStateId(toStatus.getId());
+        stateFlowTransitionContext.setRuleType(WorkflowRuleContext.RuleType.STATE_RULE);
+        stateFlowTransitionContext.setType(transitionType);
+        stateFlowTransitionContext.setStateFlowId(parentStateFlow.getId());
+        stateFlowTransitionContext.setCriteria(criteria);
+
+        WorkflowRuleAPI.addWorkflowRule(stateFlowTransitionContext);
+
+        if (actions != null && !actions.isEmpty()) {
+            actions = ActionAPI.addActions(actions, stateFlowTransitionContext);
+            if(stateFlowTransitionContext != null) {
+                ActionAPI.addWorkflowRuleActionRel(stateFlowTransitionContext.getId(), actions);
+                stateFlowTransitionContext.setActions(actions);
+            }
+        }
+
+        return stateFlowTransitionContext;
     }
     private FacilioModule constructActionModule(ModuleBean moduleBean, long orgId, FacilioModule controlActionModule) throws Exception{
         List<FacilioModule> modules = new ArrayList<>();
@@ -141,7 +357,7 @@ public class AddControlActionModule extends SignUpData {
                 FacilioField.FieldDisplayType.TEXTBOX,true,true,true,orgId);
         fields.add(readingFieldDataType);
 
-        SystemEnumField scheduledActionOperatorType = SignupUtil.getSystemEnumField(actionsModule,"scheduledActionOperatorType","Operator","SCHEDULE_ACTION_OPERATOR_TYPE","ActionOperatorTypeEnum",
+        SystemEnumField scheduledActionOperatorType = SignupUtil.getSystemEnumField(actionsModule,"scheduledActionOperatorType","Schedule Action Operator","SCHEDULE_ACTION_OPERATOR_TYPE","ActionOperatorTypeEnum",
                 FacilioField.FieldDisplayType.SELECTBOX,true,false,true,orgId);
         fields.add(scheduledActionOperatorType);
 
@@ -149,7 +365,7 @@ public class AddControlActionModule extends SignUpData {
                 true,false,true,true,orgId);
         fields.add(scheduleActionValue);
 
-        SystemEnumField revertActionOperatorType = SignupUtil.getSystemEnumField(actionsModule,"revertActionOperatorType","Operator","REVERT_ACTION_OPERATOR_TYPE","ActionOperatorTypeEnum",
+        SystemEnumField revertActionOperatorType = SignupUtil.getSystemEnumField(actionsModule,"revertActionOperatorType","Revert Action Operator","REVERT_ACTION_OPERATOR_TYPE","ActionOperatorTypeEnum",
                 FacilioField.FieldDisplayType.SELECTBOX,true,false,true,orgId);
         fields.add(revertActionOperatorType);
 
@@ -319,7 +535,7 @@ public class AddControlActionModule extends SignUpData {
         fields.add(controller);
 
         NumberField fieldId = SignupUtil.getNumberField(commandModule,"fieldId","Field","FIELD_ID", FacilioField.FieldDisplayType.TEXTBOX,
-                false,false,true,orgId);
+                true,true,true,orgId);
         fields.add(fieldId);
 
         FacilioField actionTime = FieldFactory.getDefaultField("actionTime","Action Time","ACTION_TIME",FieldType.DATE_TIME);
@@ -412,64 +628,31 @@ public class AddControlActionModule extends SignUpData {
         addModuleChain1.execute();
         moduleBean.addSubModule(controlActionModule.getModuleId(), module.getModuleId());
     }
-    private FacilioModule constructControlActionNotesModule(ModuleBean modBean, long orgId, FacilioModule controlActionModule) throws Exception {
-        FacilioModule notesModule = new FacilioModule(FacilioConstants.Control_Action.CONTROL_ACTION_NOTES_MODULE_NAME, "Control Action Notes",
-                "Control_Action_Notes", FacilioModule.ModuleType.NOTES, null,
-                null);
+    private FacilioModule constructControlActionAttachmentModule(FacilioModule controlActionModule, ModuleBean moduleBean) throws Exception{
+        FacilioModule module = new FacilioModule(FacilioConstants.Control_Action.CONTROL_ACTION_ATTACHMENT_MODULE_NAME,
+                "Control Action Attachments", "Control_Action_Attachments",
+                FacilioModule.ModuleType.ATTACHMENTS);
 
         List<FacilioField> fields = new ArrayList<>();
 
-        NumberField parentIdField = SignupUtil.getNumberField(notesModule,
-                "parentId", "Parent", "PARENT_ID", FacilioField.FieldDisplayType.NUMBER,
-                true, false, true, orgId);
-        fields.add(parentIdField);
+        NumberField fileId = new NumberField(module, "fileId", "File ID", FacilioField.FieldDisplayType.NUMBER, "FILE_ID", FieldType.NUMBER, true, false, true, true);
+        fields.add(fileId);
 
-        StringField titleField = SignupUtil.getStringField(notesModule,
-                "title", "Title",  "TITLE", FacilioField.FieldDisplayType.TEXTBOX,
-                false, false, true, false,orgId);
-        fields.add(titleField);
+        NumberField parentId = new NumberField(module, "parentId", "Parent", FacilioField.FieldDisplayType.NUMBER, "PARENT_CONTROL_ACTION", FieldType.NUMBER, true, false, true, null);
+        fields.add(parentId);
 
-        StringField bodyField = SignupUtil.getStringField(notesModule,
-                "body", "Body", "BODY", FacilioField.FieldDisplayType.TEXTAREA,
-                false, false, true, false,orgId);
-        fields.add(bodyField);
+        NumberField createdTime = new NumberField(module, "createdTime", "Created Time", FacilioField.FieldDisplayType.NUMBER, "CREATED_TIME", FieldType.NUMBER, true, false, true, null);
+        fields.add(createdTime);
 
-        StringField bodyHtmlField = SignupUtil.getStringField(notesModule,
-                "bodyHTML", "Body HTML", "BODY_HTML", FacilioField.FieldDisplayType.TEXTAREA,
-                false, false, true, false,orgId);
-        fields.add(bodyHtmlField);
-
-        LookupField parentNote = SignupUtil.getLookupField(notesModule, notesModule, "parentNote", "Parent Note",
-                "PARENT_NOTE", null, FacilioField.FieldDisplayType.LOOKUP_POPUP,
-                false, false, true, orgId);
-        fields.add(parentNote);
-
-        BooleanField notifyRequester = SignupUtil.getBooleanField(notesModule,"notifyRequester","Notify Requester","NOTIFY_REQUESTER",
-                FacilioField.FieldDisplayType.DECISION_BOX,null,false,false,false,orgId);
-        fields.add(notifyRequester);
-
-        LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE",FieldType.LOOKUP);
-        createdByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
-        fields.add(createdByPeople);
-
-        LookupField modifiedByPeople = FieldFactory.getDefaultField("sysModifiedByPeople","Modified By","SYS_MODIFIED_BY_PEOPLE",FieldType.LOOKUP);
-        modifiedByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
-        fields.add(modifiedByPeople);
-
-
-        fields.add((FacilioField) FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.DATE_TIME));
-        fields.add((FacilioField) FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.DATE_TIME));
-
-
-        notesModule.setFields(fields);
+        module.setFields(fields);
 
         FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
-        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(notesModule));
+        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
         addModuleChain1.execute();
 
-        modBean.addSubModule(controlActionModule.getModuleId(), notesModule.getModuleId());
+        moduleBean.addSubModule(controlActionModule.getModuleId(), module.getModuleId());
 
-        return notesModule;
+        return module;
     }
     private void constructCommandActivityModule(FacilioModule commandModule, ModuleBean moduleBean) throws Exception{
         FacilioModule module = new FacilioModule(FacilioConstants.Control_Action.COMMAND_ACTIVITY_MODULE_NAME,

@@ -79,7 +79,7 @@ public class MeterNotesModule extends BaseModuleConfig{
         meterNotesForm.setModule(meterNotesModule);
         meterNotesForm.setDisplayName("Add Notes");
         meterNotesForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        meterNotesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        meterNotesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
         meterNotesForm.setShowInWeb(true);
         meterNotesForm.setShowInMobile(true);
         meterNotesForm.setHideInList(false);

@@ -7,6 +7,8 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.kafka.common.protocol.types.Field;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +31,8 @@ public class FillTimeSlotForEventCommand extends FacilioCommand {
             }
             List<String> timeSlotStringList = new ArrayList<>();
             for(V3EventTimeSlotContext eventTimeSlotContext : eventTimeSlotContextList){
+                eventTimeSlotContext.setStartMinMilliSecond(Long.parseLong(String.valueOf(eventTimeSlotContext.getStartMin()*60*1000)));
+                eventTimeSlotContext.setEndMinMilliSecond(Long.parseLong(String.valueOf(eventTimeSlotContext.getEndMin()*60*1000)));
                 timeSlotStringList.add(CalendarApi.convertMinuteToHourAndMins(eventTimeSlotContext.getStartMin())+" - "+CalendarApi.convertMinuteToHourAndMins(eventTimeSlotContext.getEndMin()));
             }
             v3CalendarEventContext.setTimeSlotString(timeSlotStringList);

@@ -32,9 +32,9 @@ public class V3EventContext extends V3Context {
     private WeekDayEnum scheduledDay;
     private EventTypeEnum eventType;
     private Boolean isSpecific;
-    private Integer seasonStartMonth;
+    private MonthValueEnum seasonStartMonth;
     private Integer seasonStartDate;
-    private Integer seasonEndMonth;
+    private MonthValueEnum seasonEndMonth;
     private Integer seasonEndDate;
     private Long specialCaseMilliSecond;
     private List<V3EventTimeSlotContext> timeSlotList;
@@ -188,6 +188,47 @@ public class V3EventContext extends V3Context {
     public MonthValueEnum getScheduledMonthEnum() {
         return scheduledMonth;
     }
+    public void setSeasonStartMonth(Integer seasonStartMonth) {
+        if (seasonStartMonth != null) {
+            this.seasonStartMonth = MonthValueEnum.valueOf(seasonStartMonth);
+        } else {
+            this.seasonStartMonth = null;
+        }
+    }
+    public Integer getSeasonStartMonth(){
+        if(seasonStartMonth != null){
+            return seasonStartMonth.getVal();
+        }
+        return -1;
+    }
+    public void setSeasonStartMonthEnum(MonthValueEnum seasonStartMonth) {
+        this.seasonStartMonth = seasonStartMonth;
+    }
+
+    public MonthValueEnum getSeasonStartMonthEnum() {
+        return seasonStartMonth;
+    }
+    public void setSeasonEndMonth(Integer seasonEndMonth) {
+        if (seasonEndMonth != null) {
+            this.seasonEndMonth = MonthValueEnum.valueOf(seasonEndMonth);
+        } else {
+            this.seasonEndMonth = null;
+        }
+    }
+    public Integer getSeasonEndMonth(){
+        if(seasonEndMonth != null){
+            return seasonEndMonth.getVal();
+        }
+        return -1;
+    }
+    public void setSeasonEndMonthEnum(MonthValueEnum seasonEndMonth) {
+        this.seasonEndMonth = seasonEndMonth;
+    }
+
+    public MonthValueEnum getSeasonEndMonthEnum() {
+        return seasonEndMonth;
+    }
+
     @AllArgsConstructor
     public static enum MonthValueEnum implements FacilioIntEnum {
         JANUARY("January"),
