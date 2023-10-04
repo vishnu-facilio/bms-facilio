@@ -3520,4 +3520,8 @@
         </requestbody>
     </request>
 
+    <request path="/api/v2/application/fetchListDashboard" method="GET">
+        <requestbody type="object">
+        </requestbody>
+    </request>
 </config>

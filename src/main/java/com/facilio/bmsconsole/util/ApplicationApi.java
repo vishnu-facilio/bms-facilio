@@ -1,56 +1,52 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import com.facilio.accounts.dto.*;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
+import com.facilio.accounts.dto.AppDomain.GroupType;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.beans.ModuleBean;
 import com.facilio.beans.UserScopeBean;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.DefaultTabsAndTabGroups;
-
-import com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataLoggerModule;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.cache.CacheUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.cache.FacilioCache;
 import com.facilio.fw.cache.LRUCache;
+import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.identity.client.IdentityClient;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
-import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.facilio.beans.ModuleBean;
-import com.facilio.accounts.dto.AppDomain.AppDomainType;
-import com.facilio.accounts.dto.AppDomain.GroupType;
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.fw.BeanFactory;
-import com.facilio.iam.accounts.util.IAMAppUtil;
-import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.modules.fields.FacilioField;
 import org.json.simple.JSONObject;
 import org.reflections.Reflections;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ApplicationApi {
 
@@ -1130,7 +1126,7 @@ public class ApplicationApi {
         if(workplaceApp.getId() >0)
         {
             //Workplace App Layout
-            ApplicationLayoutContext workplaceLayout = new ApplicationLayoutContext(workplaceApp.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE,
+            ApplicationLayoutContext workplaceLayout = new ApplicationLayoutContext(workplaceApp.getId(), ApplicationLayoutContext.AppLayoutType.DUAL,
                     ApplicationLayoutContext.LayoutDeviceType.WEB, FacilioConstants.ApplicationLinkNames.IWMS_APP);
             addApplicationLayout(workplaceLayout);
             addWorkplaceAppWebTabs(workplaceLayout);
