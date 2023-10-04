@@ -1372,6 +1372,8 @@ public class FacilioConstants {
 		public static final String TOOL_TYPES_NOTES = "toolTypesNotes";
 		public static final String BASE_ALARM_NOTES = "basealarmnotes";
 
+		public static final String BASE_ALARM_ATTACHMENTS = "basealarmattachments";
+
 		public static final String ASSET_DEPRECIATION = "assetdepreciation";
 		public static final String ASSET_DEPRECIATION_REL = "assetdepreciationRel";
 		public static final String ASSET_DEPRECIATION_CALCULATION = "assetdepreciationCalculation";

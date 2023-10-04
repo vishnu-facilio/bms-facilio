@@ -512,14 +512,20 @@ public class CommonConnectedSummaryAPI {
     }
 
     private static JSONObject getSummaryWidgetGroup(boolean isMobile) throws Exception {
+        JSONObject commentWidgetParam = new JSONObject();
+        commentWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.BASE_ALARM_NOTES);
+
+        JSONObject attachmentWidgetParam = new JSONObject();
+        attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.BASE_ALARM_ATTACHMENTS);
+
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, null, null)
+                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_27", 0, 0, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, null, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_27", 0, 0, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 
