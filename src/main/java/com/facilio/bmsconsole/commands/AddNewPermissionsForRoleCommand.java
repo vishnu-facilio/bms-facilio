@@ -5,21 +5,18 @@ import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.Permission;
+import com.facilio.bmsconsole.context.PermissionGroup;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class AddNewPermissionsForRoleCommand extends FacilioCommand {
 
@@ -28,7 +25,7 @@ public class AddNewPermissionsForRoleCommand extends FacilioCommand {
 		Long roleId = (Long) context.get(FacilioConstants.ContextNames.ROLE_ID);
 		boolean checkBool = (boolean)context.getOrDefault(FacilioConstants.ContextNames.CHECK_BOOL,false);
 		List<NewPermission> permissions = (List<NewPermission>) context.get(FacilioConstants.ContextNames.PERMISSIONS);
-		List<Map<String,Object>> newPermissionWithBool = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.BOOL_PERMISSIONS);
+		List<WebTabContext> newPermissionWithBool = (List<WebTabContext>) context.get(FacilioConstants.ContextNames.BOOL_PERMISSIONS);
 
 		if(checkBool && newPermissionWithBool != null){
 			permissions = setPermission(newPermissionWithBool,roleId);
@@ -58,25 +55,38 @@ public class AddNewPermissionsForRoleCommand extends FacilioCommand {
 		return false;
 	}
 
-	private List<NewPermission> setPermission(List<Map<String,Object>> newPermission, Long roleId) throws Exception {
+	private List<NewPermission> setPermission(List<WebTabContext> newPermission, Long roleId) throws Exception {
 
-		List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(newPermission,WebTabContext.class);
 		List<NewPermission> webTabPermission = new ArrayList<>();
 
-		for (WebTabContext tab : webTabs) {
+		for (WebTabContext tab : newPermission) {
 			Long tabId = tab.getId();
 			WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
 			WebTabContext webTab = tabBean.getWebTab(tabId);
 			long permissionVal = 0;
-			List<Permission> permissions = tab.getPermission();
+
 			if (webTab != null ) {
-				Map<String, Long> permissionVsValue = NewPermissionUtil.getPermissions(webTab.getType());
-				Set<String> permissionValuekeys = permissionVsValue.keySet();
-				for (Permission permission : permissions) {
-					String actionName = permission.getActionName();
-					if (StringUtils.isNotEmpty(actionName) && permissionValuekeys.contains(actionName)) {
-						if(permission.isEnabled()){
-							permissionVal += permissionVsValue.get(actionName);
+				List<Permission> permissionVsValues = NewPermissionUtil.getPermissions(webTab);
+				List<Permission> permissions = tab.getPermission();
+
+				if(CollectionUtils.isNotEmpty(permissionVsValues) && CollectionUtils.isNotEmpty(permissions)) {
+					for (Permission permission : permissions) {
+						for (Permission permissionVsValue : permissionVsValues) {
+							if (permissionVsValue instanceof PermissionGroup && permission.isEnabled()) {
+								for (Permission permissionGroupVsValue : ((PermissionGroup) permissionVsValue).getPermissions()) {
+									String actionName = permissionGroupVsValue.getActionName();
+									if (permission.getActionName().equals(actionName)) {
+										permissionVal += permissionGroupVsValue.getValue();
+										break;
+									}
+								}
+							} else {
+								String actionName = permissionVsValue.getActionName();
+								if (permission.getActionName().equals(actionName) && permission.isEnabled()) {
+									permissionVal += permissionVsValue.getValue();
+									break;
+								}
+							}
 						}
 					}
 				}

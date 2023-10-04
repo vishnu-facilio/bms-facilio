@@ -3554,4 +3554,6 @@
         <requestbody type="object">
         </requestbody>
     </request>
+
+    <request path="/api/v3/switchVariable/getSwitchVariable" method="GET"/>
 </config>
