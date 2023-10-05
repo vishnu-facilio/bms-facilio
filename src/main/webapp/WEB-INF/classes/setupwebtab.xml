@@ -326,6 +326,9 @@
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="deleteWidget">
         </action>
+        <action name="widgetDetail/get"
+                class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="fetchWidgetDetail">
+        </action>
     </package>
 
     <package name="PageTabsSetup" namespace="/api/v1/setup/customPage/tabs" extends="v2Api">
@@ -346,6 +349,9 @@
         </action>
         <action name="reorder"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="reorderPageTabs">
+        </action>
+        <action name="connectedAppTab/add"
+                class="com.facilio.bmsconsole.actions.PageTabsAction" method="addConnectedSummaryTabToPage">
         </action>
     </package>
 

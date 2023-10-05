@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -62,7 +63,10 @@ public class FetchPageTabsCommand extends FacilioCommand {
                         if (tabId <= 0) {
                             tabId = tabs.stream().filter(tab -> tab.getStatus() != null && tab.getStatus()).findFirst().orElse(tabs.get(0)).getId();
                         }
-                        context.put(FacilioConstants.CustomPage.TAB_ID, new ArrayList<>(Arrays.asList(tabId)));
+
+                        List<Long> tabIds = new ArrayList<>(Arrays.asList(tabId));
+                        tabIds.addAll(getConnectedTabIds(tabs));
+                        context.put(FacilioConstants.CustomPage.TAB_ID, tabIds);
                     }
 
                     context.put(FacilioConstants.CustomPage.PAGE_TABS, tabs);
@@ -73,6 +77,9 @@ public class FetchPageTabsCommand extends FacilioCommand {
         return false;
     }
 
+    private static List<Long> getConnectedTabIds(@NonNull List<PageTabContext> tabs) {
+        return tabs.stream().filter(tab->tab.getTabType() == PageTabContext.TabType.CONNECTED_TAB).map(PageTabContext::getId).collect(Collectors.toList());
+    }
     @SneakyThrows
     private boolean hasLicenseEnabled(int featureLicense) {
         AccountUtil.FeatureLicense license = AccountUtil.FeatureLicense.getFeatureLicense(featureLicense);

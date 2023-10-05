@@ -11,7 +11,7 @@ fieldListType:
       - approvalFlowId
 
     accessType: SORT
-    fetchSupplement: true
+    fetchSupplement: false
     fieldTypeNamesToFetch:
       - STRING
       - NUMBER

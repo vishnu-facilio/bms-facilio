@@ -7057,6 +7057,11 @@ public class TransactionChainFactory {
 		chain.addCommand(new ReorderPageComponentsCommand());
 		return chain;
 	}
+	public static FacilioChain getAddConnectedSummaryTabToPageChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddConnectedAppSummaryTabsCommand());
+		return chain;
+	}
 	public static FacilioChain getReorderPageTabsChain(){
 		FacilioChain chain = getDefaultChain();
 //		chain.addCommand(new ValidatePageTabsReorderCommand());

@@ -4360,6 +4360,7 @@ public class FacilioConstants {
 		public static final String CUSTOM_PAGE = "customPage";
 		public static final String CUSTOM_PAGES = "customPages";
 		public static final String PAGE_ID = "pageId";
+		public static final String WIDGET_NAME = "widgetName";
 		public static final String LAYOUT_ID = "layoutId";
 		public static final String LAYOUT_IDS = "layoutIds";
 		public static final String TAB = "tab";
