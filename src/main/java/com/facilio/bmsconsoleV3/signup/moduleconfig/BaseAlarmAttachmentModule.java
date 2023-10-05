@@ -9,10 +9,12 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.v3.context.Constants;
+import lombok.extern.log4j.Log4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j
 public class BaseAlarmAttachmentModule extends BaseModuleConfig {
     public BaseAlarmAttachmentModule() {
         setModuleName(FacilioConstants.ContextNames.BASE_ALARM_ATTACHMENTS);
@@ -20,18 +22,23 @@ public class BaseAlarmAttachmentModule extends BaseModuleConfig {
     @Override
     public void addData() throws Exception {
 
-        ModuleBean modBean = Constants.getModBean();
-        FacilioModule baseAlarmModule = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
+        try {
+            ModuleBean modBean = Constants.getModBean();
+            FacilioModule baseAlarmModule = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
 
-        List<FacilioModule> modules = new ArrayList<>();
+            List<FacilioModule> modules = new ArrayList<>();
 
-        FacilioModule attachmentsModule = addAttachmentsModule();
-        modules.add(attachmentsModule);
+            FacilioModule attachmentsModule = addAttachmentsModule();
+            modules.add(attachmentsModule);
 
-        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
-        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
-        addModuleChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE, baseAlarmModule.getName());
-        addModuleChain.execute();
+            FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+            addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+            addModuleChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE, baseAlarmModule.getName());
+            addModuleChain.execute();
+        }
+        catch (Exception e) {
+            LOGGER.error(e);
+        }
 
     }
 
