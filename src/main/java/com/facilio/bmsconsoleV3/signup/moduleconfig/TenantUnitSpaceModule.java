@@ -30,7 +30,6 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
     }
     @Override
     public void addData() throws Exception {
-        super.addData();
         addSystemButtons();
     }
     @Override

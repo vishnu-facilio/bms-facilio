@@ -38,7 +38,6 @@ public class VendorsModule extends BaseModuleConfig{
     }
     @Override
     public void addData() throws Exception{
-        super.addData();
         addSystemButtons();
     }
 

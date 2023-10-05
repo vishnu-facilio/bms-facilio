@@ -37,7 +37,6 @@ public class TenantModule extends BaseModuleConfig{
 
     @Override
     public void addData() throws Exception {
-        super.addData();
         addSystemButtons();
     }
 
@@ -254,6 +253,11 @@ public class TenantModule extends BaseModuleConfig{
 
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.TENANT_ACTIVITY);
+
+        JSONObject tenantSpaceViewParam = new JSONObject();
+        tenantSpaceViewParam.put("viewName", "TenantSpaceListView");
+        tenantSpaceViewParam.put("viewModuleName","basespace");
+
         return new ModulePages()
                 .addPage(pageName, pageDisplayName,"", null, isTemplate, isDefault, true)
                 .addWebLayout()
@@ -266,7 +270,7 @@ public class TenantModule extends BaseModuleConfig{
                 .widgetDone()
                 .sectionDone()
                 .addSection("occupyingunitsvaccatedunits",null,null)
-                .addWidget("occupyingunitsvaccatedunitswidget", null, PageWidget.WidgetType.TENANT_SPECIAL_WIDGET, "webtenantspecialwidget_6_9", 0, 0,null,null )
+                .addWidget("occupyingunitsvaccatedunitswidget", null, PageWidget.WidgetType.TENANT_SPECIAL_WIDGET, "webtenantspecialwidget_6_9", 0, 0,tenantSpaceViewParam,null )
                 .widgetDone()
                 .addWidget("tenantworkorders", "Workorders", PageWidget.WidgetType.TENANT_WORKORDERS, "webtenantworkorders_3_3", 9, 0,null,null )
                 .widgetDone()

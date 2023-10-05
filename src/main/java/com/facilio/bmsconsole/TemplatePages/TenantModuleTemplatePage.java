@@ -26,6 +26,11 @@ public class TenantModuleTemplatePage implements TemplatePageFactory{
     public PagesContext getTemplatePage(ApplicationContext app, FacilioModule module) throws Exception {
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.TENANT_ACTIVITY);
+
+        JSONObject tenantSpaceViewParam = new JSONObject();
+        tenantSpaceViewParam.put("viewName", "TenantSpaceListView");
+        tenantSpaceViewParam.put("viewModuleName","basespace");
+
         return new PagesContext(null, null, "", null, true, false, false)
                 .addWebLayout()
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
