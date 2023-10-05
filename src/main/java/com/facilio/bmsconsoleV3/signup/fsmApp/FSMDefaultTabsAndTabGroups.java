@@ -59,7 +59,7 @@ public class FSMDefaultTabsAndTabGroups {
                 new WebTabContext("Inventory Requests","inventoryrequest",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.INVENTORY_REQUEST)), null, 14,null,appId),
                 new WebTabContext("Transfer Requests","transferrequest",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.TRANSFER_REQUEST)), null, 63,null,appId),
                 new WebTabContext("Dashboard","homepage",WebTabContext.Type.HOMEPAGE,null,null,null,null,appId),
-                new WebTabContext("Reports","reports",WebTabContext.Type.REPORT,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,FacilioConstants.TimeOff.TIME_OFF,FacilioConstants.TimeSheet.TIME_SHEET,FacilioConstants.Trip.TRIP,FacilioConstants.ContextNames.EMPLOYEE)),"{\"type\": \"module_reports\"}",null,null,appId)
+                new WebTabContext("Reports","reports",WebTabContext.Type.REPORT,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,FacilioConstants.TimeOff.TIME_OFF,FacilioConstants.TimeSheet.TIME_SHEET,FacilioConstants.Trip.TRIP,FacilioConstants.ContextNames.EMPLOYEE,FacilioConstants.ContextNames.ATTENDANCE)),"{\"type\": \"module_reports\"}",null,null,appId)
 
         );
         for(WebTabContext webTab : tabs){

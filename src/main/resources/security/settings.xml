@@ -3727,4 +3727,47 @@
             <property name="plannedServiceId" type="number" mandatory="true"/>
         </requestbody>
     </request>
+    <request path="/api/fsm/serviceAppointment/dispatch" method="POST">
+        <requestbody type="object">
+            <property name="appointmentId" type="number"/>
+            <property name="fieldAgentId" type="number"/>
+            <property name="scheduledEndTime" type="number"/>
+            <property name="scheduledStartTime" type="number"/>
+            <property name="skipValidation" type="boolean"/>
+        </requestbody>
+    </request>
+    <request path="/api/fsm/resource/list" method="GET">
+        <urlparams>
+            <property name="orderBy" type="string"/>
+            <property name="orderType" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="startTime" type="number"/>
+            <property name="endTime" type="number"/>
+            <property name="boardId" type="number"/>
+            <property name="search" type="string"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/fsm/events/list" method="GET">
+        <urlparams>
+            <property name="resourceIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="startTime" type="number"/>
+            <property name="endTime" type="number"/>
+            <property name="boardId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/fsm/mapView/data" method="GET">
+        <urlparams>
+            <property name="startTime" type="number"/>
+            <property name="endTime" type="number"/>
+            <property name="boardId" type="number"/>
+            <property name="search" type="string"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
+
+
 </config>
