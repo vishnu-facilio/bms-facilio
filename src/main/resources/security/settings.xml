@@ -3766,6 +3766,13 @@
             <property name="filters" type="string"/>
         </urlparams>
     </request>
+    <request path="/api/v3/timeSheet/bulkStopTimeSheet" method="POST">
+        <requestbody type="object">
+            <property name="recordIds" type="array">
+                <items type="number"/>
+            </property>
+        </requestbody>
+    </request>
 
 
 </config>

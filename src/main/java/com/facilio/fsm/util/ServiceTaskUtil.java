@@ -321,7 +321,7 @@ public class ServiceTaskUtil {
         }
     }
 
-    public static void stopTimeSheet(Long timeSheetId) throws Exception {
+    public static void stopTimeSheet(List<Long> timeSheetIds) throws Exception {
 
 
         Long currentTime = DateTimeUtil.getCurrenTime();
@@ -331,7 +331,7 @@ public class ServiceTaskUtil {
         Collection<SupplementRecord> multiLookUpFields = new ArrayList<>();
         multiLookUpFields.add((MultiLookupField) fieldMap.get("serviceTasks"));
 
-        List<TimeSheetContext> timeSheets = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.TimeSheet.TIME_SHEET,Collections.singletonList(timeSheetId), TimeSheetContext.class,multiLookUpFields);
+        List<TimeSheetContext> timeSheets = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.TimeSheet.TIME_SHEET,timeSheetIds, TimeSheetContext.class,multiLookUpFields);
         if(CollectionUtils.isNotEmpty(timeSheets)){
             //closing Time Sheet
 

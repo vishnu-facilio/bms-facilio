@@ -49,6 +49,7 @@ public class fsmAction extends V3Action {
     private static final Logger LOGGER = Logger.getLogger(fsmAction.class.getName());
 
     private long recordId;
+    private List<Long> recordIds;
     private String identifier;
     private String resourceIds;
     private Long appointmentId;
@@ -342,7 +343,7 @@ public class fsmAction extends V3Action {
 
     public String updateTimeSheetStatus() throws Exception{
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(getRecordId()));
         switch (getIdentifier()){
             case FacilioConstants.TimeSheet.STOP_TIME_SHEET:
                 FacilioChain stopTimeSheetChain = FsmTransactionChainFactoryV3.stopTimeSheetChain();
@@ -428,6 +429,14 @@ public class fsmAction extends V3Action {
             }
             setData(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, serviceTaskList);
         }
+        return SUCCESS;
+    }
+
+    public String bulkStopTimeSheet() throws Exception {
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getRecordIds());
+        FacilioChain stopTimeSheetChain = FsmTransactionChainFactoryV3.stopTimeSheetChain();
+        stopTimeSheetChain.execute(context);
         return SUCCESS;
     }
 

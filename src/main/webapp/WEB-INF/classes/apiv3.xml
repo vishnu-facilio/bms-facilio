@@ -2058,6 +2058,12 @@
         </action>
 
     </package>
+    <package name="timeSheet" namespace="/api/v3/timeSheet" extends="v3Api">
+        <action name="bulkStopTimeSheet"
+                class="com.facilio.fsm.actions.fsmAction"
+                method="bulkStopTimeSheet">
+        </action>
+    </package>
     <package name="employeeWorkschedule" namespace="/api/v3/employee"
              extends="v3Api">
         <action name="workschedule"
