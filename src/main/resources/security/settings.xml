@@ -3556,4 +3556,5 @@
     </request>
 
     <request path="/api/v3/switchVariable/getSwitchVariable" method="GET"/>
+    <request path="/api/v3/unrelated/serviceRequest/fetchAll/emailConversationThreading" method="GET" />
 </config>
