@@ -242,7 +242,9 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
         List<PeopleContext> peopleModuleData = (List<PeopleContext>) PackageBeanUtil.getModuleData(null, facilioModule, PeopleContext.class, false);
         Map<String, PeopleContext> peopleMailVsPeople = new HashMap<>();
         if (CollectionUtils.isNotEmpty(peopleModuleData)) {
-            peopleMailVsPeople = peopleModuleData.stream().collect(Collectors.toMap(PeopleContext::getEmail, Function.identity()));
+            peopleMailVsPeople = peopleModuleData.stream()
+                    .filter(peopleContext -> StringUtils.isNotBlank(peopleContext.getEmail()))
+                    .collect(Collectors.toMap(PeopleContext::getEmail, Function.identity(), (mail1, mail2) ->  mail1 ));
         }
 
         com.facilio.accounts.dto.User superAdminUser = AccountUtil.getOrgBean().getSuperAdmin(orgId);

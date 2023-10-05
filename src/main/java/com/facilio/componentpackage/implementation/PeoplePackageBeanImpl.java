@@ -38,13 +38,14 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
 
     @Override
     public Map<Long, Long> fetchCustomComponentIdsToPackage() throws Exception {
+        // TODO - Add Deleted People also with sysDeleted = true
         Map<Long, Long> peopleIdMap = new HashMap<>();
         Map<Long, String> peopleIdVsPeopleMail = new HashMap<>();
 
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule peopleModule = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
         
-        List<V3PeopleContext> props = (List<V3PeopleContext>) PackageBeanUtil.getModuleData(null, peopleModule, V3PeopleContext.class, true);
+        List<V3PeopleContext> props = (List<V3PeopleContext>) PackageBeanUtil.getModuleData(null, peopleModule, V3PeopleContext.class, false);
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3PeopleContext peopleContext : props) {
                 peopleIdMap.put(peopleContext.getId(), -1L);
@@ -422,7 +423,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
 
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule peopleModule = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-        List<V3PeopleContext> props = (List<V3PeopleContext>) PackageBeanUtil.getModuleData(null, peopleModule, V3PeopleContext.class, true);
+        List<V3PeopleContext> props = (List<V3PeopleContext>) PackageBeanUtil.getModuleData(null, peopleModule, V3PeopleContext.class, false);
 
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3PeopleContext peopleContext : props) {
@@ -495,7 +496,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(moduleName);
 
-        List<T> moduleRecords = (List<T>) PackageBeanUtil.getModuleData(null, module, clazz, true);
+        List<T> moduleRecords = (List<T>) PackageBeanUtil.getModuleData(null, module, clazz, false);
 
         Map<Long, T> recordMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(moduleRecords)) {
