@@ -748,7 +748,7 @@ public class FieldUtil {
 				if(PropertyUtils.isReadable(record,field.getName())){
 					value = PropertyUtils.getProperty(record, field.getName());
 				}else{
-					LOGGER.info("No getter method available for field name "+field.getName());
+					LOGGER.debug("No getter method available for field name "+field.getName());
 				}
 			}
 			catch (Exception e){
@@ -766,7 +766,7 @@ public class FieldUtil {
 			if(PropertyUtils.isReadable(bean,name)){
 				value=PropertyUtils.getProperty(bean, name);
 			}else{
-				LOGGER.info("No getter method available for field name "+name);
+				LOGGER.debug("No getter method available for field name "+name);
 			}
 		}catch (Exception e){
 			LOGGER.info("Exception occured while calling getProperty method for field name "+name);
