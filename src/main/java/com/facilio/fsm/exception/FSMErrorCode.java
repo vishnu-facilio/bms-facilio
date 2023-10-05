@@ -65,7 +65,8 @@ public enum FSMErrorCode {
     TASK_RECORD_LOCKED(Severity.ERROR,"Cannot Edit/Delete Task","Cannot edit or delete Service Task after start work"),
     UPDATE_PREVENT(Severity.ERROR, "Not Permitted", "You are not permitted to edit these details."),
     NOT_ENOUGH_TASK_IN_SA(Severity.ERROR, "Not Enough Task", "Not Enough Tasks in Service Appointment"),
-    SO_ASSET_SPACE_DOESNT_MATCH_SPACE_FIELD(Severity.ERROR, "Space not matched","Asset Space doesn't match the selected Space");
+    SO_ASSET_SPACE_DOESNT_MATCH_SPACE_FIELD(Severity.ERROR, "Space not matched","Asset Space doesn't match the selected Space"),
+    PHOTO_MANDATORY(Severity.ERROR, "Photo Mandatory", "Please upload photos to complete the task");
 
     private final Severity severity;
     private final String title;

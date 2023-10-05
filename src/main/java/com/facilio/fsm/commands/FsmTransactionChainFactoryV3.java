@@ -73,6 +73,7 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain getTaskBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ServiceTaskStatusCheck());
+        c.addCommand(new PhotoMandatoryValidationCommand());
         //c.addCommand(new SetPlansCommandV3());
         c.addCommand(new ServiceTaskDurationUpdateCommandV3());
         return c;
