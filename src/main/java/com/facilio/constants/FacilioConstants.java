@@ -4549,4 +4549,7 @@ public class FacilioConstants {
 	public static final String UTILITY_DISPUTE_STATUS = "utilityDisputeStatus";
 
 
+    public static class Relationship {
+		public static final String INCLUDE_HIDDEN_RELATIONS = "includeHiddenRelations";
+	}
 }

@@ -12,6 +12,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationMappingContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
@@ -25,6 +26,7 @@ public class GetAllRelationsCountCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         String searchString = (String) context.get(FacilioConstants.ContextNames.SEARCH);
+        boolean includeHiddenRelations = (boolean) context.getOrDefault(FacilioConstants.Relationship.INCLUDE_HIDDEN_RELATIONS, false);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
@@ -52,6 +54,10 @@ public class GetAllRelationsCountCommand extends FacilioCommand {
 
         if (StringUtils.isNotEmpty(searchString)) {
             builder.andCondition(CriteriaAPI.getCondition(relationFields.get("name"), searchString, StringOperators.CONTAINS));
+        }
+
+        if (!includeHiddenRelations) {
+            builder.andCondition(CriteriaAPI.getCondition(relationFields.get("relationCategory"), String.valueOf(RelationContext.RelationCategory.HIDDEN.getIndex()), NumberOperators.NOT_EQUALS));
         }
 
         Map<String, Object> modulesMap = builder.fetchFirst();
