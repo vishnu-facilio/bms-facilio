@@ -528,7 +528,7 @@ public class APIModuleWidgets {
                 .addFlexibleWidgetConfig("flexiblewebfacilityfeatures_12","Facility Features - 12",12,PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("facilityslotinformation","Facility Slot Information",PageWidget.WidgetType.FACILITY_SLOT_INFORMATION)
-                .addFixedWidgetConfig("webfacilityslotinformation_49_12","Facility Slot Information - 49 - 12",49,12,PagesContext.PageLayoutType.WEB)
+                .addFlexibleWidgetConfig("flexiblewebfacilityslotinformation_49","Facility Slot Information - 49",49,PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("facilityspecialavailability","Facility Special Availability",PageWidget.WidgetType.FACILITY_SPECIAL_AVAILABILITY)
                 .addFlexibleWidgetConfig("flexiblewebfacilityspecialavalability_28","Facility Special Availability - 28",28,PagesContext.PageLayoutType.WEB)

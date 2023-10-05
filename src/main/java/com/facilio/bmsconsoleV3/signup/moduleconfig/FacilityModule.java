@@ -180,7 +180,7 @@ public class FacilityModule extends BaseModuleConfig{
                 .widgetDone()
                 .sectionDone()
                 .addSection("slotinformation", null, null)
-                .addWidget("slotinformation", "Slot Information", PageWidget.WidgetType.FACILITY_SLOT_INFORMATION, "webfacilityslotinformation_49_12", 0, 0, null, null)
+                .addWidget("slotinformation", "Slot Information", PageWidget.WidgetType.FACILITY_SLOT_INFORMATION, "flexiblewebfacilityslotinformation_49", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("specialavailability", null, null)
