@@ -229,7 +229,7 @@ public class EmployeeModule extends BaseModuleConfig{
                 .addTab("employeeSkill", "Skill",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("employeeSkill", null, null)
-                .addWidget("employeeSkillWidget", "Skill", PageWidget.WidgetType.SKILL, "flexibleSkill_48", 0, 0, null, null)
+                .addWidget("employeeSkillWidget", "Skills", PageWidget.WidgetType.SKILL, "flexibleSkill_48", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

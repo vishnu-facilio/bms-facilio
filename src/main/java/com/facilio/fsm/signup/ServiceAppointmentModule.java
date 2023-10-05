@@ -974,7 +974,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
                 .addTab("serviceAppointmentServiceTasks", "Service Task",PageTabContext.TabType.SINGLE_WIDGET_TAB,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceAppointmentServiceTasks", null, null)
-                .addWidget("serviceAppointmentServiceTasksWidget", "Service Task", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "webServiceAppointmentServiceTasks_50_12", 0, 0, null, null)
+                .addWidget("serviceAppointmentServiceTasksWidget", "Tasks", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "webServiceAppointmentServiceTasks_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

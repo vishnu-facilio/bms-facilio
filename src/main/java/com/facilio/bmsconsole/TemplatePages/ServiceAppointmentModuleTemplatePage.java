@@ -42,10 +42,10 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
                 .tabDone()
 
 
-                .addTab("serviceAppointmentServiceTasks", "Service Tasks",  PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("serviceAppointmentServiceTasks", "Service Task",  PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceAppointmentServiceTasks", null, null)
-                .addWidget("serviceAppointmentServiceTasksWidget", "Service Tasks", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "webServiceAppointmentServiceTasks_50_12", 0, 0, null, null)
+                .addWidget("serviceAppointmentServiceTasksWidget", "Tasks", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "webServiceAppointmentServiceTasks_50_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

@@ -31,7 +31,7 @@ public class TerritoryModuleTemplatePage implements TemplatePageFactory {
                 .addTab("territorySummary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("territorySummaryFields", null, null)
-                .addWidget("territorySummaryFieldsWidget", "Territory", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.Territory.TERRITORY))
+                .addWidget("territorySummaryFieldsWidget", "Territory Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.Territory.TERRITORY))
                 .widgetDone()
                 .sectionDone()
                 .addSection("territoryGeography", null, null)
