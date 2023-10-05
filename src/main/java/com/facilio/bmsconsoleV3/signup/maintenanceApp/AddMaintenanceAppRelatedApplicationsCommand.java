@@ -15,7 +15,7 @@ public class AddMaintenanceAppRelatedApplicationsCommand extends FacilioCommand 
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        List<String> maintenanceAppRelatedApplications = Arrays.asList(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP,FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP,FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP,FacilioConstants.ApplicationLinkNames.DATA_LOADER_APP,FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP,FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP,FacilioConstants.ApplicationLinkNames.FSM_APP);
+        List<String> maintenanceAppRelatedApplications = Arrays.asList(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP,FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP,FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP,FacilioConstants.ApplicationLinkNames.DATA_LOADER_APP,FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP,FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
 
         long maintenanceAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         List<ApplicationRelatedAppsContext> relatedApps = new ArrayList<>();
