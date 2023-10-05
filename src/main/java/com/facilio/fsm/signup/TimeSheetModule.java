@@ -460,6 +460,18 @@ public class TimeSheetModule extends BaseModuleConfig {
         stopTimeSheet.setCriteria(criteria);
         SystemButtonApi.addSystemButton(FacilioConstants.TimeSheet.TIME_SHEET,stopTimeSheet);
 
+        SystemButtonRuleContext stopTimeSheetButton = new SystemButtonRuleContext();
+        stopTimeSheetButton.setName("Stop Time Sheet");
+        stopTimeSheetButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        stopTimeSheetButton.setIdentifier(FacilioConstants.TimeSheet.STOP_TIME_SHEET);
+        stopTimeSheetButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        stopTimeSheetButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        stopTimeSheetButton.setPermissionRequired(true);
+        Criteria timeCriteria = new Criteria();
+        timeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.ENDTIME),CommonOperators.IS_EMPTY));
+        stopTimeSheetButton.setCriteria(timeCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.TimeSheet.TIME_SHEET,stopTimeSheetButton);
+
     }
 
 }

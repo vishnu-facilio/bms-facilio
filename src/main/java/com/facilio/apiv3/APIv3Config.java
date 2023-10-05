@@ -220,6 +220,29 @@ import com.facilio.faults.newreadingalarm.HandleV3AlarmListLookupCommand;
 import com.facilio.faults.newreadingalarm.LoadSupplementsForFaultsCommand;
 import com.facilio.faults.sensoralarm.LoadSupplementsForSensorAlarmCommand;
 import com.facilio.faults.AfterDeleteAlarmCommand;
+import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
+import com.facilio.fsm.commands.LoadServiceTaskLookupCommandV3;
+import com.facilio.fsm.commands.LoadWorkTypeLineItemsCommandV3;
+import com.facilio.fsm.commands.LoadWorkTypeLookupsCommandV3;
+import com.facilio.fsm.commands.actuals.*;
+import com.facilio.fsm.commands.people.FetchLocationHistorySupplements;
+import com.facilio.fsm.commands.people.FetchPeopleSkillLevelSupplementsCommand;
+import com.facilio.fsm.commands.people.UpdatePeopleLocationFromTripCommand;
+import com.facilio.fsm.commands.people.UpdatePeopleLocationHistoryCommand;
+import com.facilio.fsm.commands.plans.*;
+import com.facilio.fsm.commands.serviceAppointment.AddTimeSheetServiceAppointmentActivity;
+import com.facilio.fsm.commands.serviceAppointment.AddTripServiceAppointmentActivity;
+import com.facilio.fsm.commands.serviceAppointment.FetchServiceAppointmentSupplementsCommand;
+import com.facilio.fsm.commands.serviceOrders.AddOrUpdateServiceOrderCostCommand;
+import com.facilio.fsm.commands.serviceOrders.LoadSupplementsForSOCommand;
+import com.facilio.fsm.commands.serviceOrders.SetServiceTaskCommandV3;
+import com.facilio.fsm.commands.serviceTasks.DeleteSATaskRelCommand;
+import com.facilio.fsm.commands.serviceTasks.LoadTaskPlansCommandV3;
+import com.facilio.fsm.commands.timeOff.FetchTimeOffSupplementsCommand;
+import com.facilio.fsm.commands.timeSheet.CheckRecordLockForTimeSheetCommand;
+import com.facilio.fsm.commands.timeSheet.FetchTimeSheetSupplementsCommand;
+import com.facilio.fsm.commands.trip.FetchTripSupplementsCommand;
+import com.facilio.fsm.context.*;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
 import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
@@ -4044,4 +4067,371 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
+    @Module("workType")
+    public static Supplier<V3Config> getWorkType() {
+        return () -> new V3Config(WorkTypeContext.class, new ModuleCustomFieldCount15())
+                .create()
+                .update()
+                .list()
+                .beforeFetch(new LoadWorkTypeLookupsCommandV3())
+                .summary()
+                .afterFetch(new LoadWorkTypeLineItemsCommandV3())
+                .delete()
+                .build();
+    }
+    @Module("serviceSkill")
+    public static Supplier<V3Config> getServiceSkill() {
+        return () -> new V3Config(ServiceSkillsContext.class, new ModuleCustomFieldCount15())
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module("serviceTask")
+    public static Supplier<V3Config> getServiceTask() {
+        return () -> new V3Config(ServiceTaskContext.class, new ModuleCustomFieldCount15())
+                .create()
+                .beforeSave(new FsmTransactionChainFactoryV3().getTaskBeforeSaveChain())
+                .afterSave(new FsmTransactionChainFactoryV3().getTaskAfterSaveChain())
+                .update()
+                .beforeSave(new FsmTransactionChainFactoryV3().getTaskBeforeUpdateChain())
+                .afterSave(new FsmTransactionChainFactoryV3().getTaskAfterUpdateChain())
+                .list()
+                .beforeFetch(new LoadServiceTaskLookupCommandV3())
+                .summary()
+                .beforeFetch(new LoadServiceTaskLookupCommandV3())
+                .afterFetch(new LoadTaskPlansCommandV3())
+                .delete()
+                .beforeDelete(new DeleteSATaskRelCommand())
+                .afterDelete(FsmTransactionChainFactoryV3.getTaskAfterDeleteChain())
+                .build();
+    }
+    @Module("serviceOrder")
+    public static Supplier<V3Config> getServiceOrder() {
+        return () -> new V3Config(ServiceOrderContext.class, new ModuleCustomFieldCount15())
+                .create()
+                .beforeSave(FsmTransactionChainFactoryV3.getSOBeforeSaveCreateChain())
+                .afterSave(FsmTransactionChainFactoryV3.afterSOCreateChain())
+                .afterTransaction(new AddActivitiesCommandV3(FacilioConstants.ContextNames.SERVICE_ORDER_ACTIVITY))
+                .update()
+                .beforeSave(FsmTransactionChainFactoryV3.getSOBeforeUpdateChain())
+                .afterSave(FsmTransactionChainFactoryV3.afterSOUpdateChain())
+                .afterTransaction(new AddActivitiesCommandV3())
+                .list()
+                .beforeFetch(new LoadSupplementsForSOCommand())
+                .summary()
+                .beforeFetch(new LoadSupplementsForSOCommand())
+                .afterFetch(new SetServiceTaskCommandV3())
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS)
+    public static Supplier<V3Config> getServiceOrderPlannedItems() {
+        return () -> new V3Config(ServiceOrderPlannedItemsContext.class, null)
+                .create()
+                .beforeSave(new SetServiceOrderPlannedItemsCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand(),new SAEstimatedItemCostAfterCreateCommand())
+                .update()
+                .beforeSave(FsmTransactionChainFactoryV3.getSoPlannedItemsBeforeUpdateChain())
+                .afterSave(FsmTransactionChainFactoryV3.getSoPlannedItemsAfterUpdateChain())
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, "serviceTask")
+                .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, "serviceTask")
+                .delete()
+                .beforeDelete(new ValidateSoPlannedItemsBeforeDeleteCommand())
+                .afterDelete(new AddOrUpdateServiceOrderCostCommand(),new SAEstimatedItemCostAfterDeleteCommand())
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS)
+    public static Supplier<V3Config> getServiceOrderPlannedTools() {
+        return () -> new V3Config(ServiceOrderPlannedToolsContext.class, null)
+                .create()
+                .beforeSave(new SetServiceOrderPlannedToolsCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand(),new SAEstimatedToolCostAfterCreateCommand())
+                .update()
+                .beforeSave(new SetServiceOrderPlannedToolsCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand(),new SAEstimatedToolCostAfterUpdateCommand())
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, "toolType")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, "serviceTask")
+                .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, "toolType")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, "serviceTask")
+                .delete()
+                .beforeDelete(new ServiceOrderPlannedToolsCostBeforeDelete())
+                .afterDelete(new AddOrUpdateServiceOrderCostCommand(), new SAEstimatedToolCostAfterDeleteCommand())
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES)
+    public static Supplier<V3Config> getServiceOrderPlannedServices() {
+        return () -> new V3Config(ServiceOrderPlannedServicesContext.class, null)
+                .create()
+                .beforeSave(new SetServiceOrderPlannedServicesCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand(), new SAEstimatedServiceCostAfterCreateCommand())
+                .update()
+                .beforeSave(new SetServiceOrderPlannedServicesCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand(), new SAEstimatedServiceCostAfterUpdateCommand())
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES, "service")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES, "serviceTask")
+                .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES, "service")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES, "serviceTask")
+                .delete()
+                .beforeDelete(new ServiceOrderPlannedServiceCostBeforeDelete())
+                .afterDelete(new AddOrUpdateServiceOrderCostCommand(), new SAEstimatedServiceCostAfterDeleteCommand())
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION)
+    public static Supplier<V3Config> getServiceInventoryReservation() {
+        return () -> new V3Config(ServiceInventoryReservationContext.class, null)
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "serviceOrder")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "inventoryRequest")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "requestedBy")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "serviceOrderPlannedItem")
+                .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "serviceOrder")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "inventoryRequest")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "requestedBy")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, "serviceOrderPlannedItem")
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS)
+    public static Supplier<V3Config> getServiceOrderItems() {
+        return () -> new V3Config(ServiceOrderItemsContext.class, null)
+                .create()
+                .beforeSave(new SetServiceOrderItemsCommand())
+                .afterSave(FsmTransactionChainFactoryV3.getServiceOrderItemsAfterSaveChain())
+                .update()
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, "item")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS,"rotatingAsset")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, "serviceTask")
+                .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, "item")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS,"rotatingAsset")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, "serviceTask")
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS)
+    public static Supplier<V3Config> getServiceOrderTools() {
+        return () -> new V3Config(ServiceOrderToolsContext.class, null)
+                .create()
+                .beforeSave(new SetServiceOrderToolsCommand())
+                .afterSave(FsmTransactionChainFactoryV3.getServiceOrderToolsAfterSaveChain())
+                .update()
+                .beforeSave(new SetServiceOrderToolsCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand(), new SAToolCostAfterUpdateCommand())
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS, "tool")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS, "toolType")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS, "serviceTask")
+                .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS, "tool")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS, "storeRoom")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS, "toolType")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TOOLS, "serviceTask")
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES)
+    public static Supplier<V3Config> getServiceOrderServices() {
+        return () -> new V3Config(ServiceOrderServiceContext.class, null)
+                .create()
+                .beforeSave(new SetServiceOrderServiceCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand(),new SAServiceCostAfterCreateCommand())
+                .update()
+                .beforeSave(new SetServiceOrderServiceCommand())
+                .afterSave(new AddOrUpdateServiceOrderCostCommand(),new SAServiceCostAfterUpdateCommand())
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES, "service")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES, "serviceTask")
+                .summary()
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES, "service")
+                .fetchSupplement(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES, "serviceTask")
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.TimeOff.TIME_OFF)
+    public static Supplier<V3Config> getTimeOff(){
+        return () -> new V3Config(TimeOffContext.class,new ModuleCustomFieldCount30_BS2())
+                .create()
+                .beforeSave(FsmTransactionChainFactoryV3.getTimeOffBeforeCreateChain())
+                .afterSave(new ConstructAddCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeOff.TIME_OFF_ACTIVITY))
+                .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.TimeOff.TIME_OFF_ACTIVITY))
+                .list()
+                .beforeFetch(new FetchTimeOffSupplementsCommand())
+                .summary()
+                .beforeFetch(new FetchTimeOffSupplementsCommand())
+                .pickList()
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.LocationHistory.LOCATION_HISTORY)
+    public static Supplier<V3Config> getLocationHistory(){
+        return () -> new V3Config(V3LocationHistoryContext.class,null)
+                .create()
+                .afterSave(new UpdatePeopleLocationHistoryCommand())
+                .list()
+                .beforeFetch(new FetchLocationHistorySupplements())
+                .build();
+    }
+    @Module(FacilioConstants.Territory.TERRITORY)
+    public static Supplier<V3Config> getTerritory(){
+        return () -> new V3Config(TerritoryContext.class,new ModuleCustomFieldCount30_BS2())
+                .create()
+                .beforeSave(new SetLocalIdCommandV3())
+                .afterSave(new ConstructAddCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.Territory.TERRITORY_ACTIVITY))
+                .update()
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.Territory.TERRITORY_ACTIVITY))
+                .list()
+                .summary()
+                .pickList()
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)
+    public static Supplier<V3Config> getServiceAppointment(){
+        return () -> new V3Config(ServiceAppointmentContext.class,new ModuleCustomFieldCount30_BS2())
+                .create()
+                .beforeSave(FsmTransactionChainFactoryV3.getServiceAppointmentBeforeCreateChain())
+                .afterSave(FsmTransactionChainFactoryV3.getServiceAppointmentAfterCreateChain())
+                .afterTransaction(new AddActivitiesCommandV3(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY))
+                .update()
+                .beforeSave(FsmTransactionChainFactoryV3.getServiceAppointmentBeforeUpdateChain())
+                .afterSave(FsmTransactionChainFactoryV3.getServiceAppointmentAfterUpdateChain())
+                .list()
+                .beforeFetch(new FetchServiceAppointmentSupplementsCommand())
+                .summary()
+                .beforeFetch(new FetchServiceAppointmentSupplementsCommand())
+                .pickList()
+                .delete()
+                .beforeDelete(FsmTransactionChainFactoryV3.getServiceAppointmentBeforeDeleteChain())
+                .afterDelete(FsmTransactionChainFactoryV3.getServiceAppointmentAfterDeleteChain())
+                .build();
+    }
+    @Module(FacilioConstants.PeopleSkillLevel.PEOPLE_SKILL_LEVEL)
+    public static Supplier<V3Config> getPeopleSkillLevel() {
+        return () -> new V3Config(PeopleSkillLevelContext.class, null)
+                .create()
+                .beforeSave(FsmTransactionChainFactoryV3.getPeopleSkillLevelBeforeSaveCommand())
+                .list()
+                .beforeFetch(new FetchPeopleSkillLevelSupplementsCommand())
+                .summary()
+                .beforeFetch(new FetchPeopleSkillLevelSupplementsCommand())
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.TimeSheet.TIME_SHEET)
+    public static Supplier<V3Config> getTimeSheet(){
+        return () -> new V3Config(TimeSheetContext.class,new ModuleCustomFieldCount30_BS2())
+                .create()
+                .beforeSave(FsmTransactionChainFactoryV3.getTimeSheetBeforeCreateChain())
+                .afterSave(FsmTransactionChainFactoryV3.getTimeSheetAfterCreateChain())
+                .afterTransaction(FsmTransactionChainFactoryV3.getTimeSheetAfterTransactionChain())
+                .update()
+                .beforeSave(FsmTransactionChainFactoryV3.getTimeSheetBeforeUpdateChain())
+                .afterSave(FsmTransactionChainFactoryV3.getTimeSheetAfterUpdateChain())
+                .afterTransaction(FsmTransactionChainFactoryV3.getTimeSheetAfterTransactionChain())
+                .list()
+                .beforeFetch(new FetchTimeSheetSupplementsCommand())
+                .summary()
+                .beforeFetch(new FetchTimeSheetSupplementsCommand())
+                .pickList()
+                .delete()
+                .beforeDelete(new CheckRecordLockForTimeSheetCommand())
+                .afterDelete(new AddTimeSheetServiceAppointmentActivity())
+                .build();
+    }
+    @Module(FacilioConstants.Trip.TRIP)
+    public static Supplier<V3Config> getTrip(){
+        return () -> new V3Config(TripContext.class,null)
+                .create()
+                .beforeSave(FsmTransactionChainFactoryV3.getTripBeforeCreateChain())
+                .afterSave(new ConstructAddCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.Trip.TRIP_ACTIVITY))
+                .update()
+                .beforeSave(FsmTransactionChainFactoryV3.getTripBeforeUpdateChain())
+                .afterSave(new ConstructUpdateCustomActivityCommandV3())
+                .afterTransaction(new AddActivitiesCommand(FacilioConstants.Trip.TRIP_ACTIVITY))
+                .list()
+                .beforeFetch(new FetchTripSupplementsCommand())
+                .summary()
+                .beforeFetch(new FetchTripSupplementsCommand())
+                .delete()
+                .beforeDelete(FsmTransactionChainFactoryV3.getTripBeforeDeleteChain())
+                .afterDelete(new AddTripServiceAppointmentActivity())
+                .build();
+    }
+
+    @Module(FacilioConstants.Trip.TRIP_LOCATION_HISTORY)
+    public static Supplier<V3Config> getTripLocationHistory(){
+        return () -> new V3Config(TripContext.class,null)
+                .create()
+                .afterSave(new UpdatePeopleLocationFromTripCommand())
+                .update()
+                .list()
+                .beforeFetch(new FetchLocationHistorySupplements())
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.Priority.PRIORITY)
+    public static Supplier<V3Config> getPriority(){
+        return () -> new V3Config(PriorityContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
+    @Module(FacilioConstants.Trip.TRIP_STATUS)
+    public static Supplier<V3Config> getTripStatus(){
+        return () -> new V3Config(TripStatusContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+    @Module(FacilioConstants.TimeSheet.TIME_SHEET_STATUS)
+    public static Supplier<V3Config> getTimeSheetStatus(){
+        return () -> new V3Config(TimeSheetStatusContext.class,null)
+                .create()
+                .update()
+                .list()
+                .summary()
+                .delete()
+                .build();
+    }
+
 }

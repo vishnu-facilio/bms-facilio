@@ -167,7 +167,7 @@ public class FacilioContextListener implements ServletContextListener {
 			BeanFactory.initBeans();
 			FacilioScheduler.initScheduler();
 			FacilioInstantJobScheduler.init();
-			ChainUtil.initRESTAPIHandler("com\\.facilio");
+			ChainUtil.initRESTAPIHandler("com\\.facilio\\.apiv3");
 			ModuleWidgetsUtil.initWidgetConfigHandler();
 			WidgetConfigChain.initWidgetConfigHandler();
 			WeatherServiceType.init();
