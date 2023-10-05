@@ -9,6 +9,7 @@ import com.facilio.fields.commands.*;
 import com.facilio.fields.context.FieldListType;
 import com.facilio.fields.fieldBuilder.FieldConfig;
 import com.facilio.fields.fieldBuilder.FieldListHandler;
+import com.facilio.fields.fieldBuilder.ViewFieldListHandler;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
@@ -17,6 +18,7 @@ import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.Reflections;
@@ -52,6 +54,60 @@ public class FieldsConfigChain {
         return FacilioChain.getNonTransactionChain();
     }
 
+    public static FacilioChain getViewFieldsConfigChain(String moduleName) throws Exception {
+        FacilioModule module = getModule(moduleName);
+        FieldConfig fieldConfig = getFieldHandlerForModule(module);
+        Map<String, Object> configMap = FIELDS_CONFIG_MAP.get(FieldListType.VIEW_FIELDS.getName());
+
+        ViewFieldListHandler fieldHandler = null;
+        List<String> excludeFields = null;
+        Map<AccountUtil.FeatureLicense, List<String>> licenseBasedFieldsMap = null;
+
+        if(fieldConfig != null) {
+            fieldHandler = fieldConfig.getViewFieldListHandler();
+            excludeFields = fieldConfig.getExcludeFields();
+            licenseBasedFieldsMap = fieldConfig.getLicenseBasedFieldsMap();
+        }
+
+        List<String> fieldsToAddList = null;
+        List<String> fieldsToSkipList = null;
+        List<FieldType> fieldTypesToSkip = null;
+        List<String> fixedFields = null;
+        List<String> fixedSelectableFields = null;
+        Map<String, JSONObject> customization = null;
+        Command afterFetchCommand = null;
+
+        if (fieldHandler != null) {
+            fieldsToSkipList = fieldHandler.getFieldsToSkip();
+            fieldsToAddList = fieldHandler.getFieldsToAdd();
+            fieldTypesToSkip = fieldHandler.getFieldTypesToSkip();
+            fixedFields = fieldHandler.getFixedFields();
+            fixedSelectableFields = fieldHandler.getFixedSelectableFields();
+            customization = fieldHandler.getCustomization();
+            afterFetchCommand = fieldHandler.getAfterFetchCommand();
+        }
+
+        FacilioChain chain = getDefaultChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.FieldsConfig.FIXED_FIELD_NAMES, fixedFields);
+        context.put(FacilioConstants.FieldsConfig.FIXED_SELECTABLE_FIELD_NAMES, fixedSelectableFields);
+        context.put(FacilioConstants.FieldsConfig.CUSTOMIZATION, customization);
+
+        // add fields to "skip  or add" to context
+        putAddAndSkipFieldsInContext(chain,excludeFields, licenseBasedFieldsMap, fieldsToAddList, fieldsToSkipList, fieldTypesToSkip, configMap);
+        chain.addCommand(new GetFieldsListCommand());
+        chain.addCommand(new FilterFieldsByFieldType());
+        chain.addCommand(new FilterFieldsByAccessType());
+        chain.addCommand(new FilterFieldsBasedOnAddOrSkipFields());
+        chain.addCommand(new RemoveLicenseDisabledFields());
+        chain.addCommand(new FilterFieldsByPermissionCommand());
+        addIfNotNull(chain, afterFetchCommand);
+        chain.addCommand(new GetOneLevelModuleFieldsCommand());
+        addIfNotNull(chain, FieldsConfigChainUtil.getChainFromString((List<String>) configMap.get(FacilioConstants.FieldsConfig.FIELD_RESPONSE_CHAIN)));
+
+        return chain;
+    }
+
     public static FacilioChain getFieldsConfigChain(String moduleName, FieldListType fieldListType) throws Exception {
         FacilioModule module = getModule(moduleName);
         FieldConfig fieldConfig = getFieldHandlerForModule(module);
@@ -68,20 +124,18 @@ public class FieldsConfigChain {
         List<String> fieldsToAddList = null;
         List<String> fieldsToSkipList = null;
         List<FieldType> fieldTypesToSkip = null;
-        Map<String, List<String>> typeSpecificFieldsMap = null;
         Command afterFetchCommand = null;
 
         if (fieldHandler != null) {
             fieldsToSkipList = fieldHandler.getFieldsToSkip();
             fieldsToAddList = fieldHandler.getFieldsToAdd();
-            typeSpecificFieldsMap = fieldHandler.getConfigSpecificFields();
             fieldTypesToSkip = fieldHandler.getFieldTypesToSkip();
             afterFetchCommand = fieldHandler.getAfterFetchCommand();
         }
 
         FacilioChain chain = getDefaultChain();
         // add fields to "skip  or add" to context
-        putAddAndSkipFieldsInContext(chain,excludeFields, licenseBasedFieldsMap, fieldsToAddList, fieldsToSkipList, typeSpecificFieldsMap, fieldTypesToSkip, configMap);
+        putAddAndSkipFieldsInContext(chain,excludeFields, licenseBasedFieldsMap, fieldsToAddList, fieldsToSkipList, fieldTypesToSkip, configMap);
         chain.addCommand(new GetFieldsListCommand());
         chain.addCommand(new FilterFieldsByFieldType());
         chain.addCommand(new FilterFieldsByAccessType());
@@ -119,7 +173,7 @@ public class FieldsConfigChain {
     }
 
     private static void putAddAndSkipFieldsInContext(FacilioChain chain, List<String> excludeFields, Map<AccountUtil.FeatureLicense, List<String>> licenseBasedFieldsMap, List<String> fieldsToAddList, List<String> fieldsToSkipList,
-                                                     Map<String,List<String>> typeSpecificFieldsMap, List<FieldType> fieldTypesToSkip, Map<String, Object> configMap) {
+                                                     List<FieldType> fieldTypesToSkip, Map<String, Object> configMap) {
         FacilioContext context = chain.getContext();
         List<FieldType> fieldTypesToFetch = (List<FieldType>) configMap.get(FacilioConstants.FieldsConfig.FIELD_TYPES_TO_FETCH);
         FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(fieldTypesToFetch), "fieldTypes to fetch can't be empty");
@@ -137,6 +191,7 @@ public class FieldsConfigChain {
         List<String> skipConfigFields = (List<String>) configMap.get(FacilioConstants.FieldsConfig.SKIP_CONFIG_FIELDS);
         if (CollectionUtils.isNotEmpty(skipConfigFields)) {
             if (CollectionUtils.isNotEmpty(excludeFields)) {
+                excludeFields = new ArrayList<>(excludeFields);
                 excludeFields.addAll(skipConfigFields);
             } else {
                 excludeFields = skipConfigFields;
@@ -144,6 +199,7 @@ public class FieldsConfigChain {
         }
         if (CollectionUtils.isNotEmpty(fieldsToAddList)) {
             if (CollectionUtils.isNotEmpty(excludeFields)) {
+                fieldsToAddList = new ArrayList<>(fieldsToAddList);
                 fieldsToAddList.removeAll(excludeFields);
             }
             context.put(FacilioConstants.FieldsConfig.IS_ADD_FIELD, true);
@@ -160,10 +216,6 @@ public class FieldsConfigChain {
 
         if (MapUtils.isNotEmpty(licenseBasedFieldsMap)) {
             context.put(FacilioConstants.FieldsConfig.LICENSE_BASED_FIELDS_MAP, licenseBasedFieldsMap);
-        }
-
-        if (MapUtils.isNotEmpty(typeSpecificFieldsMap)) {
-            context.put(FacilioConstants.FieldsConfig.TYPE_SPECIFIC_FIELDS_MAP, typeSpecificFieldsMap);
         }
 
         boolean fetchSupplements = (boolean) configMap.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);

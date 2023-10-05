@@ -1,6 +1,7 @@
 package com.facilio.fields.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.filters.FilterFieldContext;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -11,11 +12,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ViewFieldsResponseCommand extends FacilioCommand {
     @Override
@@ -27,18 +27,15 @@ public class ViewFieldsResponseCommand extends FacilioCommand {
         List<FacilioField> fieldsList = (List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS);
         fieldsList = CollectionUtils.isNotEmpty(fieldsList) ? fieldsList : new ArrayList<>();
 
-        Map<String, List<String>> typeSpecificFieldsMap = (Map<String, List<String>>) context.get(FacilioConstants.FieldsConfig.TYPE_SPECIFIC_FIELDS_MAP);
-
         // siteId Field
         if (Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER, FacilioConstants.ContextNames.TENANT, FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.SERVICE_REQUEST, FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(module.getName())) {
             fieldsList.add(FieldFactory.getSiteIdField());
         }
 
-        List<String> fixedFieldNames = null, fixedSelectableFieldNames = null;
-        if(typeSpecificFieldsMap != null) {
-            fixedFieldNames = typeSpecificFieldsMap.get(FacilioConstants.FieldsConfig.FIXED_FIELD_NAMES);
-            fixedSelectableFieldNames = typeSpecificFieldsMap.get(FacilioConstants.FieldsConfig.FIXED_SELECTABLE_FIELD_NAMES);
-        }
+
+        List<String> fixedFieldNames = (List<String>) context.get(FacilioConstants.FieldsConfig.FIXED_FIELD_NAMES);
+        List<String> fixedSelectableFieldNames = (List<String>) context.get(FacilioConstants.FieldsConfig.FIXED_SELECTABLE_FIELD_NAMES);
+        Map<String, JSONObject> customization = (Map<String, JSONObject>) context.get(FacilioConstants.FieldsConfig.CUSTOMIZATION);
 
         // localId Field
         if (ModuleLocalIdUtil.MODULES_WITH_LOCAL_ID.contains(moduleName)) {
@@ -46,15 +43,24 @@ public class ViewFieldsResponseCommand extends FacilioCommand {
         }
 
         List<ModuleViewField> viewFieldList = new ArrayList<>();
+        boolean isCustomization = MapUtils.isNotEmpty(customization);
+        boolean hasFixedFields = CollectionUtils.isNotEmpty(fixedFieldNames);
+        boolean hasFixedSelectableFields = CollectionUtils.isNotEmpty(fixedSelectableFieldNames);
         for (FacilioField field : fieldsList) {
             ModuleViewField viewField = new ModuleViewField(field);
-            if (CollectionUtils.isNotEmpty(fixedFieldNames) && fixedFieldNames.contains(field.getName())) {
+            if ( hasFixedFields && fixedFieldNames.contains(field.getName())) {
                 viewField.setFixed(true);
-            } else if (CollectionUtils.isNotEmpty(fixedSelectableFieldNames) && fixedSelectableFieldNames.contains(field.getName())) {
+            } else if (hasFixedSelectableFields && fixedSelectableFieldNames.contains(field.getName())) {
                 viewField.setFixedSelectable(true);
+            }
+            if(isCustomization && customization.containsKey(viewField.getName())){
+                viewField.setCustomization(customization.get(viewField.getName()).toJSONString());
             }
             viewFieldList.add(viewField);
         }
+
+        viewFieldList.sort(Comparator.comparing(ModuleViewField::isFixed).reversed()
+                .thenComparing(ModuleViewField::getDisplayName));
 
         context.put(FacilioConstants.ContextNames.FIELDS, viewFieldList);
 

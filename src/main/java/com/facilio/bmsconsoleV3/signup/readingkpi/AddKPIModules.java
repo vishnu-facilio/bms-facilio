@@ -59,9 +59,8 @@ public class AddKPIModules extends SignUpData {
         assetCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY));
         fields.add(assetCategory);
 
-        LookupField spaceCategory = FieldFactory.getDefaultField("spaceCategory", "Space Category", "SPACE_CATEGORY", FieldType.LOOKUP);
-        spaceCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY));
-        fields.add(spaceCategory);
+        NumberField categoryId = FieldFactory.getDefaultField("categoryId", "Category", "CATEGORY_ID", FieldType.NUMBER);
+        fields.add(categoryId);
 
         NumberField kpiCategoryId = FieldFactory.getDefaultField("kpiCategory", "KPI Category ID", "KPI_CATEGORY_ID", FieldType.NUMBER);
         fields.add(kpiCategoryId);
@@ -92,7 +91,7 @@ public class AddKPIModules extends SignUpData {
         fields.add(status);
 
         SystemEnumField resourceType = FieldFactory.getDefaultField("resourceType", "Resource Type", "RESOURCE_TYPE", FieldType.SYSTEM_ENUM);
-        resourceType.setEnumName("MultiResourceAssignmentType");
+        resourceType.setEnumName("ConnectedResourceAssignmentType");
         fields.add(resourceType);
 
         NumberField sysCreatedTime = FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.NUMBER);

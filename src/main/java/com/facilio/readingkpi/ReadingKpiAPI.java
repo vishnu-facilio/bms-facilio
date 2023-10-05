@@ -1,16 +1,17 @@
 package com.facilio.readingkpi;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.connected.CommonConnectedUtil;
+import com.facilio.connected.IConnectedRule;
+import com.facilio.connected.ResourceCategory;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -22,11 +23,9 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.*;
-import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingkpi.context.*;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
-import com.facilio.readingkpi.context.*;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.ScriptUtil;
 import com.facilio.storm.InstructionType;
@@ -35,6 +34,7 @@ import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.time.SecondsChronoUnit;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
 import com.facilio.workflows.context.WorkflowContext;
 import lombok.NonNull;
@@ -973,6 +973,14 @@ public class ReadingKpiAPI {
         props.put(FacilioConstants.ReadingKpi.PARENT_LOGGER_ID, parentLoggerId);
 
         scheduleOneTimeJobWithProps(ReadingKpiLoggerAPI.getNextJobId(), FacilioConstants.ReadingKpi.READING_KPI_HISTORICAL_JOB, 1, "facilio", props);
+    }
+
+    public static void setCategory(ReadingKPIContext kpi) throws Exception {
+        ResourceType type = kpi.getResourceTypeEnum();
+        V3Context category = CommonConnectedUtil.getCategory(type, kpi.getCategoryId());
+        if(category != null) {
+            kpi.setCategory(new ResourceCategory<>(type, category));
+        }
     }
 
 }

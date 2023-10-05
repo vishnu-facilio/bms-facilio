@@ -91,12 +91,14 @@ public class FieldUtil {
 													.setSerializationInclusion(Include.NON_DEFAULT)
 													.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
 													.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-													.registerModule(new JavaTimeModule());
+			;
+//            .registerModule(new JavaTimeModule());
 
 	private static final ObjectMapper DEFAULT_MAPPER = new ObjectMapper()
 			.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
 			.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-			.registerModule(new JavaTimeModule());
+			;
+//			.registerModule(new JavaTimeModule());
 
 	static {
 		for (Class classObj : FacilioConstants.ContextNames.getAllClasses()) {

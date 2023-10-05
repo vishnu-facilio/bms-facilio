@@ -6,7 +6,9 @@ import com.facilio.bmsconsole.TemplatePages.TemplatePageUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
@@ -24,6 +26,8 @@ import com.facilio.util.FacilioUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -292,5 +296,55 @@ public class PagesUtil {
         context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
         chain.execute();
         return (List<PageTabContext>) context.get(FacilioConstants.CustomPage.PAGE_TABS);
+    }
+
+    public static List<PageTabContext> addConnectedAppSummaryTabs(long pageId, String moduleName) throws Exception {
+        return addConnectedAppSummaryTabs(pageId, moduleName, null, null, false);
+    }
+    public static PageTabContext addConnectedAppSummaryTabs(long pageId, String moduleName, String widgetName) throws Exception {
+        List<PageTabContext> tabs = addConnectedAppSummaryTabs(pageId, moduleName, -1L,widgetName, false);
+        return tabs.get(0);
+    }
+
+    public static List<PageTabContext> addConnectedAppSummaryTabs(long pageId, long moduleId) throws Exception {
+        return addConnectedAppSummaryTabs(pageId, null, moduleId, null, false);
+    }
+    public static PageTabContext addConnectedAppSummaryTabs(long pageId, long moduleId, String widgetName) throws Exception {
+        List<PageTabContext> tabs = addConnectedAppSummaryTabs(pageId, null,moduleId, widgetName, false);
+        return tabs.get(0);
+    }
+    public static List<PageTabContext> addConnectedAppSummaryTabs(long pageId, String moduleName, Long moduleId, String widgetName, boolean isSystem) throws Exception {
+        if(moduleId == null || moduleId <= 0) {
+            FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(moduleName), "Invalid params to add connectedAppSummaryWidget");
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(moduleName);
+            moduleId = module.getModuleId();
+        }
+        List<ConnectedAppWidgetContext> connectedAppSummaryWidgets = ConnectedAppAPI.getConnectedAppWidgets(ConnectedAppWidgetContext.EntityType.SUMMARY_PAGE, String.valueOf(moduleId));
+        if(CollectionUtils.isNotEmpty(connectedAppSummaryWidgets)) {
+            List<PageTabContext> tabs = new ArrayList<>();
+            for (ConnectedAppWidgetContext connectedAppSummaryWidget : connectedAppSummaryWidgets) {
+                if(connectedAppSummaryWidget != null && (StringUtils.isBlank(widgetName) || widgetName.equals(connectedAppSummaryWidget.getLinkName()))) {
+                    JSONObject widgetParam = new JSONObject();
+                    widgetParam.put("widgetId", connectedAppSummaryWidget.getId());
+                    PageTabContext tab = new PageTabContext(connectedAppSummaryWidget.getLinkName() + "tab", connectedAppSummaryWidget.getWidgetName(), -1D, PageTabContext.TabType.CONNECTED_TAB, true, AccountUtil.FeatureLicense.CONNECTEDAPPS.getFeatureId())
+                            .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                            .addSection("section", "", null)
+                            .addWidget(connectedAppSummaryWidget.getLinkName(), connectedAppSummaryWidget.getWidgetName(), PageWidget.WidgetType.CONNNECTED_APP, "flexiblewebconnectedapp_30", 0, 0, widgetParam, null)
+                            .widgetDone()
+                            .sectionDone()
+                            .columnDone();
+                    tabs.add(tab);
+                }
+            }
+            if(CollectionUtils.isNotEmpty(tabs)) {
+                Map<Long, List<PageTabContext>> layoutTabsMap = new HashMap<>();
+                long layoutId = CustomPageAPI.getLayoutIdForPageId(pageId, PagesContext.PageLayoutType.WEB);
+                layoutTabsMap.put(layoutId, tabs);
+                addTabs(-1, moduleName, isSystem, PagesContext.PageLayoutType.WEB, layoutTabsMap);
+            }
+            return tabs;
+        }
+        return null;
     }
 }

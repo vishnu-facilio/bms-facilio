@@ -2,6 +2,7 @@ package com.facilio.relation.context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
@@ -59,5 +60,35 @@ public class RelationContext implements Serializable {
             throw new IllegalArgumentException("Two mappings to be added");
         }
         return Arrays.asList(mapping1, mapping2);
+    }
+    public enum RelationCategory implements FacilioIntEnum {
+        NORMAL("normal"),
+        HIDDEN("hidden"),
+        METER("meter");
+
+        RelationCategory(String name) {
+        }
+        public static RelationCategory valueOf(int type) {
+            if (type > 0 && type <= values().length) {
+                return values()[type - 1];
+            }
+            return null;
+        }
+    }
+    private RelationCategory relationCategory;
+    public void setRelationCategory(RelationCategory relationCategory) {
+        this.relationCategory = relationCategory;
+    }
+    public RelationCategory getRelationCategoryEnum() {
+        return relationCategory;
+    }
+    public void setRelationCategory(int val) {
+        this.relationCategory = RelationCategory.valueOf(val);
+    }
+    public int getRelationCategory() {
+        if (relationCategory != null) {
+            return relationCategory.getIndex();
+        }
+        return -1;
     }
 }

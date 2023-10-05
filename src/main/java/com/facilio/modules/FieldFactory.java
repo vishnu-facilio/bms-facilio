@@ -3431,6 +3431,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField("linkName", "LINK_NAME", module));
         fields.add(getStringField("description", "DESCRIPTION", module));
         fields.add(getNumberField("relationModuleId", "RELATION_MODULE_ID", module));
+        fields.add(getNumberField("relationCategory", "RELATION_CATEGORY", module));
 
         return fields;
     }

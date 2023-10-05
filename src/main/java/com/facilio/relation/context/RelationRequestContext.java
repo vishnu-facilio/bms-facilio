@@ -29,6 +29,23 @@ public class RelationRequestContext implements Serializable {
     private FacilioModule relationModule;
     private RelationMappingContext.Position position;
     private String reversePositionFieldName;
+    private RelationContext.RelationCategory relationCategory;
+
+    public void setRelationCategory(RelationContext.RelationCategory relationCategory) {
+        this.relationCategory = relationCategory;
+    }
+    public RelationContext.RelationCategory getRelationCategoryEnum() {
+        return relationCategory;
+    }
+    public void setRelationCategory(int val) {
+        this.relationCategory = RelationContext.RelationCategory.valueOf(val);
+    }
+    public int getRelationCategory() {
+        if (relationCategory != null) {
+            return relationCategory.getIndex();
+        }
+        return -1;
+    }
     public int getPosition() {
         if (position != null) {
             return position.getIndex();

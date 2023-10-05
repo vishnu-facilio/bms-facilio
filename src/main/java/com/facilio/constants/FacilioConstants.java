@@ -272,6 +272,7 @@ public class FacilioConstants {
 		public static final String NAME = "name";
 		public static final String TYPE_SPECIFIC_FIELDS_MAP = "typeSpecificFieldsMap";
 		public static final String FIXED_FIELD_NAMES = "fixedFieldNames";
+		public static final String CUSTOMIZATION = "customization";
 		public static final String FIXED_SELECTABLE_FIELD_NAMES = "fixedSelectableFieldNames";
 	}
 
@@ -965,6 +966,8 @@ public class FacilioConstants {
 		public static final String GET_ONLY_BASIC_VIEW_DETAILS = "getOnlyBasicViewDetails";
 
 		public static final String MODULE_NAME = "moduleName";
+		public static final String IS_HIDDEN_MODULE = "isHiddenModule";
+
 		public static final String SUB_MODULE_NAME = "subModuleName";
 		public static final String DATA_MODULE_NAME = "dataModuleName";
 		public static final String SUMMARY_MODULE_NAME = "summaryModuleName";
@@ -4289,10 +4292,11 @@ public class FacilioConstants {
 		public static final String RULE_SCRIPT_LOGS_MODULE = "rulescriptlogs";
 
 		public static final String SCRIPT_LOGS = "scriptLogs";
+        public static final String RESOURCE_TYPE = "resourceType";
 		public static final String COST_IMPACT_ID = "costImpactId";
 		public static final String ENERGY_IMPACT_ID = "energyImpactId";
 
-		public static class RCA {
+        public static class RCA {
 			public static final String RCA_MODULE = "readingrulerca";
 			public static final String RCA_GROUP_MODULE = "readingrulerca_group";
 			public static final String RCA_SCORE_CONDITION_MODULE = "readingrulerca_score_condition";
@@ -4361,6 +4365,7 @@ public class FacilioConstants {
 		public static final String CUSTOM_PAGE = "customPage";
 		public static final String CUSTOM_PAGES = "customPages";
 		public static final String PAGE_ID = "pageId";
+		public static final String WIDGET_NAME = "widgetName";
 		public static final String LAYOUT_ID = "layoutId";
 		public static final String LAYOUT_IDS = "layoutIds";
 		public static final String TAB = "tab";
@@ -4548,4 +4553,7 @@ public class FacilioConstants {
 	public static final String UTILITY_DISPUTE_STATUS = "utilityDisputeStatus";
 
 
+    public static class Relationship {
+		public static final String INCLUDE_HIDDEN_RELATIONS = "includeHiddenRelations";
+	}
 }

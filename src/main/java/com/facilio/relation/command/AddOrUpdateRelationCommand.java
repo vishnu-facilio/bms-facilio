@@ -60,6 +60,8 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
             computeLinkName(relationRequest);
 
             relationContext = RelationUtil.convertToRelationContext(relationRequest);
+            RelationContext.RelationCategory relationCategory = relationRequest.getRelationCategoryEnum() == null ? RelationContext.RelationCategory.NORMAL : relationRequest.getRelationCategoryEnum();
+            relationContext.setRelationCategory(relationCategory);
 
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(relationModule.getTableName())
@@ -236,6 +238,9 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
         }
         if(relationRequest.getRelationName().equals(relationRequest.getReverseRelationName())) {
             throw new IllegalArgumentException("Forward and Reverse Relation Name should not be same");
+        }
+        if (relationRequest.getRelationCategoryEnum() == null) {
+            relationRequest.setRelationCategory(RelationContext.RelationCategory.NORMAL);
         }
     }
 }

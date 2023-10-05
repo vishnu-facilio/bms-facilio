@@ -4,6 +4,9 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.connected.IConnectedRule;
+import com.facilio.connected.ResourceCategory;
+import com.facilio.connected.ResourceType;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
@@ -12,13 +15,15 @@ import com.facilio.ns.context.NamespaceFrequency;
 import com.facilio.readingkpi.ReadingKpiLoggerAPI;
 import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.V3Context;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class ReadingKPIContext extends V3Context implements IConnectedRule {
 
@@ -42,7 +47,7 @@ public class ReadingKPIContext extends V3Context implements IConnectedRule {
     private Long readingFieldId = -1L;
     private Long readingModuleId = -1l;
 
-    private PreventiveMaintenance.PMAssignmentType resourceType;
+    private ResourceType resourceType = ResourceType.ASSET_CATEGORY;
     private AssetCategoryContext assetCategory;
     private Long assetCategoryId = -1l;
     private SpaceCategoryContext spaceCategory;
@@ -54,8 +59,11 @@ public class ReadingKPIContext extends V3Context implements IConnectedRule {
 
     private List<Long> matchedResourcesIds;
 
-    String linkName;
+    Long categoryId;
 
+    ResourceCategory<? extends V3Context> category;
+
+    String linkName;
 
     public ReadingKPIContext(String name, Long readingFieldId, KPIType kpiType) {
         this.name = name;
@@ -63,19 +71,22 @@ public class ReadingKPIContext extends V3Context implements IConnectedRule {
         this.kpiType = kpiType;
     }
 
-    public PreventiveMaintenance.PMAssignmentType getResourceTypeEnum() {
+    public ResourceType getResourceTypeEnum() {
         return resourceType;
     }
 
     public int getResourceType() {
         if (resourceType != null) {
-            return resourceType.getVal();
+            return resourceType.getIndex();
         }
-        return -1;
+        return ResourceType.ASSET_CATEGORY.getIndex();
     }
 
     public void setResourceType(Integer type) {
-        this.resourceType = PreventiveMaintenance.PMAssignmentType.valueOf(type);
+        this.resourceType = ResourceType.valueOf(type);
+        if(this.resourceType == null || type == PreventiveMaintenance.PMAssignmentType.ASSET_CATEGORY.getIndex()) { //TODO: added this check for backward compatability. should be del this block.
+            this.resourceType = ResourceType.ASSET_CATEGORY;
+        }
     }
 
     public KPIType getKpiTypeEnum() {

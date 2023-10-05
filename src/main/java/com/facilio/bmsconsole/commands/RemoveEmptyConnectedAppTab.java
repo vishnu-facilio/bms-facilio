@@ -35,8 +35,8 @@ public class RemoveEmptyConnectedAppTab extends FacilioCommand {
                                 }
                             }
                         }
-                        layout.getValue().removeIf(t -> tabsIdsToRemove.contains(t.getId()));
                     }
+                    layout.getValue().removeIf(t -> tabsIdsToRemove.contains(t.getId()));
                 }
             }
         }

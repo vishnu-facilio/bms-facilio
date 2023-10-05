@@ -2,18 +2,20 @@ package com.facilio.readingrule.context;
 
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
+import com.facilio.connected.ResourceCategory;
+import com.facilio.connected.ResourceType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.context.NameSpaceCacheContext;
 import com.facilio.ns.context.NameSpaceContext;
-import com.facilio.readingkpi.context.IConnectedRule;
+import com.facilio.connected.IConnectedRule;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.rca.context.ReadingRuleRCAContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -21,7 +23,8 @@ import java.util.Map;
 
 @Setter
 @Getter
-public class  NewReadingRuleContext extends V3Context implements ReadingRuleInterface, IConnectedRule, Cloneable {
+@NoArgsConstructor
+public class NewReadingRuleContext extends V3Context implements ReadingRuleInterface, IConnectedRule {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,8 +33,6 @@ public class  NewReadingRuleContext extends V3Context implements ReadingRuleInte
     String name;
 
     String description;
-
-    String appliedTo;
 
     String moduleName;
 
@@ -45,48 +46,39 @@ public class  NewReadingRuleContext extends V3Context implements ReadingRuleInte
 
     NameSpaceContext ns;
 
-    Long WorkflowId;
-
     Long impactId;
 
     Boolean autoClear;
 
     Boolean status;
 
-    private SpaceCategoryContext spaceCategory;
+    int resourceType = ResourceType.ASSET_CATEGORY.getIndex();
+
+    Long categoryId;
+
+    public void setResourceType(int resourceType) {
+        this.resourceType = resourceType;
+        this.resourceTypeEnum = ResourceType.valueOf(resourceType);
+    }
+
+    ResourceType resourceTypeEnum = ResourceType.ASSET_CATEGORY; //TODO: need to be change
+
+    ResourceCategory<? extends V3Context> category;
 
     private AssetCategoryContext assetCategory;
 
     String linkName;
 
-    public NewReadingRuleContext() {
-    }
-
-    public NewReadingRuleContext(Long id, Long readingFieldId, NameSpaceCacheContext ns) {
-        this.setId(id);
-        this.setReadingFieldId(readingFieldId);
-        this.setNs(ns);
-    }
-
     public void setStatus(Boolean status) {
         this.status = status;
     }
 
-
     private ReadingRuleRCAContext rca;
 
     public boolean isActive() {
-        if (status != null) {
-            return status.booleanValue();
-        }
-        return false;
+        return (status != null) ? status : false;
     }
 
-    FacilioField readingField;
-
-    public ResourceType getResourceTypeEnum() {
-        return ResourceType.ASSET_CATEGORY;
-    }
 
     List<ActionContext> actions;
 
@@ -94,8 +86,17 @@ public class  NewReadingRuleContext extends V3Context implements ReadingRuleInte
 
     Long readingFieldId;
 
+    FacilioField readingField;
+
     String readingFieldName;
+
     String readingModuleName;
+
+    public NewReadingRuleContext(Long id, Long readingFieldId, NameSpaceCacheContext ns) {
+        this.setId(id);
+        this.setReadingFieldId(readingFieldId);
+        this.setNs(ns);
+    }
 
     public void setNullForResponse() {
         setMatchedResources(null);
@@ -105,29 +106,9 @@ public class  NewReadingRuleContext extends V3Context implements ReadingRuleInte
         }
     }
 
-
     @Override
     public long insertLog(Long startTime, Long endTime, Integer resourceCount, boolean isSysCreated) throws Exception {
         return NewReadingRuleAPI.insertLog(getId(), startTime, endTime, resourceCount == null ? assets.size() : resourceCount);
-    }
-
-    public enum ResourceType {
-        ONE_RESOURCE,
-        ALL_BUILDINGS,
-        ALL_FLOORS,
-        SPACE_CATEGORY,
-        ASSET_CATEGORY;
-
-        public int getValue() {
-            return ordinal() + 1;
-        }
-
-        public static ResourceType valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
     }
 }
 

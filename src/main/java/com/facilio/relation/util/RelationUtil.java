@@ -123,10 +123,14 @@ public class RelationUtil {
     }
 
     public static List<RelationRequestContext> getAllRelations(FacilioModule module) throws Exception {
-        return getAllRelations(module, false, null, null);
+        return getAllRelations(module, false, null, null, false);
     }
 
-    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString) throws Exception {
+    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean includeHiddenRelations) throws Exception {
+        return getAllRelations(module, false, null, null, includeHiddenRelations);
+    }
+
+    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString, boolean includeHiddenRelations) throws Exception {
 
         Map<String, FacilioField> relationFields = FieldFactory.getAsMap(FieldFactory.getRelationFields());
         Map<String, FacilioField> mappingFields = FieldFactory.getAsMap(FieldFactory.getRelationMappingFields());
@@ -150,6 +154,10 @@ public class RelationUtil {
 
         if (StringUtils.isNotEmpty(searchString)) {
             builder.andCondition(CriteriaAPI.getCondition(relationFields.get("name"), searchString, StringOperators.CONTAINS));
+        }
+
+        if (!includeHiddenRelations) {
+            builder.andCondition(CriteriaAPI.getCondition(relationFields.get("relationCategory"), String.valueOf(RelationContext.RelationCategory.HIDDEN.getIndex()), NumberOperators.NOT_EQUALS));
         }
 
         StringBuilder orderBy = new StringBuilder().append(relationFields.get("id").getCompleteColumnName()).append(" DESC");
@@ -323,6 +331,7 @@ public class RelationUtil {
         request.setDescription(relation.getDescription());
         request.setLinkName(relation.getLinkName());
         request.setRelationModule(relation.getRelationModule());
+        request.setRelationCategory(relation.getRelationCategory());
     }
 
     private static void fillForwardMappingDatainRequest(RelationRequestContext request, RelationMappingContext mapping) throws Exception {

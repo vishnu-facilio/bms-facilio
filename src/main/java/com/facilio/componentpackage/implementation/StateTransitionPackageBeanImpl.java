@@ -77,7 +77,9 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
         element.element(PackageConstants.WorkFlowRuleConstants.SHOW_IN_OCCUPANT_PORTAL).text(String.valueOf(((AbstractStateTransitionRuleContext) stateflowTransition).isShowInOccupantPortal()));
         element.element(PackageConstants.WorkFlowRuleConstants.SHOW_IN_TENANT_PORTAL).text(String.valueOf(((AbstractStateTransitionRuleContext) stateflowTransition).isShowInTenantPortal()));
         element.element(PackageConstants.WorkFlowRuleConstants.SHOW_IN_VENDOR_PORTAL).text(String.valueOf(((AbstractStateTransitionRuleContext) stateflowTransition).isShowInVendorPortal()));
-
+        if (StringUtils.isNotEmpty(stateflowTransition.getTime())) {
+            element.element(PackageConstants.WorkFlowRuleConstants.JOB_TIME).text(stateflowTransition.getTime());
+        }
         if (((ApproverWorkflowRuleContext)stateflowTransition).getAllApprovalRequired() != null){
             element.element(PackageConstants.WorkFlowRuleConstants.ALL_APPROVAL_REQUIRED).text(String.valueOf(((ApproverWorkflowRuleContext) stateflowTransition).getAllApprovalRequired()));
         }
@@ -321,6 +323,10 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
         if (builder.getElement(PackageConstants.WorkFlowRuleConstants.ALL_APPROVAL_REQUIRED) != null){
             Boolean allApprovalRequired = Boolean.parseBoolean(builder.getElement(PackageConstants.WorkFlowRuleConstants.ALL_APPROVAL_REQUIRED).getText());
             stateflowTransition.setAllApprovalRequired(allApprovalRequired);
+        }
+
+        if (builder.getElement(PackageConstants.WorkFlowRuleConstants.JOB_TIME) != null){
+            stateflowTransition.setTime(builder.getElement(PackageConstants.WorkFlowRuleConstants.JOB_TIME).getText());
         }
 
         XMLBuilder approverList = builder.getElement(PackageConstants.WorkFlowRuleConstants.APPROVER_LIST);

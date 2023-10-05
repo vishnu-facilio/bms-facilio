@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -409,7 +410,7 @@ public class ReadingRuleRcaAPI {
         List<NewReadingRuleContext> sameCategoryRules = new ArrayList<>();
         List<NewReadingRuleContext> otherCategoryRules = new ArrayList<>();
         for (NewReadingRuleContext rule : rcaRules) {
-            if (rule.getAssetCategory().getId() == asset.getCategory().getId()) {
+            if (rule.getCategory().fetchId() == asset.getCategory().getId()) {
                 sameCategoryRules.add(rule);
             } else {
                 otherCategoryRules.add(rule);
@@ -430,7 +431,7 @@ public class ReadingRuleRcaAPI {
         FacilioUtil.throwRunTimeException(fromModule == null, "RCA: from module cannot be empty!!");
         List<ReadingAlarm> alarms = new ArrayList<>();
         for (NewReadingRuleContext rule : rcaRules) {
-            FacilioModule toModule = bean.getModule(rule.getAssetCategory().getAssetModuleID());
+            FacilioModule toModule = bean.getModule(((V3AssetCategoryContext)rule.getCategory().getCtx()).getAssetModuleID());
             FacilioUtil.throwRunTimeException(toModule == null, "RCA: to module cannot be empty!!");
             List<Long> resourceIds = fetchReverseParentIds(fromModule, toModule, resourceId);
             List<ReadingAlarm> readingAlarms = fetchFaultsWithResourceIds(Lists.newArrayList(rule), resourceIds, dataSetInterval);

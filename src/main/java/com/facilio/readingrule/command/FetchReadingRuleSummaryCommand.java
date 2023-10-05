@@ -43,6 +43,7 @@ public class FetchReadingRuleSummaryCommand extends FacilioCommand {
                 }
                 rule.setModuleName(FacilioConstants.ReadingRules.NEW_READING_RULE);
                 setReadingfldAndModuleName(rule);
+                NewReadingRuleAPI.setCategory(rule);
             }
         }
         return false;

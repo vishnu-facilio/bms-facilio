@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -44,11 +45,14 @@ public class ReadingRuleAction extends V3Action {
     private Integer dateOperator;
     private String dateOperatorValue;
     private String filters;
+    private Integer resourceType;
 
     public String rcaRuleList() throws Exception {
+        resourceType = resourceType == null ? ResourceType.ASSET_CATEGORY.getIndex() : resourceType;
         FacilioChain chain = TransactionChainFactory.fetchRcaRules();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ReadingRules.RESOURCE_TYPE, ResourceType.valueOf(resourceType));
         chain.execute();
         List<NewReadingRuleContext> newReadingRuleContext = (List<NewReadingRuleContext>) context.get(FacilioConstants.ReadingRules.NEW_READING_RULE_LIST);
         setData("result", newReadingRuleContext);

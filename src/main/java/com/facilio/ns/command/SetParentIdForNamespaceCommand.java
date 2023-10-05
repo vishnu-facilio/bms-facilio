@@ -1,9 +1,8 @@
 package com.facilio.ns.command;
 
-import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.readingkpi.context.ReadingKPIContext;
-import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.connected.IConnectedRule;
+import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,17 +19,13 @@ public class SetParentIdForNamespaceCommand extends FacilioCommand {
 
         if (CollectionUtils.isNotEmpty(list)) {
             for (Object fddObject : list) {
-                if (fddObject instanceof NewReadingRuleContext) {
-                    NewReadingRuleContext newReadingRuleContext = (NewReadingRuleContext) fddObject;
-                    newReadingRuleContext.getNs().setParentRuleId(newReadingRuleContext.getId());
-                    newReadingRuleContext.getNs().getWorkflowContext().setIsV2Script(true);
-                } else if (fddObject instanceof ReadingKPIContext) {
-                    ReadingKPIContext readingKPIContext = (ReadingKPIContext) fddObject;
-                    readingKPIContext.getNs().setParentRuleId(readingKPIContext.getId());
-                    readingKPIContext.getNs().getWorkflowContext().setIsV2Script(true);
-                } else if (fddObject instanceof SensorRuleContext) {
-                    SensorRuleContext sensorRuleContext = (SensorRuleContext) fddObject;
-                    sensorRuleContext.getNs().setParentRuleId(sensorRuleContext.getId());
+                if (fddObject instanceof IConnectedRule) {
+                    IConnectedRule connectedRule = (IConnectedRule) fddObject;
+                    NameSpaceContext ns = connectedRule.getNs();
+                    ns.setParentRuleId(connectedRule.getId());
+                    if (ns.getWorkflowContext() != null) {
+                        ns.getWorkflowContext().setIsV2Script(true);
+                    }
                 }
             }
         }

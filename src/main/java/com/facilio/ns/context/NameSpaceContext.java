@@ -4,7 +4,6 @@ import com.facilio.annotations.ImmutableChildClass;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,12 +26,13 @@ public class NameSpaceContext implements Serializable {
         this.type = ns.type;
         this.assetCategoryId = ns.assetCategoryId;
         this.workflowId = ns.workflowId;
-        this.categoryId=ns.categoryId;
+        this.categoryId = ns.categoryId;
         this.workflowContext = ns.workflowContext;
         this.status = ns.status;
         this.fields = ns.fields;
-        this.loggerLevel=ns.loggerLevel;
-        this.assetCategoryContext= ns.assetCategoryContext;
+        this.loggerLevel = ns.loggerLevel;
+        this.assetCategoryContext = ns.assetCategoryContext;
+        this.execMode = ns.execMode;
     }
 
     /**
@@ -47,12 +47,13 @@ public class NameSpaceContext implements Serializable {
         this.type = ns.type;
         this.assetCategoryId = ns.assetCategoryId;
         this.workflowId = ns.workflowId;
-        this.categoryId=ns.categoryId;
+        this.categoryId = ns.categoryId;
         this.workflowContext = ns.workflowContext;
         this.status = ns.status;
         this.fields = ns.fields;
-        this.loggerLevel=ns.loggerLevel;
-        this.assetCategoryContext=ns.assetCategoryContext;
+        this.loggerLevel = ns.loggerLevel;
+        this.assetCategoryContext = ns.assetCategoryContext;
+        this.execMode = ns.execMode;
     }
 
     Long id;
@@ -71,6 +72,17 @@ public class NameSpaceContext implements Serializable {
 
     Long categoryId;
 
+    Integer execMode;
+
+    public void setExecMode(int mode) {
+        this.execMode = mode;
+        this.execModeEnum = NSExecMode.valueOf(mode);
+    }
+
+    NSExecMode execModeEnum;
+
+    Long executorId;
+
     Long workflowId;
 
     WorkflowContext workflowContext;
@@ -87,12 +99,12 @@ public class NameSpaceContext implements Serializable {
         fields = new ArrayList<>();
     }
 
-    public NameSpaceContext(NSType type, Long parentRuleId, Long execInterval, Long workflowId,Long categoryId) {
+    public NameSpaceContext(NSType type, Long parentRuleId, Long execInterval, Long workflowId, Long categoryId) {
         this.type = type;
         this.parentRuleId = parentRuleId;
         this.execInterval = execInterval;
         this.workflowId = workflowId;
-        this.categoryId=categoryId;
+        this.categoryId = categoryId;
     }
 
     public void addField(NameSpaceField... fs) {
@@ -130,31 +142,12 @@ public class NameSpaceContext implements Serializable {
         return null;
     }
 
-    private NameSpaceField getMaxIntervalField() {
-        return fields.get(fields.size() - 1);
-    }
-
-    @JsonIgnore
-    public Long intervalTimeWithMaxDuration() {
-        NameSpaceField maxIntervalField = getMaxIntervalField();
-        return maxIntervalField.getDataInterval() > getExecInterval() ?
-                maxIntervalField.getDataInterval() : getExecInterval();
-    }
-
-    @JsonIgnore
-    public String nsKey() {
-        return "NS_" + id + "_LETS";
-    }
-
     public NSType getTypeEnum() {
         return type;
     }
 
     public int getType() {
-        if (type != null) {
-            return type.getIndex();
-        }
-        return -1;
+        return (type != null) ? type.getIndex() : -1;
     }
 
     public void setType(Integer type) {
@@ -169,9 +162,5 @@ public class NameSpaceContext implements Serializable {
             return this.workflowContext = WorkflowUtil.getWorkflowContext(workflowId);
         }
         return null;
-    }
-
-    public void setNullForResponse() {
-
     }
 }

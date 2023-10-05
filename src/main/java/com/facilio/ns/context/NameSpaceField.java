@@ -84,20 +84,7 @@ public class NameSpaceField implements Cloneable, Serializable {
         }
     }
 
-
-    boolean isEnabledCompaction;
-
     public String fieldKey() {
-        return isEnabledCompaction ? compactedKey() : baseKey();
-    }
-
-    @JsonIgnore
-    private String compactedKey() {
-        return baseKey() + "_COMPACT";
-    }
-
-    @JsonIgnore
-    private String baseKey() {
         return "O" + orgId + "_NS" + nsId + "_R" + resourceId + "_FLD" + fieldId + "_" + aggregationType;
     }
 

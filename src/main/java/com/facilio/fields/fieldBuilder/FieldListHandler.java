@@ -11,10 +11,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j
 public class FieldListHandler implements FieldListBuilder {
@@ -26,14 +23,24 @@ public class FieldListHandler implements FieldListBuilder {
 
     @Getter
     private Command afterFetchCommand;
-    @Getter
+
+    public List<String> getFieldsToAdd() {
+        return CollectionUtils.isNotEmpty(fieldsToAdd)?Collections.unmodifiableList(fieldsToAdd):null;
+    }
+
+    public List<String> getFieldsToSkip() {
+        return CollectionUtils.isNotEmpty(fieldsToSkip)?Collections.unmodifiableList(fieldsToSkip):null;
+    }
+
+    public List<FieldType> getFieldTypesToSkip() {
+        return CollectionUtils.isNotEmpty(fieldTypesToSkip)?Collections.unmodifiableList(fieldTypesToSkip):null;
+    }
+
     private List<String> fieldsToAdd;
-    @Getter
     private List<String> fieldsToSkip;
-    @Getter
     private List<FieldType> fieldTypesToSkip;
-    @Getter
-    private Map<String, List<String>> configSpecificFields;
+//    @Getter
+//    private Map<String, List<String>> configSpecificFields;
 
 
     @Override
@@ -79,19 +86,19 @@ public class FieldListHandler implements FieldListBuilder {
         return this;
     }
 
-    @Override
-    public FieldListBuilder addConfigSpecificFields(String name, List<String> fieldNames) {
-        if (StringUtils.isNotEmpty(name) && CollectionUtils.isNotEmpty(fieldNames)) {
-            if (configSpecificFields == null) {
-                configSpecificFields = new HashMap<>();
-            }
-            if (!configSpecificFields.containsKey(name)) {
-                configSpecificFields.put(name, new ArrayList<>());
-            }
-            configSpecificFields.get(name).addAll(fieldNames);
-        }
-        return this;
-    }
+//    @Override
+//    public FieldListBuilder addConfigSpecificFields(String name, List<String> fieldNames) {
+//        if (StringUtils.isNotEmpty(name) && CollectionUtils.isNotEmpty(fieldNames)) {
+//            if (configSpecificFields == null) {
+//                configSpecificFields = new HashMap<>();
+//            }
+//            if (!configSpecificFields.containsKey(name)) {
+//                configSpecificFields.put(name, new ArrayList<>());
+//            }
+//            configSpecificFields.get(name).addAll(fieldNames);
+//        }
+//        return this;
+//    }
 
     @Override
     public FieldConfig done() {

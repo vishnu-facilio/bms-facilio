@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 public class FetchPageColumnsCommand extends FacilioCommand {
-    private static final Logger LOGGER = Logger.getLogger(FetchPageColumnsCommand.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
         boolean excludeColumns = (boolean) context.getOrDefault(FacilioConstants.CustomPage.EXCLUDE_COLUMNS, false);

@@ -1,35 +1,55 @@
 package com.facilio.fields.fieldBuilder;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.fields.context.FieldListType;
-import com.facilio.util.FacilioUtil;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Getter
 public class FieldConfig {
+
     private final Map<String, FieldListHandler> fieldListTypeHandlerMap = new HashMap<>();
+    private ViewFieldListHandler viewFieldListHandler;
+
+    public List<String> getExcludeFields() {
+        return Collections.unmodifiableList(excludeFields);
+    }
+
+    public Map<AccountUtil.FeatureLicense, List<String>> getLicenseBasedFieldsMap() {
+        return Collections.unmodifiableMap(licenseBasedFieldsMap);
+    }
+
+    public Map<String, FieldListHandler> getFieldListTypeHandlerMap() {
+        return Collections.unmodifiableMap(fieldListTypeHandlerMap);
+    }
+
     private final List<String> excludeFields = new ArrayList<>();
     private final Map<AccountUtil.FeatureLicense, List<String>> licenseBasedFieldsMap = new HashMap<>();
 
-    public FieldListHandler addType(FieldListType fieldListType) {
+    public FieldListHandler sortFields() {
+        return addType(FieldListType.SORTABLE);
+    }
+    public FieldListHandler advancedFields() {
+        return addType(FieldListType.ADVANCED_FILTER_FIELDS);
+    }
+    public FieldListHandler pageBuilderCriteriaFields() {
+        return addType(FieldListType.PAGE_BUILDER_CRITERIA_FIELDS);
+    }
+    private FieldListHandler addType(FieldListType fieldListType) {
         String fieldListTypeName = fieldListType.getName();
-        if(fieldListTypeHandlerMap.containsKey(fieldListTypeName)) {
-            return fieldListTypeHandlerMap.get(fieldListTypeName);
-        } else {
+        if (!fieldListTypeHandlerMap.containsKey(fieldListTypeName)) {
             fieldListTypeHandlerMap.put(fieldListTypeName, new FieldListHandler(this));
-            return fieldListTypeHandlerMap.get(fieldListTypeName);
         }
+        return fieldListTypeHandlerMap.get(fieldListTypeName);
+    }
+
+    public ViewFieldListHandler viewFields() {
+        viewFieldListHandler = new ViewFieldListHandler(this);
+        return this.viewFieldListHandler;
     }
 
     /**

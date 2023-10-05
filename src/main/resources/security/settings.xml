@@ -1564,6 +1564,21 @@
         </requestbody>
     </request>
 
+    <request path="/api/v1/setup/customPage/widget/widgetDetail/get">
+        <urlparams>
+            <property name="layoutType" type="string"/>
+            <property name="id" type="number"/>
+            <property name="moduleName" type="string"/>
+            <property name="appId" type="number"/>
+            <property name="widgetType" type="string"/>
+            <property name="widgetWrapperType" type="string"/>
+            <property name="isBuilderRequest" type="boolean"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="recordId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
     <request path="/api/v1/setup/customPage/fetch" >
         <urlparams>
             <property name="layoutType" type="string"/>
@@ -1634,6 +1649,14 @@
         </requestbody>
     </request>
 
+    <request path="/api/v1/setup/customPage/tabs/connectedAppTab/add">
+        <requestbody type="object">
+            <property name="pageId" type="number" mandatory="true"/>
+            <property name ="moduleName" type="string" mandatory="true"/>
+            <property name="widgetName" type="string"/>
+        </requestbody>
+    </request>
+
     <request path="/api/v1/setup/customPage/tabs/patch">
         <requestbody type="object">
             <property name="tab" type="object" mandatory="true">
@@ -1648,6 +1671,13 @@
             <property name="id" type="number" mandatory="true"/>
             <property name="status" type="boolean" mandatory="true"/>
         </requestbody>
+    </request>
+
+    <request path="/api/v2/fields/config/:fieldListType/:moduleName">
+        <urlparams>
+            <property name="fieldListType" type="string" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
     </request>
 
     <request path="/api/v1/setup/customPage/tabs/reorder">
@@ -3541,4 +3571,6 @@
         <requestbody type="object">
         </requestbody>
     </request>
+
+    <request path="/api/v3/switchVariable/getSwitchVariable" method="GET"/>
 </config>

@@ -122,22 +122,29 @@ public class FieldsConfigChainUtil {
         return fetchFieldList(moduleName, fieldListType, defaultFieldIds, false);
     }
     public static FacilioContext fetchFieldList(String moduleName, FieldListType fieldListType, List<Long> defaultFieldIds, boolean isOnelevel) throws Exception {
-        FacilioChain fieldsChain = FieldsConfigChain.getFieldsConfigChain(moduleName, fieldListType);
-        FacilioContext fieldsContext = fieldsChain.getContext();
-        addDefaultValuesToContext(fieldsContext, moduleName, fieldListType, defaultFieldIds);
-        if(isOnelevel) {
+        FacilioChain fieldsChain = null;
+        FacilioContext fieldsContext = null;
+        if (fieldListType == FieldListType.VIEW_FIELDS) {
+            fieldsChain = FieldsConfigChain.getViewFieldsConfigChain(moduleName);
+        } else {
+            fieldsChain = FieldsConfigChain.getFieldsConfigChain(moduleName, fieldListType);
+        }
+        fieldsContext = fieldsChain.getContext();
+        addDefaultValuesToContext(fieldsContext, moduleName, fieldListType, defaultFieldIds, isOnelevel);
+        if (isOnelevel) {
             fieldsContext.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, false);
         }
         fieldsChain.execute();
-
         return fieldsContext;
     }
 
 
-    private static void addDefaultValuesToContext(FacilioContext context, String moduleName, FieldListType fieldListType, List<Long> defaultFieldIds) throws Exception {
+    private static void addDefaultValuesToContext(FacilioContext context, String moduleName, FieldListType fieldListType, List<Long> defaultFieldIds, boolean isOnelevel) throws Exception {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.DEFAULT_FIELD_IDS, defaultFieldIds);
-        context.put(FacilioConstants.FieldsConfig.FIELD_LIST_TYPE, fieldListType);
+        context.put(FacilioConstants.FieldsConfig.FIELD_LIST_TYPE, fieldListType);if (isOnelevel) {
+            context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, false);
+        }
     }
 
     protected static void fillModuleNameMap(Reflections reflections) throws InvocationTargetException, IllegalAccessException {

@@ -11,7 +11,7 @@ fieldListType:
       - approvalFlowId
 
     accessType: SORT
-    fetchSupplement: true
+    fetchSupplement: false
     fieldTypeNamesToFetch:
       - STRING
       - NUMBER
@@ -58,6 +58,12 @@ fieldListType:
       - com.facilio.fields.commands.ViewFieldsResponseCommand
 
   - name: ADVANCED_FILTER_FIELDS
+    skipConfigFields:
+      - stateFlowId
+      - slaPolicyId
+      - formId
+      - approvalStatus
+      - approvalFlowId
     fetchSupplement: true
     fieldTypeNamesToFetch:
       - STRING

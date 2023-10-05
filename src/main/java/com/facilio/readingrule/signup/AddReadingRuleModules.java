@@ -54,9 +54,12 @@ public class AddReadingRuleModules extends SignUpData {
         assetCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY));
         fields.add(assetCategory);
 
-        LookupField spaceCategory = FieldFactory.getDefaultField("spaceCategory", "Space Category", "SPACE_CATEGORY_ID", FieldType.LOOKUP);
-        spaceCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY));
-        fields.add(spaceCategory);
+        SystemEnumField resourceType = FieldFactory.getDefaultField("resourceType", "Resource Type", "RESOURCE_TYPE", FieldType.SYSTEM_ENUM);
+        resourceType.setEnumName("ConnectedResourceAssignmentType");
+        fields.add(resourceType);
+
+        NumberField categoryId = FieldFactory.getDefaultField("categoryId", "Category ID", "CATEGORY_ID", FieldType.NUMBER);
+        fields.add(categoryId);
 
         LookupField faultImpact = FieldFactory.getDefaultField("impact", "Impact", "IMPACT_ID", FieldType.LOOKUP);
         faultImpact.setLookupModule(modBean.getModule(FacilioConstants.FaultImpact.MODULE_NAME));
@@ -70,9 +73,6 @@ public class AddReadingRuleModules extends SignUpData {
 
         NumberField siteId = FieldFactory.getDefaultField("siteId", "Site ID", "SITE_ID", FieldType.NUMBER);
         fields.add(siteId);
-
-        NumberField alarmType = FieldFactory.getDefaultField("alarmType", "Applied To", "ALARM_APPLIED_TO", FieldType.NUMBER);
-        fields.add(alarmType);
 
         BooleanField status = FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.BOOLEAN);
         fields.add(status);

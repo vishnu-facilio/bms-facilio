@@ -1,11 +1,11 @@
 package com.facilio.ns;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.assetcatergoryfeature.util.AssetCategoryFeatureStatusUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.NamespaceBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.assetcatergoryfeature.util.AssetCategoryFeatureStatusUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -91,7 +91,7 @@ public class NamespaceAPI {
                 field.setRelatedInfo(relatedInfo);
             }
             ns.addField(field);
-            LOGGER.debug("Namespace ID : " + ns.getId() + " NameSpace Category Id => "+ ns.getCategoryId());
+            LOGGER.debug("Namespace ID : " + ns.getId() + " NameSpace Category Id => " + ns.getCategoryId());
             ns.setAssetCategoryContext(AssetCategoryFeatureStatusUtil.validateCategoryWithNSType(ns.getCategoryId()));
             FacilioField readingField = modBean.getField(field.getFieldId());
             field.setVarDataType(getScriptDataType(readingField));
@@ -141,21 +141,21 @@ public class NamespaceAPI {
         return list;
     }
 
-    public static List<Long> getMatchedResources(NameSpaceContext ns, V3Context fddContext) throws Exception {
+    public static List<Long> getMatchedResources(NameSpaceContext ns, V3Context ruleCtx) throws Exception {
         Set<Long> resourceIds = new HashSet<>();
 
         List<Long> inclusions = CollectionUtils.isEmpty(ns.getIncludedAssetIds()) ? fetchResourceIdsFromNamespaceInclusions(ns.getId()) : ns.getIncludedAssetIds();
         if (CollectionUtils.isNotEmpty(inclusions)) {
             return inclusions;
         }
-        if (fddContext != null) {
+        if (ruleCtx != null) {
             Long assetCategoryId;
-            if (fddContext instanceof ReadingKPIContext) {
-                assetCategoryId = ((ReadingKPIContext) fddContext).getAssetCategory().getId();
+            if (ruleCtx instanceof ReadingKPIContext) {
+                assetCategoryId = ((ReadingKPIContext) ruleCtx).getCategory().fetchId();
             } else {
-                assetCategoryId = ((NewReadingRuleContext) fddContext).getAssetCategory().getId();
+                assetCategoryId = ((NewReadingRuleContext) ruleCtx).getCategory().fetchId();
             }
-            List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryId, null, fddContext.getSiteId());
+            List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryId, null, ruleCtx.getSiteId());
             resourceIds.addAll(assets.stream().map((assetContext) -> assetContext.getId()).collect(Collectors.toList()));
 
         }
@@ -308,6 +308,7 @@ public class NamespaceAPI {
 
         return props.stream().map(prop -> (Long) prop.get("id")).findFirst();
     }
+
     public static List<Long> getNsIdForRuleId(Long parentRuleId, List<NSType> nsTypeList) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())

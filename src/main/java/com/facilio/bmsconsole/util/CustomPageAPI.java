@@ -333,6 +333,17 @@ public class CustomPageAPI {
         return props;
     }
 
+    public static PagesContext getCustomPage(String pageName, long appId, long moduleId, PagesContext.PageLayoutType layoutType) throws Exception{
+        GenericSelectRecordBuilder builder = getCustomPageBuilder(appId, moduleId, layoutType);
+        builder.andCondition(CriteriaAPI.getNameCondition(pageName, ModuleFactory.getPagesModule()));
+
+        List<Map<String, Object>> props = builder.get();
+        if (props != null && !props.isEmpty()) {
+            return FieldUtil.getAsBeanFromMap(props.get(0), PagesContext.class);
+        }
+
+        return null;
+    }
     private static GenericSelectRecordBuilder getCustomPageBuilder(long appId, long moduleId, PagesContext.PageLayoutType layoutType) {
         FacilioModule pagesModule = ModuleFactory.getPagesModule();
         FacilioModule pageLayoutsModule = ModuleFactory.getPageLayoutsModule();
@@ -620,6 +631,9 @@ public class CustomPageAPI {
         if (connectedWidgetId != null && connectedWidgetId > 0) {
             ConnectedAppWidgetContext summaryWidget = ConnectedAppAPI.getConnectedAppWidget(connectedWidgetId);
             if (summaryWidget != null && recordId !=null && recordId > 0) {
+                if(summaryWidget.getCriteriaId() > 0){
+                    summaryWidget.setCriteria(CriteriaAPI.getCriteria(summaryWidget.getCriteriaId()));
+                }
                 if (summaryWidget.getCriteria() != null) {
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                     FacilioModule module = modBean.getModule(moduleName);

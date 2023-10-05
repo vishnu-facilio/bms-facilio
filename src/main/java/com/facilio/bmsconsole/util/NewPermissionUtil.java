@@ -3,12 +3,16 @@ package com.facilio.bmsconsole.util;
 import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.WebTabContext.Type;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -660,6 +664,33 @@ public class NewPermissionUtil {
             }
         }
         return null;
+    }
+
+    public static List<Permission> getPermissions(WebTabContext tab) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+
+        String moduleName = "*";
+        if (tab.getTypeEnum() == WebTabContext.Type.MODULE) {
+                List<TabIdAppIdMappingCacheContext> tabIdAppIdMappingContextList = tabBean.getTabIdModules(tab.getId());
+                List<Long> moduleIds = new ArrayList<>();
+                if (CollectionUtils.isNotEmpty(tabIdAppIdMappingContextList)) {
+                    for (TabIdAppIdMappingContext tabIdAppIdMappingContext : tabIdAppIdMappingContextList) {
+                        if (tabIdAppIdMappingContext != null && tabIdAppIdMappingContext.getModuleId() > 0) {
+                            moduleIds.add(tabIdAppIdMappingContext.getModuleId());
+                        }
+                    }
+                }
+            if (CollectionUtils.isNotEmpty(moduleIds)) {
+                FacilioModule module = modBean.getModule(moduleIds.get(0));
+                if(module != null) {
+                    moduleName = module.getName();
+                }
+            } else if (tab.getConfigJSON() != null) {
+                moduleName = (String) tab.getConfigJSON().get("type");
+            }
+        }
+        return getPermissions(tab.getType(), moduleName);
     }
 
     public static List<Permission> getPermissionFromConfig(int tabType, JSONObject configJSON) {

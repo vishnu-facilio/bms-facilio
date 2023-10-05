@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleFactory;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -29,6 +30,7 @@ public class PageTabsAction extends FacilioAction{
     private long appId;
     private PageTabContext tab;
     private Long layoutId;
+    private String widgetName;
     private PagesContext.PageLayoutType layoutType;
     private Boolean excludeColumns = false;
     private Boolean status;
@@ -102,6 +104,17 @@ public class PageTabsAction extends FacilioAction{
         chain.execute();
         double sequenceNumber = (double) context.get(FacilioConstants.CustomPage.SEQUENCE_NUMBER);
         setResult(FacilioConstants.CustomPage.SEQUENCE_NUMBER, sequenceNumber);
+        return SUCCESS;
+    }
+
+    public String addConnectedSummaryTabToPage() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getAddConnectedSummaryTabToPageChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.CustomPage.PAGE_ID, pageId);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.CustomPage.WIDGET_NAME, widgetName);
+        chain.execute();
+        setResult(FacilioConstants.CustomPage.PAGE_TABS, context.get(FacilioConstants.CustomPage.PAGE_TABS));
         return SUCCESS;
     }
 }

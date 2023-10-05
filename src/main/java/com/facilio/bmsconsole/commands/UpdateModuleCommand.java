@@ -19,7 +19,8 @@ public class UpdateModuleCommand extends FacilioCommand {
 		String displayName = (String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME);
 		String description = (String) context.get(FacilioConstants.ContextNames.MODULE_DESCRIPTION);
 		Boolean stateFlowEnabled = (Boolean) context.get(FacilioConstants.ContextNames.STATE_FLOW_ENABLED);
-		
+		boolean isHiddenModule = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_HIDDEN_MODULE, false);
+
 		InstalledBundleContext installedBundle = (InstalledBundleContext) context.get(BundleConstants.INSTALLED_BUNDLE);
 
 		if (StringUtils.isNotEmpty(moduleName) && StringUtils.isNotEmpty(displayName)) {
@@ -30,6 +31,7 @@ public class UpdateModuleCommand extends FacilioCommand {
 			m.setModuleId(module.getModuleId());
 			m.setDisplayName(displayName);
 			m.setDescription(description);
+			m.setStatus(isHiddenModule);
 			m.setStateFlowEnabled(stateFlowEnabled);
 			
 			if(installedBundle != null) {
