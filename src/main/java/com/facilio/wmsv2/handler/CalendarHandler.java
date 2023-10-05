@@ -3,6 +3,7 @@ package com.facilio.wmsv2.handler;
 import com.facilio.bmsconsoleV3.util.CalendarApi;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.util.DBConf;
 import com.facilio.ims.handler.ImsHandler;
 import com.facilio.fms.message.Message;
 import lombok.extern.log4j.Log4j;
@@ -34,13 +35,13 @@ public class CalendarHandler extends ImsHandler {
     private ZonedDateTime getStartDate(Message message){
         JSONObject object = message.getContent();
         Long startDate = Long.parseLong(String.valueOf(object.get("startDate")));
-        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(startDate), ZoneId.systemDefault());
+        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(startDate), DBConf.getInstance().getCurrentZoneId());
 
     }
     private ZonedDateTime getEndDate(Message message){
         JSONObject object = message.getContent();
         Long endDate = Long.parseLong(String.valueOf(object.get("endDate")));
-        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(endDate), ZoneId.systemDefault());
+        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(endDate), DBConf.getInstance().getCurrentZoneId());
 
     }
 

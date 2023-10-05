@@ -25,6 +25,9 @@ public class FetchReadingFieldDetailsCommand extends FacilioCommand {
         }
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         for(V3ActionContext actionContext : actionContextList){
+            if(actionContext.getReadingFieldId() == null){
+                continue;
+            }
             FacilioField readingField = moduleBean.getField(actionContext.getReadingFieldId());
             actionContext.setReadingField(readingField);
         }

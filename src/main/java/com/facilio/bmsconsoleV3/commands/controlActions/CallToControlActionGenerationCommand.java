@@ -4,6 +4,7 @@ import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateCo
 import com.facilio.bmsconsoleV3.util.ControlActionAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.util.DBConf;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -25,7 +26,7 @@ public class CallToControlActionGenerationCommand extends FacilioCommand {
             return false;
         }
         Long currentTime = System.currentTimeMillis();
-        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), ZoneId.systemDefault());
+        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), DBConf.getInstance().getCurrentZoneId());
         ZonedDateTime startTime = zonedDateTime.plusDays(1);
         zonedDateTime = zonedDateTime.plusMonths(1);
         for(V3ControlActionTemplateContext controlActionTemplateContext : controlActionTemplateContextList){

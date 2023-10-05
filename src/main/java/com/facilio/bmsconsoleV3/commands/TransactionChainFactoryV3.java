@@ -3882,7 +3882,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getActionAfterSummaryCommand() {
         FacilioChain c = getDefaultChain();
-        //c.addCommand(new FetchReadingFieldDetailsCommand());
+        c.addCommand(new FetchReadingFieldDetailsCommand());
         return c;
     }
 
@@ -3893,12 +3893,12 @@ public class TransactionChainFactoryV3 {
     }
     public static FacilioChain getCommandsAfterListChain(){
         FacilioChain c = getDefaultChain();
-        //c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
+        c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
         return c;
     }
     public static FacilioChain getCommandsAfterSummaryChain(){
         FacilioChain c = getDefaultChain();
-        //c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
+        c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
         return c;
     }
     public static FacilioChain getControlActionBeforeListChain(){

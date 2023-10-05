@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.calendar;
 
+import com.facilio.db.util.DBConf;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,7 +31,7 @@ public class V3CalendarTimeSlotContext extends V3Context {
         return endMin;
     }
     public Integer convertMillisecondsToMinute(Long milliSecond){
-        ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(milliSecond), ZoneId.systemDefault());
+        ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(milliSecond), DBConf.getInstance().getCurrentZoneId());
         return dateTime.getHour()*60+dateTime.getMinute();
     }
 }

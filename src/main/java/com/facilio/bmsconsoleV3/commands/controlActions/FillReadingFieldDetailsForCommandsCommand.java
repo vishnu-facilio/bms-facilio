@@ -25,6 +25,9 @@ public class FillReadingFieldDetailsForCommandsCommand extends FacilioCommand {
         }
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         for(V3CommandsContext commandsContext : commandsContextList){
+            if(commandsContext.getFieldId() == null){
+                continue;
+            }
             FacilioField field = moduleBean.getField(commandsContext.getFieldId());
             commandsContext.setReadingField(field);
         }

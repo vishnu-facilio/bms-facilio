@@ -4,6 +4,7 @@ import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext;
 import com.facilio.bmsconsoleV3.util.ControlActionAPI;
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.util.DBConf;
 import org.apache.commons.chain.Context;
 
 import java.time.Instant;
@@ -20,7 +21,7 @@ public class ActivateControlActionTemplateCommand extends FacilioCommand {
         ControlActionAPI.updateControlActionTemplate(controlActionTemplateContext);
         ControlActionAPI.addControlActionTemplateActivity(V3ControlActionTemplateContext.ControlActionTemplateStatus.ACTIVE.getValue(),controlActionTemplateId);
         Long currentTime = System.currentTimeMillis();
-        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), ZoneId.systemDefault());
+        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), DBConf.getInstance().getCurrentZoneId());
         ZonedDateTime startTime = zonedDateTime.plusDays(1);
         zonedDateTime = zonedDateTime.plusDays(5);
         ControlActionAPI.generateControlActionFromTemplateWms(controlActionTemplateId,startTime.toEpochSecond()*1000,zonedDateTime.toEpochSecond()*1000);

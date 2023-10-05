@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.enums;
 
 import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.facilio.bmsconsoleV3.context.calendar.V3EventContext;
+import com.facilio.db.util.DBConf;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioIntEnum;
 
@@ -145,7 +146,7 @@ public enum EventTypeEnum implements FacilioEnum {
         public Object getIndex() {
             return this.intVal;
         }
-
+        public ZoneId zoneId = DBConf.getInstance().getCurrentZoneId();
         private static Map<Integer, EventTypeEnum> initEventTypeEnumMap() {
             Map<Integer, EventTypeEnum> eventTypeEnumMap = new HashMap<>();
 
@@ -178,8 +179,8 @@ public enum EventTypeEnum implements FacilioEnum {
             if (startTime == null && endTime == null) {
                 return true;
             }
-            ZonedDateTime StartTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault());
-            ZonedDateTime EndTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(endTime), ZoneId.systemDefault());
+            ZonedDateTime StartTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(startTime), zoneId);
+            ZonedDateTime EndTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(endTime), zoneId);
             LocalDate startDate = LocalDate.of(StartTime.getYear(), StartTime.getMonthValue(), StartTime.getDayOfMonth());
             LocalDate endDate = LocalDate.of(EndTime.getYear(), EndTime.getMonthValue(), EndTime.getDayOfMonth());
             if (localDate.isAfter(startDate) && localDate.isBefore(endDate)) {
@@ -320,9 +321,9 @@ public enum EventTypeEnum implements FacilioEnum {
             if(calendarEventContext.getValidityStartTime() == null && calendarEventContext.getValidityEndTime() == null){
                 return true;
             }
-            ZonedDateTime zonedDateTime = ZonedDateTime.of(localDate.getYear(),localDate.getMonthValue(),localDate.getDayOfMonth(),0,0,0,0,ZoneId.systemDefault());
+            ZonedDateTime zonedDateTime = ZonedDateTime.of(localDate.getYear(),localDate.getMonthValue(),localDate.getDayOfMonth(),0,0,0,0,zoneId);
             if (calendarEventContext.getValidityStartTime() != null) {
-                ZonedDateTime startDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(calendarEventContext.getValidityStartTime()), ZoneId.systemDefault());
+                ZonedDateTime startDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(calendarEventContext.getValidityStartTime()), zoneId);
                 if (zonedDateTime.isAfter(startDate) || zonedDateTime.isEqual(startDate)) {
                     check = true;
                 } else {
@@ -332,7 +333,7 @@ public enum EventTypeEnum implements FacilioEnum {
             }
             if (check) {
                 if (calendarEventContext.getValidityEndTime() != null) {
-                    ZonedDateTime endDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(calendarEventContext.getValidityEndTime()), ZoneId.systemDefault());
+                    ZonedDateTime endDate = ZonedDateTime.ofInstant(Instant.ofEpochMilli(calendarEventContext.getValidityEndTime()), zoneId);
                     if (zonedDateTime.isBefore(endDate) || zonedDateTime.isEqual(endDate)) {
                         check = true;
                     } else {

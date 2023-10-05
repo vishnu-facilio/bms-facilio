@@ -4,6 +4,7 @@ import com.facilio.bmsconsoleV3.context.calendar.V3EventContext;
 import com.facilio.bmsconsoleV3.enums.EventTypeEnum;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.util.DBConf;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -28,7 +29,7 @@ public class SetSpecialCaseMilliSecondsCommand extends FacilioCommand {
                 int year = eventContext.getScheduledYear();
                 int month =  eventContext.getScheduledMonth();
                 int date = eventContext.getScheduledDate();
-                ZonedDateTime zonedDateTime = ZonedDateTime.of(year,month,date,0,0,0,0, ZoneId.systemDefault());
+                ZonedDateTime zonedDateTime = ZonedDateTime.of(year,month,date,0,0,0,0, DBConf.getInstance().getCurrentZoneId());
                 eventContext.setSpecialCaseMilliSecond(zonedDateTime.toEpochSecond()*1000);
             }
         }
