@@ -4290,8 +4290,9 @@ public class FacilioConstants {
 		public static final String RULE_SCRIPT_LOGS_MODULE = "rulescriptlogs";
 
 		public static final String SCRIPT_LOGS = "scriptLogs";
+        public static final String RESOURCE_TYPE = "resourceType";
 
-		public static class RCA {
+        public static class RCA {
 			public static final String RCA_MODULE = "readingrulerca";
 			public static final String RCA_GROUP_MODULE = "readingrulerca_group";
 			public static final String RCA_SCORE_CONDITION_MODULE = "readingrulerca_score_condition";

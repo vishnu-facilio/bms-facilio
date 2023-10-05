@@ -356,7 +356,7 @@ enums:
 
   - name: WorkflowRuleStatus
     enumClassName: com.facilio.bmsconsole.context.WorkflowRuleLogContext$RuleStatus
-    
+
   - name: BaseMailLogState
     enumClassName: com.facilio.bmsconsoleV3.context.BaseMailMessageContext$BaseMailLogStatus
 
@@ -486,3 +486,7 @@ enums:
 
   - name: ClosureRestriction
     enumClassName: com.facilio.remotemonitoring.context.FlaggedEventRuleClosureConfigContext$ClosureRestriction
+
+
+  - name: ConnectedResourceAssignmentType
+    enumClassName: com.facilio.connected.ResourceType

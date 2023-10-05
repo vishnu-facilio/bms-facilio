@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.readingkpi.ReadingKpiAPI;
 import com.facilio.readingkpi.context.KPIType;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.v3.context.Constants;
@@ -36,6 +37,8 @@ public class FetchMetricAndUnitCommand extends FacilioCommand {
                     String customUnit = readingField.getUnit();
                     kpi.setCustomUnit(customUnit);
                 }
+
+                ReadingKpiAPI.setCategory(kpi);
             }
         }
         return false;

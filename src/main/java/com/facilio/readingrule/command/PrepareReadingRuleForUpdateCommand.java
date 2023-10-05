@@ -36,7 +36,7 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
         NameSpaceContext nameSpaceContext = NamespaceAPI.getNameSpaceByRuleId(readingRule.getId(), NSType.READING_RULE);
         WorkflowContext workflow = readingRule.getNs().getWorkflowContext();
         workflow.setId(nameSpaceContext.getWorkflowId());
-        if(workflow==null){
+        if (workflow == null) {
             throw new Exception("WorkFlow can not be null for reading rule");
         }
         NewReadingRuleContext oldRule = NewReadingRuleAPI.getReadingRules(Collections.singletonList(readingRule.getId())).get(0);
@@ -53,12 +53,6 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
 
     private void constructRuleDetails(Context ctx, NewReadingRuleContext newCtx, NewReadingRuleContext oldRule) throws Exception {
 
-        if (newCtx.getAssetCategory() != null) {
-            oldRule.setAssetCategory(newCtx.getAssetCategory());
-        }
-        if (newCtx.getAppliedTo() != null) {
-            oldRule.setAppliedTo(newCtx.getAppliedTo());
-        }
         if (CollectionUtils.isNotEmpty(newCtx.getAssets())) {
             oldRule.setAssets(newCtx.getAssets());
             newCtx.getNs().setIncludedAssetIds(newCtx.getAssets());
@@ -105,11 +99,13 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
             rule.setMatchedResources(resourcesMap);
         }
     }
-    private void setSeverity(NewReadingRuleContext rule) throws Exception{
-       RuleAlarmDetails alarmDetails=rule.getAlarmDetails();
-       AlarmSeverityContext alarmSeverity = AlarmAPI.getAlarmSeverity(alarmDetails.getSeverity());
-       alarmDetails.setSeverityId(alarmSeverity.getId());
+
+    private void setSeverity(NewReadingRuleContext rule) throws Exception {
+        RuleAlarmDetails alarmDetails = rule.getAlarmDetails();
+        AlarmSeverityContext alarmSeverity = AlarmAPI.getAlarmSeverity(alarmDetails.getSeverity());
+        alarmDetails.setSeverityId(alarmSeverity.getId());
     }
+
     private void removeIncludedAssets(NewReadingRuleContext oldRule, NewReadingRuleContext newRule) {
         oldRule.setAssets(new ArrayList<>());
         newRule.getNs().setIncludedAssetIds(new ArrayList<>());

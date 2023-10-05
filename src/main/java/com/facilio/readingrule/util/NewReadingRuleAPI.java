@@ -8,6 +8,10 @@ import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.connected.CommonConnectedUtil;
+import com.facilio.connected.IConnectedRule;
+import com.facilio.connected.ResourceCategory;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
@@ -22,11 +26,11 @@ import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceCacheContext;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
-import com.facilio.readingkpi.context.IConnectedRule;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.context.RuleAlarmDetails;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
@@ -134,9 +138,9 @@ public class NewReadingRuleAPI {
     public static NewReadingRuleContext getRule(Long ruleId) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         List<NewReadingRuleContext> rules = getRules(new Condition[]{
-                CriteriaAPI.getIdCondition(ruleId,modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE))});
+                CriteriaAPI.getIdCondition(ruleId, modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE))});
         if (CollectionUtils.isNotEmpty(rules)) {
-             return rules.get(0);
+            return rules.get(0);
         }
         throw new IllegalArgumentException("Invalid Rule Id");
     }
@@ -146,7 +150,7 @@ public class NewReadingRuleAPI {
         String search = null;
         int page = 0, perPage = 50;
         String orderBy = null, orderType = null;
-        if(paramsMap != null){
+        if (paramsMap != null) {
             page = (int) paramsMap.get("page");
             perPage = (int) paramsMap.get("perPage");
             search = (String) paramsMap.get("search");
@@ -155,7 +159,7 @@ public class NewReadingRuleAPI {
                 orderType = (String) paramsMap.get("orderType");
             }
         }
-        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, orderBy, orderType, search, page, perPage, true, null, null,null);
+        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, orderBy, orderType, search, page, perPage, true, null, null, null);
         Map<String, Object> newReadingRuleContexts = (Map<String, Object>) fetch.get(Constants.RECORD_MAP);
 
         List<NewReadingRuleContext> rules = (List<NewReadingRuleContext>) newReadingRuleContexts.get(moduleName);
@@ -240,6 +244,7 @@ public class NewReadingRuleAPI {
         }
         return -1L;
     }
+
     public static void setModuleNameForCriteria(Criteria criteria, String moduleName) {
         Map<String, Condition> conditions = criteria.getConditions();
         for (Map.Entry<String, Condition> entry : conditions.entrySet()) {
@@ -297,5 +302,13 @@ public class NewReadingRuleAPI {
         ruleLogger.setCalculationStartTime(DateTimeUtil.getCurrenTime(new Boolean[0]));
         WorkflowRuleLoggerAPI.addWorkflowRuleLogger(ruleLogger);
         return ruleLogger.getId();
+    }
+
+    public static void setCategory(NewReadingRuleContext rule) throws Exception {
+        ResourceType type = rule.getResourceTypeEnum();
+        V3Context category = CommonConnectedUtil.getCategory(type, rule.getCategoryId());
+        if(category != null) {
+            rule.setCategory(new ResourceCategory<>(type, category));
+        }
     }
 }

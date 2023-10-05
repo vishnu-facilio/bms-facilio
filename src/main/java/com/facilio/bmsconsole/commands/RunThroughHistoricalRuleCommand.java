@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.alarms.sensor.context.SensorRuleContext;
+import com.facilio.alarms.sensor.util.SensorRuleUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
 import com.facilio.taskengine.common.JobConstants;
@@ -23,8 +25,6 @@ import com.facilio.bmsconsole.context.ExecuteHistoricalRule;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
 import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
-import com.facilio.alarms.sensor.context.SensorRuleContext;
-import com.facilio.alarms.sensor.util.SensorRuleUtil;
 import com.facilio.bmsconsole.enums.RuleJobType;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalAlarmsAPI;
@@ -46,7 +46,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand implements P
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		this.context = context;
-		long maximumDailyEventRuleJobsPerOrg = 10000l; 
+		long maximumDailyEventRuleJobsPerOrg = 10000l;
 		
 		Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.HISTORICAL_READING_RULE_JOBS_THRESHOLD);
     	if (orgInfoMap != null && MapUtils.isNotEmpty(orgInfoMap)) {
@@ -207,7 +207,7 @@ public class RunThroughHistoricalRuleCommand extends FacilioCommand implements P
 	private List<Long> getSensorRuleFieldIds(JSONObject loggerInfo, String primaryPropKeyName) throws Exception {	
 		List<SensorRuleContext> sensorRules = SensorRuleUtil.getSensorRuleByCategoryId((Long)loggerInfo.get(primaryPropKeyName), null, false, true);
 		if(sensorRules != null && !sensorRules.isEmpty()) {	
-			Set<Long> sensorRuleFieldIds = sensorRules.stream().map(sensorRule -> sensorRule.getSensorFieldId()).collect(Collectors.toSet());
+			Set<Long> sensorRuleFieldIds = sensorRules.stream().map(sensorRule -> sensorRule.getReadingFieldId()).collect(Collectors.toSet());
 			List<Long> matchedSensorRuleFieldIds = new ArrayList<Long>(sensorRuleFieldIds);
 			return WorkflowRuleHistoricalAlarmsAPI.getMatchedFinalSecondaryIds((List<Long>)loggerInfo.get("readingFieldId"), matchedSensorRuleFieldIds, true);
 		}	

@@ -1,6 +1,7 @@
 package com.facilio.ns.factory;
 
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 
 import java.util.ArrayList;
@@ -66,12 +67,15 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(getIdField(module));
         fields.add(getNumberField("parentRuleId", "PARENT_RULE_ID", module));
-        fields.add(getNumberField("categoryId","CATEGORY_ID",module));
+        fields.add(getNumberField("categoryId", "CATEGORY_ID", module));
         fields.add(getNumberField("execInterval", "EXEC_INTERVAL", module));
         fields.add(getNumberField("type", "TYPE", module));
         fields.add(getNumberField("workflowId", "WORKFLOW_ID", module));
         fields.add(getBooleanField("status", "STATUS", module));
-        fields.add(getNumberField("loggerLevel","LOGGER_LEVEL",module));
+        fields.add(getNumberField("loggerLevel", "LOGGER_LEVEL", module));
+        fields.add(getNumberField("execMode", "EXECUTOR_MODE", module));
+        fields.add(getNumberField("executorId", "EXECUTOR_ID", module));
+        fields.add(getBooleanField("isDeleted", "SYS_DELETED", module));
         return fields;
     }
 

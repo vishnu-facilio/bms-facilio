@@ -40,7 +40,9 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
                     kpi.setReadingFieldId(null);
                     kpi.setReadingModuleId(null);
                 }
-
+                if(kpi.getCategoryId() == null) { //TODO: should be delete this code
+                    kpi.setCategoryId(kpi.getAssetCategoryId());
+                }
                 setReadingParent(kpi, context);
             }
         }
@@ -54,7 +56,7 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
             field.setUnit(customUnit);
             field.setMetric(0);
         } else {
-            Integer unitId = 0;
+            int unitId = 0;
             if (kpi.getUnitId() != null) {
                 unitId = kpi.getUnitId();
             }
@@ -68,7 +70,6 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
         ArrayList<FacilioField> fieldList = new ArrayList<FacilioField>() {
             {
                 add(kpi.getReadingField());
-                add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_INFO, kpi.getName() + " - Sys Info", "SYS_INFO", null, FieldType.BIG_STRING));
             }
         };
         context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fieldList);
@@ -104,14 +105,14 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
 
     public void setContextForNsAndWorkflow(Context context, ReadingKPIContext kpi) throws Exception {
         WorkflowContext workflow = kpi.getNs().getWorkflowContext();
-        if (workflow == null) {
-            throw new Exception("WorkFlow can not be null for KPI");
+        if (workflow != null) {
+            context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
         }
-        context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+
         context.put(NamespaceConstants.NAMESPACE_FIELDS, kpi.getNs().getFields());
         context.put(NamespaceConstants.NAMESPACE, kpi.getNs());
         kpi.getNs().setExecInterval(kpi.getFrequencyEnum() != null ? kpi.getFrequencyEnum().getMs() : null);
         kpi.getNs().setType(NSType.KPI_RULE.getIndex());
-        kpi.getNs().setStatus(kpi.getKpiTypeEnum()==KPIType.LIVE);
+        kpi.getNs().setStatus(kpi.getKpiTypeEnum() == KPIType.LIVE);
     }
 }

@@ -61,6 +61,7 @@ public class BulkConfigurePointsJob extends InstantJob {
         } else if (filters != null && !filters.isEmpty()) {
             Criteria filterCriteria = FilterUtil.getCriteriaFromFilters(filters, FacilioConstants.ContextNames.POINTS, context);
             pointRequest.withCriteria(filterCriteria).limit(limit);
+            pointRequest.filterUnConfigurePoints();
         } else {
             throw new Exception("Either Point ids or criteria can't be empty");
         }

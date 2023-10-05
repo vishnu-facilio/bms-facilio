@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.rca.context.RCAScoreReadingContext;
@@ -32,11 +33,14 @@ public class ReadingRuleAction extends V3Action {
     private Integer dateOperator;
     private String dateOperatorValue;
     private String filters;
+    private Integer resourceType;
 
     public String rcaRuleList() throws Exception {
+        resourceType = resourceType == null ? ResourceType.ASSET_CATEGORY.getIndex() : resourceType;
         FacilioChain chain = TransactionChainFactory.fetchRcaRules();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ReadingRules.RESOURCE_TYPE, ResourceType.valueOf(resourceType));
         chain.execute();
         List<NewReadingRuleContext> newReadingRuleContext = (List<NewReadingRuleContext>) context.get(FacilioConstants.ReadingRules.NEW_READING_RULE_LIST);
         setData("result", newReadingRuleContext);
@@ -90,11 +94,11 @@ public class ReadingRuleAction extends V3Action {
         context.put(FacilioConstants.ContextNames.PAGE, getPage());
         context.put(FacilioConstants.ContextNames.PER_PAGE, getPerPage());
         chain.execute();
-        List<Map<String,Object>> ruleDetails = (List<Map<String,Object>>) context.get(FacilioConstants.ReadingRules.RCA.RCA_RULE_DETAILS);
+        List<Map<String, Object>> ruleDetails = (List<Map<String, Object>>) context.get(FacilioConstants.ReadingRules.RCA.RCA_RULE_DETAILS);
         JSONObject result = new JSONObject();
         result.put(FacilioConstants.ContextNames.RECORD_LIST, ruleDetails);
         result.put(FacilioConstants.ContextNames.RECORD_COUNT, context.get(FacilioConstants.ContextNames.COUNT));
-        setData("result",result);
+        setData("result", result);
         return SUCCESS;
     }
 
@@ -111,7 +115,7 @@ public class ReadingRuleAction extends V3Action {
         JSONObject result = new JSONObject();
         result.put("lastMonth", context.getOrDefault("lastMonth", 0D));
         result.put("thisMonth", context.getOrDefault("thisMonth", 0D));
-        setData("result",result);
+        setData("result", result);
         return SUCCESS;
     }
 }

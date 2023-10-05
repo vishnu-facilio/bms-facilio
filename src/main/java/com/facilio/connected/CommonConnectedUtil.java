@@ -1,8 +1,10 @@
 package com.facilio.connected;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -16,9 +18,12 @@ import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingkpi.ReadingKpiAPI;
-import com.facilio.readingkpi.context.IConnectedRule;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.storm.InstructionType;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.V3Context;
+import com.facilio.v3.util.V3Util;
+import com.google.common.collect.Lists;
 import lombok.NonNull;
 import org.antlr.v4.runtime.misc.OrderedHashSet;
 import org.apache.commons.collections4.CollectionUtils;
@@ -415,5 +420,28 @@ public class CommonConnectedUtil {
 
         historicalContext.put("data", instructionData);
         runStormHistorical.execute();
+    }
+
+    public static V3Context getCategory(ResourceType type, Long categoryId) throws Exception {
+        if(categoryId == null) {
+            return null;
+            //TODO: hack, need to remove this return check. added for backward compatibility
+            //throw new Exception("Category id cannot be null");
+        }
+        FacilioContext resultCtx;
+        switch (type) {
+            case ASSET_CATEGORY:
+                resultCtx = V3Util.getSummary(FacilioConstants.ContextNames.ASSET_CATEGORY, Lists.newArrayList(categoryId));
+                List<V3AssetCategoryContext> assetCategoriesCtx = Constants.getRecordListFromContext(resultCtx, FacilioConstants.ContextNames.ASSET_CATEGORY);
+                return CollectionUtils.isNotEmpty(assetCategoriesCtx) ? assetCategoriesCtx.get(0) : null;
+            case METER_CATEGORY:
+//                resultCtx = V3Util.getSummary(FacilioConstants.Meter.UTILITY_TYPE, Lists.newArrayList(categoryId));
+//                List<V3UtilityTypeContext> utilityCtxs = Constants.getRecordListFromContext(resultCtx, FacilioConstants.Meter.UTILITY_TYPE);
+//                return CollectionUtils.isNotEmpty(utilityCtxs) ? utilityCtxs.get(0) : null;
+                throw new Exception("Not supported yet");
+            case SITE:
+                throw new Exception("Not supported yet");
+        }
+        return null;
     }
 }

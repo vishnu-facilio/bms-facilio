@@ -31,7 +31,6 @@ public class AddRuleReadingsModuleCommand extends FacilioCommand {
                     add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_RESULT, ruleName, "BOOLEAN_CF1", null, FieldType.BOOLEAN));
                     add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_ENERGY_IMPACT, ruleName + " - Energy Impact", "ENERGY_IMPACT", null, FieldType.DECIMAL));
                     add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_COST_IMPACT, ruleName + " - Cost Impact", "COST_IMPACT", null, FieldType.DECIMAL));
-                    add(FieldFactory.getField(NewReadingRuleAPI.RuleReadingsConstant.RULE_READING_INFO, ruleName + " - Sys Info", "SYS_INFO", null, FieldType.BIG_STRING));
                 }
             };
 

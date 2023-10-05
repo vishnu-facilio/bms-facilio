@@ -11,6 +11,7 @@ import com.facilio.ns.context.NSType;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.faultimpact.FaultImpactAPI;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
@@ -35,9 +36,9 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
                 readingRule.getNs().setType(NSType.READING_RULE.getIndex());
                 readingRule.getNs().setStatus(true);
 
-                WorkflowContext workflow=readingRule.getNs().getWorkflowContext();
+                WorkflowContext workflow = readingRule.getNs().getWorkflowContext();
 
-                if(workflow==null){
+                if (workflow == null) {
                     throw new Exception("WorkFlow can not be null for reading rule");
                 }
                 ctx.put(NamespaceConstants.NAMESPACE, readingRule.getNs());
@@ -45,9 +46,12 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
 
                 ctx.put(WorkflowV2Util.WORKFLOW_CONTEXT, readingRule.getNs().getWorkflowContext());
                 ctx.put(NamespaceConstants.NAMESPACE_FIELDS, readingRule.getNs().getFields());
-                setReadingParent(ctx, readingRule);
+
+                readingRule.setCategoryId(readingRule.getAssetCategory().getId()); //TODO: hack: clean up this code
+                NewReadingRuleAPI.setCategory(readingRule);
                 setAssets(readingRule);
                 setFaultImpactObject(readingRule);
+                setReadingParent(ctx, readingRule);
             }
         }
         return false;
@@ -83,13 +87,20 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
         switch (rule.getResourceTypeEnum()) {
             case SPACE_CATEGORY:
                 context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.SPACE_CATEGORY);
-                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, rule.getSpaceCategory().getId());
+                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, rule.getCategoryId());
                 context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getSpaceCategoryReadingRelModule());
                 break;
             case ASSET_CATEGORY:
                 context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.ASSET_CATEGORY);
-                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, rule.getAssetCategory().getId());
+                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, rule.getCategoryId());
                 context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+            case METER_CATEGORY:
+                context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.METER);
+                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, rule.getCategoryId());
+//                context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+            case SITE:
+                context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.SITE);
+                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, rule.getCategoryId());
         }
     }
 }
