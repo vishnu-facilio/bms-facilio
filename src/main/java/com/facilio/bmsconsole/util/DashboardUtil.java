@@ -14,6 +14,8 @@ import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
+import com.facilio.cards.util.CardLayout;
+import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -682,7 +684,15 @@ public class DashboardUtil {
 				if(dashboardWidgetContext != null) {
 					dashboardWidgetContext.setWidgetVsWorkflowContexts(DashboardUtil.getWidgetVsWorkflowList(dashboardWidgetContext.getId()));
 				}
-				
+				if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
+					if(widgetType.equals(WidgetType.CARD)){
+						WidgetCardContext cardContext = (WidgetCardContext) dashboardWidgetContext;
+						if(cardContext.getCardLayout().equals(CardLayout.COMBO_CARD.getName())){
+							List<WidgetCardContext> childCards = CardUtil.getChildCards(cardContext.getId());
+							cardContext.setChildCards(childCards);
+						}
+					}
+				}
 				dashboardWidgetContexts.add(dashboardWidgetContext);
 			}
 		}

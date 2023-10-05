@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.util.List;
+
 public class WidgetCardContext extends DashboardWidgetContext {
 
 	/**
@@ -70,7 +72,10 @@ public class WidgetCardContext extends DashboardWidgetContext {
 	private Long parentId;
 	public void setParentId(Long parentId) { this.parentId = parentId; }
 	public Long getParentId() { return this.parentId; }
-	
+	private List<WidgetCardContext> childCards;
+	public void setChildCards(List<WidgetCardContext> childCards) { this.childCards = childCards; }
+	public List<WidgetCardContext> getChildCards() { return this.childCards; }
+
 	private JSONObject cardParams;
 	
 	public JSONObject getCardParams() {
@@ -234,6 +239,7 @@ public void setCardCustomScriptFilters(DashboardCustomScriptFilter cardCustomScr
 		dataOptionsJson.put("scriptModeInt",getScriptModeInt());
 		dataOptionsJson.put("customScriptId",getCustomScriptId());
 		dataOptionsJson.put("parentId",getParentId());
+		dataOptionsJson.put("childCards",getChildCards());
 
 		
 		

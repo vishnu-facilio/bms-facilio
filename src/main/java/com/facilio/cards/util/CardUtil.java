@@ -1,10 +1,13 @@
 package com.facilio.cards.util;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import com.facilio.bmsconsole.context.WidgetCardContext;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -203,5 +206,21 @@ public class CardUtil {
 			}
 		}
 		return sb.toString();
+	}
+	public static List<WidgetCardContext> getChildCards(Long parentId) throws Exception {
+		List<WidgetCardContext> childCards= new ArrayList<>();
+		if(parentId != null && parentId > 0){
+			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+					.table(ModuleFactory.getWidgetCardModule().getTableName())
+					.select(FieldFactory.getWidgetCardFields())
+					.andCondition(CriteriaAPI.getCondition("PARENT_ID","parent_id", String.valueOf(parentId), NumberOperators.EQUALS));
+			List<Map<String, Object>> props = selectRecordBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				for (Map<String, Object>prop: props){
+					childCards.add(FieldUtil.getAsBeanFromMap(prop, WidgetCardContext.class));
+				}
+			}
+		}
+		return childCards;
 	}
 }
