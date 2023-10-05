@@ -3712,6 +3712,19 @@
             <property name="endTime" type="number"/>
         </urlparams>
     </request>
-
-
+    <request path="/api/v3/serviceOrderItem/serviceOrderItemFromReservation">
+        <requestbody type="object">
+            <property name="reservationId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/serviceOrderTool/serviceOrderToolFromPlan">
+        <requestbody type="object">
+            <property name="plannedToolId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/serviceOrderService/serviceOrderServiceFromPlan">
+        <requestbody type="object">
+            <property name="plannedServiceId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
 </config>
