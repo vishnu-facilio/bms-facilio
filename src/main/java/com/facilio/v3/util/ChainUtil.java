@@ -670,7 +670,7 @@ public class ChainUtil {
         fillModuleTypeMap(reflections);
     }
 
-    public static void initRESTAPIHandlerByStorm(String packageName) throws Exception {
+    public static void initRESTAPIHandlerForStorm(String packageName) throws Exception {
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .forPackages(packageName)
                 .filterInputsBy(new FilterBuilder().includePackage(packageName))

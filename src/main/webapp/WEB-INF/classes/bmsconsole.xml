@@ -1468,8 +1468,13 @@
 				<param name="includeProperties">formulaList.*,fieldVsRules.*</param>
 			</result>
 		</action>
-				<action name="updateRDM" class="com.facilio.bmsconsole.actions.ReadingAction"
-			method="updateReadingDataMeta">
+		<action name="updateRDM" class="com.facilio.bmsconsole.actions.ReadingAction" method="updateReadingDataMeta">
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+
+		<action name="update_rdm" class="com.facilio.bmsconsole.actions.ReadingAction" method="updateReadingDataMeta1">
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
