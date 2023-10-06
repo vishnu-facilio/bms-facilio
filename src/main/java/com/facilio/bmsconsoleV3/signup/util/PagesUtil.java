@@ -330,7 +330,7 @@ public class PagesUtil {
                     PageTabContext tab = new PageTabContext(connectedAppSummaryWidget.getLinkName() + "tab", connectedAppSummaryWidget.getWidgetName(), -1D, PageTabContext.TabType.CONNECTED_TAB, true, AccountUtil.FeatureLicense.CONNECTEDAPPS.getFeatureId())
                             .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                             .addSection("section", "", null)
-                            .addWidget(connectedAppSummaryWidget.getLinkName(), connectedAppSummaryWidget.getWidgetName(), PageWidget.WidgetType.CONNNECTED_APP, "flexiblewebconnectedapp_30", 0, 0, widgetParam, null)
+                            .addWidget(connectedAppSummaryWidget.getLinkName(), connectedAppSummaryWidget.getWidgetName(), PageWidget.WidgetType.CONNNECTED_APP, "flexiblewebconnectedapp_6", 0, 0, widgetParam, null)
                             .widgetDone()
                             .sectionDone()
                             .columnDone();
