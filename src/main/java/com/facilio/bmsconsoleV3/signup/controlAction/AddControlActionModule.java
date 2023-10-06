@@ -298,6 +298,7 @@ public class AddControlActionModule extends SignUpData {
         editRecord.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
 //        editRecord.setPermission(AccountConstants.ModulePermission.UPDATE.name());
 //        editRecord.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,editRecord);
 
     }
 

@@ -114,6 +114,7 @@ public class AddControlActionTemplateModule extends SignUpData {
         editRecord.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
         editRecord.setIdentifier("edit");
         editRecord.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,editRecord);
     }
     public void addNightlyJob() throws Exception {
 
