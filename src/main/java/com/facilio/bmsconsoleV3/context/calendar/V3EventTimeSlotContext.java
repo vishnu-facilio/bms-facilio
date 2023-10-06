@@ -31,7 +31,7 @@ public class V3EventTimeSlotContext extends V3Context {
         return endMin;
     }
     public Integer convertMillisecondsToMinute(Long milliSecond){
-        ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(milliSecond), DBConf.getInstance().getCurrentZoneId());
+        ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(milliSecond), ZoneId.systemDefault());
         return dateTime.getHour()*60+dateTime.getMinute();
     }
 }
