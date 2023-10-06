@@ -43,6 +43,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -660,8 +662,20 @@ public class ChainUtil {
 
     public static void initRESTAPIHandler(String packageName) throws InvocationTargetException, IllegalAccessException {
         Reflections reflections = new Reflections(ClasspathHelper.forPackage(packageName), new MethodAnnotationsScanner());
+        initRESTAPIHandler(reflections);
+    }
+
+    public static void initRESTAPIHandler(Reflections reflections) throws InvocationTargetException, IllegalAccessException {
         fillModuleNameMap(reflections);
         fillModuleTypeMap(reflections);
+    }
+
+    public static void initRESTAPIHandlerByStorm(String packageName) throws Exception {
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .forPackages(packageName)
+                .filterInputsBy(new FilterBuilder().includePackage(packageName))
+                .setScanners(new MethodAnnotationsScanner()));
+        initRESTAPIHandler(reflections);
     }
 
     private static void fillModuleTypeMap(Reflections reflections) throws InvocationTargetException, IllegalAccessException {
