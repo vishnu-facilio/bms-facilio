@@ -383,7 +383,7 @@ public class ViewAPI {
 				}
 				view.setViewType(view.getType());
 
-				if ((!getOnlyBasicValues || AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DISABLE_VIEWLIST_OPTIMIZATION)) && (view.getCriteriaId() != -1)) {
+				if ((!getOnlyBasicValues) && (view.getCriteriaId() != -1)) {
 					Criteria criteria = CriteriaAPI.getCriteria(orgId, view.getCriteriaId());
 					setCriteriaValue(criteria);
 					view.setCriteria(criteria);
