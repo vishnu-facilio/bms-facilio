@@ -64,4 +64,17 @@ public class DataMigrationConstants {
     public static final String SKIP_MODULES_LIST = "skipModules";
     public static final String LOG_MODULES_LIST = "logModules";
     public static final String RUN_ONLY_FOR_MODULES = "runOnlyForModules";
+    public static final String DATA_MIGRATION_MODULE_NAMES = "dataMigrationModuleNames";
+    public static final String DATA_MIGRATION_MODULES = "dataMigrationModules";
+    public static final String ALL_SYSTEM_MODULES = "allSystemModules";
+    public static final String ALL_DATA_MIGRATION_MODULES = "allDataMigrationModules";
+    public static final String MODULES_VS_DETAILS = "ModulesVsInfo";
+    public static final String LIMIT = "limit";
+    public static final String PACKAGE_ID = "packageId";
+    public static final String PACKAGE_CHANGE_SET = "packageChangSets";
+    public static final String FILE = "file";
+    public static final String MODULE_NAMES_XML_FILE_NAME = "moduleNameVsXmlFileName";
+    public static final String DATA_INSERT_PROCESS = "moduleDataInsertProcess";
+
+
 }

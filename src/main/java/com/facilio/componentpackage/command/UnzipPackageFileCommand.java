@@ -15,6 +15,7 @@ import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.File;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 @Log4j
@@ -53,6 +54,7 @@ public class UnzipPackageFileCommand extends FacilioCommand {
 		Queue<PackageFolderContext> folderQueue = new LinkedList<>();
 		folderQueue.add(rootFolder);
 
+		List<String> fileSupportedFolderName = PackageFileUtil.getFileSupportedFolderNames();
 		while(!folderQueue.isEmpty()) {
 			PackageFolderContext folderContent = folderQueue.poll();
 			File currentFolder = new File(folderContent.getPath());
@@ -68,9 +70,9 @@ public class UnzipPackageFileCommand extends FacilioCommand {
 					String fileName = FilenameUtils.getBaseName(fileNameWithExtn);
 					String extension = FilenameUtils.getExtension(fileNameWithExtn);
 
-					if(PackageConstants.ALLOWED_EXTN.contains(extension) && !fileName.startsWith(".") && !currentFolder.getName().endsWith(PackageConstants.META_FILES_FOLDER_NAME)) {
+					if(PackageConstants.ALLOWED_EXTN.contains(extension) && !fileName.startsWith(".") && !fileSupportedFolderName.contains(currentFolder.getName())) {
 						String content = PackageFileUtil.readFileContent(file.getAbsolutePath());
-						PackageFileContext packageFile = new PackageFileContext(fileName, extension, content);
+						PackageFileContext packageFile = new PackageFileContext(fileName, extension, content,file);
 						folderContent.addFile(fileNameWithExtn, packageFile);
 					}
 				}

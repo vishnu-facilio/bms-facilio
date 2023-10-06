@@ -1,5 +1,6 @@
 package com.facilio.datamigration.beans;
 
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -7,12 +8,15 @@ import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.context.DataMigrationMappingContext;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
+import com.facilio.datamigration.util.DataMigrationUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -28,13 +32,15 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Log4j
 public class DataMigrationBeanImpl implements DataMigrationBean{
     private static final List<Integer> SKIP_SITE_FILTER = Arrays.asList(FacilioModule.ModuleType.NOTES.getValue(), FacilioModule.ModuleType.ATTACHMENTS.getValue());
 
     @Override
-    public List<Map<String, Object>> getModuleData(FacilioModule module, List<FacilioField> fields, List<SupplementRecord> supplements, int offset, int limit, Set<Long> siteIds, Criteria moduleCriteria) throws Exception {
+    public List<Map<String, Object>> getModuleDataForIds(FacilioModule module, List<FacilioField> fields, List<SupplementRecord> supplements, int offset, int limit, Set<Long> siteIds, Criteria moduleCriteria,List<Long> recordIds) throws Exception {
 //        if(CollectionUtils.isNotEmpty(siteIds)) {
 //            AccountUtil.setCurrentSiteId(siteIds.iterator().next());
 //        }
@@ -52,6 +58,10 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
                                 .skipModuleCriteria()
                                         .offset(offset)
                                                 .limit(limit);
+
+        if(CollectionUtils.isNotEmpty(recordIds)){
+            selectBuilder.andCondition(CriteriaAPI.getIdCondition(recordIds,module));
+        }
 
         if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(supplements)) {
             selectBuilder.fetchSupplements(supplements);
@@ -108,6 +118,98 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
         return selectBuilder.getAsProps();
     }
 
+    @Override
+    public List<FacilioModule> getSystemSubModules(List<Long> parentModuleIds) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioModule> systemSubModules = new ArrayList<>();
+        FacilioModule relModule = ModuleFactory.getSubModulesRelModule();
+        List<FacilioField> moduleFields = FieldFactory.getModuleFields();
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(moduleFields);
+        Map<String,FacilioField> relFieldMap = FieldFactory.getAsMap(FieldFactory.getSubModuleRelFields(relModule));
+
+
+        Set<String> skipModules = DataMigrationUtil.getAllSkipMigrationModules();
+        List<Integer> moduleTypesToSkip = DataMigrationUtil.getModuleTypesToSkip();
+
+        Criteria skipCriteria = new Criteria();
+        skipCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("type"), StringUtils.join(moduleTypesToSkip, ","), NumberOperators.NOT_EQUALS));
+        skipCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("name"), StringUtils.join(skipModules, ","), StringOperators.ISN_T));
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getSubModulesRelModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("custom"),"false", BooleanOperators.IS))
+                .leftJoin(ModuleFactory.getModuleModule().getTableName())
+                .on("Modules.MODULEID=SubModulesRel.CHILD_MODULE_ID")
+                .andCondition(CriteriaAPI.getCondition(relFieldMap.get("parentModuleId"),parentModuleIds, NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("type"), String.valueOf(FacilioModule.ModuleType.BASE_ENTITY.getValue()), NumberOperators.NOT_EQUALS))
+                .andCriteria(skipCriteria)
+                .orderBy( relFieldMap.get("parentModuleId").getCompleteColumnName() +" ASC")
+                .select(moduleFields);
+
+        List<Map<String, Object>> props = selectBuilder.get();
+
+        if (CollectionUtils.isNotEmpty(props)) {
+            systemSubModules = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
+            Map<Long, FacilioModule> moduleIdVsObj = systemSubModules.stream().collect(Collectors.toMap(FacilioModule::getModuleId, Function.identity(),(name1, name2) -> { return name1; }));
+            int index = 0 ;
+
+            for (Map<String, Object> prop : props) {
+                if(prop.containsKey("extendsId") && prop.get("extendsId") != null) {
+                    FacilioModule extendModule = null;
+                    if(moduleIdVsObj.get((Long)prop.get("extendsId"))==null){
+                        long extendModuleId = (Long)prop.get("extendsId");
+                        extendModule = modBean.getModule(extendModuleId);
+                    }else{
+                        extendModule = moduleIdVsObj.get((Long)prop.get("extendsId"));
+                    }
+                    systemSubModules.get(index).setExtendModule(extendModule);
+                }
+                index++;
+            }
+        }
+
+        return systemSubModules;
+    }
+
+    public List<FacilioModule> getAllModules() throws Exception{
+
+        FacilioModule moduleModule = ModuleFactory.getModuleModule();
+        List<FacilioField> moduleFields = FieldFactory.getModuleFields();
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .table(moduleModule.getTableName())
+                .select(moduleFields);
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        if (CollectionUtils.isEmpty(props)) {
+            return null;
+        }
+
+        for (Map<String, Object> prop : props) {
+            if (prop.containsKey("createdBy")) {
+                IAMUser user = new IAMUser();
+                user.setId((long) prop.get("createdBy"));
+                prop.put("createdBy", user);
+            }
+        }
+
+        List<FacilioModule> moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
+        Map<Long, FacilioModule> moduleIdVsObj = moduleList.stream().collect(Collectors.toMap(FacilioModule::getModuleId, Function.identity()));
+        int index = 0;
+        for (Map<String, Object> prop : props) {
+            if(prop.containsKey("extendsId") && prop.get("extendsId") != null) {
+                moduleList.get(index).setExtendModule(moduleIdVsObj.get((Long)prop.get("extendsId")));
+            }
+            index++;
+        }
+        return moduleList;
+
+    }
+    @Override
+    public List<Map<String, Object>> getModuleData(FacilioModule module, List<FacilioField> fields, List<SupplementRecord> supplements, int offset, int limit, Set<Long> siteIds, Criteria moduleCriteria) throws Exception {
+        return getModuleDataForIds(module,fields,supplements,offset,limit,siteIds,moduleCriteria,new ArrayList<>());
+    }
     @Override
     public Map<Long, Long> createModuleData(FacilioModule module, List<FacilioField> targetFields, List<SupplementRecord> supplements,
                                             List<Map<String, Object>> props, Boolean addLogger) throws Exception {

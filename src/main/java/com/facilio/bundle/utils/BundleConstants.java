@@ -51,6 +51,7 @@ public class BundleConstants {
 	public static final String VALUES = "values";
 	
 	public static final String XML_FILE_EXTN = "xml";
+	public static final String CSV_FILE_EXTN = "csv";
 	public static final String COMPONENTS_FOLDER_NAME = "Components";
 	
 	public static final String COMPONENTS_FOLDER = "componentFolder";

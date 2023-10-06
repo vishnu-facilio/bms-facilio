@@ -276,6 +276,31 @@
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
 		</action>
+		<action name="createDataPackage" class="com.facilio.datamigration.action.CopyDataMigrationAction">
+			<result name="success" type="json">
+				<param name="root">result</param>
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+			</result>
+		</action>
+
+		<action name="installDataPackage" class="com.facilio.datamigration.action.InstallDataMigrationAction">
+			<result name="success" type="json">
+				<param name="root">result</param>
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+			</result>
+		</action>
 
 		<action name="createPackage" class="com.facilio.componentpackage.action.PackageAction" method="createPackage" >
 			<result name="success" type="json">
@@ -302,11 +327,12 @@
 			<param name="includeProperties">responseCode, message, stackTrace</param>
 		</result>
 		</action>
-
 		<action name="copyCustomization" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/copyCustomization.jsp</result>
 		</action>
-
+		<action name="copyDataMigration" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/copyDataMigration.jsp</result>
+		</action>
 		<action name="metaMigration" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/metaMigration.jsp</result>
 		</action>

@@ -8,6 +8,7 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 
@@ -55,7 +56,7 @@ public class FetchCommentMentionsCommand extends FacilioCommand {
         if(mentionedPeopleIds != null || mentionedPeopleIds.isEmpty()){
             Set<Long> pplSet = new HashSet<>(mentionedPeopleIds);
             List<V3PeopleContext> mentionedPeopleList = V3RecordAPI.getRecordsList(FacilioConstants.ContextNames.PEOPLE, pplSet, V3PeopleContext.class);
-            if(mentionedPeopleList != null || !mentionedPeopleList.isEmpty()){
+            if(CollectionUtils.isNotEmpty(mentionedPeopleList)){
                 for (V3PeopleContext ppl : mentionedPeopleList) {
                     pplWithId.put(ppl.getId(), ppl);
                 }

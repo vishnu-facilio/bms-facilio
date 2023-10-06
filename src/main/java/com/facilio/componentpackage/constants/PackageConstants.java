@@ -46,6 +46,8 @@ public class PackageConstants {
     public static final String TARGET_ORG_ID = "targetOrgId";
     public static final String SANDBOX_DOMAIN_NAME = "sandboxDomainName";
     public static final String PACKAGE_ROOT_FOLDER = "Package_root_folder";
+    public static final String TO_BE_FETCH_RECORDS = "toBeFetchRecords";
+    public static final String FETCHED_RECORDS = "fetchedRecords";
     public static final String PREVIOUS_VERSION = "previousVersion";
     public static final String PACKAGE_CONFIG_XML = "packageConfigXML";
     public static final String USE_LINKNAME_FROM_CONTEXT = "useLinkNameFromContext";
@@ -53,11 +55,19 @@ public class PackageConstants {
 
     public static final String TYPE_STRING = "typeString";
     public static final String CONSTANT = "constant";
+    public static final String CSV_FILE_EXTN = "csv";
+    public static final String DATA_FOLDER_NAME = "datas";
+    public static final String DATA_ATTACHMENT_FILE_FOLDER_NAME = "dataAttachmentFiles";
+    public static final String MODULE_NAMES = "moduleNames";
+    public static final String MODULE =  "module";
+    public static final String DATA_CONF_FILE_NAME = "DataConf";
+    public static final String DATA = "Data";
 
     public static final List<String> ALLOWED_EXTN = new ArrayList<>();
 
     static {
         ALLOWED_EXTN.add("xml");
+        ALLOWED_EXTN.add("csv");
         ALLOWED_EXTN.add("fs");
     }
 
