@@ -1220,7 +1220,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             endTrip.setIdentifier(FacilioConstants.ServiceAppointment.END_TRIP);
             endTrip.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
             endTrip.setPermission("EXECUTE");
-            endTrip.setPermissionRequired(false);
+            endTrip.setPermissionRequired(true);
             Criteria endTripCriteria = new Criteria();
             endTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(enRouteStatus.getId()), PickListOperators.IS));
             endTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.IS));
@@ -1242,7 +1242,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             Criteria startWorkCriteria = new Criteria();
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(dispatchedStatus.getId()), PickListOperators.IS));
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), CommonOperators.IS_NOT_EMPTY));
-            startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.ISN_T));
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
             startWorkCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
             startWork.setCriteria(startWorkCriteria);
@@ -1261,7 +1260,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             Criteria completeCriteria = new Criteria();
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(inProgressStatus.getId()), PickListOperators.IS));
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), CommonOperators.IS_NOT_EMPTY));
-            completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.ISN_T));
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), CommonOperators.IS_NOT_EMPTY));
             completeCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.ACTUAL_START_TIME), CommonOperators.IS_NOT_EMPTY));
@@ -1276,7 +1274,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             startTrip.setIdentifier(FacilioConstants.ServiceAppointment.START_TRIP);
             startTrip.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
             startTrip.setPermission("EXECUTE");
-            startTrip.setPermissionRequired(false);
+            startTrip.setPermissionRequired(true);
             Criteria startTripCriteria = new Criteria();
             List<Long> statusIds = new ArrayList<>();
             statusIds.add(dispatchedStatus.getId());
