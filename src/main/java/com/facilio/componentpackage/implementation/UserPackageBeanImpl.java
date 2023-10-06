@@ -248,8 +248,10 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
         }
 
         com.facilio.accounts.dto.User superAdminUser = AccountUtil.getOrgBean().getSuperAdmin(orgId);
-        Map<Long, Long> superAdminAppIdVsOrgUserId = getSuperAdminOrgUserId(superAdminUser.getUid());
+        Map<Long, Long> superAdminAppIdVsOrgUserId = getSuperAdminOrgUserId(orgId, superAdminUser.getUid());
+        Set<Long> superAdminDefaultAppIds = superAdminAppIdVsOrgUserId.keySet();
 
+        Map<String, List<String>> deletedUserNameVsIdentifiers = new HashMap<>();
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         Map<String, Map<String, Long>> userNameVsIdentifierVsOrgUserId = new HashMap<>();
 
@@ -264,12 +266,14 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
                 peopleUserContext.getUser().setAppDomain(appIdVsAppDomain.get(peopleUserContext.getApplicationId()));
 
                 long orgUserId = -1;
-                if (user.getEmail().equals(superAdminUser.getEmail()) && SUPER_ADMIN_DEFAULT_APPS.contains(appLinkName)) {
+                if (user.getEmail().equals(superAdminUser.getEmail()) && superAdminDefaultAppIds.contains(peopleUserContext.getApplicationId())) {
                     // OrgUserId for SuperAdmin for DefaultApps is generated on Org Creation, so only find mapping
                     orgUserId = superAdminAppIdVsOrgUserId.getOrDefault(peopleUserContext.getApplicationId(), -1L);
-                } else if (userNameVsIdentifierVsOrgUserId.containsKey(user.getUsername()) && userNameVsIdentifierVsOrgUserId.get(user.getUsername()).containsKey(user.getIdentifier())) {
+                } else if (userNameVsIdentifierVsOrgUserId.containsKey(user.getUsername()) && userNameVsIdentifierVsOrgUserId.get(user.getUsername()).containsKey(user.getIdentifier())
+                            && !(deletedUserNameVsIdentifiers.containsKey(user.getUsername()) && deletedUserNameVsIdentifiers.get(user.getUsername()).contains(user.getIdentifier()))) {
                     // OrgUserId of a user is unique on a constraint (USERNAME, IDENTIFIER)
                     // OrgUserId is same for a user when present in both Tenant & Occupant Portal, Main & Maintenance App
+                    // If a user is deleted, do not reuse old orgUserId. Create a new orgUserId
                     orgUserId = userNameVsIdentifierVsOrgUserId.get(user.getUsername()).get(user.getIdentifier());
                     if (user.getDeletedTime() < 0 || (peopleUserContext.getRoleId() > 0 && peopleUserContext.getApplicationId() > 0)) {
                         peopleUserContext.setOrgUserId(orgUserId);
@@ -278,7 +282,13 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
                 } else {
                     if (user.getDeletedTime() > 0) {
                         // Deleted User
-                        orgUserId = addSandboxUser(peopleUserContext, false, false, true, null);
+                        if (deletedUserNameVsIdentifiers.containsKey(user.getUsername()) && deletedUserNameVsIdentifiers.get(user.getUsername()).contains(user.getIdentifier())) {
+                            orgUserId = userNameVsIdentifierVsOrgUserId.get(user.getUsername()).get(user.getIdentifier());
+                        } else {
+                            orgUserId = addSandboxUser(peopleUserContext, false, false, true, null);
+                            deletedUserNameVsIdentifiers.computeIfAbsent(user.getUsername(), k -> new ArrayList<>());
+                            deletedUserNameVsIdentifiers.get(user.getUsername()).add(user.getIdentifier());
+                        }
                     } else if (peopleUserContext.getRoleId() < 0 && peopleUserContext.getApplicationId() < 0) {
                         // User with no app access
                         orgUserId = addSandboxUser(peopleUserContext, false, false, false, null);
@@ -409,24 +419,16 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
         add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
     }};
 
-    private final List<String> SUPER_ADMIN_DEFAULT_APPS = new ArrayList<String>() {{
-        add(FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP);
-        add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        add(FacilioConstants.ApplicationLinkNames.DATA_LOADER_APP);
-        add(FacilioConstants.ApplicationLinkNames.DEVELOPER_APP);
-        add(FacilioConstants.ApplicationLinkNames.KIOSK_APP);
-        add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
-    }};
-
-    private static Map<Long, Long> getSuperAdminOrgUserId(long uid) throws Exception {
+    private static Map<Long, Long> getSuperAdminOrgUserId(long orgId, long uid) throws Exception {
         List<Map<String, Object>> records = ApplicationUserUtil.getOrgAppUsers(uid, -1L);
         Map<Long, Long> appIdVsOrgUserId = new HashMap<>();
         if (CollectionUtils.isNotEmpty(records)) {
             for (Map<String, Object> record : records) {
                 long ouid = (Long) record.getOrDefault("ouid", -1L);
+                long propOrgId = (Long) record.getOrDefault("orgId", -1L);
                 long applicationId = (Long) record.getOrDefault("applicationId", -1L);
 
-                if (ouid > 0 && applicationId > 0) {
+                if (propOrgId == orgId && ouid > 0 && applicationId > 0) {
                     appIdVsOrgUserId.put(applicationId, ouid);
                 }
             }
