@@ -4749,6 +4749,7 @@ public class FacilioConstants {
 		public static final String TIME_SHEET_STATUS = "timeSheetStatus";
 		public static final String IN_PROGRESS = "inProgress";
 		public static final String COMPLETED = "completed";
+		public static final String TIME_SHEET_STATUS_ACTIONS = "timeSheetStatusActions";
 
 	}
 	public static class Trip{

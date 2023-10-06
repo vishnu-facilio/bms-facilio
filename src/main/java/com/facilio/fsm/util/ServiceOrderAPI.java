@@ -62,8 +62,12 @@ public class ServiceOrderAPI {
     public static void updateServiceOrder(ServiceOrderContext so) throws Exception
     {
         JSONObject bodyParams = new JSONObject();
-        if(so.getStatus().getStatus().equals(FacilioConstants.ServiceOrder.COMPLETED)){
-            bodyParams.put("completeTask",true);
+        if(so != null && so.getStatus() != null) {
+            if(StringUtils.isNotEmpty(so.getStatus().getStatus())) {
+                if (so.getStatus().getStatus().equals(FacilioConstants.ServiceOrder.COMPLETED)) {
+                    bodyParams.put("completeTask", true);
+                }
+            }
         }
         Long soId = so.getId();
         V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, soId, FieldUtil.getAsJSON(so), bodyParams, null, null, null, null,null, null, null,null);

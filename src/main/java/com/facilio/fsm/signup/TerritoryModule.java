@@ -109,7 +109,7 @@ public class TerritoryModule extends BaseModuleConfig {
         territoryGeographyFormFields.add(new FormField("geography", FacilioField.FieldDisplayType.TERRITORY, "Geography", FormField.Required.REQUIRED, 3, 1));
 
         FormSection generalInfosection = new FormSection("General Information", 1, territoryGeneralInfoFormFields, false);
-        FormSection geographySection = new FormSection("Geography", 2, territoryGeographyFormFields, false);
+        FormSection geographySection = new FormSection("Geography", 2, territoryGeographyFormFields, true);
 
         generalInfosection.setSectionType(FormSection.SectionType.FIELDS);
 

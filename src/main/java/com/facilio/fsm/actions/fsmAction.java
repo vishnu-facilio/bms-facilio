@@ -343,13 +343,16 @@ public class fsmAction extends V3Action {
 
     public String updateTimeSheetStatus() throws Exception{
         FacilioContext context = new FacilioContext();
+        HashMap<String, String> successMsg = new HashMap<>();
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(getRecordId()));
         switch (getIdentifier()){
             case FacilioConstants.TimeSheet.STOP_TIME_SHEET:
                 FacilioChain stopTimeSheetChain = FsmTransactionChainFactoryV3.stopTimeSheetChain();
                 stopTimeSheetChain.execute(context);
+                successMsg.put("message","Time Sheet Stopped Successfully");
                 break;
         }
+        setData(FacilioConstants.TimeSheet.TIME_SHEET_STATUS_ACTIONS,successMsg);
         return SUCCESS;
     }
     public String updateTripStatus() throws Exception{

@@ -32,7 +32,7 @@ public class FSMDefaultTabsAndTabGroups {
                 new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, null, null,null,appId),
                 new WebTabContext("Dispatch Console","dispatch",WebTabContext.Type.DISPATCHER_CONSOLE,null, null, null,null,appId),
                 new WebTabContext("Approvals", "approval", WebTabContext.Type.APPROVAL, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.TimeOff.TIME_OFF)), null, null,null,appId),
-                new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"portfolio\" }", 1,null,appId),
+                new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.PORTFOLIO, null, "{ \"type\": \"portfolio\" }", 1,null,appId),
                 new WebTabContext("Territory","territory",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.Territory.TERRITORY)), null, null,null,appId),
                 new WebTabContext("Assets", "assets", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.ASSET)), null, 4,null,appId),
                 new WebTabContext("Service Order","serviceOrder",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.SERVICE_ORDER)), null, null,null,appId),
