@@ -871,7 +871,7 @@ public class NewPermissionUtil {
                 return newKpiTabType.getOrDefault(action, -1);
             case 94:
                 return newDashboardTabType.getOrDefault(action, -1);
-            case 104:
+            case 106:
                 return dispatcherBoardTabType.getOrDefault(action,-1);
 
             default:
@@ -1080,7 +1080,7 @@ public class NewPermissionUtil {
                 }
                 return maps;
             }
-            case 105: {
+            case 106: {
                 Map<String, Long> maps = new HashMap<>();
                 for (String key : dispatcherBoardTabType.keySet()) {
                     maps.put(key, Long.valueOf(dispatcherBoardTabType.get(key).toString()));

@@ -2789,3 +2789,9 @@
 /api/v2/readings/meter/add
 /api/v2/readings/utilitytype
 /api/v3/virtualMeterTemplate/publish
+
+/api/v3/module/serviceAppointment/*/systemButton/*
+/api/v3/module/serviceTask/*/systemButton/*
+/api/v3/module/timeSheet/*/systemButton/*
+/api/v3/module/trip/*/systemButton/*
+/api/v3/module/serviceOrder/*/SYSTEM_BUTTON/*

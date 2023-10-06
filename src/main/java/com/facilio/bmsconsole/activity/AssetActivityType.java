@@ -129,7 +129,7 @@ public enum AssetActivityType implements ActivityType {
 			return "moved asset to the Storeroom - " + json.get("storeroom");
 		}
 	},
-	USE_IN_SO(150) {
+	USE_IN_SO(152) {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub

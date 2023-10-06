@@ -4,7 +4,7 @@ import com.facilio.activity.ActivityType;
 import org.json.simple.JSONObject;
 
 public enum ServiceAppointmentActivityType implements ActivityType {
-    DISPATCH(140){
+    DISPATCH(142){
         @Override
         public String constructMessage(JSONObject json) {
             String fieldAgent = (String) json.get("fieldAgent");
@@ -14,7 +14,7 @@ public enum ServiceAppointmentActivityType implements ActivityType {
             return builder.toString();
         }
     },
-    RESCHEDULED(141){
+    RESCHEDULED(143){
         @Override
         public String constructMessage(JSONObject json) {
             String doneBy = (String) json.get("doneBy");
@@ -23,7 +23,7 @@ public enum ServiceAppointmentActivityType implements ActivityType {
             return builder.toString();
         }
     },
-    START_WORK(142){
+    START_WORK(144){
         @Override
         public String constructMessage(JSONObject json) {
             String doneBy = (String) json.get("doneBy");
@@ -32,7 +32,7 @@ public enum ServiceAppointmentActivityType implements ActivityType {
             return builder.toString();
         }
     },
-    START_TRIP(143){
+    START_TRIP(145){
         @Override
         public String constructMessage(JSONObject json) {
             String trip = (String) json.get("trip");
@@ -43,7 +43,7 @@ public enum ServiceAppointmentActivityType implements ActivityType {
             return builder.toString();
         }
     },
-    END_TRIP(144){
+    END_TRIP(146){
         @Override
         public String constructMessage(JSONObject json) {
             String trip = (String) json.get("trip");
@@ -54,7 +54,7 @@ public enum ServiceAppointmentActivityType implements ActivityType {
             return builder.toString();
         }
     },
-    COMPLETE_WORK(145){
+    COMPLETE_WORK(147){
         @Override
         public String constructMessage(JSONObject json) {
             String doneBy = (String) json.get("doneBy");
@@ -63,7 +63,7 @@ public enum ServiceAppointmentActivityType implements ActivityType {
             return builder.toString();
         }
     },
-    CANCELLED(146){
+    CANCELLED(148){
         @Override
         public String constructMessage(JSONObject json) {
             String doneBy = (String) json.get("doneBy");
@@ -72,7 +72,7 @@ public enum ServiceAppointmentActivityType implements ActivityType {
             return builder.toString();
         }
     },
-    TIME_SHEET_ADDED(147){
+    TIME_SHEET_ADDED(149){
         @Override
         public String constructMessage(JSONObject json) {
             String timeSheet = (String) json.get("timeSheet");
@@ -83,7 +83,7 @@ public enum ServiceAppointmentActivityType implements ActivityType {
             return builder.toString();
         }
     },
-    TIME_SHEET_DELETED(148){
+    TIME_SHEET_DELETED(150){
         @Override
         public String constructMessage(JSONObject json) {
             String timeSheet = (String) json.get("timeSheet");
@@ -94,7 +94,7 @@ public enum ServiceAppointmentActivityType implements ActivityType {
             return builder.toString();
         }
     },
-    TRIP_DELETED(149){
+    TRIP_DELETED(151){
         @Override
         public String constructMessage(JSONObject json) {
             String trip = (String) json.get("trip");
