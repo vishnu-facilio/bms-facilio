@@ -32,21 +32,15 @@ public class ControlActionTemplatePage implements TemplatePageFactory {
                 .addTab("controlactiontemplatesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("controlactiontemplatesummaryfields", null, null)
-                .addWidget("controlactiontemplatesummaryfieldswidget", "Control Action Template", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME , app))
+                .addWidget("controlactiontemplatesummaryfieldswidget", "Control Action", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME , app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("controlactiontemplateControlfields", null, null)
-                .addWidget("controlactiontemplateControlfieldswidget", "Controls", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 0, null,fetchRelatedListForModule(module,FacilioConstants.Control_Action.ACTION_MODULE_NAME))
+                .addWidget("controlactiontemplateControlfieldswidget", "Actions", PageWidget.WidgetType.ACTIONS_LIST_VIEW, "webActionsListView_32_12", 0, 0, null,null)
                 .widgetDone()
                 .sectionDone()
-                .addSection("controlactiontemplateCriteriafields", null, null)
-                .addWidget("controlactiontemplateassetcriteriafieldswidget", "Asset attribute criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_28_6", 0, 0, getSummaryCriteriaListWidgetDetails(FacilioConstants.ContextNames.ASSET,"assetCriteriaId"),null)
-                .widgetDone()
-                .addWidget("controlactiontemplatesitecriteriafieldswidget", "Site attribute criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_28_6", 6, 0, getSummaryCriteriaListWidgetDetails(FacilioConstants.ContextNames.SITE,"siteCriteriaId"),null)
-                .widgetDone()
-                .addWidget("controlactiontemplatecontrollercriteriafieldswidget", "Controller attribute criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_28_6", 0, 28, getSummaryCriteriaListWidgetDetails("controllers","controllerCriteriaId"),null)
-                .widgetDone()
-                .addWidget("widgetGroup", "Comments", PageWidget.WidgetType.WIDGET_GROUP, "webwidgetgroup_28_6", 6, 28, null, getWidgetGroup(false))
+                .addSection("notesandcomments",null,null)
+                .addWidget("widgetGroup", "Comments", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getWidgetGroup(false))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -54,7 +48,19 @@ public class ControlActionTemplatePage implements TemplatePageFactory {
                 .addTab("controlActionTemplateControlactions", "Control Actions", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("controlActionTemplateControlactionfields", null, null)
-                .addWidget("controlActionTemplateControlactionRelatedList", "List of Control Actions", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 0, null, fetchRelatedListForModule(module,FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME))
+                .addWidget("controlActionTemplateControlactionRelatedList", "List of Control Actions", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 0, null, ControlActionTemplatePage.fetchRelatedListForModule(module,FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("controlactiontemplatecriteria","Criteria",PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("controlactiontemplateCriteriafields", null, null)
+                .addWidget("controlactiontemplateassetcriteriafieldswidget", "Asset attribute criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_28_6", 0, 0, getSummaryCriteriaListWidgetDetails(FacilioConstants.ContextNames.ASSET,"assetCriteriaId"),null)
+                .widgetDone()
+                .addWidget("controlactiontemplatesitecriteriafieldswidget", "Site attribute criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_28_6", 6, 0, getSummaryCriteriaListWidgetDetails(FacilioConstants.ContextNames.SITE,"siteCriteriaId"),null)
+                .widgetDone()
+                .addWidget("controlactiontemplatecontrollercriteriafieldswidget", "Controller attribute criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_28_6", 0, 28, getSummaryCriteriaListWidgetDetails("controllers","controllerCriteriaId"),null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -80,20 +86,16 @@ public class ControlActionTemplatePage implements TemplatePageFactory {
         FacilioModule module = moduleBean.getModule(moduleName);
         FacilioField nameField = moduleBean.getField("name", moduleName);
         FacilioField controlActionType = moduleBean.getField("controlActionType", moduleName);
-        FacilioField assetCategory = moduleBean.getField("assetCategory", moduleName);
-        FacilioField startTime = moduleBean.getField("scheduledActionDateTime", moduleName);
-        FacilioField revertTime = moduleBean.getField("revertActionDateTime", moduleName);
+        FacilioField controlActionExecutionType = moduleBean.getField("controlActionExecutionType", moduleName);
         FacilioField calendar = moduleBean.getField("calendar",moduleName);
         FacilioField description = moduleBean.getField("description", moduleName);
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
         addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, controlActionType, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, assetCategory, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, startTime, 1, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, revertTime, 2, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, calendar, 2, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, description, 3, 1, 4);
+        addSummaryFieldInWidgetGroup(widgetGroup, controlActionExecutionType, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, controlActionType, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, calendar, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, description, 2, 1, 4);
 
         widgetGroup.setName("controlActionTemplateModuleDetails");
         widgetGroup.setDisplayName("General Information");
@@ -133,11 +135,11 @@ public class ControlActionTemplatePage implements TemplatePageFactory {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_28", 0, 0, notesWidgetParam, null)
+                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_28", 0, 0, attachmentsWidgetParam, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

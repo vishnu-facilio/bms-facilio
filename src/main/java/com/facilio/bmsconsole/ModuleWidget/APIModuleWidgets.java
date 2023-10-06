@@ -252,12 +252,20 @@ public class APIModuleWidgets {
                 .addModuleWidget("criteriaListView","Criteria List View",PageWidget.WidgetType.CRITERIA_LIST_VIEW)
                 .addFixedWidgetConfig("webCriteriaListView_28_6", "Criteria List View - 28 - 6",28,6, PagesContext.PageLayoutType.WEB)
                 .done()
+                .addModuleWidget("commandsListView","Commands List View",PageWidget.WidgetType.COMMANDS_LIST_VIEW)
+                .addFixedWidgetConfig("webCommandsListView_32_12", "Commands List View - 32 - 12",32,12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("actionsListView","Actions List View",PageWidget.WidgetType.ACTIONS_LIST_VIEW)
+                .addFixedWidgetConfig("webActionsListView_32_12", "Actions List View - 32 - 6",32,12, PagesContext.PageLayoutType.WEB)
+                .done()
                 ;
     }
     @WidgetsForModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME)
     public static Supplier<ModuleWidgets> getControlActionTemplateWidgets(){
         return () -> new ModuleWidgets()
                 .addModuleWidget("criteriaListView","Criteria List View",PageWidget.WidgetType.CRITERIA_LIST_VIEW)
+                .done()
+                .addModuleWidget("actionsListView","Actions List View",PageWidget.WidgetType.ACTIONS_LIST_VIEW)
                 .done()
                 ;
     }

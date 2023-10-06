@@ -582,7 +582,10 @@ public class PageWidget {
 		SUB_SPACES("subSpaces"),
 		FLOORS("floors"),
 		TENANT_RECENTLY_CLOSED_WORKORDER("tenantrecentlyclosedworkorder"),
-		CALENDAR_EVENT_LIST("calendarEventList");
+		CALENDAR_EVENT_LIST("calendarEventList"),
+		COMMANDS_LIST_VIEW("commandsListView"),
+		ACTIONS_LIST_VIEW("actionsListView")
+		;
 
 		private String name;
 		@Getter
