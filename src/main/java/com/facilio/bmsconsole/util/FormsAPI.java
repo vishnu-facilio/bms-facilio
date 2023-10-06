@@ -11,6 +11,11 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.FormSiteRelationContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.FormSiteRelationContext;
+import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
@@ -40,6 +45,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.fw.FacilioException;
 import com.facilio.ims.handler.AuditLogHandler;
 import com.facilio.modules.*;
+import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
@@ -47,6 +53,18 @@ import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -854,7 +872,7 @@ public class FormsAPI {
 				 .andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), formModule));
 
 
-		if(!skipTemplatePermission && currentUser.getRole() != null && !AccountUtil.isFeatureEnabled(FeatureLicense.DISABLE_FORM_SHARING)) {
+		if(!skipTemplatePermission && currentUserRoleId>0) {
 			formListBuilder.leftJoin(formSharingModule.getTableName()).on("Forms.ID =Form_Sharing.PARENT_ID");
 
 			Criteria sharingCriteria = new Criteria();
