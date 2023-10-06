@@ -273,7 +273,7 @@ public class AddControlActionModule extends SignUpData {
         SystemButtonRuleContext unPublishControlAction = new SystemButtonRuleContext();
         unPublishControlAction.setName("Un Publish");
         unPublishControlAction.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        unPublishControlAction.setIdentifier("Un Publish");
+        unPublishControlAction.setIdentifier("unPublish");
         unPublishControlAction.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         Criteria unPublishCriteria = new Criteria();
         unPublishCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.PUBLISHED.getIndex()), EnumOperators.IS));
@@ -283,13 +283,21 @@ public class AddControlActionModule extends SignUpData {
 
         SystemButtonRuleContext publishControlAction = new SystemButtonRuleContext();
         publishControlAction.setName("Publish");
-        publishControlAction.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        publishControlAction.setIdentifier("Publish");
+        publishControlAction.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        publishControlAction.setIdentifier("publish");
         publishControlAction.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         Criteria publishCriteria = new Criteria();
         publishCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.UNPUBLISHED.getIndex()), EnumOperators.IS));
         publishControlAction.setCriteria(publishCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,publishControlAction);
+
+        SystemButtonRuleContext editRecord = new SystemButtonRuleContext();
+        editRecord.setName("Edit");
+        editRecord.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editRecord.setIdentifier("edit");
+        editRecord.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        editRecord.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//        editRecord.setPermissionRequired(true);
 
     }
 
