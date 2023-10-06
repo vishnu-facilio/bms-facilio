@@ -3588,4 +3588,11 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new PreviewPDFTemplateCommand());
 		return chain;
 	}
+
+    public static FacilioChain getTreeParentNodesChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new FetchSpaceDetailsCommand());
+		chain.addCommand(new FetchChildNodesCommand());
+		return chain;
+    }
 }

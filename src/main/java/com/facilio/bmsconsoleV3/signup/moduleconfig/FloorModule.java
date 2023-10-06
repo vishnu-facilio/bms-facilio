@@ -1,15 +1,13 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -294,7 +292,7 @@ public class FloorModule extends BaseModuleConfig {
             activeToInactive.setType(AbstractStateTransitionRuleContext.TransitionType.NORMAL);
             activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
-
+            addSystemButtons();
             // adding form
 //            FacilioForm defaultForm = new FacilioForm();
 //            defaultForm.setName("standard");
@@ -330,6 +328,53 @@ public class FloorModule extends BaseModuleConfig {
             ex.printStackTrace();
         }
 
+    }
+
+    private void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editFloor = new SystemButtonRuleContext();
+        editFloor.setName("Edit");
+        editFloor.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editFloor.setIdentifier("editFloor");
+        editFloor.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editFloor.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editFloor.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FLOOR,editFloor);
+
+        SystemButtonRuleContext addSpace = new SystemButtonRuleContext();
+        addSpace.setName("Add Space");
+        addSpace.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addSpace.setIdentifier("addFloorSpace");
+        addSpace.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addSpace.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        addSpace.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FLOOR,addSpace);
+
+        SystemButtonRuleContext addPhoto = new SystemButtonRuleContext();
+        addPhoto.setName("Add Photo");
+        addPhoto.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        addPhoto.setIdentifier("addFloorPhoto");
+        addPhoto.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        addPhoto.setPermissionRequired(true);
+        addPhoto.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FLOOR,addPhoto);
+
+        SystemButtonRuleContext floorPlan = new SystemButtonRuleContext();
+        floorPlan.setName("Manage Floor Plan");
+        floorPlan.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        floorPlan.setIdentifier("floorPlan");
+        floorPlan.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        floorPlan.setPermissionRequired(true);
+        floorPlan.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FLOOR,floorPlan);
+
+        SystemButtonRuleContext downloadQR = new SystemButtonRuleContext();
+        downloadQR.setName("Download QR");
+        downloadQR.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadQR.setIdentifier("downloadFloorQR");
+        downloadQR.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        downloadQR.setPermissionRequired(true);
+        downloadQR.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FLOOR,downloadQR);
     }
 
     @Override

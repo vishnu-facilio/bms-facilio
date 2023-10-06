@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
@@ -9,10 +10,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -76,7 +74,7 @@ public class SpaceModule extends BaseModuleConfig {
             activeToInactive.setType(AbstractStateTransitionRuleContext.TransitionType.NORMAL);
             activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
-
+            addSystemButtons();
 
             // adding form
 //            FacilioForm defaultForm = new FacilioForm();
@@ -114,6 +112,45 @@ public class SpaceModule extends BaseModuleConfig {
             ex.printStackTrace();
         }
     }
+    private void addSystemButtons() throws Exception{
+        SystemButtonRuleContext editSpace = new SystemButtonRuleContext();
+        editSpace.setName("Edit");
+        editSpace.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editSpace.setIdentifier("editSpace");
+        editSpace.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editSpace.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editSpace.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SPACE,editSpace);
+
+        SystemButtonRuleContext addSpace = new SystemButtonRuleContext();
+        addSpace.setName("Add Sub Space");
+        addSpace.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addSpace.setIdentifier("addSubSpace");
+        addSpace.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addSpace.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        addSpace.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SPACE,addSpace);
+
+        SystemButtonRuleContext addPhoto = new SystemButtonRuleContext();
+        addPhoto.setName("Add Photo");
+        addPhoto.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        addPhoto.setIdentifier("addSpacePhoto");
+        addPhoto.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        addPhoto.setPermissionRequired(true);
+        addPhoto.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SPACE,addPhoto);
+
+        SystemButtonRuleContext downloadQR = new SystemButtonRuleContext();
+        downloadQR.setName("Download QR");
+        downloadQR.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadQR.setIdentifier("downloadSpaceQR");
+        downloadQR.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        downloadQR.setPermissionRequired(true);
+        downloadQR.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SPACE,downloadQR);
+
+    }
+
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

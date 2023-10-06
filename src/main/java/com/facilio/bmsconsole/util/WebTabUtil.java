@@ -147,6 +147,13 @@ public class WebTabUtil {
         return false;
     }
 
+    public static boolean isNewPortfolioTab(WebTabContext webTabContext) {
+        if(webTabContext != null && webTabContext.getTypeEnum().equals(WebTabContext.Type.PORTFOLIO)) {
+            return true;
+        }
+        return false;
+    }
+
     public static boolean currentUserHasPermission(long tabId,String action){
         return currentUserHasPermission(tabId,action,AccountUtil.getCurrentUser().getRole());
     }

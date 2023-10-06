@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
@@ -9,10 +10,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -74,12 +72,59 @@ public class SiteModule extends BaseModuleConfig {
             activeToInactive.setType(AbstractStateTransitionRuleContext.TransitionType.NORMAL);
             activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
-
+            addSystemButtons();
             addDefaultSiteModuleConfig(siteModule.getModuleId());
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editSite = new SystemButtonRuleContext();
+        editSite.setName("Edit");
+        editSite.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editSite.setIdentifier("editSite");
+        editSite.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editSite.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editSite.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,editSite);
+
+        SystemButtonRuleContext addBuilding = new SystemButtonRuleContext();
+        addBuilding.setName("Add Building");
+        addBuilding.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addBuilding.setIdentifier("addBuilding");
+        addBuilding.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addBuilding.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        addBuilding.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,addBuilding);
+
+        SystemButtonRuleContext addSpace = new SystemButtonRuleContext();
+        addSpace.setName("Add Space");
+        addSpace.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addSpace.setIdentifier("addSiteSpace");
+        addSpace.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addSpace.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        addSpace.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,addSpace);
+
+        SystemButtonRuleContext addPhoto = new SystemButtonRuleContext();
+        addPhoto.setName("Add Photo");
+        addPhoto.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addPhoto.setIdentifier("addSitePhoto");
+        addPhoto.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addPhoto.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        addPhoto.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,addPhoto);
+
+        SystemButtonRuleContext downloadQR = new SystemButtonRuleContext();
+        downloadQR.setName("Download QR");
+        downloadQR.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadQR.setIdentifier("downloadSiteQR");
+        downloadQR.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        downloadQR.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        downloadQR.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,downloadQR);
     }
 
     private void addDefaultSiteModuleConfig(long siteModuleId) throws Exception {

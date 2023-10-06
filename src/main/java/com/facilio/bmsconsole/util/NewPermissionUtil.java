@@ -720,6 +720,15 @@ public class NewPermissionUtil {
         permissionMap.put("*", permissions);
         permissionList.put(Type.DISPATCHER_CONSOLE.getIndex(), permissionMap);
 
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.PORTFOLIO.getIndex(), permissionMap);
+
 
         for(Type type : Type.values()) {
             if(type.getTabType().getIndex() == WebTabContext.TabType.SETUP.getIndex()) {

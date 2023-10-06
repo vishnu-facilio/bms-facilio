@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -8,6 +9,7 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -71,9 +73,56 @@ public class BuildingModule extends BaseModuleConfig {
         activeToInactive.setType(AbstractStateTransitionRuleContext.TransitionType.NORMAL);
         activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
 //        WorkflowRuleAPI.addWorkflowRule(activeToInactive);
-
+        addSystemButtons();
     }
 
+    private void addSystemButtons() throws Exception{
+        SystemButtonRuleContext editBuilding = new SystemButtonRuleContext();
+        editBuilding.setName("Edit");
+        editBuilding.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editBuilding.setIdentifier("editBuilding");
+        editBuilding.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editBuilding.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editBuilding.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BUILDING,editBuilding);
+
+        SystemButtonRuleContext addFloor = new SystemButtonRuleContext();
+        addFloor.setName("Add Floor");
+        addFloor.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addFloor.setIdentifier("addFloor");
+        addFloor.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addFloor.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        addFloor.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BUILDING,addFloor);
+
+        SystemButtonRuleContext addSpace = new SystemButtonRuleContext();
+        addSpace.setName("Add Space");
+        addSpace.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addSpace.setIdentifier("addBuildingSpace");
+        addSpace.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addSpace.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        addSpace.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BUILDING,addSpace);
+
+        SystemButtonRuleContext addPhoto = new SystemButtonRuleContext();
+        addPhoto.setName("Add Photo");
+        addPhoto.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        addPhoto.setIdentifier("addBuildingPhoto");
+        addPhoto.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        addPhoto.setPermissionRequired(true);
+        addPhoto.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BUILDING,addPhoto);
+
+        SystemButtonRuleContext downloadQR = new SystemButtonRuleContext();
+        downloadQR.setName("Download QR");
+        downloadQR.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadQR.setIdentifier("downloadBuildingQR");
+        downloadQR.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        downloadQR.setPermissionRequired(true);
+        downloadQR.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BUILDING,downloadQR);
+
+    }
     @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
         Map<String, List<PagesContext>> appNameVsPage = new HashMap<>();

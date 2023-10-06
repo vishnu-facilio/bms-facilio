@@ -285,6 +285,19 @@ public class BaseSpaceAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String fetchParentNodes() throws Exception{
+		long spaceId = getBaseSpaceId();
+		FacilioChain getParentNodesChain = ReadOnlyChainFactory.getTreeParentNodesChain();
+		FacilioContext context = getParentNodesChain.getContext();
+		context.put("spaceId",spaceId);
+		getParentNodesChain.execute();
+		setResult("expandedKeys",context.get("expandedKeys"));
+		setResult("selectedNode",getBaseSpaceId());
+		setResult("nodes",context.get("node"));
+//		setResult("parentIdVsChildrenMap",context.get("parentIdVsChildrenMap"));
+		return SUCCESS;
+	}
+
 	public long getBaseSpaceId() {
 		return baseSpaceId;
 	}
