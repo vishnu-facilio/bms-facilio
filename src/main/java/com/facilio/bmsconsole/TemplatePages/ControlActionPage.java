@@ -33,7 +33,7 @@ public class ControlActionPage implements TemplatePageFactory{
                 .addTab("controlactioncommands", "Command Results", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("controlactionControlfields", null, null)
-                .addWidget("controlactionCommandswidget", "List of Commands", PageWidget.WidgetType.COMMANDS_LIST_VIEW, "webCommandsListView_29_12", 0, 0, null,null)
+                .addWidget("controlactionCommandswidget", "List of Commands", PageWidget.WidgetType.COMMANDS_LIST_VIEW, "webCommandsListView_32_12", 0, 0, null,null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("notesandcomments",null,null)
