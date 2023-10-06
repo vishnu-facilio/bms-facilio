@@ -60,14 +60,14 @@ public class SetServiceOrderServiceCommand extends FacilioCommand {
                         serviceOrderService.setDuration(duration);
                     }
                 }
-                if(duration !=null && duration > 0 && serviceOrderService.getStartTime() != null && serviceOrderService.getEndTime() >0 && (serviceOrderService.getEndTime() == null || serviceOrderService.getStartTime() <= 0) ) {
+                if(duration !=null && duration > 0 && serviceOrderService.getStartTime() != null && serviceOrderService.getStartTime() >0 ) {
                     Long endTime = V3InventoryUtil.getReturnTimeFromDurationAndIssueTime(duration, serviceOrderService.getStartTime());
                     serviceOrderService.setEndTime(endTime);
                 }
-                else if(duration !=null && duration > 0 && serviceOrderService.getEndTime() != null && serviceOrderService.getEndTime() >0 && (serviceOrderService.getStartTime() ==null || serviceOrderService.getStartTime() <= 0)){
-                    Long startTime = V3InventoryUtil.getIssueTimeFromDurationAndReturnTime(duration, serviceOrderService.getEndTime());
-                    serviceOrderService.setStartTime(startTime);
-                }
+//                else if(duration !=null && duration > 0 && serviceOrderService.getEndTime() != null && serviceOrderService.getEndTime() >0 && (serviceOrderService.getStartTime() ==null || serviceOrderService.getStartTime() <= 0)){
+//                    Long startTime = V3InventoryUtil.getIssueTimeFromDurationAndReturnTime(duration, serviceOrderService.getEndTime());
+//                    serviceOrderService.setStartTime(startTime);
+//                }
                 if(service.getSellingPrice()!=null && serviceOrderService.getQuantity()!=null){
                     Double totalCost = service.getSellingPrice()* serviceOrderService.getQuantity();
                     if(service.getPaymentTypeEnum().equals(V3ServiceContext.PaymentType.DURATION_BASED) && duration!=null){

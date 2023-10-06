@@ -69,14 +69,14 @@ public class SetServiceOrderToolsCommand extends FacilioCommand {
                     }
                 }
 
-                if(duration !=null && duration > 0 && serviceOrderTool.getIssueTime() != null && serviceOrderTool.getIssueTime() >0 && (serviceOrderTool.getReturnTime() == null || serviceOrderTool.getReturnTime() <= 0) ) {
+                if(duration !=null && duration > 0 && serviceOrderTool.getIssueTime() != null && serviceOrderTool.getIssueTime() >0) {
                     Long returnTime = V3InventoryUtil.getReturnTimeFromDurationAndIssueTime(duration, serviceOrderTool.getIssueTime());
                     serviceOrderTool.setReturnTime(returnTime);
                 }
-                else if(duration !=null && duration > 0 && serviceOrderTool.getReturnTime() != null && serviceOrderTool.getReturnTime() >0 && (serviceOrderTool.getIssueTime() ==null || serviceOrderTool.getIssueTime() <= 0)){
-                    Long issueTime = V3InventoryUtil.getIssueTimeFromDurationAndReturnTime(duration, serviceOrderTool.getReturnTime());
-                    serviceOrderTool.setIssueTime(issueTime);
-                }
+//                else if(duration !=null && duration > 0 && serviceOrderTool.getReturnTime() != null && serviceOrderTool.getReturnTime() >0 && (serviceOrderTool.getIssueTime() ==null || serviceOrderTool.getIssueTime() <= 0)){
+//                    Long issueTime = V3InventoryUtil.getIssueTimeFromDurationAndReturnTime(duration, serviceOrderTool.getReturnTime());
+//                    serviceOrderTool.setIssueTime(issueTime);
+//                }
                 serviceOrderTool.setToolType(tool.getToolType());
                 serviceOrderTool.setStoreRoom(tool.getStoreRoom());
                 if(tool.getRate()!=null){
