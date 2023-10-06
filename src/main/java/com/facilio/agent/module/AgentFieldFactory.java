@@ -12,22 +12,23 @@ import com.facilio.modules.fields.FacilioField;
 public class AgentFieldFactory {
 	
 	 public static List<FacilioField> getMessageTopicFields() {
-			FacilioModule module = AgentModuleFactory.getMessageToipcModule();
-			List<FacilioField> fields = new ArrayList<>();
-			fields.add(FieldFactory.getIdField(module));
-			fields.add(FieldFactory.getField("isDisable", "IS_DISABLE", module, FieldType.BOOLEAN));
-			fields.add(FieldFactory.getField("orgId", "ORGID", module, FieldType.NUMBER));
-			fields.add(FieldFactory.getField("topic", "TOPIC", module, FieldType.STRING));
-         fields.add(FieldFactory.getField("partitionId", "PARTITION_ID", module, FieldType.NUMBER));
-         fields.add(FieldFactory.getField("maxConsumers", "MAX_CONSUMERS", module, FieldType.NUMBER));
-         fields.add(FieldFactory.getField("maxConsumersPerInstance", "MAX_CONSUMERS_PER_INSTANCE", module, FieldType.NUMBER));
-         fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
-			fields.add(FieldFactory.getField("lastModifiedTime", "LAST_MODIFIED_TIME", module, FieldType.NUMBER));
-			fields.add(FieldFactory.getField("lastEnabledTime", "LAST_ENABLED_TIME", module, FieldType.NUMBER));
-			fields.add(FieldFactory.getField("lastDisabledTime", "LAST_DISABLED_TIME", module, FieldType.NUMBER));
-			fields.add(FieldFactory.getField("messageSource", "MESSAGE_SOURCE", module, FieldType.STRING));
-			return fields;
-		}
+		 FacilioModule module = AgentModuleFactory.getMessageToipcModule();
+		 List<FacilioField> fields = new ArrayList<>();
+		 fields.add(FieldFactory.getIdField(module));
+		 fields.add(FieldFactory.getField("isDisable", "IS_DISABLE", module, FieldType.BOOLEAN));
+		 fields.add(FieldFactory.getField("orgId", "ORGID", module, FieldType.NUMBER));
+		 fields.add(FieldFactory.getField("topic", "TOPIC", module, FieldType.STRING));
+		 fields.add(FieldFactory.getField("partitionId", "PARTITION_ID", module, FieldType.NUMBER));
+		 fields.add(FieldFactory.getField("maxConsumers", "MAX_CONSUMERS", module, FieldType.NUMBER));
+		 fields.add(FieldFactory.getField("maxConsumersPerInstance", "MAX_CONSUMERS_PER_INSTANCE", module, FieldType.NUMBER));
+		 fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+		 fields.add(FieldFactory.getField("lastModifiedTime", "LAST_MODIFIED_TIME", module, FieldType.NUMBER));
+		 fields.add(FieldFactory.getField("lastEnabledTime", "LAST_ENABLED_TIME", module, FieldType.NUMBER));
+		 fields.add(FieldFactory.getField("lastDisabledTime", "LAST_DISABLED_TIME", module, FieldType.NUMBER));
+		 fields.add(FieldFactory.getField("messageSource", "MESSAGE_SOURCE", module, FieldType.STRING));
+		 fields.add(FieldFactory.getField("version", "VERSION", module, FieldType.STRING));
+		 return fields;
+	 }
 	 
 	 public static List<FacilioField> getAgentDisableFields() {
 			FacilioModule module = AgentModuleFactory.getAgentDisableModule();

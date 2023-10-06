@@ -2,10 +2,13 @@ package com.facilio.agentv2.point;
 
 import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.iotmessage.IotMessage;
+import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import com.facilio.agentv2.modbustcp.ModbusUtils;
 import com.facilio.agentv2.rdm.RdmControllerContext;
@@ -18,6 +21,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.AckUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -50,6 +54,8 @@ public class PointsUtil {
 
     public static boolean processPoints(JSONObject payload, Controller controller, FacilioAgent agent) throws Exception {
         LOGGER.info("Processing points for controller " + controller.getName());
+
+        IotMessage iotMessage = IotMessageApiV2.getIotMessage(AckUtil.getMessageIdFromPayload(payload));
 
         if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray pointsJSON = (JSONArray) payload.get(AgentConstants.DATA);
@@ -89,7 +95,7 @@ public class PointsUtil {
                             point.setAgentId(controller.getAgentId());
                             point.setDeviceName(controller.getName());
                             int agentType = agent.getAgentType();
-                            if (agentType == AgentType.CUSTOM.getKey() || agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey() || agentType == AgentType.MQTT.getKey()) {
+                            if (iotMessage.getCommand() == FacilioCommand.ADD_POINTS.asInt() || agentType == AgentType.CUSTOM.getKey() || agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey() || agentType == AgentType.MQTT.getKey()) {
                                 point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                             }
                             if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() ||
