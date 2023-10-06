@@ -40,7 +40,6 @@ public class V3EventContext extends V3Context {
     private Long specialCaseMilliSecond;
     private List<V3EventTimeSlotContext> timeSlotList;
     private List<String> timeSlotString;
-    public ZoneId zoneId = DBConf.getInstance().getCurrentZoneId();
 
     public Integer getEventType() {
         return eventType == null ? null : eventType.getIntVal();
@@ -76,14 +75,14 @@ public class V3EventContext extends V3Context {
 
     public Integer getScheduledDate() {
         if(getSpecialCaseMilliSecond() != null){
-            ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()), zoneId);
+            ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()), DBConf.getInstance().getCurrentZoneId());
             return dateTime.getDayOfMonth();
         }
         return scheduledDate;
     }
     public Integer getScheduledMonth(){
         if(getSpecialCaseMilliSecond() != null){
-            ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()),zoneId);
+            ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()),DBConf.getInstance().getCurrentZoneId());
             return dateTime.getMonthValue();
         }
         if(scheduledMonth == null) {
@@ -93,7 +92,7 @@ public class V3EventContext extends V3Context {
     }
     public Integer getScheduledYear(){
         if(getSpecialCaseMilliSecond() != null){
-            ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()),zoneId);
+            ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()),DBConf.getInstance().getCurrentZoneId());
             return dateTime.getYear();
         }
         return scheduledYear;
