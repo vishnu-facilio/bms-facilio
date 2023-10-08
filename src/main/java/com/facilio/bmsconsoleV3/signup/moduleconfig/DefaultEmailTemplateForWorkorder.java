@@ -38,7 +38,7 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         addAssignTeamTemplate();
         addCommentTemplate();
         addTechnicianResolvesWorkorder();
-        addTechnicianCloseWorkorder();
+        //addTechnicianCloseWorkorder();
         addWorkorderOnHold();
     }
 
@@ -71,8 +71,8 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         workflowContext.setExpressions(expressions);
         workflowContext.setParameters(parameters);
 
-        String message = "<p>The following work order ${workorder.subject} assigned has been put on hold by ${workorder.assignedTo.name}. </p><p></p><p>Subject : ${workorder.subject} </p><p>Description : ${workorder.description:-} </p><p>Status : ${workorder.status.status} </p><p></p><p>Please view the work order here - ${workorder.url} </p><p></p><p>Regards, </p><p>Team ${org.brand:-Facilio}.\"</p>";
-        EMailStructure eMailStructure = getEmailStructure(message,false,false,"Work order put on hold",workflowContext);
+        String message = "<p><span style=\"font-family: Arial\">Dear </span><span><span data-id=\"{workorder.assignedBy.name}\" class=\"mention\" data-type=\"mention\">${workorder.assignedBy.name}</span> </span><span style=\"font-family: Arial\">,  </span></p><p></p><p><span style=\"font-family: Arial\">This is to inform you that the Work Order with the ID </span><span><span data-id=\"{workorder.id}\" class=\"mention\" data-type=\"mention\">${workorder.id}</span>  - ${workorder.url} </span><span style=\"font-family: Arial\">has been paused. </span></p><p><span style=\"font-family: Arial\">Work Order: </span><span><span data-id=\"{workorder.subject}\" class=\"mention\" data-type=\"mention\">${workorder.subject}</span> </span></p>";
+        EMailStructure eMailStructure = getEmailStructure(message,false,false,"Your Work order has been paused",workflowContext);
 
         List<ActionContext> actionContextList =  new ArrayList<>();
         ActionContext action = new ActionContext();
@@ -121,10 +121,10 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         pushNotificationTemplateJson.put("application", app.getId());
         pushNotificationTemplateJson.put("id","${workorder.assignedBy.id:-}");
-        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"The following work order ${workorder.subject} has been put on hold by ${workorder.assignedTo.name}.\\n\\nSubject : ${workorder.subject}\\nDescription : \\n${workorder.description:-}\\nStatus : ${workorder.status.status}\\n\\nPlease view the work order here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order put on hold\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"The following work order ${workorder.subject} has been put on hold by ${workorder.assignedTo.name}.\\n\\nSubject : ${workorder.subject}\\nDescription : \\n${workorder.description:-}\\nStatus : ${workorder.status.status}\\n\\nPlease view the work order here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order put on hold\"},\"id\":\"${workorder.assignedBy.id:-}\"}");
+        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"Work Order has been paused. Please review the details and proceed accordingly\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order put on hold\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"Work Order has been paused. Please review the details and proceed accordingly\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order put on hold\"},\"id\":\"${workorder.assignedBy.id:-}\"}");
         pushNotificationTemplateJson.put("isPushNotification",false);
         pushNotificationTemplateJson.put("isSendNotification",false);
-        pushNotificationTemplateJson.put("message","The following work order ${workorder.subject} has been put on hold by ${workorder.assignedTo.name}.\\n\\nSubject : ${workorder.subject}\\nDescription : \\n${workorder.description:-}\\nStatus : ${workorder.status.status}\\n\\nPlease view the work order here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.\"");
+        pushNotificationTemplateJson.put("message","Work Order has been paused. Please review the details and proceed accordingly");
         pushNotificationTemplateJson.put("subject","Work order put on hold");
         pushNotificationTemplateJson.put("name","New WorkOrder Push Notification Template");
         pushNotificationTemplateJson.put("to","${workorder.assignedBy.id:-}");
@@ -225,10 +225,10 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         pushNotificationTemplateJson.put("application", app.getId());
         pushNotificationTemplateJson.put("id","${workorder.assignedTo.id:-}");
-        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"The following work order ${workorder.subject} has been closed by ${workorder.assignedTo.name}.\\n\\nSubject : ${workorder.subject}\\nDescription : \\n${workorder.description:-}\\nStatus : ${workorder.status.status}\\n\\nPlease view the closed work order here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order closed\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"The following work order ${workorder.subject} has been closed by ${workorder.assignedTo.name}.\\n\\nSubject : ${workorder.subject}\\nDescription : \\n${workorder.description:-}\\nStatus : ${workorder.status.status}\\n\\nPlease view the closed work order here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order closed\"},\"id\":\"${workorder.assignedTo.id:-}\"}");
+        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"Work Order has been closed. Please review the details\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order closed\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"Work Order has been closed. Please review the details\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order closed\"},\"id\":\"${workorder.assignedTo.id:-}\"}");
         pushNotificationTemplateJson.put("isPushNotification",false);
         pushNotificationTemplateJson.put("isSendNotification",false);
-        pushNotificationTemplateJson.put("message","The following work order ${workorder.subject} has been closed by ${workorder.assignedTo.name}.\\n\\nSubject : ${workorder.subject}\\nDescription : \\n${workorder.description:-}\\nStatus : ${workorder.status.status}\\n\\nPlease view the closed work order here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.\"");
+        pushNotificationTemplateJson.put("message","Work Order has been closed. Please review the details");
         pushNotificationTemplateJson.put("subject","Work order closed");
         pushNotificationTemplateJson.put("name","New WorkOrder Push Notification Template");
         pushNotificationTemplateJson.put("to","${workorder.assignedTo.id:-}");
@@ -273,8 +273,8 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         workflowContext.setExpressions(expressions);
         workflowContext.setParameters(parameters);
 
-        String message = "<p>The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url} </p><p></p><p>Regards,</p><p>Team ${org.brand:-Facilio}.</p>";
-        EMailStructure eMailStructure = getEmailStructure(message,false,false,"Workorder resolved",workflowContext);
+        String message = "<p><span style=\"font-family: Arial\">Dear </span><span><span data-id=\"{workorder.assignedBy.name}\" class=\"mention\" data-type=\"mention\">${workorder.assignedBy.name}</span> </span><span style=\"font-family: Arial\">,  </span></p><p></p><p><span style=\"font-family: Arial\">This is to inform you that the Work Order with the ID </span><span><span data-id=\"{workorder.id}\" class=\"mention\" data-type=\"mention\">${workorder.id}</span> - ${workorder.url} </span><span style=\"font-family: Arial\">has been resolved. </span></p><p><span style=\"font-family: Arial\">Work Order: </span><span><span data-id=\"{workorder.subject}\" class=\"mention\" data-type=\"mention\">${workorder.subject}</span> </span></p>";
+        EMailStructure eMailStructure = getEmailStructure(message,false,false,"Your workorder resolved",workflowContext);
 
         List<ActionContext> actionContextList =  new ArrayList<>();
         ActionContext action = new ActionContext();
@@ -321,10 +321,10 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         pushNotificationTemplateJson.put("application", app.getId());
         pushNotificationTemplateJson.put("id","${workorder.assignedBy.id:-}");
-        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Workorder resolved\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Workorder resolved\"},\"id\":\"${workorder.assignedBy.id:-}\"}");
+        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"Work Order has been resolved. Please review the details and proceed accordingly\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Workorder resolved\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"Work Order has been resolved. Please review the details and proceed accordingly\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Workorder resolved\"},\"id\":\"${workorder.assignedBy.id:-}\"}");
         pushNotificationTemplateJson.put("isPushNotification",false);
         pushNotificationTemplateJson.put("isSendNotification",false);
-        pushNotificationTemplateJson.put("message","The following work order ${workorder.subject} has been resolved. Please view the resolved workorder here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.\"");
+        pushNotificationTemplateJson.put("message","Work Order has been resolved. Please review the details and proceed accordingly");
         pushNotificationTemplateJson.put("subject","Workorder resolved");
         pushNotificationTemplateJson.put("name","New WorkOrder Push Notification Template");
         pushNotificationTemplateJson.put("to","${workorder.assignedBy.id:-}");
@@ -372,8 +372,8 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         workflowContext.setExpressions(expressions);
         workflowContext.setParameters(parameters);
 
-        String message =  "<p>The following work order ${workorder.subject} has been closed by ${workorder.assignedBy.name}.<br><br><br>Subject : ${workorder.subject} <br>Description : ${workorder.description:-} <br>Status : ${workorder.status.status} <br><br>Please view the closed work order here - ${workorder.url} <br><br>Regards, <br>Team ${org.brand:-Facilio}.</p>";
-        EMailStructure eMailStructure = getEmailStructure(message,false,false,"Work order closed",workflowContext);
+        String message = "<p><span style=\"font-family: Arial\">Dear </span><span data-id=\"{workorder.assignedBy.name}\" class=\"mention\" data-type=\"mention\">${workorder.assignedBy.name}</span> <span style=\"font-family: Arial\">, </span></p><p></p><p><span style=\"font-family: Arial\">This is to inform you that the Work Order with the ID </span><span>${workorder.id} </span><span style=\"font-family: Arial\">- ${workorder.url} has been successfully Closed.</span></p><p><span style=\"font-family: Arial\">Work Order: </span><span>${workorder.subject}</span></p>";
+        EMailStructure eMailStructure = getEmailStructure(message,false,false,"Your work order closed",workflowContext);
 
         List<ActionContext> actionContextList =  new ArrayList<>();
         ActionContext action = new ActionContext();
@@ -423,10 +423,10 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         pushNotificationTemplateJson.put("application", app.getId());
         pushNotificationTemplateJson.put("id","${workorder.requester.id:-}");
-        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"The following work order ${workorder.subject} has been closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team ${org.brand:-Facilio}.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order closed\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"The following work order ${workorder.subject} has been closed by ${workorder.assignedBy.name}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description:-}\nStatus : ${workorder.status.status}\n\nPlease view the closed work order here - ${workorder.url}\n\n - Team ${org.brand:-Facilio}.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order closed\"},\"id\":\"${workorder.requester.id:-}\"}");
+        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"Work Order has been closed. Please review the details\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order closed\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"Work Order has been closed. Please review the details\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order closed\"},\"id\":\"${workorder.assignedTo.id:-}\"}");
         pushNotificationTemplateJson.put("isPushNotification",false);
         pushNotificationTemplateJson.put("isSendNotification",false);
-        pushNotificationTemplateJson.put("message","The following work order ${workorder.subject} has been closed by ${workorder.assignedBy.name}.\\n\\nSubject : ${workorder.subject}\\nDescription : \\n${workorder.description:-}\\nStatus : ${workorder.status.status}\\n\\nPlease view the closed work order here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.");
+        pushNotificationTemplateJson.put("message","Work Order has been closed. Please review the details");
         pushNotificationTemplateJson.put("subject","Work order closed");
         pushNotificationTemplateJson.put("name","New WorkOrder Push Notification Template");
         pushNotificationTemplateJson.put("to","${workorder.requester.id:-}");
@@ -474,7 +474,7 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         workflowContext.setExpressions(expressions);
         workflowContext.setParameters(parameters);
 
-        String message =  "<p>${workorder.assignedBy.name} has assigned a new workorder to you. <br><br>Subject : ${workorder.subject} <br>Description : ${workorder.description:-} <br>Due by : ${workorder.dueDateString:-} <br>Please view the new workorder here - ${workorder.url}<br><br>Regards,</p><p>Team ${org.brand:-Facilio}.</p>";
+        String message =  "<p><span style=\"font-family: sans-serif\">Dear </span><span data-id=\"{workorder.assignedBy.name}\" class=\"mention\" data-type=\"mention\">${workorder.assignedBy.name}</span><span style=\"font-family: sans-serif\">, </span></p><p></p><p><span style=\"font-family: sans-serif\">You've been assigned for a Work Order - ${workorder.url} </span></p><p><span style=\"font-family: sans-serif\">Work Order: </span><span data-id=\"{workorder.subject}\" class=\"mention\" data-type=\"mention\">${workorder.subject}</span> </p><p>Description: <span data-id=\"{workorder.description}\" class=\"mention\" data-type=\"mention\">${workorder.description}</span> </p><p></p>";
         String subject = "New Workorder Assigned";
         EMailStructure eMailStructure = getEmailStructure(message,false,false,subject,workflowContext);
 
@@ -526,10 +526,10 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         pushNotificationTemplateJson.put("application", app.getId());
         pushNotificationTemplateJson.put("id","${workorder.assignedTo.id:-}");
-        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"${workorder.assignedBy.name} has assigned a new workorder to you. \\n\\nSubject : ${workorder.subject}\\nDescription : \\n${workorder.description:-}\\nDue by : ${workorder.dueDateString:-}\\nPlease view the work order here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Assign Workorder\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"${workorder.assignedBy.name} has assigned a new workorder to you. \\n\\nSubject : ${workorder.subject}\\nDescription : \\n${workorder.description:-}\\nDue by : ${workorder.dueDateString:-}\\nPlease view the work order here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Assign Workorder\"},\"id\":\"${workorder.assignedTo.id:-}\"}");
+        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"Work Order has been assigned to you. Please review the details and proceed accordingly\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Assign Workorder\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"Work Order has been assigned to you. Please review the details and proceed accordingly\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Assign Workorder\"},\"id\":\"${workorder.assignedBy.id:-}\"}");
         pushNotificationTemplateJson.put("isPushNotification",false);
         pushNotificationTemplateJson.put("isSendNotification",false);
-        pushNotificationTemplateJson.put("message","${workorder.assignedBy.name} has assigned a new workorder to you. \\n\\nSubject : ${workorder.subject}\\nDescription : \\n${workorder.description:-}\\nDue by : ${workorder.dueDateString:-}\\nPlease view the work order here - ${workorder.url}\\n\\n - Team ${org.brand:-Facilio}.");
+        pushNotificationTemplateJson.put("message","Work Order has been assigned to you. Please review the details and proceed accordingly");
         pushNotificationTemplateJson.put("subject","Assign Workorder");
         pushNotificationTemplateJson.put("name","New WorkOrder Push Notification Template");
         pushNotificationTemplateJson.put("to","${workorder.assignedTo.id:-}");
@@ -579,7 +579,7 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         workflowContext.setExpressions(expressions);
         workflowContext.setParameters(parameters);
 
-        String message = "<p>${workorder.assignedBy.name} has assigned a new workorder to your team - ${workorder.assignmentGroup.name}. <br><br>Subject : ${workorder.subject} </p><p>Description : ${workorder.description:-} </p><p>Due by : ${workorder.dueDateString:-} </p><p>Please view the work order here - ${workorder.url} </p><p></p><p>Regards, </p><p>Team ${org.brand:-Facilio}.</p>";
+        String message = "<p><span style=\"font-family: sans-serif\">Dear Team, <br><br>You've been assigned for a Work Order - ${workorder.url} <br>Work Order: <span data-id=\"{workorder.subject}\" class=\"mention\" data-type=\"mention\">${workorder.subject}</span> </span></p><p><span style=\"font-family: sans-serif\">Description: <span data-id=\"{workorder.description}\" class=\"mention\" data-type=\"mention\">${workorder.description}</span> </span></p><p></p>";
         String subject = "New Workorder Assigned";
         EMailStructure eMailStructure = getEmailStructure(message,false,false,subject,workflowContext);
 
@@ -638,7 +638,7 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         workflowContext.setExpressions(expressions);
         workflowContext.setParameters(parameters);
 
-        String message = "<p>${comment.createdBy.name} has added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments. <br><br>Regards, </p><p>Team ${org.brand:-Facilio}.</p>";
+        String message = "<p><span style=\"font-family: Arial\">Dear </span><span>${workorder.assignedBy.name}</span> ,</p><p></p><p><span style=\"font-family: Arial\">${comment.createdBy.name} has added a new comment to your workorder titled '${workorder.subject}'. You can view and reply to the comments by accessing the work order through the following link: ${workorder.url}. </span></p><p></p>";
         String subject = "New Comment added";
         EMailStructure eMailStructure = getEmailStructure(message,false,false,subject,workflowContext);
 
@@ -687,10 +687,10 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         pushNotificationTemplateJson.put("application", app.getId());
         pushNotificationTemplateJson.put("id","${workorder.assignedTo.id:-}");
-        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"${comment.createdBy.name} has  added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments.\\n - Team ${org.brand:-Facilio}.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"New Comment\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"${comment.createdBy.name} has  added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments.\\n - Team ${org.brand:-Facilio}.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"New Comment\"},\"id\":\"${workorder.assignedTo.id:-}\"}");
+        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"${comment.createdBy.name} has added a new comment to your workorder '${workorder.subject}'.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"New Comment\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"${comment.createdBy.name} has added a new comment to your workorder '${workorder.subject}'.\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"New Comment\"},\"id\":\"${workorder.assignedTo.id:-}\"}");
         pushNotificationTemplateJson.put("isPushNotification",false);
         pushNotificationTemplateJson.put("isSendNotification",false);
-        pushNotificationTemplateJson.put("message","${comment.createdBy.name} has  added a new comment in your workorder ${workorder.subject} . Please view the workorder here - ${workorder.url} to reply/view the comments.\\n - Team ${org.brand:-Facilio}.");
+        pushNotificationTemplateJson.put("message","${comment.createdBy.name} has added a new comment to your workorder '${workorder.subject}'.");
         pushNotificationTemplateJson.put("subject","New Comment");
         pushNotificationTemplateJson.put("name","New WorkOrder Push Notification Template");
         pushNotificationTemplateJson.put("to","${workorder.assignedTo.id:-}");
