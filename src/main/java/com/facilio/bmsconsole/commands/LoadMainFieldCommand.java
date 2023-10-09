@@ -54,6 +54,11 @@
 		if(colorField != null){
 			selectFields.add(colorField);
 		}
+		FacilioField subModuleTypeField = (FacilioField) context.get(FacilioConstants.PickList.SUB_MODULE_TYPE_FIELD);
+		if(subModuleTypeField != null){
+			selectFields.add(subModuleTypeField);
+		}
+
 
 		if (CollectionUtils.isNotEmpty(supplements)) {
 			context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplements);

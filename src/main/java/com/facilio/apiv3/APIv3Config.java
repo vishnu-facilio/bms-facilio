@@ -3244,6 +3244,7 @@ public class APIv3Config {
                 .list()
                 .pickList()
                 .setFourthField(FacilioConstants.ContextNames.BASE_SPACE, FacilioConstants.ContextNames.DECOMMISSION)
+                .setSubModuleTypeField(FacilioConstants.ContextNames.BASE_SPACE,FacilioConstants.ContextNames.SPACE_TYPE)
                 .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }
@@ -3253,6 +3254,7 @@ public class APIv3Config {
                 .list()
                 .pickList()
                 .setFourthField(FacilioConstants.ContextNames.RESOURCE, FacilioConstants.ContextNames.DECOMMISSION)
+                .setSubModuleTypeField(FacilioConstants.ContextNames.RESOURCE,FacilioConstants.ContextNames.RESOURCE_TYPE)
                 .beforeFetch(new DecommissionPicklistCheckCommand())
                 .build();
     }

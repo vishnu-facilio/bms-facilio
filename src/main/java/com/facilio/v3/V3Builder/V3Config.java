@@ -840,6 +840,7 @@ public class V3Config implements V3Builder {
         private Command beforeFetchCommand;
         private Command afterFetchCommand;
         private V3Builder parent;
+        private FacilioField subModuleTypeField;
 
         private PickListHandler(V3Builder parent) {
             this.parent = parent;
@@ -880,6 +881,14 @@ public class V3Config implements V3Builder {
             } catch (Exception ex) {}
             return this;
         }
+        public PickListBuilder setSubModuleTypeField(String moduleName, String fieldName) {
+            try {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                subModuleTypeField = modBean.getField(fieldName, moduleName);
+            } catch (Exception ex) {}
+            return this;
+        }
+
         @Override
         public PickListBuilder setSubmoduleType(String moduleName, String fieldName) {
             try {
@@ -974,6 +983,9 @@ public class V3Config implements V3Builder {
         }
         public FacilioField getColorField() {
             return colorField;
+        }
+        public FacilioField getSubModuleTypeField(){
+            return subModuleTypeField;
         }
 
         public FacilioField getAccent() {

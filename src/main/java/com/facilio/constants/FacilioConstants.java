@@ -320,6 +320,8 @@ public class FacilioConstants {
 		public static final String ACCENT_FIELD = "accent";
 		public static final String SEVERITY_LEVEL = "severityLevel";
 		public static final String LOCAL_SEARCH = "localSearch";
+
+		public static final String SUB_MODULE_TYPE_FIELD = "subModuleTypeField";
 	}
 
 	public static class Filters {

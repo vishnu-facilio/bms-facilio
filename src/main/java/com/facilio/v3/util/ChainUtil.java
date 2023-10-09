@@ -230,6 +230,7 @@ public class ChainUtil {
         FacilioField colorField = null;
         FacilioField accentField = null;
         String severityLevel = null;
+        FacilioField subModuleTypeField = null;
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         FacilioContext context = nonTransactionChain.getContext();
@@ -247,6 +248,7 @@ public class ChainUtil {
                 colorField = pickListHandler.getColorField();
                 accentField = pickListHandler.getAccent();
                 severityLevel = pickListHandler.getSeverityLevel();
+                subModuleTypeField=pickListHandler.getSubModuleTypeField();
             }
         }
 
@@ -273,6 +275,11 @@ public class ChainUtil {
         if(StringUtils.isNotEmpty(severityLevel)){
             context.put(FacilioConstants.PickList.SEVERITY_LEVEL,severityLevel);
         }
+        if(subModuleTypeField!=null){
+            context.put(FacilioConstants.PickList.SUB_MODULE_TYPE_FIELD,subModuleTypeField);
+        }
+
+
         nonTransactionChain.addCommand(new LoadMainFieldCommand());
 
         addIfNotNull(nonTransactionChain, beforeFetchCommand);

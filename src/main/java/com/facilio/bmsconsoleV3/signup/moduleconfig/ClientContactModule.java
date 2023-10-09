@@ -202,14 +202,14 @@ public class ClientContactModule extends BaseModuleConfig{
         editButton.setPermissionRequired(true);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.CLIENT_CONTACT,editButton);
 
-//        SystemButtonRuleContext portalAccessButton = new SystemButtonRuleContext();
-//        portalAccessButton.setName("PortalAccess");
-//        portalAccessButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-//        portalAccessButton.setIdentifier(FacilioConstants.ContextNames.CLIENTCONTACT_MODULE_PORTAL_BUTTON);
-//        portalAccessButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-//        portalAccessButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-//        portalAccessButton.setPermissionRequired(true);
-//        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.CLIENT_CONTACT, portalAccessButton);
+        SystemButtonRuleContext portalAccessButton = new SystemButtonRuleContext();
+        portalAccessButton.setName("PortalAccess");
+        portalAccessButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        portalAccessButton.setIdentifier(FacilioConstants.ContextNames.CLIENTCONTACT_MODULE_PORTAL_BUTTON);
+        portalAccessButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        portalAccessButton.setPermission("MANAGE_ACCESS");
+        portalAccessButton.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.CLIENT_CONTACT, portalAccessButton);
 
     }
 }

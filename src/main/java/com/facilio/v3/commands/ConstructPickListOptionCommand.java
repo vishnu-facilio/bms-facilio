@@ -2,6 +2,9 @@ package com.facilio.v3.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
+import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -41,8 +44,9 @@ public class ConstructPickListOptionCommand extends FacilioCommand {
             FacilioField colorField = (FacilioField) context.get(FacilioConstants.PickList.COLOR_FIELD);
             FacilioField accentField = (FacilioField) context.get(FacilioConstants.PickList.ACCENT_FIELD);
             String severityLevel = (String) context.get(FacilioConstants.PickList.SEVERITY_LEVEL);
+            FacilioField subModuleTypeField = (FacilioField) context.get(FacilioConstants.PickList.SUB_MODULE_TYPE_FIELD);
+            pickList = constructFieldOptionsFromRecords(records, defaultField, secondaryField , fourthField, subModuleField,colorField,accentField,severityLevel,subModuleTypeField);
 
-            pickList = constructFieldOptionsFromRecords(records, defaultField, secondaryField , fourthField, subModuleField,colorField,accentField,severityLevel);
             int pickListRecordCount = pickList == null ? 0 : pickList.size();
             boolean localSearch = true;
             JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
@@ -59,7 +63,7 @@ public class ConstructPickListOptionCommand extends FacilioCommand {
 
     }
 
-    public static List<FieldOption<Long>> constructFieldOptionsFromRecords (List<Map<String, Object>> records, FacilioField defaultField, FacilioField secondaryField,FacilioField fourthField, FacilioField subModuleField,FacilioField colorField,FacilioField accentField,String severityLevel) throws Exception {
+    public static List<FieldOption<Long>> constructFieldOptionsFromRecords (List<Map<String, Object>> records, FacilioField defaultField, FacilioField secondaryField,FacilioField fourthField, FacilioField subModuleField,FacilioField colorField,FacilioField accentField,String severityLevel,FacilioField subModuleTypeField) throws Exception {
 
         if (CollectionUtils.isEmpty(records)) {
             return null;
@@ -73,6 +77,7 @@ public class ConstructPickListOptionCommand extends FacilioCommand {
         FacilioField fourthFieldLookupPrimary = getMainFieldOfLookup(fourthField, modBean);
         FacilioField colorFieldLookupPrimary = getMainFieldOfLookup(colorField, modBean);
         FacilioField accentFieldLookupPrimary = getMainFieldOfLookup(accentField, modBean);
+        FacilioField subModuleTypeFieldLookupPrimary = getMainFieldOfLookup(subModuleTypeField, modBean);
         for (Map<String, Object> prop : records) {
             Long id = (Long) prop.get("id");
             Object primaryLabel = getValue(prop, defaultField, defaultFieldLookupPrimary);
@@ -81,13 +86,14 @@ public class ConstructPickListOptionCommand extends FacilioCommand {
             String subModuleLabel = subModuleField == null ? null : String.valueOf(getValue(prop, subModuleField, subModuleFieldLookupPrimary));
             String color = colorField == null ? null :(String) getValue(prop , colorField ,colorFieldLookupPrimary);
             String accent = accentField == null ? null :(String) getValue(prop , accentField ,accentFieldLookupPrimary);
-
-            options.add(new FieldOption<>(id,
+            String moduleName= subModuleTypeField ==null?null:getSubModuleName(prop,subModuleTypeField,subModuleTypeFieldLookupPrimary);
+            options.add(new FieldOption<>(
+                    id,
                     primaryLabel,
                     secondaryLabel,
                     fourthLabel,
                     subModuleLabel,
-                    color,accent,severityLevel
+                    color,accent,severityLevel,moduleName
             ));
         }
         return options;
@@ -114,6 +120,21 @@ public class ConstructPickListOptionCommand extends FacilioCommand {
         else {
             return prop.get(field.getName());
         }
+
+    }
+    private static String getSubModuleName(Map<String, Object> prop, FacilioField field, FacilioField lookupMainField) throws Exception {
+
+        String moduleName=field.getModule().getName();
+        String subModuleName = null;
+        if(moduleName.equals(FacilioConstants.ContextNames.BASE_SPACE)) {
+            subModuleName= V3BaseSpaceContext.SpaceType.getType((Integer)getValue(prop,field,lookupMainField)).getModuleName();
+        }else if(moduleName.equals(FacilioConstants.ContextNames.RESOURCE)){
+            subModuleName= V3ResourceContext.ResourceType.valueOf((Integer)getValue(prop,field,lookupMainField)).getSubModuleName();
+            if(subModuleName.equals(FacilioConstants.ContextNames.BASE_SPACE)){
+                subModuleName= SpaceAPI.getBaseSpace((Long) prop.get("id")).getSpaceTypeEnum().getModuleName();
+            }
+        }
+        return subModuleName;
 
     }
 }
