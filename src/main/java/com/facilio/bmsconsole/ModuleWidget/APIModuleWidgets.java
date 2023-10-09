@@ -678,10 +678,10 @@ public class APIModuleWidgets {
     public static Supplier<ModuleWidgets> getFlaggedEventWidgets(){
         return () -> new ModuleWidgets()
                 .addModuleWidget("evaluationTimeRemaining","Evaluation Time Remaining",PageWidget.WidgetType.EVALUATION_TIME_REMAINING)
-                .addWidgetConfig("evaluationTimeRemaining_11_3","Evaluation Time Remaining - 11 - 3",WidgetConfigContext.ConfigType.FIXED,11,3,PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("evaluationTimeRemaining_2_3","Evaluation Time Remaining - 11 - 3",WidgetConfigContext.ConfigType.FIXED,11,3,PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("evaluationTeamDetails","Evaluation Team Details",PageWidget.WidgetType.EVALUATION_TEAM_DETAILS)
-                .addWidgetConfig("evaluationTeamDetails_18_3","Evaluation Team Details - 18 - 3",WidgetConfigContext.ConfigType.FIXED,18,3,PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("evaluationTeamDetails_4_3","Evaluation Team Details - 18 - 3",WidgetConfigContext.ConfigType.FIXED,18,3,PagesContext.PageLayoutType.WEB)
                 .done();
 
     }
