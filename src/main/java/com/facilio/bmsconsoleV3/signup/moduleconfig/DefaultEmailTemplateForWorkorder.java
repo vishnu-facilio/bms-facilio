@@ -38,7 +38,6 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         addAssignTeamTemplate();
         addCommentTemplate();
         addTechnicianResolvesWorkorder();
-        //addTechnicianCloseWorkorder();
         addWorkorderOnHold();
     }
 
@@ -145,110 +144,6 @@ public class DefaultEmailTemplateForWorkorder extends SignUpData {
         rule.setActivityType(EventType.HOLD_WORK_ORDER);
         rule.setActions(actionContextList);
         WorkflowEventContext event = constructEvent(EventType.HOLD_WORK_ORDER);
-        rule.setEvent(event);
-
-        addRule(rule);
-    }
-
-
-    public static void addTechnicianCloseWorkorder() throws Exception{
-
-        WorkflowContext workflowContext = new WorkflowContext();
-        List<String> workflowExpressions = new ArrayList<>();
-        workflowExpressions.add("org.domain");
-        workflowExpressions.add("workorder.assignedTo.email");
-        workflowExpressions.add("workorder.subject");
-        workflowExpressions.add("workorder.assignedTo.name");
-        workflowExpressions.add("workorder.description");
-        workflowExpressions.add("workorder.status.status");
-        workflowExpressions.add("workorder.url");
-        workflowExpressions.add("org.brand");
-
-        List<String> workflowParamters = new ArrayList<>();
-        workflowParamters.addAll(workflowExpressions);
-        workflowParamters.add("workorder");
-
-        JSONArray expressions = getExpressionList(workflowExpressions);
-        List<ParameterContext> parameters = getParametersList(workflowParamters);
-
-        workflowContext.setExpressions(expressions);
-        workflowContext.setParameters(parameters);
-
-        String message = "<p>The following work order ${workorder.subject} has been closed by ${workorder.assignedTo.name}. </p><p></p><p>Subject : ${workorder.subject} </p><p>Description : ${workorder.description:-} </p><p>Status : ${workorder.status.status} </p><p></p><p>Please view the closed work order here - ${workorder.url} </p><p></p><p>Regards, </p><p>Team ${org.brand:-Facilio}.\"</p>";
-        EMailStructure eMailStructure = getEmailStructure(message,false,false,"Work order closed",workflowContext);
-
-        List<ActionContext> actionContextList =  new ArrayList<>();
-        ActionContext action = new ActionContext();
-        JSONObject templateJson = new JSONObject();
-
-
-        templateJson.put("fromAddr",null);
-        templateJson.put("ftl",false);
-        templateJson.put("html",false);
-        templateJson.put("isAttachmentAdded",false);
-        templateJson.put("name","New WorkOrder Email Template");
-        templateJson.put("message",message);
-        templateJson.put("subject","Work order closed");
-        templateJson.put("to","${workorder.assignedTo.email:-}");
-        templateJson.put("type",1);
-        templateJson.put("emailStructureId",eMailStructure.getId());
-        templateJson.put("workflow",FieldUtil.getAsProperties(workflowContext));
-
-        action.setActionType(3);
-        action.setTemplateJson(templateJson);
-        actionContextList.add(action);
-
-        WorkflowContext pushWorkflowContext = new WorkflowContext();
-        List<String> pushWorkflowExpressions = new ArrayList<>();
-        pushWorkflowExpressions.add("org.domain");
-        pushWorkflowExpressions.add("workorder.assignedTo.id");
-        pushWorkflowExpressions.add("workorder.subject");
-        pushWorkflowExpressions.add("workorder.assignedTo.name");
-        pushWorkflowExpressions.add("workorder.description");
-        pushWorkflowExpressions.add("workorder.status.status");
-        pushWorkflowExpressions.add("workorder.url");
-        pushWorkflowExpressions.add("org.brand");
-        pushWorkflowExpressions.add("workorder.id");
-
-        List<String> pushWorkflowParamters = new ArrayList<>();
-        pushWorkflowParamters.addAll(pushWorkflowExpressions);
-        pushWorkflowParamters.add("workorder");
-
-        JSONArray pushExpressions = getExpressionList(pushWorkflowExpressions);
-        List<ParameterContext> pushParameters = getParametersList(pushWorkflowParamters);
-
-        pushWorkflowContext.setExpressions(pushExpressions);
-        pushWorkflowContext.setParameters(pushParameters);
-
-        ActionContext pushNotificationAction = new ActionContext();
-        JSONObject pushNotificationTemplateJson = new JSONObject();
-        ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-        pushNotificationTemplateJson.put("application", app.getId());
-        pushNotificationTemplateJson.put("id","${workorder.assignedTo.id:-}");
-        pushNotificationTemplateJson.put("body","{\"name\":\"WORKORDER_PUSH_NOTIFICATION\",\"notification\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"Work Order has been closed. Please review the details\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order closed\"},\"data\":{\"content_available\":true,\"summary_id\":\"${workorder.id}\",\"sound\":\"default\",\"module_name\":\"workorder\",\"priority\":\"high\",\"text\":\"Work Order has been closed. Please review the details\",\"click_action\":\"WORKORDER_SUMMARY\",\"title\":\"Work order closed\"},\"id\":\"${workorder.assignedTo.id:-}\"}");
-        pushNotificationTemplateJson.put("isPushNotification",false);
-        pushNotificationTemplateJson.put("isSendNotification",false);
-        pushNotificationTemplateJson.put("message","Work Order has been closed. Please review the details");
-        pushNotificationTemplateJson.put("subject","Work order closed");
-        pushNotificationTemplateJson.put("name","New WorkOrder Push Notification Template");
-        pushNotificationTemplateJson.put("to","${workorder.assignedTo.id:-}");
-        pushNotificationTemplateJson.put("type", Template.Type.PUSH_NOTIFICATION);
-        pushNotificationTemplateJson.put("userWorkflow", null);
-        pushNotificationTemplateJson.put("workflow",FieldUtil.getAsProperties(pushWorkflowContext));
-
-        pushNotificationAction.setActionType(7);
-        pushNotificationAction.setTemplateJson(pushNotificationTemplateJson);
-        actionContextList.add(pushNotificationAction);
-
-        WorkflowRuleContext rule = new WorkflowRuleContext();
-        rule.setDescription("Workorder closed");
-        rule.setName("Technician Closes Workorder");
-        rule.setRuleType(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION);
-        rule.setCriteria(getCriteria("assignedTo",2));
-        rule.setActivityType(EventType.CLOSE_WORK_ORDER);
-        rule.setActions(actionContextList);
-        rule.setModule(workorderModule);
-        WorkflowEventContext event = constructEvent(EventType.CLOSE_WORK_ORDER);
         rule.setEvent(event);
 
         addRule(rule);
