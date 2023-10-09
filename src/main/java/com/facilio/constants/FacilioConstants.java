@@ -3669,6 +3669,7 @@ public class FacilioConstants {
 		public static final String JOB_SERVICE = JobConstants.JOB_SERVICE;
 		public static final String AGENT_SERVICE = "agent";
 		public static final String WEATHER_SERVICE = "weather";
+		public static final String CLICKHOUSE = "clickhouse";
 		public static final String DEFAULT_SERVICE = FacilioService.DEFAULT_SERVICE;
 		public static final String INSTANT_JOB_SERVICE = JobConstants.INSTANT_JOB_SERVICE;
 		public static final String WMS_SERVICE = "wms";

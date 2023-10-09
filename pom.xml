@@ -190,7 +190,7 @@
         <dependency>
             <groupId>com.facilio.framework</groupId>
             <artifactId>facilio-framework</artifactId>
-            <version>2.0.24</version>
+            <version>2.0.25</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>
@@ -714,6 +714,13 @@
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
             <version>6.0.2.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>com.clickhouse</groupId>
+            <artifactId>clickhouse-jdbc</artifactId>
+            <version>0.4.6</version>
+            <!-- use uber jar with all dependencies included, change classifier to http for smaller jar -->
+            <classifier>all</classifier>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>

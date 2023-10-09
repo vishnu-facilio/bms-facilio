@@ -1,38 +1,18 @@
 package com.facilio.aws.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import com.facilio.auth.AzureSecretManager;
-import javax.servlet.http.HttpServletRequest;
-
-import lombok.Getter;
-import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
-import com.facilio.agent.AgentKeys;
-import com.facilio.util.FacilioUtil;
-import com.facilio.util.RequestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.ActionContext;
 import lombok.Getter;
+import lombok.SneakyThrows;
+
+import com.facilio.agent.AgentKeys;
+import com.facilio.auth.AzureSecretManager;
+import com.facilio.util.FacilioUtil;
+import com.facilio.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -791,6 +771,14 @@ public class FacilioProperties {
             secret.put("password", PROPERTIES.getProperty("db.password"));
             secret.put("db.default.db", PROPERTIES.getProperty("db.default.db"));
         }
+        if("ch".equals(secretKey)) {
+            secret.put("host", PROPERTIES.getProperty("db.host"));
+            secret.put("port", PROPERTIES.getProperty("ch.port"));
+            secret.put("username", PROPERTIES.getProperty("ch.username"));
+            secret.put("password", PROPERTIES.getProperty("ch.password"));
+            secret.put("db.default.db", PROPERTIES.getProperty("ch.default.db"));
+            secret.put("db.type", "ch");
+        }
         return secret;
 
     }
@@ -820,6 +808,7 @@ public class FacilioProperties {
         }
         return secretMap;
     }
+
     private static Map<String, String> getSecretFromAzure(String secretKey) throws Exception {
         try {
             LOGGER.info("Getting secret => "+secretKey);

@@ -1,17 +1,22 @@
 package com.facilio.bmsconsole.db;
 
+import lombok.SneakyThrows;
+
 import com.facilio.accounts.dto.*;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
 import com.facilio.chain.FacilioChain;
 import com.facilio.db.util.DBConf;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.cache.LRUCache;
-import com.facilio.bmsconsole.localization.translationbean.TranslationBean;
 import com.facilio.iam.accounts.util.IAMUtil;
-import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.NumberField;
@@ -21,7 +26,6 @@ import com.facilio.services.filestore.FileStore;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
-import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -206,7 +210,8 @@ public class BmsDBConf extends DBConf {
     @SneakyThrows
     public HashMap<String, String> getSecret(String secretKey) {
         HashMap<String, String> password = FacilioProperties.getPassword(secretKey);
-        String url = String.format("jdbc:mysql://%s:%s/", password.get("host"), password.get("port"));
+        String dbType = isClickHouse(password) ? "ch" : "mysql";
+        String url = String.format("jdbc:%s://%s:%s/", dbType, password.get("host"), password.get("port"));
         password.put("url", url);
         return password;
     }

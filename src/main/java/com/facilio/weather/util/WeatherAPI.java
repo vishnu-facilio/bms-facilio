@@ -1,5 +1,7 @@
 package com.facilio.weather.util;
 
+import lombok.extern.log4j.Log4j;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
@@ -9,6 +11,7 @@ import com.facilio.bmsconsoleV3.context.weather.V3WeatherServiceContext;
 import com.facilio.bmsconsoleV3.context.weather.V3WeatherStationContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -20,6 +23,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.relation.util.RelationshipDataUtil;
+import com.facilio.service.FacilioService;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.taskengine.job.JobContext;
 import com.facilio.tasker.FacilioTimer;
@@ -31,7 +35,6 @@ import com.facilio.v3.exception.RESTException;
 import com.facilio.weather.bean.WeatherBean;
 import com.facilio.weather.service.WeatherService;
 import com.facilio.weather.service.WeatherServiceType;
-import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -333,4 +336,31 @@ public class WeatherAPI {
 		formattedResponse.put("forecast", hourlyObj);
 		return formattedResponse;
 	}
+
+	public static void callDummyClickhouseApi() throws Exception {
+		WeatherAPI.fetchDummyRecords(false);
+		WeatherAPI.fetchDummyRecords(true);
+	}
+
+	public static List<Map<String, Object>> fetchDummyRecords(boolean isCh) throws Exception {
+		LOGGER.info("CLICKHOUSE :: I am testing clickhouse apis "+isCh);
+		ModuleBean modBean = Constants.getModBean();
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_WEATHER_READING);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.NEW_WEATHER_READING);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(fields)
+				.limit(3);
+		List<Map<String, Object>> result;
+
+		if(isCh) {
+			result = FacilioService.runAsServiceWihReturn(
+					FacilioConstants.Services.CLICKHOUSE, () -> selectBuilder.get());
+		} else {
+			result = selectBuilder.get();
+		}
+		LOGGER.info("Results in clickhouse ::"+result);
+		return result;
+	}
+
 }
