@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.agent.alarms.AgentAlarmContext;
@@ -14,7 +15,8 @@ import com.facilio.alarms.sensor.context.sensoralarm.SensorAlarmContext;
 import com.facilio.alarms.sensor.context.sensoralarm.SensorAlarmOccurrenceContext;
 import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmContext;
 import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmOccurrenceContext;
-import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -1386,5 +1388,78 @@ public class NewAlarmAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("rule"), String.valueOf(ruleId), NumberOperators.EQUALS));
 
 		return builder.get();
+	}
+
+	public static Criteria getActiveAlarmCriteria() throws Exception {
+		ModuleBean modBean = Constants.getModBean();
+		Criteria lookupCriteria = new Criteria();
+		List<FacilioField> alarmSeverityFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_SEVERITY);
+		Map<String, FacilioField> alarmSeverityFieldMap = FieldFactory.getAsMap(alarmSeverityFields);
+		FacilioField severityNameField = alarmSeverityFieldMap.get("severity");
+		lookupCriteria.addAndCondition(CriteriaAPI.getCondition(severityNameField, FacilioConstants.Alarm.CLEAR_SEVERITY, StringOperators.ISN_T));
+		return lookupCriteria;
+	}
+
+	public static SystemButtonRuleContext getAcknowledgeAlarmSystemButton() throws Exception {
+		ModuleBean modBean = Constants.getModBean();
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_ALARM);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField acknowledgedField = fieldMap.get("acknowledged");
+		FacilioField severityField = fieldMap.get("severity");
+
+		SystemButtonRuleContext acknowledgeAlarmButton = new SystemButtonRuleContext();
+		acknowledgeAlarmButton.setIdentifier("acknowledge_alarm");
+		acknowledgeAlarmButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+		acknowledgeAlarmButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+		acknowledgeAlarmButton.setName("Acknowledge");
+		acknowledgeAlarmButton.setPermission(AccountConstants.ModulePermission.ACKNOWLEDGE_ALARM.name());
+		acknowledgeAlarmButton.setPermissionRequired(true);
+
+		Criteria acknowledgeCriteria = new Criteria();
+		acknowledgeCriteria.addAndCondition(CriteriaAPI.getCondition(acknowledgedField, String.valueOf(Boolean.FALSE), BooleanOperators.IS));
+		acknowledgeCriteria.addAndCondition(CriteriaAPI.getCondition(severityField, getActiveAlarmCriteria(), LookupOperator.LOOKUP));
+
+		acknowledgeAlarmButton.setCriteria(acknowledgeCriteria);
+		return acknowledgeAlarmButton;
+	}
+
+	public static SystemButtonRuleContext getCreateWoSystemButton() throws Exception {
+		ModuleBean modBean = Constants.getModBean();
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_ALARM);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField lastWoIdField = fieldMap.get("lastWoId");
+		FacilioField severityField = fieldMap.get("severity");
+
+		SystemButtonRuleContext createWorkorderSystemButton = new SystemButtonRuleContext();
+		createWorkorderSystemButton.setIdentifier("alarm_create_workorder");
+		createWorkorderSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+		createWorkorderSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+		createWorkorderSystemButton.setName("Create Workorder");
+
+		Criteria createWoCriteria = new Criteria();
+		createWoCriteria.addAndCondition(CriteriaAPI.getCondition(lastWoIdField, "NULL", CommonOperators.IS_EMPTY));
+		createWoCriteria.addAndCondition(CriteriaAPI.getCondition(severityField, getActiveAlarmCriteria(), LookupOperator.LOOKUP));
+
+		createWorkorderSystemButton.setCriteria(createWoCriteria);
+		return createWorkorderSystemButton;
+	}
+
+	public static SystemButtonRuleContext getViewWoSystemButton() throws Exception {
+		ModuleBean modBean = Constants.getModBean();
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_ALARM);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField lastWoIdField = fieldMap.get("lastWoId");
+
+		SystemButtonRuleContext viewWorkorderSystemButton = new SystemButtonRuleContext();
+		viewWorkorderSystemButton.setIdentifier("alarm_view_workorder");
+		viewWorkorderSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+		viewWorkorderSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+		viewWorkorderSystemButton.setName("View Workorder");
+
+		Criteria viewWoCriteria = new Criteria();
+		viewWoCriteria.addAndCondition(CriteriaAPI.getCondition(lastWoIdField, String.valueOf(1), NumberOperators.GREATER_THAN_EQUAL));
+
+		viewWorkorderSystemButton.setCriteria(viewWoCriteria);
+		return viewWorkorderSystemButton;
 	}
 }

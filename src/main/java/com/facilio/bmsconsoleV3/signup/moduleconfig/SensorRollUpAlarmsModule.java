@@ -3,8 +3,11 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -277,5 +280,28 @@ public class SensorRollUpAlarmsModule extends BaseModuleConfig{
             appNameVsPage.put(appName,getSensorAlarmSystemPage(app, false,  true));
         }
         return appNameVsPage;
+    }
+
+    public static void addSystemButtonsForBMSAlarm() throws Exception {
+        addAcknowledgeButton();
+        addCreateWorkOrderButton();
+        addViewWorkOrderButton();
+    }
+
+    public static void addAcknowledgeButton() throws Exception {
+        //Sensor Alarm Acknowledge Button
+        SystemButtonRuleContext acknowledgeAlarmButton = NewAlarmAPI.getAcknowledgeAlarmSystemButton();
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM, acknowledgeAlarmButton);
+    }
+
+    public static void addCreateWorkOrderButton() throws Exception {
+        //Sensor Alarm Create Workorder Button
+        SystemButtonRuleContext createWorkorderSystemButton = NewAlarmAPI.getCreateWoSystemButton();
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM,createWorkorderSystemButton);
+    }
+    public static void addViewWorkOrderButton() throws Exception {
+        //Sensor Alarm View Workorder Button
+        SystemButtonRuleContext viewWorkorderSystemButton = NewAlarmAPI.getViewWoSystemButton();
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM,viewWorkorderSystemButton);
     }
 }

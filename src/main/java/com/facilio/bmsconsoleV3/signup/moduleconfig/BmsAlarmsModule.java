@@ -3,15 +3,16 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.LookupOperator;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -24,6 +25,11 @@ import static com.facilio.connected.CommonConnectedSummaryAPI.getBMSAlarmSystemP
 public class BmsAlarmsModule extends BaseModuleConfig{
     public BmsAlarmsModule() throws Exception{
         setModuleName(FacilioConstants.ContextNames.BMS_ALARM);
+    }
+
+    @Override
+    public void addData() throws Exception {
+        addSystemButtonsForBMSAlarm();
     }
 
     @Override
@@ -212,5 +218,48 @@ public class BmsAlarmsModule extends BaseModuleConfig{
             appNameVsPage.put(appName,getBMSAlarmSystemPage(app, false,  true));
         }
         return appNameVsPage;
+    }
+
+    public static void addSystemButtonsForBMSAlarm() throws Exception {
+        addAcknowledgeButton();
+        addCreateWorkOrderButton();
+        addViewWorkOrderButton();
+        addExportCsvButton();
+        addExportExcelButton();
+    }
+
+    public static void addAcknowledgeButton() throws Exception {
+        //BMS Alarm Acknowledge Button
+        SystemButtonRuleContext acknowledgeAlarmButton = NewAlarmAPI.getAcknowledgeAlarmSystemButton();
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM, acknowledgeAlarmButton);
+    }
+
+    public static void addCreateWorkOrderButton() throws Exception {
+        //BMS Alarm Create Workorder Button
+        SystemButtonRuleContext createWorkorderSystemButton = NewAlarmAPI.getCreateWoSystemButton();
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM,createWorkorderSystemButton);
+    }
+    public static void addViewWorkOrderButton() throws Exception {
+        //BMS Alarm View Workorder Button
+        SystemButtonRuleContext viewWorkorderSystemButton = NewAlarmAPI.getViewWoSystemButton();
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM,viewWorkorderSystemButton);
+    }
+    public static void addExportCsvButton() throws Exception {
+        //BMS Alarm Export CSV Button
+        SystemButtonRuleContext exportCsvSystemButton = new SystemButtonRuleContext();
+        exportCsvSystemButton.setIdentifier("bms_alarm_export_csv");
+        exportCsvSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        exportCsvSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportCsvSystemButton.setName("Export CSV");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM,exportCsvSystemButton);
+    }
+    public static void addExportExcelButton() throws Exception {
+        //BMS Alarm Export CSV Button
+        SystemButtonRuleContext exportExcelSystemButton = new SystemButtonRuleContext();
+        exportExcelSystemButton.setIdentifier("bms_alarm_export_excel");
+        exportExcelSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        exportExcelSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportExcelSystemButton.setName("Export Excel");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM,exportExcelSystemButton);
     }
 }
