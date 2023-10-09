@@ -465,6 +465,9 @@ public class GetViewListCommand extends FacilioCommand {
 			resultViews = resultViews.stream().filter(view -> view.getStatus()).collect(Collectors.toList());
 		}
 
+		// removing all views which are neither list view nor calendar view
+		resultViews.removeIf(view -> !(view.isListView() || view.isCalendarView()));
+
 		addEditableAccess(dbViews, isPrivilegedAccess, currentUserId, superAdminUserId);
 
 		return resultViews;
