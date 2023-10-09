@@ -127,7 +127,7 @@ public class ChainUtil {
                 beforeCountCommand = listHandler.getBeforeCountCommand();
             }
         }
-        
+
         addIfNotNull(nonTransactionChain, beforeCountCommand);
         nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
         nonTransactionChain.addCommand(new GenerateCriteriaFromClientCriteriaCommand());
@@ -233,7 +233,7 @@ public class ChainUtil {
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         FacilioContext context = nonTransactionChain.getContext();
-       
+
         V3Config.PickListHandler pickListHandler = null;
         if (v3Config != null) {
             pickListHandler = v3Config.getPickListHandler();
@@ -602,7 +602,7 @@ public class ChainUtil {
         addIfNotNull(transactionChain, afterTransactionCommand);
 
         transactionChain.addCommand(new AddActivitiesCommandV3());
-         transactionChain.addCommand(new AddOneTimeJobForScheduledRule(WorkflowRuleRecordRelationshipContext.EventType.PATCH));
+        transactionChain.addCommand(new AddOneTimeJobForScheduledRule(WorkflowRuleRecordRelationshipContext.EventType.PATCH));
 
         return transactionChain;
     }
@@ -677,9 +677,20 @@ public class ChainUtil {
 
     public static void initRESTAPIHandler(String packageName) throws InvocationTargetException, IllegalAccessException {
         Reflections reflections = new Reflections(ClasspathHelper.forPackage(packageName), new MethodAnnotationsScanner());
-        packageName = packageName.replace("\\","");
-        fillModuleNameMap(reflections,packageName);
+        initRESTAPIHandler(reflections);
+    }
+
+    public static void initRESTAPIHandler(Reflections reflections) throws InvocationTargetException, IllegalAccessException {
+        fillModuleNameMap(reflections);
         fillModuleTypeMap(reflections);
+    }
+
+    public static void initRESTAPIHandlerForStorm(String packageName) throws Exception {
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .forPackages(packageName)
+                .filterInputsBy(new FilterBuilder().includePackage(packageName))
+                .setScanners(new MethodAnnotationsScanner()));
+        initRESTAPIHandler(reflections);
     }
 
     private static void fillModuleTypeMap(Reflections reflections) throws InvocationTargetException, IllegalAccessException {
@@ -703,26 +714,24 @@ public class ChainUtil {
         }
     }
 
-    private static void fillModuleNameMap(Reflections reflections,String packageName) throws InvocationTargetException, IllegalAccessException {
+    private static void fillModuleNameMap(Reflections reflections) throws InvocationTargetException, IllegalAccessException {
         Set<Method> methodsAnnotatedWithModule = reflections.getMethodsAnnotatedWith(Module.class);
         for (Method method: methodsAnnotatedWithModule) {
-            if(method.getDeclaringClass().getPackage().getName().equals(packageName)) {
-                validateHandlerMethod(method);
+            validateHandlerMethod(method);
 
-                Module annotation = method.getAnnotation(Module.class);
-                String moduleName = annotation.value().trim();
-                if (moduleName.isEmpty()) {
-                    throw new IllegalStateException("Module name cannot be empty.");
-                }
-
-                Supplier<V3Config> config = (Supplier<V3Config>) method.invoke(null, null);
-
-                if (MODULE_HANDLER_MAP.containsKey(moduleName)) {
-                    throw new IllegalStateException("Module config already present.");
-                }
-
-                MODULE_HANDLER_MAP.put(moduleName, config);
+            Module annotation = method.getAnnotation(Module.class);
+            String moduleName = annotation.value().trim();
+            if (moduleName.isEmpty()) {
+                throw new IllegalStateException("Module name cannot be empty.");
             }
+
+            Supplier<V3Config> config = (Supplier<V3Config>) method.invoke(null, null);
+
+            if (MODULE_HANDLER_MAP.containsKey(moduleName)) {
+                throw new IllegalStateException("Module config already present.");
+            }
+
+            MODULE_HANDLER_MAP.put(moduleName, config);
         }
     }
 
@@ -752,7 +761,7 @@ public class ChainUtil {
     }
 
     public static void addWorkflowChain(Chain chain) throws Exception {
-      addWorkflowChain(chain,null);
+        addWorkflowChain(chain,null);
     }
     public static void addWorkflowChain(Chain chain,ConfigParams configParams) throws Exception{
         if(configParams!=null && configParams.isOnlyRestrictedWorkflows()){
@@ -763,8 +772,8 @@ public class ChainUtil {
     }
     private static void defaultAddWorkflowChain(Chain chain){
         chain.addCommand(new ExecuteStateFlowCommand());
-		chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));
-		chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
         chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
@@ -793,11 +802,11 @@ public class ChainUtil {
         updateWorkflowChain(chain,null);
     }
     public static void updateWorkflowChain(Chain chain,ConfigParams configParams) throws Exception {
-      if(configParams!=null && configParams.isOnlyRestrictedWorkflows()){
-          updateRestrictedWorkflowChain(chain);
-      }else{
-          defaultUpdateWorkflowChain(chain);
-      }
+        if(configParams!=null && configParams.isOnlyRestrictedWorkflows()){
+            updateRestrictedWorkflowChain(chain);
+        }else{
+            defaultUpdateWorkflowChain(chain);
+        }
     }
     private static void defaultUpdateWorkflowChain(Chain chain) throws Exception{
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));
