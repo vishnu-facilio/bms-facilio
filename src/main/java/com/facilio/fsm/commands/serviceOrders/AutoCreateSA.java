@@ -42,6 +42,8 @@ public class AutoCreateSA extends FacilioCommand {
                 sa.setScheduledStartTime(order.getPreferredStartTime());
                 sa.setScheduledEndTime(order.getPreferredEndTime());
                 sa.setServiceOrder(order);
+                sa.setCategory(order.getCategory());
+                sa.setResolutionDueDuration(order.getResolutionDueDuration());
                 V3SiteContext site = order.getSite();
                 if (site != null) {
                     V3SiteContext siteObj = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SITE,site.getId(), V3SiteContext.class);

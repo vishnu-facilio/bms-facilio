@@ -3681,7 +3681,7 @@
     <request path="/api/v3/serviceAppointment/associateTask" method="POST">
         <requestbody type="object">
             <property name="serviceTasks" type="array">
-                <items type="number"/>
+                <items type="object"/>
             </property>
             <property name="appointmentId" type="number"/>
         </requestbody>

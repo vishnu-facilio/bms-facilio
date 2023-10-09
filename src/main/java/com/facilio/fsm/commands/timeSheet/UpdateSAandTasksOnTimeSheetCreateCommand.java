@@ -36,7 +36,6 @@ public class UpdateSAandTasksOnTimeSheetCreateCommand extends FacilioCommand {
                             Long agentId = timeSheet.getFieldAgent().getId();
                             long workDuration = ServiceAppointmentUtil.getAppointmentDuration(agentId, appointmentId);
                             appointment.setActualDuration(workDuration);
-//                            V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, appointmentId, FieldUtil.getAsJSON(appointment), null, null, null, null, null, null, null, null);
 
 
                     List<TimeSheetTaskContext> tasks = timeSheet.getServiceTasks();
@@ -67,11 +66,6 @@ public class UpdateSAandTasksOnTimeSheetCreateCommand extends FacilioCommand {
                                     }
                                     //Updating SA to InProgress state
 
-//                                    FacilioContext appointmentList = V3Util.getSummary(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, Collections.singletonList(timeSheet.getServiceAppointment().getId()));
-
-//                                    if (Constants.getRecordList(appointmentList) != null) {
-//                                        ServiceAppointmentContext existingAppointment = (ServiceAppointmentContext) Constants.getRecordList(appointmentList).get(0);
-//                                        if (existingAppointment != null) {
                                     String appointmentStatus = appointment.getStatus().getStatus();
                                     if (appointmentStatus.equals(FacilioConstants.ServiceAppointment.DISPATCHED)) {
                                         ServiceAppointmentTicketStatusContext inProgressState = ServiceAppointmentUtil.getStatus(FacilioConstants.ServiceAppointment.IN_PROGRESS);

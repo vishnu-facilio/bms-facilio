@@ -16,10 +16,7 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AssociateServiceTaskInSACommand extends FacilioCommand {
@@ -40,8 +37,12 @@ public class AssociateServiceTaskInSACommand extends FacilioCommand {
                     List<ServiceTaskContext> newTasks = (List<ServiceTaskContext>) tasks.get("newTasks");
                     List<Map<String, Object>> associatedTasks = (List<Map<String, Object>>) tasks.get("associatedTasks");
                     if (CollectionUtils.isNotEmpty(newTasks)) {
+                        List<Map<String, Object>> newTaskMapList = FieldUtil.getAsMapList(newTasks, ServiceTaskContext.class);
+                        for (Map<String,Object>newTask : newTaskMapList){
+                            newTask.put("serviceOrder",serviceAppointment.getServiceOrder());
+                        }
                         FacilioModule serviceTaskModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
-                        FacilioContext taskList = V3Util.createRecordList(serviceTaskModule, FieldUtil.getAsMapList(newTasks, ServiceTaskContext.class), null, null);
+                        FacilioContext taskList = V3Util.createRecordList(serviceTaskModule, newTaskMapList, null, null);
                         List<Map<String, Object>> serviceTaskList = new ArrayList<>();
                         if (taskList != null) {
                             Map<String, List<ModuleBaseWithCustomFields>> record = Constants.getRecordMap(taskList);

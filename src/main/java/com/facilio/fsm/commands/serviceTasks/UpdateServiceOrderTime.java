@@ -72,7 +72,6 @@ public class UpdateServiceOrderTime extends FacilioCommand {
                     //if the service order is not in initiated or closed state we skip the update
                     if(initOrder || completeOrder){
                         ServiceOrderAPI.updateServiceOrder(serviceOrderInfo);
-//                        V3RecordAPI.updateRecord(so,serviceOrderModule,updateFields);
                     }
                 }
             }
