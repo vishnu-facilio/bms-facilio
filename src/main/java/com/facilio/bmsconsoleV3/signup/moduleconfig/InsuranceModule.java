@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
@@ -9,8 +10,11 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -31,7 +35,10 @@ public class InsuranceModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.INSURANCE);
     }
 
-
+    @Override
+    public void addData() throws Exception {
+        addSystemButton();
+    }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
@@ -176,7 +183,9 @@ public class InsuranceModule extends BaseModuleConfig{
 
         for (String appName : appNameList) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName, buildInsurancePage(app, module, false, true));
+            if(app!=null) {
+                appNameVsPage.put(appName, buildInsurancePage(app, module, false, true));
+            }
         }
         return appNameVsPage;
     }
@@ -360,6 +369,17 @@ public class InsuranceModule extends BaseModuleConfig{
         glimpseList.add(glimpse);
 
         return glimpseList;
+
+    }
+    private static void addSystemButton() throws Exception{
+        SystemButtonRuleContext editButton = new SystemButtonRuleContext();
+        editButton.setName("Edit");
+        editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButton.setIdentifier(FacilioConstants.ContextNames.INSURANCE_MODULE_EDIT_BUTTON);
+        editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editButton.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.INSURANCE,editButton);
 
     }
 

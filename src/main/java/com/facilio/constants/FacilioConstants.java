@@ -360,6 +360,10 @@ public class FacilioConstants {
 
 	public static class ContextNames {
 		public static final String CONDITIONS="conditions";
+		public static final String CLIENT_MODULE_EDIT_BUTTON="clientModuleEditButton";
+		public static final String INSURANCE_MODULE_EDIT_BUTTON="insuranceModuleEditButton";
+		public static final String CLIENTCONTACT_MODULE_PORTAL_BUTTON="clientConatctModulePortalButton";
+		public static final String CLIENTCONTACT_MODULE_EDIT_BUTTON="clientContactModuleEditButton";
 		public static final String WORKFLOW_RULE_LOGS="workflowRuleLogs";
 		public static final String ONE_LEVEL_LOOKUP="oneLevelLookup";
 		public static final String IS_ONE_LEVEL_FIELDS="isOneLevelFields";
