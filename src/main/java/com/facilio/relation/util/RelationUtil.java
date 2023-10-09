@@ -7,6 +7,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.RelationshipOperator;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -123,14 +124,14 @@ public class RelationUtil {
     }
 
     public static List<RelationRequestContext> getAllRelations(FacilioModule module) throws Exception {
-        return getAllRelations(module, false, null, null, false);
-    }
-
-    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean includeHiddenRelations) throws Exception {
-        return getAllRelations(module, false, null, null, includeHiddenRelations);
+        return getAllRelations(module, false, null, null, false, RelationContext.RelationCategory.NORMAL);
     }
 
     public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString, boolean includeHiddenRelations) throws Exception {
+        return getAllRelations(module, isSetupPage, pagination, searchString, includeHiddenRelations, RelationContext.RelationCategory.NORMAL);
+    }
+
+    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString, boolean includeHiddenRelations, RelationContext.RelationCategory relationCategory) throws Exception {
 
         Map<String, FacilioField> relationFields = FieldFactory.getAsMap(FieldFactory.getRelationFields());
         Map<String, FacilioField> mappingFields = FieldFactory.getAsMap(FieldFactory.getRelationMappingFields());
@@ -159,6 +160,8 @@ public class RelationUtil {
         if (!includeHiddenRelations) {
             builder.andCondition(CriteriaAPI.getCondition(relationFields.get("relationCategory"), String.valueOf(RelationContext.RelationCategory.HIDDEN.getIndex()), NumberOperators.NOT_EQUALS));
         }
+
+        addRelationCategoryCriteriaToBuilder(relationCategory, builder, relationFields.get("relationCategory"));
 
         StringBuilder orderBy = new StringBuilder().append(relationFields.get("id").getCompleteColumnName()).append(" DESC");
         builder.orderBy(orderBy.toString());
@@ -451,5 +454,20 @@ public class RelationUtil {
             return recordIds;
         }
         return new ArrayList<>();
+    }
+
+    public static void addRelationCategoryCriteriaToBuilder(RelationContext.RelationCategory relationCategory, GenericSelectRecordBuilder builder, FacilioField relationCategoryField) {
+        if (relationCategory != null) {
+            Criteria relationCategoryCriteria = new Criteria();
+            if (relationCategory.equals(RelationContext.RelationCategory.NORMAL)) {
+                relationCategoryCriteria.addAndCondition(CriteriaAPI.getCondition(relationCategoryField, String.valueOf(RelationContext.RelationCategory.NORMAL.getIndex()), NumberOperators.EQUALS));
+                relationCategoryCriteria.addOrCondition(CriteriaAPI.getCondition(relationCategoryField, CommonOperators.IS_EMPTY));
+                builder.andCriteria(relationCategoryCriteria);
+            }
+            else {
+                relationCategoryCriteria.addAndCondition(CriteriaAPI.getCondition(relationCategoryField, String.valueOf(relationCategory.getIndex()), NumberOperators.EQUALS));
+                builder.andCriteria(relationCategoryCriteria);
+            }
+        }
     }
 }
