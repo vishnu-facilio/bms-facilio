@@ -8,8 +8,8 @@ env:
 phases:
   build:
     commands:
-      - mvn package -Dbuild.number=$CODEBUILD_BUILD_NUMBER -Dbuild.branch="$(echo $BRANCH_NAME | sed -e 's/\//_/g')" -Dbuild.commitid=$COMMIT_ID -s build_settings.xml -Drepo.pwd=$REPO_PWD -Drepo.name=$REPO_NAME
-      - mvn deploy -Dbuild.type=jar -Dbuild.number=$CODEBUILD_BUILD_NUMBER -Dbuild.branch="$(echo $BRANCH_NAME | sed -e 's/\//_/g')" -DskipTests -s build_settings.xml -Drepo.pwd=$REPO_PWD -Drepo.name=$REPO_NAME
+      - mvn package -Dbuild.number=$CODEBUILD_BUILD_NUMBER -Dbuild.branch="$(echo $BRANCH_NAME | sed -e 's/\//_/g')" -Dbuild.commitid=$COMMIT_ID -s build_settings.xml -Drepo.pwd=$REPO_PWD -Drepo.name=$REPO_NAME -Drepo.domain=$REPO_DOMAIN
+      - mvn deploy -Dbuild.type=jar -Dbuild.number=$CODEBUILD_BUILD_NUMBER -Dbuild.branch="$(echo $BRANCH_NAME | sed -e 's/\//_/g')" -DskipTests -s build_settings.xml -Drepo.pwd=$REPO_PWD -Drepo.name=$REPO_NAME -Drepo.domain=$REPO_DOMAIN
 artifacts:
   files:
     - target/ROOT.war

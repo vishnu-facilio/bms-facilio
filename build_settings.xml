@@ -16,7 +16,7 @@
             <repositories>
                 <repository>
                     <id>maven-group</id>
-                    <url>https://repo.facilio.in/repository/maven-group/</url>
+                    <url>${repo.domain}/repository/maven-group/</url>
                 </repository>
             </repositories>
         </profile>
@@ -25,7 +25,7 @@
         <mirror>
             <id>maven-group</id>
             <name>maven-central</name>
-            <url>https://repo.facilio.in/repository/maven-group/</url>
+            <url>${repo.domain}/repository/maven-group/</url>
             <mirrorOf>*</mirrorOf>
         </mirror>
     </mirrors>
