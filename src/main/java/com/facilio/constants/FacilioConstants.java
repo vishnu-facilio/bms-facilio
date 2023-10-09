@@ -67,6 +67,7 @@ import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeContext;
 import com.facilio.control.*;
 import com.facilio.control.util.ControlScheduleUtil;
 import com.facilio.controlaction.util.ControlActionUtil;
+import com.facilio.fsm.context.*;
 import com.facilio.ims.handler.AuditLogHandler;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -88,6 +89,7 @@ import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+
 //import com.facilio.custom.CustomController;
 
 public class FacilioConstants {
@@ -96,7 +98,7 @@ public class FacilioConstants {
 	public static final SimpleDateFormat HTML5_DATE_FORMAT_1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 	public static final int INVITATION_EXPIRY_DAYS = 7;
 
-	public static class CognitoUserPool {
+    public static class CognitoUserPool {
 
 		public static String getAWSAccountId() {
 			return "665371858763";
@@ -1967,6 +1969,9 @@ public class FacilioConstants {
 		public static final String VENDOR_NOTES = "vendorsNotes";
 		public static final String VENDOR_ID = "vendorsId";
 
+		public static final String VENDOR_CONTACT_NOTES="vendorcontactnotes";
+		public static final String VENDOR_CONTACT_ATTACHMENTS="vendorcontactattachments";
+
 		public static final String ITEM = "item";
 		public static final String ITEMS = "items";
 		public static final String ITEM_STATUS = "itemStatus";
@@ -2221,6 +2226,7 @@ public class FacilioConstants {
 		public static final String DEVICE_TYPE = "deviceType";
 
 		public static final String ATTENDANCE = "attendance";
+		public static final String MY_ATTENDANCE = "myAttendance";
 		public static final String ATTENDANCE_TRANSACTIONS = "attendanceTransaction";
 		public static final String BREAK = "break";
 		public static final String BREAK_LIST = "break_list";
@@ -2465,6 +2471,9 @@ public class FacilioConstants {
 
 		public static final String EMPLOYEE = "employee";
 		public static final String EMPLOYEES = "employees";
+		public static final String EMPLOYEE_ACTIVITY = "employeeActivity";
+		public static final String EMPLOYEE_NOTES="employeenotes";
+		public static final String EMPLOYEE_ATTACHMENTS="employeeattachments";
 
 		public static final String TENANT_CONTACT = "tenantcontact";
 		public static final String TENANT_ID_VS_PRIMARY_TENANT_CONTACT = "tenantIdVsPrimaryTenantContactMap";
@@ -2472,16 +2481,24 @@ public class FacilioConstants {
 
 		public static final String TENANT_CONTACTS = "tenantcontacts";
 
+		public static final String SERVICE_ORDER = "serviceOrder";
+
+		public static final String SERVICE_ORDER_ACTIVITY = "serviceOrderActivity";
+
 		public static final String CLIENT_CONTACT = "clientcontact";
 		public static final String CLIENT_CONTACTS = "clientcontacts";
 
 		public static final String VENDOR_CONTACT = "vendorcontact";
 		public static final String VENDOR_CONTACTS = "vendorcontacts";
+		public static final String VENDOR_CONTACTS_ACTIVITY = "vendorContactsActivity";
 
 		public static final String PEOPLE = "people";
 		public static final String EMAIL_VS_PEOPLE_MAP = "emailVsPeopleMap";
 		public static final String PEOPLE_TYPE_LIST = "peopleTypeList";
 		public static final String PEOPLE_ID = "peopleId";
+		public static final String LAST_CHECKED_IN_TIME = "lastCheckedInTime";
+		public static final String LAST_CHECKED_OUT_TIME = "lastCheckedOutTime";
+		public static final String CHECKED_IN = "checkedIn";
 
 		public static final String PEOPLE_TYPE = "peopleType";
 		public static final String SECURITY_POLICY_ID = "securityPolicyId";
@@ -2860,8 +2877,49 @@ public class FacilioConstants {
 			public static final String MODULE_FORM_ID = "moduleFormId";
 
 		}
+		public static class FieldServiceManagement {
+			public static final String SERVICE_SKILL = "serviceSkill";
+			public static final String WORK_TYPE = "workType";
+			public static final String WORK_TYPE_LINE_ITEMS = "workTypeLineItems";
+			public static final String WORK_TYPE_SKILLS = "workTypeSkills";
+			public static final String SERVICE_ORDER = "serviceOrder";
+			public static final String SERVICE_ORDER_LIST = "serviceOrderList";
+			public static final String INVENTORY_COST_TYPE = "inventoryCostType";
+			public static final String INVENTORY_SOURCE = "inventorySource";
+			public static final String SERVICE_ORDER_COST = "serviceOrderCost";
+			public static final String SERVICE_ORDER_TICKET_STATUS = "serviceOrderTicketStatus";
+			public static final String SERVICE_ORDER_TASK = "serviceOrderTask";
+			public static final String SERVICE_ORDER_ATTACHMENTS = "serviceOrderAttachments";
+			public static final String SERVICE_ORDER_NOTES = "serviceOrderNotes";
+			public static final String SERVICE_ORDER_ACTIVITY = "serviceOrderActivity";
+			public static final String SERVICE_TASK = "serviceTask";
+			public static final String SERVICE_INVENTORY_RESERVATION = "serviceInventoryReservation";
+			public static final String SERVICE_TASK_ATTACHMENTS = "serviceTaskAttachments";
+			public static final String SERVICE_TASK_SKILLS = "serviceTaskSkills";
+			public static final String SERVICE_ORDER_PLANNED_ITEMS = "serviceOrderPlannedItems";
+			public static final String SERVICE_ORDER_PLANNED_TOOLS = "serviceOrderPlannedTools";
+			public static final String SERVICE_ORDER_PLANNED_TOOL_ID = "serviceOrderPlannedToolId";
+			public static final String SERVICE_ORDER_PLANNED_SERVICES = "serviceOrderPlannedServices";
+			public static final String SERVICE_ORDER_PLANNED_SERVICE_ID = "serviceOrderPlannedServiceId";
+			public static final String SERVICE_ORDER_ITEMS = "serviceOrderItems";
+			public static final String SERVICE_ORDER_TOOLS = "serviceOrderTools";
+			public static final String SERVICE_ORDER_SERVICES = "serviceOrderServices";
+			public static final String SERVICE_TASK_IDS = "serviceTaskIds";
+			public static final String OLD_SERVICE_TASK_IDS = "oldServiceTaskIds";
+			public static final String SERVICE_TASK_STATUS_ACTIONS = "serviceTaskStatusActions";
+			public static final String SERVICE_TASK_STATUS = "serviceTaskStatus";
+		}
+		public static class ServiceTaskStatus {
+			public static final String NEW = "new";
+			public static final String SCHEDULED = "scheduled";
+			public static final String DISPATCHED = "dispatched";
+			public static final String IN_PROGRESS = "inProgress";
+			public static final String ON_HOLD = "onHold";
+			public static final String COMPLETED = "completed";
+			public static final String CANCELLED = "cancelled";
+		}
 
-		// etisalat changes
+			// etisalat changes
 		public static final String BILL_ALERT = "custom_alert";
 		public static final String BILL_INVOICE = "custom_invoices";
 		public static final String BILL_TARIFF = "custom_tariffinfo";
@@ -3319,6 +3377,32 @@ public class FacilioConstants {
 			classMap.put(Control_Action.CONTROL_ACTION_ACTIVITY_MODULE_NAME, ActivityContext.class);
 			classMap.put(Control_Action.CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME, ActivityContext.class);
 			classMap.put(Control_Action.COMMAND_ACTIVITY_MODULE_NAME,ActivityContext.class);
+			classMap.put(ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS, ServiceAppointmentTicketStatusContext.class);
+			classMap.put(ServiceOrder.SERVICE_ORDER_TICKET_STATUS, ServiceOrderTicketStatusContext.class);
+			classMap.put(TimeOff.TIME_OFF_TYPE, TimeOffTypeContext.class);
+			classMap.put(SERVICE_ORDER_ACTIVITY,ActivityContext.class);
+			classMap.put(EMPLOYEE_ACTIVITY,ActivityContext.class);
+			classMap.put(VENDOR_CONTACTS_ACTIVITY,ActivityContext.class);
+			classMap.put(Territory.TERRITORY_ACTIVITY,ActivityContext.class);
+			classMap.put(ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY,ActivityContext.class);
+			classMap.put(TimeSheet.TIME_SHEET_ACTIVITY,ActivityContext.class);
+			classMap.put(Trip.TRIP_ACTIVITY,ActivityContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_INVENTORY_RESERVATION, ServiceInventoryReservationContext.class);
+			classMap.put(TimeOff.TIME_OFF_ACTIVITY, ActivityContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_TASK, ServiceTaskContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_TASK_STATUS, ServiceTaskStatusContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_TASK_SKILLS, ServiceTaskSkillsContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, ServiceOrderPlannedItemsContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER_PLANNED_TOOLS, ServiceOrderPlannedToolsContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES, ServiceOrderPlannedServicesContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER_ITEMS, ServiceOrderItemsContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER_TOOLS, ServiceOrderToolsContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER_SERVICES, ServiceOrderServiceContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_TASK_ATTACHMENTS, AttachmentV3Context.class);
+			classMap.put(Territory.TERRITORY, TerritoryContext.class);
+			classMap.put(ServiceAppointment.SERVICE_APPOINTMENT,ServiceAppointmentContext.class);
+			classMap.put(FieldServiceManagement.SERVICE_ORDER,ServiceOrderContext.class);
+			classMap.put(Priority.PRIORITY, PriorityContext.class);
 
 
 			for (QuestionType type : QuestionType.values()) {
@@ -3749,6 +3833,9 @@ public class FacilioConstants {
 		public static final String ENERGY_APP = "energy";
 		public static final String REMOTE_MONITORING = "remotemonitor";
 
+
+		public static final String FSM_APP = "fsm";
+
 	}
 
 	public static class DefaultRoleNames {
@@ -3762,11 +3849,22 @@ public class FacilioConstants {
 		public static final String ADMIN = "Administrator";
 		public static final String MAINTENANCE_SUPER_ADMIN = "CAFM Super Administrator";
 		public static final String MAINTENANCE_ADMIN = "CAFM Administrator";
+
+		public static final String FSM_SUPER_ADMIN = "FSM Super Administrator";
+		public static final String FSM_ADMIN = "FSM Administrator";
 		public static final String CAFM_ADMIN = "CAFM Admin";
 		public static final String KIOSK_ADMIN = "Kiosk Admin";
 		public static final String DEV_ADMIN = "Dev Admin";
 		public static final String MAINTENANCE_MANAGER = "CAFM Manager";
 		public static final String MAINTENANCE_TECHNICIAN = "CAFM Technician";
+
+
+		public static final String FSM_DISPATCHER = "Dispatcher";
+		public static final String FIELD_AGENT = "Field Agent";
+		public static final String ASSISTANT_FIELD_AGENT = "Assistant Field Agent";
+		public static final String STOREROOM_MANAGER = "Storeroom Manager";
+
+
 		public static final String DATA_LOADER_ADMIN = "Data Loader Admin";
 
 		public static final String EMPLOYEE_ADMIN = "Employee Admin";
@@ -4555,5 +4653,133 @@ public class FacilioConstants {
 
     public static class Relationship {
 		public static final String INCLUDE_HIDDEN_RELATIONS = "includeHiddenRelations";
+	}
+	public static class Dispatcher {
+		public static final String DISPATCHER_CONFIG = "dispatcherConfig";
+		public static final String DISPATCHER = "dispatcher";
+		public static final String DISPATCHER_ID = "dispatcherId";
+		public static final String DISPATCHER_LIST = "dispatcherList";
+		public static final String BOARD_ID = "boardId";
+		public static final String EVENTS = "events";
+		public static final String EVENT = "event";
+		public static final String RESOURCES = "resources";
+
+	}
+	public static class TimeOff{
+		public static final String TIME_OFF = "timeOff";
+		public static final String TIME_OFF_TYPE = "timeOffType";
+		public static final String TIME_OFF_ACTIVITY = "timeOffActivity";
+		public static final String TIME_OFF_NOTES = "timeOffnotes";
+		public static final String TIME_OFF_ATTACHMENTS = "timeOffattachments";
+	}
+
+	public static class Territory{
+		public static final String TERRITORY = "territory";
+		public static final String PEOPLE_TERRITORY = "peopleTerritory";
+		public static final String TERRITORY_ACTIVITY = "territoryActivity";
+		public static final String TERRITORY_NOTES="territorynotes";
+		public static final String TERRITORY_ATTACHMENTS="territoryattachments";
+
+	}
+
+	public static class LocationHistory{
+		public static final String LOCATION_HISTORY = "locationhistory";
+	}
+
+	public static class ServiceAppointment{
+		public static final String SERVICE_APPOINTMENT = "serviceAppointment";
+		public static final String SERVICE_APPOINTMENT_TASK = "serviceAppointmentTask";
+		public static final String FIELD_AGENT_ID = "fieldAgentId";
+		public static final String FIELD_AGENT = "fieldAgent";
+		public static final String SERVICE_APPOINTMENT_ACTIVITY = "serviceAppointmentActivity";
+		public static final String SERVICE_APPOINTMENT_SKILL = "serviceAppointmentSkill";
+		public static final String SERVICE_APPOINTMENT_TICKET_STATUS = "serviceAppointmentTicketStatus";
+		public static final String SERVICE_APPOINTMENT_NOTES = "serviceAppointmentNotes";
+		public static final String SERVICE_APPOINTMENT_ATTACHMENTS = "serviceAppointmentAttachments";
+		public static final String SCHEDULED = "scheduled";
+		public static final String DISPATCHED = "dispatched";
+		public static final String EN_ROUTE = "enRoute";
+		public static final String IN_PROGRESS = "inProgress";
+		public static final String COMPLETED = "completed";
+		public static final String CANCELLED = "cancelled";
+		public static final String SCHEDULE = "schedule";
+		public static final String DISPATCH = "dispatch";
+
+		public static final String REDISPATCH = "redispatch";
+		public static final String RESCHEDULE = "reschedule";
+		public static final String COMPLETE = "complete";
+		public static final String CANCEL = "cancel";
+		public static final String PAUSE = "pause";
+		public static final String RESUME = "resume";
+		public static final String SCHEDULED_START_TIME = "scheduledStartTime";
+		public static final String SCHEDULED_END_TIME = "scheduledEndTime";
+		public static final String START_TRIP = "startTrip";
+		public static final String START_WORK = "startWork";
+		public static final String END_TRIP = "endTrip";
+		public static final String ACTUAL_START_TIME = "actualStartTime";
+		public static final String SERVICE_APPOINTMENT_STATUS_ACTIONS = "serviceAppointmentStatusActions";
+		public static final String PRIORITY = "priority";
+		public static final String RESOLUTION_DUE_STATUS = "resolutionDueStatus";
+		public static final String SKIP_VALIDATION = "skipValidation";
+	}
+
+	public static class ServiceOrder{
+		public static final String SERVICE_ORDER = "serviceOrder";
+		public static final String SERVICE_ORDER_TICKET_STATUS = "serviceOrderTicketStatus";
+		public static final String SERVICE_ORDER_STATUS_ACTIONS = "serviceOrderStatusActions";
+		public static final String PREVIEW = "preview";
+		public static final String NEW = "new";
+		public static final String SCHEDULED = "scheduled";
+		public static final String IN_PROGRESS = "inProgress";
+		public static final String COMPLETED = "completed";
+		public static final String CANCELLED = "cancelled";
+		public static final String CLOSED = "closed";
+	}
+
+
+
+
+	public static class PeopleSkillLevel{
+		public static final String PEOPLE_SKILL_LEVEL = "peopleskilllevel";
+	}
+
+	public static class TimeSheet{
+		public static final String TIME_SHEET = "timeSheet";
+		public static final String TIME_SHEET_TASK = "timeSheetTask";
+		public static final String TIME_SHEET_ACTIVITY = "timeSheetActivity";
+		public static final String TIME_SHEET_NOTES="timeSheetnotes";
+		public static final String TIME_SHEET_ATTACHMENTS="timeSheetattachments";
+		public static final String STOP_TIME_SHEET="stopTimeSheet";
+		public static final String TIME_SHEET_STATUS = "timeSheetStatus";
+		public static final String IN_PROGRESS = "inProgress";
+		public static final String COMPLETED = "completed";
+		public static final String TIME_SHEET_STATUS_ACTIONS = "timeSheetStatusActions";
+
+	}
+	public static class Trip{
+		public static final String TRIP = "trip";
+		public static final String TRIP_LOCATION_HISTORY = "tripLocationHistory";
+		public static final String TRIP_ACTIVITY = "tripActivity";
+		public static final String TRIP_NOTES = "tripnotes";
+		public static final String TRIP_ATTACHMENTS = "tripattachments";
+		public static final String START_LOCATION="startLocation";
+		public static final String END_LOCATION="endLocation";
+		public static final String TRIP_STATUS = "tripStatus";
+		public static final String IN_PROGRESS = "inProgress";
+		public static final String COMPLETED = "completed";
+		public static final String START_TIME = "startTime";
+		public static final String TOTAL_DURATION = "totalDuration";
+		public static final String TOTAL_DISTANCE = "totalDistance";
+		public static final String TRIP_STATUS_ACTIONS = "tripStatusActions";
+
+	}
+	public static class Priority{
+		public static final String PRIORITY = "priority";
+		public static final String LOW = "low";
+		public static final String MEDIUM = "medium";
+		public static final String HIGH = "high";
+	}
+	public static class Portfolio{
+		public static final String PORTFOLIO = "portfolio";
 	}
 }

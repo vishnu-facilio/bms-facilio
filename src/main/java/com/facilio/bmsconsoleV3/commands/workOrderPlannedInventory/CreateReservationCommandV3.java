@@ -3,6 +3,8 @@ package com.facilio.bmsconsoleV3.commands.workOrderPlannedInventory;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.bmsconsoleV3.enums.InventoryReservationStatus;
+import com.facilio.bmsconsoleV3.enums.ReservationSource;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -41,9 +43,9 @@ public class CreateReservationCommandV3 extends FacilioCommand {
     }
     public InventoryReservationContext getReservationRecord(WorkOrderPlannedItemsContext workOrderPlannedItem){
         InventoryReservationContext reservation = new InventoryReservationContext();
-        reservation.setReservationSource(InventoryReservationContext.ReservationSource.WO_PLANS.getIndex());
+        reservation.setReservationSource(ReservationSource.WO_PLANS.getIndex());
         reservation.setReservationType(workOrderPlannedItem.getReservationType());
-        reservation.setReservationStatus(InventoryReservationContext.InventoryReservationStatus.NOT_ISSUED.getIndex());
+        reservation.setReservationStatus(InventoryReservationStatus.NOT_ISSUED.getIndex());
         reservation.setStoreRoom(workOrderPlannedItem.getStoreRoom());
         reservation.setWorkOrder(workOrderPlannedItem.getWorkOrder());
         reservation.setItemType(workOrderPlannedItem.getItemType());

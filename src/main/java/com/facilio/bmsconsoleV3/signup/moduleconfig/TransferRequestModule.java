@@ -56,6 +56,7 @@ public class TransferRequestModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -71,7 +72,7 @@ public class TransferRequestModule extends BaseModuleConfig{
         transferRequestForm.setName("default_transferrequest_web");
         transferRequestForm.setModule(transferRequestModule);
         transferRequestForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        transferRequestForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        transferRequestForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> transferRequestFormDefaultFields = new ArrayList<>();
         transferRequestFormDefaultFields.add(new FormField("requestSubject", FacilioField.FieldDisplayType.TEXTBOX, "Request Subject", FormField.Required.REQUIRED, 1, 1));

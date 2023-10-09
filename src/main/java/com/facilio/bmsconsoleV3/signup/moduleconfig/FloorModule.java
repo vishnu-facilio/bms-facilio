@@ -1,15 +1,13 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -45,6 +43,7 @@ public class FloorModule extends BaseModuleConfig {
         appNameList.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
@@ -78,17 +77,17 @@ public class FloorModule extends BaseModuleConfig {
                     .addLayout(PagesContext.PageLayoutType.WEB)
                     .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("summaryfields", "", null)
-                    .addWidget("floorDetails", "Floor details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_20", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
+                    .addWidget("floorDetails", "Floor details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
                     .widgetDone()
                     .sectionDone()
                     .addSection("floorInsights","",null)
-                    .addWidget("floorInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_19_7",0,0,spaceParam,null)
+                    .addWidget("floorInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_7",0,0,spaceParam,null)
                     .widgetDone()
-                    .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_19_5",7,0,null,null)
+                    .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_5",7,0,null,null)
                     .widgetDone()
                     .sectionDone()
                     .addSection("widgetGroup", null, null)
-                    .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getWidgetGroup(false,notesModuleParam,attachmentModuleParam))
+                    .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false,notesModuleParam,attachmentModuleParam))
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -97,7 +96,7 @@ public class FloorModule extends BaseModuleConfig {
                     .addTab("spaces","Spaces", PageTabContext.TabType.SIMPLE,true,null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("spaces","",null)
-                    .addWidget("spaces","Spaces", PageWidget.WidgetType.SPACES,"flexibleWebSpaces_32",0,0,spaceParam,null)
+                    .addWidget("spaces","Spaces", PageWidget.WidgetType.SPACES,"flexibleWebSpaces_7",0,0,spaceParam,null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -106,21 +105,21 @@ public class FloorModule extends BaseModuleConfig {
                     .addTab("maintenance", "Maintenance", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
                     .addSection("plannedmaintenance", "", null)
-                    .addWidget("floorplannedmaintenance", "Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE, "flexiblewebplannedmaintenance_36", 0, 0, null, null)
+                    .addWidget("floorplannedmaintenance", "Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE, "flexiblewebplannedmaintenance_7", 0, 0, null, null)
                     .widgetDone()
                     .sectionDone()
                     .addSection("unplannedmaintenance", "", null)
-                    .addWidget("floorunplannedmaintenance", "Reactive Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE, "flexiblewebunplannedmaintenance_36", 0, 0, null, null)
+                    .addWidget("floorunplannedmaintenance", "Reactive Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE, "flexiblewebunplannedmaintenance_7", 0, 0, null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
                     .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
                     .addSection("floorworkorderdetails", null, null)
-                    .addWidget("floorworkorderdetail", "Maintenance Insights", PageWidget.WidgetType.WORKORDER_INSIGHT, "flexiblewebworkorderinsight_12", 0, 0, null, null)
+                    .addWidget("floorworkorderdetail", "Maintenance Insights", PageWidget.WidgetType.WORKORDER_INSIGHT, "flexiblewebworkorderinsight_3", 0, 0, null, null)
                     .widgetDone()
                     .sectionDone()
                     .addSection("recentlyclosedppm", null, null)
-                    .addWidget("floorrecentlyclosed", "Recently Closed Work order", PageWidget.WidgetType.RECENTLY_CLOSED_PM, "flexiblewebrecentlyclosedpm_23", 0, 0, null, null)
+                    .addWidget("floorrecentlyclosed", "Recently Closed Work order", PageWidget.WidgetType.RECENTLY_CLOSED_PM, "flexiblewebrecentlyclosedpm_4", 0, 0, null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -129,15 +128,15 @@ public class FloorModule extends BaseModuleConfig {
                     .addTab("readings", "Readings", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("floorreadings", null, null)
-                    .addWidget("floorreadings", "Readings", PageWidget.WidgetType.READINGS, "flexiblewebreadings_33", 0, 0, null, null)
+                    .addWidget("floorreadings", "Readings", PageWidget.WidgetType.READINGS, "flexiblewebreadings_7", 0, 0, null, null)
                     .widgetDone()
                     .sectionDone()
                     .addSection("floorcommand", null, null)
-                    .addWidget("floorcommand", "Commands", PageWidget.WidgetType.COMMANDS_WIDGET, "flexiblewebcommandswidget_34", 0, 0, null, null)
+                    .addWidget("floorcommand", "Commands", PageWidget.WidgetType.COMMANDS_WIDGET, "flexiblewebcommandswidget_7", 0, 0, null, null)
                     .widgetDone()
                     .sectionDone()
                     .addSection("floorRelatedReadings", null, null)
-                    .addWidget("relatedReadings", "Related Readings", PageWidget.WidgetType.RELATED_READINGS, "flexiblewebrelatedreadings_33", 0, 0, null, null)
+                    .addWidget("relatedReadings", "Related Readings", PageWidget.WidgetType.RELATED_READINGS, "flexiblewebrelatedreadings_7", 0, 0, null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -147,11 +146,11 @@ public class FloorModule extends BaseModuleConfig {
                     .addTab("safetyPlan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("hazards", "", null)
-                    .addWidget("floorhazards", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_28", 0, 0, null,null)
+                    .addWidget("floorhazards", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_6", 0, 0, null,null)
                     .widgetDone()
                     .sectionDone()
                     .addSection("precautions", "", null)
-                    .addWidget("floorPrecautions", "Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_28", 0, 0, null,null)
+                    .addWidget("floorPrecautions", "Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_6", 0, 0, null,null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -161,11 +160,11 @@ public class FloorModule extends BaseModuleConfig {
                     .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("floorRelatedlist", "Related List", "List of related records across modules")
-                    .addWidget("floorrelated", "Related", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                    .addWidget("floorrelated", "Related", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
                     .widgetDone()
                     .sectionDone()
                     .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
-                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_29", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -174,7 +173,7 @@ public class FloorModule extends BaseModuleConfig {
                     .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("activity", null, null)
-                    .addWidget("flooractivity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
+                    .addWidget("flooractivity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -189,11 +188,11 @@ public class FloorModule extends BaseModuleConfig {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 0, notesModuleParam, null)
+                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_5", 0, 0, notesModuleParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 0, attachmentModuleParam, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_5", 0, 0, attachmentModuleParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
         return FieldUtil.getAsJSON(widgetGroup);
@@ -293,7 +292,7 @@ public class FloorModule extends BaseModuleConfig {
             activeToInactive.setType(AbstractStateTransitionRuleContext.TransitionType.NORMAL);
             activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
-
+            addSystemButtons();
             // adding form
 //            FacilioForm defaultForm = new FacilioForm();
 //            defaultForm.setName("standard");
@@ -329,6 +328,53 @@ public class FloorModule extends BaseModuleConfig {
             ex.printStackTrace();
         }
 
+    }
+
+    private void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editFloor = new SystemButtonRuleContext();
+        editFloor.setName("Edit");
+        editFloor.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editFloor.setIdentifier("editFloor");
+        editFloor.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editFloor.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editFloor.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FLOOR,editFloor);
+
+        SystemButtonRuleContext addSpace = new SystemButtonRuleContext();
+        addSpace.setName("Add Space");
+        addSpace.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addSpace.setIdentifier("addFloorSpace");
+        addSpace.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addSpace.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        addSpace.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FLOOR,addSpace);
+
+        SystemButtonRuleContext addPhoto = new SystemButtonRuleContext();
+        addPhoto.setName("Add Photo");
+        addPhoto.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        addPhoto.setIdentifier("addFloorPhoto");
+        addPhoto.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        addPhoto.setPermissionRequired(true);
+        addPhoto.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FLOOR,addPhoto);
+
+        SystemButtonRuleContext floorPlan = new SystemButtonRuleContext();
+        floorPlan.setName("Manage Floor Plan");
+        floorPlan.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        floorPlan.setIdentifier("floorPlan");
+        floorPlan.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        floorPlan.setPermissionRequired(true);
+        floorPlan.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FLOOR,floorPlan);
+
+        SystemButtonRuleContext downloadQR = new SystemButtonRuleContext();
+        downloadQR.setName("Download QR");
+        downloadQR.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadQR.setIdentifier("downloadFloorQR");
+        downloadQR.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        downloadQR.setPermissionRequired(true);
+        downloadQR.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FLOOR,downloadQR);
     }
 
     @Override
@@ -378,7 +424,7 @@ public class FloorModule extends BaseModuleConfig {
         defaultFloorForm.setName("default_floor_web");
         defaultFloorForm.setModule(floorModule);
         defaultFloorForm.setDisplayName("Floor");
-        defaultFloorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        defaultFloorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,FacilioConstants.ApplicationLinkNames.FSM_APP));
         defaultFloorForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultFloorForm.setShowInWeb(true);
 

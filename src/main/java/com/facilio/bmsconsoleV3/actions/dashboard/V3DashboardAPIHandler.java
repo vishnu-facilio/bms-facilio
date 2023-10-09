@@ -10,6 +10,7 @@ import com.facilio.bmsconsoleV3.actions.DashboardExecuteMetaContext;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.bmsconsoleV3.context.dashboard.*;
+import com.facilio.cards.util.CardLayout;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -684,22 +685,44 @@ public class V3DashboardAPIHandler {
             if(dashboard_execute_data.getRule_applied_widget_ids().contains(widget_id) || (is_trigger_widget_type && !dashboard_execute_data.getRule_applied_widget_ids().contains(widget_id))){
                 continue;
             }
-            JSONObject widget_json = new JSONObject();
-            widget_json.put("widget_id", widget_id);
-            widget_json.put("widgetType", dashboardWidgetContext.getWidgetType().getName());
-            widget_json.put("actionMeta", new JSONObject());
-            JSONObject actionMeta = new JSONObject();
-            V3DashboardAPIHandler.setTimeLineFilterResp(actionMeta, widget_id, dashboard_execute_data.getTimeline_widget_field_map(), dashboard_execute_data.getGlobal_timeline_filter_widget_map());
-            V3DashboardAPIHandler.setUserFilterResp(actionMeta, widget_id, dashboard_execute_data.getGlobal_filter_widget_map(), dashboard_execute_data.getPlaceHolders());
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)) {
-                V3DashboardAPIHandler.setFilterForReadingResp(actionMeta, widget_id, dashboard_execute_data.getReading_filter_widget_map(), dashboard_execute_data.getPlaceHolders());
+            if(dashboardWidgetContext.getWidgetType().equals(DashboardWidgetContext.WidgetType.CARD)){
+                WidgetCardContext cardContext = (WidgetCardContext) dashboardWidgetContext;
+                if(cardContext.getCardLayout().equals(CardLayout.COMBO_CARD.getName())){
+                    if(cardContext.getChildCards() != null && cardContext.getChildCards().size() > 0){
+                        for(WidgetCardContext child: cardContext.getChildCards()){
+                            constructFilterResp(dashboard_execute_data, child, true,cardContext.getId());
+                        }
+                    }
+                }
+                else{
+                    constructFilterResp(dashboard_execute_data, dashboardWidgetContext, false, null);
+                }
             }
-            if (actionMeta != null && !actionMeta.isEmpty()) {
-                widget_json.put("actionMeta", actionMeta);
-                dashboard_execute_data.getMain_result_array().add(widget_json);
-            } else {
-                dashboard_execute_data.getMain_result_array().add(widget_json);
+            else{
+                constructFilterResp(dashboard_execute_data, dashboardWidgetContext, false, null);
             }
+        }
+    }
+    public static void constructFilterResp(DashboardExecuteMetaContext dashboard_execute_data, DashboardWidgetContext dashboardWidgetContext, Boolean isCombo, Long parentId)throws Exception
+
+    {
+        Long widget_id = dashboardWidgetContext.getId();
+        JSONObject widget_json = new JSONObject();
+        widget_json.put("widget_id", widget_id);
+        widget_json.put("parent_id", isCombo ?  parentId : null);
+        widget_json.put("widgetType", isCombo ? "card" : dashboardWidgetContext.getWidgetType().getName());
+        widget_json.put("actionMeta", new JSONObject());
+        JSONObject actionMeta = new JSONObject();
+        V3DashboardAPIHandler.setTimeLineFilterResp(actionMeta, widget_id, dashboard_execute_data.getTimeline_widget_field_map(), dashboard_execute_data.getGlobal_timeline_filter_widget_map());
+        V3DashboardAPIHandler.setUserFilterResp(actionMeta, widget_id, dashboard_execute_data.getGlobal_filter_widget_map(), dashboard_execute_data.getPlaceHolders());
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)) {
+            V3DashboardAPIHandler.setFilterForReadingResp(actionMeta, widget_id, dashboard_execute_data.getReading_filter_widget_map(), dashboard_execute_data.getPlaceHolders());
+        }
+        if (actionMeta != null && !actionMeta.isEmpty()) {
+            widget_json.put("actionMeta", actionMeta);
+            dashboard_execute_data.getMain_result_array().add(widget_json);
+        } else {
+            dashboard_execute_data.getMain_result_array().add(widget_json);
         }
     }
     public static DashboardTabContext constructDashboardTabData(Long dashboardTabId)throws Exception
@@ -999,12 +1022,11 @@ public class V3DashboardAPIHandler {
             if(selected_values != null && selected_values.size() > 0 && (!"".equals(selected_values.get(0)) && !"all".equals(selected_values.get(0))))
             {
                 FacilioField applied_widget_field = widget_and_field.getValue();
-                if((operatorId == null && applied_widget_field !=null && applied_widget_field.getName() != null &&
+                operatorId = PickListOperators.IS.getOperatorId();
+                if((applied_widget_field !=null && applied_widget_field.getName() != null &&
                         (applied_widget_field.getName().equals(FacilioConstants.ContextNames.RESOURCE)
                                 || applied_widget_field.getName().equals(FacilioConstants.ContextNames.SPACE)))){
                     operatorId = BuildingOperator.BUILDING_IS.getOperatorId();
-                }else{
-                    operatorId = 36;
                 }
                 Operator operator = Operator.getOperator(operatorId != null && operatorId > 0 ? operatorId : 36);
                 Condition condition = new Condition();

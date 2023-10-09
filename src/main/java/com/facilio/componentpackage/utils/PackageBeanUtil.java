@@ -1334,6 +1334,10 @@ public class PackageBeanUtil {
     }
 
     public static List<?> getModuleDataListsForIds(Collection<Long> ids, FacilioModule module, Class<?> clazz) throws Exception {
+        return getModuleDataListsForIds(ids, module, clazz, false);
+    }
+
+    public static List<?> getModuleDataListsForIds(Collection<Long> ids, FacilioModule module, Class<?> clazz, boolean fetchDeleted) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
                 .table(module.getTableName())
@@ -1341,6 +1345,11 @@ public class PackageBeanUtil {
                 .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
                 .select(moduleBean.getAllFields(module.getName()))
                 .andCondition(CriteriaAPI.getIdCondition(ids, module));
+
+        if (fetchDeleted) {
+            builder.fetchDeleted();
+        }
+
         return builder.get();
     }
 

@@ -18,6 +18,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import org.json.simple.JSONObject;
 
 public class ExecuteComboCardWorkflowCommand extends FacilioCommand {
 
@@ -32,12 +33,20 @@ public class ExecuteComboCardWorkflowCommand extends FacilioCommand {
                     .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(cardId), NumberOperators.EQUALS));
             List<Map<String, Object>> props = select.get();
             if (props != null && !props.isEmpty()) {
+                JSONObject cardFilters = (JSONObject) context.get(FacilioConstants.ContextNames.CARD_FILTERS);
+                JSONObject cardUserFilters = (JSONObject) context.get(FacilioConstants.ContextNames.CARD_USER_FILTERS);
                 List<Map<String,Object>> card = new ArrayList<>();
                 for(Map<String, Object> prop :props) {
                     long childCardId = (long) prop.get("id");
                     Map<String,Object> childCard = new HashMap<>();
                     FacilioChain chain = ReadOnlyChainFactory.getExecuteCardWorkflowChain();
                     chain.getContext().put(FacilioConstants.ContextNames.CARD_ID, childCardId);
+                    if(cardFilters != null){
+                        chain.getContext().put(FacilioConstants.ContextNames.CARD_FILTERS, cardFilters.get(String.valueOf(childCardId)));
+                    }
+                    if(cardUserFilters != null){
+                        chain.getContext().put(FacilioConstants.ContextNames.CARD_USER_FILTERS, cardUserFilters.get(String.valueOf(childCardId)));
+                    }
                     chain.execute();
                     childCard.put("cardContext", chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT));
                     childCard.put("data", chain.getContext().get(FacilioConstants.ContextNames.CARD_RETURN_VALUE));

@@ -30,32 +30,38 @@ public class ControlActionPage implements TemplatePageFactory{
         controlActionActivityWidgetParam.put("activityModuleName", FacilioConstants.Control_Action.CONTROL_ACTION_ACTIVITY_MODULE_NAME);
         return new PagesContext(null, null, "", null, true, false, false)
                 .addLayout(PagesContext.PageLayoutType.WEB)
-                .addTab("controlactionsummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("controlactioncommands", "Command Results", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("controlactionsummaryfields", null, null)
-                .addWidget("controlactionsummaryfieldswidget", "Control Action", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME , app))
-                .widgetDone()
-                .sectionDone()
                 .addSection("controlactionControlfields", null, null)
-                .addWidget("controlactionControlfieldswidget", "Controls", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 0, null,fetchRelatedListForModule(module,FacilioConstants.Control_Action.ACTION_MODULE_NAME))
+                .addWidget("controlactionCommandswidget", "List of Commands", PageWidget.WidgetType.COMMANDS_LIST_VIEW, "webCommandsListView_6_12", 0, 0, null,null)
                 .widgetDone()
                 .sectionDone()
-                .addSection("controlactionCriteriafields", null, null)
-                .addWidget("controlactionassetcriteriafieldswidget", "Asset attribute criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_28_6", 0, 0, getSummaryCriteriaListWidgetDetails(FacilioConstants.ContextNames.ASSET, "assetCriteriaId"),null)
-                .widgetDone()
-                .addWidget("controlactionsitecriteriafieldswidget", "Site attribute criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_28_6", 6, 0, getSummaryCriteriaListWidgetDetails(FacilioConstants.ContextNames.SITE,"siteCriteriaId"),null)
-                .widgetDone()
-                .addWidget("controlactioncontrollercriteriafieldswidget", "Controller attribute criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_28_6", 0, 28, getSummaryCriteriaListWidgetDetails("controllers","controllerCriteriaId"),null)
-                .widgetDone()
-                .addWidget("widgetGroup", "Comments", PageWidget.WidgetType.WIDGET_GROUP, "webwidgetgroup_28_6", 6, 28, null, getWidgetGroup(false))
+                .addSection("notesandcomments",null,null)
+                .addWidget("widgetGroup", "Comments", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("controlActionCommand", "Command results", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("controlactionbasicdetails", "Actions", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("controlActionCommandFields", null, null)
-                .addWidget("controlActionRelatedList", "List of Commands", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 0, null, fetchRelatedListForModule(module,FacilioConstants.Control_Action.COMMAND_MODULE_NAME))
+                .addSection("controlactionsummaryfields", null, null)
+                .addWidget("controlactionsummaryfieldswidget", "Control Action", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME , app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("controlactionControlfields", null, null)
+                .addWidget("controlactionControlfieldswidget", "Actions", PageWidget.WidgetType.ACTIONS_LIST_VIEW, "webActionsListView_6_12", 0, 0, null,null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("controlactioncriteria","Criteria",PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("controlactionCriteriafields", null, null)
+                .addWidget("controlactionassetcriteriafieldswidget", "Asset Field Criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_6_6", 0, 0, getSummaryCriteriaListWidgetDetails(FacilioConstants.ContextNames.ASSET, "assetCriteriaId"),null)
+                .widgetDone()
+                .addWidget("controlactionsitecriteriafieldswidget", "Site Field Criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_6_6", 6, 0, getSummaryCriteriaListWidgetDetails(FacilioConstants.ContextNames.SITE,"siteCriteriaId"),null)
+                .widgetDone()
+                .addWidget("controlactioncontrollercriteriafieldswidget", "Controller Field Criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_6_6", 0, 28, getSummaryCriteriaListWidgetDetails("controllers","controllerCriteriaId"),null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -63,7 +69,7 @@ public class ControlActionPage implements TemplatePageFactory{
                 .addTab("controlActionHistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("controlActionHistoryFields", null, null)
-                .addWidget("controlActionHistory", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, controlActionActivityWidgetParam,null)
+                .addWidget("controlActionHistory", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, controlActionActivityWidgetParam,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -132,51 +138,13 @@ public class ControlActionPage implements TemplatePageFactory{
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_28", 0, 0, notesWidgetParam, null)
+                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_28", 0, 0, attachmentsWidgetParam, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_5", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
         return FieldUtil.getAsJSON(widgetGroup);
-    }
-    public static JSONObject fetchRelatedListForModule(FacilioModule module , String listModuleName) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        BulkRelatedListContext bulkRelatedListWidget = new BulkRelatedListContext();
-        if(module != null) {
-            List<RelatedListWidgetContext> relLists = new ArrayList<>();
-
-            FacilioModule subModule = modBean.getModule(listModuleName);
-
-            List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
-            List<FacilioField> fields = allFields.stream()
-                    .filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == module.getModuleId()))
-                    .collect(Collectors.toList());
-
-            long moduleId = module.getModuleId();
-            if (CollectionUtils.isNotEmpty(fields)) {
-
-                for (FacilioField field : fields) {
-                    RelatedListWidgetContext relList = new RelatedListWidgetContext();
-                    if(listModuleName.equals(FacilioConstants.Control_Action.ACTION_MODULE_NAME)){
-                        relList.setDisplayName("List of Command");
-                    }
-                    else{
-                        relList.setDisplayName("Controls");
-                    }
-
-                    relList.setSubModuleName(subModule.getName());
-                    relList.setSubModuleId(subModule.getModuleId());
-                    relList.setFieldName(field.getName());
-                    relList.setFieldId(field.getFieldId());
-                    relLists.add(relList);
-//                        return FieldUtil.getAsJSON(relList);
-                }
-                bulkRelatedListWidget.setRelatedList(relLists);
-                return FieldUtil.getAsJSON(bulkRelatedListWidget);
-            }
-        }
-        return null;
     }
 }

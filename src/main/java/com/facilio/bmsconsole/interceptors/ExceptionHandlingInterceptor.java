@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.interceptors;
 
 import com.facilio.exception.ErrorResponseUtil;
+import com.facilio.fsm.exception.FSMException;
+import com.facilio.i18n.util.ErrorsUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -30,11 +32,19 @@ public class ExceptionHandlingInterceptor extends AbstractInterceptor  {
         try{
             result = invocation.invoke();
         } catch (Exception ex){
-            LOGGER.error(FacilioUtil.constructMessageFromException(ex));
+            LOGGER.error("Exception Handling Inerceptor - " + FacilioUtil.constructMessageFromException(ex));
             HttpServletResponse response = ServletActionContext.getResponse();
             Boolean errorType;
             Boolean messageNull;
+            String errorTitle = "";
+            org.json.simple.JSONObject errorData = new org.json.simple.JSONObject();
+
             ErrorResponseUtil values = null;
+            if(ex instanceof FSMException) {
+                FSMException fsmException = (FSMException) ex;
+                errorTitle = fsmException.getFsmErrorCode().getTitle();
+                errorData = ErrorsUtil.getFSMExceptionAsJson(fsmException);
+            }
             if(ex instanceof RESTException){
                 errorType = true;
                 values = new ErrorResponseUtil((RESTException) ex);
@@ -43,18 +53,21 @@ public class ExceptionHandlingInterceptor extends AbstractInterceptor  {
                 errorType = false;
             }
             Map<String, Object> errorMap = new HashMap<>();
-            messageNull = ex.getMessage() == null || StringUtils.isEmpty(ex.getMessage());
+            messageNull = FacilioUtil.constructMessageFromException(ex) == null || StringUtils.isEmpty(FacilioUtil.constructMessageFromException(ex));
             //Handling exception for Multiple transactions in a thread(New Transaction Service)
             try {
                 errorMap.put("message", ((InvocationTargetException)ex).getTargetException().getMessage());
             }catch(Exception e){
-                errorMap.put("message", errorType ? values.getMessage() : messageNull ? "Error Occurred" :ex.getMessage());
+                LOGGER.error("Exception Handling Inerceptor - " + FacilioUtil.constructMessageFromException(ex));
+                errorMap.put("message", errorType ? values.getMessage() : messageNull ? "Error Occurred" :FacilioUtil.constructMessageFromException(ex));
             }
             errorMap.put("responseCode",errorType ? values.getErrorCode().getCode() : messageNull ? ErrorCode.UNHANDLED_EXCEPTION.getCode() : ErrorCode.ERROR.getCode());
             errorMap.put("code",errorType ? values.getErrorCode().getCode() : messageNull ? ErrorCode.UNHANDLED_EXCEPTION.getCode() : ErrorCode.ERROR.getCode());
             errorMap.put("isErrorGeneralized", errorType ? values.getIsErrorGeneralized(): false);
             errorMap.put("isVisible",  errorType ? values.getIsVisible(): true);
             errorMap.put("correctiveAction", errorType ? values.getCorrectiveAction(): "");
+            errorMap.put("title", errorTitle);
+            errorMap.put("errorData",errorData);
             write(errorMap, errorType ? values.getErrorCode().getHttpStatus() : messageNull ? ErrorCode.UNHANDLED_EXCEPTION.getHttpStatus() : ErrorCode.ERROR.getHttpStatus(), response);
             LOGGER.log(Level.FATAL, "error thrown from action class", ex);
         }

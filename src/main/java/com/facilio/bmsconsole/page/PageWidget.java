@@ -597,7 +597,42 @@ public class PageWidget {
 		SUB_SPACES("subSpaces"),
 		FLOORS("floors"),
 		TENANT_RECENTLY_CLOSED_WORKORDER("tenantrecentlyclosedworkorder"),
-		CALENDAR_EVENT_LIST("calendarEventList");
+		CALENDAR_EVENT_LIST("calendarEventList"),
+		COMMANDS_LIST_VIEW("commandsListView"),
+		ACTIONS_LIST_VIEW("actionsListView"),
+		SERVICE_TASK_WIDGET("serviceTaskWidget"),
+		SERVICE_ORDER_PLANS("serviceOrderPlans"),
+		SERVICE_ORDER_ACTUALS("serviceOrderActuals"),
+		LAST_KNOWN_LOCATION("lastKnownLocation"),
+		CURRENT_STATUS("currentStatus"),
+		SKILL("skill"),
+		TERRITORIES("territories"),
+		WORK_SCHEDULE("workSchedule"),
+		EMPLOYEE_LOCATION("employeeLocation"),
+		VENDOR_LOCATION("vendorLocation"),
+		TERRITORY_SITES("territorySites"),
+		FIELD_AGENTS("fieldAgents"),
+		SERVICE_APPOINTMENT_SERVICE_TASKS("serviceAppointmentServiceTasks"),
+		SERVICE_APPOINTMENT_PLANS("serviceAppointmentPlans"),
+		SERVICE_APPOINTMENT_ACTUALS("serviceAppointmentActuals"),
+
+		SERVICE_APPOINTMENT_TIMESHEET("serviceAppointmentTimesheet"),
+		SERVICE_APPOINTMENT_TRIP("serviceAppointmentTrip"),
+		GEOGRAPHY("geography"),
+		TIMESHEET_TASKS("timeSheetTasks"),
+		TRIP_JOURNEY("tripJourney"),
+		SERVICE_ORDER_APPOINTMENTS("serviceOrderAppointments"),
+		VENDOR_CONTACT_LAST_KNOWN_LOCATION("vendorContactLastKnownLocation"),
+		VENDOR_CONATCT_CURRENT_STATUS("vendorContactCurrentStatus"),
+		VENDOR_CONTACT_SKILL("vendorContactSkill"),
+		VENDOR_CONTACT_WORK_SCHEDULE("vendorContactWorkSchedule"),
+		PEOPLE_STATUS_WIDGET("peopleStatusWidget"),
+		ONGOING_TRIP_WIDGET("ongoingTripWidget"),
+		ONGOING_TIMESHEET_WIDGET("ongoingTimeSheetWidget"),
+		OVERDUE_SERVICE_APPOINTMENTS_WIDGET("overdueServiceAppointmentsWidget"),
+		TODAY_SERVICE_APPOINTMENTS_WIDGET("todayServiceAppointmentsWidget"),
+		OPEN_SERVICE_APPOINTMENTS_WIDGET("openServiceAppointmentsWidget")
+		;
 
 		private String name;
 		@Getter

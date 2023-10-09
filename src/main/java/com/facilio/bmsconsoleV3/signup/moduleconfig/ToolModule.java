@@ -55,6 +55,7 @@ public class ToolModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -70,7 +71,7 @@ public class ToolModule extends BaseModuleConfig{
         stockedToolsForm.setName("web_default");
         stockedToolsForm.setModule(toolModule);
         stockedToolsForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        stockedToolsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        stockedToolsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> stockedToolsFormFields = new ArrayList<>();
         stockedToolsFormFields.add(new FormField("toolType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tool Type", FormField.Required.REQUIRED, "toolTypes", 1, 1));

@@ -13,6 +13,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.ims.endpoint.Messenger;
 import com.facilio.fms.message.Message;
@@ -23,6 +24,7 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import org.sqlite.core.DB;
 
 import java.time.*;
 import java.time.temporal.ChronoField;
@@ -169,7 +171,7 @@ public class CalendarApi {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.Calendar.CALENDAR_SLOTS_MODULE_NAME);
         Long currentTime = System.currentTimeMillis();
-        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime),ZoneId.systemDefault());
+        ZonedDateTime now = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), DBConf.getInstance().getCurrentZoneId());
         ZonedDateTime startDate = now.plusDays(1);
         ZonedDateTime endDate = now.plusDays(100);
 
@@ -426,8 +428,8 @@ public class CalendarApi {
        return builder.fetchFirst();
     }
     public static List<V3CalendarSlotsContext> getCalendarSlots(Long calendarId,Long startTime, Long endTime) throws Exception{
-        ZonedDateTime startDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(startTime), ZoneId.systemDefault());
-        ZonedDateTime endDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(endTime),ZoneId.systemDefault());
+        ZonedDateTime startDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(startTime), DBConf.getInstance().getCurrentZoneId());
+        ZonedDateTime endDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(endTime),DBConf.getInstance().getCurrentZoneId());
 
         if(startDateTime.getYear() == endDateTime.getYear() && startDateTime.getMonthValue() == endDateTime.getMonthValue() && startDateTime.getDayOfMonth() >= endDateTime.getDayOfMonth()){
             return null;
@@ -466,7 +468,7 @@ public class CalendarApi {
 
                 }
                 if(month != startMonth && month != endMonth){
-                    ZonedDateTime zonedDateTime = ZonedDateTime.of(startYear,month,1,0,0,0,0,ZoneId.systemDefault());
+                    ZonedDateTime zonedDateTime = ZonedDateTime.of(startYear,month,1,0,0,0,0, DBConf.getInstance().getCurrentZoneId());
                     criteria.orCriteria(getMonthInBetweenRangeCriteria(zonedDateTime,fieldMap));
                 }
             }
@@ -489,7 +491,7 @@ public class CalendarApi {
                          criteria.orCriteria(getEndMonthCriteria(endDateTime,fieldMap));
                     }
                     else{
-                        ZonedDateTime zonedDateTime = ZonedDateTime.of(year,monthStart,1,0,0,0,0,ZoneId.systemDefault());
+                        ZonedDateTime zonedDateTime = ZonedDateTime.of(year,monthStart,1,0,0,0,0,DBConf.getInstance().getCurrentZoneId());
                         criteria.orCriteria(getMonthInBetweenRangeCriteria(zonedDateTime,fieldMap));
                     }
                 }
@@ -557,7 +559,7 @@ public class CalendarApi {
         if(calendarSlotsContext == null){
             return null;
         }
-        return ZonedDateTime.of(calendarSlotsContext.getCalendarYear(),calendarSlotsContext.getCalendarMonth(),calendarSlotsContext.getCalendarDate(),0,0,0,0,ZoneId.systemDefault());
+        return ZonedDateTime.of(calendarSlotsContext.getCalendarYear(),calendarSlotsContext.getCalendarMonth(),calendarSlotsContext.getCalendarDate(),0,0,0,0,DBConf.getInstance().getCurrentZoneId());
 
     }
     public static String convertMinuteToHourAndMins(Integer slotTime){

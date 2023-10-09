@@ -529,3 +529,41 @@ classes:
   - com.facilio.remotemonitoring.signup.AddFlaggedEventClosureConfigModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmFilterRuleCriteriaModuleConfig
   - com.facilio.bmsconsoleV3.signup.moduleconfig.FlaggedEventActionModuleConfig
+
+  #FSM Modules
+  - com.facilio.fsm.signup.PriorityModule
+  - com.facilio.fsm.signup.ServiceSkillModule
+  - com.facilio.fsm.signup.WorkTypeModule
+  - com.facilio.fsm.signup.WorkTypeLineItemsModule
+  - com.facilio.fsm.signup.TerritoryModule
+  - com.facilio.fsm.signup.ServiceOrderTicketStatus
+  - com.facilio.fsm.signup.ServiceOrderModule
+  - com.facilio.fsm.signup.TimeOffModule
+  - com.facilio.fsm.signup.ServiceTaskStatusModule
+  - com.facilio.fsm.signup.ServiceTaskModule
+  - com.facilio.fsm.signup.ServiceTaskAttachmentsModule
+  - com.facilio.fsm.signup.ServiceAppointmentTicketStatus
+  - com.facilio.fsm.signup.ServiceAppointmentModule
+  - com.facilio.fsm.signup.ServiceOrderPlannedItemsModule
+  - com.facilio.fsm.signup.ServiceOrderPlannedToolsModule
+  - com.facilio.fsm.signup.ServiceOrderPlannedServicesModule
+  - com.facilio.fsm.signup.ServiceInventoryReservationModule
+  - com.facilio.fsm.signup.TimeSheetStatus
+  - com.facilio.fsm.signup.TimeSheetModule
+  - com.facilio.fsm.signup.ServiceOrderItemsModule
+  - com.facilio.fsm.signup.ServiceOrderToolsModule
+  - com.facilio.fsm.signup.ServiceOrderServicesModule
+  - com.facilio.fsm.signup.ServiceOrderCostModule
+  - com.facilio.fsm.signup.TripStatus
+
+  #Adding Location History Module
+  - com.facilio.fsm.signup.LocationHistoryModule
+
+  #Adding People Skill Level Module
+  - com.facilio.fsm.signup.PeopleSkillLevelModule
+
+  #Adding Trip Module
+  - com.facilio.fsm.signup.TripModule
+
+  #Adding Trip Location History Module
+  - com.facilio.fsm.signup.TripLocationHistoryModule

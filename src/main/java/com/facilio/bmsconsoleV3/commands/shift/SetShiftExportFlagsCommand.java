@@ -9,9 +9,9 @@ public class SetShiftExportFlagsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         validateProps(context);
-        Long employeeID = (Long) context.get(FacilioConstants.Shift.EMPLOYEE_ID);
+        Long peopleID = (Long) context.get(FacilioConstants.ContextNames.PEOPLE_ID);
         // if employeeID is given, export is for list and not calendar;
-        if (employeeID != null && employeeID > 0){
+        if (peopleID != null && peopleID > 0){
             context.put(FacilioConstants.Shift.EXPORT_LIST, true);
         }
         return false;

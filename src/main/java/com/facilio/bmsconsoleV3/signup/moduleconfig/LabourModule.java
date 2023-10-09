@@ -33,7 +33,7 @@ public class LabourModule extends BaseModuleConfig{
         labourForm.setName("web_default");
         labourForm.setModule(labourModule);
         labourForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        labourForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        labourForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> labourFormFields = new ArrayList<>();
         labourFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

@@ -61,6 +61,7 @@ public class ItemModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -85,6 +86,7 @@ public class ItemModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         staleParts.setAppLinkNames(appLinkNames);
 
         return staleParts;
@@ -105,6 +107,7 @@ public class ItemModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -163,7 +166,7 @@ public class ItemModule extends BaseModuleConfig{
         itemForm.setName("web_default");
         itemForm.setModule(itemModule);
         itemForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        itemForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        itemForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> itemFormFields = new ArrayList<>();
         itemFormFields.add(new FormField("itemType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item Type", FormField.Required.REQUIRED, "itemTypes", 1, 2));

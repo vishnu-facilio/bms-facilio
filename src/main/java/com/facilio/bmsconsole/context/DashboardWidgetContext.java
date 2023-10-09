@@ -36,22 +36,6 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	}
 
 	private String linkName;
-	public boolean getCombo() {
-		return combo;
-	}
-
-	public void setCombo(boolean combo) {
-		this.combo = combo;
-	}
-
-	private boolean combo = false;
-	private boolean child = false;
-	public boolean getChild() {
-		return child;
-	}
-	public void setChild(boolean child) {
-		this.child = child;
-	}
 	private List<DashboardUserFilterWidgetFieldMappingContext> widgetFieldMapping;
 	public void setWidgetFieldMapping(List<DashboardUserFilterWidgetFieldMappingContext> widgetFieldMapping) {
 		this.widgetFieldMapping = widgetFieldMapping;

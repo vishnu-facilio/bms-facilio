@@ -16,9 +16,9 @@ public class ListShiftPlannerCommand extends FacilioCommand {
 
         Long rangeFrom = (Long) context.get(FacilioConstants.Shift.RANGE_FROM);
         Long rangeTo = (Long) context.get(FacilioConstants.Shift.RANGE_TO);
-        Long employeeID = (Long) context.get(FacilioConstants.Shift.EMPLOYEE_ID);
+        Long peopleId = (Long) context.get(FacilioConstants.ContextNames.PEOPLE_ID);
 
-        List<Map<String, Object>> shifts = ShiftAPI.getShiftListDecoratedWithWeeklyOff(employeeID, rangeFrom, rangeTo);
+        List<Map<String, Object>> shifts = ShiftAPI.getShiftListDecoratedWithWeeklyOff(peopleId, rangeFrom, rangeTo);
 
         context.put(FacilioConstants.Shift.SHIFTS, shifts);
         return false;
@@ -35,9 +35,9 @@ public class ListShiftPlannerCommand extends FacilioCommand {
             throw new IllegalArgumentException("rangeTo is a mandatory prop");
         }
 
-        Long employeeID = (Long) context.get(FacilioConstants.Shift.EMPLOYEE_ID);
-        if (employeeID == null || employeeID <= 0){
-            throw new IllegalArgumentException("employeeID is a mandatory prop");
+        Long peopleId = (Long) context.get(FacilioConstants.ContextNames.PEOPLE_ID);
+        if (peopleId == null || peopleId <= 0){
+            throw new IllegalArgumentException("peopleId is a mandatory prop");
         }
     }
 

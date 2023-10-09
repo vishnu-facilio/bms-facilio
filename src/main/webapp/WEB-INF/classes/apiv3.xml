@@ -242,12 +242,46 @@
             <param name="identifier">{2}</param>
             <param name="buttonPermission">true</param>
         </action>
+        <action name="serviceAppointment/*/systemButton/*" class="com.facilio.fsm.actions.fsmAction" method="updateServiceAppointmentStatus">
+            <param name="moduleName">serviceAppointment</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">{2}</param>
+            <param name="buttonPermission">true</param>
+        </action>
+        <action name="serviceTask/*/systemButton/*" class="com.facilio.fsm.actions.fsmAction" method="updateServiceTaskStatus">
+            <param name="moduleName">serviceTask</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">{2}</param>
+            <param name="buttonPermission">true</param>
+        </action>
+        <action name="timeSheet/*/systemButton/*" class="com.facilio.fsm.actions.fsmAction" method="updateTimeSheetStatus">
+            <param name="moduleName">timeSheet</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">{2}</param>
+            <param name="buttonPermission">true</param>
+        </action>
+        <action name="trip/*/systemButton/*" class="com.facilio.fsm.actions.fsmAction" method="updateTripStatus">
+            <param name="moduleName">trip</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">{2}</param>
+            <param name="buttonPermission">true</param>
+        </action>
         <action name="*/*/systemButton/*">
             <param name="moduleName">{1}</param>
             <param name="recordId">{2}</param>
             <param name="buttonAction">systemButton</param>
             <param name="identifier">{3}</param>
             <param name="buttonPermission">true</param>
+        </action>
+        <action name="serviceOrder/*/SYSTEM_BUTTON/*" class="com.facilio.fsm.actions.ServiceOrderAction" method="updateServiceOrders">
+            <param name="moduleName">serviceOrder</param>
+            <param name="orderId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">{2}</param>
         </action>
     </package>
     <package name="newTimelineV3Api" namespace="/api/v3/modules/timeline" extends="v3Api">
@@ -1644,6 +1678,7 @@
     </package>
     <package name="peopleUtils" namespace="/api/v3/people/util" extends="v3Api">
         <action name="recordPeople" class="com.facilio.bmsconsoleV3.actions.V3RecordPeopleAction" method="getPeopleFromRecordFields"/>
+       <action name="shiftDetailsForCurrentDay" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="getShiftDetailsForCurrentDay"/>
     </package>
 
     <package name="group" namespace="/api/v3/group" extends="v3Api">
@@ -1982,6 +2017,61 @@
     <package name="controlActionTemplateV3Api" namespace="/api/v3/ControlActionTemplate" extends="v3Api">
         <action name="activate" class="com.facilio.bmsconsoleV3.actions.V3ControlActionTemplateAction" method="activateControlActionTemplate"/>
         <action name="inActivate" class="com.facilio.bmsconsoleV3.actions.V3ControlActionTemplateAction" method="inActivateControlActionTemplate"></action>
+    </package>
+
+
+    <package name="fieldService" extends="v3Api" namespace="/api/v3/fsm">
+        <action name="homePage/mobile" class="com.facilio.fsm.actions.fsmAction" method="getMobileHomePage"/>
+    </package>
+    <package name="serviceOrderItem" namespace="/api/v3/serviceOrderItem"
+             extends="v3Api">
+        <action name="serviceOrderItemFromReservation"
+                class="com.facilio.fsm.actions.ServiceOrderItemsAction"
+                method="serviceOrderItemFromReservation">
+        </action>
+    </package>
+    <package name="serviceOrderTool" namespace="/api/v3/serviceOrderTool"
+             extends="v3Api">
+        <action name="serviceOrderToolFromPlan"
+                class="com.facilio.fsm.actions.ServiceOrderToolsAction"
+                method="serviceOrderToolFromPlan">
+        </action>
+    </package>
+    <package name="serviceOrderService" namespace="/api/v3/serviceOrderService"
+             extends="v3Api">
+        <action name="serviceOrderServiceFromPlan"
+                class="com.facilio.fsm.actions.ServiceOrderServicesAction"
+                method="serviceOrderServiceFromPlan">
+        </action>
+    </package>
+    <package name="serviceAppointment" namespace="/api/v3/serviceAppointment"
+             extends="v3Api">
+        <action name="associateTask"
+                class="com.facilio.fsm.actions.fsmAction"
+                method="associateTask">
+        </action>
+        <action name="dispatch"
+                class="com.facilio.fsm.actions.fsmAction"
+                method="dispatchServiceAppointment">
+        </action>
+        <action name="tripDetails" class="com.facilio.fsm.actions.fsmAction" method="fetchTripDetails">
+        </action>
+        <action name="fetchTaskList" class="com.facilio.fsm.actions.fsmAction" method="fetchTaskList">
+        </action>
+
+    </package>
+    <package name="timeSheet" namespace="/api/v3/timeSheet" extends="v3Api">
+        <action name="bulkStopTimeSheet"
+                class="com.facilio.fsm.actions.fsmAction"
+                method="bulkStopTimeSheet">
+        </action>
+    </package>
+    <package name="employeeWorkschedule" namespace="/api/v3/employee"
+             extends="v3Api">
+        <action name="workschedule"
+                class="com.facilio.fsm.actions.fsmAction"
+                method="workScheduleList">
+        </action>
     </package>
 
 </struts>

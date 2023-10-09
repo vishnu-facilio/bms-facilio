@@ -7,6 +7,8 @@ import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.bmsconsoleV3.enums.InventoryReservationStatus;
+import com.facilio.bmsconsoleV3.enums.ReservationSource;
 import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
@@ -156,55 +158,4 @@ public class InventoryReservationContext extends V3Context {
         this.inventoryRequestLineItem = inventoryRequestLineItem;
     }
 
-    public enum ReservationSource implements FacilioIntEnum {
-        WO_PLANS("Work Order Plans"), INVENTORY_REQUEST("Inventory Request");
-
-        private final String value;
-        ReservationSource(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public Integer getIndex() {
-            return ordinal() + 1;
-        }
-
-        @Override
-        public String getValue() {
-            return value;
-        }
-
-        public static ReservationSource valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
-    }
-    public enum InventoryReservationStatus implements FacilioIntEnum {
-        NOT_ISSUED("Not Issued"), PARTIALLY_ISSUED("Partially Issued"), ISSUED("Issued");
-
-        private final String value;
-
-        InventoryReservationStatus(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public Integer getIndex() {
-            return ordinal() + 1;
-        }
-
-        @Override
-        public String getValue() {
-            return value;
-        }
-
-        public static InventoryReservationStatus valueOf(int value) {
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
-    }
 }

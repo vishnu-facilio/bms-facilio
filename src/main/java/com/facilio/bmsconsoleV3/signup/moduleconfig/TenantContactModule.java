@@ -65,6 +65,7 @@ public class TenantContactModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         allView.setHidden(true);
@@ -92,6 +93,7 @@ public class TenantContactModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -107,7 +109,7 @@ public class TenantContactModule extends BaseModuleConfig{
         tenantContactForm.setName("default_tenantcontact_web");
         tenantContactForm.setModule(tenantContactModule);
         tenantContactForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        tenantContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        tenantContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> tenantContactFormfields = new ArrayList<>();
         tenantContactFormfields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
@@ -178,11 +180,11 @@ public class TenantContactModule extends BaseModuleConfig{
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
-                .addWidget("summaryfieldswidget", "Vendor Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .addWidget("summaryfieldswidget", "Vendor Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
-                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getWidgetGroup())
+                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup())
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -276,11 +278,11 @@ public class TenantContactModule extends BaseModuleConfig{
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("comments", "Comments", "")
-                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_27", 0, 0, notesWidgetParam, null)
+                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, "flexiblewebattachment_27", 0, 0, attachmentsWidgetParam, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, "flexiblewebattachment_5", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

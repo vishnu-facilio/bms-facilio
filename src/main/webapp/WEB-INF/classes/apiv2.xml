@@ -7136,6 +7136,10 @@
 		<action name="siteInfo" class="com.facilio.bmsconsole.actions.CampusAction" method="getSiteDetails" />
 	</package>
 
+	<package name="baseSpaceTreeApiV2" namespace="/api/v2/basespace/tree" extends="v2Api">
+		<action name="fetchParentNodes" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="fetchParentNodes" />
+	</package>
+
 	<package name="bmsPointsTagging" namespace="/api/v2/bmsPointsTagging/internal" extends="v2Api">
 		<action name="update" class="com.facilio.bmsconsole.actions.BmsPointsTaggingAction" method="updateInternalApi" />
 		<action name="delete" class="com.facilio.bmsconsole.actions.BmsPointsTaggingAction" method="deleteInternalApi" />

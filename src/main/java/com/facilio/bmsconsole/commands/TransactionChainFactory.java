@@ -16,6 +16,7 @@ import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
 import com.facilio.alarms.sensor.commands.AddSensorRuleFromReadingsCommand;
 import com.facilio.alarms.sensor.commands.FetchAllSensorRulesCommand;
 import com.facilio.alarms.sensor.commands.FetchSensorRuleListCommand;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.banner.commands.CloseBannerCommand;
 import com.facilio.bmsconsole.ModuleSettingConfig.command.AddGlimpseCommand;
 import com.facilio.bmsconsole.ModuleSettingConfig.command.GetModuleSettingConfigDetailsCommand;
@@ -47,6 +48,7 @@ import com.facilio.bmsconsoleV3.commands.shift.AssignShiftToUserCommand;
 import com.facilio.bmsconsoleV3.signup.AddEnergyApp;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultForms;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultViews;
+import com.facilio.bmsconsoleV3.signup.fsmApp.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.*;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
@@ -123,6 +125,7 @@ public class TransactionChainFactory {
 //			c.addCommand(new AddMaintenanceAppConfigCommand());
 			//c.addCommand(new AddDefaultWoTimelineCommand());
 			c.addCommand(addMaintenanceApplication());
+			c.addCommand(addFSMApplication());
 			c.addCommand(addEmployeePortalChain());
 			c.addCommand(new AddEnergyApp());
 			c.addCommand(addScopingChain());
@@ -131,6 +134,16 @@ public class TransactionChainFactory {
 			c.addCommand(new DefaultPermissionSetCommand());
 			return c;
 		}
+
+	public static FacilioChain addFSMApplication() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddFsmApplicationLayout());
+		c.addCommand(new AddFsmApplicationDefaultViews());
+		c.addCommand(new AddFsmApplicationDefaultForms());
+		c.addCommand(new AddDefaultRolePermissionsFsmApp());
+		c.addCommand(new AddFsmAppRelatedApplicationsCommand());
+		return c;
+	}
 
 	public static FacilioChain addMaintenanceApplication() {
 		FacilioChain c = getDefaultChain();
@@ -5825,6 +5838,7 @@ public class TransactionChainFactory {
 		c.addCommand(new AddPeopleTypeForEmployeeCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
+		c.addCommand(new AddDefaultShiftToEmployeeCommand());
 		c.addCommand(new UpdateScopingForPeopleCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));

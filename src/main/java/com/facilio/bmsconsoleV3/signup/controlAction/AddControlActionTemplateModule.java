@@ -90,9 +90,9 @@ public class AddControlActionTemplateModule extends SignUpData {
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
         SystemButtonRuleContext activateControlActionTemplate = new SystemButtonRuleContext();
-        activateControlActionTemplate.setName("Publish");
+        activateControlActionTemplate.setName("Activate");
         activateControlActionTemplate.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        activateControlActionTemplate.setIdentifier("Publish");
+        activateControlActionTemplate.setIdentifier("activate");
         activateControlActionTemplate.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         Criteria  activationCriteria = new Criteria();
         activationCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionTemplateStatus"),String.valueOf(V3ControlActionTemplateContext.ControlActionTemplateStatus.IN_ACTIVE.getIndex()), EnumOperators.IS));
@@ -100,15 +100,21 @@ public class AddControlActionTemplateModule extends SignUpData {
         SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,activateControlActionTemplate);
 
         SystemButtonRuleContext  inactivateControlActionTemplate = new SystemButtonRuleContext();
-        inactivateControlActionTemplate.setName("Un Publish");
-        inactivateControlActionTemplate.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        inactivateControlActionTemplate.setIdentifier("Un Publish");
+        inactivateControlActionTemplate.setName("In Activate");
+        inactivateControlActionTemplate.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        inactivateControlActionTemplate.setIdentifier("inActivate");
         inactivateControlActionTemplate.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         Criteria unPublishCriteria = new Criteria();
         unPublishCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionTemplateStatus"),String.valueOf(V3ControlActionTemplateContext.ControlActionTemplateStatus.ACTIVE.getIndex()), EnumOperators.IS));
         inactivateControlActionTemplate.setCriteria(unPublishCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,inactivateControlActionTemplate);
 
+        SystemButtonRuleContext editRecord = new SystemButtonRuleContext();
+        editRecord.setName("Edit");
+        editRecord.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editRecord.setIdentifier("edit");
+        editRecord.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,editRecord);
     }
     public void addNightlyJob() throws Exception {
 
@@ -136,6 +142,19 @@ public class AddControlActionTemplateModule extends SignUpData {
         fields.add(doneBy);
         FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING, FacilioField.FieldDisplayType.TEXTAREA);
         fields.add(info);
+
+        LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE",FieldType.LOOKUP);
+        createdByPeople.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(createdByPeople);
+
+        LookupField modifiedByPeople = FieldFactory.getDefaultField("sysModifiedByPeople","Modified By","SYS_MODIFIED_BY_PEOPLE",FieldType.LOOKUP);
+        modifiedByPeople.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(modifiedByPeople);
+
+
+        fields.add((FacilioField) FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.DATE_TIME));
+        fields.add((FacilioField) FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.DATE_TIME));
+
         module.setFields(fields);
         FacilioChain addModuleChain1 = TransactionChainFactory.addSystemModuleChain();
         addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));

@@ -140,6 +140,17 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 //			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 //		}
 
+		long fsmAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FSM_APP);
+			if (fsmAppId > 0) {
+				Role fsmAdminRole = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
+						FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+				clonedUser.setRole(fsmAdminRole);
+				clonedUser.setRoleId(fsmAdminRole.getRoleId());
+				clonedUser.setApplicationId(fsmAppId);
+				AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
+			}
+
+
 		context.put(FacilioConstants.ContextNames.USER, user);
 	}
 
@@ -185,6 +196,18 @@ public class CreateAppSuperAdminCommand extends FacilioCommand {
 			clonedUser.setRole(cafmAdminRole);
 			clonedUser.setRoleId(cafmAdminRole.getRoleId());
 			clonedUser.setApplicationId(cafmAppId);
+			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
+		}
+
+		// adding super admin to fsm app
+		long fsmAppId = ApplicationApi
+				.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FSM_APP);
+		if (fsmAppId > 0) {
+			Role fsmAdminRole = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),
+					FacilioConstants.DefaultRoleNames.FSM_SUPER_ADMIN);
+			clonedUser.setRole(fsmAdminRole);
+			clonedUser.setRoleId(fsmAdminRole.getRoleId());
+			clonedUser.setApplicationId(fsmAppId);
 			AccountUtil.getUserBean().addToORGUsersApps(clonedUser, false);
 		}
 

@@ -1,6 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.shift;
 
-import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.ShiftAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -18,31 +18,31 @@ public class ComposeShiftCalendarCommand extends FacilioCommand {
         Long rangeFrom = (Long) context.get(FacilioConstants.Shift.RANGE_FROM);
         Long rangeTo = (Long) context.get(FacilioConstants.Shift.RANGE_TO);
 
-        List<V3EmployeeContext> employees = (List<V3EmployeeContext>)
-                context.get(FacilioConstants.ContextNames.EMPLOYEES);
-        List<Map<String, Object>> employeesWithWhiteListedFields = stripEmployeeFields(employees);
+        List<V3PeopleContext> peopleList = (List<V3PeopleContext>)
+                context.get(FacilioConstants.ContextNames.PEOPLE);
+        List<Map<String, Object>> peopleWithWhiteListedFields = stripPeopleFields(peopleList);
 
-        Map<Long, List<Map<String, Object>>> employeeShiftMapping = new HashMap<>();
+        Map<Long, List<Map<String, Object>>> peopleShiftMapping = new HashMap<>();
 
-        for (V3EmployeeContext emp: employees) {
-            List<Map<String, Object>> shifts = ShiftAPI.getCompactedShiftList(emp.getId(), rangeFrom, rangeTo);
-            employeeShiftMapping.put(emp.getId(), shifts);
+        for (V3PeopleContext people: peopleList) {
+            List<Map<String, Object>> shifts = ShiftAPI.getCompactedShiftList(people.getId(), rangeFrom, rangeTo);
+            peopleShiftMapping.put(people.getId(), shifts);
         }
 
-        context.put(FacilioConstants.ContextNames.SHIFTS, employeeShiftMapping);
-        context.put(FacilioConstants.ContextNames.EMPLOYEES, employeesWithWhiteListedFields);
+        context.put(FacilioConstants.ContextNames.SHIFTS, peopleShiftMapping);
+        context.put(FacilioConstants.ContextNames.PEOPLE, peopleWithWhiteListedFields);
 
         return false;
     }
 
-    private List<Map<String, Object>> stripEmployeeFields(List<V3EmployeeContext> employees) {
-        List<Map<String, Object>> strippedEmployees = new ArrayList<>();
-        for (V3EmployeeContext e: employees) {
+    private List<Map<String, Object>> stripPeopleFields(List<V3PeopleContext> peopleList) {
+        List<Map<String, Object>> strippedPeople = new ArrayList<>();
+        for (V3PeopleContext people: peopleList) {
             HashMap<String, Object> strippedE = new HashMap<>();
-            strippedE.put("id", e.getId());
-            strippedE.put("name", e.getName());
-            strippedEmployees.add(strippedE);
+            strippedE.put("id", people.getId());
+            strippedE.put("name", people.getName());
+            strippedPeople.add(strippedE);
         }
-        return strippedEmployees;
+        return strippedPeople;
     }
 }

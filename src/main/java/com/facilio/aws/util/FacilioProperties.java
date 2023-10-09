@@ -293,7 +293,6 @@ public class FacilioProperties {
             if (StringUtils.isEmpty(mailDomain)) {
                 mailDomain = "facilio.com";
             }
-
             azureDevelopment = PROPERTIES.getProperty("azureDevelopment", "false");
             deployment = PROPERTIES.getProperty("deployment", "facilio");
             region = PROPERTIES.getProperty("region", "us-west-2");

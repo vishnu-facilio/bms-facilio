@@ -54,6 +54,7 @@ public class TransferRequestShipmentModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -69,7 +70,7 @@ public class TransferRequestShipmentModule extends BaseModuleConfig{
         transferRequestShipmentForm.setName("default_trshipment_web");
         transferRequestShipmentForm.setModule(transferRequestShipmentModule);
         transferRequestShipmentForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        transferRequestShipmentForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        transferRequestShipmentForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> transferRequestShipmentFormFields = new ArrayList<>();
         transferRequestShipmentFormFields.add(new FormField("expectedCompletionDate", FacilioField.FieldDisplayType.DATE, "Expected Completion Date", FormField.Required.OPTIONAL, 1, 1));

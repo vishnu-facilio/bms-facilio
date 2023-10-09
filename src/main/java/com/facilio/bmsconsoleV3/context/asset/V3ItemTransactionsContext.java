@@ -14,6 +14,9 @@ import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
+import com.facilio.fsm.context.ServiceInventoryReservationContext;
+import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.fsm.context.ServiceOrderItemsContext;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -278,5 +281,32 @@ public class V3ItemTransactionsContext extends V3Context {
 
     public void setInventoryReservation(InventoryReservationContext inventoryReservation) {
         this.inventoryReservation = inventoryReservation;
+    }
+    private ServiceOrderContext serviceOrder;
+
+    public ServiceOrderContext getServiceOrder() {
+        return serviceOrder;
+    }
+
+    public void setServiceOrder(ServiceOrderContext serviceOrder) {
+        this.serviceOrder = serviceOrder;
+    }
+    private ServiceOrderItemsContext serviceOrderItem;
+
+    public ServiceOrderItemsContext getServiceOrderItem() {
+        return serviceOrderItem;
+    }
+
+    public void setServiceOrderItem(ServiceOrderItemsContext serviceOrderItem) {
+        this.serviceOrderItem = serviceOrderItem;
+    }
+    private ServiceInventoryReservationContext serviceInventoryReservation;
+
+    public ServiceInventoryReservationContext getServiceInventoryReservation() {
+        return serviceInventoryReservation;
+    }
+
+    public void setServiceInventoryReservation(ServiceInventoryReservationContext serviceInventoryReservation) {
+        this.serviceInventoryReservation = serviceInventoryReservation;
     }
 }

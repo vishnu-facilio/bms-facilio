@@ -1928,7 +1928,7 @@
     </request>
     <request path="/api/v3/shiftplanner/update">
         <requestbody type="object">
-            <property name="employees" type="array" mandatory="true">
+            <property name="people" type="array" mandatory="true">
                 <items type="number"/>
             </property>
             <property name="shiftEnd" type="number" mandatory="true"/>
@@ -2037,6 +2037,28 @@
     <request path="/api/v1/setup/fields/sortable/:moduleName">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/fields/advancedFilter/drilldown/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="defaultFieldIds" type="array"/>
+            <property name="OneLevelFields" type="boolean"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/fields/advancedFilter/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="defaultFieldIds" type="array"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/fields/sortable/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="defaultFieldIds" type="array"/>
         </urlparams>
     </request>
 
@@ -3573,4 +3595,201 @@
     </request>
 
     <request path="/api/v3/switchVariable/getSwitchVariable" method="GET"/>
+    <request path="/api/v3/unrelated/serviceRequest/fetchAll/emailConversationThreading" method="GET" />
+
+    <!--    pdf Builder -->
+    <request path="/api/v1/setup/pdftemplates/list" method="GET">
+        <requestbody type="object">
+            <property name="moduleName" type="string" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/pdftemplates/delete" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/pdftemplates/view" method="GET">
+        <requestbody type="object">
+            <property name="moduleName" type="string" />
+            <property name="id" type="number" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/pdftemplates/preview/:id/:recordId" method="GET">
+        <requestbody type="object">
+            <property name="id" type="number"></property>
+            <property name="recordId" type="number"></property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/pdftemplates/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="moduleName" type="string"></property>
+        </requestbody>
+    </request>
+
+
+
+    <request path="/api/v1/setup/dispatcher/:updateDispatcherConfig" method="POST">
+        <requestbody type="object">
+            <property name="dispatcherConfig" type="object">
+                <property name="id" type="number"/>
+                <property name="name" type="string"/>
+                <property name="description" type="string"/>
+                <property name="isMapView" type="boolean"/>
+                <property name="startTimeFieldId" type="number"/>
+                <property name="endTimeFieldId" type="number"/>
+                <property name="defaultStartDay" type="number"/>
+                <property name="defaultCalendarView" type="number"/>
+                <property name="workorderConfigJson" type="string"/>
+                <property name="resourceConfigJson" type="string"/>
+                <property name="eventConfigJson" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/dispatcher/fetchDispatcherConfig" method="GET">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/dispatcher/list" method="GET"/>
+    <request path="/api/v1/setup/dispatcher/delete" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/fsm/dispatcher/list" method="GET"/>
+
+
+    <request path="/api/v3/serviceRequest/:id/site" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/systemButton/getAvailableButtonsForList" method="GET">
+       <requestbody type="object">
+        <property name="recordIds" type="array">
+            <items type="number"/>
+        </property>
+         <property name="moduleName" type="string"/>
+         <property name="positionType" type="number"/>
+       </requestbody>
+    </request>
+    <request path="/api/fsm/serviceappointment/list" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="viewName" type="string"/>
+            <property name="boardId" type="number"/>
+            <property name="orderBy" type="string"/>
+            <property name="orderType" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/fsm/board/list" method="GET"/>
+    <request path="/api/v3/people/util/shiftDetailsForCurrentDay" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/fsm/homePage/mobile" method="GET"/>
+    <request path="/api/v3/serviceAppointment/associateTask" method="POST">
+        <requestbody type="object">
+            <property name="serviceTasks" type="array">
+                <items type="number"/>
+            </property>
+            <property name="appointmentId" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/serviceAppointment/dispatch" method="POST">
+        <requestbody type="object">
+            <property name="appointmentId" type="number"/>
+            <property name="fieldAgentId" type="number"/>
+            <property name="scheduledEndTime" type="number"/>
+            <property name="scheduledStartTime" type="number"/>
+            <property name="skipValidation" type="boolean"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/serviceAppointment/tripDetails" method="GET">
+        <urlparams>
+            <property name="appointmentId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/serviceAppointment/fetchTaskList" method="GET">
+        <urlparams>
+            <property name="timeSheetId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/employee/workschedule" method="GET">
+        <urlparams>
+            <property name="peopleId" type="number"/>
+            <property name="startTime" type="number"/>
+            <property name="endTime" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/serviceOrderItem/serviceOrderItemFromReservation">
+        <requestbody type="object">
+            <property name="reservationId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/serviceOrderTool/serviceOrderToolFromPlan">
+        <requestbody type="object">
+            <property name="plannedToolId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/serviceOrderService/serviceOrderServiceFromPlan">
+        <requestbody type="object">
+            <property name="plannedServiceId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/fsm/serviceAppointment/dispatch" method="POST">
+        <requestbody type="object">
+            <property name="appointmentId" type="number"/>
+            <property name="fieldAgentId" type="number"/>
+            <property name="scheduledEndTime" type="number"/>
+            <property name="scheduledStartTime" type="number"/>
+            <property name="skipValidation" type="boolean"/>
+        </requestbody>
+    </request>
+    <request path="/api/fsm/resource/list" method="GET">
+        <urlparams>
+            <property name="orderBy" type="string"/>
+            <property name="orderType" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="startTime" type="number"/>
+            <property name="endTime" type="number"/>
+            <property name="boardId" type="number"/>
+            <property name="search" type="string"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/fsm/events/list" method="GET">
+        <urlparams>
+            <property name="resourceIds" type="string"/>
+            <property name="startTime" type="number"/>
+            <property name="endTime" type="number"/>
+            <property name="boardId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/fsm/mapView/data" method="GET">
+        <urlparams>
+            <property name="startTime" type="number"/>
+            <property name="endTime" type="number"/>
+            <property name="boardId" type="number"/>
+            <property name="search" type="string"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/timeSheet/bulkStopTimeSheet" method="POST">
+        <requestbody type="object">
+            <property name="recordIds" type="array">
+                <items type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+
 </config>

@@ -19,8 +19,8 @@ public class ShiftAction extends V3Action {
 
     private Long rangeFrom;
     private Long rangeTo;
-    private Long employeeID;
-    private List<Long> employees;
+    private Long peopleId;
+    private List<Long> people;
     private Long shiftID;
     private Long shiftStart;
     private Long shiftEnd;
@@ -31,7 +31,7 @@ public class ShiftAction extends V3Action {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.Shift.RANGE_FROM, rangeFrom);
         context.put(FacilioConstants.Shift.RANGE_TO, rangeTo);
-        context.put(FacilioConstants.Shift.EMPLOYEE_ID, employeeID);
+        context.put(FacilioConstants.ContextNames.PEOPLE_ID, peopleId);
         chain.execute();
 
         setData("shifts", context.get("shifts"));
@@ -53,8 +53,8 @@ public class ShiftAction extends V3Action {
 
         setData(FacilioConstants.Shift.RANGE,
                 context.get(FacilioConstants.Shift.RANGE));
-        setData(FacilioConstants.ContextNames.EMPLOYEES,
-                context.get(FacilioConstants.ContextNames.EMPLOYEES));
+        setData(FacilioConstants.ContextNames.PEOPLE,
+                context.get(FacilioConstants.ContextNames.PEOPLE));
         setData(FacilioConstants.ContextNames.SHIFTS,
                 context.get(FacilioConstants.ContextNames.SHIFTS));
         setData(FacilioConstants.ContextNames.COUNT,
@@ -68,7 +68,7 @@ public class ShiftAction extends V3Action {
         context.put(FacilioConstants.Shift.SHIFT_START, shiftStart);
         context.put(FacilioConstants.Shift.SHIFT_END, shiftEnd);
         context.put(FacilioConstants.Shift.SHIFT_ID, shiftID);
-        context.put(FacilioConstants.Shift.EMPLOYEES, employees);
+        context.put(FacilioConstants.ContextNames.PEOPLE, people);
         chain.execute();
 
         setData("shifts", context.get("shifts"));
@@ -83,7 +83,7 @@ public class ShiftAction extends V3Action {
         context.put(FacilioConstants.Shift.RANGE_TO, rangeTo);
         context.put(FacilioConstants.ContextNames.PAGE, getPage());
         context.put(FacilioConstants.ContextNames.PER_PAGE, getPerPage());
-        context.put(FacilioConstants.Shift.EMPLOYEE_ID, employeeID);
+        context.put(FacilioConstants.ContextNames.PEOPLE_ID,getPeopleId() );
         context.put(FacilioConstants.Shift.FORMAT, format);
         context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
         context.put(FacilioConstants.ContextNames.ORDER_TYPE, getOrderType());

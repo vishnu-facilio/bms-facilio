@@ -5,10 +5,12 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAPIHandler;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
+import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -22,6 +24,7 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
 
@@ -95,8 +98,17 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
             for (int i = 0; i < existingWidgets.size(); i++) {
                 if (!widgetMapping.containsKey(existingWidgets.get(i).getId())) {
                     removedWidgets.add(existingWidgets.get(i).getId());
-                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && existingWidgets.get(i).getWidgetType() == DashboardWidgetContext.WidgetType.FILTER){
-                        removedFilters.add(existingWidgets.get(i).getId());
+                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
+                        if(existingWidgets.get(i).getWidgetType() == DashboardWidgetContext.WidgetType.FILTER){
+                            removedFilters.add(existingWidgets.get(i).getId());
+                        }else if(existingWidgets.get(i).getWidgetType() == DashboardWidgetContext.WidgetType.CARD){
+                            List<WidgetCardContext>childCards = CardUtil.getChildCards(existingWidgets.get(i).getId());
+                            if(childCards != null && childCards.size() > 0){
+                                for(WidgetCardContext childCard : childCards){
+                                    removedWidgets.add(childCard.getId());
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -122,7 +134,6 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
 
     public void createOrUpdateWidgetInSection(Context context, DashboardTabContext dashboardTabContext, DashboardWidgetContext widget, JSONObject widgetMapping)throws Exception
     {
-        Long parentId = null;
         List<DashboardWidgetContext> update_widget_list = new ArrayList<DashboardWidgetContext>();
         List<DashboardWidgetContext> widget_list = ((WidgetSectionContext) widget).getWidgets_in_section();
         V3DashboardAPIHandler.checkAndGenerateWidgetLinkName(widget_list, null, dashboardTabContext.getId());
@@ -134,15 +145,9 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
                 dashboard_widget.setDashboardTabId(dashboardTabContext.getId());
                 context.put(FacilioConstants.ContextNames.WIDGET, dashboard_widget);
                 context.put(FacilioConstants.ContextNames.WIDGET_TYPE, dashboard_widget.getWidgetType());
-                if(dashboard_widget.getChild()) {
-                    context.put(FacilioConstants.ContextNames.PARENT_ID,parentId);
-                }
-                else {
-                    context.put(FacilioConstants.ContextNames.PARENT_ID,null);
-                }
                 addWidgetChain.execute(context);
-                if(dashboard_widget.getCombo()){
-                    parentId = dashboard_widget.getId();
+                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && dashboard_widget.getWidgetType().equals(DashboardWidgetContext.WidgetType.CARD)){
+                    createOrUpdateWidgetInCard(context, dashboardTabContext, widget, dashboard_widget);
                 }
             }
             else
@@ -151,6 +156,9 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
                 dashboard_widget.setDashboardTabId(dashboardTabContext.getId());
                 dashboard_widget.setSectionId(widget.getId());
                 update_widget_list.add(dashboard_widget);
+                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && dashboard_widget.getWidgetType().equals(DashboardWidgetContext.WidgetType.CARD)){
+                    createOrUpdateWidgetInCard(context, dashboardTabContext, widget, dashboard_widget);
+                }
             }
         }
         if(update_widget_list.size() > 0)
@@ -160,5 +168,43 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
             updateWidgetChain.execute(context);
         }
     }
+    public void createOrUpdateWidgetInCard(Context context, DashboardTabContext dashboardTab, DashboardWidgetContext widget, DashboardWidgetContext dashboard_widget)throws Exception{
+        WidgetCardContext cardContext = (WidgetCardContext) dashboard_widget;
+        List<WidgetCardContext> update_card_list = new ArrayList<>();
+        List<WidgetCardContext> existingCards = CardUtil.getChildCards(cardContext.getId());
+        if(cardContext.getChildCards() != null && cardContext.getChildCards().size() > 0) {
+            for(WidgetCardContext childCard : cardContext.getChildCards()){
+                if(childCard.getId() < 0) {
+                    FacilioChain addCardChain = TransactionChainFactoryV3.getAddWidgetChainV3();
+                    childCard.setDashboardTabId(dashboardTab.getId());
+                    childCard.setSectionId(widget.getId());
+                    context.put(FacilioConstants.ContextNames.WIDGET, childCard);
+                    context.put(FacilioConstants.ContextNames.WIDGET_TYPE, childCard.getWidgetType());
+                    context.put(FacilioConstants.ContextNames.DASHBOARD_TAB_ID, dashboardTab.getId());
+                    childCard.setParentId(cardContext.getId());
+                    addCardChain.execute(context);
+                }
+                else{
+                    childCard.setDashboardTabId(dashboardTab.getId());
+                    childCard.setSectionId(widget.getId());
+                    childCard.setParentId(cardContext.getId());
+                    update_card_list.add(childCard);
+                }
+            }
+            List<Long> update_card_Ids = update_card_list.stream().map(WidgetCardContext::getId).collect(Collectors.toList());
+            List<Long> removedIds = existingCards.stream().filter(card -> !update_card_Ids.contains(card.getId())).map(WidgetCardContext::getId).collect(Collectors.toList());
+            if(removedIds.size() > 0) {
+                GenericDeleteRecordBuilder genericDeleteRecordBuilder = new GenericDeleteRecordBuilder();
+                genericDeleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
+                        .andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "ID", StringUtils.join(removedIds, ","), StringOperators.IS));
+                genericDeleteRecordBuilder.delete();
+            }
+            if(update_card_list.size() > 0){
 
+                FacilioChain updateWidgetChain = TransactionChainFactoryV3.getUpdateWidgetsChainV3();
+                context.put(FacilioConstants.ContextNames.WIDGET_UPDATE_LIST,update_card_list);
+                updateWidgetChain.execute(context);
+            }
+        }
+    }
 }

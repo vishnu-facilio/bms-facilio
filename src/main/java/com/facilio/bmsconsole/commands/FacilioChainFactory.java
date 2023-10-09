@@ -17,6 +17,9 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.elasticsearch.command.DeleteDataFromESCommand;
+import com.facilio.fsm.commands.dispatchBoard.AddDispatcherConfigCommand;
+import com.facilio.fsm.commands.dispatchBoard.DeleteDispatcherConfigCommand;
+import com.facilio.fsm.commands.dispatchBoard.UpdateDispatcherConfigCommand;
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
@@ -2667,4 +2670,20 @@ public class FacilioChainFactory {
 		c.addCommand(new AddPeopleRelatedDataCommand());
 		return c;
 	}
+	public static FacilioChain addDispatcherConfig(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new AddDispatcherConfigCommand());
+		return c;
+	}
+	public static FacilioChain updateDispatcherConfig(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new UpdateDispatcherConfigCommand());
+		return c;
+	}
+	public static FacilioChain deleteDispatcherConfig(){
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeleteDispatcherConfigCommand());
+		return c;
+	}
+
 }

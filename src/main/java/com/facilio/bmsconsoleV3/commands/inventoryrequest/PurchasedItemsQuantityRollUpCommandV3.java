@@ -127,9 +127,8 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(consumableModule.getTableName())
                 .andCustomWhere(consumableModule.getTableName() + ".ORGID = " + AccountUtil.getCurrentOrg().getOrgId())
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(consumableModule),
-                        String.valueOf(consumableModule.getModuleId()), NumberOperators.EQUALS))
-                .andCustomWhere("APPROVED_STATE = ? OR APPROVED_STATE = ? ", 1, 3);
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(consumableModule),String.valueOf(consumableModule.getModuleId()), NumberOperators.EQUALS));
+//                .andCustomWhere("APPROVED_STATE = ? OR APPROVED_STATE = ? ", 1, 3);
         // builder.andCondition(CriteriaAPI.getCondition(consumableFieldMap.get("approvedState"),
         // String.valueOf(1), NumberOperators.EQUALS))
         // .orCondition(CriteriaAPI.getCondition(consumableFieldMap.get("approvedState"),

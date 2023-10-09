@@ -26,7 +26,7 @@ import java.util.*;
 @Log4j
 public class NewPermissionUtil {
 
-    private static Map<String, Integer> moduleTabType = Collections.unmodifiableMap(initModuleMap());
+    private static Map<String, Long> moduleTabType = Collections.unmodifiableMap(initModuleMap());
     private static Map<String, Integer> approvalTabType = Collections.unmodifiableMap(initApprovalMap());
     private static Map<String, Integer> calendarTabType = Collections.unmodifiableMap(initCalendarMap());
     private static Map<String, Integer> reportTabType = Collections.unmodifiableMap(initReportMap());
@@ -52,30 +52,40 @@ public class NewPermissionUtil {
 
     private static Map<String, Integer> setupPermissionMap = Collections.unmodifiableMap(initSetupPermissionMap());
     private static Map<String, Integer> newDashboardTabType = Collections.unmodifiableMap(initNewDashboardMap());
+    private static Map<String, Integer> dispatcherBoardTabType = Collections.unmodifiableMap(initDispatcherBoardMap());
 
     private static Map<String, Integer> alarmModulePermissionType = Collections.unmodifiableMap(initAlarmPermissionsMap());
 
 
-    private static Map<String, Integer> initModuleMap() {
+    private static Map<String, Long> initModuleMap() {
         moduleTabType = new HashMap<>();
-        moduleTabType.put("CREATE", 1);
-        moduleTabType.put("IMPORT", 2); //Deprecated
-        moduleTabType.put("READ", 4);
-        moduleTabType.put("UPDATE", 8);
-        moduleTabType.put("DELETE", 16);
-        moduleTabType.put("EXPORT", 32);
-        moduleTabType.put("READ_TEAM", 64);
-        moduleTabType.put("READ_OWN", 128);
-        moduleTabType.put("UPDATE_TEAM", 256);
-        moduleTabType.put("UPDATE_OWN", 512);
-        moduleTabType.put("UPDATE_CHANGE_OWNERSHIP", 1024);
-        moduleTabType.put("UPDATE_CLOSE_WORKORDER", 2048);
-        moduleTabType.put("UPDATE_TASK", 4096);
-        moduleTabType.put("DELETE_TEAM", 8192);
-        moduleTabType.put("DELETE_OWN", 16384);
-        moduleTabType.put("UPDATE_WORKORDER_TASK", 32768);
-        moduleTabType.put("CONTROL", 65536);
-        //moduleTabType.put("READ_TASK", 131072);
+        moduleTabType.put("CREATE", 1L);
+        moduleTabType.put("IMPORT", 2L); //Deprecated
+        moduleTabType.put("READ", 4L);
+        moduleTabType.put("UPDATE", 8L);
+        moduleTabType.put("DELETE", 16L);
+        moduleTabType.put("EXPORT", 32L);
+        moduleTabType.put("READ_TEAM", 64L);
+        moduleTabType.put("READ_OWN", 128L);
+        moduleTabType.put("UPDATE_TEAM", 256L);
+        moduleTabType.put("UPDATE_OWN", 512L);
+        moduleTabType.put("UPDATE_CHANGE_OWNERSHIP", 1024L);
+        moduleTabType.put("UPDATE_CLOSE_WORKORDER", 2048L);
+        moduleTabType.put("UPDATE_TASK", 4096L);
+        moduleTabType.put("DELETE_TEAM", 8192L);
+        moduleTabType.put("DELETE_OWN", 16384L);
+        moduleTabType.put("UPDATE_WORKORDER_TASK", 32768L);
+        moduleTabType.put("CONTROL", 65536L);
+        moduleTabType.put("EXECUTE",131072L);
+        moduleTabType.put("CANCEL", 262144L);
+        moduleTabType.put("DISPATCH",524288L);
+        moduleTabType.put("VIEW_PRICING",1048576L);
+        moduleTabType.put("CLOSE",2097152L);
+        moduleTabType.put("MANAGE_SERVICE_TASKS", 4194304L);
+        moduleTabType.put("MANAGE_INVENTORY_AND_SERVICE",8388608L);
+        moduleTabType.put("MANAGE_INVENTORY_REQUEST",16777216L);
+        moduleTabType.put("CLONE",33554432L);
+        moduleTabType.put("COMPLETE",67108864L);
         return moduleTabType;
     }
 
@@ -231,6 +241,11 @@ public class NewPermissionUtil {
         settingsTabType.put("COMMISSIONING", 17179869184L);
 		settingsTabType.put("FEEDBACK_AND_COMPLAINTS", 34359738368L);
 		settingsTabType.put("SMART_CONTROLS", 68719476736L);
+        settingsTabType.put("DISPATCH_CONFIG", 137438953472L);
+        settingsTabType.put("WORK_TYPE",274877906944L);
+        settingsTabType.put("SKILLS",549755813888L);
+        settingsTabType.put("TIME_OFF_SETTINGS",1099511627776L);
+
 
         return settingsTabType;
     }
@@ -291,6 +306,12 @@ public class NewPermissionUtil {
         alarmModulePermissionType.put("CLEAR_ALARM", 4);
 
         return alarmModulePermissionType;
+    }
+    private static Map<String, Integer> initDispatcherBoardMap() {
+        dispatcherBoardTabType = new HashMap<>();
+        dispatcherBoardTabType.put("READ", 1);
+        dispatcherBoardTabType.put("CAN_ASSIGN", 2);
+        return dispatcherBoardTabType;
     }
 
     static Map<Integer, Map<String, List<Permission>>> permissionList = new HashMap<>();
@@ -368,6 +389,71 @@ public class NewPermissionUtil {
         permissions.add(new PermissionGroup("Delete", deleteGroup));
         permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
         permissionMap.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        List<Permission> readGroups = new ArrayList<>();
+        readGroups.add(new Permission("READ", "All", moduleTabType.get("READ"), null));
+        readGroups.add(new Permission("READ_TEAM", "Team", moduleTabType.get("READ_TEAM"), null));
+        readGroups.add(new Permission("READ_OWN", "Own", moduleTabType.get("READ_OWN"), null));
+        permissions.add(new PermissionGroup("Read", readGroups));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("COMPLETE", "Complete", moduleTabType.get("COMPLETE"), null));
+        permissions.add(new Permission("CLOSE", "Close", moduleTabType.get("CLOSE"), null));
+        permissions.add(new Permission("CANCEL", "Cancel", moduleTabType.get("CANCEL"), null));
+        permissions.add(new Permission("MANAGE_SERVICE_TASKS", "Manage Tasks", moduleTabType.get("MANAGE_SERVICE_TASKS"), null));
+        permissions.add(new Permission("MANAGE_INVENTORY_AND_SERVICE", "Manage Inventory & Service", moduleTabType.get("MANAGE_INVENTORY_AND_SERVICE"), null));
+        permissions.add(new Permission("MANAGE_INVENTORY_REQUEST", "Manage Inventory Request", moduleTabType.get("MANAGE_INVENTORY_REQUEST"), null));
+//        permissions.add(new Permission("VIEW_PRICING", "View Pricing", moduleTabType.get("VIEW_PRICING"), null));
+        permissionMap.put(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        List<Permission> readPermissions = new ArrayList<>();
+        readPermissions.add(new Permission("READ", "All", moduleTabType.get("READ"), null));
+        readPermissions.add(new Permission("READ_OWN", "Own", moduleTabType.get("READ_OWN"), null));
+        permissions.add(new PermissionGroup("Read", readPermissions));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("CANCEL", "Cancel", moduleTabType.get("CANCEL"), null));
+        permissions.add(new Permission("DISPATCH", "Dispatch", moduleTabType.get("DISPATCH"), null));
+        permissions.add(new Permission("EXECUTE", "Execute", moduleTabType.get("EXECUTE"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("MANAGE_INVENTORY_AND_SERVICE", "Manage Inventory & Service", moduleTabType.get("MANAGE_INVENTORY_AND_SERVICE"), null));
+        permissions.add(new Permission("MANAGE_SERVICE_TASKS", "Manage Task", moduleTabType.get("MANAGE_SERVICE_TASKS"), null));
+//        permissions.add(new Permission("VIEW_PRICING", "View Pricing", moduleTabType.get("VIEW_PRICING"), null));
+        permissions.add(new Permission("MANAGE_INVENTORY_REQUEST", "Manage Inventory Request", moduleTabType.get("MANAGE_INVENTORY_REQUEST"), null));
+        permissionMap.put(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+
+        List<Permission> readGroupPermissions = new ArrayList<>();
+        readGroupPermissions.add(new Permission("READ", "All", moduleTabType.get("READ"), null));
+        readGroupPermissions.add(new Permission("READ_OWN", "Own", moduleTabType.get("READ_OWN"), null));
+        permissions.add(new PermissionGroup("Read", readGroupPermissions));
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("CLOSE", "Close", moduleTabType.get("CLOSE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissionMap.put(FacilioConstants.TimeSheet.TIME_SHEET, permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+
+        List<Permission> readPermissionGroup = new ArrayList<>();
+        readPermissionGroup.add(new Permission("READ", "All", moduleTabType.get("READ"), null));
+        readPermissionGroup.add(new Permission("READ_OWN", "Own", moduleTabType.get("READ_OWN"), null));
+        permissions.add(new PermissionGroup("Read", readPermissionGroup));
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("COMPLETE", "Complete", moduleTabType.get("COMPLETE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissionMap.put(FacilioConstants.Trip.TRIP, permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
         permissions = new ArrayList<>();
@@ -627,6 +713,23 @@ public class NewPermissionUtil {
         permissionMap.put("*", permissions);
         permissionList.put(Type.NEW_DASHBOARD.getIndex(), permissionMap);
 
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("READ", "Read", dispatcherBoardTabType.get("READ"), null));
+        permissions.add(new Permission("CAN_ASSIGN", "Can Assign", dispatcherBoardTabType.get("CAN_ASSIGN"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.DISPATCHER_CONSOLE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissionMap = new HashMap<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissionMap.put("*", permissions);
+        permissionList.put(Type.PORTFOLIO.getIndex(), permissionMap);
+
+
         for(Type type : Type.values()) {
             if(type.getTabType().getIndex() == WebTabContext.TabType.SETUP.getIndex()) {
                 permissions = new ArrayList<>();
@@ -736,7 +839,7 @@ public class NewPermissionUtil {
         }
         switch (tabType) {
             case 1:
-                return moduleTabType.getOrDefault(action, -1);
+                return moduleTabType.getOrDefault(action, -1L);
             case 2:
                 return approvalTabType.getOrDefault(action, -1);
             case 3:
@@ -777,6 +880,9 @@ public class NewPermissionUtil {
                 return newKpiTabType.getOrDefault(action, -1);
             case 94:
                 return newDashboardTabType.getOrDefault(action, -1);
+            case 106:
+                return dispatcherBoardTabType.getOrDefault(action,-1);
+
             default:
                 return -1;
         }
@@ -955,6 +1061,20 @@ public class NewPermissionUtil {
                 }
                 return maps;
             }
+            case 84: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : myAttendanceTabType.keySet()) {
+                    maps.put(key, Long.valueOf(myAttendanceTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 85: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : attendanceTabType.keySet()) {
+                    maps.put(key, Long.valueOf(attendanceTabType.get(key).toString()));
+                }
+                return maps;
+            }
             case 87: {
                 Map<String, Long> maps = new HashMap<>();
                 for (String key : newKpiTabType.keySet()) {
@@ -966,6 +1086,13 @@ public class NewPermissionUtil {
                 Map<String, Long> maps = new HashMap<>();
                 for (String key : newDashboardTabType.keySet()) {
                     maps.put(key, Long.valueOf(newDashboardTabType.get(key).toString()));
+                }
+                return maps;
+            }
+            case 106: {
+                Map<String, Long> maps = new HashMap<>();
+                for (String key : dispatcherBoardTabType.keySet()) {
+                    maps.put(key, Long.valueOf(dispatcherBoardTabType.get(key).toString()));
                 }
                 return maps;
             }
@@ -988,7 +1115,7 @@ public class NewPermissionUtil {
         }
         return actionList;
     }
-    
+
     public static List<Permission> getTabPermissions(WebTabContext webTab,Long roleId) throws Exception {
         List<Permission> tabPermissionList = new ArrayList<>();
         List<Permission> permissions = webTab.getPermission();

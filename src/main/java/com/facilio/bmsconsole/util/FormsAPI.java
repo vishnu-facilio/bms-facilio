@@ -1215,27 +1215,68 @@ public class FormsAPI {
 				fields.add(new FormField("failureClass", FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",8, 2));
 				fields.add(new FormField("amenities",FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Amenities",FormField.Required.OPTIONAL,"amenity",9,2));
 				break;
-				case ContextNames.SERVICE_REQUEST:
-					fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
-					fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-					fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 1));
-					fields.add(new FormField("requester", FieldDisplayType.LOOKUP_SIMPLE, "Requester", Required.REQUIRED, "people" , 4, 1));
-					fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 5, 1));
-					fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 6, 1));
-					fields.add(new FormField("urgency", FieldDisplayType.LOOKUP_SIMPLE, "Urgency", Required.OPTIONAL, "servicerequestpriority", 7, 1));
-					fields.add(new FormField("classificationType", FieldDisplayType.SELECTBOX, "Classification Type", Required.OPTIONAL, "classification" , 8, 1));
-					fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 9, 1));
-					fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 10, 1));
-					fields.add(new FormField("responseDueDate", FieldDisplayType.DATETIME, "Response Due Date", Required.OPTIONAL, 11, 1));
-					fields.add(new FormField("affectedPerson", FieldDisplayType.LOOKUP_SIMPLE, "Affected Person", Required.OPTIONAL,"people", 15, 1));
-					fields.add(new FormField("reportedDate", FieldDisplayType.DATETIME, "Reported Date", Required.OPTIONAL, 16, 1));
-					fields.add(new FormField("affectedDate", FieldDisplayType.DATETIME, "Affected Date", Required.OPTIONAL, 17, 1));
-					fields.add(new FormField("actualStartDate", FieldDisplayType.DATETIME, "Actual Start Date", Required.OPTIONAL, 18, 1));
-					fields.add(new FormField("actualFinishDate", FieldDisplayType.DATETIME, "Actual Finish Date", Required.OPTIONAL, 19, 1));
-					fields.add(new FormField("requestType", FieldDisplayType.SELECTBOX, "Request Type", Required.OPTIONAL, 20, 1));
-
-					break;
+			case ContextNames.SERVICE_REQUEST:
+				fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
+				fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+				fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 1));
+				fields.add(new FormField("requester", FieldDisplayType.LOOKUP_SIMPLE, "Requester", Required.REQUIRED, "people" , 4, 1));
+				fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 5, 1));
+				fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 6, 1));
+				fields.add(new FormField("urgency", FieldDisplayType.LOOKUP_SIMPLE, "Urgency", Required.OPTIONAL, "servicerequestpriority", 7, 1));
+				fields.add(new FormField("classificationType", FieldDisplayType.SELECTBOX, "Classification Type", Required.OPTIONAL, "classification" , 8, 1));
+				fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 9, 1));
+				fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 10, 1));
+				fields.add(new FormField("responseDueDate", FieldDisplayType.DATETIME, "Response Due Date", Required.OPTIONAL, 11, 1));
+				fields.add(new FormField("affectedPerson", FieldDisplayType.LOOKUP_SIMPLE, "Affected Person", Required.OPTIONAL,"people", 15, 1));
+				fields.add(new FormField("reportedDate", FieldDisplayType.DATETIME, "Reported Date", Required.OPTIONAL, 16, 1));
+				fields.add(new FormField("affectedDate", FieldDisplayType.DATETIME, "Affected Date", Required.OPTIONAL, 17, 1));
+				fields.add(new FormField("actualStartDate", FieldDisplayType.DATETIME, "Actual Start Date", Required.OPTIONAL, 18, 1));
+				fields.add(new FormField("actualFinishDate", FieldDisplayType.DATETIME, "Actual Finish Date", Required.OPTIONAL, 19, 1));
+				fields.add(new FormField("requestType", FieldDisplayType.SELECTBOX, "Request Type", Required.OPTIONAL, 20, 1));
+				break;
+			case FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT:
+				fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
+				fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+				fields.add(new FormField("serviceOrder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Service Orders", Required.REQUIRED,6,3));
+				fields.add(new FormField("serviceTasks",FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Service Tasks", Required.REQUIRED,7,1));
+				fields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 10, 3));
+				fields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.REQUIRED, 11, 3));
+				fields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DURATION, "Response Due Duration", FormField.Required.REQUIRED, 12, 4));
+				fields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.REQUIRED, 13, 4));
+				break;
+			case ContextNames.FieldServiceManagement.SERVICE_ORDER:
+				fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
+				fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+				fields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Client", Required.OPTIONAL,6,3));
+				fields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX,"Category", Required.OPTIONAL,6,3));
+				fields.add(new FormField("priority",  FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Priority", Required.REQUIRED,6,3));
+				fields.add(new FormField("space", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Space", Required.OPTIONAL,6,3));
+				fields.add(new FormField("asset",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Asset", Required.OPTIONAL,7,1));
+				fields.add(new FormField("fieldAgent",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Field Agent", Required.OPTIONAL,7,1));
+				fields.add(new FormField("vendor",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Vendor", Required.OPTIONAL,7,1));
+				fields.add(new FormField("scheduledStartTime",FacilioField.FieldDisplayType.DATETIME,"Scheduled Start Time", Required.OPTIONAL,7,1));
+				fields.add(new FormField("scheduledEndTime",FacilioField.FieldDisplayType.DATETIME,"Scheduled End Time", Required.OPTIONAL,7,1));
+				fields.add(new FormField("autoCreateSa",FacilioField.FieldDisplayType.DECISION_BOX,"AutoCreate SA", Required.OPTIONAL,7,1));
+				fields.add(new FormField("responseDueDuration", FieldDisplayType.DURATION,"Response Due Duration", Required.OPTIONAL,7,1));
+				fields.add(new FormField("resolutionDueDuration", FieldDisplayType.DURATION,"Resoultion Due Duration", Required.OPTIONAL,7,1));
+				fields.add(new FormField("serviceTasks", FacilioField.FieldDisplayType.SERVICE_TASK_ITEMS,"Tasks", Required.OPTIONAL,7,1));
+				break;
 			case ContextNames.SITE:
+				fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+				fields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+				fields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 3, 1));
+				fields.add(new FormField("managedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Managed By", FormField.Required.OPTIONAL, 4, 2));
+				fields.add(new FormField("siteType", FacilioField.FieldDisplayType.SELECTBOX, "Site Type", FormField.Required.OPTIONAL, 4, 3));
+				fields.add(new FormField("grossFloorArea", FacilioField.FieldDisplayType.DECIMAL, "Gross Floor Area", FormField.Required.OPTIONAL, 5, 2));
+				fields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Total Area", FormField.Required.OPTIONAL, 5, 3));
+				fields.add(new FormField("cddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "CDD Base Temperature", FormField.Required.OPTIONAL, 6, 2));
+				fields.add(new FormField("hddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "HDD Base Temperature", FormField.Required.OPTIONAL, 6, 3));
+				fields.add(new FormField("wddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "WDD Base Temperature", FormField.Required.OPTIONAL, 7, 2));
+				fields.add(new FormField("timeZone", FacilioField.FieldDisplayType.TIMEZONE, "Time Zone", FormField.Required.OPTIONAL, 8, 3));
+				fields.add(new FormField("boundaryRadius", FacilioField.FieldDisplayType.NUMBER, "Boundary Radius", FormField.Required.OPTIONAL, 9, 2));
+				fields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",10, 2));
+				fields.add(new FormField("territory",FieldDisplayType.LOOKUP_SIMPLE,"Territory", Required.OPTIONAL,"territory",11,2));
+				break;
 			case ContextNames.BUILDING:
 			case ContextNames.FLOOR:
 				// Add modules here, if not all fields needs to be shown and only form factory fields are needed

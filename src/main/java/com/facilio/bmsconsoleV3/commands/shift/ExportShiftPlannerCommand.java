@@ -4,7 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.PeopleAPI;
-import com.facilio.bmsconsoleV3.context.V3EmployeeContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.ShiftAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -36,37 +36,37 @@ public class ExportShiftPlannerCommand extends FacilioCommand {
 
         String url = "";
         if (exportList != null && exportList) {
-            Long employeeID = (Long) context.get(FacilioConstants.Shift.EMPLOYEE_ID);
-            url = exportListView(fileType, rangeFrom, rangeTo, employeeID);
+            Long peopleId = (Long) context.get(FacilioConstants.ContextNames.PEOPLE_ID);
+            url = exportListView(fileType, rangeFrom, rangeTo, peopleId);
         } else {
-            List<V3EmployeeContext> employees =
-                    (List<V3EmployeeContext>) context.get(FacilioConstants.Shift.EMPLOYEES);
-            url = exportCalendarView(fileType, rangeFrom, rangeTo, employees);
+            List<V3PeopleContext> peopleList =
+                    (List<V3PeopleContext>) context.get(FacilioConstants.ContextNames.PEOPLE);
+            url = exportCalendarView(fileType, rangeFrom, rangeTo, peopleList);
         }
         context.put(FacilioConstants.Shift.URL, url);
         return false;
     }
 
-    private String exportCalendarView(FileInfo.FileFormat fileType, Long rangeFrom, Long rangeTo, List<V3EmployeeContext> employees) throws Exception {
+    private String exportCalendarView(FileInfo.FileFormat fileType, Long rangeFrom, Long rangeTo, List<V3PeopleContext> peopleList) throws Exception {
         Map<String, Object> table = new HashMap<>();
         table.put("headers", getCalendarExportHeaders(rangeFrom, rangeTo));
 
-        ArrayList employeeShifts = new ArrayList();
-        for (V3EmployeeContext emp: employees) {
-            List<Map<String, Object>> pShifts = ShiftAPI.getShiftListDecoratedWithWeeklyOff(emp.getId(), rangeFrom, rangeTo);
+        ArrayList peopleShifts = new ArrayList();
+        for (V3PeopleContext people: peopleList) {
+            List<Map<String, Object>> pShifts = ShiftAPI.getShiftListDecoratedWithWeeklyOff(people.getId(), rangeFrom, rangeTo);
             List<String> row = new ArrayList<>();
-            row.add(emp.getName());
+            row.add(people.getName());
             row.addAll(pShifts.stream().map(s -> (String) s.get("name")).collect(Collectors.toList()));
-            employeeShifts.add(row);
+            peopleShifts.add(row);
         }
-        table.put("records", employeeShifts);
+        table.put("records", peopleShifts);
         String fileName = "shift-planner-calendar-export";
         return ExportUtil.exportData(fileType, fileName, table, false);
     }
 
     private ArrayList<String> getCalendarExportHeaders(Long rangeFrom, Long rangeTo) {
         ArrayList<String> list = new ArrayList<>();
-        list.add("employees");
+        list.add("people");
         list.addAll(ShiftAPI.computeRange(rangeFrom, rangeTo)
                 .stream()
                 .map(d ->   ShiftAPI.epochToReadableDate(d))
@@ -74,13 +74,13 @@ public class ExportShiftPlannerCommand extends FacilioCommand {
         return list;
     }
 
-    private String exportListView(FileInfo.FileFormat fileType, Long rangeFrom, Long rangeTo, Long employeeID) throws Exception {
-        List<Map<String, Object>> shifts = ShiftAPI.getShiftListDecoratedWithWeeklyOff(employeeID, rangeFrom, rangeTo);
+    private String exportListView(FileInfo.FileFormat fileType, Long rangeFrom, Long rangeTo, Long peopleId) throws Exception {
+        List<Map<String, Object>> shifts = ShiftAPI.getShiftListDecoratedWithWeeklyOff(peopleId, rangeFrom, rangeTo);
         Map<String, Object> table = new HashMap<>();
         table.put("headers", getListExportHeaders());
         table.put("records", shifts);
 
-        PeopleContext people = PeopleAPI.getPeopleForId(employeeID);
+        PeopleContext people = PeopleAPI.getPeopleForId(peopleId);
         String fileName = people.getName() +"-shift-planner-list-export";
         return ExportUtil.exportData(fileType, fileName, table, false);
     }

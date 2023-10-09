@@ -85,6 +85,7 @@ public class ClientContactModule extends BaseModuleConfig{
         appNameList.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
@@ -104,11 +105,11 @@ public class ClientContactModule extends BaseModuleConfig{
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryFields", null, null)
-                .addWidget("contactDetails", "Contact Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, ClientContactModuleUtil.getSummaryWidgetDetails(module.getName(), app))
+                .addWidget("contactDetails", "Contact Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, ClientContactModuleUtil.getSummaryWidgetDetails(module.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null,  null)
-                .addWidget("commentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0,  null, ClientContactModuleUtil.getWidgetGroup(false))
+                .addWidget("commentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, ClientContactModuleUtil.getWidgetGroup(false))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

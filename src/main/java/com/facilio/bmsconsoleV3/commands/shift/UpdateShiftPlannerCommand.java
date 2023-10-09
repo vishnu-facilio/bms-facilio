@@ -14,20 +14,20 @@ public class UpdateShiftPlannerCommand extends FacilioCommand {
 
         validateProps(context);
 
-        List<Long> employees = (List<Long>) context.get(FacilioConstants.Shift.EMPLOYEES);
+        List<Long> people = (List<Long>) context.get(FacilioConstants.ContextNames.PEOPLE);
         long shiftID = (Long) context.get(FacilioConstants.Shift.SHIFT_ID);
         long shiftStart = (Long) context.get(FacilioConstants.Shift.SHIFT_START);
         long shiftEnd = (Long) context.get(FacilioConstants.Shift.SHIFT_END);
 
-        ShiftAPI.updateEmployeeShift(employees, shiftID, shiftStart, shiftEnd);
+        ShiftAPI.updateEmployeeShift(people, shiftID, shiftStart, shiftEnd);
         return false;
     }
 
     private void validateProps(Context context) {
 
-        List<Long> employees = (List<Long>) context.get(FacilioConstants.Shift.EMPLOYEES);
-        if (CollectionUtils.isEmpty(employees)){
-            throw new IllegalArgumentException("employees is a mandatory prop");
+        List<Long> people = (List<Long>) context.get(FacilioConstants.ContextNames.PEOPLE);
+        if (CollectionUtils.isEmpty(people)){
+            throw new IllegalArgumentException("people is a mandatory prop");
         }
 
         Long shiftID = (Long) context.get(FacilioConstants.ContextNames.SHIFT_ID);

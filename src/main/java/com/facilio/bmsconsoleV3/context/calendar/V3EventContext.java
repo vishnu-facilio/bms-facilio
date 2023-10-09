@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.context.calendar;
 import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.enums.EventTypeEnum;
+import com.facilio.db.util.DBConf;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.commands.SaveCommand;
 import com.facilio.v3.context.V3Context;
@@ -40,7 +41,6 @@ public class V3EventContext extends V3Context {
     private List<V3EventTimeSlotContext> timeSlotList;
     private List<String> timeSlotString;
 
-
     public Integer getEventType() {
         return eventType == null ? null : eventType.getIntVal();
     }
@@ -75,14 +75,14 @@ public class V3EventContext extends V3Context {
 
     public Integer getScheduledDate() {
         if(getSpecialCaseMilliSecond() != null){
-            ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()),ZoneId.systemDefault());
+            ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()), DBConf.getInstance().getCurrentZoneId());
             return dateTime.getDayOfMonth();
         }
         return scheduledDate;
     }
     public Integer getScheduledMonth(){
         if(getSpecialCaseMilliSecond() != null){
-            ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()),ZoneId.systemDefault());
+            ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()),DBConf.getInstance().getCurrentZoneId());
             return dateTime.getMonthValue();
         }
         if(scheduledMonth == null) {
@@ -92,7 +92,7 @@ public class V3EventContext extends V3Context {
     }
     public Integer getScheduledYear(){
         if(getSpecialCaseMilliSecond() != null){
-            ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()),ZoneId.systemDefault());
+            ZonedDateTime dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(getSpecialCaseMilliSecond()),DBConf.getInstance().getCurrentZoneId());
             return dateTime.getYear();
         }
         return scheduledYear;

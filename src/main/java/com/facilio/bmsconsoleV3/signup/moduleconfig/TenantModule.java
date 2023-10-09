@@ -69,6 +69,7 @@ public class TenantModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -95,6 +96,7 @@ public class TenantModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         activeTenantsView.setAppLinkNames(appLinkNames);
 
         return activeTenantsView;
@@ -140,7 +142,7 @@ public class TenantModule extends BaseModuleConfig{
         tenantForm.setName("default_tenant_web");
         tenantForm.setModule(tenantModule);
         tenantForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        tenantForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        tenantForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> tenantFormFields = new ArrayList<>();
         tenantFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Tenant Logo", FormField.Required.OPTIONAL,1,1));
@@ -215,21 +217,21 @@ public class TenantModule extends BaseModuleConfig{
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("tenantdetailcontact", null, null)
-                .addWidget("tenantdetailcontactwidget", "Primary Contact", PageWidget.WidgetType.TENANT_DETAIL_CONTACT, "webtenantdetailcontactwidget_13_6", 0, 0,null,null )
+                .addWidget("tenantdetailcontactwidget", "Primary Contact", PageWidget.WidgetType.TENANT_DETAIL_CONTACT, "webtenantdetailcontactwidget_3_6", 0, 0,null,null )
                 .widgetDone()
-                .addWidget("tenantspecialwidget", "Details", PageWidget.WidgetType.TENANT_DETAIL_OVERVIEW, "webtenantdetailoverviewwidget_13_6", 6, 0,null,null )
+                .addWidget("tenantspecialwidget", "Details", PageWidget.WidgetType.TENANT_DETAIL_OVERVIEW, "webtenantdetailoverviewwidget_3_6", 6, 0,null,null )
                 .widgetDone()
                 .sectionDone()
                 .addSection("occupyingunitsvaccatedunits",null,null)
-                .addWidget("occupyingunitsvaccatedunitswidget", null, PageWidget.WidgetType.TENANT_SPECIAL_WIDGET, "webtenantspecialwidget_31_9", 0, 0,null,null )
+                .addWidget("occupyingunitsvaccatedunitswidget", null, PageWidget.WidgetType.TENANT_SPECIAL_WIDGET, "webtenantspecialwidget_6_9", 0, 0,null,null )
                 .widgetDone()
-                .addWidget("tenantworkorders", "Workorders", PageWidget.WidgetType.TENANT_WORKORDERS, "webtenantworkorders_13_3", 9, 0,null,null )
+                .addWidget("tenantworkorders", "Workorders", PageWidget.WidgetType.TENANT_WORKORDERS, "webtenantworkorders_3_3", 9, 0,null,null )
                 .widgetDone()
-                .addWidget("tenantrecentlyclosedworkorder", "Recently Closed Work order", PageWidget.WidgetType.TENANT_RECENTLY_CLOSED_WORKORDER, "webtenantrecentlyclosedworkorder_23_3", 9, 13,null,null )
+                .addWidget("tenantrecentlyclosedworkorder", "Recently Closed Work order", PageWidget.WidgetType.TENANT_RECENTLY_CLOSED_WORKORDER, "webtenantrecentlyclosedworkorder_4_3", 9, 13,null,null )
                 .widgetDone()
-                .addWidget("tenantfacilitybookingwidget", "Facility Bookings", PageWidget.WidgetType.TENANT_BOOKINGS, "webtenantfacilitybookingwidget_13_3", 9, 36,null,null )
+                .addWidget("tenantfacilitybookingwidget", "Facility Bookings", PageWidget.WidgetType.TENANT_BOOKINGS, "webtenantfacilitybookingwidget_3_3", 9, 36,null,null )
                 .widgetDone()
-                .addWidget("tenantupcomingfacilitybooking", "Upcoming Facility Booking", PageWidget.WidgetType.TENANT_UPCOMING_BOOKING, "webtenantupcomingfacilitybookingwidget_10_3", 9, 49,null,null )
+                .addWidget("tenantupcomingfacilitybooking", "Upcoming Facility Booking", PageWidget.WidgetType.TENANT_UPCOMING_BOOKING, "webtenantupcomingfacilitybookingwidget_2_3", 9, 49,null,null )
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -237,7 +239,7 @@ public class TenantModule extends BaseModuleConfig{
                 .addTab("tenantcontact", "Tenant Contacts", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("tenantcontactrelatedlist", "", "")
-                .addWidget("tenantcontactrelatedlistWidget", "Tenant Contact", PageWidget.WidgetType.RELATED_LIST, "flexiblewebrelatedlist_29", 0, 0, null, RelatedListWidgetUtil.getSingleRelatedListForModule(module,FacilioConstants.ContextNames.TENANT_CONTACT,"tenant"))
+                .addWidget("tenantcontactrelatedlistWidget", "Tenant Contact", PageWidget.WidgetType.RELATED_LIST, "flexiblewebrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.getSingleRelatedListForModule(module,FacilioConstants.ContextNames.TENANT_CONTACT,"tenant"))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -245,11 +247,11 @@ public class TenantModule extends BaseModuleConfig{
                 .addTab("information", "Notes & Information", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
-                .addWidget("summaryfieldswidget", "Tenant Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .addWidget("summaryfieldswidget", "Tenant Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
-                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getWidgetGroup())
+                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup())
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -257,7 +259,7 @@ public class TenantModule extends BaseModuleConfig{
                 .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
-                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -366,11 +368,11 @@ public class TenantModule extends BaseModuleConfig{
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("comments", "Comments", "")
-                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_27", 0, 0, notesWidgetParam, null)
+                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, "flexiblewebattachment_27", 0, 0, attachmentsWidgetParam, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, "flexiblewebattachment_5", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

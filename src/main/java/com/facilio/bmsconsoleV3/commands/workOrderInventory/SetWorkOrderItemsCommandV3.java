@@ -21,6 +21,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.*;
 import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
@@ -35,6 +36,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.facilio.bmsconsoleV3.util.V3AssetAPI.isAssetInStoreRoom;
+import static com.facilio.bmsconsoleV3.util.V3ItemsApi.getItemWithServingSites;
 
 public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
     @SuppressWarnings("unchecked")
@@ -72,7 +74,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                 if(workorderItem.getQuantity() <= 0){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
                 }
-                V3ItemContext item = getItem(workorderItem.getItem().getId());
+                V3ItemContext item = getItemWithServingSites(workorderItem.getItem().getId());
                 itemTypesId = item.getItemType().getId();
                 V3ItemTypesContext itemType = getItemType(itemTypesId);
 
@@ -84,7 +86,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                 }
                List<Long> servingSiteIds = new ArrayList<>();
                 if(item.getStoreRoom()!=null && item.getStoreRoom().getServingsites()!=null){
-                    servingSiteIds = item.getStoreRoom().getServingsites().stream().map(servingSite -> servingSite.getId()).collect(Collectors.toList());
+                    servingSiteIds = item.getStoreRoom().getServingsites().stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
                 }
                if(wo.getSiteId()>0 && !servingSiteIds.contains(wo.getSiteId())){
                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storeroom does not serve the selected work order's site");
@@ -342,26 +344,6 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
         }
         return null;
     }
-    public static V3ItemContext getItem(long id) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
-        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-        Collection<SupplementRecord> lookUpfields = new ArrayList<>();
-        LookupFieldMeta storeRoomField = new LookupFieldMeta((LookupField) fieldMap.get("storeRoom"));
-        MultiLookupField servingSitesField = (MultiLookupField) modBean.getField("servingsites", FacilioConstants.ContextNames.STORE_ROOM);
-        storeRoomField.addChildSupplement(servingSitesField);
-        lookUpfields.add(storeRoomField);
-        lookUpfields.add((LookupField) fieldMap.get("itemType"));
-
-        List<V3ItemContext> inventories = V3RecordAPI.getRecordsListWithSupplements(module.getName(),Collections.singletonList(id),V3ItemContext.class,lookUpfields);
-
-        if (inventories != null && !inventories.isEmpty()) {
-            return inventories.get(0);
-        }
-        return null;
-    }
-
     public static V3ItemTypesContext getItemType(long id) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule itemTypesModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);

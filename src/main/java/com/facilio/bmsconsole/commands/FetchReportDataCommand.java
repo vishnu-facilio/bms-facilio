@@ -2285,7 +2285,16 @@ public class FetchReportDataCommand extends FacilioCommand {
         if(type == ReportType.PIVOT_REPORT && isReadingModule(dp.getyAxis().getModule().getTypeEnum())){
             addColumnNameInCondition(dp.getAllCriteria(), dp.getyAxis().getModule().getName());
             replaceTableNameWithAliasInCondition(dp.getAllCriteria(), dp.getyAxis().getModule().getName());
-            newSelectBuilder.andCriteria(dp.getAllCriteria());
+            if(dp.getCriteria() != null && dp.getyAxis() != null && dp.getyAxis().getField() != null){
+                FacilioField aggrField = dp.getyAxis().getAggrEnum().getSelectField(dp.getyAxis().getField()).clone();
+                String criteria_field_alias = ReportUtil.getAggrFieldName(aggrField, dp.getyAxis().getAggrEnum());
+                String havingCriteria = dp.getCriteria().computeWhereClause();
+                havingCriteria = havingCriteria.replaceAll(dp.getyAxis().getField().getCompleteColumnName(), criteria_field_alias);
+                newSelectBuilder.having(havingCriteria);
+            }
+            if(dp.getOtherCriteria() != null ){
+                newSelectBuilder.andCriteria(dp.getOtherCriteria());
+            }
             if(dp.getParentCriteriaFilter() != null && baseModule != null)
             {
                 addColumnNameInCondition(dp.getParentCriteriaFilter(), baseModule.getName());

@@ -39,6 +39,7 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(GetDbTimeLineFilterToWidgetMapping.class.getName());
 
 	public static Map<String, String> TIME_LINE_T_TIME_DATE_FIELD = Collections.singletonMap("dateField", "ttime");
+	Map<Long, Map<String, String>> widgetTimeLineFilters = new HashMap<>();
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -68,7 +69,6 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 
 
 
-			Map<Long, Map<String, String>> widgetTimeLineFilters = new HashMap<>();
 
 			for (DashboardWidgetContext widget : widgets) {
 				try {
@@ -196,7 +196,36 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 						}
 
 					}
+					else if (cardLayout.equals(CardLayout.COMBO_CARD.getName())) {
+						for(WidgetCardContext childCard : newCardWidget.getChildCards()){
+							Map<String, String> newDateField = null;
+							String childCardLayout = childCard.getCardLayout();
+							if (DashboardFilterUtil.T_TIME_ONLY_CARD_LAYOUTS.contains(childCardLayout)) {
+								newDateField=new HashMap<>( TIME_LINE_T_TIME_DATE_FIELD);
+							}
+							else if (childCardLayout.equals(CardLayout.KPICARD_LAYOUT_1.getName()) || childCardLayout.equals(CardLayout.KPICARD_LAYOUT_2.getName())) {
 
+								JSONObject cardParams = childCard.getCardParams();
+								String kpiType = (String) cardParams.get("kpiType");
+
+								if (kpiType.equalsIgnoreCase("module")) {
+									if (cardParams.get("dateRange") != null) {
+										JSONObject kpiObj = (JSONObject) cardParams.get("kpi");
+										long kpiId = (long) kpiObj.get("kpiId");
+										KPIContext kpi = KPIUtil.getKPI(kpiId,false);
+										if(kpi != null && kpi.getDateField() != null) {
+											String dateFieldName = kpi.getDateField().getName();
+											newDateField = new HashMap<>(
+													Collections.singletonMap("dateField", dateFieldName));
+										}
+									}
+								} else if (kpiType.equalsIgnoreCase("reading")) {
+									newDateField=new HashMap<>( TIME_LINE_T_TIME_DATE_FIELD);
+								}
+							}
+							widgetTimeLineFilters.put(childCard.getId(),newDateField);
+						}
+					}
 				}
 				else if (widget.getWidgetType() == DashboardWidgetContext.WidgetType.LIST_VIEW)
 				{

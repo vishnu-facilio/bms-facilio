@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
@@ -9,10 +10,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -76,7 +74,7 @@ public class SpaceModule extends BaseModuleConfig {
             activeToInactive.setType(AbstractStateTransitionRuleContext.TransitionType.NORMAL);
             activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
-
+            addSystemButtons();
 
             // adding form
 //            FacilioForm defaultForm = new FacilioForm();
@@ -114,6 +112,45 @@ public class SpaceModule extends BaseModuleConfig {
             ex.printStackTrace();
         }
     }
+    private void addSystemButtons() throws Exception{
+        SystemButtonRuleContext editSpace = new SystemButtonRuleContext();
+        editSpace.setName("Edit");
+        editSpace.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editSpace.setIdentifier("editSpace");
+        editSpace.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editSpace.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editSpace.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SPACE,editSpace);
+
+        SystemButtonRuleContext addSpace = new SystemButtonRuleContext();
+        addSpace.setName("Add Sub Space");
+        addSpace.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addSpace.setIdentifier("addSubSpace");
+        addSpace.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addSpace.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        addSpace.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SPACE,addSpace);
+
+        SystemButtonRuleContext addPhoto = new SystemButtonRuleContext();
+        addPhoto.setName("Add Photo");
+        addPhoto.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        addPhoto.setIdentifier("addSpacePhoto");
+        addPhoto.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        addPhoto.setPermissionRequired(true);
+        addPhoto.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SPACE,addPhoto);
+
+        SystemButtonRuleContext downloadQR = new SystemButtonRuleContext();
+        downloadQR.setName("Download QR");
+        downloadQR.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadQR.setIdentifier("downloadSpaceQR");
+        downloadQR.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        downloadQR.setPermissionRequired(true);
+        downloadQR.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SPACE,downloadQR);
+
+    }
+
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -149,6 +186,7 @@ public class SpaceModule extends BaseModuleConfig {
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -168,6 +206,7 @@ public class SpaceModule extends BaseModuleConfig {
         appNameList.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
@@ -196,17 +235,17 @@ public class SpaceModule extends BaseModuleConfig {
                 .addLayout(PagesContext.PageLayoutType.WEB)
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", "", null)
-                .addWidget("summaryFieldsWidget", "Space details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_20", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
+                .addWidget("summaryFieldsWidget", "Space details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("spaceInsights","",null)
-                .addWidget("spaceInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_19_7",0,0,spaceParam,null)
+                .addWidget("spaceInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_7",0,0,spaceParam,null)
                 .widgetDone()
-                .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_19_5",7,0,null,null)
+                .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_5",7,0,null,null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
-                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getWidgetGroup(false,notesModuleParam,attachmentModuleParam))
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false,notesModuleParam,attachmentModuleParam))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -215,7 +254,7 @@ public class SpaceModule extends BaseModuleConfig {
                 .addTab("subSpaces","Sub Spaces", PageTabContext.TabType.SIMPLE,true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("subspaces","",null)
-                .addWidget("subspaces","Sub Spaces", PageWidget.WidgetType.SUB_SPACES,"flexibleWebSubSpaces_32",0,0,spaceParam,null)
+                .addWidget("subspaces","Sub Spaces", PageWidget.WidgetType.SUB_SPACES,"flexibleWebSubSpaces_7",0,0,spaceParam,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -224,21 +263,21 @@ public class SpaceModule extends BaseModuleConfig {
                 .addTab("maintenance", "Maintenance", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
                 .addSection("plannedmaintenance", "", null)
-                .addWidget("spaceplannedmaintenance", "Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE, "flexiblewebplannedmaintenance_36", 0, 0, null, null)
+                .addWidget("spaceplannedmaintenance", "Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE, "flexiblewebplannedmaintenance_7", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("unplannedmaintenance", "", null)
-                .addWidget("spaceunplannedmaintenance", "Reactive Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE, "flexiblewebunplannedmaintenance_36", 0, 0, null, null)
+                .addWidget("spaceunplannedmaintenance", "Reactive Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE, "flexiblewebunplannedmaintenance_7", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
                 .addSection("spaceworkorderdetails", null, null)
-                .addWidget("spaceworkorderdetail", "Maintenance Insights", PageWidget.WidgetType.WORKORDER_INSIGHT, "flexiblewebworkorderinsight_12", 0, 0, null, null)
+                .addWidget("spaceworkorderdetail", "Maintenance Insights", PageWidget.WidgetType.WORKORDER_INSIGHT, "flexiblewebworkorderinsight_3", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("recentlyclosedppm", null, null)
-                .addWidget("spacerecentlyclosed", "Recently Closed Work order", PageWidget.WidgetType.RECENTLY_CLOSED_PM, "flexiblewebrecentlyclosedpm_23", 0, 0, null, null)
+                .addWidget("spacerecentlyclosed", "Recently Closed Work order", PageWidget.WidgetType.RECENTLY_CLOSED_PM, "flexiblewebrecentlyclosedpm_4", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -248,15 +287,15 @@ public class SpaceModule extends BaseModuleConfig {
                 .addTab("readings", "Readings", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("spacereadings", null, null)
-                .addWidget("spacereadings", "Readings", PageWidget.WidgetType.READINGS, "flexiblewebreadings_33", 0, 0, null, null)
+                .addWidget("spacereadings", "Readings", PageWidget.WidgetType.READINGS, "flexiblewebreadings_7", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("spacecommand", null, null)
-                .addWidget("spacecommand", "Commands", PageWidget.WidgetType.COMMANDS_WIDGET, "flexiblewebcommandswidget_34", 0, 0, null, null)
+                .addWidget("spacecommand", "Commands", PageWidget.WidgetType.COMMANDS_WIDGET, "flexiblewebcommandswidget_7", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("spaceRelatedReadings", null, null)
-                .addWidget("relatedReadings", "Related Readings", PageWidget.WidgetType.RELATED_READINGS, "flexiblewebrelatedreadings_33", 0, 0, null, null)
+                .addWidget("relatedReadings", "Related Readings", PageWidget.WidgetType.RELATED_READINGS, "flexiblewebrelatedreadings_7", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -265,11 +304,11 @@ public class SpaceModule extends BaseModuleConfig {
                 .addTab("safetyPlan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("hazards", "", null)
-                .addWidget("spacehazards", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_28", 0, 0, null,null)
+                .addWidget("spacehazards", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_6", 0, 0, null,null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("precautions", "", null)
-                .addWidget("spacePrecautions", "Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_28", 0, 0, null,null)
+                .addWidget("spacePrecautions", "Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_6", 0, 0, null,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -278,11 +317,11 @@ public class SpaceModule extends BaseModuleConfig {
                 .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("spaceRelatedlist", "Related List", "List of related records across modules")
-                .addWidget("spacerelated", "Related", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .addWidget("spacerelated", "Related", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
                 .widgetDone()
                 .sectionDone()
                 .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_29", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -291,7 +330,7 @@ public class SpaceModule extends BaseModuleConfig {
                 .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("activity", null, null)
-                .addWidget("spaceActivity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
+                .addWidget("spaceActivity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -305,11 +344,11 @@ public class SpaceModule extends BaseModuleConfig {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 0, notesModuleParam, null)
+                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_5", 0, 0, notesModuleParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 0, attachmentModuleParam, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_5", 0, 0, attachmentModuleParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
         return FieldUtil.getAsJSON(widgetGroup);
@@ -377,7 +416,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebSiteForm.setName("default_space_web_site");
         defaultSpaceWebSiteForm.setModule(spaceModule);
         defaultSpaceWebSiteForm.setDisplayName("Standard Form From Site");
-        defaultSpaceWebSiteForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        defaultSpaceWebSiteForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,FacilioConstants.ApplicationLinkNames.FSM_APP));
         defaultSpaceWebSiteForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultSpaceWebSiteForm.setShowInWeb(true);
 
@@ -413,7 +452,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebBuildingForm.setName("default_space_web_building");
         defaultSpaceWebBuildingForm.setModule(spaceModule);
         defaultSpaceWebBuildingForm.setDisplayName("Standard Form From Building");
-        defaultSpaceWebBuildingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        defaultSpaceWebBuildingForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,FacilioConstants.ApplicationLinkNames.FSM_APP));
         defaultSpaceWebBuildingForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultSpaceWebBuildingForm.setShowInWeb(true);
 
@@ -449,7 +488,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebFloorForm.setName("default_space_web_floor");
         defaultSpaceWebFloorForm.setModule(spaceModule);
         defaultSpaceWebFloorForm.setDisplayName("Standard Form From Floor");
-        defaultSpaceWebFloorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        defaultSpaceWebFloorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,FacilioConstants.ApplicationLinkNames.FSM_APP));
         defaultSpaceWebFloorForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultSpaceWebFloorForm.setShowInWeb(true);
 
@@ -483,7 +522,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebSpaceForm.setName("default_space_web_space");
         defaultSpaceWebSpaceForm.setModule(spaceModule);
         defaultSpaceWebSpaceForm.setDisplayName("Standard Form From Space");
-        defaultSpaceWebSpaceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        defaultSpaceWebSpaceForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,FacilioConstants.ApplicationLinkNames.FSM_APP));
         defaultSpaceWebSpaceForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultSpaceWebSpaceForm.setShowInWeb(true);
 

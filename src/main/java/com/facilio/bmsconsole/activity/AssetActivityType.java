@@ -128,7 +128,18 @@ public enum AssetActivityType implements ActivityType {
 			// TODO Auto-generated method stub
 			return "moved asset to the Storeroom - " + json.get("storeroom");
 		}
-	}
+	},
+	USE_IN_SO(152) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			String history = "issued the asset to SO #" + json.get("soId") + ", moved to " + json.get("site");
+			if(json.get("space")!=null){
+				history += ", " + json.get("space");
+			}
+			return history;
+		}
+	},
 	;
 
 	private AssetActivityType(int value) {

@@ -1858,7 +1858,6 @@ public class FieldFactory extends BaseFieldFactory {
     public static List<String> getSystemFieldNames() {
         return systemFields;
     }
-
     public static FacilioField getSystemField(String fieldName, FacilioModule module) {
         switch (fieldName) {
             case "siteId":
@@ -1913,6 +1912,7 @@ public class FieldFactory extends BaseFieldFactory {
         }
         return null;
     }
+
     private static final List<String> baseModuleSystemFields = Collections.unmodifiableList(FieldFactory.getBaseModuleSystemFields(null).stream().map(FacilioField::getName).collect(Collectors.toList()));
 
     public static boolean isBaseModuleSystemField(String fieldName) {
@@ -12323,7 +12323,33 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(FieldFactory.getSysDeletedByField(module));
         return fields;
     }
-    
+    public static List<FacilioField> getDispatcherFields(FacilioModule module) {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("isMapView", "IS_MAP_VIEW", module, FieldType.BOOLEAN));
+        fields.add(getNumberField("defaultCalendarView", "DEFAULT_CALENDAR_VIEW", module));
+        fields.add(getNumberField("defaultStartDay", "DEFAULT_START_DAY", module));
+        fields.add(getNumberField("startTimeFieldId", "START_TIME_FIELDID", module));
+        fields.add(getNumberField("endTimeFieldId", "END_TIME_FIELDID", module));
+        fields.add(getNumberField("resourceCriteriaId", "RESOURCE_CRITERIA_ID", module));
+        fields.add(getStringField("workorderConfigJson", "WORKORDER_CONFIG_JSON", module));
+        fields.add(getStringField("resourceConfigJson", "RESOURCE_CONFIG_JSON", module));
+        fields.add(getStringField("eventConfigJson", "EVENT_CONFIG_JSON", module));
+
+        FacilioField name = getField("name", "NAME", module, FieldType.STRING);
+        name.setMainField(true);
+        fields.add(name);
+        return fields;
+    }
+    public static List<FacilioField> getDispatcherBoardSharingFields(FacilioModule module) {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getField("parentId", "PARENT_ID", module, FieldType.LOOKUP));
+        fields.add(getField("peopleId", "PEOPLE_ID", module, FieldType.LOOKUP));
+        fields.add(getField("roleId", "ROLE_ID", module, FieldType.LOOKUP));
+        fields.add(getField("groupId", "GROUP_ID", module, FieldType.LOOKUP));
+        fields.add(getField("type", "SHARING_TYPE", module, FieldType.NUMBER));
+        return fields;
+    }
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:

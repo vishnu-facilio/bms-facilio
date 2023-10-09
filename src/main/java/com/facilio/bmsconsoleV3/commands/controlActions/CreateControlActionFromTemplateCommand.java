@@ -10,6 +10,7 @@ import com.facilio.bmsconsoleV3.util.ControlActionAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
@@ -95,7 +96,7 @@ public class CreateControlActionFromTemplateCommand extends FacilioCommand {
     public long convertDateTimeToMillis(int year,int month,int date,int time){
         int hour = time/60;
         int min = time%60;
-        ZonedDateTime zonedDateTime = ZonedDateTime.of(year,month,date,hour,min,0,0,ZoneId.systemDefault());
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(year,month,date,hour,min,0,0, DBConf.getInstance().getCurrentZoneId());
         return zonedDateTime.toEpochSecond()*1000;
     }
 }

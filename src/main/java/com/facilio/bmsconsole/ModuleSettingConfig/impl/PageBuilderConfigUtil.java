@@ -8,6 +8,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.remotemonitoring.signup.*;
+import com.facilio.modules.ModuleFactory;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
@@ -57,6 +58,16 @@ public class PageBuilderConfigUtil {
             moduleList.add(modBean.getModule(FlaggedEventRuleModule.MODULE_NAME));
             moduleList.add(modBean.getModule(FlaggedEventModule.MODULE_NAME));
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.TENANT));
+            moduleList.add(modBean.getModule("serviceOrder"));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.EMPLOYEE));
+            moduleList.add(modBean.getModule(FacilioConstants.Territory.TERRITORY));
+            moduleList.add(modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.VENDOR_CONTACT));
+            moduleList.add(modBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET));
+            moduleList.add(modBean.getModule(FacilioConstants.TimeOff.TIME_OFF));
+            moduleList.add(modBean.getModule(FacilioConstants.Trip.TRIP));
+            moduleList.add(modBean.getModule(FacilioConstants.Attendance.ATTENDANCE));
+            moduleList.add(modBean.getModule(FacilioConstants.Break.BREAK));
 
             if (CollectionUtils.isNotEmpty(moduleList)) {
                 List<Long> moduleIds = moduleList.stream().filter(Objects::nonNull).map(FacilioModule::getModuleId).collect(Collectors.toList());

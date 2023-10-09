@@ -5869,6 +5869,20 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setTableName("Asset_Categories_Feature_Activation");
 		return module;
 	}
+	public static FacilioModule getDispatcherModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("dispatcher");
+		module.setDisplayName("Dispatcher");
+		module.setTableName("Dispatcher");
+		return module;
+	}
+	public static FacilioModule getDispatcherBoardSharingModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("dispatcherBoardSharing");
+		module.setDisplayName("Dispatcher Board Sharing");
+		module.setTableName("Dispatcher_Board_Sharing");
+		return module;
+	}
 
 	public static FacilioModule getflaggedEventWorkorderTemplateFieldMappingModule() {
 		FacilioModule module = new FacilioModule();

@@ -42,6 +42,7 @@ public class CommandModule extends BaseModuleConfig {
         fields.add(new ViewField("name","Name"));
         fields.add(new ViewField("site","Site"));
         fields.add(new ViewField("asset","Asset"));
+        fields.add(new ViewField("fieldId","Reading Field Id"));
         fields.add(new ViewField("controller","Controller"));
         fields.add(new ViewField("controlActionCommandStatus","Status"));
         fields.add(new ViewField("previousValue","Previous Value"));

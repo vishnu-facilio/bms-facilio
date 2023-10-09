@@ -60,6 +60,7 @@ public class ItemTypesModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -75,7 +76,7 @@ public class ItemTypesModule extends BaseModuleConfig{
         itemTypesForm.setName("default_itemTypes_web");
         itemTypesForm.setModule(itemTypesModule);
         itemTypesForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        itemTypesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        itemTypesForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> itemTypesFormFields = new ArrayList<>();
         itemTypesFormFields.add(new FormField("photo", FacilioField.FieldDisplayType.IMAGE, "Photo", FormField.Required.OPTIONAL, 1, 1));

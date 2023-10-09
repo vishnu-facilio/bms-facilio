@@ -803,11 +803,14 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
         c.addCommand(new AddOrUpdatePortalUserCommandV3());
         c.addCommand(new AddOrUpdateScopingAndPermissionCommandV3());
+        c.addCommand(new AssignDefaultShift());
+        c.addCommand(new ConstructAddCustomActivityCommandV3());
         return c;
     }
 
     public static FacilioChain getEmployeeBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new SetLocalIdCommandV3());
         c.addCommand(new PeopleValidationCommandV3());
         c.addCommand(new AddPeopleTypeForEmployeeCommandV3());
         return c;
@@ -825,6 +828,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddOrUpdatePortalUserCommandV3());
         c.addCommand(new AssignDefaultShift());
         c.addCommand(new AddOrUpdateScopingAndPermissionCommandV3());
+        c.addCommand(new ConstructAddCustomActivityCommandV3());
         return c;
     }
 
@@ -1081,6 +1085,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommandV3());
         c.addCommand(new UpdatePeoplePrimaryContactCommandV3());
+        c.addCommand(new ConstructUpdateCustomActivityCommandV3());
         return c;
     }
 
@@ -3351,6 +3356,7 @@ public class TransactionChainFactoryV3 {
     public static Command getAttendanceTxnAfterTransactionChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateAttendance());
+        c.addCommand(new UpdatePeopleAvailabilityStatusCommand());
         return c;
     }
 
@@ -3891,7 +3897,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getActionAfterSummaryCommand() {
         FacilioChain c = getDefaultChain();
-        //c.addCommand(new FetchReadingFieldDetailsCommand());
+        c.addCommand(new FetchReadingFieldDetailsCommand());
         return c;
     }
 
@@ -3902,12 +3908,12 @@ public class TransactionChainFactoryV3 {
     }
     public static FacilioChain getCommandsAfterListChain(){
         FacilioChain c = getDefaultChain();
-        //c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
+        c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
         return c;
     }
     public static FacilioChain getCommandsAfterSummaryChain(){
         FacilioChain c = getDefaultChain();
-        //c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
+        c.addCommand(new FillReadingFieldDetailsForCommandsCommand());
         return c;
     }
     public static FacilioChain getControlActionBeforeListChain(){

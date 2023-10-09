@@ -70,6 +70,7 @@ public class VendorsModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -85,7 +86,7 @@ public class VendorsModule extends BaseModuleConfig{
         vendorsForm.setName("default_vendors_web");
         vendorsForm.setModule(vendorsModule);
         vendorsForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        vendorsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        vendorsForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> vendorsFormFields = new ArrayList<>();
         vendorsFormFields.add(new FormField("vendorLogo", FacilioField.FieldDisplayType.IMAGE, "Vendor Logo", FormField.Required.OPTIONAL, 1, 1));
@@ -187,11 +188,11 @@ public class VendorsModule extends BaseModuleConfig{
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
-                .addWidget("summaryfieldswidget", "Vendor Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_24", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .addWidget("summaryfieldswidget", "Vendor Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
-                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 0, 0, null, getWidgetGroup())
+                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup())
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -199,7 +200,7 @@ public class VendorsModule extends BaseModuleConfig{
                 .addTab("vendorcontact", "Vendor Contact", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("vendorcontactrelatedlist", "", "")
-                .addWidget("vendorcontactrelatedlistWidget", "Vendor Contact", PageWidget.WidgetType.RELATED_LIST, "flexiblewebrelatedlist_29", 0, 0, null, VendorTemplatePage.fetchSingleRelatedListForModule(module,vendorContactModule,"vendor",false))
+                .addWidget("vendorcontactrelatedlistWidget", "Vendor Contact", PageWidget.WidgetType.RELATED_LIST, "flexiblewebrelatedlist_6", 0, 0, null, VendorTemplatePage.fetchSingleRelatedListForModule(module,vendorContactModule,"vendor",false))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -207,11 +208,11 @@ public class VendorsModule extends BaseModuleConfig{
                 .addTab("related", "Related", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_29", 0, 0,  null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0,  null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
                 .widgetDone()
                 .sectionDone()
                 .addSection("relatedlist", "Related List", "List of related records across modules")
-                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_29", 0, 0,  null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_6", 0, 0,  null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -219,7 +220,7 @@ public class VendorsModule extends BaseModuleConfig{
                 .addTab("history", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
-                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0,  historyWidgetParam, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0,  historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -333,11 +334,11 @@ public class VendorsModule extends BaseModuleConfig{
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("comments", "Comments", "")
-                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_27", 0, 0, notesWidgetParam, null)
+                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, "flexiblewebattachment_27", 0, 0, attachmentsWidgetParam, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, "flexiblewebattachment_5", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

@@ -38,13 +38,14 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
 
     @Override
     public Map<Long, Long> fetchCustomComponentIdsToPackage() throws Exception {
+        // TODO - Add Deleted People also with sysDeleted = true
         Map<Long, Long> peopleIdMap = new HashMap<>();
         Map<Long, String> peopleIdVsPeopleMail = new HashMap<>();
 
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule peopleModule = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
         
-        List<V3PeopleContext> props = (List<V3PeopleContext>) PackageBeanUtil.getModuleData(null, peopleModule, V3PeopleContext.class, true);
+        List<V3PeopleContext> props = (List<V3PeopleContext>) PackageBeanUtil.getModuleData(null, peopleModule, V3PeopleContext.class, false);
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3PeopleContext peopleContext : props) {
                 peopleIdMap.put(peopleContext.getId(), -1L);
@@ -249,6 +250,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
 
         List<V3PeopleContext> others = new ArrayList<>();
         List<String> employeeMails = new ArrayList<>();
+        List<String> occupantMails = new ArrayList<>();
         List<Map<String, Object>> tenants = new ArrayList<>();
         List<Map<String, Object>> vendors = new ArrayList<>();
         List<Map<String, Object>> clients = new ArrayList<>();
@@ -278,6 +280,10 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
             } else if (peopleTypeEnum.equals(V3PeopleContext.PeopleType.EMPLOYEE)){
                 peopleContext.setPeopleType(V3PeopleContext.PeopleType.OTHERS.getIndex());
                 employeeMails.add(peopleContext.getEmail());
+                others.add(peopleContext);
+            } else if (peopleTypeEnum.equals(V3PeopleContext.PeopleType.OCCUPANT)) {
+                peopleContext.setPeopleType(V3PeopleContext.PeopleType.OTHERS.getIndex());
+                occupantMails.add(peopleContext.getEmail());
                 others.add(peopleContext);
             } else if (PEOPLE_TYPE_LIST.contains(peopleTypeEnum)){
                 XMLBuilder additionalProp = element.getElement(PackageConstants.UserConstants.ADDITIONAL_PROPS);
@@ -342,7 +348,8 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         Map<String, Long> clientsMap = bulkAddModuleRecords(FacilioConstants.ContextNames.CLIENT, clients, V3ClientContext.class, "primaryContactEmail", "primaryContactName");
 
         // Convert People to respective types
-        convertPeopleToEmployee(peopleMailVsPeopleId, employeeMails);
+        convertPeopleToEmployeeOrOccupant(V3PeopleContext.PeopleType.EMPLOYEE, peopleMailVsPeopleId, employeeMails);
+        convertPeopleToEmployeeOrOccupant(V3PeopleContext.PeopleType.OCCUPANT, peopleMailVsPeopleId, occupantMails);
         convertPeopleType(V3PeopleContext.PeopleType.TENANT_CONTACT, peopleMailVsPeopleId, tenantsMap, tenantMailVsContactMails);
         convertPeopleType(V3PeopleContext.PeopleType.VENDOR_CONTACT, peopleMailVsPeopleId, vendorsMap, vendorMailVsContactMails);
         convertPeopleType(V3PeopleContext.PeopleType.CLIENT_CONTACT, peopleMailVsPeopleId, clientsMap, clientMailVsContactMails);
@@ -422,7 +429,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
 
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule peopleModule = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-        List<V3PeopleContext> props = (List<V3PeopleContext>) PackageBeanUtil.getModuleData(null, peopleModule, V3PeopleContext.class, true);
+        List<V3PeopleContext> props = (List<V3PeopleContext>) PackageBeanUtil.getModuleData(null, peopleModule, V3PeopleContext.class, false);
 
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3PeopleContext peopleContext : props) {
@@ -495,7 +502,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(moduleName);
 
-        List<T> moduleRecords = (List<T>) PackageBeanUtil.getModuleData(null, module, clazz, true);
+        List<T> moduleRecords = (List<T>) PackageBeanUtil.getModuleData(null, module, clazz, false);
 
         Map<Long, T> recordMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(moduleRecords)) {
@@ -574,20 +581,20 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         }
     }
 
-    private static void convertPeopleToEmployee(Map<String, Long> peopleMailVsPeopleId, List<String> employeeMails) throws Exception {
-        if (MapUtils.isEmpty(peopleMailVsPeopleId) || CollectionUtils.isEmpty(employeeMails)) {
+    private static void convertPeopleToEmployeeOrOccupant(V3PeopleContext.PeopleType peopleType, Map<String, Long> peopleMailVsPeopleId, List<String> peopleMails) throws Exception {
+        if (MapUtils.isEmpty(peopleMailVsPeopleId) || CollectionUtils.isEmpty(peopleMails)) {
             return;
         }
 
         List<Long> employeePeopleIds = new ArrayList<>();
-        for (String mail : employeeMails) {
+        for (String mail : peopleMails) {
             long peopleId = peopleMailVsPeopleId.getOrDefault(mail, -1L);
             if (peopleId > 0) {
                 employeePeopleIds.add(peopleId);
             }
         }
 
-        convertPeopleTypeChain(V3PeopleContext.PeopleType.EMPLOYEE, employeePeopleIds, -1);
+        convertPeopleTypeChain(peopleType, employeePeopleIds, -1);
     }
 
     private static void convertPeopleTypeChain(V3PeopleContext.PeopleType peopleType, List<Long> peopleIds, long lookupId) throws Exception {

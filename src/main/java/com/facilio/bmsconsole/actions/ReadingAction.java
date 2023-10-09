@@ -290,6 +290,13 @@ public class ReadingAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.MESSAGE, "success");
 		return SUCCESS;
 	}
+
+	public String updateReadingDataMeta1() throws Exception{
+		LOGGER.info("updated reading data meta : asset category id " + assetCategoryId);
+		ReadingDataMetaAPI.updateReadingDataMeta(getAssetCategoryId());
+		setResult(FacilioConstants.ContextNames.MESSAGE, "success");
+		return SUCCESS;
+	}
 	
 	public String updateRDM() throws Exception{
 		ReadingsAPI.updateReadingDataMeta(readingDataMeta);

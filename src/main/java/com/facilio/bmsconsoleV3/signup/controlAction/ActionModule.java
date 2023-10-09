@@ -39,6 +39,7 @@ public class ActionModule extends BaseModuleConfig {
 
 
         List<ViewField> fields = new ArrayList<>();
+        fields.add(new ViewField("readingFieldId","Reading Field Id"));
         fields.add(new ViewField("actionVariableType","Variable Type"));
         fields.add(new ViewField("scheduledActionOperatorType","Schedule Action Operator"));
         fields.add(new ViewField("scheduleActionValue","Schedule Action Value"));

@@ -2,19 +2,21 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
+import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
+import com.facilio.fsm.context.TerritoryContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.permission.context.PermissionSetContext;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+@Getter@Setter
 public class PeopleContext extends ModuleBaseWithCustomFields{
 
 	private static final long serialVersionUID = 1L;
-
 	private String name;
 	private String email;
 	private String phone;
@@ -209,4 +211,78 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private List<Long> groups;
 	@Getter@Setter
 	private Long shiftId;
+	private List<TerritoryContext> territories;
+
+	private Status status;
+	public Integer getStatus() {
+		if (status != null) {
+			return status.getIndex();
+		}
+		return null;
+	}
+	public void setStatus(Integer status) {
+		if(status != null) {
+			this.status = Status.valueOf(status);
+		}
+	}
+	public Status getStatusEnum() {
+		return status;
+	}
+
+	public enum Status implements FacilioIntEnum {
+		AVAILABLE("Available"),
+		EN_ROUTE("En Route"),
+		ON_SITE("On Site"),
+		NOT_AVAILABLE("Not Available");
+
+		String name;
+
+		Status(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public Integer getIndex() {
+			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return this.name;
+		}
+
+		public static Status valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	private boolean dispatchable;
+	private LocationContextV3 startLocation;
+	private LocationContextV3 endLocation;
+	private String currentLocation;
+	private Long lastSyncTime;
+	private Double currentFreeCapacity;
+	private boolean trackGeoLocation;
+	private Double batteryInfo;
+	private Double signalInfo;
+	private long avatarId;
+	private String avatarUrl;
+	private File avatar;
+	private String avatarFileName;
+	private  String avatarContentType;
+	private Double rate;
+	private Long lastCheckedInTime;
+	private Long lastCheckedOutTime;
+	private boolean checkedIn;
+
 }

@@ -10,6 +10,8 @@ import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemCont
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
+import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.fsm.context.ServiceOrderToolsContext;
 import com.facilio.v3.context.V3Context;
 
 import java.util.List;
@@ -261,6 +263,25 @@ public class V3ToolTransactionContext extends V3Context {
 
     public void setStoreRoom(V3StoreRoomContext storeRoom) {
         this.storeRoom = storeRoom;
+    }
+
+    private ServiceOrderContext serviceOrder;
+
+    public ServiceOrderContext getServiceOrder() {
+        return serviceOrder;
+    }
+
+    public void setServiceOrder(ServiceOrderContext serviceOrder) {
+        this.serviceOrder = serviceOrder;
+    }
+    private ServiceOrderToolsContext serviceOrderTool;
+
+    public ServiceOrderToolsContext getServiceOrderTool() {
+        return serviceOrderTool;
+    }
+
+    public void setServiceOrderTool(ServiceOrderToolsContext serviceOrderTool) {
+        this.serviceOrderTool = serviceOrderTool;
     }
 }
 

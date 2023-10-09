@@ -54,6 +54,7 @@ public class InspectionResponseModule extends BaseModuleConfig{
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -68,7 +69,7 @@ public class InspectionResponseModule extends BaseModuleConfig{
         inspectionForm.setName("default_"+FacilioConstants.Inspection.INSPECTION_RESPONSE+"_web");
         inspectionForm.setModule(inspectionResponseModule);
         inspectionForm.setDisplayName("Standard");
-        inspectionForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        inspectionForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
         inspectionForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         inspectionForm.setShowInWeb(true);
 

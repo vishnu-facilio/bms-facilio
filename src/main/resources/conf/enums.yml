@@ -70,6 +70,9 @@ enums:
   - name: PeopleType
     enumClassName: com.facilio.bmsconsole.context.PeopleContext$PeopleType
 
+  - name: PeopleStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.V3PeopleContext$Status
+
   - name: DepreciationType
     enumClassName: com.facilio.bmsconsole.context.AssetDepreciationContext$DepreciationType
 
@@ -278,10 +281,10 @@ enums:
     enumClassName: com.facilio.weather.util.ServiceType
 
   - name: ReservationSource
-    enumClassName: com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext$ReservationSource
+    enumClassName: com.facilio.bmsconsoleV3.enums.ReservationSource
 
   - name: InventoryReservationStatus
-    enumClassName: com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext$InventoryReservationStatus
+    enumClassName: com.facilio.bmsconsoleV3.enums.InventoryReservationStatus
 
   - name: PMScopeAssigmentType
     enumClassName: com.facilio.bmsconsole.context.PlannedMaintenance$PMScopeAssigmentType
@@ -490,3 +493,39 @@ enums:
 
   - name: ConnectedResourceAssignmentType
     enumClassName: com.facilio.connected.ResourceType
+
+  - name: WorkTypeInventoryType
+    enumClassName: com.facilio.fsm.context.WorkTypeLineItemsContext$WorkTypeInventoryType
+
+  - name: ServiceOrderMaintenanceType
+    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderMaintenanceType
+
+  - name: ServiceOrderRequestResponseStatus
+    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderRequestResponseStatus
+
+  - name: ServiceOrderSourceType
+    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderSourceType
+
+  - name: ServiceOrderPrerequisiteStatus
+    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderPrerequisiteStatus
+
+  - name: ServiceOrderStatus
+    enumClassName: com.facilio.fsm.context.ServiceOrderContext$ServiceOrderStatus
+
+  - name: AppointmentType
+    enumClassName: com.facilio.fsm.context.ServiceAppointmentContext$AppointmentType
+
+  - name: AppointmentDueStatus
+    enumClassName: com.facilio.fsm.context.ServiceAppointmentContext$DueStatus
+
+  - name: ServiceAppointmentCategory
+    enumClassName: com.facilio.fsm.context.ServiceAppointmentContext$ServiceAppointmentCategory
+
+  - name: InventoryCostType
+    enumClassName: com.facilio.fsm.context.ServiceOrderCostContext$InventoryCostType
+
+  - name: InventorySource
+    enumClassName: com.facilio.fsm.context.ServiceOrderCostContext$InventorySource
+
+  - name: Level
+    enumClassName: com.facilio.fsm.context.PeopleSkillLevelContext$Level

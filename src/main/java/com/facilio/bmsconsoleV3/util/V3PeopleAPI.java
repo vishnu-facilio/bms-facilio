@@ -29,13 +29,16 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fsm.context.TimeOffContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.permission.context.PermissionSetContext;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -220,6 +223,9 @@ public class V3PeopleAPI {
                         tc.setFormId(defaultform.getId());
                     }
                     addPeopleRecord(tc, module, fields, parentId);
+                    if(module.getName().equals("vendorcontact") || module.getName().equals("employee")){
+                        ShiftAPI.assignDefaultShiftToEmployee(tc.getId());
+                    }
                     return;
                 }
             }
@@ -242,9 +248,15 @@ public class V3PeopleAPI {
                 validatePeopleEmail(trimmedEmail);
 
                 addPeopleRecord(tc, module, fields, parentId);
+                if(module.getName().equals("vendorcontact") || module.getName().equals("employee")){
+                    ShiftAPI.assignDefaultShiftToEmployee(tc.getId());
+                }
                 return;
             }
             V3RecordAPI.addRecord(true, Collections.singletonList(tc), module, fields);
+            if(module.getName().equals("vendorcontact") || module.getName().equals("employee")){
+                ShiftAPI.assignDefaultShiftToEmployee(tc.getId());
+            }
             updateStateForPrimaryContact(tc);
         }
 
@@ -1221,5 +1233,135 @@ public class V3PeopleAPI {
                 V3RecordAPI.updateRecord(cc, modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT), Collections.singletonList(isClientPortalAccess));
                 break;
         }
+    }
+
+    public static void updatePeopleStatus()throws Exception{
+
+        List<V3PeopleContext> peopleList =  getAllPeople();
+        Long currentTime = DateTimeUtil.getCurrenTime();
+        Long startTime = DateTimeUtil.getDayStartTimeOf(currentTime);
+        Long endTime = DateTimeUtil.getDayEndTimeOf(currentTime);
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        if(CollectionUtils.isNotEmpty(peopleList)) {
+            for (V3PeopleContext people : peopleList) {
+                if(isTimeOff(people.getId(), currentTime)) {
+                    if (people.getStatus() == V3PeopleContext.Status.AVAILABLE.getIndex() || people.getStatus() == null) {
+                        FacilioField status = Constants.getModBean().getField("status", FacilioConstants.ContextNames.PEOPLE);
+                        people.setStatus(V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
+                        V3RecordAPI.updateRecord(people, peopleModule, Collections.singletonList(status));
+                    }
+                }
+                else {
+                    List<Map<String, Object>> shifts = ShiftAPI.getShiftList(people.getId(),startTime,endTime);
+                    if(CollectionUtils.isNotEmpty(shifts)) {
+                        if(checkIfAvailable(shifts,currentTime) ) {
+                            if (people.getStatus() == V3PeopleContext.Status.NOT_AVAILABLE.getIndex() || people.getStatus() == null) {
+                                FacilioField status = Constants.getModBean().getField("status", FacilioConstants.ContextNames.PEOPLE);
+                                people.setStatus(V3PeopleContext.Status.AVAILABLE.getIndex());
+                                V3RecordAPI.updateRecord(people, peopleModule, Collections.singletonList(status));
+                            }
+                        }
+                        else {
+                            if (people.getStatus() == V3PeopleContext.Status.AVAILABLE.getIndex() || people.getStatus() == null) {
+                                FacilioField status = Constants.getModBean().getField("status", FacilioConstants.ContextNames.PEOPLE);
+                                people.setStatus(V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
+                                V3RecordAPI.updateRecord(people, peopleModule, Collections.singletonList(status));
+                            }
+                        }
+                    }
+                    }
+                }
+
+            }
+        }
+
+    public static boolean isTimeOff(long peopleId,long time)throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.TimeOff.TIME_OFF);
+        List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.TimeOff.TIME_OFF);
+        SelectRecordsBuilder<TimeOffContext> builder = new SelectRecordsBuilder<TimeOffContext>()
+                .module(module)
+                .beanClass(TimeOffContext.class)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "people", String.valueOf(peopleId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("START_TIME","startTime",String.valueOf(time), NumberOperators.GREATER_THAN_EQUAL))
+                .andCondition(CriteriaAPI.getCondition("END_TIME","endTime",String.valueOf(time), NumberOperators.LESS_THAN_EQUAL));
+
+
+        List<TimeOffContext> record = builder.get();
+
+        if(CollectionUtils.isNotEmpty(record)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean checkIfAvailable(List<Map<String, Object>> shifts, long currentTime)throws Exception{
+
+            for(Map<String, Object> shift : shifts){
+                Long stTime = (Long)shift.get("startTime") + (Long) shift.get("epoch");
+                Long edTime = (Long)shift.get("endTime") + (Long) shift.get("epoch");
+                if(currentTime>= stTime && currentTime <= edTime){
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public static Long getResourcesCount(FacilioModule module,Criteria serverCriteria,String sortBy,Criteria filterCriteria,Criteria searchCriteria) throws Exception {
+
+        FacilioField id = FieldFactory.getIdField(module);
+        List<FacilioField> selectFields = new ArrayList<>();
+        selectFields.add(id);
+
+        List<SupplementRecord> lookupFields = new ArrayList<>();
+
+        SelectRecordsBuilder<V3PeopleContext> selectRecordsBuilder = getPeopleSelectBuilder(module,selectFields,lookupFields,serverCriteria,sortBy,filterCriteria,searchCriteria);
+        selectRecordsBuilder
+                .select(new HashSet<>())
+                .module(module)
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, id);
+        List<V3PeopleContext> props = selectRecordsBuilder.get();
+
+        long count = 0;
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(props)) {
+            count = props.get(0).getId();
+        }
+        return count;
+    }
+
+    public static List<V3PeopleContext> getResourcesList(FacilioModule module,List<FacilioField> selectFields,List<SupplementRecord>lookUpfields,Criteria serverCriteria,String sortBy,Criteria filterCriteria,Criteria searchCriteria,int perPage,int offset) throws Exception{
+        SelectRecordsBuilder<V3PeopleContext> selectRecordsBuilder =  getPeopleSelectBuilder(module,selectFields,lookUpfields,serverCriteria,sortBy,filterCriteria,searchCriteria);
+
+        selectRecordsBuilder
+                .limit(perPage)
+                .offset(offset);
+        return selectRecordsBuilder.get();
+    }
+
+    public static SelectRecordsBuilder<V3PeopleContext> getPeopleSelectBuilder(FacilioModule module,List<FacilioField> selectFields,List<SupplementRecord>lookupFields,Criteria serverCriteria,String sortBy,Criteria filterCriteria,Criteria searchCriteria) {
+        SelectRecordsBuilder<V3PeopleContext> selectRecordsBuilder = new SelectRecordsBuilder<V3PeopleContext>()
+                .module(module)
+                .select(selectFields)
+                .beanClass(V3PeopleContext.class);
+        if(CollectionUtils.isNotEmpty(lookupFields)){
+            selectRecordsBuilder.fetchSupplements(lookupFields);
+        }
+        if(serverCriteria != null){
+            selectRecordsBuilder.andCriteria(serverCriteria);
+        }
+        if(sortBy != null){
+            selectRecordsBuilder.orderBy(sortBy);
+        }
+        if (filterCriteria != null) {
+            selectRecordsBuilder.andCriteria(filterCriteria);
+        }
+        if (searchCriteria != null) {
+            selectRecordsBuilder.andCriteria(searchCriteria);
+        }
+        return selectRecordsBuilder;
     }
 }

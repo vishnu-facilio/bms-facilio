@@ -280,9 +280,6 @@ public class AddWidgetCommandV3 extends FacilioCommand {
                         .fields(FieldFactory.getWidgetCardFields());
 
                 props = FieldUtil.getAsProperties(widgetCardContext);
-                if(context.get(FacilioConstants.ContextNames.PARENT_ID) != null){
-                    props.put("parentId",context.get(FacilioConstants.ContextNames.PARENT_ID));
-                }
                 insertBuilder.addRecord(props);
                 insertBuilder.save();
             }

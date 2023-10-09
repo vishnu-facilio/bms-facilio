@@ -24,6 +24,7 @@ public class AddActionsForControlActionTemplateCommand extends FacilioCommand {
             return false;
         }
         for(V3ControlActionTemplateContext controlActionTemplateContext : controlActionTemplateContextList) {
+            ControlActionAPI.deleteActions(controlActionTemplateContext.getId());
             List<V3ActionContext> actionContextList = controlActionTemplateContext.getActionContextList();
             ControlActionAPI.dropControlActionCommands(controlActionTemplateContext.getId());
             if (CollectionUtils.isNotEmpty(actionContextList)) {

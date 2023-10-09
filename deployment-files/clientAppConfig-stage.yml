@@ -3,9 +3,12 @@ clientapps:
   - name: default
     baseUrl: https://static.facilio.in
     stageBaseUrl: https://static.facilio.in/dev
+  - name: legacy
+    baseUrl: https://static.facilio.in
+    stageBaseUrl: https://static.facilio.in/dev
   - name: new-default
     baseUrl: https://static.facilio.in/newclient
-    stageBaseUrl: https://static.facilio.in/dev/newclient
+    stageBaseUrl: https://static.facilio.in/newclient/dev
   - name: auth
     baseUrl: https://static.facilio.in/auth
     stageBaseUrl: https://static.facilio.in/dev
@@ -27,3 +30,6 @@ clientapps:
   - name: weave-builder
     baseUrl: https://static.facilio.in/weave-builder
     stageBaseUrl: https://static.facilio.in/weave-builder/dev
+  - name: dispatcher
+    baseUrl: https://static.facilio.in/dispatcher
+    stageBaseUrl: https://static.facilio.in/dev

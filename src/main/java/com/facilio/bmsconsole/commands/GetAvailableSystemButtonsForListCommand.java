@@ -40,6 +40,7 @@ public class GetAvailableSystemButtonsForListCommand extends FacilioCommand {
                     List<WorkflowRuleContext> executableSystemButtons = SystemButtonApi.getExecutableSystemButtons(systemButtons,moduleName,record,context);
                     if (CollectionUtils.isNotEmpty(executableSystemButtons)) {
                         evaluatedSystemButtons.addAll(executableSystemButtons);
+                        record.addEvaluatedButtonIds(executableSystemButtons.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList()));
                         Map<String,Object> evaluatedButtonIdsWithRecordIds = new HashMap<>();
                         evaluatedButtonIdsWithRecordIds.put("id",record.getId());
                         evaluatedButtonIdsWithRecordIds.put("evaluatedButtonIds",executableSystemButtons.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList()));

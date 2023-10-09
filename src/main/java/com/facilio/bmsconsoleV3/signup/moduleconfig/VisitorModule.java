@@ -47,6 +47,7 @@ public class VisitorModule extends BaseModuleConfig{
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         allView.setAppLinkNames(appLinkNames);
 
@@ -81,7 +82,7 @@ public class VisitorModule extends BaseModuleConfig{
         visitorForm.setName("portal_visitor_web");
         visitorForm.setModule(visitorModule);
         visitorForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        visitorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
+        visitorForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP));
 
         List<FormField> visitorFormFields = new ArrayList<>();
         visitorFormFields.add(new FormField("avatar", FacilioField.FieldDisplayType.IMAGE,"Visitor Photo", FormField.Required.OPTIONAL,1,1));

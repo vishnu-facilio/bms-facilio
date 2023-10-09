@@ -3,6 +3,8 @@ package com.facilio.v3;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.interceptors.AuthInterceptor;
 import com.facilio.bmsconsole.util.AuditLogUtil;
+import com.facilio.fsm.exception.FSMException;
+import com.facilio.i18n.util.ErrorsUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.ims.handler.AuditLogHandler;
@@ -16,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.json.simple.JSONObject;
 import com.facilio.exception.ErrorResponseUtil;
-
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -340,6 +341,14 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 	public void setFetchStackTrace(Boolean fetchStackTrace) {
 		this.fetchStackTrace = fetchStackTrace;
 	}
+
+	private JSONObject errorData;
+	public JSONObject getErrorData() {
+		return errorData;
+	}
+	public void setErrorData(JSONObject errorData) {
+		this.errorData = errorData;
+	}
 	
 	private static final int MAX_LENGTH_OF_TRACE = 5000;
 	public void setStackTrace(Exception e) {
@@ -380,7 +389,16 @@ public class V3Action extends ActionSupport implements ServletResponseAware {
 			errRestType = true;
 			values = new ErrorResponseUtil((RESTException) exception);
 			this.setData(values.getData());
-		} else if (exception instanceof IllegalArgumentException) {
+		}
+		else if (exception instanceof FSMException) {
+			FSMException fsmException = (FSMException) exception;
+			this.setErrorData(ErrorsUtil.getFSMExceptionAsJson(fsmException));
+		}
+		else if (exception != null && exception.getCause() != null && exception.getCause() instanceof FSMException) {
+			FSMException fsmException = (FSMException) exception.getCause();
+			this.setErrorData(ErrorsUtil.getFSMExceptionAsJson(fsmException));
+		}
+		else if (exception instanceof IllegalArgumentException) {
 			errorCode =  ErrorCode.VALIDATION_ERROR;
 			message = exception.getMessage();
 			if (StringUtils.isEmpty(message)) {

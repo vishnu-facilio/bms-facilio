@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -80,6 +81,11 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.Tenant.NEWS_AND_INFORMATION);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
 		modulesWithLocalId.add(FacilioConstants.Meter.METER);
+		modulesWithLocalId.add(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+		modulesWithLocalId.add(FacilioConstants.TimeSheet.TIME_SHEET);
+		modulesWithLocalId.add(FacilioConstants.TimeOff.TIME_OFF);
+		modulesWithLocalId.add(FacilioConstants.Territory.TERRITORY);
+		modulesWithLocalId.add(FacilioConstants.Trip.TRIP);
 
 
 		return modulesWithLocalId;
@@ -209,6 +215,17 @@ public class ModuleLocalIdUtil {
 		}
 
 		return null;
+	}
+
+	public static void insertModuleLocalId(String moduleName) throws Exception {
+		FacilioModule moduleLocalIdModule = ModuleFactory.getModuleLocalIdModule();
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(moduleLocalIdModule.getTableName())
+				.fields(FieldFactory.getModuleLocalIdFields());
+		Map<String, Object> map = new HashMap<>();
+		map.put("localId", 0);
+		map.put("moduleName", moduleName);
+		insertBuilder.insert(map);
 	}
 
 }

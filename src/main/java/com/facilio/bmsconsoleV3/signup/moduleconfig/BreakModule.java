@@ -54,6 +54,7 @@ public class BreakModule extends BaseModuleConfig{
         List<String> apps = Arrays.asList(
                 FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
                 FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
+                FacilioConstants.ApplicationLinkNames.FSM_APP,
                 FacilioConstants.ApplicationLinkNames.IWMS_APP
         );
         allView.setAppLinkNames(apps);
@@ -73,6 +74,7 @@ public class BreakModule extends BaseModuleConfig{
         List<String> apps = Arrays.asList(
                 FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
                 FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
+                FacilioConstants.ApplicationLinkNames.FSM_APP,
                 FacilioConstants.ApplicationLinkNames.IWMS_APP
         );
         breakModuleForm.setAppLinkNamesForForm(apps);

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
@@ -9,10 +10,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -74,12 +72,59 @@ public class SiteModule extends BaseModuleConfig {
             activeToInactive.setType(AbstractStateTransitionRuleContext.TransitionType.NORMAL);
             activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
-
+            addSystemButtons();
             addDefaultSiteModuleConfig(siteModule.getModuleId());
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editSite = new SystemButtonRuleContext();
+        editSite.setName("Edit");
+        editSite.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editSite.setIdentifier("editSite");
+        editSite.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editSite.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editSite.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,editSite);
+
+        SystemButtonRuleContext addBuilding = new SystemButtonRuleContext();
+        addBuilding.setName("Add Building");
+        addBuilding.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addBuilding.setIdentifier("addBuilding");
+        addBuilding.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addBuilding.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        addBuilding.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,addBuilding);
+
+        SystemButtonRuleContext addSpace = new SystemButtonRuleContext();
+        addSpace.setName("Add Space");
+        addSpace.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addSpace.setIdentifier("addSiteSpace");
+        addSpace.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addSpace.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        addSpace.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,addSpace);
+
+        SystemButtonRuleContext addPhoto = new SystemButtonRuleContext();
+        addPhoto.setName("Add Photo");
+        addPhoto.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addPhoto.setIdentifier("addSitePhoto");
+        addPhoto.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addPhoto.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        addPhoto.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,addPhoto);
+
+        SystemButtonRuleContext downloadQR = new SystemButtonRuleContext();
+        downloadQR.setName("Download QR");
+        downloadQR.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadQR.setIdentifier("downloadSiteQR");
+        downloadQR.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        downloadQR.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        downloadQR.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,downloadQR);
     }
 
     private void addDefaultSiteModuleConfig(long siteModuleId) throws Exception {
@@ -174,6 +219,7 @@ public class SiteModule extends BaseModuleConfig {
         appNameList.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
         appNameList.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
@@ -200,6 +246,7 @@ public class SiteModule extends BaseModuleConfig {
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
@@ -209,6 +256,8 @@ public class SiteModule extends BaseModuleConfig {
     public List<FacilioForm> getModuleForms() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
+
+        ArrayList<FacilioForm> siteForms = new ArrayList<>();
 
         FacilioForm defaultSiteForm = new FacilioForm();
         defaultSiteForm.setName("default_site_web");
@@ -240,8 +289,41 @@ public class SiteModule extends BaseModuleConfig {
         defaultSiteForm.setSections(Collections.singletonList(section));
         defaultSiteForm.setIsSystemForm(true);
         defaultSiteForm.setType(FacilioForm.Type.FORM);
+        siteForms.add(defaultSiteForm);
 
-        return Arrays.asList(defaultSiteForm,remoteMonitoringSiteForm());
+        FacilioForm fsmSiteForm = new FacilioForm();
+        fsmSiteForm.setName("default_site_fsm");
+        fsmSiteForm.setModule(siteModule);
+        fsmSiteForm.setDisplayName("Site");
+        fsmSiteForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP));
+        fsmSiteForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        fsmSiteForm.setShowInWeb(true);
+
+        List<FormField> fsmSiteFormFields = new ArrayList<>();
+        fsmSiteFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        fsmSiteFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
+        fsmSiteFormFields.add(new FormField("territory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Territory", FormField.Required.REQUIRED, 3, 1));
+        fsmSiteFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 4, 1));
+        fsmSiteFormFields.add(new FormField("managedBy", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Managed By", FormField.Required.OPTIONAL, 5, 2));
+        fsmSiteFormFields.add(new FormField("siteType", FacilioField.FieldDisplayType.SELECTBOX, "Site Type", FormField.Required.OPTIONAL, 6, 3));
+        fsmSiteFormFields.add(new FormField("grossFloorArea", FacilioField.FieldDisplayType.DECIMAL, "Gross Floor Area", FormField.Required.OPTIONAL, 7, 2));
+        fsmSiteFormFields.add(new FormField("area", FacilioField.FieldDisplayType.DECIMAL, "Total Area", FormField.Required.OPTIONAL, 8, 3));
+        fsmSiteFormFields.add(new FormField("cddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "CDD Base Temperature", FormField.Required.OPTIONAL, 9, 2));
+        fsmSiteFormFields.add(new FormField("hddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "HDD Base Temperature", FormField.Required.OPTIONAL, 9, 3));
+        fsmSiteFormFields.add(new FormField("wddBaseTemperature", FacilioField.FieldDisplayType.DECIMAL, "WDD Base Temperature", FormField.Required.OPTIONAL, 10, 2));
+        fsmSiteFormFields.add(new FormField("timeZone", FacilioField.FieldDisplayType.TIMEZONE, "Time Zone", FormField.Required.OPTIONAL, 11, 3));
+        fsmSiteFormFields.add(new FormField("boundaryRadius", FacilioField.FieldDisplayType.NUMBER, "Boundary Radius", FormField.Required.OPTIONAL, 12, 2));
+        fsmSiteFormFields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",13, 2));
+
+        FormSection formSection = new FormSection("Default", 1, fsmSiteFormFields, false);
+        formSection.setSectionType(FormSection.SectionType.FIELDS);
+        fsmSiteForm.setSections(Collections.singletonList(formSection));
+        fsmSiteForm.setIsSystemForm(true);
+        fsmSiteForm.setType(FacilioForm.Type.FORM);
+        siteForms.add(fsmSiteForm);
+        siteForms.add(remoteMonitoringSiteForm());
+
+        return siteForms;
     }
 
     private FacilioForm remoteMonitoringSiteForm() throws Exception {
@@ -326,29 +408,29 @@ public class SiteModule extends BaseModuleConfig {
                 .addTab("summary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", "", null)
-                .addWidget("summaryFieldsWidget", "Site details",PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_20", 0, 0, null,getSummaryWidgetDetails(module.getName(),app))
+                .addWidget("summaryFieldsWidget", "Site details",PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null,getSummaryWidgetDetails(module.getName(),app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("siteInsights","",null)
-                .addWidget("siteLocationWidgets","Location Details", PageWidget.WidgetType.SPACE_LOCATION,"webSpaceLocation_19_3",0,0,locationWidgetParam,null)
+                .addWidget("siteLocationWidgets","Location Details", PageWidget.WidgetType.SPACE_LOCATION,"webSpaceLocation_4_3",0,0,locationWidgetParam,null)
                 .widgetDone()
-                .addWidget("siteInsights","Site Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_19_6",3,0,spaceParam,null)
+                .addWidget("siteInsights","Site Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_6",3,0,spaceParam,null)
                 .widgetDone()
-                .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_19_3",9,0,null,null)
+                .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_3",9,0,null,null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("weatherCast","",null)
-                .addWidget("weatherCard","Weather Card", PageWidget.WidgetType.WEATHER_CARD,"webWeatherCard_28_4",0,0,null,null)
+                .addWidget("weatherCard","Weather Card", PageWidget.WidgetType.WEATHER_CARD,"webWeatherCard_6_4",0,0,null,null)
                 .widgetDone()
-                .addWidget("depreciationAnalysis","Depreciation Analysis", PageWidget.WidgetType.DEPRECIATION_ANALYSIS,"webDepreciationAnalysis_28_8",4,0,null,null)
+                .addWidget("depreciationAnalysis","Depreciation Analysis", PageWidget.WidgetType.DEPRECIATION_ANALYSIS,"webDepreciationAnalysis_6_8",4,0,null,null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("HourlyForecast","",null)
-                .addWidget("hourlyForecastWidget","Hourly forecast", PageWidget.WidgetType.HOURLY_FORECAST,"flexibleWebHourlyForecast_32",0,0,null,null)
+                .addWidget("hourlyForecastWidget","Hourly forecast", PageWidget.WidgetType.HOURLY_FORECAST,"flexibleWebHourlyForecast_6",0,0,null,null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
-                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_20", 4, 0, null, getWidgetGroup(false,notesModuleParam,attachmentModuleParam))
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 4, 0, null, getWidgetGroup(false,notesModuleParam,attachmentModuleParam))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -357,11 +439,11 @@ public class SiteModule extends BaseModuleConfig {
                 .addTab("buildingsAndSpaces","Buildings & Spaces", PageTabContext.TabType.SIMPLE,true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("buildings","",null)
-                .addWidget("buildings","Buildings", PageWidget.WidgetType.BUILDINGS,"flexibleWebBuildings_32",0,0,buildingsParam,null)
+                .addWidget("buildings","Buildings", PageWidget.WidgetType.BUILDINGS,"flexibleWebBuildings_6",0,0,buildingsParam,null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("spaces","",null)
-                .addWidget("spaces","Spaces", PageWidget.WidgetType.SPACES,"flexibleWebSpaces_32",0,0,spaceParam,null)
+                .addWidget("spaces","Spaces", PageWidget.WidgetType.SPACES,"flexibleWebSpaces_7",0,0,spaceParam,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -370,21 +452,21 @@ public class SiteModule extends BaseModuleConfig {
                 .addTab("maintenance", "Maintenance", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
                 .addSection("plannedmaintenance", "", null)
-                .addWidget("siteplannedmaintenance", "Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE, "flexiblewebplannedmaintenance_36", 0, 0, null, null)
+                .addWidget("siteplannedmaintenance", "Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE, "flexiblewebplannedmaintenance_7", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("unplannedmaintenance", "", null)
-                .addWidget("siteunplannedmaintenance", "Reactive Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE, "flexiblewebunplannedmaintenance_36", 0, 0, null, null)
+                .addWidget("siteunplannedmaintenance", "Reactive Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE, "flexiblewebunplannedmaintenance_7", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
                 .addSection("siteworkorderdetails", null, null)
-                .addWidget("siteworkorderdetail", "Maintenance Insights", PageWidget.WidgetType.WORKORDER_INSIGHT, "flexiblewebworkorderinsight_12", 0, 0, null, null)
+                .addWidget("siteworkorderdetail", "Maintenance Insights", PageWidget.WidgetType.WORKORDER_INSIGHT, "flexiblewebworkorderinsight_3", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("recentlyclosedppm", null, null)
-                .addWidget("siterecentlyclosed", "Recently Closed Work order", PageWidget.WidgetType.RECENTLY_CLOSED_PM, "flexiblewebrecentlyclosedpm_23", 0, 0, null, null)
+                .addWidget("siterecentlyclosed", "Recently Closed Work order", PageWidget.WidgetType.RECENTLY_CLOSED_PM, "flexiblewebrecentlyclosedpm_4", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -393,15 +475,15 @@ public class SiteModule extends BaseModuleConfig {
                 .addTab("readings", "Readings", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("sitereadings", null, null)
-                .addWidget("sitereadings", "Readings", PageWidget.WidgetType.READINGS, "flexiblewebreadings_33", 0, 0, null, null)
+                .addWidget("sitereadings", "Readings", PageWidget.WidgetType.READINGS, "flexiblewebreadings_7", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("sitecommand", null, null)
-                .addWidget("sitecommand", "Commands", PageWidget.WidgetType.COMMANDS_WIDGET, "flexiblewebcommandswidget_34", 0, 0, null, null)
+                .addWidget("sitecommand", "Commands", PageWidget.WidgetType.COMMANDS_WIDGET, "flexiblewebcommandswidget_7", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("siteRelatedReadings", null, null)
-                .addWidget("relatedReadings", "Related Readings", PageWidget.WidgetType.RELATED_READINGS, "flexiblewebrelatedreadings_33", 0, 0, null, null)
+                .addWidget("relatedReadings", "Related Readings", PageWidget.WidgetType.RELATED_READINGS, "flexiblewebrelatedreadings_7", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -410,11 +492,11 @@ public class SiteModule extends BaseModuleConfig {
                 .addTab("safetyPlan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("hazards", "", null)
-                .addWidget("sitehazards", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_28", 0, 0, null,null)
+                .addWidget("sitehazards", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_6", 0, 0, null,null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("precautions", "", null)
-                .addWidget("sitePrecautions", "Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_28", 0, 0, null,null)
+                .addWidget("sitePrecautions", "Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_6", 0, 0, null,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -424,11 +506,11 @@ public class SiteModule extends BaseModuleConfig {
                 .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("siteRelatedlist", "Related List", "List of related records across modules")
-                .addWidget("siterelated", "Related",PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_29", 0, 0, null,RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .addWidget("siterelated", "Related",PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null,RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
                 .widgetDone()
                 .sectionDone()
                 .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_29", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -437,7 +519,7 @@ public class SiteModule extends BaseModuleConfig {
                 .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("activity", null, null)
-                .addWidget("siteactivity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_20", 0, 0, historyWidgetParam, null)
+                .addWidget("siteactivity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -453,11 +535,11 @@ public class SiteModule extends BaseModuleConfig {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_27", 0, 0, notesModuleParam, null)
+                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_5", 0, 0, notesModuleParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_27", 0, 0, attachmentModuleParam, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_5", 0, 0, attachmentModuleParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
         return FieldUtil.getAsJSON(widgetGroup);

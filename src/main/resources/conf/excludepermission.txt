@@ -2090,6 +2090,7 @@
 /api/reading/deleteformula
 /api/reading/allformulas
 /api/reading/updateRDM
+/api/reading/update_rdm
 /api/reading/calculateFormulField
 /api/photos/add
 /api/photos/upload
