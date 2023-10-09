@@ -605,6 +605,7 @@ public class FacilioConstants {
 			public static final String UNMODELED = "unmodeled";
 			public static final String POINT_RECORDS = "pointRecords";
 			public static final String DATA_SNAPSHOT = "dataSnapshot";
+			public static final String CONTROL_IDS = "controlIds";
 		}
 
 		public static class Reservation {

@@ -7,11 +7,14 @@ import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.FacilioException;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,51 +33,59 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
 
         FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
         long timeStamp = Long.parseLong(context.get(FacilioConstants.ContextNames.TIMESTAMP).toString());
-        Map<String, Object> snapshot = (Map<String, Object>) context.get(FacilioConstants.ContextNames.DataProcessor.DATA_SNAPSHOT);
+        Map<String, Map<String, Object>> snapshot = (Map<String, Map<String, Object>>) context.get(FacilioConstants.ContextNames.DataProcessor.DATA_SNAPSHOT);
         Map<String, Point> pointRecords = (Map<String, Point>) context.get(FacilioConstants.ContextNames.DataProcessor.POINT_RECORDS);
+        Map<String,String> errorPoints = new HashMap<>();
+        boolean filterEnabled = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.POINT_FILTER);
 
-        if (snapshot != null) {
-            List<String> pointsToRemove = new ArrayList<>();
-            List<Point> points = new ArrayList<>();
-            for (Map.Entry<String, Object> stringObjectEntry : snapshot.entrySet()) {
-                String pointName = stringObjectEntry.getKey();
-                Object value = stringObjectEntry.getValue();
-                Point point = pointRecords.get(pointName);
-                if (point != null) {
-                    if (value == null || (!isCov && intervalFilterConditions(agent, timeStamp, point)) || value.toString().equalsIgnoreCase("NaN")) {
-                        pointsToRemove.add(pointName);
-                    } else {
-                        // set data missing as false
-                        if (point.getDataMissing()) {
-                            point.setDataMissing(false);
-                            updatePointDataMissing = true;
-                        }
-                        //update point last recorded time and value
-                        point.setLastRecordedTime(timeStamp);
-                        point.setLastRecordedValue(value.toString());
-                        points.add(point);
-                    }
+        List<String> pointsToRemove = new ArrayList<>();
+        List<Point> points = new ArrayList<>();
+        for (Map.Entry<String, Map<String, Object>> stringObjectEntry : snapshot.entrySet()) {
+            String pointName = stringObjectEntry.getKey();
+            Map<String, Object> pointData = stringObjectEntry.getValue();
+            Object value = pointData.get(AgentConstants.VALUE);
+            Point point = pointRecords.get(pointName);
+            if (point != null) {
+                if (!isCov && filterEnabled && intervalFilterConditions(agent, timeStamp, point)) {
+                    pointsToRemove.add(pointName);
+                    point.setDataFiltered(true);
+                    errorPoints.put(pointName, "Point is filtered out as the data has already come in this interval period");
                 } else {
-                    LOGGER.debug("Point name not found for " + pointName);
+                    // set data missing as false
+                    if (point.getDataMissing()) {
+                        point.setDataMissing(false);
+                        updatePointDataMissing = true;
+                    }
+                    //update point last recorded time and value
+                    point.setLastRecordedTime(timeStamp);
+                    point.setLastRecordedValue(value.toString());
+                    points.add(point);
                 }
+            } else {
+                LOGGER.debug("Point name not found for " + pointName);
             }
-            PointsAPI.updatePointsValue(points, updatePointDataMissing);
-
-            for (String pointName : pointsToRemove) {
-                snapshot.remove(pointName);
-            }
-            if (!pointsToRemove.isEmpty()) {
-                LOGGER.debug("Filtered points : " + pointsToRemove);
-            }
-            return snapshot.isEmpty();
-        } else {
-            return false;
         }
+
+        context.put(AgentConstants.ERROR_POINTS, errorPoints);
+        if (!points.isEmpty()) {
+            PointsAPI.updatePointsValue(points, updatePointDataMissing);
+        }
+
+        for (String pointName : pointsToRemove) {
+            snapshot.remove(pointName);
+        }
+        if (!pointsToRemove.isEmpty()) {
+            LOGGER.debug("Filtered points : " + pointsToRemove);
+        }
+
+        if (snapshot.isEmpty()) {
+            throw new FacilioException("Data for all the points came for the interval period already");
+        }
+        return false;
 
     }
 
     private boolean intervalFilterConditions(FacilioAgent agent, long timeStamp, Point point) throws Exception {
-        boolean featureEnabled = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.POINT_FILTER);
         boolean isFiltered;
         long timeFromLastRecorded = timeStamp - point.getLastRecordedTime() + TOLERANCE_MS;
         if (point.getInterval() > 0) {
@@ -82,6 +93,6 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
         } else {
             isFiltered = timeFromLastRecorded < agent.getInterval() * 60 * 1000;
         }
-        return featureEnabled && isFiltered;
+        return isFiltered;
     }
 }

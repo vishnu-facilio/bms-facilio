@@ -28,7 +28,7 @@ public class ModeledDataCommandV2 extends AgentV2Command {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long timeStamp = Long.parseLong(context.get(FacilioConstants.ContextNames.TIMESTAMP).toString());
-        Map<String, Object> snapshot = (Map<String, Object>) context.get(FacilioConstants.ContextNames.DataProcessor.DATA_SNAPSHOT);
+        Map<String, Map<String, Object>> snapshot = (Map<String, Map<String, Object>>) context.get(FacilioConstants.ContextNames.DataProcessor.DATA_SNAPSHOT);
         Map<String, Point> pointRecords = (Map<String, Point>) context.get(FacilioConstants.ContextNames.DataProcessor.POINT_RECORDS);
 
         Map<String, ReadingContext> iModuleVsReading;
@@ -39,17 +39,18 @@ public class ModeledDataCommandV2 extends AgentV2Command {
         return false;
     }
 
-    private Map<String, ReadingContext> getModuleVsReading(Context context, Map<String, Point> dataPointsRecords, Long timeStamp, Map<String, Object> data) throws Exception {
+    private Map<String, ReadingContext> getModuleVsReading(Context context, Map<String, Point> dataPointsRecords, Long timeStamp, Map<String, Map<String, Object>> data) throws Exception {
     	FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
-        Map<String,String> errorPoints = new HashMap<>();
     	int agentInterval = (int)agent.getInterval();
     	
     	Map<Long, Map<String, Integer>> inputValues = fetchInputValues(dataPointsRecords.values());
+        Map<String,String> errorPoints = (Map<String, String>) context.get(AgentConstants.ERROR_POINTS);
     	
         Map<String, Object> unmodelled = new HashMap<>();
         Map<String, ReadingContext> iModuleVsReading = new HashMap<>();
         for (String pointName : data.keySet()) {
-            Object pointValue = data.get(pointName);
+            Map<String, Object> pointData = data.get(pointName);
+            Object pointValue = pointData.get(AgentConstants.VALUE);
             if (dataPointsRecords.containsKey(pointName)) {
                 Point p = dataPointsRecords.get(pointName);
                 Long resourceId = p.getResourceId();
@@ -60,7 +61,7 @@ public class ModeledDataCommandV2 extends AgentV2Command {
                     FieldType type = field.getDataTypeEnum();
                     String moduleName = field.getModule().getName();
                     
-                    if (inputValues != null && pointValue!= null && (type == FieldType.BOOLEAN || type == FieldType.ENUM)) {
+                    if (inputValues != null && (type == FieldType.BOOLEAN || type == FieldType.ENUM)) {
                     	pointValue = convertInputValue(inputValues, p.getId(), pointValue);
                     }
                     
@@ -92,7 +93,6 @@ public class ModeledDataCommandV2 extends AgentV2Command {
             }
         }
         context.put(FacilioConstants.ContextNames.DataProcessor.UNMODELED, unmodelled);
-        context.put("errorPoints",errorPoints);
         return iModuleVsReading;
     }
 

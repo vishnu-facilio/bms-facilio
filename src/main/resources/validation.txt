@@ -780,7 +780,6 @@
 /api/v2/agent/inboundConnections/add
 /api/agent/inbound/wegot/events
 /api/v3/people/util
-/api/v3/iot/data/push
 /api/v3/agent/:fetchAgent
 /api/v3/agent/connections
 /api/v3/modules/:moduleName

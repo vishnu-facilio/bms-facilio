@@ -40,6 +40,7 @@ public class AgentConstants
     public static final String LAST_DATA_SENT_TIME = "lastDataSentTime";
     public static final String DELETED_TIME = "deletedTime";
     public static final String DATA = "data";
+    public static final String TIMESERIES = "time_series";
     public static final String CONTROLLER_TYPE = "controllerType";
     public static final String IS_LATEST_VERSION = "isLatestVersion";
     public static final String WORKFLOW = "workflow";
@@ -145,10 +146,16 @@ public class AgentConstants
     public static final String VALUE = "value";
     public static final String COMMAND = "command";
     public static final String PROPERTY = "property";
+    public static final String PAYLOAD = "payload";
+    public static final String PAYLOAD_STR = "payLoadString";
+    public static final String UNIQUE_ID = "uniqueId";
     public static final String VERSION = "version";
     public static final String NEW_CONTROLLER_ID = "newControllerId";
     public static final String IS_NEW_AGENT = "isNewAgent";
     public static final String TIMESTAMP = "timestamp";
+    public static final String ACTUAL_TIMESTAMP = "actual_timestamp";
+    public static final String TIMESTAMP_SEC = "ts_sec";
+    public static final String PUBLISH_TIMESTAMP_SEC = "publish_ts_sec";
     public static final String AGENT_TABLE = "Agent";
     public static final String CONNECTED = "connected";
     public static final String DEVICE_DETAILS = "deviceDetails";
@@ -325,7 +332,7 @@ public class AgentConstants
     public static final String WORKFLOW_SYNTAX_ERROR = "workflowSyntaxError";
     public static final String WORKFLOW_RESPONSE = "workflowResponse";
     public static final String MESSAGE_PARTITION = "messagePartition";
-    
+
     public static final String EVENT_VERSION = "eventVersion";
     public static final String COMMAND_MAX_RETRY_COUNT = "commandMaxRetryCount";
 
@@ -342,6 +349,7 @@ public class AgentConstants
     public static final String UNCONFIGURED = "UNCONFIGURED";
     public static final String CONFIGURED = "CONFIGURED";
     public static final String COMMISSIONED = "COMMISSIONED";
+    public static final String ERROR_POINTS = "errorPoints";
 
 
     public static AgentBean getAgentBean() throws Exception {
