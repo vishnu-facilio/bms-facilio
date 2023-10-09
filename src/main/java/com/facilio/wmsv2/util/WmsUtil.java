@@ -1,13 +1,15 @@
 package com.facilio.wmsv2.util;
 
+import lombok.extern.log4j.Log4j;
+
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.db.util.DBConf;
 import com.facilio.server.ServerInfo;
 import com.facilio.wmsv2.endpoint.LiveSession;
 import com.facilio.wmsv2.handler.WmsHandler;
 import com.facilio.wmsv2.handler.WmsProcessor;
 import com.facilio.wmsv2.message.TopicHandler;
 import com.facilio.wmsv2.message.WebMessage;
-import lombok.extern.log4j.Log4j;
 
 import javax.websocket.EncodeException;
 import java.io.IOException;
@@ -16,14 +18,19 @@ import java.text.MessageFormat;
 @Log4j
 public class WmsUtil {
 
-    public static final String WMS_SUBSCRIBE_CHANNEL = createWmsTopic("wms__subscribe__channel");
-    public static final String WMS_UNSUBSCRIBE_CHANNEL = createWmsTopic("wms__unsubscribe__channel");
-    public static final String WMS_ORG_TOPIC = FacilioProperties.getEnvironment() + "/wms/org/{0}/{1}";
-    public static final String WMS_APP_TOPIC = FacilioProperties.getEnvironment() + "/wms/org/{0}/app/{1}/{2}";
-    public static final String WMS_USER_TOPIC = FacilioProperties.getEnvironment() + "/wms/org/{0}/app/{1}/user/{2}/{3}";
+    public static final String WMS_SUBSCRIBE_CHANNEL = createScopeTopic("wms__subscribe__channel");
+    public static final String WMS_UNSUBSCRIBE_CHANNEL = createScopeTopic("wms__unsubscribe__channel");
+    public static final String WMS_ORG_TOPIC = createWmsTopic("wms/org/{0}/{1}");
+    public static final String WMS_APP_TOPIC = createWmsTopic("wms/org/{0}/app/{1}/{2}");
+    public static final String WMS_USER_TOPIC = createWmsTopic("wms/org/{0}/app/{1}/user/{2}/{3}");
+
+    private static String createScopeTopic(String topic) {
+        return MessageFormat.format("{0}__{1}__{2}", FacilioProperties.getEnvironment(), ServerInfo.getHostname(), topic);
+    }
 
     private static String createWmsTopic(String topic) {
-        return MessageFormat.format("{0}__{1}__{2}", FacilioProperties.getEnvironment(), ServerInfo.getHostname(), topic);
+        String format = DBConf.getInstance().isNewVersion() ? "latest/{0}/{1}" : "{0}/{1}";
+        return MessageFormat.format(format, FacilioProperties.getEnvironment(), topic);
     }
 
     public static String convertToRedisTopic(LiveSession ls, String topic) {

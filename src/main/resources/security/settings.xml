@@ -1000,6 +1000,15 @@
             <property name="emailAddress" type="string"/>
         </requestbody>
     </request>
+
+    <request path="/api/v3/wms/stats">
+        <requestbody type="object">
+            <property name="orgId" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/wms/connections"/>
+
     <request path="/api/v3/homepage/widgetData">
         <urlparams>
             <property name="linkName" type="string"/>
