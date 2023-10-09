@@ -33,6 +33,7 @@ public class NameSpaceContext implements Serializable {
         this.loggerLevel = ns.loggerLevel;
         this.assetCategoryContext = ns.assetCategoryContext;
         this.execMode = ns.execMode;
+        this.executorId = ns.executorId;
     }
 
     /**
@@ -54,6 +55,7 @@ public class NameSpaceContext implements Serializable {
         this.loggerLevel = ns.loggerLevel;
         this.assetCategoryContext = ns.assetCategoryContext;
         this.execMode = ns.execMode;
+        this.executorId = ns.executorId;
     }
 
     Long id;
