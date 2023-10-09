@@ -1,19 +1,21 @@
 package com.facilio.fsm.commands.plans;
 
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceOrderPlannedItemsContext;
+import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.facilio.fsm.util.ServiceAppointmentUtil.updateEstimatedCostDuringUpdate;
 
 public class SAEstimatedItemCostAfterUpdateCommand extends FacilioCommand {
     @Override
@@ -25,9 +27,10 @@ public class SAEstimatedItemCostAfterUpdateCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(serviceOrderPlannedItems) && changeSet!=null){
             for(ServiceOrderPlannedItemsContext serviceOrderPlannedItem : serviceOrderPlannedItems){
                 if(serviceOrderPlannedItem.getServiceAppointment()!=null){
-                    ServiceAppointmentContext serviceAppointment = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,serviceOrderPlannedItem.getServiceAppointment().getId());
+                    FacilioContext appointmentContext = V3Util.getSummary(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, Collections.singletonList(serviceOrderPlannedItem.getServiceAppointment().getId()));
+                    ServiceAppointmentContext serviceAppointment  = (ServiceAppointmentContext) Constants.getRecordList(appointmentContext).get(0);
                     List<UpdateChangeSet> changes =changeSet.get(serviceOrderPlannedItem.getId());
-                    updateEstimatedCostDuringUpdate( changes,serviceAppointment,moduleName);
+                    ServiceAppointmentUtil.updateEstimatedCostDuringUpdate( changes,serviceAppointment,moduleName);
                 }
             }
         }
