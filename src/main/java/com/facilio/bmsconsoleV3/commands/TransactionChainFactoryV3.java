@@ -71,6 +71,7 @@ import com.facilio.assetcatergoryfeature.commands.FetchAssetCategoryLevelStatusC
 import com.facilio.assetcatergoryfeature.commands.UpdateAssetCategoryLevelStatusCommand;
 import com.facilio.faults.LoadOccurrenceForAlarmCommand;
 import com.facilio.faults.newreadingalarm.HandleV3AlarmListLookupCommand;
+import com.facilio.connected.commands.AddExecutorCommand;
 import com.facilio.plannedmaintenance.FetchPlannerDetails;
 import com.facilio.plannedmaintenance.PreCreateWorkOrderRecord;
 import com.facilio.permission.commands.AddOrUpdatePermissionSet;
@@ -293,7 +294,6 @@ import com.facilio.trigger.command.AddOrUpdateTriggerCommand;
 import com.facilio.trigger.command.DeleteTriggerCommand;
 import com.facilio.trigger.command.ExecuteTriggerCommand;
 import com.facilio.trigger.command.GetAllTriggersCommand;
-import com.facilio.workflows.command.AddWorkflowCommand;
 import com.facilio.workflows.command.UpdateWorkflowCommand;
 
 public class TransactionChainFactoryV3 {
@@ -3154,7 +3154,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain addNamespaceAndFieldsChain() {
         FacilioChain c = getDefaultChain();
-        c.addCommand(new AddWorkflowCommand());
+        c.addCommand(new AddExecutorCommand());
         c.addCommand(addNsAndNsFieldsChain());
         return c;
     }
