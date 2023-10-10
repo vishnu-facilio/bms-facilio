@@ -3654,8 +3654,6 @@
         </requestbody>
     </request>
 
-
-
     <request path="/api/v1/setup/dispatcher/:updateDispatcherConfig" method="POST">
         <requestbody type="object">
             <property name="dispatcherConfig" type="object">
@@ -3875,4 +3873,24 @@
             <property name="jobPlanIds" type="array"></property>
         </requestbody>
     </request>
+    
+    <request path="/api/v2/pdftemplates/preview/:id/:recordId" method="GET">
+        <requestbody type="object">
+    <request path="/api/v2/pdftemplates/preview/:moduleName/:id/:recordId" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="id" type="number"></property>
+            <property name="recordId" type="number"></property>
+
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/pdftemplates/download/:moduleName/:id/:recordId" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="id" type="number"></property>
+            <property name="recordId" type="number"></property>
+        </urlparams>
+    </request>
+
 </config>

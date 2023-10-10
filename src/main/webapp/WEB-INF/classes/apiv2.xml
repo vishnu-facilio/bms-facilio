@@ -7666,6 +7666,18 @@
 		</action>
 	</package>
 
+	<package name="pdfTemplate" namespace="/api/v2/pdftemplates" extends="v2Api">
+		<action name="*/preview" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="preview">
+			<param name="permission">ALL</param>
+			<param name="moduleName">{1}</param>
+		</action>
+		<action name="*/download" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="download">
+			<param name="permission">ALL</param>
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
+
+
 	<package name="pageBuilderEnabledModules" namespace="/api/v2/moduleSetting/pageBuilder" extends="v2Api">
 		<action name="modules"
 				class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchPageBuilderEnabledModules">

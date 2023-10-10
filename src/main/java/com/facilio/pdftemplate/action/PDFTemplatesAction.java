@@ -68,17 +68,32 @@ public class PDFTemplatesAction extends V3Action {
     }
 
     public String preview() throws Exception {
-        if (getId() <= 0 || getRecordId() <= 0) {
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "The templateId or recordId parameters are missing.");
-        }
+
+        validateParameters();
+
         FacilioChain chain = ReadOnlyChainFactory.getPreviewPDFTemplateChain();
         FacilioContext context = chain.getContext();
-
-        context.put(FacilioConstants.ContextNames.ID, getId());
-        context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
         chain.execute();
 
         setData(FacilioConstants.ContextNames.PDF_TEMPLATE_HTML, context.get(FacilioConstants.ContextNames.PDF_TEMPLATE_HTML));
         return SUCCESS;
+    }
+
+    public String download() throws Exception {
+
+        validateParameters();
+
+        FacilioChain chain = ReadOnlyChainFactory.getDownloadPDFTemplateChain();
+        FacilioContext context = chain.getContext();
+        chain.execute();
+
+        setData(FacilioConstants.ContextNames.FILE_ID, context.get(FacilioConstants.ContextNames.FILE_ID));
+        return SUCCESS;
+    }
+
+    private void validateParameters() throws RESTException {
+        if (getId() <= 0 || getRecordId() <= 0) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid templateId or recordId values.");
+        }
     }
 }
