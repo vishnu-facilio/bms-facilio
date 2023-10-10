@@ -5,7 +5,7 @@
 
 
 <struts>
-    <package name="iotPush" namespace="/api/v3/iot/data"
+    <package name="iotPush" namespace="/api/v3/iot/olddata"
              extends="struts-default,json-default">
         <interceptors>
             <interceptor name="agentApiKeyInterceptor"
@@ -29,6 +29,11 @@
             <result name="success" type="json">
                 <param name="statusCode">200</param>
             </result>
+        </action>
+    </package>
+
+    <package name="iotPushV3" namespace="/api/v3/iot/data" extends="v3Api">
+        <action name="push" class="com.facilio.agentv2.actions.RestPushAgentV3Action" method="push">
         </action>
     </package>
     

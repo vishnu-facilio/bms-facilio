@@ -77,6 +77,9 @@ public abstract class Point extends FacilioPoint implements Serializable {
     @Getter @Setter
     private Long overrideTimeInMillis = 0L;
 
+    @Getter @Setter @JsonIgnore
+    private boolean isDataFiltered = false;
+
     public Long getModuleId() {
         return moduleId;
     }

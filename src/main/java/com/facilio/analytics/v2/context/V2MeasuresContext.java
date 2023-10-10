@@ -23,6 +23,7 @@ public class V2MeasuresContext {
     public String moduleName;
     public String parentModuleName;
     public Long category;
+    public String displayName;
 
     public Criteria criteria;
     public long criteriaId;
@@ -33,17 +34,12 @@ public class V2MeasuresContext {
     private boolean duplicateDataPoint;
     private boolean defaultSortPoint;
     public int aggr;
-    public AggregateOperator aggrEnum;
     private ReportDataPointContext.OrderByFunction orderByFunction;
 
     public void setAggr(int aggr){
         this.aggr = aggr;
-        this.setAggrEnum(AggregateOperator.getAggregateOperator(aggr));
     }
     @JsonIgnore
-    public void setAggrEnum(AggregateOperator aggr) {
-        this.aggrEnum = aggr;
-    }
     public AggregateOperator getAggrEnum(){
         return AggregateOperator.getAggregateOperator(this.aggr);
     }

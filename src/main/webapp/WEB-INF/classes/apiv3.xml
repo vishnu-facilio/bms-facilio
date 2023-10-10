@@ -277,7 +277,7 @@
             <param name="identifier">{3}</param>
             <param name="buttonPermission">true</param>
         </action>
-        <action name="serviceOrder/*/SYSTEM_BUTTON/*" class="com.facilio.fsm.actions.ServiceOrderAction" method="updateServiceOrders">
+        <action name="serviceOrder/*/systemButton/*" class="com.facilio.fsm.actions.ServiceOrderAction" method="updateServiceOrders">
             <param name="moduleName">serviceOrder</param>
             <param name="orderId">{1}</param>
             <param name="buttonAction">systemButton</param>

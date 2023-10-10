@@ -29,22 +29,12 @@ public class RollUpServiceTaskCommand extends FacilioCommand {
         HashMap<String,Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
         EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
         List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName"));
-//        Boolean isTaskAdd = (Boolean) context.get(FacilioConstants.ServiceAppointment.IS_TASK_ADD);
         ServiceTaskStatusContext scheduled = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.SCHEDULED);
         ServiceTaskStatusContext newStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.NEW);
         ServiceTaskStatusContext dispatched = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.DISPATCHED);
         if(CollectionUtils.isNotEmpty(serviceAppointments)) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
-//                if (isTaskAdd) {
-//                    FacilioContext saContext = V3Util.getSummary(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, Collections.singletonList(serviceAppointment.getId()));
-//                    if (Constants.getRecordList(saContext) != null) {
-//                        ServiceAppointmentContext sa = (ServiceAppointmentContext) Constants.getRecordList(saContext).get(0);
-//                        if (sa != null) {
-//                            List<Long> taskIds = sa.getServiceTasks().stream().map(ServiceAppointmentTaskContext::getId).collect(Collectors.toList());
-//                            serviceTaskIds.addAll(taskIds);
-//                        }
-//                    }
-//                }
+
                 if (serviceAppointment.getStatus() != null) {
                     ServiceAppointmentTicketStatusContext appointmentStatus = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS, serviceAppointment.getStatus().getId());
 
@@ -70,14 +60,6 @@ public class RollUpServiceTaskCommand extends FacilioCommand {
                                 V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, id, FieldUtil.getAsJSON(existingTask), null, null, null, null, null, null, null, null,null);
 
 
-//
-//                        ServiceTaskContext serviceTask = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,id);
-////                        ServiceTaskContext serviceTask = new ServiceTaskContext();
-////                        serviceTask.setId(id);
-//                        existingTask.setServiceAppointment(null);
-//                        existingTask.setStatus(ServiceTaskContext.ServiceTaskStatus.NEW.getIndex());
-//                        V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,id, FieldUtil.getAsJSON(serviceTask), null, null, null, null, null,null, null, null);
-//                        V3RecordAPI.updateRecord(serviceTask, serviceTaskModule, Collections.singletonList(serviceAppointmentId));
                             }
                             for (Long taskId : newIds) {
 
@@ -93,7 +75,6 @@ public class RollUpServiceTaskCommand extends FacilioCommand {
                                     existingTask.setStatus(scheduled);
                                 }
                                 V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, taskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null, null, null, null,null);
-//                        V3RecordAPI.updateRecord(serviceTask, serviceTaskModule, Collections.singletonList(serviceAppointmentId));
                             }
 
                         } else {
@@ -114,7 +95,6 @@ public class RollUpServiceTaskCommand extends FacilioCommand {
 
 
                                 V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, serviceTaskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null, null, null, null,null);
-//                    V3RecordAPI.updateRecord(serviceTask, serviceTaskModule, Collections.singletonList(serviceAppointmentId));
                             }
                         }
                     }

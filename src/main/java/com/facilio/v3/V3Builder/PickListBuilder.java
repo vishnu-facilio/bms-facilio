@@ -9,6 +9,9 @@ public interface PickListBuilder {
     PickListBuilder setFourthField(String moduleName, String fieldName);
     PickListBuilder setMainField(String moduleName, String fieldName);
     PickListBuilder setSubmoduleType(String moduleName, String fieldName);
+    PickListBuilder setColorField(String moduleName, String fieldName);
+    PickListBuilder setAccentField(String moduleName, String fieldName);
+    PickListBuilder setSeverityLevel(String severityLevel);
     UpdateBuilder update();
     CreateBuilder create();
     PreCreateBuilder preCreate();

@@ -1000,6 +1000,15 @@
             <property name="emailAddress" type="string"/>
         </requestbody>
     </request>
+
+    <request path="/api/v3/wms/stats">
+        <requestbody type="object">
+            <property name="orgId" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/wms/connections"/>
+
     <request path="/api/v3/homepage/widgetData">
         <urlparams>
             <property name="linkName" type="string"/>
@@ -3698,7 +3707,7 @@
     <request path="/api/v3/serviceAppointment/associateTask" method="POST">
         <requestbody type="object">
             <property name="serviceTasks" type="array">
-                <items type="number"/>
+                <items type="object"/>
             </property>
             <property name="appointmentId" type="number"/>
         </requestbody>
@@ -3791,5 +3800,24 @@
         </requestbody>
     </request>
 
+    <request path="/api/v3/iot/data/push" method="POST">
+        <requestbody type="object">
+            <property name="payload" type="object"  mandatory="true">
+                <property name="agent" type="string" mandatory="true"/>
+                <property name="controller" type="object">
+                    <property name="name" type="string"/>
+                </property>
+                <property name="controllerType" type="number"/>
+                <property name="uniqueId" type="string"/>
+                <property name="publishType" type="number"/>
+                <property name="time_series" type="array">
+                    <items type="object"/>
+                </property>
+                <property name="data" type="array">
+                    <items type="object"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
 
 </config>

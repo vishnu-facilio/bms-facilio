@@ -316,6 +316,9 @@ public class FacilioConstants {
 		public static final String SECONDARY_FIELD = "secondaryField";
 		public static final String SUBMODULE_FIELD ="subModuleField";
 		public static final String FOURTH_FIELD = "fourthField";
+		public static final String COLOR_FIELD = "colorField";
+		public static final String ACCENT_FIELD = "accent";
+		public static final String SEVERITY_LEVEL = "severityLevel";
 		public static final String LOCAL_SEARCH = "localSearch";
 	}
 
@@ -357,6 +360,10 @@ public class FacilioConstants {
 
 	public static class ContextNames {
 		public static final String CONDITIONS="conditions";
+		public static final String CLIENT_MODULE_EDIT_BUTTON="clientModuleEditButton";
+		public static final String INSURANCE_MODULE_EDIT_BUTTON="insuranceModuleEditButton";
+		public static final String CLIENTCONTACT_MODULE_PORTAL_BUTTON="clientConatctModulePortalButton";
+		public static final String CLIENTCONTACT_MODULE_EDIT_BUTTON="clientContactModuleEditButton";
 		public static final String WORKFLOW_RULE_LOGS="workflowRuleLogs";
 		public static final String ONE_LEVEL_LOOKUP="oneLevelLookup";
 		public static final String IS_ONE_LEVEL_FIELDS="isOneLevelFields";
@@ -605,6 +612,7 @@ public class FacilioConstants {
 			public static final String UNMODELED = "unmodeled";
 			public static final String POINT_RECORDS = "pointRecords";
 			public static final String DATA_SNAPSHOT = "dataSnapshot";
+			public static final String CONTROL_IDS = "controlIds";
 		}
 
 		public static class Reservation {

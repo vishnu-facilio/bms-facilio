@@ -123,6 +123,7 @@ public class FsmTransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new CheckRecordLockCommand());
         c.addCommand(new ValidateSAUpdateCommand());
+        c.addCommand(new AssociateServiceTaskInSACommand());
         c.addCommand(new RollUpServiceAppointmentFieldsCommand());
         c.addCommand(new ValidateSAMismatch());
         return c;

@@ -42,7 +42,7 @@ public class GetBulkRelatedListWidgetCommand extends FacilioCommand {
             List<RelatedListWidgetContext> relLists = bulkRelList.getRelatedList();
             if(CollectionUtils.isNotEmpty(relLists)) {
                 List<RelatedListWidgetContext> relatedListsToRemove = new ArrayList<>();
-                for (RelatedListWidgetContext relList : bulkRelList.getRelatedList()) {
+                for (RelatedListWidgetContext relList : relLists) {
                     if (!(isFetchForClone || isBuilderRequest)) {
                         boolean canShowRelList;
                         if (relList.getConnectedAppWidgetId() != null && relList.getConnectedAppWidgetId() > 0) {
@@ -63,6 +63,8 @@ public class GetBulkRelatedListWidgetCommand extends FacilioCommand {
                             relatedListsToRemove.add(relList);
                         }
                     }
+                }
+                if(CollectionUtils.isNotEmpty(relatedListsToRemove)) {
                     bulkRelList.getRelatedList().removeAll(relatedListsToRemove);
                 }
             }

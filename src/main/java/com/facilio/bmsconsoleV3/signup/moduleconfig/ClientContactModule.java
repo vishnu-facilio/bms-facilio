@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.TemplatePages.ClientContactModuleTemplatePage;
 import com.facilio.bmsconsole.context.*;
@@ -10,8 +11,11 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.ClientContactModuleUtil;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
@@ -26,6 +30,10 @@ public class ClientContactModule extends BaseModuleConfig{
 
     public ClientContactModule() throws Exception{
         setModuleName(FacilioConstants.ContextNames.CLIENT_CONTACT);
+    }
+    @Override
+    public void addData() throws Exception {
+        addSystemButton();
     }
 
     @Override
@@ -91,7 +99,9 @@ public class ClientContactModule extends BaseModuleConfig{
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
         for(String appName:appNameList) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName, buildClientContactPage(app, module, false, true));
+            if(app!=null) {
+                appNameVsPage.put(appName, buildClientContactPage(app, module, false, true));
+            }
         }
         return appNameVsPage;
     }
@@ -191,5 +201,24 @@ public class ClientContactModule extends BaseModuleConfig{
         scopeConfigList = Arrays.asList(remoteMonitorApp);
         return scopeConfigList;
     }
+    private static void addSystemButton() throws Exception{
+        SystemButtonRuleContext editButton = new SystemButtonRuleContext();
+        editButton.setName("Edit");
+        editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButton.setIdentifier(FacilioConstants.ContextNames.CLIENTCONTACT_MODULE_EDIT_BUTTON);
+        editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editButton.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.CLIENT_CONTACT,editButton);
 
+//        SystemButtonRuleContext portalAccessButton = new SystemButtonRuleContext();
+//        portalAccessButton.setName("PortalAccess");
+//        portalAccessButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        portalAccessButton.setIdentifier(FacilioConstants.ContextNames.CLIENTCONTACT_MODULE_PORTAL_BUTTON);
+//        portalAccessButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        portalAccessButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//        portalAccessButton.setPermissionRequired(true);
+//        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.CLIENT_CONTACT, portalAccessButton);
+
+    }
 }

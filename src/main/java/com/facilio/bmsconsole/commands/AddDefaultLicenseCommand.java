@@ -19,7 +19,6 @@ public class AddDefaultLicenseCommand extends FacilioCommand {
             AccountUtil.FeatureLicense.ENERGY,
             AccountUtil.FeatureLicense.SPACE_ASSET,
             AccountUtil.FeatureLicense.NEW_LAYOUT,
-            AccountUtil.FeatureLicense.APPROVAL,
             AccountUtil.FeatureLicense.SCHEDULED_WO,
             AccountUtil.FeatureLicense.NEW_ALARMS,
             AccountUtil.FeatureLicense.SKIP_TRIGGERS,

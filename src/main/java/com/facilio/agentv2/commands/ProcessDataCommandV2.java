@@ -33,11 +33,6 @@ public class ProcessDataCommandV2 extends AgentV2Command {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING);
-        boolean forkPostProcessing = orgInfoMap == null ? false : Boolean.parseBoolean(orgInfoMap.get(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING));
-        LOGGER.info("Fork post processing in data process v2 => "+forkPostProcessing);
-        context.put(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, forkPostProcessing);
-
         if( containsCheck(AgentConstants.DATA,context) ){
             Object payloadObject = context.get(AgentConstants.DATA);
             if( payloadObject instanceof JSONObject){

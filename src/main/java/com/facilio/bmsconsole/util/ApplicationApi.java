@@ -3239,7 +3239,7 @@ public class ApplicationApi {
             webTabGroups.add(new WebTabGroupContext("Process", "process", layout.getId(), 0, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Stateflows", "stateflows", WebTabContext.Type.STATEFLOWS, null, appId, null));
-            webTabs.add(new WebTabContext("Approvals", "approvals", WebTabContext.Type.APPROVALS, null, appId, null,AccountUtil.FeatureLicense.APPROVAL.getFeatureId()));
+            webTabs.add(new WebTabContext("Approvals", "approvals", WebTabContext.Type.APPROVALS, null, appId, null));
 
             groupNameVsWebTabsMap.put("process", webTabs);
 

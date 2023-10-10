@@ -5,6 +5,7 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.agentv2.iotmessage.IotData;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -35,16 +36,13 @@ public class UpdateDataCommandStatus extends AgentV2Command {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         try {
-            JSONObject payload = (JSONObject) context.get(AgentConstants.DATA);
-            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
-            FacilioAgent agent = agentBean.getAgent((String) payload.get("agent"));
+            if (context.containsKey(FacilioConstants.ContextNames.DataProcessor.CONTROL_IDS)) {
 
-            int maxRetryCount = agent.getCommandMaxRetryCount();
-            if (payload.containsKey("controlIds")) {
-            	
-            	JSONArray controlIds = (JSONArray) payload.get("controlIds");
-                JSONArray data = (JSONArray) payload.get("data");
-                JSONObject jsonObject = (JSONObject) data.get(0);
+            	JSONArray controlIds = (JSONArray) context.get(FacilioConstants.ContextNames.DataProcessor.CONTROL_IDS);
+                Map<String, Map<String, Object>> data = (Map<String, Map<String, Object>>) context.get(FacilioConstants.ContextNames.DataProcessor.DATA_SNAPSHOT);
+
+                FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
+                int maxRetryCount = agent.getCommandMaxRetryCount();
 
                 ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioModule controlActionModule = modbean.getModule(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
@@ -66,7 +64,7 @@ public class UpdateDataCommandStatus extends AgentV2Command {
                     }
                     String pointName = (String) command.getDatum("name");
                     String sentValue = command.getValue();
-                    Object receivedValue = jsonObject.get(pointName);
+                    Object receivedValue = data.get(pointName).get(AgentConstants.VALUE);
                     LOGGER.info("Sent value : "+sentValue);
                     LOGGER.info("Received Value : "+receivedValue);
 

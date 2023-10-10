@@ -1615,8 +1615,8 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getTimeSeriesProcessChainV2() throws Exception {
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ProcessDataCommandV3());
 		chain.addCommand(new UpdateDataCommandStatus());
-		chain.addCommand(new ProcessDataCommandV2());
 		chain.addCommand(new UpdateLastRecordedValueAndFilterPointsCommand());
 		chain.addCommand(new ModeledDataCommandV2());
 		chain.addCommand(new UnModeledDataCommandV2());

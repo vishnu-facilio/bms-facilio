@@ -19,6 +19,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.DataLogContextV3;
 import com.facilio.chain.FacilioChain;
@@ -34,6 +35,7 @@ import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.FacilioException;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.trigger.context.TriggerType;
@@ -79,20 +81,11 @@ public class DataProcessorV2 {
     }
 
 
-    public boolean processRecord(JSONObject payload, EventUtil eventUtil, FacilioAgent agent,long recordId,int partitionId,String messageSource,int payloadIndex) {
+    public boolean processRecord(JSONObject payload, EventUtil eventUtil, FacilioAgent agent,long recordId,int partitionId,String messageSource,int payloadIndex, long startTime) {
         boolean processStatus = false;
         try {
 
-            Long timeStamp = System.currentTimeMillis();
-            if(payload.containsKey(AgentConstants.TIMESTAMP)){
-                timeStamp = (Long) payload.get(AgentConstants.TIMESTAMP);
-                if (payload.containsKey("actual_timestamp")) {
-                    Object actual_timestampObj = payload.get("actual_timestamp");
-                    timeStamp = actual_timestampObj instanceof Long ? (Long) actual_timestampObj : Long.parseLong(actual_timestampObj.toString());
-                }
-            }else {
-                payload.put(AgentConstants.TIMESTAMP,timeStamp);
-            }
+            long timeStamp = getPayloadTimeStamp(payload);
             if (agent.getAgentType() != AgentType.CLOUD.getKey()) {
                 agent.setLastDataReceivedTime(timeStamp);
                 AgentConstants.getAgentBean().updateAgentLastDataReceivedTime(agent);
@@ -131,14 +124,15 @@ public class DataProcessorV2 {
                     processStatus = processAck(agent, payload);
                     break;
                 case TIMESERIES:
+                case COV:
 
 
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
                     Controller timeseriesController = getOrAddController(payload, agent);
+                    if (timeseriesController == null) {
+                        throw new FacilioException("The controller in payload is not available");
+                    }
                     int messagePartition = 0;
-
-
-
                     if (payload.containsKey(AgentConstants.MESSAGE_PARTITION)) {
                         messagePartition = Integer.parseInt(payload.get(AgentConstants.MESSAGE_PARTITION).toString());
                     }
@@ -150,24 +144,13 @@ public class DataProcessorV2 {
                         controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp + "#" + messagePartition);
 
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
-                        processStatus = processTimeSeries(agent, timeSeriesPayload, timeseriesController, true,recordId,partitionId,messageSource,publishType,payloadIndex);
+                        processStatus = processTimeSeries(agent, timeStamp, timeSeriesPayload, timeseriesController,recordId,partitionId,messageSource,publishType, payloadIndex, startTime);
                     } else {
                         //add datalog table entry with this exception
                         LOGGER.info("Duplicate message for controller id : " + timeseriesController.getId() +
                                 " a_timestamp : " + timeStamp);
                     }
                     break;
-                case COV:
-                    Controller controller = getOrAddController(payload, agent);
-                    timeSeriesPayload = (JSONObject) payload.clone();
-                    if (controller != null) {
-                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
-                    } else {
-                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, null);
-                    }
-                    processStatus = processTimeSeries(agent, timeSeriesPayload, controller, false,recordId,partitionId,messageSource,publishType,payloadIndex);
-                    break;
-                    //processTimeSeries(payload,)
                 case AGENT_EVENTS:
                     processStatus = processAgentEvents(agent, payload);
                     break;
@@ -202,6 +185,24 @@ public class DataProcessorV2 {
         }
         LOGGER.debug(" process status " + processStatus);
         return processStatus;
+    }
+
+    // TODO.. Needs to change actual_timestamp value to ts_sec and timestamp value to publish_ts_sec
+    // ts_sec would contain data poll time and publish_ts_sec(can be used for debugging) would contain data produced time. actual_ts would be deprecated
+    private static long getPayloadTimeStamp(JSONObject payload) {
+        Long timeStamp = (Long)payload.get(AgentConstants.TIMESTAMP_SEC);
+        if (timeStamp  != null) {
+            return timeStamp * 1000;
+        }
+        // Actual ts will be removed
+        if (payload.containsKey(AgentConstants.ACTUAL_TIMESTAMP)) {
+            timeStamp = (long) payload.get(AgentConstants.ACTUAL_TIMESTAMP);
+        }
+        if (timeStamp == null) {
+            timeStamp = payload.containsKey(AgentConstants.TIMESTAMP) ? (long)payload.get(AgentConstants.TIMESTAMP)
+                    : System.currentTimeMillis();
+        }
+        return timeStamp;
     }
 
     private static Controller getOrAddController(JSONObject payload, FacilioAgent agent) throws Exception {
@@ -429,68 +430,42 @@ public class DataProcessorV2 {
         return false;
     }
 
-    private boolean processTimeSeries(FacilioAgent agent, JSONObject payload, Controller controller, boolean isTimeSeries,long recordId,int partitionId,String messageSource,PublishType publishType,int payloadIndex) throws Exception {
-        long startTime = System.currentTimeMillis();
-
+    private boolean processTimeSeries(FacilioAgent agent, long timeStamp, JSONObject payload, Controller controller,long recordId,int partitionId,String messageSource,PublishType publishType, int payloadIndex, long startTime) throws Exception {
         try {
             FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
             FacilioContext context = chain.getContext();
             context.put(AgentConstants.RECORD_ID, recordId);
             context.put(AgentConstants.PARTITION_ID, partitionId);
+            context.put(AgentKeys.PAYLOAD_INDEX,payloadIndex);
             context.put(AgentConstants.AGENT, agent);
             context.put(AgentConstants.IS_NEW_AGENT, true);
-            context.put(AgentConstants.MESSAGE_SOURCE, messageSource);
-            context.put(AgentConstants.PUBLISH_TYPE, publishType);
+            context.put(AgentConstants.MESSAGE_SOURCE,messageSource);
+            context.put(AgentConstants.PUBLISH_TYPE,publishType);
             context.put(AgentKeys.START_TIME, startTime);
-            context.put(AgentKeys.PAYLOAD_INDEX,payloadIndex);
-            if (controller != null) {
-                context.put(AgentConstants.CONTROLLER, controller);
-                context.put(AgentConstants.CONTROLLER_ID, controller.getId());
-                context.put(AgentConstants.AGENT_ID, controller.getAgentId());
-            } else {
-                // Cloud Agent
-                context.put(AgentConstants.CONTROLLER_ID, -1L);
-                if (payload.containsKey("agent")) {
-                    long agentId = getAgentId(payload.get("agent").toString());
-                    if (agentId > 0) {
-                        context.put(AgentConstants.AGENT_ID, agentId);
-                    }
-                } else throw new Exception("Agent missing in payload");
-            }
-            if (controller == null) {
-                int type = Integer.parseInt(payload.get(AgentConstants.CONTROLLER_TYPE).toString());
-                if (type == FacilioControllerType.MISC.asInt() && agent.getAgentType() == AgentType.CLOUD.getKey()) {
-                    String name = ((JSONObject) payload.get("controller")).get("name").toString();
-                    context.put(AgentConstants.CONTROLLER_NAME, name);
-                }
-            }
-            context.put(AgentConstants.DATA, payload);
-            context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, isTimeSeries);
-            if (payload.containsKey(AgentConstants.TIMESTAMP) && (payload.get(AgentConstants.TIMESTAMP) != null)) {
-                LOGGER.debug(" timestamp long instance check " + (payload.get(AgentConstants.TIMESTAMP) instanceof Long));
-                LOGGER.debug(" timestamp String instance check " + (payload.get(AgentConstants.TIMESTAMP) instanceof String));
-                context.put(AgentConstants.TIMESTAMP, payload.get(AgentConstants.TIMESTAMP));
-            } else {
-                context.put(AgentConstants.TIMESTAMP, System.currentTimeMillis());
-            }
+            context.put(AgentConstants.CONTROLLER, controller);
+            context.put(AgentConstants.CONTROLLER_ID, controller.getId());
+            context.put(AgentConstants.AGENT_ID, controller.getAgentId());
+            context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, publishType == PublishType.TIMESERIES);
+            context.put(AgentConstants.TIMESTAMP, timeStamp);
+            int version = FacilioUtil.parseInt(payload.getOrDefault(AgentConstants.VERSION, 2));
+            context.put(AgentConstants.VERSION, version);
+            context.put(AgentConstants.PAYLOAD, payload);
+
+            Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING);
+            boolean forkPostProcessing = orgInfoMap == null ? false : Boolean.parseBoolean(orgInfoMap.get(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING));
+            context.put(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, forkPostProcessing);
+
             chain.execute();
             LOGGER.debug(" done processes data command ");
-            /*for (Object key : context.keySet()) {
-                LOGGER.info(key+"->"+context.get(key));
-            }*/
             return true;
-            /*ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            bean.processNewTimeSeries(payload,controllerTs);*/
         } catch (Exception e) {
-            addAgentDataLogForError(e, recordId, agent.getId(), controller.getId(), messageSource, partitionId, payload, publishType, startTime,payloadIndex);
-
+            addAgentDataLogForError(e,recordId,agent.getId(),controller.getId(),messageSource,partitionId,payload,publishType, startTime, payloadIndex);
             LOGGER.info("Exception while processing timeseries data ", e);
-            //add log
         }
         return false;
     }
 
-    private void addAgentDataLogForError(Exception e,long recordId,long agentId,long controllerId,String messageSource,int partitionId,JSONObject payload,PublishType publishType,long startTime,int payloadIndex) throws Exception {
+    private void addAgentDataLogForError(Exception e,long recordId,long agentId,long controllerId,String messageSource,int partitionId,JSONObject payload,PublishType publishType, long startTime, int payloadIndex) throws Exception {
 
         DataLogContextV3 datalog = new DataLogContextV3();
         datalog.setRecordId(recordId);
@@ -499,8 +474,10 @@ public class DataProcessorV2 {
         datalog.setControllerId(controllerId);
         datalog.setMessageSource(messageSource);
         datalog.setPayload(payload.toJSONString());
+        datalog.setStartTime(startTime);
         datalog.setMessageStatus(DataLogContextV3.Agent_Message_Status.FAILURE.getKey());
-        datalog.setErrorStackTrace(e.toString());
+        String errorMessage = e.getMessage() != null ? e.getMessage() : "Internal Server Error";
+        datalog.setErrorStackTrace(errorMessage);
         datalog.setPublishType(publishType.asInt());
         datalog.setStartTime(startTime);
         datalog.setEndTime(System.currentTimeMillis());

@@ -37,6 +37,7 @@ public class ServiceOrderContext extends V3Context {
     private Boolean isAllSACompleted;
     private Boolean isTaskInitiated;
     private Long resolutionDueDate;
+    private Long resolutionDueDuration;
     private Long resolvedTime;
     private StateFlowRuleContext stateflow;
     private ServiceOrderSourceType sourceType;

@@ -1,10 +1,14 @@
 package com.facilio.modules.fields;
 
+import lombok.Getter;
+
 import java.util.Objects;
 
 public class FieldOption <Value> {
     private Value value;
     private String label, secondaryLabel,fourthLabel, subModule;
+    @Getter
+    private String color,accent,severityLevel;
 
     public FieldOption(Value value, Object label) {
         this(value, label, null);
@@ -20,12 +24,15 @@ public class FieldOption <Value> {
         this.secondaryLabel = secondaryLabel == null ? null : Objects.toString(secondaryLabel);
         this.subModule = subModule;
     }
-    public FieldOption(Value value, Object label, Object secondaryLabel,Object fourthLabel ,String subModule){
+    public FieldOption(Value value, Object label, Object secondaryLabel,Object fourthLabel ,String subModule,String color,String accent,String severityLevel){
         this.value = value;
         this.label = label == null ? null : Objects.toString(label);
         this.secondaryLabel = secondaryLabel == null ? null : Objects.toString(secondaryLabel);
         this.fourthLabel = fourthLabel == null ? null : Objects.toString(fourthLabel);
         this.subModule = subModule;
+        this.color = color;
+        this.severityLevel = severityLevel;
+        this.accent = accent;
     }
 
     public String getLabel() {
