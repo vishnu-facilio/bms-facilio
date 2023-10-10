@@ -2564,6 +2564,7 @@
             <property name="user" type="object">
                 <property name="applicationId" type="number"/>
                 <property name="uid" type="number"/>
+                <property name="appLinkName" type="string"/>
             </property>
         </requestbody>
     </request>
@@ -2600,6 +2601,7 @@
         <urlparams>
             <property name="email" type="string"/>
             <property name="appId" type="number"/>
+            <property name="appLinkName" type="string"/>
         </urlparams>
     </request>
     <request path="/api/v1/setup/iamuser/addorupdateportaluser" method="POST">
@@ -3186,6 +3188,13 @@
             <property name="userStatus" type="boolean"/>
             <property name="activeTab" type="string" />
             <property name="fileName" type="string" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/application/users/getUserFromPeopleId" method="GET">
+        <urlparams>
+            <property name="peopleId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
 

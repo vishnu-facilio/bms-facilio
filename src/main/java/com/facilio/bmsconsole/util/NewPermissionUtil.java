@@ -88,6 +88,7 @@ public class NewPermissionUtil {
         moduleTabType.put("MANAGE_INVENTORY_REQUEST",67108864L);
         moduleTabType.put("CLONE",134217728L);
         moduleTabType.put("COMPLETE",268435456L);
+        moduleTabType.put("MANAGE_ACCESS",536870912L);
         return moduleTabType;
     }
 
@@ -472,6 +473,46 @@ public class NewPermissionUtil {
         permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
         permissions.add(new Permission("CONTROL", "Control", moduleTabType.get("CONTROL"), null));
         permissionMap.put(FacilioConstants.ContextNames.ASSET, permissions);
+
+        permissions = new ArrayList<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("MANAGE_ACCESS","Manage Access",moduleTabType.get("MANAGE_ACCESS"),null));
+        permissionMap.put(FacilioConstants.ContextNames.TENANT_CONTACT, permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("MANAGE_ACCESS","Manage Access",moduleTabType.get("MANAGE_ACCESS"),null));
+        permissionMap.put(FacilioConstants.ContextNames.VENDOR_CONTACT, permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("MANAGE_ACCESS","Manage Access",moduleTabType.get("MANAGE_ACCESS"),null));
+        permissionMap.put(FacilioConstants.ContextNames.CLIENT_CONTACT, permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("MANAGE_ACCESS","Manage Access",moduleTabType.get("MANAGE_ACCESS"),null));
+        permissionMap.put(FacilioConstants.ContextNames.EMPLOYEE, permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
         permissions = new ArrayList<>();
         permissionMap = new HashMap<>();

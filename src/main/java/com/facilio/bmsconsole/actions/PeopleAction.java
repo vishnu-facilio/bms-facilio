@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -66,7 +67,6 @@ public class PeopleAction extends FacilioAction{
 	private List<PeopleContext> peopleList;
 	
 	private List<Long> peopleIds;
-	
 	private long recordId = -1;
 	public long getRecordId() {
 		return recordId;

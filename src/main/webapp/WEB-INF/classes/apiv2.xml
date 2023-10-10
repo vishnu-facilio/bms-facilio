@@ -6795,6 +6795,10 @@
 			<param name="permission">ALL</param>
 			<param name="setupTab">PORTALS,USERS,API_SETUP,AUDIT_LOGS</param>
 		</action>
+		<action name="getUserFromPeopleId" class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="getUserFromPeopleId">
+			<param name="moduleName">${moduleName}</param>
+			<param name="permission">MANAGE_ACCESS</param>
+		</action>
 		<action name="summary" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="getApplicationUserDetails">
 				<param name="permission">ALL</param>

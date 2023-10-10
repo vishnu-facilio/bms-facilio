@@ -128,6 +128,8 @@ public class AppModulePermissionUtil {
             new Permission(getExponentValue(6), "CREATE_EDIT", "Create/Edit", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(7), "UPDATE_WORKORDER_TASK", "Execute Task", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(8), "CONTROL", "Control", PermissionMapping.GROUP2PERMISSION),
+            new Permission(getExponentValue(9),"MANAGE_ACCESS","Manage Access",PermissionMapping.GROUP2PERMISSION),
+
             //new Permission(getExponentValue(9), "READ_TASK", "Read Task", PermissionMapping.GROUP2PERMISSION)
             new Permission(getExponentValue(10), "MANAGE_INVENTORY", "Manage Inventory", PermissionMapping.GROUP2PERMISSION)
 
