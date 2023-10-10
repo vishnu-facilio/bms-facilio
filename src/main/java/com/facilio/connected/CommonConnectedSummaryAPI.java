@@ -35,7 +35,7 @@ public class CommonConnectedSummaryAPI {
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("ruleDetails", null, null)
-                .addWidget("ruleDetails", "Rule Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_7", 0, 0, null, getReadingRuleSummaryWidgetDetails(FacilioConstants.ReadingRules.NEW_READING_RULE, app))
+                .addWidget("ruleDetails", "Rule Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getReadingRuleSummaryWidgetDetails(FacilioConstants.ReadingRules.NEW_READING_RULE, app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("faultDetails", null, null)
