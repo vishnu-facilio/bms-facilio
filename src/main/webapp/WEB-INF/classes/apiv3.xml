@@ -1924,6 +1924,7 @@
     <package name="virtualMeterTemplate" namespace="/api/v3/virtualMeterTemplate" extends="v3Api">
         <action name="publish" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="publishVMTemplate"></action>
         <action name="generateVM" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="generateVirtualMeter"></action>
+        <action name="filterResources" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="fetchVMGeneratedResources"></action>
     </package>
 
 

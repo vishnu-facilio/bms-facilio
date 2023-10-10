@@ -2,13 +2,21 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.SystemButtonApi;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
+import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -50,6 +58,8 @@ public class AddVirtualMeterTemplateModules extends SignUpData {
         SignupUtil.addModules(virtualMeterResourcesModule);
         
         addMultilookupFieldIntoTemplateModule("resources",modBean, orgId, virtualMeterTemplateModule, virtualMeterResourcesModule);
+
+        addSystemButtons();
 	}
 	
 	private FacilioModule constructVirtualMeterReadingModule(ModuleBean moduleBean, long orgId, FacilioModule virtualMeterTemplateModule) throws Exception {
@@ -101,7 +111,7 @@ public class AddVirtualMeterTemplateModules extends SignUpData {
         module.setOrgId(orgId);
 
         /**
-         * Adding fields plannedMaintenanceSite Module
+         * Adding fields virtualMeterTemplateResources Module
          */
         List<FacilioField> fields = new ArrayList<>();
         /* left Field */
@@ -257,5 +267,40 @@ public class AddVirtualMeterTemplateModules extends SignUpData {
 		sitesField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
 		moduleBean.addField(sitesField);
 	}
+
+    private static void addSystemButtons() throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        SystemButtonRuleContext publishVMTemplate = new SystemButtonRuleContext();
+        publishVMTemplate.setName("Publish");
+        publishVMTemplate.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        publishVMTemplate.setIdentifier("virtualMeterTemplatePublish");
+        publishVMTemplate.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria publishCriteria = new Criteria();
+        publishCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("vmTemplateStatus"),String.valueOf(VirtualMeterTemplateContext.VMTemplateStatus.UN_PUBLISHED.getIndex()), EnumOperators.IS));
+        publishVMTemplate.setCriteria(publishCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE,publishVMTemplate);
+
+        SystemButtonRuleContext  generateVM = new SystemButtonRuleContext();
+        generateVM.setName("Generate VM");
+        generateVM.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        generateVM.setIdentifier("generateVirtualMeter");
+        generateVM.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria generateCriteria = new Criteria();
+        generateCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("vmTemplateStatus"),String.valueOf(VirtualMeterTemplateContext.VMTemplateStatus.PUBLISHED.getIndex()), EnumOperators.IS));
+        generateVM.setCriteria(generateCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE,generateVM);
+
+        SystemButtonRuleContext editVMTemplate = new SystemButtonRuleContext();
+        editVMTemplate.setName("Edit");
+        editVMTemplate.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editVMTemplate.setIdentifier("editVirtualMeterTemplate");
+        editVMTemplate.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE,editVMTemplate);
+
+    }
 
 }

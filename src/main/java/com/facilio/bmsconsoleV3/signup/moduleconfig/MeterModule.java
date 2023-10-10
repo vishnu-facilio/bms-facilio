@@ -9,8 +9,11 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -50,6 +53,7 @@ public class MeterModule extends BaseModuleConfig{
 
         addModuleLocalId();
         addMeterSubModules(meterModule);
+        addSystemButtons();
 
     }
 
@@ -376,7 +380,7 @@ public class MeterModule extends BaseModuleConfig{
         return module;
     }
     /**
-     * creates description field for Shift
+     * creates description field for Meter
      **/
     private void addRichTextField(FacilioModule meterModule, FacilioModule richText) throws Exception {
         LargeTextField field = (LargeTextField) FieldFactory.getDefaultField("description", "Description", null, FieldType.LARGE_TEXT);
@@ -384,6 +388,15 @@ public class MeterModule extends BaseModuleConfig{
         field.setRelModuleId(richText.getModuleId());
 
         Constants.getModBean().addField(field);
+    }
+
+    private static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editMeter = new SystemButtonRuleContext();
+        editMeter.setName("Edit");
+        editMeter.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editMeter.setIdentifier("editMeter");
+        editMeter.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.Meter.METER,editMeter);
     }
 
     private static List<ViewField> getAllViewColumns() {

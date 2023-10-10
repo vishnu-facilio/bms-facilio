@@ -3780,6 +3780,12 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain fetchVMGeneratedResourcesChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchVMGeneratedResourcesCommand());
+        return c;
+    }
+
     public static FacilioChain getVirtualMeterTemplateSummaryBeforeFetchChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new VMTemplateSupplementsSupplyCommand());
