@@ -921,7 +921,7 @@ public class ChainUtil {
         return chain;
     }
 
-    public static FacilioChain getCalendarViewChain(String moduleName, boolean getSingleCellData) throws Exception {
+    public static FacilioChain getCalendarViewChain(String moduleName, boolean getSingleCellData, boolean onlyCount) throws Exception {
         FacilioModule module = ChainUtil.getModule(moduleName);
         V3Config v3Config = ChainUtil.getV3Config(module);
 
@@ -967,6 +967,10 @@ public class ChainUtil {
         } else {
             nonTransactionChain.addCommand(new CalendarViewDataAggregationCommand());
             nonTransactionChain.addCommand(new CalendarViewDataCommand());
+        }
+
+        if (onlyCount) {
+            return nonTransactionChain;
         }
 
         addIfNotNull(nonTransactionChain, afterFetchCommand);

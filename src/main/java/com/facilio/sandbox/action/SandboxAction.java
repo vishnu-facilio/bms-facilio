@@ -1,8 +1,11 @@
 package com.facilio.sandbox.action;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -14,11 +17,17 @@ import com.facilio.sandbox.command.SandboxTransactionChainFactory;
 import com.facilio.sandbox.context.SandboxConfigContext;
 import com.facilio.sandbox.utils.SandboxAPI;
 import com.facilio.sandbox.utils.SandboxConstants;
+import com.facilio.identity.client.IdentityClient;
+import com.facilio.identity.client.bean.UserBean;
+import com.facilio.iam.accounts.util.IAMAppUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Log4j @Setter @Getter
@@ -32,6 +41,7 @@ public class SandboxAction extends FacilioAction {
     private long sourceOrgId;
     private long targetOrgId;
     private String domainName;
+    private String sandboxName;
     private List<Integer> skipComponents;
     private boolean fromAdminTool = false;
     private String search;
@@ -155,6 +165,26 @@ public class SandboxAction extends FacilioAction {
         sandboxContext.put(SandboxConstants.SANDBOX, sandbox);
         updateSandboxChain.execute();
         setResult(FacilioConstants.ContextNames.MESSAGE, "Status changed successfully");
+
+        return SUCCESS;
+    }
+
+    public String goToSandbox() throws Exception {
+        String redirectUrl = "/" + sandboxName;
+        User currentUser = AccountUtil.getCurrentUser();
+        Organization sandboxOrg = IAMUtil.getOrgBean().getOrgv2(sandboxName, Organization.OrgType.SANDBOX);
+
+        Organization currentOrg = AccountUtil.getCurrentOrg();
+        String appDomainName = currentOrg != null ? currentOrg.getDomain() + "." + FacilioProperties.getSandboxSubDomain() : null;
+        AppDomain appDomainObj = StringUtils.isNotEmpty(appDomainName) ? IAMAppUtil.getAppDomain(appDomainName, sandboxOrg.getOrgId()) : null;
+        com.facilio.identity.client.dto.AppDomain appDomain = appDomainObj != null ?
+                IdentityClient.getDefaultInstance().getAppDomainBean().getAppDomain(appDomainObj.getDomain()) : null;
+
+        UserBean userBean = IdentityClient.getDefaultInstance().getUserBean();
+        String sandboxUrl = userBean.generateSandboxLoginRequest(sandboxOrg.getOrgId(), currentUser.getEmail(), appDomain, redirectUrl);
+
+        HttpServletResponse response = ServletActionContext.getResponse();
+        response.sendRedirect(sandboxUrl);
 
         return SUCCESS;
     }

@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
+import lombok.Getter;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.modules.FacilioModule;
@@ -103,8 +104,14 @@ public class FacilioForm implements Serializable {
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
-	
-	
+
+	public String getDefaultSubFormName(String moduleName) {
+		return "default_" + moduleName;
+	}
+
+	public String getDefaultSubFormDisplayName(String moduleName) {
+		return moduleName + " SubFom";
+	}
 	private List<Long> siteIds;
 	
 	

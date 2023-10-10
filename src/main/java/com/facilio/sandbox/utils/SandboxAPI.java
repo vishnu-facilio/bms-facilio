@@ -47,6 +47,10 @@ import static com.facilio.backgroundactivity.util.BackgroundActivityAPI.isActivi
 
 @Log4j
 public class SandboxAPI {
+    public static boolean isSandboxOrg(Organization org) {
+        return org != null && org.getOrgType() == Organization.OrgType.SANDBOX.getIndex();
+    }
+
     public static boolean isSandboxSubDomain(String domain) {
         return StringUtils.isNotEmpty(domain) && domain.endsWith(FacilioProperties.getSandboxSubDomain());
     }
@@ -110,6 +114,30 @@ public class SandboxAPI {
             return FieldUtil.getAsBeanFromMap(props, SandboxConfigContext.class);
         }
         return null;
+    }
+
+    public static List<SandboxConfigContext> getActiveSandboxForUser(long ouid) throws Exception {
+        if (ouid < 0) {
+            return null;
+        }
+        List<SandboxConfigContext> sandboxList = null;
+        FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
+        List<FacilioField> sandboxFields = FieldFactory.getFacilioSandboxFields();
+        FacilioModule sandboxSharingModule = ModuleFactory.getSandboxSharingModule();
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(sandboxFields)
+                .table(sandboxModule.getTableName())
+                .leftJoin(sandboxSharingModule.getTableName())
+                .on(sandboxSharingModule.getTableName() + ".PARENT_ID = " + sandboxModule.getTableName() + ".ID")
+                .andCondition(CriteriaAPI.getCondition("ORG_USER_ID", "ouid", String.valueOf(ouid), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(SandboxConfigContext.SandboxStatus.ACTIVE.getIndex()), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        if (CollectionUtils.isNotEmpty(props)) {
+            sandboxList = FieldUtil.getAsBeanListFromMapList(props, SandboxConfigContext.class);
+        }
+        return sandboxList;
     }
 
     public static List<SandboxConfigContext> getAllSandbox(int page, int perPage, String search) throws Exception {

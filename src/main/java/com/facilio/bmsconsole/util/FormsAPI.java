@@ -2336,7 +2336,8 @@ public class FormsAPI {
 			subForm.setHideInList(true);
 			subForm.setType(FacilioForm.Type.SUB_FORM);
 			subForm.setAppLinkName(SignupUtil.getSignupApplicationLinkName());
-			subForm.setDisplayName(subFormModule.getName() + " " + defaultForm.getId());
+			subForm.setName(subForm.getDefaultSubFormName(subFormModule.getName()));
+			subForm.setDisplayName(subForm.getDefaultSubFormDisplayName(subFormModule.getDisplayName()));
 			subForm.setIsSystemForm(true);
 
 			addSubFormToExistingForm(subForm,defaultForm);
@@ -2362,7 +2363,14 @@ public class FormsAPI {
 		FormSection subFormSection = new FormSection();
 		subFormSection.setSubFormId(defaultSubForm.getId());
 		subFormSection.setSectionType(FormSection.SectionType.SUB_FORM);
-		subFormSection.setName(StringUtils.isNotEmpty(defaultSubForm.getDisplayName())?defaultSubForm.getDisplayName():"Subform");
+
+		String subSectionName = null;
+		if (CollectionUtils.isNotEmpty(defaultSubForm.getSections())) {
+			subSectionName = defaultSubForm.getSections().get(0).getName();
+		}
+
+		subFormSection.setName(StringUtils.isNotEmpty(subSectionName) ? subSectionName : "Subform");
+
 		subFormSection.setShowLabel(true);
 		subFormSection.setSequenceNumber(defaultForm.getSections().size()+1);
 

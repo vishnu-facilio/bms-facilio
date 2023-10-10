@@ -88,6 +88,10 @@
                 class="com.facilio.sandbox.action.SandboxAction"
                 method="rerun">
         </action>
+        <action name="goToSandbox"
+                class="com.facilio.sandbox.action.SandboxAction"
+                method="goToSandbox">
+        </action>
     </package>
 
     <package name="moduleSetupApi" namespace="/api/v1/setup/modules" extends="v2Api">

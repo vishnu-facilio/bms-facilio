@@ -27,6 +27,7 @@ import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.sandbox.context.SandboxConfigContext;
 import com.facilio.sandbox.utils.SandboxAPI;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
@@ -1074,10 +1075,23 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String getOrgs() throws Exception {
+		User currentUser = AccountUtil.getCurrentUser();
 		HttpServletRequest request = ServletActionContext.getRequest();
 		Organization.OrgType orgType = SandboxAPI.isSandboxSubDomain(request.getServerName()) ? Organization.OrgType.SANDBOX : Organization.OrgType.PRODUCTION;
 
-		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid(), orgType);
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(currentUser.getUid(), orgType);
+
+		// Filter active sandbox orgs
+		if (CollectionUtils.isNotEmpty(orgs) && orgType.equals(Organization.OrgType.SANDBOX) && currentUser.getOuid() > 0) {
+			List<SandboxConfigContext> activeSandboxForUser = SandboxAPI.getActiveSandboxForUser(currentUser.getOuid());
+			List<Organization> filteredOrgs = null;
+			if (CollectionUtils.isNotEmpty(activeSandboxForUser)) {
+				List<Long> activeSandboxOrgs = activeSandboxForUser.stream().map(SandboxConfigContext::getSandboxOrgId).collect(Collectors.toList());
+                filteredOrgs = orgs.stream().filter(organization -> activeSandboxOrgs.contains(organization.getOrgId())).collect(Collectors.toList());
+			}
+			orgs = filteredOrgs;
+		}
+
 		setResult("Orgs", orgs);
 		return SUCCESS;
 	}

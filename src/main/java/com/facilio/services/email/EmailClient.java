@@ -1,6 +1,7 @@
 package com.facilio.services.email;
 
 import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -29,6 +30,7 @@ import com.facilio.mailtracking.context.MailEnums;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.sandbox.utils.SandboxAPI;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
@@ -386,7 +388,8 @@ public abstract class EmailClient extends BaseEmailClient {
     }
 
     boolean canSendEmail(JSONObject mailJson) throws Exception {
-        if (FacilioProperties.isDevelopment()) {
+        Organization currentOrg = AccountUtil.getCurrentOrg();
+        if (FacilioProperties.isDevelopment() || SandboxAPI.isSandboxOrg(currentOrg)) {
             return false;
         }
         return (getEmailAddresses(mailJson, TO).size() >0 );
