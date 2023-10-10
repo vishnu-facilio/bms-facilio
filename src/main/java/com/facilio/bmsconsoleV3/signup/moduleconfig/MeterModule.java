@@ -28,6 +28,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
+import com.facilio.relation.util.RelationshipWidgetUtil;
 import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
@@ -394,7 +395,7 @@ public class MeterModule extends BaseModuleConfig{
         SystemButtonRuleContext editMeter = new SystemButtonRuleContext();
         editMeter.setName("Edit");
         editMeter.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        editMeter.setIdentifier("editMeter");
+        editMeter.setIdentifier("edit");
         editMeter.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.Meter.METER,editMeter);
     }
@@ -466,7 +467,7 @@ public class MeterModule extends BaseModuleConfig{
                 .addTab("meterrelated", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("meterrelationships", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, null)
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(meterModule))
                 .widgetDone()
                 .sectionDone()
                 .addSection("meterrelatedlist", "Related List", "List of related records across modules")
@@ -509,7 +510,7 @@ public class MeterModule extends BaseModuleConfig{
                 .addTab("meterrelated", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("meterrelationships", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, null)
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(meterModule))
                 .widgetDone()
                 .sectionDone()
                 .addSection("meterrelatedlist", "Related List", "List of related records across modules")
@@ -566,7 +567,7 @@ public class MeterModule extends BaseModuleConfig{
                 .addTab("meterrelated", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("meterrelationships", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, null)
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(meterModule))
                 .widgetDone()
                 .sectionDone()
                 .addSection("meterrelatedlist", "Related List", "List of related records across modules")
@@ -609,7 +610,7 @@ public class MeterModule extends BaseModuleConfig{
                 .addTab("meterrelated", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("meterrelationships", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, null)
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(meterModule))
                 .widgetDone()
                 .sectionDone()
                 .addSection("meterrelatedlist", "Related List", "List of related records across modules")
@@ -845,14 +846,20 @@ public class MeterModule extends BaseModuleConfig{
         }
     }
     private static JSONObject getCommentsAttachmentsWidgetGroup(boolean isMobile) throws Exception {
+        JSONObject notesWidgetParam = new JSONObject();
+        notesWidgetParam.put(FacilioConstants.ContextNames.NOTES_MODULE_NAME, FacilioConstants.Meter.METER_NOTES);
+
+        JSONObject attachmentsWidgetParam = new JSONObject();
+        attachmentsWidgetParam.put(FacilioConstants.ContextNames.ATTACHMENTS_MODULE_NAME, FacilioConstants.Meter.METER_ATTACHMENTS);
+
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
                 .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_5", 0, 0, null, null)
+                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Attachments", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_5", 0, 0, null, null)
+                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_5", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
         return FieldUtil.getAsJSON(widgetGroup);
