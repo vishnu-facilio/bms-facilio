@@ -109,13 +109,13 @@ public class WaterMeterModule extends BaseModuleConfig{
         FacilioModule parentModule = modBean.getModule(FacilioConstants.Meter.WATER_METER);
         FacilioModule childModule = modBean.getModule(FacilioConstants.Meter.WATER_METER);
         RelationRequestContext parentMeterVsChildMeterRelation = new RelationRequestContext();
-        parentMeterVsChildMeterRelation.setName("parentmeter");
-        parentMeterVsChildMeterRelation.setDescription("Parent Vs Child meter relationship");
+        parentMeterVsChildMeterRelation.setName("Water Meter Hierarchy");
+        parentMeterVsChildMeterRelation.setDescription("Relationship between Parent and Child meters");
         parentMeterVsChildMeterRelation.setFromModuleId(parentModule.getModuleId());
         parentMeterVsChildMeterRelation.setToModuleId(childModule.getModuleId());
         parentMeterVsChildMeterRelation.setRelationType(RelationRequestContext.RelationType.ONE_TO_MANY);
-        parentMeterVsChildMeterRelation.setRelationName("parent to");
-        parentMeterVsChildMeterRelation.setReverseRelationName("child of");
+        parentMeterVsChildMeterRelation.setRelationName("Parent to Child Water Meter");
+        parentMeterVsChildMeterRelation.setReverseRelationName("Child to Parent Water Meter");
         parentMeterVsChildMeterRelation.setRelationCategory(RelationContext.RelationCategory.METER);
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateRelationChain();
         FacilioContext context = chain.getContext();

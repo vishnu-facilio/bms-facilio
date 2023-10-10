@@ -50,10 +50,7 @@ import com.facilio.bmsconsoleV3.commands.tool.*;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesExtraFields;
 import com.facilio.bmsconsoleV3.commands.tooltypes.LoadToolTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.userScoping.*;
-import com.facilio.bmsconsoleV3.commands.utilityType.AddUtilityTypeModuleCommand;
-import com.facilio.bmsconsoleV3.commands.utilityType.SetUtilityTypeModuleCommand;
-import com.facilio.bmsconsoleV3.commands.utilityType.UpdateUtilityTypeMeterModuleIdCommand;
-import com.facilio.bmsconsoleV3.commands.utilityType.ValidateUtilityTypeDeletion;
+import com.facilio.bmsconsoleV3.commands.utilityType.*;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendor.LoadVendorsExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.vendorQuotes.CheckVendorPortalAccessibilityCommandV3;
@@ -3743,6 +3740,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddUtilityTypeModuleCommand());
         c.addCommand(TransactionChainFactory.commonAddModuleChain());
         c.addCommand(new UpdateUtilityTypeMeterModuleIdCommand());
+        c.addCommand(new AddRelationshipForCustomUtilityTypeCommand());
         return c;
     }
 

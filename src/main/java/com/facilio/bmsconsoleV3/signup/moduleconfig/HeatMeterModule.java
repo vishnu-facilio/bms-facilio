@@ -109,13 +109,13 @@ public class HeatMeterModule extends BaseModuleConfig{
         FacilioModule parentModule = modBean.getModule(FacilioConstants.Meter.HEAT_METER);
         FacilioModule childModule = modBean.getModule(FacilioConstants.Meter.HEAT_METER);
         RelationRequestContext parentMeterVsChildMeterRelation = new RelationRequestContext();
-        parentMeterVsChildMeterRelation.setName("parentmeter");
-        parentMeterVsChildMeterRelation.setDescription("Parent Vs Child meter relationship");
+        parentMeterVsChildMeterRelation.setName("Heat Meter Hierarchy");
+        parentMeterVsChildMeterRelation.setDescription("Relationship between Parent and Child meters");
         parentMeterVsChildMeterRelation.setFromModuleId(parentModule.getModuleId());
         parentMeterVsChildMeterRelation.setToModuleId(childModule.getModuleId());
         parentMeterVsChildMeterRelation.setRelationType(RelationRequestContext.RelationType.ONE_TO_MANY);
-        parentMeterVsChildMeterRelation.setRelationName("parent to");
-        parentMeterVsChildMeterRelation.setReverseRelationName("child of");
+        parentMeterVsChildMeterRelation.setRelationName("Parent to Child Heat Meter");
+        parentMeterVsChildMeterRelation.setReverseRelationName("Child to Parent Heat Meter");
         parentMeterVsChildMeterRelation.setRelationCategory(RelationContext.RelationCategory.METER);
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateRelationChain();
         FacilioContext context = chain.getContext();

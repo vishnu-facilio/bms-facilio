@@ -109,13 +109,13 @@ public class GasMeterModule extends BaseModuleConfig{
         FacilioModule parentModule = modBean.getModule(FacilioConstants.Meter.GAS_METER);
         FacilioModule childModule = modBean.getModule(FacilioConstants.Meter.GAS_METER);
         RelationRequestContext parentMeterVsChildMeterRelation = new RelationRequestContext();
-        parentMeterVsChildMeterRelation.setName("parentmeter");
-        parentMeterVsChildMeterRelation.setDescription("Parent Vs Child meter relationship");
+        parentMeterVsChildMeterRelation.setName("Gas Meter Hierarchy");
+        parentMeterVsChildMeterRelation.setDescription("Relationship between Parent and Child meters");
         parentMeterVsChildMeterRelation.setFromModuleId(parentModule.getModuleId());
         parentMeterVsChildMeterRelation.setToModuleId(childModule.getModuleId());
         parentMeterVsChildMeterRelation.setRelationType(RelationRequestContext.RelationType.ONE_TO_MANY);
-        parentMeterVsChildMeterRelation.setRelationName("parent to");
-        parentMeterVsChildMeterRelation.setReverseRelationName("child of");
+        parentMeterVsChildMeterRelation.setRelationName("Parent to Child Gas Meter");
+        parentMeterVsChildMeterRelation.setReverseRelationName("Child to Parent Gas Meter");
         parentMeterVsChildMeterRelation.setRelationCategory(RelationContext.RelationCategory.METER);
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateRelationChain();
         FacilioContext context = chain.getContext();
