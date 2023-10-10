@@ -92,10 +92,10 @@ public class FlaggedEventUtil {
                                             controllerCriteriaMatched = controllerCriteria.computePredicate(controllerProp).evaluate(controllerProp);
                                         }
                                     }
-                                    if(flaggedEventRule.getWorkflowId() != null && flaggedEventRule.getWorkflowId() > 0) {
+                                    if (flaggedEventRule.getWorkflowId() != null && flaggedEventRule.getWorkflowId() > 0) {
                                         workflowCriteriaMatched = false;
                                         WorkflowContext workflow = WorkflowUtil.getWorkflowContext(flaggedEventRule.getWorkflowId());
-                                        if(workflow != null) {
+                                        if (workflow != null) {
                                             List<Object> params = new ArrayList<>();
                                             params.add(FieldUtil.getAsProperties(filteredAlarm));
                                             workflow.setParams(params);
@@ -104,7 +104,7 @@ public class FlaggedEventUtil {
                                             workflow.setRecordModuleId(modBean.getModule(FilteredAlarmModule.MODULE_NAME).getModuleId());
                                             workflow.setLogType(WorkflowLogContext.WorkflowLogType.MODULE_RULE);
                                             Boolean result = (Boolean) workflow.executeWorkflow();
-                                            if(result == null) {
+                                            if (result == null) {
                                                 workflowCriteriaMatched = false;
                                             } else {
                                                 workflowCriteriaMatched = result;
@@ -131,7 +131,7 @@ public class FlaggedEventUtil {
             JSONObject input = new JSONObject();
             input.put("orgId", orgId);
             input.put("filterAlarm", FacilioUtil.getAsJSON(filteredAlarm));
-            queue.put(getMessageProcessingTopicName(), new FacilioRecord(orgId + "#"+ filteredAlarm.getController().getId(), input));
+            queue.put(getMessageProcessingTopicName(), new FacilioRecord(orgId + "#" + filteredAlarm.getController().getId(), input));
         }
     }
 
@@ -291,7 +291,7 @@ public class FlaggedEventUtil {
             criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE", "flaggedEventRule", String.valueOf(flaggedEventRuleId), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", StringUtils.join(Arrays.asList(FlaggedEventContext.FlaggedEventStatus.CLEARED.name(), FlaggedEventContext.FlaggedEventStatus.AUTO_CLOSED.name()), ","), StringOperators.ISN_T));
             criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(clientId), NumberOperators.EQUALS));
-            if(assetId != null && assetId > 0) {
+            if (assetId != null && assetId > 0) {
                 criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(assetId), NumberOperators.EQUALS));
             } else {
                 criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
@@ -343,7 +343,7 @@ public class FlaggedEventUtil {
             criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_TYPE", "alarmType", String.valueOf(filteredAlarm.getAlarmType().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", String.valueOf(filteredAlarm.getController().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE", "flaggedEventRule", String.valueOf(filteredAlarm.getFlaggedEventRule().getId()), NumberOperators.EQUALS));
-            if(filteredAlarm.getAsset() != null && filteredAlarm.getAsset().getId() > 0) {
+            if (filteredAlarm.getAsset() != null && filteredAlarm.getAsset().getId() > 0) {
                 criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(filteredAlarm.getAsset().getId()), NumberOperators.EQUALS));
             } else {
                 criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
@@ -398,12 +398,14 @@ public class FlaggedEventUtil {
         Long ruleId = (Long) ruleContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
         return ruleId;
     }
-
     public static Long addEmailRule(WorkflowRuleContext emailRule, String ruleName, Criteria criteria) throws Exception {
+        return addEmailRule(emailRule, ruleName, criteria, EventType.CREATE);
+    }
+    public static Long addEmailRule(WorkflowRuleContext emailRule, String ruleName, Criteria criteria,EventType eventType) throws Exception {
         emailRule.setRuleType(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION);
         emailRule.setScheduleType(WorkflowRuleContext.ScheduledRuleType.AFTER);
         WorkflowEventContext workflowEventContext = new WorkflowEventContext();
-        workflowEventContext.setActivityType(EventType.CREATE);
+        workflowEventContext.setActivityType(eventType);
         workflowEventContext.setModuleName(FlaggedEventModule.MODULE_NAME);
         emailRule.setEvent(workflowEventContext);
         emailRule.setCriteria(criteria);
