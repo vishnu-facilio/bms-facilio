@@ -1,10 +1,15 @@
 package com.facilio.bmsconsoleV3.signup.controlAction;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 
@@ -58,5 +63,18 @@ public class CommandModule extends BaseModuleConfig {
         allView.setSortFields(sortFields);
 
         return allView;
+    }
+    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        List<ScopeVariableModulesFields> scopeConfigList;
+
+        ScopeVariableModulesFields energyApp = new ScopeVariableModulesFields();
+        energyApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_energy_site"));
+        energyApp.setModuleId(module.getModuleId());
+        energyApp.setFieldName("site");
+
+        scopeConfigList = Arrays.asList(energyApp);
+        return scopeConfigList;
     }
 }

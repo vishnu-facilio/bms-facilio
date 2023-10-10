@@ -6,6 +6,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.CalendarActivityType;
 import com.facilio.bmsconsole.activity.ControlActionActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsoleV3.actions.V3ControlActionAction;
@@ -47,16 +48,16 @@ public class CreateControlActionCommandsCommand extends FacilioCommand {
         if(CollectionUtils.isEmpty(assetContextList)){
             return false;
         }
+        boolean check = false;
+        List<PeopleContext> firstLevelApproverList = ControlActionAPI.getApprovalList(v3ControlActionContext.getId(),FacilioConstants.Control_Action.CONTROL_ACTION_FIRST_LEVEL_APPROVAL_MODULE_NAME);
         V3CommandsContext.ControlActionCommandStatus commandStatus = V3CommandsContext.ControlActionCommandStatus.NOT_SCHEDULED;
-        if(v3ControlActionContext.getControlActionStatus() == V3ControlActionContext.ControlActionStatus.COMMAND_GENERATED.getVal()){
-            v3ControlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getVal());
-            v3ControlActionContext.setScheduleActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getVal());
-            ControlActionAPI.updateControlAction(v3ControlActionContext);
-            ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getValue(),v3ControlActionContext.getId());
-
-            commandStatus = V3CommandsContext.ControlActionCommandStatus.SCHEDULED;
-
+        if(CollectionUtils.isEmpty(firstLevelApproverList)) {
+            if (v3ControlActionContext.getControlActionStatus() == V3ControlActionContext.ControlActionStatus.PUBLISHED.getVal()){
+                commandStatus = V3CommandsContext.ControlActionCommandStatus.SCHEDULED;
+                check = true;
+            }
         }
+
         List<V3CommandsContext> commandsContextList = new ArrayList<>();
         for(V3AssetContext assetContext : assetContextList) {
             List<V3ActionContext> actionContextList = v3ControlActionContext.getActionContextList();
@@ -69,6 +70,13 @@ public class CreateControlActionCommandsCommand extends FacilioCommand {
         }
         if(CollectionUtils.isNotEmpty(commandsContextList)){
             ControlActionAPI.createCommand(commandsContextList);
+            if(check) {
+                ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.COMMAND_GENERATED.getValue(), v3ControlActionContext.getId());
+                v3ControlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getVal());
+                v3ControlActionContext.setScheduleActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getVal());
+                ControlActionAPI.updateControlAction(v3ControlActionContext);
+                ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getValue(), v3ControlActionContext.getId());
+            }
         }
         context.put(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,v3ControlActionContext);
         return false;
@@ -101,10 +109,10 @@ public class CreateControlActionCommandsCommand extends FacilioCommand {
                 subject += "Set Value To ";
             }
             else if(actionContext.getScheduledActionOperatorTypeEnum() == V3ActionContext.ActionOperatorTypeEnum.INCREASED_BY){
-                subject += "Increased By ";
+                subject += "Increase By ";
             }
             else if(actionContext.getScheduledActionOperatorTypeEnum() == V3ActionContext.ActionOperatorTypeEnum.DECREASED_BY){
-                subject += "Decreased By ";
+                subject += "Decrease By ";
             }
             subject += String.valueOf(actionContext.getScheduleActionValue());
         }
@@ -113,10 +121,10 @@ public class CreateControlActionCommandsCommand extends FacilioCommand {
                 subject += "Set Value To ";
             }
             else if(actionContext.getRevertActionOperatorTypeEnum() == V3ActionContext.ActionOperatorTypeEnum.INCREASED_BY){
-                subject += "Increased By ";
+                subject += "Increase By ";
             }
             else if(actionContext.getRevertActionOperatorTypeEnum() == V3ActionContext.ActionOperatorTypeEnum.DECREASED_BY){
-                subject += "Decreased By ";
+                subject += "Decrease By ";
             }
             subject += String.valueOf(actionContext.getRevertActionValue());
         }

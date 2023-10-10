@@ -48,6 +48,10 @@ import com.facilio.bmsconsoleV3.commands.shift.AssignShiftToUserCommand;
 import com.facilio.bmsconsoleV3.signup.AddEnergyApp;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultForms;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultViews;
+import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppDefaultUserAndRoles;
+import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppLayout;
+import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppRelatedApplication;
+import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppTabsAndLayout;
 import com.facilio.bmsconsoleV3.signup.fsmApp.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.*;
 import com.facilio.cb.command.*;
@@ -127,7 +131,7 @@ public class TransactionChainFactory {
 			c.addCommand(addMaintenanceApplication());
 			c.addCommand(addFSMApplication());
 			c.addCommand(addEmployeePortalChain());
-			c.addCommand(new AddEnergyApp());
+			c.addCommand(addEnergyApplication());
 			c.addCommand(addScopingChain());
 			c.addCommand(addRemoteMonitoringApplicationMeta());
 			c.addCommand(new AssignShiftToUserCommand());
@@ -166,6 +170,14 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddRMTabsAndTabGroups());
 		c.addCommand(new AddRMSetupTabsAndTabGroups());
+		return c;
+	}
+	public static FacilioChain addEnergyApplication(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddEnergyAppLayout());
+		c.addCommand(new AddEnergyAppTabsAndLayout());
+		c.addCommand(new AddEnergyAppDefaultUserAndRoles());
+		//c.addCommand(new AddEnergyAppRelatedApplication());
 		return c;
 	}
 

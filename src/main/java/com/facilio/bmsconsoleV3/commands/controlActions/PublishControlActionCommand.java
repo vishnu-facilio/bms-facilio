@@ -28,6 +28,8 @@ public class PublishControlActionCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Long controlActionId = (Long) context.get("controlActionId");
         V3ControlActionContext controlActionContext = ControlActionAPI.getControlAction(controlActionId);
+        controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.PUBLISHED.getVal());
+        ControlActionAPI.updateControlAction(controlActionContext);
         ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.PUBLISHED.getValue(), controlActionId);
 
         List<PeopleContext> firstLevelApproverList = ControlActionAPI.getApprovalList(controlActionContext.getId(),FacilioConstants.Control_Action.CONTROL_ACTION_FIRST_LEVEL_APPROVAL_MODULE_NAME);
@@ -35,11 +37,6 @@ public class PublishControlActionCommand extends FacilioCommand {
             controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.WAITING_FOR_FIRST_LEVEL_APPROVAL.getVal());
             ControlActionAPI.updateControlAction(controlActionContext);
             ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.WAITING_FOR_FIRST_LEVEL_APPROVAL.getValue(), controlActionId);
-        }
-        else{
-            controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.COMMAND_GENERATED.getVal());
-            ControlActionAPI.updateControlAction(controlActionContext);
-            ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.COMMAND_GENERATED.getValue(), controlActionId);
         }
         ControlActionAPI.generateCommand(controlActionId);
         return false;

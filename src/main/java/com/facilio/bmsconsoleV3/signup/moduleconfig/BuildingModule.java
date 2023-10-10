@@ -143,7 +143,12 @@ public class BuildingModule extends BaseModuleConfig {
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
         for (String appName : appNameList) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            if(appName.equals(FacilioConstants.ApplicationLinkNames.ENERGY_APP)){
+                appNameVsPage.put(appName, createEnergyAppFloorDefaultPage(app, module, true, false));
+            }
+            else{
             appNameVsPage.put(appName, createFloorDefaultPage(app, module, true, false));
+            }
         }
         return appNameVsPage;
     }
@@ -258,6 +263,89 @@ public class BuildingModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
+
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("buildingRelatedlist", "Related List", "List of related records across modules")
+                .addWidget("buildingRelated", "Related", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("activity", null, null)
+                .addWidget("buildingActivity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+
+                .layoutDone()
+                .pageDone().getCustomPages();
+    }
+    private List<PagesContext> createEnergyAppFloorDefaultPage(ApplicationContext app, FacilioModule module, boolean isDefault, boolean isTemplate) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule buildingModule = modBean.getModule("building");
+
+
+        JSONObject historyWidgetParam = new JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.BUILDING_ACTIVITY);
+
+        JSONObject floorParam = new JSONObject();
+        floorParam.put("moduleName","floor");
+        floorParam.put("parentName","building");
+
+        JSONObject spaceParam = new JSONObject();
+        spaceParam.put("moduleName","space");
+        spaceParam.put("parentName","building");
+
+        JSONObject notesModuleParam = new JSONObject();
+        notesModuleParam.put(FacilioConstants.ContextNames.NOTES_MODULE_NAME,"basespacenotes");
+
+        JSONObject attachmentModuleParam = new JSONObject();
+        attachmentModuleParam.put(FacilioConstants.ContextNames.ATTACHMENTS_MODULE_NAME,"basespaceattachments");
+
+
+        return new ModulePages()
+                .addPage("buildingDefaultPage","Default Building Page","",null,isTemplate,isDefault,true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summaryfields", "", null)
+                .addWidget("summaryFieldsWidget", "Building details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("buildingInsights","",null)
+                .addWidget("buildingInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_7",0,0,spaceParam,null)
+                .widgetDone()
+                .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_5",7,0,null,null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false,notesModuleParam,attachmentModuleParam))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("floorsAndSpaces","Floors & Spaces", PageTabContext.TabType.SIMPLE,true,null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("floors","",null)
+                .addWidget("floors","Floors", PageWidget.WidgetType.FLOORS,"flexibleWebFloors_7",0,0,floorParam,null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("spaces","",null)
+                .addWidget("spaces","Spaces", PageWidget.WidgetType.SPACES,"flexibleWebSpaces_7",0,0,spaceParam,null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
 
                 .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
@@ -469,7 +557,12 @@ public class BuildingModule extends BaseModuleConfig {
         maintenanceApp.setModuleId(module.getModuleId());
         maintenanceApp.setFieldName("siteId");
 
-        scopeConfigList = Arrays.asList(maintenanceApp);
+        ScopeVariableModulesFields energyApp = new ScopeVariableModulesFields();
+        energyApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_energy_site"));
+        energyApp.setModuleId(module.getModuleId());
+        energyApp.setFieldName("siteId");
+
+        scopeConfigList = Arrays.asList(maintenanceApp,energyApp);
         return scopeConfigList;
     }
 }

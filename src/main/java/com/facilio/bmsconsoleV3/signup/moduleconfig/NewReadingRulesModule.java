@@ -7,12 +7,15 @@ import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -123,5 +126,16 @@ public class NewReadingRulesModule extends BaseModuleConfig {
             }
         }
         return appNameVsPage;
+    }
+    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        List<ScopeVariableModulesFields> scopeConfigList;
+        ScopeVariableModulesFields energyApp = new ScopeVariableModulesFields();
+        energyApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_energy_site"));
+        energyApp.setModuleId(module.getModuleId());
+        energyApp.setFieldName("siteId");
+        scopeConfigList = Arrays.asList(energyApp);
+        return scopeConfigList;
     }
 }

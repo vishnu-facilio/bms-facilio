@@ -14,7 +14,9 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -863,5 +865,16 @@ public class MeterModule extends BaseModuleConfig{
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
         return FieldUtil.getAsJSON(widgetGroup);
+    }
+    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        List<ScopeVariableModulesFields> scopeConfigList;
+        ScopeVariableModulesFields energyApp = new ScopeVariableModulesFields();
+        energyApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_energy_site"));
+        energyApp.setModuleId(module.getModuleId());
+        energyApp.setFieldName("siteId");
+        scopeConfigList = Arrays.asList(energyApp);
+        return scopeConfigList;
     }
 }

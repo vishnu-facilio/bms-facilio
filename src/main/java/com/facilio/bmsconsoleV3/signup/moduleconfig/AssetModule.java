@@ -130,7 +130,12 @@ public class AssetModule extends BaseModuleConfig{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
         for (String appName : appLinkNames) {
-            appNameVsPage.put(appName, createAssetDefaultPage(ApplicationApi.getApplicationForLinkName(appName), module, false, true));
+            if(appName.equals(FacilioConstants.ApplicationLinkNames.ENERGY_APP)){
+                appNameVsPage.put(appName,createEnergyAppAssetDefaultPage(ApplicationApi.getApplicationForLinkName(appName),module,false,true));
+            }
+            else {
+                appNameVsPage.put(appName, createAssetDefaultPage(ApplicationApi.getApplicationForLinkName(appName), module, false, true));
+            }
         }
         return appNameVsPage;
     }
@@ -603,6 +608,116 @@ public class AssetModule extends BaseModuleConfig{
         }
 
     }
+    public static List<PagesContext> createEnergyAppAssetDefaultPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        JSONObject historyWidgetParam = new JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.ASSET_ACTIVITY);
+        return new ModulePages()
+                .addPage("assetdefaultpage", "Default Asset Page", "", null, isTemplate, isDefault, true)
+
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                .addSection("summaryfields", "", null)
+                .addWidget("summaryFieldsWidget", "Asset details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                .addSection("locationdetails", null, null)
+                .addWidget("assetlocationdetails", "Location details", PageWidget.WidgetType.ASSET_LOCATION, "flexiblewebassetlocation_3", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("operatinghours", null, null)
+                .addWidget("assetoperatinghours", "Operating hours", PageWidget.WidgetType.OPERATING_HOURS, "flexibleweboperatinghours_4", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+
+                .addTab("fault", "Fault", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                .addSection("faultreport", "", null)
+                .addWidget("assetfaultreport", "Fault Reports", PageWidget.WidgetType.FAULT_REPORT, "flexiblewebfaultreport_5", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                .addSection("faultinsight", null, null)
+                .addWidget("assetfaultinsight", "Fault Insights", PageWidget.WidgetType.FAULT_INSIGHT, "flexiblewebfaultinsight_4", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("readings", "Readings", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("assetreadings", null, null)
+                .addWidget("readings", "Readings", PageWidget.WidgetType.READINGS, "flexiblewebreadings_7", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("assetcommand", null, null)
+                .addWidget("assetcommand", "Commands", PageWidget.WidgetType.COMMANDS_WIDGET, "flexiblewebcommandswidget_7", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("performance", "Performance", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("latestdowntime", null, null)
+                .addWidget("assetlatestdowntime", "Latest Downtime Reported", PageWidget.WidgetType.LATEST_DOWNTIME, "weblatestdowntime_3_6", 0, 0, null, null)
+                .widgetDone()
+                .addWidget("assetoveralldowntime", "Overall Downtime", PageWidget.WidgetType.OVERALL_DOWNTIME, "weboveralldowntime_3_6", 6, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("downtimehistory", null, null)
+                .addWidget("assetdowntimehistory", "Downtime History", PageWidget.WidgetType.DOWNTIME_HISTORY, "flexibledowntimehistory_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("failurerate", null, null)
+                .addWidget("assetfailurerate", "Mean Time Between Failure", PageWidget.WidgetType.FAILURE_RATE, "webfailurerate_8_6", 0, 0, null, null)
+                .widgetDone()
+                .addWidget("assetaveragerepairtime", "Mean Time To Repair", PageWidget.WidgetType.AVERAGE_REPAIR_TIME, "webaveragerepairtime_8_6", 6, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("relatedlist", "Related List", "List of all related records across modules")
+                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("activity", null, null)
+                .addWidget("activity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
+                .pageDone()
+
+
+                .getCustomPages();
+    }
     private static JSONObject getSummaryWidgetDetails(String moduleName,  ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
@@ -966,7 +1081,12 @@ public class AssetModule extends BaseModuleConfig{
         maintenanceApp.setModuleId(module.getModuleId());
         maintenanceApp.setFieldName("siteId");
 
-        scopeConfigList = Arrays.asList(maintenanceApp);
+        ScopeVariableModulesFields energyApp = new ScopeVariableModulesFields();
+        energyApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_energy_site"));
+        energyApp.setModuleId(module.getModuleId());
+        energyApp.setFieldName("siteId");
+
+        scopeConfigList = Arrays.asList(maintenanceApp,energyApp);
         return scopeConfigList;
     }
 

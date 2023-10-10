@@ -255,7 +255,12 @@ public class SiteModule extends BaseModuleConfig {
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
         for (String appName : appNameList) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName, createSiteDefaultPage(app, module, true, false));
+            if(appName.equals(FacilioConstants.ApplicationLinkNames.ENERGY_APP)){
+                appNameVsPage.put(appName, createEnergyAppSiteDefaultPage(app, module, true, false));
+            }
+            else {
+                appNameVsPage.put(appName, createSiteDefaultPage(app, module, true, false));
+            }
         }
         return appNameVsPage;
     }
@@ -560,6 +565,122 @@ public class SiteModule extends BaseModuleConfig {
                 .pageDone().getCustomPages();
 
 }
+    private List<PagesContext> createEnergyAppSiteDefaultPage(ApplicationContext app, FacilioModule module, boolean isDefault, boolean isTemplate) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule siteModule = modBean.getModule("site");
+
+        JSONObject locationWidgetParam = new JSONObject();
+        locationWidgetParam.put("fieldName","location");
+
+        JSONObject historyWidgetParam = new JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.SITE_ACTIVITY);
+
+        JSONObject buildingsParam = new JSONObject();
+        buildingsParam.put("moduleName","building");
+        buildingsParam.put("parentName","site");
+
+        JSONObject spaceParam = new JSONObject();
+        spaceParam.put("moduleName","space");
+        spaceParam.put("parentName","site");
+
+        JSONObject notesModuleParam = new JSONObject();
+        notesModuleParam.put(FacilioConstants.ContextNames.NOTES_MODULE_NAME,"basespacenotes");
+
+        JSONObject attachmentModuleParam = new JSONObject();
+        attachmentModuleParam.put(FacilioConstants.ContextNames.ATTACHMENTS_MODULE_NAME,"basespaceattachments");
+
+        return new ModulePages()
+                .addPage("siteDefaultPage","Default Site Page","",null,isTemplate,isDefault,true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summaryfields", "", null)
+                .addWidget("summaryFieldsWidget", "Site details",PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null,getSummaryWidgetDetails(module.getName(),app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("siteInsights","",null)
+                .addWidget("siteLocationWidgets","Location Details", PageWidget.WidgetType.SPACE_LOCATION,"webSpaceLocation_4_3",0,0,locationWidgetParam,null)
+                .widgetDone()
+                .addWidget("siteInsights","Site Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_6",3,0,spaceParam,null)
+                .widgetDone()
+                .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_3",9,0,null,null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("weatherCast","",null)
+                .addWidget("weatherCard","Weather Card", PageWidget.WidgetType.WEATHER_CARD,"webWeatherCard_6_4",0,0,null,null)
+                .widgetDone()
+                .addWidget("depreciationAnalysis","Depreciation Analysis", PageWidget.WidgetType.DEPRECIATION_ANALYSIS,"webDepreciationAnalysis_6_8",4,0,null,null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("HourlyForecast","",null)
+                .addWidget("hourlyForecastWidget","Hourly forecast", PageWidget.WidgetType.HOURLY_FORECAST,"flexibleWebHourlyForecast_6",0,0,null,null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 4, 0, null, getWidgetGroup(false,notesModuleParam,attachmentModuleParam))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("buildingsAndSpaces","Buildings & Spaces", PageTabContext.TabType.SIMPLE,true,null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("buildings","",null)
+                .addWidget("buildings","Buildings", PageWidget.WidgetType.BUILDINGS,"flexibleWebBuildings_6",0,0,buildingsParam,null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("spaces","",null)
+                .addWidget("spaces","Spaces", PageWidget.WidgetType.SPACES,"flexibleWebSpaces_7",0,0,spaceParam,null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("readings", "Readings", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("sitereadings", null, null)
+                .addWidget("sitereadings", "Readings", PageWidget.WidgetType.READINGS, "flexiblewebreadings_7", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("sitecommand", null, null)
+                .addWidget("sitecommand", "Commands", PageWidget.WidgetType.COMMANDS_WIDGET, "flexiblewebcommandswidget_7", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("siteRelatedReadings", null, null)
+                .addWidget("relatedReadings", "Related Readings", PageWidget.WidgetType.RELATED_READINGS, "flexiblewebrelatedreadings_7", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("siteRelatedlist", "Related List", "List of related records across modules")
+                .addWidget("siterelated", "Related",PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null,RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("activity", null, null)
+                .addWidget("siteactivity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+
+                .layoutDone()
+                .pageDone().getCustomPages();
+
+    }
 
     private JSONObject getWidgetGroup(boolean isMobile, JSONObject notesModuleParam, JSONObject attachmentModuleParam) throws Exception {
         WidgetGroupContext widgetGroup = new WidgetGroupContext()

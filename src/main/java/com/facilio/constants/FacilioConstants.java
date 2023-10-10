@@ -3920,7 +3920,8 @@ public class FacilioConstants {
 		public static final String IWMS_ADMIN = "IWMS Admin";
 
 		public static final String REMOTE_MONITORING_ADMIN = "Remote Monitoring Admin";
-
+		public static final String ENERGY_SUPER_ADMIN = "Energy Super Administrator";
+		public static final String ENERGY_MANAGER = "Energy Manager";
 	}
 
 	public static class TableNames {

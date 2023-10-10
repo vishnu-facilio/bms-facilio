@@ -213,16 +213,16 @@ public class V3ControlActionContext extends V3Context {
     }
     public void setControlActionExecutionType(Integer type) {
         if (type != null) {
-            this.controlActionSourceType = ControlActionSourceTypeEnum.valueOf(type);
+            this.controlActionExecutionType = ControlActionExecutionType.valueOf(type);
         }
     }
 
-    public ControlActionSourceTypeEnum getControlActionExecutionTypeEnum() {
-        return controlActionSourceType;
+    public ControlActionExecutionType getControlActionExecutionTypeEnum() {
+        return controlActionExecutionType;
     }
     public Integer getControlActionExecutionType() {
-        if(controlActionSourceType != null) {
-            return controlActionSourceType.getVal();
+        if(controlActionExecutionType != null) {
+            return controlActionExecutionType.getVal();
         }
         return -1;
     }

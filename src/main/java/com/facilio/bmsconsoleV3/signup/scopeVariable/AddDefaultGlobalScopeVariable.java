@@ -77,6 +77,7 @@ public class AddDefaultGlobalScopeVariable extends SignUpData {
         clientUserScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.ClientValueGenerator").getId());
         scopeBean.addScopeVariable(clientUserScopeVariable);
 
+        //Remote Monitoring - client
         GlobalScopeVariableContext clientScopeVariable = new GlobalScopeVariableContext();
         clientScopeVariable.setLinkName("default_remotemonitor_client");
         clientScopeVariable.setApplicableModuleId(modBean.getModule(FacilioConstants.ContextNames.CLIENT).getModuleId());
@@ -87,5 +88,18 @@ public class AddDefaultGlobalScopeVariable extends SignUpData {
         clientScopeVariable.setType(GlobalScopeVariableContext.Type.ALL.getIndex());
         clientScopeVariable.setShowSwitch(true);
         scopeBean.addScopeVariable(clientScopeVariable);
+
+        //energy app - Site
+        GlobalScopeVariableContext energySiteScopeVariable = new GlobalScopeVariableContext();
+        energySiteScopeVariable.setLinkName("default_energy_site");
+        energySiteScopeVariable.setApplicableModuleId(modBean.getModule(FacilioConstants.ContextNames.SITE).getModuleId());
+        energySiteScopeVariable.setStatus(true);
+        energySiteScopeVariable.setShowSwitch(true);
+        energySiteScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        energySiteScopeVariable.setDescription("Default Site Scope Variable");
+        energySiteScopeVariable.setDisplayName("Site Scope Variable");
+        energySiteScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
+        energySiteScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.AccessibleBasespaceValueGenerator").getId());
+        scopeBean.addScopeVariable(energySiteScopeVariable);
     }
 }

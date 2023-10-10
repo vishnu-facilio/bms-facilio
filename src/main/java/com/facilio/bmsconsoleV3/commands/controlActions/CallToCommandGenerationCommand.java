@@ -36,12 +36,6 @@ public class CallToCommandGenerationCommand extends FacilioCommand {
             if(controlActionContext.getControlActionSourceType() == V3ControlActionContext.ControlActionSourceTypeEnum.CONTROL_ACTION_TEMPLATE.getVal()) {
                 controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.PUBLISHED.getVal());
                 ControlActionAPI.updateControlAction(controlActionContext);
-                List<PeopleContext> firstLevelApproverList = ControlActionAPI.getApprovalList(controlActionContext.getId(),FacilioConstants.Control_Action.CONTROL_ACTION_FIRST_LEVEL_APPROVAL_MODULE_NAME);
-                if(CollectionUtils.isEmpty(firstLevelApproverList)){
-                    controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.COMMAND_GENERATED.getVal());
-                    ControlActionAPI.updateControlAction(controlActionContext);
-                    ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.COMMAND_GENERATED.getValue(), controlActionContext.getId());
-                }
                 ControlActionAPI.generateCommand(controlActionContext.getId());
             }
         }

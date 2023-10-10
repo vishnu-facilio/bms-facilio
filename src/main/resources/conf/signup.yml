@@ -460,6 +460,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.controlAction.ControlActionModule
   - com.facilio.bmsconsoleV3.signup.controlAction.ControlActionTemplateModule
   - com.facilio.bmsconsoleV3.signup.controlAction.CommandModule
+  - com.facilio.bmsconsoleV3.signup.controlAction.ActionModule
   - com.facilio.bmsconsoleV3.signup.controlAction.ControlActionNotes
   - com.facilio.bmsconsoleV3.signup.controlAction.ControlActionTemplateNotes
 

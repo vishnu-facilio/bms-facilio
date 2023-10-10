@@ -11,12 +11,16 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class CalendarModulePostAction extends BaseModuleConfig {
     public CalendarModulePostAction(){
@@ -28,11 +32,14 @@ public class CalendarModulePostAction extends BaseModuleConfig {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
         Map<String, FacilioForm> forms = FormsAPI.getFormsFromDB(module.getName(), Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+
         for(FacilioForm form : forms.values()){
-            disableFieldsOnEditFormRule(form);
+            Map<Long, FormField> formFieldMap = form.getSections().stream().map(FormSection::getFields).flatMap(List::stream).collect(Collectors.toMap(FormField::getFieldId, Function.identity()));
+            disableFieldsOnEditFormRule(form,fieldMap,formFieldMap);
         }
     }
-    public static void disableFieldsOnEditFormRule(FacilioForm form) throws Exception{
+    public static void disableFieldsOnEditFormRule(FacilioForm form,Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception{
         FormRuleContext singleRule = new FormRuleContext();
         singleRule.setName("Calendar Edit Form Disability  Rule");
         singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
@@ -50,8 +57,8 @@ public class CalendarModulePostAction extends BaseModuleConfig {
         FormRuleActionFieldsContext typeActionField = new FormRuleActionFieldsContext();
         FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
 
-        typeActionField.setFormFieldName("Type");
-        actionField.setFormFieldName("Client");
+        typeActionField.setFormFieldId(formFieldMap.get(fieldMap.get("client").getId()).getId());
+        actionField.setFormFieldId(formFieldMap.get(fieldMap.get("calendarType").getId()).getId());
         actionFieldsContexts.add(typeActionField);
         actionFieldsContexts.add(actionField);
 
