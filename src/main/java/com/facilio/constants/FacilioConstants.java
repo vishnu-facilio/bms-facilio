@@ -2717,6 +2717,10 @@ public class FacilioConstants {
 			public static final String CURRENT_ORG_USER_USER = "Is Current Org User";
 			public static final String CLIENT = "Is Current Client";
 
+			public static final String SITES_IN_CURRENT_PEOPLE_TERRITORIES = "Sites in Current People Territory";
+			public static final String CURRENT_PEOPLE_TERRITORIES = "Associated to Current People";
+
+
 		}
 
 		public static class Budget {

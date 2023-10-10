@@ -18,6 +18,7 @@ import org.json.simple.JSONObject;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -90,8 +91,7 @@ public class V3PeopleAction extends V3Action {
     }
     public String getShiftDetailsForCurrentDay() throws Exception {
         if(getId() > 0){
-            long currentTime = DateTimeUtil.getCurrenTime();
-            List<ShiftSlot> shift = ShiftAPI.fetchShiftSlots(Collections.singletonList(getId()),DateTimeUtil.getDayStartTimeOf(currentTime),DateTimeUtil.getDayEndTimeOf(currentTime));
+            Map<String,Object> shift = ShiftAPI.getPeopleShiftForGivenTime(getId(),DateTimeUtil.getCurrenTime());
             Attendance attendance = AttendanceAPI.getAttendanceForToday(getId());
             JSONObject result = new JSONObject();
             result.put(FacilioConstants.ContextNames.SHIFT,shift);

@@ -29,6 +29,7 @@ import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ServiceAppointmentModule extends BaseModuleConfig {
     public static List<String> serviceAppointmentSupportedApps = Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.FSM_APP);
@@ -164,6 +165,15 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         FacilioField mismatch = FieldFactory.getDefaultField("mismatch","IS MISMATCH","MISMATCH", FieldType.BOOLEAN);
         serviceAppointmentFields.add(mismatch);
+
+        MultiEnumField mismatchType = FieldFactory.getDefaultField("mismatchType","Mismatch Type",null, FieldType.MULTI_ENUM, FacilioField.FieldDisplayType.SELECTBOX);
+        List<String> types = Arrays.asList( "Territory", "Availability", "Skills");
+        List<EnumFieldValue<Integer>> typeValues = types.stream().map( val -> {
+            int index = types.indexOf(val)+1;
+            return new EnumFieldValue<>(index, val, index, true);
+        }).collect(Collectors.toList());
+        mismatchType.setValues(typeValues);
+        serviceAppointmentFields.add(mismatchType);
 
         LookupField status = FieldFactory.getDefaultField("status","Appointment Status","STATUS",FieldType.LOOKUP);
         status.setRequired(true);
@@ -1278,9 +1288,6 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             Criteria startTripCriteria = new Criteria();
             List<Long> statusIds = new ArrayList<>();
             statusIds.add(dispatchedStatus.getId());
-            if(inProgressStatus != null) {
-                statusIds.add(inProgressStatus.getId());
-            }
             startTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ContextNames.STATUS), statusIds, PickListOperators.IS));
             startTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.FIELD_AGENT), FacilioConstants.Criteria.LOGGED_IN_PEOPLE, PickListOperators.IS));
             startTripCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), CommonOperators.IS_NOT_EMPTY));

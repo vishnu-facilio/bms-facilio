@@ -3437,7 +3437,8 @@
             <property name="scopeVariable" type="object" mandatory="true" >
                 <property name="appId" type="number" mandatory="true" />
                 <property name="displayName" type="string" mandatory="true" />
-                <property name="id" type="number" mandatory="true" />
+                <property name="applicableModuleId" type="number" mandatory="false" />
+                <property name="id" type="number" mandatory="false" />
                 <property name="scopeVariableModulesFieldsList" type="array" mandatory="true" >
                     <items type="object">
                         <property name="moduleId" type="number" mandatory="true"/>

@@ -4462,6 +4462,9 @@ public class APIv3Config {
                 .list()
                 .summary()
                 .delete()
+                .pickList()
+                .setAccentField(FacilioConstants.Priority.PRIORITY,FacilioConstants.ContextNames.FieldServiceManagement.COLOR)
+                .setSeverityLevel("L2")
                 .build();
     }
 
@@ -4473,6 +4476,8 @@ public class APIv3Config {
                 .list()
                 .summary()
                 .delete()
+                .pickList()
+                .setColorField(FacilioConstants.Trip.TRIP_STATUS,FacilioConstants.ContextNames.FieldServiceManagement.COLOR)
                 .build();
     }
     @Module(FacilioConstants.TimeSheet.TIME_SHEET_STATUS)
@@ -4483,7 +4488,37 @@ public class APIv3Config {
                 .list()
                 .summary()
                 .delete()
+                .pickList()
+                .setColorField(FacilioConstants.TimeSheet.TIME_SHEET_STATUS,FacilioConstants.ContextNames.FieldServiceManagement.COLOR)
                 .build();
     }
-
+    @Module(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS)
+    public static Supplier<V3Config> getServiceAppointmentTicketStatus(){
+        return () -> new V3Config(ServiceAppointmentTicketStatusContext.class,null)
+                .pickList()
+                .setColorField(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS,FacilioConstants.ContextNames.FieldServiceManagement.COLOR)
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS)
+    public static Supplier<V3Config> getServiceOrderTicketStatus(){
+        return () -> new V3Config(ServiceOrderTicketStatusContext.class,null)
+                .pickList()
+                .setColorField(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS,FacilioConstants.ContextNames.FieldServiceManagement.COLOR)
+                .build();
+    }
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_STATUS)
+    public static Supplier<V3Config> getServiceTaskTicketStatus(){
+        return () -> new V3Config(ServiceTaskStatusContext.class,null)
+                .pickList()
+                .setColorField(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_STATUS,FacilioConstants.ContextNames.FieldServiceManagement.STATUS_TYPE)
+                .build();
+    }
+    @Module(FacilioConstants.TimeOff.TIME_OFF_TYPE)
+    public static Supplier<V3Config> getTimeOffType(){
+        return () -> new V3Config(TimeOffTypeContext.class,null)
+                .pickList()
+                .setAccentField(FacilioConstants.ContextNames.FieldServiceManagement.COLOR,FacilioConstants.ContextNames.FieldServiceManagement.COLOR)
+                .setSeverityLevel("L2")
+                .build();
+    }
 }

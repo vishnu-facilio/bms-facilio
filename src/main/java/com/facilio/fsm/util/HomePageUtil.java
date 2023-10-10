@@ -31,13 +31,15 @@ public class HomePageUtil {
         if(currentUser != null && currentUser.getPeopleId() > 0) {
 
             PagesContext homePage = new PagesContext("fsmHomePage","Home",null,null,true,false,false);
-
+            homePage.setId(1);
             PageTabContext mobileTab = new PageTabContext("home","Home",10D, PageTabContext.TabType.SIMPLE,false,-1);
+            mobileTab.setId(11L);
             homePage.setLayouts(new HashMap<String, List<PageTabContext>>());
-            homePage.getLayouts().put(PagesContext.PageLayoutType.MOBILE.name(), new ArrayList<>(Arrays.asList(mobileTab)));
+            homePage.getLayouts().put(PagesContext.PageLayoutType.MOBILE.name(), new ArrayList<>(Collections.singletonList(mobileTab)));
 
             PageColumnContext column = new PageColumnContext(10D, PageColumnContext.ColumnWidth.FULL_WIDTH.getWidth());
-            mobileTab.setColumns(new ArrayList<>(Arrays.asList(column)));
+            column.setId(21L);
+            mobileTab.setColumns(new ArrayList<>(Collections.singletonList(column)));
             column.setParentContext(mobileTab);
 
 
@@ -46,9 +48,10 @@ public class HomePageUtil {
             if (peopleContext != null) {
                 JSONObject summaryWidgetParams = new JSONObject();
                 summaryWidgetParams.put(FacilioConstants.ContextNames.PEOPLE, FieldUtil.getAsJSON(peopleContext));
-                PageSectionContext person = new PageSectionContext("peopleSummary","Summary",CollectionUtils.isNotEmpty(column.getSections()) ? ((column.getSections().size()+1) * 10D ) : 10,null);
+                PageSectionContext person = new PageSectionContext("peopleSummary","",CollectionUtils.isNotEmpty(column.getSections()) ? ((column.getSections().size()+1) * 10D ) : 10,null);
+                person.setId(31L);
                 if(column.getSections() == null) {
-                    column.setSections(new ArrayList<>(Arrays.asList(person)));
+                    column.setSections(new ArrayList<>(Collections.singletonList(person)));
                 }
                 else {
                     column.getSections().add(person);
@@ -56,27 +59,30 @@ public class HomePageUtil {
                 person.setParentContext(column);
 
                 PageSectionWidgetContext peopleSummaryWidget = new PageSectionWidgetContext("peopleStatusWidget","Summary", PageWidget.WidgetType.PEOPLE_STATUS_WIDGET,10D,0,0,null,summaryWidgetParams);
+                peopleSummaryWidget.setId(41L);
                 peopleSummaryWidget.setHeight(9L);
                 peopleSummaryWidget.setWidth(12L);
                 peopleSummaryWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
-                person.setWidgets(new ArrayList<>(Arrays.asList(peopleSummaryWidget)));
+                person.setWidgets(new ArrayList<>(Collections.singletonList(peopleSummaryWidget)));
                 peopleSummaryWidget.setParentContext(person);
             }
 
             List<FacilioField> saFields = Constants.getModBean().getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
             Map<String, FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
 
-            PageSectionContext Ongoing = new PageSectionContext("ongoing","Ongoing Work Items",CollectionUtils.isNotEmpty(column.getSections()) ? ((column.getSections().size()+1) * 10D ) : 10,null);
+            PageSectionContext Ongoing = new PageSectionContext("ongoing","",CollectionUtils.isNotEmpty(column.getSections()) ? ((column.getSections().size()+1) * 10D ) : 10,null);
+            Ongoing.setId(32L);
 
             List<TimeSheetContext> ongoingTimeSheet = ServiceAppointmentUtil.getOngoingTimeSheets(currentUser.getPeopleId(), null);
             if (CollectionUtils.isNotEmpty(ongoingTimeSheet)) {
                 JSONObject workWidgetParams = new JSONObject();
                 workWidgetParams.put(FacilioConstants.TimeSheet.TIME_SHEET, FieldUtil.getAsMapList(ongoingTimeSheet,TimeSheetContext.class));
                 PageSectionWidgetContext ongoingWorkWidget = new PageSectionWidgetContext("ongoingTimeSheetWidget","Ongoing Work", PageWidget.WidgetType.ONGOING_TIMESHEET_WIDGET,CollectionUtils.isNotEmpty(Ongoing.getWidgets()) ? ((Ongoing.getWidgets().size()+1) * 10D ) : 10,0,0,null,workWidgetParams);
+                ongoingWorkWidget.setId(42L);
                 ongoingWorkWidget.setHeight(6L);
                 ongoingWorkWidget.setWidth(12L);
                 ongoingWorkWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
-                Ongoing.setWidgets(new ArrayList<>(Arrays.asList(ongoingWorkWidget)));
+                Ongoing.setWidgets(new ArrayList<>(Collections.singletonList(ongoingWorkWidget)));
                 ongoingWorkWidget.setParentContext(Ongoing);
             }
 
@@ -85,11 +91,12 @@ public class HomePageUtil {
                 JSONObject tripWidgetParams = new JSONObject();
                 tripWidgetParams.put(FacilioConstants.Trip.TRIP, FieldUtil.getAsMapList(ongoingTrips,TripContext.class));
                 PageSectionWidgetContext ongoingTripWidget = new PageSectionWidgetContext("ongoingTripWidget","Ongoing Trip", PageWidget.WidgetType.ONGOING_TRIP_WIDGET,CollectionUtils.isNotEmpty(Ongoing.getWidgets()) ? ((Ongoing.getWidgets().size()+1) * 10D ) : 10,0,0,null,tripWidgetParams);
+                ongoingTripWidget.setId(43L);
                 ongoingTripWidget.setHeight(6L);
                 ongoingTripWidget.setWidth(12L);
                 ongoingTripWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
                 if(Ongoing.getWidgets() == null) {
-                    Ongoing.setWidgets(new ArrayList<>(Arrays.asList(ongoingTripWidget)));
+                    Ongoing.setWidgets(new ArrayList<>(Collections.singletonList(ongoingTripWidget)));
                 }
                 else {
                     Ongoing.getWidgets().add(ongoingTripWidget);
@@ -99,7 +106,7 @@ public class HomePageUtil {
 
             if (CollectionUtils.isNotEmpty(Ongoing.getWidgets())) {
                 if(column.getSections() == null) {
-                    column.setSections(new ArrayList<>(Arrays.asList(Ongoing)));
+                    column.setSections(new ArrayList<>(Collections.singletonList(Ongoing)));
                 }
                 else {
                     column.getSections().add(Ongoing);
@@ -107,91 +114,56 @@ public class HomePageUtil {
                 Ongoing.setParentContext(column);
             }
 
-            PageSectionContext appointments = new PageSectionContext("appointments","Appointments",CollectionUtils.isNotEmpty(column.getSections()) ? ((column.getSections().size()+1) * 10D ) : 10,null);
+            PageSectionContext appointments = new PageSectionContext("appointments","",CollectionUtils.isNotEmpty(column.getSections()) ? ((column.getSections().size()+1) * 10D ) : 10,null);
+            appointments.setId(33L);
+            appointments.setWidgets(new ArrayList<>());
 
-            FacilioContext overDueListContext = V3Util.fetchList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, true, "overdueAppointments", null,
-                    true, null, null, null,
-                    null, 1, 2, false, null, null,null);
-
-            Map<String, Object> overduesRecordMap = (Map<String, Object>) overDueListContext.get("recordMap");
-            List<ServiceAppointmentContext> overdueAppointmentsList = (List<ServiceAppointmentContext>) overduesRecordMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
-
-            if (CollectionUtils.isNotEmpty(overdueAppointmentsList)) {
-                JSONObject overdueWidgetParams = new JSONObject();
-                overdueWidgetParams.put(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, FieldUtil.getAsMapList(overdueAppointmentsList, ServiceAppointmentContext.class));
-                overdueWidgetParams.put("moduleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
-                overdueWidgetParams.put("viewName", "overdueAppointments");
-                PageSectionWidgetContext overdueWidget = new PageSectionWidgetContext("overdueServiceAppointmentsWidget","Overdue Appointments", PageWidget.WidgetType.OVERDUE_SERVICE_APPOINTMENTS_WIDGET,CollectionUtils.isNotEmpty(appointments.getWidgets()) ? ((appointments.getWidgets().size()+1) * 10D ) : 10,0,0,null,overdueWidgetParams);
-                overdueWidget.setHeight(21L);
-                overdueWidget.setWidth(12L);
-                overdueWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
-                if(appointments.getWidgets() == null) {
-                    appointments.setWidgets(new ArrayList<>(Arrays.asList(overdueWidget)));
-                }
-                else {
-                    appointments.getWidgets().add(overdueWidget);
-                }
-                overdueWidget.setParentContext(appointments);
-            }
+            JSONObject overdueWidgetParams = new JSONObject();
+            overdueWidgetParams.put("moduleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+            overdueWidgetParams.put("viewName", "overdueAppointments");
+            PageSectionWidgetContext overdueWidget = new PageSectionWidgetContext("overdueServiceAppointmentsWidget","Overdue Appointments", PageWidget.WidgetType.OVERDUE_SERVICE_APPOINTMENTS_WIDGET,CollectionUtils.isNotEmpty(appointments.getWidgets()) ? ((appointments.getWidgets().size()+1) * 10D ) : 10,0,0,null,overdueWidgetParams);
+            overdueWidget.setId(44L);
+            overdueWidget.setHeight(21L);
+            overdueWidget.setWidth(12L);
+            overdueWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
+            appointments.getWidgets().add(overdueWidget);
+            overdueWidget.setParentContext(appointments);
 
             Criteria todayCriteria = new Criteria();
             todayCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), DateOperators.TODAY));
             todayCriteria.addOrCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME), DateOperators.TODAY));
 
-            FacilioContext TodayOpenListContext = V3Util.fetchList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, true, "myOpenAppointments", null,
-                    true, null, null, null,
-                    null, 1, 2, false, null, todayCriteria,null);
+            JSONObject todayWidgetParams = new JSONObject();
+            todayWidgetParams.put("moduleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+            todayWidgetParams.put("viewName", "myOpenAppointments");
+            todayWidgetParams.put("clientCriteria", FieldUtil.getAsJSON(todayCriteria));
+            PageSectionWidgetContext todayWidget = new PageSectionWidgetContext("todayServiceAppointmentsWidget","Today Appointments", PageWidget.WidgetType.TODAY_SERVICE_APPOINTMENTS_WIDGET,CollectionUtils.isNotEmpty(appointments.getWidgets()) ? ((appointments.getWidgets().size()+1) * 10D ) : 10,0,0,null,todayWidgetParams);
+            todayWidget.setId(45L);
+            todayWidget.setHeight(21L);
+            todayWidget.setWidth(12L);
+            todayWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
+            appointments.getWidgets().add(todayWidget);
+            todayWidget.setParentContext(appointments);
 
-            Map<String, Object> todayRecordMap = (Map<String, Object>) TodayOpenListContext.get("recordMap");
-            List<ServiceAppointmentContext> todayOpenAppointmentsList = (List<ServiceAppointmentContext>) todayRecordMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+            Criteria upcomingCriteria = new Criteria();
+            upcomingCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME), DateOperators.STARTING_TOMORROW));
 
-            if (CollectionUtils.isNotEmpty(todayOpenAppointmentsList)) {
-                JSONObject todayWidgetParams = new JSONObject();
-                todayWidgetParams.put(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, FieldUtil.getAsMapList(todayOpenAppointmentsList, ServiceAppointmentContext.class));
-                todayWidgetParams.put("moduleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
-                todayWidgetParams.put("viewName", "myOpenAppointments");
-                todayWidgetParams.put("clientCriteria", FieldUtil.getAsJSON(todayCriteria));
-                PageSectionWidgetContext todayWidget = new PageSectionWidgetContext("todayServiceAppointmentsWidget","Today Appointments", PageWidget.WidgetType.TODAY_SERVICE_APPOINTMENTS_WIDGET,CollectionUtils.isNotEmpty(appointments.getWidgets()) ? ((appointments.getWidgets().size()+1) * 10D ) : 10,0,0,null,todayWidgetParams);
-                todayWidget.setHeight(21L);
-                todayWidget.setWidth(12L);
-                todayWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
-                if(appointments.getWidgets() == null) {
-                    appointments.setWidgets(new ArrayList<>(Arrays.asList(todayWidget)));
-                }
-                else {
-                    appointments.getWidgets().add(todayWidget);
-                }
-                todayWidget.setParentContext(appointments);
-            }
+            JSONObject upcomingWidgetParams = new JSONObject();
+            upcomingWidgetParams.put("moduleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+            upcomingWidgetParams.put("viewName", "myOpenAppointments");
+            upcomingWidgetParams.put("clientCriteria", FieldUtil.getAsJSON(upcomingCriteria));
 
-            FacilioContext openAppointmentsListContext = V3Util.fetchList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, true, "myOpenAppointments", null,
-                    true, null, null, null,
-                    null, 1, 2, false, null, null,null);
-
-            Map<String, Object> openRecordMap = (Map<String, Object>) openAppointmentsListContext.get("recordMap");
-            List<ServiceAppointmentContext> openAppointmentsList = (List<ServiceAppointmentContext>) openRecordMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
-
-            if (CollectionUtils.isNotEmpty(openAppointmentsList)) {
-                JSONObject openWidgetParams = new JSONObject();
-                openWidgetParams.put(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, FieldUtil.getAsMapList(openAppointmentsList, ServiceAppointmentContext.class));
-                openWidgetParams.put("moduleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
-                openWidgetParams.put("viewName", "myOpenAppointments");
-                PageSectionWidgetContext openWidget = new PageSectionWidgetContext("openServiceAppointmentsWidget","Open Appointments", PageWidget.WidgetType.OPEN_SERVICE_APPOINTMENTS_WIDGET,CollectionUtils.isNotEmpty(appointments.getWidgets()) ? ((appointments.getWidgets().size()+1) * 10D ) : 10,0,0,null,openWidgetParams);
-                openWidget.setHeight(21L);
-                openWidget.setWidth(12L);
-                openWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
-                if(appointments.getWidgets() == null) {
-                    appointments.setWidgets(new ArrayList<>(Arrays.asList(openWidget)));
-                }
-                else {
-                    appointments.getWidgets().add(openWidget);
-                }
-                openWidget.setParentContext(appointments);
-            }
+            PageSectionWidgetContext upcomingWidget = new PageSectionWidgetContext("upcomingServiceAppointmentsWidget","Upcoming Appointments", PageWidget.WidgetType.OPEN_SERVICE_APPOINTMENTS_WIDGET,CollectionUtils.isNotEmpty(appointments.getWidgets()) ? ((appointments.getWidgets().size()+1) * 10D ) : 10,0,0,null,upcomingWidgetParams);
+            upcomingWidget.setId(46L);
+            upcomingWidget.setHeight(21L);
+            upcomingWidget.setWidth(12L);
+            upcomingWidget.setConfigType(WidgetConfigContext.ConfigType.FLEXIBLE);
+            appointments.getWidgets().add(upcomingWidget);
+            upcomingWidget.setParentContext(appointments);
 
             if (CollectionUtils.isNotEmpty(appointments.getWidgets())) {
                 if(column.getSections() == null) {
-                    column.setSections(new ArrayList<>(Arrays.asList(appointments)));
+                    column.setSections(new ArrayList<>(Collections.singletonList(appointments)));
                 }
                 else {
                     column.getSections().add(appointments);

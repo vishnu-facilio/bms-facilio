@@ -35,6 +35,7 @@ public class ServiceAppointmentContext extends V3Context {
     private V3PeopleContext fieldAgent;
     private Boolean isAllTasksClosed;
     private boolean mismatch;
+    private List<Integer> mismatchType;
     private ServiceAppointmentTicketStatusContext status;
     private Long resolutionDueDuration;
     private V3ClientContext client;

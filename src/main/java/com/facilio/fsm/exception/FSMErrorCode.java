@@ -52,7 +52,7 @@ public enum FSMErrorCode {
     TIME_SHEET_NOT_ENOUGH_DETAILS(Severity.ERROR, "Mandatory field missing", "Not enough details to create a timesheet"),
     TIME_SHEET_SA_MANDATORY(Severity.ERROR, "Service Appointment is required", "Please select Service Appointment to proceed with Time Sheet creation"),
     TIME_SHEET_TIME_MISMATCH(Severity.ERROR, "Time range is invalid", "Time Sheet should have valid time range."),
-    TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Work cannot be started", "You currently have an active task in progress. To manage your ongoing tasks, please navigate to the associated service appointment"),
+    TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Work cannot be started", "An ongoing time sheet exists. Please complete the existing time sheet before creating a new one"),
     TIMESHEET_RECORD_LOCKED(Severity.ERROR,"Cannot Edit/Delete Time Sheet","Cannot edit or delete an ongoing Time Sheet."),
 
     // Trip error codes

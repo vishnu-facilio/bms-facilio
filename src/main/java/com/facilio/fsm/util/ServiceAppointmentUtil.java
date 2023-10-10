@@ -230,7 +230,9 @@ public class ServiceAppointmentUtil {
                             updateProps.put("status",taskStatus);
                             updateRecordList.add(updateProps);
                         }
-                        V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false,null);
+                        if(CollectionUtils.isNotEmpty(oldRecords)) {
+                            V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true, false, null);
+                        }
                     }
                 }
             }
@@ -327,7 +329,9 @@ public class ServiceAppointmentUtil {
                                     updateProps.put("actualStartTime", currentTime);
                                     updateRecordList.add(updateProps);
                                 }
-                                V3Util.processAndUpdateBulkRecords(Constants.getModBean().getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK), oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true, false, null);
+                                if(CollectionUtils.isNotEmpty(oldRecords)) {
+                                    V3Util.processAndUpdateBulkRecords(Constants.getModBean().getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK), oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true, false, null);
+                                }
                             }
                         }
                     }else{
@@ -410,8 +414,9 @@ public class ServiceAppointmentUtil {
                                         updateRecordList.add(updateProps);
                                     }
                                 }
-                                V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false,null);
-
+                                if(CollectionUtils.isNotEmpty(oldRecords)) {
+                                    V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true, false, null);
+                                }
                             }
 
                             V3PeopleContext agent = existingAppointment.getFieldAgent();
@@ -499,7 +504,9 @@ public class ServiceAppointmentUtil {
                                     updateRecordList.add(updateProps);
                                 }
                             }
-                            V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true,false,null);
+                            if(CollectionUtils.isNotEmpty(oldRecords)) {
+                                V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true, false, null);
+                            }
                         }
 
                         V3PeopleContext agent = existingAppointment.getFieldAgent();

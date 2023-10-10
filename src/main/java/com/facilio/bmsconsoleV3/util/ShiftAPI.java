@@ -981,4 +981,65 @@ public class ShiftAPI {
        return null;
     }
 
+    public static Map<String, Object> getPeopleShiftForGivenTime(long peopleId,long time) throws Exception {
+        FacilioModule shiftMod = getShiftModule();
+        List<FacilioField> shiftFields = FieldFactory.getShiftFields();
+
+        FacilioModule shiftPeopleRelMod = getShiftPeopleRelPseudoModule();
+
+        List<FacilioField> selectFields = new ArrayList<>();
+        List<String> shiftFieldsWhitelist = Arrays.asList("name", "startTime", "endTime");
+        selectFields.addAll(filterFields(shiftFields, shiftFieldsWhitelist));
+        selectFields.add(FieldFactory.getField("slotStart", "START_TIME", shiftPeopleRelMod, FieldType.NUMBER));
+        selectFields.add(FieldFactory.getField("slotEnd", "END_TIME", shiftPeopleRelMod, FieldType.NUMBER));
+
+        Map<String, FacilioField> fieldMap =
+                FieldFactory.getAsMap(FieldFactory.getShiftPeopleRelPseudoModuleFields());
+
+
+        Condition peopleCondition = CriteriaAPI.getCondition(fieldMap.get("peopleId"),
+                String.valueOf(peopleId),
+                NumberOperators.EQUALS);
+
+        Criteria withinRange = new Criteria();
+        withinRange.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"),
+                Collections.singletonList(time),
+                NumberOperators.LESS_THAN_EQUAL));
+        withinRange.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("endTime"),
+                Collections.singletonList(time),
+                NumberOperators.GREATER_THAN_EQUAL));
+
+        Criteria beforeRange = new Criteria();
+        beforeRange.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"),
+                Collections.singletonList(UNLIMITED_PERIOD),
+                NumberOperators.EQUALS));
+        beforeRange.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("endTime"),
+                Collections.singletonList(time),
+                NumberOperators.GREATER_THAN_EQUAL));
+
+        Criteria afterRange = new Criteria();
+        afterRange.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("endTime"),
+                Collections.singletonList(UNLIMITED_PERIOD),
+                NumberOperators.EQUALS));
+        afterRange.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"),
+                Collections.singletonList(time),
+                NumberOperators.LESS_THAN_EQUAL));
+
+        Criteria timeCriteria = new Criteria();
+        timeCriteria.orCriteria(withinRange);
+        timeCriteria.orCriteria(beforeRange);
+        timeCriteria.orCriteria(afterRange);
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(shiftPeopleRelMod.getTableName())
+                .select(selectFields)
+                .innerJoin(shiftMod.getTableName())
+                .on("Shift_People_Rel.SHIFT_ID = Shift.ID")
+                .orderBy("Shift_People_Rel.START_TIME")
+                .andCondition(peopleCondition)
+                .andCriteria(timeCriteria);
+
+        return builder.fetchFirst();
+    }
+
 }

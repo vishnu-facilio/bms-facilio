@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -293,7 +294,13 @@ public class fsmAction extends V3Action {
                     dispatcherSAEvent.setStartTime(serviceAppointment.getScheduledStartTime());
                     dispatcherSAEvent.setEndTime(serviceAppointment.getScheduledEndTime());
                     ServiceAppointmentTicketStatusContext saStatus = serviceAppointment.getStatus();
-                    dispatcherSAEvent.setBackgroundColor(saStatus.getColor());
+                    if(saStatus != null){
+                        ServiceAppointmentTicketStatusContext statusObj = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS,saStatus.getId(),ServiceAppointmentTicketStatusContext.class);
+                        dispatcherSAEvent.setBackgroundColor(statusObj.getBackgroundColor());
+                        dispatcherSAEvent.setTextColor(statusObj.getTextColor());
+                        dispatcherSAEvent.setBackgroundColorHover(statusObj.getBackgroundColorHover());
+                        dispatcherSAEvent.setTextColorHover(statusObj.getTextColorHover());
+                    }
                 }
             }
         }

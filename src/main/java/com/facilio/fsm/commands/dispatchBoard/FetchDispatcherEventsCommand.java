@@ -1,6 +1,7 @@
 package com.facilio.fsm.commands.dispatchBoard;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.fsm.context.*;
@@ -8,6 +9,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -126,9 +128,9 @@ public class FetchDispatcherEventsCommand extends FacilioCommand {
                         dispatcherTOEvent.setEventType(DispatcherEventContext.EventType.TIME_OFF.getIndex());
                         dispatcherTOEvent.setTimeOff(timeOffEvent);
                         TimeOffTypeContext timeOffType = timeOffEvent.getType();
-                        dispatcherTOEvent.setBackgroundColor(timeOffType.getColor());
+                        dispatcherTOEvent.setBackgroundColor(timeOffType.getBackgroundColor());
                         dispatcherTOEvent.setTextColor(timeOffType.getTextColor());
-                        dispatcherTOEvent.setBackgroundColorHover(timeOffType.getColor());
+                        dispatcherTOEvent.setBackgroundColorHover(timeOffType.getBackgroundColor());
                         dispatcherTOEvent.setTextColorHover(timeOffType.getTextColor());
                         pplEvents.add(dispatcherTOEvent);
                     }

@@ -17,10 +17,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.MultiLookupField;
-import com.facilio.modules.fields.MultiLookupMeta;
-import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.modules.fields.*;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -52,6 +49,8 @@ public class ValidateSAMismatch extends FacilioCommand {
         List<FSMErrorCode> mismatchException = new ArrayList<>();
         mismatchException.add(FSMErrorCode.SA_MISMATCH);
 
+        List<Integer> mismatchType = new ArrayList<>();
+
         if(CollectionUtils.isNotEmpty(serviceAppointments)) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
                 if(serviceAppointment.getFieldAgent() != null){
@@ -71,6 +70,7 @@ public class ValidateSAMismatch extends FacilioCommand {
                         }
                         if(territoryMismatch){
                             mismatchException.add(FSMErrorCode.SA_TERRITORY_MISMATCH);
+                            mismatchType.add(1);
                         }
                     }
 
@@ -78,6 +78,7 @@ public class ValidateSAMismatch extends FacilioCommand {
                     timeMismatch = checkForTimeMismatch(serviceAppointment,peopleId);
                     if(timeMismatch){
                         mismatchException.add(FSMErrorCode.SA_TIME_MISMATCH);
+                        mismatchType.add(2);
                     }
 
                     if(CollectionUtils.isNotEmpty(serviceAppointment.getSkills())){
@@ -93,6 +94,7 @@ public class ValidateSAMismatch extends FacilioCommand {
                                 List<Long> peopleSkillIds = peopleSkills.stream().map(obj -> obj.getSkill().getId()).collect(Collectors.toList());
                                 if (!peopleSkillIds.containsAll(skillIds)) {
                                     mismatchException.add(FSMErrorCode.SA_SKILL_MISMATCH);
+                                    mismatchType.add(3);
                                 }
                             }
                         }
@@ -110,9 +112,11 @@ public class ValidateSAMismatch extends FacilioCommand {
                             throw exception;
                         } else {
                             serviceAppointment.setMismatch(true);
+                            serviceAppointment.setMismatchType(mismatchType);
                         }
                     } else {
                         serviceAppointment.setMismatch(false);
+                        serviceAppointment.setMismatchType(new ArrayList<>());
                     }
                 }
             }
@@ -127,20 +131,24 @@ public class ValidateSAMismatch extends FacilioCommand {
             if(CollectionUtils.isNotEmpty(timeOffList)){
                 return true;
             }
-            Shift currentShift = ShiftAPI.getPeopleShiftForDay(peopleId, serviceAppointment.getScheduledStartTime());
+            Map<String,Object> currentShift = ShiftAPI.getPeopleShiftForGivenTime(peopleId,serviceAppointment.getScheduledStartTime());
             if (currentShift != null) {
-                long shiftStart = currentShift.getStartTime();
-                long shiftEnd = currentShift.getEndTime();
-                if(shiftEnd < shiftStart){
-                    shiftEnd += 86400000;
-                }
-                long startTimeDayStart = DateTimeUtil.getDayStartTimeOf(serviceAppointment.getScheduledStartTime());
-                long endTimeDayStart = DateTimeUtil.getDayStartTimeOf(serviceAppointment.getScheduledEndTime());
-                if ((serviceAppointment.getScheduledStartTime() < (shiftStart + startTimeDayStart)) || (serviceAppointment.getScheduledStartTime() > (shiftEnd + startTimeDayStart))) {
-                    return true;
-                }
-                if((serviceAppointment.getScheduledEndTime() > (shiftEnd + endTimeDayStart)) || (serviceAppointment.getScheduledEndTime() < (shiftStart + endTimeDayStart))){
-                    return true;
+                long shiftStart = (long) currentShift.getOrDefault("startTime",0);
+                long shiftEnd = (long) currentShift.getOrDefault("endTime",0);
+                if( shiftStart > 0 && shiftEnd > 0) {
+                    long startTimeDayStart = DateTimeUtil.getDayStartTimeOf(serviceAppointment.getScheduledStartTime());
+                    //    Need to check Night and morning shift overlap case
+                    if (shiftEnd < shiftStart) {
+                        shiftEnd += 86400000;
+                    }
+                    if ((serviceAppointment.getScheduledStartTime() < (shiftStart + startTimeDayStart)) || (serviceAppointment.getScheduledStartTime() > (shiftEnd + startTimeDayStart))) {
+                        return true;
+                    }
+                    if ((serviceAppointment.getScheduledEndTime() > (shiftEnd + startTimeDayStart)) || (serviceAppointment.getScheduledEndTime() < (shiftStart + startTimeDayStart))) {
+                        return true;
+                    }
+                } else {
+                    throw new FSMException(FSMErrorCode.UNKNOWN_ERROR);
                 }
             }
         } else {
