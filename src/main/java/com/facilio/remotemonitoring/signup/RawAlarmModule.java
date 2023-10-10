@@ -186,6 +186,17 @@ public class RawAlarmModule extends SignUpData {
         asset.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET));
         modBean.addField(asset);
 
+        LookupField parentAlarm = new LookupField();
+        parentAlarm.setDefault(true);
+        parentAlarm.setName("parentAlarm");
+        parentAlarm.setDisplayName("Parent Alarm");
+        parentAlarm.setModule(rawAlarmMod);
+        parentAlarm.setDataType(FieldType.LOOKUP);
+        parentAlarm.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        parentAlarm.setColumnName("PARENT_ALARM");
+        parentAlarm.setLookupModule(modBean.getModule(RawAlarmModule.MODULE_NAME));
+        modBean.addField(parentAlarm);
+
         modBean.addField(FieldFactory.getSystemField("sysCreatedTime", rawAlarmMod));
         modBean.addField(FieldFactory.getSystemField("sysCreatedByPeople", rawAlarmMod));
         modBean.addField(FieldFactory.getSystemField("sysModifiedTime", rawAlarmMod));

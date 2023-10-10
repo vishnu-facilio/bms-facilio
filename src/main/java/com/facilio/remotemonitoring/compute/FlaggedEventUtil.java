@@ -125,13 +125,17 @@ public class FlaggedEventUtil {
     }
 
     public static void pushToStormFlaggedEventQueue(FilteredAlarmContext filteredAlarm) throws Exception {
+        long controllerId = -1;
+        if(filteredAlarm.getController() != null) {
+            controllerId = filteredAlarm.getController().getId();
+        }
         if (AccountUtil.getCurrentOrg() != null) {
             long orgId = AccountUtil.getCurrentOrg().getId();
             MessageQueue queue = MessageQueueFactory.getMessageQueue(MessageSourceUtil.getDefaultSource());
             JSONObject input = new JSONObject();
             input.put("orgId", orgId);
             input.put("filterAlarm", FacilioUtil.getAsJSON(filteredAlarm));
-            queue.put(getMessageProcessingTopicName(), new FacilioRecord(orgId + "#" + filteredAlarm.getController().getId(), input));
+            queue.put(getMessageProcessingTopicName(), new FacilioRecord(orgId + "#" + controllerId, input));
         }
     }
 
@@ -284,10 +288,14 @@ public class FlaggedEventUtil {
     }
 
     public static FlaggedEventContext getOpenFlaggedEvent(Long controllerId, Long flaggedEventRuleId, Long clientId, Long assetId) throws Exception {
-        if (controllerId != null && flaggedEventRuleId != null && clientId != null) {
+        if (flaggedEventRuleId != null && clientId != null) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", String.valueOf(controllerId), NumberOperators.EQUALS));
+            if(controllerId != null && controllerId > 0) {
+                criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", String.valueOf(controllerId), NumberOperators.EQUALS));
+            } else {
+                criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
+            }
             criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE", "flaggedEventRule", String.valueOf(flaggedEventRuleId), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", StringUtils.join(Arrays.asList(FlaggedEventContext.FlaggedEventStatus.CLEARED.name(), FlaggedEventContext.FlaggedEventStatus.AUTO_CLOSED.name()), ","), StringOperators.ISN_T));
             criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(clientId), NumberOperators.EQUALS));
@@ -331,7 +339,7 @@ public class FlaggedEventUtil {
     }
 
     private static List<FilteredAlarmContext> getOpenFilteredAlarmsForFlaggedRule(FilteredAlarmContext filteredAlarm) throws Exception {
-        if (filteredAlarm != null && filteredAlarm.getClient() != null && filteredAlarm.getAlarmType() != null && filteredAlarm.getController() != null && filteredAlarm.getFlaggedEventRule() != null) {
+        if (filteredAlarm != null && filteredAlarm.getClient() != null && filteredAlarm.getAlarmType() != null && filteredAlarm.getFlaggedEventRule() != null) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             Criteria criteria = new Criteria();
             FilteredAlarmContext lastClearedFilterAlarm = getLastClearedAlarm(filteredAlarm);
@@ -341,7 +349,9 @@ public class FlaggedEventUtil {
             criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID", "clientId", String.valueOf(filteredAlarm.getClient().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", "", CommonOperators.IS_EMPTY));
             criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_TYPE", "alarmType", String.valueOf(filteredAlarm.getAlarmType().getId()), NumberOperators.EQUALS));
-            criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", String.valueOf(filteredAlarm.getController().getId()), NumberOperators.EQUALS));
+            if(filteredAlarm.getController() != null) {
+                criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", String.valueOf(filteredAlarm.getController().getId()), NumberOperators.EQUALS));
+            }
             criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE", "flaggedEventRule", String.valueOf(filteredAlarm.getFlaggedEventRule().getId()), NumberOperators.EQUALS));
             if (filteredAlarm.getAsset() != null && filteredAlarm.getAsset().getId() > 0) {
                 criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(filteredAlarm.getAsset().getId()), NumberOperators.EQUALS));

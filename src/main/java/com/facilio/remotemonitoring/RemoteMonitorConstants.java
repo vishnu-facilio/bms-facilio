@@ -16,4 +16,10 @@ public class RemoteMonitorConstants {
     public static final String FLAGGED_EVENT_AUTO_CLOSURE_SCHEDULED_JOB = "FlaggedEventAutoClosureJob";
     public static final String CLOSE_VALUES = "FlaggedEventAutoClosureJob";
 
+    public static class SystemAlarmTypes {
+        public static final String UNDEFINED = "undefined";
+        public static final String HEARBEAT = "heartbeat";
+        public static final String CONTROLLER_OFFLINE = "controlleroffline";
+
+    }
 }

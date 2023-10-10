@@ -121,6 +121,17 @@ public class AlarmFilterRuleModule extends SignUpData {
         siteCriteriaId.setColumnName("SITE_CRITERIA_ID");
         modBean.addField(siteCriteriaId);
 
+        StringSystemEnumField filterType = new StringSystemEnumField();
+        filterType.setDefault(true);
+        filterType.setName("filterType");
+        filterType.setDisplayName("Filter Type");
+        filterType.setModule(mod);
+        filterType.setEnumName("FilterType");
+        filterType.setDataType(FieldType.STRING_SYSTEM_ENUM);
+        filterType.setDisplayType(FacilioField.FieldDisplayType.SELECTBOX);
+        filterType.setColumnName("FILTER_TYPE");
+        modBean.addField(filterType);
+
         modBean.addField(FieldFactory.getSystemField("sysCreatedTime", mod));
         modBean.addField(FieldFactory.getSystemField("sysCreatedByPeople", mod));
         modBean.addField(FieldFactory.getSystemField("sysModifiedTime", mod));

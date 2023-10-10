@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 public class NoAlarmReceivedForDurationOfTimeRTNHandler implements AlarmCriteriaHandler {
     @Override
     public void compute(RawAlarmContext rawAlarm, FilterRuleCriteriaContext filterRuleCriteria) throws Exception {
+        if(filterRuleCriteria != null) {
+            RawAlarmUtil.updateFilterCriteriaId(rawAlarm, filterRuleCriteria);
+        }
         updateAlarmLastReceivedTimeForController(rawAlarm);
     }
 

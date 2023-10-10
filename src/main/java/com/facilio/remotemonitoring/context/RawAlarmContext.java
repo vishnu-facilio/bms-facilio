@@ -13,6 +13,7 @@ import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -33,13 +34,15 @@ public class RawAlarmContext extends V3Context {
     private Long filterRuleCriteriaId;
     private RawAlarmSourceType sourceType;
     private V3AssetContext asset;
-
+    private RawAlarmContext parentAlarm;
+    private List<Long> relatedAlarmIds;
     public enum RawAlarmSourceType implements FacilioStringEnum {
         SCRIPT("Script"),
         CONTROLLER("Controller"),
         EMAIL("Email"),
         SIMULATOR("Simulator"),
-        SYSTEM("System");
+        SYSTEM("System"),
+        ROLLUP("Roll Up");
 
         @Getter
         @Setter

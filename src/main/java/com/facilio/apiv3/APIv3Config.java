@@ -61,7 +61,6 @@ import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.Fi
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.FillNewsRelatedModuleDataInListCommandV3;
 import com.facilio.bmsconsoleV3.commands.communityFeatures.newsandinformation.LoadNewsAndInformationLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.controlActions.CallToCommandGenerationCommand;
-import com.facilio.bmsconsoleV3.commands.controlActions.CallToControlActionGenerationCommand;
 import com.facilio.bmsconsoleV3.commands.decommission.DecommissionLogLookupFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.decommission.DecommissionPicklistCheckCommand;
 import com.facilio.bmsconsoleV3.commands.employee.LoadEmployeeLookupCommandV3;
@@ -152,7 +151,6 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.*;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3ExternalAttendeeContext;
 import com.facilio.bmsconsoleV3.context.failurecode.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
-import com.facilio.bmsconsoleV3.context.inspection.InspectionPriorityContext;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.*;
@@ -281,8 +279,6 @@ import com.facilio.workflowlog.context.WorkflowLogContext;
 
 import com.facilio.workflowlog.context.WorkflowVersionHistoryContext;
 
-
-import org.apache.commons.chain.Command;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -3690,6 +3686,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getRawAlarmModule(){
         return () -> new V3Config(RawAlarmContext.class,null)
                 .list()
+                .afterFetch(new FillRawAlarmLogicalControllerCommand())
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"client")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"site")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"alarmType")
@@ -3697,9 +3694,11 @@ public class APIv3Config {
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"alarmCategory")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"asset")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"controller")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"parentAlarm")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"sysCreatedByPeople")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"sysModifiedByPeople")
                 .summary()
+                .afterFetch(new FillRawAlarmLogicalControllerCommand())
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"client")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"site")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"alarmType")
@@ -3707,6 +3706,7 @@ public class APIv3Config {
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"alarmCategory")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"asset")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"controller")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"parentAlarm")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"sysCreatedByPeople")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"sysModifiedByPeople")
                 .delete()
@@ -3849,6 +3849,7 @@ public class APIv3Config {
                 .afterSave(new ConstructUpdateCustomActivityCommandV3(),
                         new AddActivitiesCommandV3(AddSubModuleRelations.FILTER_ALARM_ACTIVITY))
                 .list()
+                .afterFetch(new FillFilterAlarmLogicalControllerCommand())
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"site")
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"client")
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"controller")
@@ -3864,6 +3865,7 @@ public class APIv3Config {
                 .delete()
                 .markAsDeleteByPeople()
                 .summary()
+                .afterFetch(new FillFilterAlarmLogicalControllerCommand())
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"site")
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"client")
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"controller")
@@ -3933,6 +3935,7 @@ public class APIv3Config {
                 .afterTransaction(new ConstructAddCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
                 .list()
                 .afterFetch(new ComputeTimeRemainingForFlaggedEventCommand())
+                .afterFetch(new FillFlaggedEventLogicalControllerCommand())
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEventRule")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEvent")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"client")
@@ -3948,6 +3951,7 @@ public class APIv3Config {
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"bureauCloseIssues")
                 .summary()
                 .afterFetch(new ComputeTimeRemainingForFlaggedEventCommand())
+                .afterFetch(new FillFlaggedEventLogicalControllerCommand())
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEventRule")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEvent")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"client")

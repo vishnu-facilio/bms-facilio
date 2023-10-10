@@ -17,7 +17,10 @@ public class FilterRuleCriteriaContext extends V3Context {
     private Long alarmCount;
     private Long alarmCountPeriod;
     private Long alarmClearPeriod;
-
+    private Integer percentage;
+    private String message;
+    private Long assetCategoryId;
+    private Long relationshipId;
     public Integer getControllerTypeIndex() {
         if (controllerType != null) {
             return controllerType.getIndex();

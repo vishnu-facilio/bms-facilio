@@ -8,6 +8,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -52,6 +53,16 @@ public class AlarmRuleBeanImpl implements AlarmRuleBean {
         return null;
     }
 
+    @Override
+    public AlarmTypeContext getAlarmType(String linkname) throws Exception {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("LINK_NAME","linkname",linkname, StringOperators.IS));
+        List<AlarmTypeContext> alarmTypes = V3RecordAPI.getRecordsListWithSupplements(AlarmTypeModule.MODULE_NAME, null, AlarmTypeContext.class, criteria, null, null,null);
+        if(CollectionUtils.isNotEmpty(alarmTypes)) {
+            return alarmTypes.get(0);
+        }
+        return null;
+    }
     @Override
     public List<AlarmDefinitionTaggingContext> getAlarmDefinitionTaggings(@NonNull Long alarmDefinitionId,@NonNull ControllerType controllerType) throws Exception {
         Criteria criteria = new Criteria();

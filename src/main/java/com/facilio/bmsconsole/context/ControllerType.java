@@ -22,7 +22,8 @@ public enum ControllerType implements FacilioIntEnum {
 	REST(11, "Rest"),
 	SYSTEM(12, "System"),
 	RDM(13, "RDM"),
-	E2(14, "E2");
+	E2(14, "E2"),
+	LOGICAL_CONTROLLER(255, "System Controller");
 
 	private int key;
 	private String label;

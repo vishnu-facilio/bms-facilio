@@ -14,7 +14,8 @@ public enum AlarmFilterCriteriaType implements FacilioStringEnum {
     ALARM_COUNTS_IN_A_PERIOD_OF_TIME("Alarm counts in a period of time", ImmutableMap.of(AlarmStrategy.RETURN_TO_NORMAL, new AlarmCountsInAPeriodOfTimeRTNHandler(), AlarmStrategy.REPEAT_UNTIL_RESOLVED, new AlarmCountsInAPeriodOfTimeRURHandler())),
     ALARM_COUNTS_IN_A_PERIOD_OF_TIME_OR_OPEN_FOR_DURATION("Alarm open for specified duration or counts in a period of time", ImmutableMap.of(AlarmStrategy.RETURN_TO_NORMAL, new AlarmCountsInAPeriodOfTimeOrOpenForDurationHandler())),
     NO_ALARM_RECEIVED_FOR_SPECIFIC_PERIOD("No alarm received for a specific duration", ImmutableMap.of(AlarmStrategy.RETURN_TO_NORMAL, new NoAlarmReceivedForDurationOfTimeRTNHandler(), AlarmStrategy.REPEAT_UNTIL_RESOLVED, new NoAlarmReceivedForDurationOfTimeRURHandler())),
-    DO_NOT_FORWARD("Do no forward", ImmutableMap.of(AlarmStrategy.RETURN_TO_NORMAL, new DoNotForwardHandler(), AlarmStrategy.REPEAT_UNTIL_RESOLVED, new DoNotForwardHandler()));
+    DO_NOT_FORWARD("Do no forward", ImmutableMap.of(AlarmStrategy.RETURN_TO_NORMAL, new DoNotForwardHandler(), AlarmStrategy.REPEAT_UNTIL_RESOLVED, new DoNotForwardHandler())),
+    ALARM_ROLL_UP("Roll Up", ImmutableMap.of(AlarmStrategy.RETURN_TO_NORMAL, new RollupAlarmHandler(), AlarmStrategy.REPEAT_UNTIL_RESOLVED, new RollupAlarmHandler()));
 
     @Getter
     @Setter

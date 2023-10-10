@@ -10,6 +10,7 @@ public class AlarmTypeContext extends V3Context {
     private String name;
     private String description;
     private Boolean uncategorisedAlarm;
+    private String linkName;
 
     public boolean isUncategorisedAlarm() {
         if(uncategorisedAlarm == null) {

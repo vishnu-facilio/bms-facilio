@@ -641,7 +641,7 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new CloseButtonDetailsCommand());
         return c;
     }
-    
+
     public static FacilioChain GetSFG20SettingsChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetSFG20SettingsCommand());
@@ -664,6 +664,11 @@ public class ReadOnlyChainFactoryV3 {
     public static FacilioChain GetSFG20SyncScheduleDetailsListCountChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetSFGSyncScheduleDetailsListCountCommand());
+        return c;
+    }
+    public static FacilioChain getAssetRelationChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetAssetRelationsForAssetCategoryCommand());
         return c;
     }
 }

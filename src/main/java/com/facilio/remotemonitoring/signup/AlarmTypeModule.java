@@ -59,6 +59,15 @@ public class AlarmTypeModule extends SignUpData {
         uncategorisedAlarmField.setDefault(true);
         modBean.addField(uncategorisedAlarmField);
 
+        StringField linkName = new StringField();
+        linkName.setName("linkName");
+        linkName.setDisplayName("Link Name");
+        linkName.setModule(mod);
+        linkName.setColumnName("LINK_NAME");
+        linkName.setDataType(FieldType.STRING);
+        linkName.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
+        linkName.setDefault(true);
+        modBean.addField(linkName);
 
         modBean.addField(FieldFactory.getSystemField("sysCreatedTime", mod));
         modBean.addField(FieldFactory.getSystemField("sysCreatedByPeople", mod));

@@ -5,7 +5,10 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -18,6 +21,9 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.queue.source.MessageSourceUtil;
+import com.facilio.relation.context.RelationContext;
+import com.facilio.relation.context.RelationMappingContext;
+import com.facilio.relation.util.RelationUtil;
 import com.facilio.remotemonitoring.beans.AlarmRuleBean;
 import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.handlers.AlarmCriteriaHandler;
@@ -46,7 +52,7 @@ public class FilterAlarmUtil {
     }
 
     public static Pair<AlarmFilterRuleContext, FilterRuleCriteriaContext> getRulesMatchingCriteria(RawAlarmContext rawAlarm) throws Exception {
-        if (rawAlarm != null && rawAlarm.getClient() != null && rawAlarm.getAlarmDefinition() != null && rawAlarm.getController() != null) {
+        if (rawAlarm != null && rawAlarm.getClient() != null) {
             AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
             List<AlarmFilterRuleContext> alarmFilterRules = alarmBean.getAlarmFilterRulesForClient(rawAlarm.getClient().getId());
             if (CollectionUtils.isNotEmpty(alarmFilterRules)) {
@@ -74,13 +80,32 @@ public class FilterAlarmUtil {
                         }
 
                         if (siteCriteriaMatched && controllerCriteriaMatched) {
-                            List<FilterRuleCriteriaContext> filterRuleCriteriaList = alarmFilterRule.getFilterRuleCriteriaList();
-                            if (CollectionUtils.isNotEmpty(filterRuleCriteriaList)) {
-                                for (FilterRuleCriteriaContext filterRuleCriteria : filterRuleCriteriaList) {
-                                    AlarmDefinitionContext alarmDefinition = filterRuleCriteria.getAlarmDefinition();
-                                    Integer controllerType = filterRuleCriteria.getControllerTypeIndex();
-                                    if (alarmDefinition != null && alarmDefinition.getId() == rawAlarm.getAlarmDefinition().getId() && controllerType != null && controllerType == rawAlarm.getController().getControllerType()) {
-                                        return Pair.of(alarmFilterRule, filterRuleCriteria);
+                            if (alarmFilterRule.getFilterType() == null || alarmFilterRule.getFilterType() != FilterType.ROLL_UP) {
+                                List<FilterRuleCriteriaContext> filterRuleCriteriaList = alarmFilterRule.getFilterRuleCriteriaList();
+                                if (CollectionUtils.isNotEmpty(filterRuleCriteriaList) && rawAlarm.getAlarmDefinition() != null && rawAlarm.getController() != null) {
+                                    for (FilterRuleCriteriaContext filterRuleCriteria : filterRuleCriteriaList) {
+                                        AlarmDefinitionContext alarmDefinition = filterRuleCriteria.getAlarmDefinition();
+                                        Integer controllerType = filterRuleCriteria.getControllerTypeIndex();
+                                        if (alarmDefinition != null && alarmDefinition.getId() == rawAlarm.getAlarmDefinition().getId() && controllerType != null && controllerType == rawAlarm.getController().getControllerType()) {
+                                            return Pair.of(alarmFilterRule, filterRuleCriteria);
+                                        }
+                                    }
+                                }
+                            } else {
+                                if(rawAlarm.getAsset() != null && rawAlarm.getAsset().getId() > 0) {
+                                    V3AssetContext asset = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ASSET,rawAlarm.getAsset().getId(), V3AssetContext.class);
+                                    if(asset != null && asset.getCategory() != null && asset.getCategory().getId() > 0) {
+                                        List<FilterRuleCriteriaContext> filterRuleCriteriaList = alarmFilterRule.getFilterRuleCriteriaList();
+                                        if (CollectionUtils.isNotEmpty(filterRuleCriteriaList)) {
+                                            for (FilterRuleCriteriaContext filterRuleCriteria : filterRuleCriteriaList) {
+                                                if(filterRuleCriteria.getAssetCategoryId() > 0) {
+                                                    V3AssetCategoryContext cat = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ASSET_CATEGORY,asset.getCategory().getId(), V3AssetCategoryContext.class);
+                                                    if(cat != null && filterRuleCriteria.getAssetCategoryId() == cat.getId()) {
+                                                        return Pair.of(alarmFilterRule, filterRuleCriteria);
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -131,6 +156,71 @@ public class FilterAlarmUtil {
         filteredAlarm.setMessage(rawAlarm.getMessage());
         return filteredAlarm;
     }
+
+    public static List<Long> getNeighbourAssets(Long assetId,Long relationshipId,boolean excludeIncomingAsset) throws Exception {
+        Long parenAssetId = FilterAlarmUtil.getRelatedParentAsset(assetId,relationshipId);
+        if(parenAssetId != null) {
+            List<Long> neighbourAssetIds = FilterAlarmUtil.getRelatedChildAssets(parenAssetId,relationshipId);
+            if(CollectionUtils.isNotEmpty(neighbourAssetIds)) {
+                if(excludeIncomingAsset) {
+                    neighbourAssetIds.remove(assetId);
+                }
+                return neighbourAssetIds;
+            }
+        }
+        return null;
+    }
+    private static List<Long> getRelatedChildAssets(Long parentId,Long relationshipId) throws Exception {
+        List<Long> relatedAssets = getRelatedAssets(parentId,relationshipId,false);
+        if(CollectionUtils.isNotEmpty(relatedAssets)) {
+            return relatedAssets;
+        }
+        return null;
+    }
+    private static Long getRelatedParentAsset(Long childId,Long relationshipId) throws Exception {
+        List<Long> relatedAssets = getRelatedAssets(childId,relationshipId,true);
+        if(CollectionUtils.isNotEmpty(relatedAssets)) {
+            return relatedAssets.get(0);
+        }
+        return null;
+    }
+
+    private static List<Long> getRelatedAssets(Long childId,Long relationshipId,boolean isForward) throws Exception {
+        RelationContext relation = RelationUtil.getRelation(relationshipId,true);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+        RelationMappingContext relationMapping = null;
+        if(assetModule != null) {
+            if (relation != null) {
+                if(isForward) {
+                    relationMapping = relation.getMapping2();
+                } else {
+                    relationMapping = relation.getMapping1();
+                }
+            }
+        }
+        if(relationMapping != null) {
+            List<Long> ids = getRelatedRecords(childId,relationMapping.getId());
+            if(CollectionUtils.isNotEmpty(ids)) {
+                return ids;
+            }
+        }
+        return null;
+    }
+    private static List<Long> getRelatedRecords(Long parentId,Long relMapId) throws Exception {
+        RelationMappingContext relationMapping = RelationUtil.getRelationMapping(relMapId);
+        JSONObject data = (JSONObject) RelationUtil.getRecordsWithRelationship(relMapId, parentId, 1, 500, null).get("data");
+        List frmObjs = (List) data.get(relationMapping.getFromModule().getName());
+        List<Long> resIds = new ArrayList<>();
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(frmObjs)) {
+            for (Object frmObj : frmObjs) {
+                Map obj = (Map) frmObj;
+                resIds.add((Long) obj.get("id"));
+            }
+        }
+        return resIds;
+    }
+
     public static void addFilteredAlarm(FilteredAlarmContext filteredAlarm) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()

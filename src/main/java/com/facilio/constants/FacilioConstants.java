@@ -1311,6 +1311,7 @@ public class FacilioConstants {
 		public static final String ASSET_TYPE = "assettype";
 		public static final String ASSET_CATEGORY = "assetcategory";
 		public static final String ASSET_CATEGORY_ID = "assetcategoryId";
+		public static final String RELATIONS_FOR_ASSET_CATEGORIES = "relationsForAssetCategories";
 		public static final String ASSET_DEPARTMENT = "assetdepartment";
 		public static final String ENERGY_METER = "energymeter";
 		public static final String ASSET_SPARE_PARTS = "assetSpareParts";

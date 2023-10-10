@@ -5,8 +5,10 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.remotemonitoring.context.AlarmFilterCriteriaType;
 import com.facilio.remotemonitoring.context.AlarmFilterRuleContext;
 import com.facilio.remotemonitoring.context.FilterRuleCriteriaContext;
+import com.facilio.remotemonitoring.context.FilterType;
 import com.facilio.remotemonitoring.signup.AlarmFilterRuleCriteriaModule;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
@@ -25,7 +27,6 @@ public class AddAlarmFilterRuleCriteriaCommand extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<AlarmFilterRuleContext> alarmFilterRules = (List<AlarmFilterRuleContext>) recordMap.get(moduleName);
-        List<ModuleBaseWithCustomFields> filterRuleCriteriaList = new ArrayList<>();
         List<ModuleBaseWithCustomFields> addCriteriaList = new ArrayList<>();
         List<Long> recordIds = new ArrayList<Long>();
         if(CollectionUtils.isNotEmpty(alarmFilterRules)) {
@@ -36,15 +37,13 @@ public class AddAlarmFilterRuleCriteriaCommand extends FacilioCommand {
                         AlarmFilterRuleContext filterRule = new AlarmFilterRuleContext();
                         filterRule.setId(alarmFilterRule.getId());
                         filterRuleCriteriaObject.setAlarmFilterRule(filterRule);
-                        if(filterRuleCriteriaObject.getFilterCriteria() != null){
-                            filterRuleCriteriaList.add(filterRuleCriteriaObject);
-                        }
                         if(filterRuleCriteriaObject.getId() > 0){
                             recordIds.add(filterRuleCriteriaObject.getId());
                         }
-                        if(filterRuleCriteriaObject.getAlarmDefinition() != null){
-                            addCriteriaList.add(filterRuleCriteriaObject);
+                        if(alarmFilterRule.getFilterType().equals(FilterType.ROLL_UP)){
+                            filterRuleCriteriaObject.setFilterCriteria(AlarmFilterCriteriaType.ALARM_ROLL_UP);
                         }
+                        addCriteriaList.add(filterRuleCriteriaObject);
                     }
                 }
             }

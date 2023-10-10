@@ -10,6 +10,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.remotemonitoring.RemoteMonitorConstants;
+import com.facilio.remotemonitoring.beans.AlarmRuleBean;
 import com.facilio.remotemonitoring.compute.RawAlarmUtil;
 import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.signup.AlarmFilterRuleCriteriaModule;
@@ -19,6 +21,7 @@ import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,6 +50,7 @@ public class AlarmNotReceivedJob extends FacilioJob {
 
     private static void checkAndFilterAlarm(Controller controller,FilterRuleCriteriaContext filterRuleCriteria) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
         if(filterRuleCriteria != null && filterRuleCriteria.getControllerType() != null && filterRuleCriteria.getAlarmDefinition() != null && filterRuleCriteria.getAlarmFilterRule() != null) {
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER","controller",String.valueOf(controller.getId()), NumberOperators.EQUALS));
@@ -64,31 +68,44 @@ public class AlarmNotReceivedJob extends FacilioJob {
                         updateControllerAlarmInfo.setFiltered(true);
                         V3RecordAPI.updateRecord(updateControllerAlarmInfo,modBean.getModule(ControllerAlarmInfoModule.MODULE_NAME), Collections.singletonList(modBean.getField("filtered", ControllerAlarmInfoModule.MODULE_NAME)),Collections.singletonList(controllerAlarmInfo.getId()));
                         RawAlarmContext rawAlarm = constructRawAlarm(filterRuleCriteria,controller,controllerAlarmInfo);
-                        RawAlarmUtil.addRawAlarm(rawAlarm);
-                        AlarmFilterCriteriaType.NO_ALARM_RECEIVED_FOR_SPECIFIC_PERIOD.getHandler(rawAlarm).createFilteredAlarm(rawAlarm,filterRuleCriteria);
+                        Pair<AlarmDefinitionMappingContext,RawAlarmContext> pair = RawAlarmUtil.processMessage(rawAlarm);
+                        if(pair != null) {
+                            RawAlarmContext processedRawAlarm = RawAlarmUtil.checkAndCreateAlarmDefinition(pair.getLeft(),pair.getRight());
+                            if(processedRawAlarm.getAlarmDefinition() != null) {
+                                processedRawAlarm = RawAlarmUtil.tagRawAlarm(processedRawAlarm);
+                                if(processedRawAlarm.getStrategyEnum() == AlarmStrategy.RETURN_TO_NORMAL) {
+                                    RawAlarmUtil.clearPreviousRawAlarmsForRTN(processedRawAlarm);
+                                }
+                                processedRawAlarm.setAlarmType(alarmBean.getAlarmType(RemoteMonitorConstants.SystemAlarmTypes.CONTROLLER_OFFLINE));
+                                RawAlarmContext addedAlarm = RawAlarmUtil.addAndGetRawAlarm(processedRawAlarm);
+                                AlarmFilterCriteriaType.NO_ALARM_RECEIVED_FOR_SPECIFIC_PERIOD.getHandler(rawAlarm).createFilteredAlarm(addedAlarm,filterRuleCriteria);
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
+//    private static RawAlarmContext getLastPingAlarmReceived() {
+//
+//    }
     private static RawAlarmContext constructRawAlarm(FilterRuleCriteriaContext filterRuleCriteria,Controller controller,ControllerAlarmInfoContext controllerAlarmInfo) throws Exception {
         if(filterRuleCriteria.getAlarmFilterRule() != null && controllerAlarmInfo != null) {
             RawAlarmContext rawAlarm = new RawAlarmContext();
             rawAlarm.setFiltered(true);
             rawAlarm.setController(controller);
             rawAlarm.setAsset(controllerAlarmInfo.getAsset());
-            rawAlarm.setAlarmType(filterRuleCriteria.getAlarmFilterRule().getAlarmType());
             rawAlarm.setStrategy(filterRuleCriteria.getAlarmFilterRule().getStrategy());
-            rawAlarm.setAlarmDefinition(filterRuleCriteria.getAlarmDefinition());
             V3SiteContext site = new V3SiteContext();
             site.setId(controller.getSiteId());
             rawAlarm.setSite(site);
             rawAlarm.setOccurredTime(System.currentTimeMillis());
             rawAlarm.setFilterRuleCriteriaId(filterRuleCriteria.getId());
             rawAlarm.setClient(filterRuleCriteria.getAlarmFilterRule().getClient());
+            rawAlarm.setAsset(controllerAlarmInfo.getAsset());
             rawAlarm.setProcessed(true);
-            rawAlarm.setMessage("System Generated Alarm");
+            rawAlarm.setMessage(filterRuleCriteria.getMessage());
             rawAlarm.setSourceType(RawAlarmContext.RawAlarmSourceType.SYSTEM);
             return rawAlarm;
         }

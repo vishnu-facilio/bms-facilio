@@ -1,12 +1,16 @@
 package com.facilio.remotemonitoring.utils;
 
+import com.facilio.agentv2.controller.Controller;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -15,14 +19,19 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.relation.context.RelationContext;
+import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.relation.util.RelationUtil;
 import com.facilio.remotemonitoring.compute.FlaggedEventUtil;
 import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.signup.*;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RemoteMonitorUtils {
     //    public static FlaggedEventRuleClosureConfigContext getFlaggedEventRuleClosureConfig(long flaggedEventRuleId) throws Exception{
@@ -71,12 +80,14 @@ public class RemoteMonitorUtils {
                 }
             }
         }
-        Map<String, Object> deleteObj = new HashMap<>();
-        deleteObj.put(alarmFilterRuleCriteriaModule.getName(), recordIds);
-        FacilioContext context = V3Util.deleteRecords(alarmFilterRuleCriteriaModule.getName(), deleteObj, null, null, false);
-        Map<String, Integer> countMap = Constants.getCountMap(context);
-        if (countMap.containsKey(alarmFilterRuleCriteriaModule.getName())) {
-            return countMap.get(alarmFilterRuleCriteriaModule.getName());
+        if(!recordIds.isEmpty()){
+            Map<String, Object> deleteObj = new HashMap<>();
+            deleteObj.put(alarmFilterRuleCriteriaModule.getName(), recordIds);
+            FacilioContext context = V3Util.deleteRecords(alarmFilterRuleCriteriaModule.getName(), deleteObj, null, null, false);
+            Map<String, Integer> countMap = Constants.getCountMap(context);
+            if (countMap.containsKey(alarmFilterRuleCriteriaModule.getName())) {
+                return countMap.get(alarmFilterRuleCriteriaModule.getName());
+            }
         }
         return 0;
     }
@@ -215,6 +226,49 @@ public class RemoteMonitorUtils {
         }
         return null;
     }
+
+    public static List<RelationContext> getAssetRelationForAssetCategory(Long assetCategoryModuleId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        Map<String, FacilioField> relationFields = FieldFactory.getAsMap(FieldFactory.getRelationFields());
+        Map<String, FacilioField> relationMappingFields = FieldFactory.getAsMap(FieldFactory.getRelationMappingFields());
+        FacilioModule assetCategoryModule = modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY);
+        Map<String, FacilioField> assetCategoryFields = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY));
+        String allowedRelationTypes = String.join(",", String.valueOf(RelationRequestContext.RelationType.MANY_TO_ONE.getIndex()), String.valueOf(RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()));
+
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getRelationFields())
+                .table(ModuleFactory.getRelationModule().getTableName())
+                .innerJoin(ModuleFactory.getRelationMappingModule().getTableName())
+                .on(relationFields.get("id").getCompleteColumnName() + " = " + relationMappingFields.get("relationId").getCompleteColumnName())
+                .andCondition(CriteriaAPI.getCondition(relationMappingFields.get("fromModuleId"), String.valueOf(assetCategoryModuleId), NumberOperators.EQUALS))
+                .innerJoin(assetCategoryModule.getTableName())
+                .on(relationMappingFields.get("toModuleId").getCompleteColumnName() + " = " + assetCategoryFields.get("assetModuleID").getCompleteColumnName())
+                .andCondition(CriteriaAPI.getCondition(relationMappingFields.get("relationType"), allowedRelationTypes, NumberOperators.EQUALS));
+
+        List<RelationContext> relationList = FieldUtil.getAsBeanListFromMapList(selectRecordBuilder.get(), RelationContext.class);
+        return relationList;
+    }
+
+    public static Controller getControllerForAlarm(RawAlarmContext alarm) throws Exception {
+        if(alarm != null) {
+            if(alarm.getController() != null &&  alarm.getController().getControllerType() == ControllerType.LOGICAL_CONTROLLER.getKey()) {
+                return getLogicalController();
+            }
+            else if(alarm.getSourceType() != null && alarm.getSourceType() == RawAlarmContext.RawAlarmSourceType.ROLLUP) {
+                return getLogicalController();
+            } else if(alarm.getController() != null && alarm.getController().getId() > -1) {
+                return V3RecordAPI.getRecord(FacilioConstants.ContextNames.CONTROLLER, alarm.getController().getId(), Controller.class);
+            }
+        }
+        return null;
+    }
+    public static Controller getLogicalController() {
+        Controller logicalController = new Controller();
+        logicalController.setName("System Controller");
+        logicalController.setControllerType(ControllerType.LOGICAL_CONTROLLER.getKey());
+        return logicalController;
+    }
+
     public static String getExecutorName(String executorName) {
         if(FacilioProperties.getService() != null && FacilioProperties.getService().equalsIgnoreCase("storm")) {
             return FacilioProperties.isDevelopment() ? executorName : "pre-" + executorName;

@@ -4162,4 +4162,9 @@
         </urlparams>
     </request>
 
+    <request path="/api/v3/alarmFilterRule/assetRelation/:assetCategoryId" method="GET">
+        <urlparams>
+            <property name="assetCategoryId" type="number"/>
+        </urlparams>
+    </request>
 </config>

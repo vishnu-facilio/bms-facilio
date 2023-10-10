@@ -1,6 +1,7 @@
 package com.facilio.remotemonitoring.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.Criteria;
@@ -9,16 +10,20 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.remotemonitoring.context.AlarmAssetTaggingContext;
+import com.facilio.remotemonitoring.context.AlarmTypeContext;
 import com.facilio.remotemonitoring.context.FlaggedEventBureauActionsContext;
 import com.facilio.remotemonitoring.signup.AlarmAssetTaggingModule;
+import com.facilio.remotemonitoring.signup.AlarmTypeModule;
 import com.facilio.remotemonitoring.signup.FlaggedEventBureauActionModule;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ValidateAlarmAssetTaggingCommand extends FacilioCommand {
     @Override

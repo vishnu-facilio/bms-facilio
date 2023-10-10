@@ -1,11 +1,13 @@
 package com.facilio.fields.util;
 
+import org.apache.kafka.common.protocol.types.Field;
+
 import java.util.Arrays;
 import java.util.List;
 
 public class FieldsConfigList {
     public static final List<String> WORK_ORDER_FIELDS_INCLUDE = Arrays.asList( //SORT
-            "actualWorkDuration", "subject", "actualWorkStart", "actualWorkEnd","siteId","approvalStatus",
+            "actualWorkDuration", "subject", "actualWorkStart", "actualWorkEnd", "siteId", "approvalStatus",
             "assignedBy", "assignedTo", "assignmentGroup", "category",
             "createdBy", "createdTime", "totalCost", "dueDate",
             "modifiedTime", "noOfTasks", "noOfClosedTasks", "priority",
@@ -32,7 +34,7 @@ public class FieldsConfigList {
             "subject", "localId"
     );
 
-    public static final List<String> ASSET_FIELDS_INCLUDE =  Arrays.asList( //SORT, ADVANCED_FILTER_FIELDS
+    public static final List<String> ASSET_FIELDS_INCLUDE = Arrays.asList( //SORT, ADVANCED_FILTER_FIELDS
             "category", "department", "description", "manufacturer",
             "name", "purchasedDate", "qrVal", "retireDate", "serialNumber",
             "state", "supplier", "tagNumber", "type", "space", "unitPrice",
@@ -45,7 +47,7 @@ public class FieldsConfigList {
             "hideToCustomer", "parentAssetId", "stateFlowId"
     );
 
-    public static final List<String> NEW_ALARMS_FIELDS_INCLUDE =Arrays.asList( //SORT
+    public static final List<String> NEW_ALARMS_FIELDS_INCLUDE = Arrays.asList( //SORT
             "subject", "acknowledged", "acknowledgedBy", "severity",
             "acknowledgedTime", "lastClearedTime", "lastCreatedTime", "lastOccurredTime",
             "resource", "rule", "readingAlarmCategory", "faultType",
@@ -125,7 +127,6 @@ public class FieldsConfigList {
     public static final List<String> AGENT_ALARM_VIEW_FIXED_SELECTABLE_FIELDS = Arrays.asList("noOfOccurrences");
 
 
-
     public static final List<String> AGENT_FIELDS_INCLUDE = Arrays.asList(
             "connected", "displayName", "interval", "lastModifiedTime",
             "createdTime", "lastDataReceivedTime", "siteId", "writable",
@@ -153,7 +154,7 @@ public class FieldsConfigList {
     );
 
     public static final List<String> SITE_VIEW_FIXED_FIELDS = Arrays.asList(
-            "name","id"
+            "name", "id"
     );
 
     public static final List<String> BUILDING_VIEW_FIELDS_EXCLUDE = Arrays.asList(
@@ -163,7 +164,7 @@ public class FieldsConfigList {
     );
 
     public static final List<String> BUILDING_VIEW_FIXED_FIELDS = Arrays.asList(
-            "name","id"
+            "name", "id"
     );
 
     public static final List<String> SERVICE_VIEW_FIELDS_INCLUDE = Arrays.asList(
@@ -193,6 +194,61 @@ public class FieldsConfigList {
     public static final List<String> WORKPERMIT_VIEW_FIELDS_EXCLUDE = Arrays.asList(
             "ticket", "approvalFlowId", "stateFlowId", "isRecurring",
             "recurringInfoId", "permitType");
+    public static final List<String> RAW_ALARM_FIELDS_TO_INCLUDE = Arrays.asList(
+            "id", "message", "site", "client", "controller", "alarmDefinition",
+            "alarmCategory", "alarmType", "strategy","asset", "parentAlarm", "occurredTime",
+            "clearedTime", "filtered", "processed", "sysCreatedByPeople", "sysCreatedTime"
+    );
+
+    public static final List<String> ALARM_DEFINITION_MAPPING_FIELDS_TO_INCLUDE = Arrays.asList(
+            "id", "name", "alarmDefinition", "regularExpression",
+            "priority", "client", "sysCreatedTime", "sysCreatedByPeople",
+            "sysModifiedTime", "sysModifiedByPeople"
+    );
+
+    public static final List<String> ALARM_DEFINITION_TAGGING_FIELDS_TO_INCLUDE = Arrays.asList(
+            "id", "name", "alarmDefinition", "client", "alarmType",
+            "alarmCategory", "controllerType", "sysCreatedTime",
+            "sysCreatedByPeople", "sysModifiedTime", "sysModifiedByPeople"
+    );
+
+    public static final List<String> ALARM_TYPE_FIELDS_TO_INCLUDE = Arrays.asList(
+            "id", "name", "description", "linkName", "sysCreatedTime",
+            "sysCreatedByPeople", "sysModifiedTime", "sysModifiedByPeople"
+    );
+
+    public static final List<String> ALARM_CATEGORY_FIELDS_TO_INCLUDE = Arrays.asList(
+            "id", "name", "description", "client", "sysCreatedTime",
+            "sysCreatedByPeople", "sysModifiedTime", "sysModifiedByPeople"
+
+    );
+
+    public static final List<String> ALARM_FILTER_RULE_FIELDS_TO_INCLUDE = Arrays.asList(
+            "id", "name", "description", "client", "alarmType",
+            "strategy", "filterType", "priority", "status", "filterType",
+            "sysCreatedTime", "sysCreatedByPeople", "sysModifiedTime",
+            "sysModifiedByPeople"
+    );
+
+    public static final List<String> FILTERED_ALARM_FIELDS_TO_INCLUDE = Arrays.asList(
+            "id", "message", "controller", "client", "site",
+            "alarmType", "alarmCategory","asset", "occurredTime", "clearedTime",
+            "rawAlarm", "alarmFilterRule", "flaggedEvent"
+
+    );
+
+    public static final List<String> FLAGGED_EVENT_RULE_FIELDS_TO_INCLUDE = Arrays.asList(
+            "id", "name", "description", "executionType", "priority",
+            "sysCreatedTime", "sysCreatedByPeople", "sysModifiedTime",
+            "sysModifiedByPeople"
+    );
+
+    public static final List<String> FLAGGED_EVENT_FIELDS_TO_INCLUDE = Arrays.asList(
+            "id", "site", "client", "controller", "flaggedEventRule",
+            "status", "workorder", "assignedPeople", "team",
+            "sysCreatedTime", "sysCreatedByPeople", "sysModifiedTime",
+            "sysModifiedByPeople"
+    );
 
     public static final List<String> UTILITY_INTEGRATION_CUSTOMER_FIELDS_EXCLUDE = Arrays.asList(
             "userUid", "templateUid", "secretState","meta","isArchived","isExpired","isRevoked","formUid"

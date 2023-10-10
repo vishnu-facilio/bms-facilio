@@ -110,6 +110,47 @@ public class AlarmFilterRuleCriteriaModule extends SignUpData {
         alarmClearPeriodField.setColumnName("ALARM_CLEAR_PERIOD");
         modBean.addField(alarmClearPeriodField);
 
+        StringField messageField = new StringField();
+        messageField.setName("message");
+        messageField.setModule(mod);
+        messageField.setDisplayName("Message");
+        messageField.setColumnName("MESSAGE");
+        messageField.setDataType(FieldType.BIG_STRING);
+        messageField.setDisplayType(FacilioField.FieldDisplayType.TEXTAREA);
+        messageField.setDefault(true);
+        messageField.setMainField(true);
+        modBean.addField(messageField);
+
+        NumberField assetCategoryId = new NumberField();
+        assetCategoryId.setDefault(true);
+        assetCategoryId.setName("assetCategoryId");
+        assetCategoryId.setDisplayName("Asset Category Id");
+        assetCategoryId.setModule(mod);
+        assetCategoryId.setDataType(FieldType.NUMBER);
+        assetCategoryId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
+        assetCategoryId.setColumnName("ASSET_CATEGORY_ID");
+        modBean.addField(assetCategoryId);
+
+        NumberField relationMappingId = new NumberField();
+        relationMappingId.setDefault(true);
+        relationMappingId.setName("relationshipId");
+        relationMappingId.setDisplayName("Relationship Id");
+        relationMappingId.setModule(mod);
+        relationMappingId.setDataType(FieldType.NUMBER);
+        relationMappingId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
+        relationMappingId.setColumnName("RELATIONSHIP_ID");
+        modBean.addField(relationMappingId);
+
+        NumberField percentage = new NumberField();
+        percentage.setDefault(true);
+        percentage.setName("percentage");
+        percentage.setDisplayName("Percentage");
+        percentage.setModule(mod);
+        percentage.setDataType(FieldType.NUMBER);
+        percentage.setDisplayType(FacilioField.FieldDisplayType.PERCENT);
+        percentage.setColumnName("PERCENTAGE");
+        modBean.addField(percentage);
+
         modBean.addField(FieldFactory.getSystemField("sysCreatedTime", mod));
         modBean.addField(FieldFactory.getSystemField("sysCreatedByPeople", mod));
         modBean.addField(FieldFactory.getSystemField("sysModifiedTime", mod));

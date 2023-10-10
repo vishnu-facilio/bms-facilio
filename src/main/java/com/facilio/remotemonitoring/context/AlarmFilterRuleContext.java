@@ -23,7 +23,7 @@ public class AlarmFilterRuleContext extends V3Context {
     private Criteria siteCriteria;
     private Criteria controllerCrtieria;
     private Boolean status;
-
+    private FilterType filterType;
     public void setStrategy(Integer type) {
         if (type != null) {
             this.strategy = AlarmStrategy.valueOf(type);

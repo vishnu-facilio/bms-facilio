@@ -5,6 +5,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fields.fieldBuilder.FieldConfig;
 import com.facilio.fields.util.FieldsConfigList;
 import com.facilio.mailtracking.MailConstants;
+import com.facilio.modules.FieldType;
+import com.facilio.remotemonitoring.signup.*;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
 
@@ -727,6 +729,127 @@ public class APIFieldsConfig {
 
                 .viewFields()
                 .addFixedFields(Arrays.asList("requestSubject", "id"))
+                .done();
+
+    }
+
+    @Module(RawAlarmModule.MODULE_NAME)
+    public static Supplier<FieldConfig> getRawAlarmFieldsConfig(){
+        return () -> new FieldConfig()
+
+                .advancedFields()
+                .add(FieldsConfigList.RAW_ALARM_FIELDS_TO_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.RAW_ALARM_FIELDS_TO_INCLUDE)
+                .done();
+    }
+
+    @Module(AlarmDefinitionMappingModule.MODULE_NAME)
+    public static Supplier<FieldConfig> getAlarmDefinitionMappingModuleFields(){
+        return () -> new FieldConfig()
+
+                .advancedFields()
+                .add(FieldsConfigList.ALARM_DEFINITION_MAPPING_FIELDS_TO_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.ALARM_DEFINITION_MAPPING_FIELDS_TO_INCLUDE)
+                .done();
+    }
+
+    @Module(AlarmDefinitionTaggingModule.MODULE_NAME)
+    public static Supplier<FieldConfig> getAlarmDefinitionTaggingModuleFields(){
+        return () -> new FieldConfig()
+
+                .advancedFields()
+                .add(FieldsConfigList.ALARM_DEFINITION_TAGGING_FIELDS_TO_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.ALARM_DEFINITION_TAGGING_FIELDS_TO_INCLUDE)
+                .done();
+    }
+
+    @Module(AlarmTypeModule.MODULE_NAME)
+    public static Supplier<FieldConfig> getAlarmTypeModuleFields(){
+        return () -> new FieldConfig()
+
+                .advancedFields()
+                .add(FieldsConfigList.ALARM_TYPE_FIELDS_TO_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.ALARM_TYPE_FIELDS_TO_INCLUDE)
+                .done();
+
+    }
+
+    @Module(AlarmCategoryModule.MODULE_NAME)
+    public static Supplier<FieldConfig> getAlarmCategoryModuleFields(){
+        return () -> new FieldConfig()
+
+                .advancedFields()
+                .add(FieldsConfigList.ALARM_CATEGORY_FIELDS_TO_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.ALARM_CATEGORY_FIELDS_TO_INCLUDE)
+                .done();
+    }
+
+    @Module(AlarmFilterRuleModule.MODULE_NAME)
+    public static Supplier<FieldConfig> getAlarmFilterRuleModuleFields(){
+        return () -> new FieldConfig()
+
+                .advancedFields()
+                .add(FieldsConfigList.ALARM_FILTER_RULE_FIELDS_TO_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.ALARM_FILTER_RULE_FIELDS_TO_INCLUDE)
+                .done();
+
+    }
+
+    @Module(FilteredAlarmModule.MODULE_NAME)
+    public static Supplier<FieldConfig> getFilteredAlarmModuleFields(){
+        return  () -> new FieldConfig()
+
+                .advancedFields()
+                .add(FieldsConfigList.FILTERED_ALARM_FIELDS_TO_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.FILTERED_ALARM_FIELDS_TO_INCLUDE)
+                .done();
+    }
+
+    @Module(FlaggedEventRuleModule.MODULE_NAME)
+    public static Supplier<FieldConfig> getFlaggedEventRuleModuleFields(){
+        return () -> new FieldConfig()
+
+                .advancedFields()
+                .add(FieldsConfigList.FLAGGED_EVENT_RULE_FIELDS_TO_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.FLAGGED_EVENT_RULE_FIELDS_TO_INCLUDE)
+                .done();
+
+    }
+
+    @Module((FlaggedEventModule.MODULE_NAME))
+    public static Supplier<FieldConfig> getFlaggedEventModuleFields(){
+        return () -> new FieldConfig()
+
+                .advancedFields()
+                .add(FieldsConfigList.FLAGGED_EVENT_FIELDS_TO_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.FLAGGED_EVENT_FIELDS_TO_INCLUDE)
                 .done();
 
     }

@@ -13,11 +13,14 @@ import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +37,7 @@ public enum TeamOperator implements Operator<String> {
                 if (fieldName != null && !fieldName.isEmpty()) {
                     FacilioField teamField = getField(fieldName);
                     if (teamField != null) {
-                        return PickListOperators.IS.getPredicate(teamField.getName(), getAccessibleTeamsForPeople());
+                        return new FacilioModulePredicate(teamField.getName(), computePredicate(getAccessibleTeamsForPeople()));
                     }
                 }
             } catch (Exception e) {
@@ -43,6 +46,25 @@ public enum TeamOperator implements Operator<String> {
             return null;
         }
     };
+
+
+    private static Predicate computePredicate(String value) {
+        if(value != null && value.contains(",")) {
+            List<Predicate> predicates = new ArrayList<>();
+            String[] values = value.trim().split("\\s*,\\s*");
+            for(String val : values) {
+                predicates.add(getValuePredicate(val));
+            }
+            return PredicateUtils.anyPredicate(predicates);
+        }
+        else {
+            return getValuePredicate(value);
+        }
+    }
+
+    private static Predicate getValuePredicate(String value) {
+        return new PickListOperators.PickListPredicate(value != null ? Long.parseLong(value) : -1);
+    }
 
     private static String getAccessibleTeamsForPeople() throws Exception {
         if(AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getPeopleId() > -1) {

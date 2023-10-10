@@ -2166,4 +2166,12 @@
             <param name="permission">ALL</param>
         </action>
     </package>
+    <package name="alarmFilterRule" namespace="/api/v3/alarmFilterRule" extends="v3Api">
+        <action name="assetRelation/*" class="com.facilio.remotemonitoring.action.AlarmFilterRuleAction" method="getSelectedCategoryAssetRelationsships">
+            <param name="assetCategoryId">{1}</param>
+            <param name="moduleName">alarmFilterRule</param>
+            <param name="permission">GET:READ</param>
+            <param name="checkPermission">true</param>
+        </action>
+    </package>
 </struts>

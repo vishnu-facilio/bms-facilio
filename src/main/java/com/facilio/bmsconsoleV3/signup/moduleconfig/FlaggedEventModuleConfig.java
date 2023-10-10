@@ -14,6 +14,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.TeamOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
@@ -294,8 +295,8 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
 
     private static Criteria getGageWithEvaluationDetailCriteria() throws Exception {
         Criteria criteria = new Criteria();
-        Condition condition = CriteriaAPI.getCondition( "currentBureauActionDetail","CURRENT_BUREAU_ACTION", CommonOperators.IS_NOT_EMPTY);
-        criteria.addAndCondition(condition);
+        Condition currentTeamCondition = CriteriaAPI.getCondition("team","TEAM_ID", TeamOperator.CURRENT_PEOPLE_IN_TEAM);
+        criteria.addAndCondition(currentTeamCondition);
         return  criteria;
     }
 }

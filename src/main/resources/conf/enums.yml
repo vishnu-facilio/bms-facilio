@@ -545,3 +545,6 @@ enums:
 
   - name: SFGType
     enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext$SFGType
+
+  - name: FilterType
+    enumClassName: com.facilio.remotemonitoring.context.FilterType
