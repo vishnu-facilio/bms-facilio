@@ -25,7 +25,7 @@ services:
     dbName: accesslog
 
   - serviceName: clickhouse
-    instanceName: default
+    instanceName: clickhouse-server
     dbName: default
     publicAccess: false
 
