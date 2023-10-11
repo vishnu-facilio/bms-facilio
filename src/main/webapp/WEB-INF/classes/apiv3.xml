@@ -362,6 +362,9 @@
             <param name="moduleName">workorder</param>
             <param name="recordId">{1}</param>
         </action>
+        <action name="states/featureSettings" class="com.facilio.bmsconsoleV3.actions.WorkorderAction" method="workOrderFeatureSettingsList">
+            <param name="moduleName">workorder</param>
+        </action>
     </package>
 
     <package name="shiftPlannerList" namespace="/api/v3/shiftplanner" extends="v3Api">

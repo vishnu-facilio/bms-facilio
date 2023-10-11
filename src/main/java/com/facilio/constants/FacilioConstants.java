@@ -409,6 +409,7 @@ public class FacilioConstants {
 		public static final String NOTES_MODULE_NAME = "notesModuleName";
         public static final String WORK_ORDER_FEATURE_SETTINGS_LIST = "workOrderFeatureSettingsList";
 		public static final String WORK_ORDER_FEATURE_SETTINGS_LIST_MAP = "workOrderFeatureSettingsListMap";
+		public static final String WORK_ORDER_STATES_FEATURE_SETTINGS = "workOrderStatesFeatureSettings";
 		public static final String WORK_ORDER_FEATURE_SETTINGS_TYPE = "workOrderFeatureSettingsType";
 		public static final String WORK_ORDER_FEATURE_ALLOWED_STATE_ID = "workOrderAllowedStateId";
         public static final String WORK_ORDER_SETTINGS = "workOrderSettings";

@@ -3031,6 +3031,13 @@
         </urlparams>
     </request>
 
+    <!-- WORKORDER FEATURE SETTINGS API: STATES MAPPING -->
+    <request path="/api/v3/workorders/states/featureSettings" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v2/userMobileSetting/updateFcmToken" method="POST">
         <requestbody type="object">
             <property name="oldFcmToken" type="string" mandatory="true"/>
