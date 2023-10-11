@@ -116,6 +116,8 @@ public class AgentConstants
 
     public static final String ORGID = "orgId";
     public static final String DISPLAY_NAME = "displayName";
+    public static final String ALLOW_AUTO_MAPPING = "allowAutoMapping";
+    public static final String AUTO_MAPPING_PARENT_FIELD_ID = "autoMappingParentFieldId";
     public static final String DESCRIPTION = "description";
     public static final String POINT_TYPE = "pointType";
     public static final String DEVICE_NAME = "deviceName";
@@ -123,6 +125,7 @@ public class AgentConstants
     public static final String RESOURCE_ID ="resourceId";
     public static final String FIELD_ID = "fieldId";
     public static final String MAPPED_TIME = "mappedTime";
+    public static final String MAPPED_TYPE = "mappedType";
     public static final String AGENT_ID = "agentId";
     public static final String AGENT_NAME = "agentName";
     public static final String AGENT_PARAMS = "agentParams";

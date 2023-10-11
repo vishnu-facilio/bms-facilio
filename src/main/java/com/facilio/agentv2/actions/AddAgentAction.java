@@ -13,12 +13,9 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.service.FacilioService;
-import com.facilio.workflows.context.WorkflowContext;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -30,9 +27,6 @@ import javax.xml.bind.DatatypeConverter;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-
-import static com.facilio.agentv2.AgentConstants.AGENT_NAME;
 
 @Setter @Getter
 public class AddAgentAction extends AgentActionV2 {
@@ -45,6 +39,7 @@ public class AddAgentAction extends AgentActionV2 {
     private long messageSourceId;
     private String subscribeTopics;
     private long siteId;
+    private long autoMappingParentFieldId;
     private String type;
     private String displayName;
     private int agentType=-1;
@@ -55,6 +50,7 @@ public class AddAgentAction extends AgentActionV2 {
     private Integer port;
     private String ipAddress;
     private String agentSourceType = AgentConstants.AgentSourceType.WEB.getValue();
+    private boolean allowAutoMapping;
 
 	public String createAgent() {
         try {
@@ -91,6 +87,8 @@ public class AddAgentAction extends AgentActionV2 {
                 long orgId = currentOrg.getOrgId();
                 long inboundId = getInboundId(agent, orgId);
                 agent.setInboundConnectionId(inboundId);
+                agent.setAutoMappingParentFieldId(getAutoMappingParentFieldId());
+                agent.setAllowAutoMapping(isAllowAutoMapping());
             case CLOUD:
             case CUSTOM:
                 agent.setConnected(true);

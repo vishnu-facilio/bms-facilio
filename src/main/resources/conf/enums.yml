@@ -22,6 +22,9 @@ enums:
   - name: ConfigureStatus
     enumClassName: com.facilio.agentv2.point.PointEnum$ConfigureStatus
 
+  - name: MappedType
+    enumClassName: com.facilio.agentv2.point.PointEnum$MappedType
+
   - name: DeviceType
     enumClassName: com.facilio.bmsconsole.context.DeviceContext$DeviceType
 

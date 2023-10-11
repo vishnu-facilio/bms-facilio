@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -85,11 +84,11 @@ import com.facilio.workflows.util.WorkflowUtil;
 public class ReadingsAPI {
 	private static final Logger LOGGER = LogManager.getLogger(ReadingsAPI.class.getName());
 	public static final int DEFAULT_DATA_INTERVAL = 15; //In Minutes
-	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60); 
+	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60);
 	private static final int BATCH_SIZE =2000;
-	
-	public static final String FORMULA_FIELD_TABLE_NAME = "Formula_Readings";	
-	
+
+	public static final String FORMULA_FIELD_TABLE_NAME = "Formula_Readings";
+
 	public static int getOrgDefaultDataIntervalInMin() throws Exception {
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
 		String defaultIntervalProp = orgInfo.get(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
@@ -100,7 +99,7 @@ public class ReadingsAPI {
 			return Integer.parseInt(defaultIntervalProp);
 		}
 	}
-	
+
 	public static ReadingInputType getRDMInputTypeFromModuleType(ModuleType type) {
 		switch (type) {
 			case SCHEDULED_FORMULA:
@@ -113,18 +112,18 @@ public class ReadingsAPI {
 				return ReadingInputType.WEB;
 		}
 	}
-	
+
 	public static FacilioModule getParentModuleRelFromChildModule(FacilioModule childModule) throws Exception {
-		
+
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getSubModuleRelFields());
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getSubModulesRelModule().getTableName())
 				.select(FieldFactory.getSubModuleRelFields())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("childModuleId"), childModule.getModuleId()+"", NumberOperators.EQUALS));
-		
+
 		List<Map<String, Object>> props = selectBuilder.get();
-		
+
 		if(props !=null && !props.isEmpty()) {
 			Long parentModuleId = (Long) props.get(0).get("parentModuleId");
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -132,19 +131,19 @@ public class ReadingsAPI {
 		}
 		return null;
 	}
-	
+
 	public static int updateReadingDataMeta (ReadingDataMeta rdm) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField resourceIdField = fieldMap.get("resourceId");
 		FacilioField fieldIdField = fieldMap.get("fieldId");
-		
+
 		if (rdm.getReadingTypeEnum() != null && rdm.getReadingTypeEnum() == ReadingType.WRITE) {
 			rdm.setIsControllable(true);
 			rdm.setControlActionMode(ReadingDataMeta.ControlActionMode.LIVE.getIntVal());
 		}
-		
+
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(fields)
@@ -152,19 +151,19 @@ public class ReadingsAPI {
 														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(rdm.getResourceId()), PickListOperators.IS))
 														.andCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(rdm.getFieldId()), PickListOperators.IS))
 														;
-		
+
 		return updateBuilder.update(FieldUtil.getAsProperties(rdm));
 	}
-	
+
 	// values should be available for all fields in fieldNamesToUpdate, else will be set as null
 	public static int updateReadingDataMetaList (List<ReadingDataMeta> rdms, List<String> fieldNamesToUpdate) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
+
 		FacilioField resourceIdField = fieldMap.get("resourceId");
 		FacilioField fieldIdField = fieldMap.get("fieldId");
-		
+
 		List<FacilioField> updateFields = new ArrayList<>();
 		boolean shouldUpdateReadingType = false;
 		for(String fieldName: fieldNamesToUpdate) {
@@ -178,12 +177,12 @@ public class ReadingsAPI {
 		List<FacilioField> whereFields = new ArrayList<>();
 		whereFields.add(resourceIdField);
 		whereFields.add(fieldIdField);
-		
+
 		List<Map<String, Object>> props = FieldUtil.getAsMapList(rdms, ReadingDataMeta.class);
 		List<BatchUpdateContext> batchUpdateList = new ArrayList<>();
 		for (Map<String, Object> prop: props) {
 			BatchUpdateContext updateVal = new BatchUpdateContext();
-			
+
 			if (shouldUpdateReadingType) {
 				Integer readingType = (Integer) prop.get("readingType");
 				if (readingType == null) {
@@ -191,36 +190,36 @@ public class ReadingsAPI {
 					prop.put("readingType", readingType);
 				}
 				setControllableprop(prop, readingType == ReadingType.WRITE.getValue());
-				
+
 				updateVal.addUpdateValue("isControllable",  prop.get("isControllable"));
 				updateVal.addUpdateValue("controlActionMode",  prop.get("controlActionMode"));
 			}
-			
+
 			for(String fieldName: fieldNamesToUpdate) {
 				updateVal.addUpdateValue(fieldName,  prop.get(fieldName));
 			}
-			
+
 			updateVal.addWhereValue("resourceId",prop.get("resourceId"));
 			updateVal.addWhereValue("fieldId", prop.get("fieldId"));
-			
+
 			batchUpdateList.add(updateVal);
 		}
-		
+
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(updateFields)
 														;
-		
+
 		return updateBuilder.batchUpdate(whereFields, batchUpdateList);
 	}
-	
+
 	public static int updateReadingDataMetaInputType (List<ReadingDataMeta> metaList, ReadingDataMeta.ReadingInputType type, ReadingType readingType) throws SQLException {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField resourceIdField = fieldMap.get("resourceId");
 		FacilioField fieldIdField = fieldMap.get("fieldId");
-		
+
 		Criteria pkCriteriaList = new Criteria();
 		for (ReadingDataMeta meta : metaList) {
 			Criteria pkCriteria = new Criteria();
@@ -228,25 +227,25 @@ public class ReadingsAPI {
 			pkCriteria.addAndCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(meta.getFieldId()), PickListOperators.IS));
 			pkCriteriaList.orCriteria(pkCriteria);
 		}
-		
+
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("inputType", type.getValue());
-		
+
 		if (readingType == null) {
 			readingType = ReadingType.READ;
 		}
 		prop.put("readingType", readingType.getValue());
 		setControllableprop(prop, readingType == ReadingType.WRITE);
-		
+
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(fields)
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCriteria(pkCriteriaList);
-														
+
 		return updateBuilder.update(prop);
 	}
-	
+
 	private static void setControllableprop(Map<String, Object> prop, boolean isWritable) {
 		if (isWritable) {
 			prop.put("isControllable", true);
@@ -257,14 +256,14 @@ public class ReadingsAPI {
 			prop.put("controlActionMode", null);
 		}
 	}
-	
+
 	public static int updateReadingDataMeta (List<Pair<Long, FacilioField>> resourceFieldPair, ReadingDataMeta rdm) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField resourceIdField = fieldMap.get("resourceId");
 		FacilioField fieldIdField = fieldMap.get("fieldId");
-		
+
 		Criteria pkCriteriaList = new Criteria();
 		for (Pair<Long, FacilioField> pair : resourceFieldPair) {
 			Criteria pkCriteria = new Criteria();
@@ -272,33 +271,33 @@ public class ReadingsAPI {
 			pkCriteria.addAndCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(pair.getRight().getFieldId()), PickListOperators.IS));
 			pkCriteriaList.orCriteria(pkCriteria);
 		}
-		
+
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCriteria(pkCriteriaList);
-				
+
 		return updateBuilder.update(FieldUtil.getAsProperties(rdm));
 	}
-	
+
 	public static int updateReadingDataMeta (long parentId, List<Long> fieldIds, ReadingDataMeta rdm) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField resourceIdField = fieldMap.get("resourceId");
 		FacilioField fieldIdField = fieldMap.get("fieldId");
-		
+
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(parentId), PickListOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldIdField, fieldIds, PickListOperators.IS));
-				
+
 		return updateBuilder.update(FieldUtil.getAsProperties(rdm));
 	}
-	
+
 	public static ReadingDataMeta getReadingDataMeta(long resourceId,FacilioField field) throws Exception {
 		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
 		rdmPairs.add(Pair.of(resourceId, field));
@@ -308,14 +307,14 @@ public class ReadingsAPI {
 		}
 		return null;
 	}
-	
+
 	public static List<ReadingDataMeta> getReadingDataMetaList(List<Pair<Long, FacilioField>> rdmPairs) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField resourceIdField = fieldMap.get("resourceId");
 		FacilioField fieldIdField = fieldMap.get("fieldId");
-		
+
 		Map<Long, FacilioField> fieldIdMap = new HashMap<>();
 		Criteria pkCriteriaList = new Criteria();
 		for (Pair<Long, FacilioField> pair : rdmPairs) {
@@ -325,7 +324,7 @@ public class ReadingsAPI {
 			pkCriteriaList.orCriteria(pkCriteria);
 			fieldIdMap.put(pair.getRight().getFieldId(), pair.getRight());
 		}
-		
+
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(module.getTableName())
@@ -333,12 +332,12 @@ public class ReadingsAPI {
 													.andCriteria(pkCriteriaList);
 		return getReadingDataFromProps(builder.get(), fieldIdMap);
 	}
-	
+
 	public static ReadingDataMeta getReadingDataMeta(long id) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
-		
-		
+
+
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(module.getTableName())
@@ -349,19 +348,19 @@ public class ReadingsAPI {
 		}
 		return null;
 	}
-	
+
 	public static Map<String, ReadingDataMeta> getReadingDataMetaMap(List<Pair<Long, FacilioField>> rdmPairs) throws Exception {
-		
+
 		if (rdmPairs == null || rdmPairs.isEmpty()) {
 			return Collections.EMPTY_MAP;
 		}
-		
+
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField resourceIdField = fieldMap.get("resourceId");
 		FacilioField fieldIdField = fieldMap.get("fieldId");
-		
+
 		Map<Long, FacilioField> fieldIdMap = new HashMap<>();
 		Criteria pkCriteriaList = new Criteria();
 		for (Pair<Long, FacilioField> pair : rdmPairs) {
@@ -371,7 +370,7 @@ public class ReadingsAPI {
 			pkCriteriaList.orCriteria(pkCriteria);
 			fieldIdMap.put(pair.getRight().getFieldId(), pair.getRight());
 		}
-		
+
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(module.getTableName())
@@ -380,11 +379,11 @@ public class ReadingsAPI {
 		List<Map<String, Object>>  res = builder.get();
 		return getRDMMapFromProps(res, fieldIdMap);
 	}
-	
+
 	public static long getReadingDataMetaCount(Long resourceId, boolean excludeEmptyFields, String search, ReadingInputType...inputTypes) throws Exception {
 		return getReadingDataMetaCount(Collections.singletonList(resourceId), excludeEmptyFields, false, search, null, inputTypes);
 	}
-	
+
 	public static long getReadingDataMetaCount(Collection<Long> resourceIds, boolean excludeEmptyFields, boolean unused, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
 		List<Map<String, Object>> props = getRDMProps(resourceIds, null, excludeEmptyFields, unused, true, null, search, readingType, inputTypes);
 		if (props != null && !props.isEmpty()) {
@@ -392,27 +391,27 @@ public class ReadingsAPI {
 		}
 		return 0;
 	}
-	
+
 	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList) throws Exception {
 		return getReadingDataMetaList(resourceId, fieldList, false);
 	}
-	
+
 	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingInputType...inputTypes) throws Exception {
 		return getReadingDataMetaList(resourceId != null && resourceId != -1 ? Collections.singletonList(resourceId) : null, fieldList, excludeEmptyFields, null, null, inputTypes);
 	}
-	
+
 	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, JSONObject pagination, String search, ReadingInputType...inputTypes) throws Exception {
 		return getReadingDataMetaList(resourceIds, fieldList, excludeEmptyFields, pagination, search, null, inputTypes);
 	}
-	
+
 	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, JSONObject pagination, String search, ReadingInputType...inputTypes) throws Exception {
 		return getReadingDataMetaList(resourceIds, fieldMap, excludeEmptyFields, false, pagination, search, null, inputTypes);
 	}
-	
+
 	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingType readingType) throws Exception {
 		return getReadingDataMetaList(resourceIds, fieldList, excludeEmptyFields, null, null, readingType);
 	}
-	
+
 	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, JSONObject pagination, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
 		Map<Long, FacilioField> fieldMap = null;
 		if (fieldList != null) {
@@ -467,20 +466,20 @@ public class ReadingsAPI {
 		if (!valueCriteria.isEmpty()) {
 			builder.andCriteria(valueCriteria);
 		}
-		
+
 		if(readingType != null) {
 //			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("readingType"), String.valueOf(readingType.getValue()), PickListOperators.IS));
 			boolean isControllable = readingType == ReadingType.WRITE;
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("isControllable"), String.valueOf(isControllable), BooleanOperators.IS));
 		}
-		
+
 		if (inputTypes != null && inputTypes.length > 0) {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"), getReadingTypes(inputTypes), PickListOperators.IS));
 		}
 		else {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
 		}
-		
+
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
 			int perPage = (int) pagination.get("perPage");
@@ -499,7 +498,7 @@ public class ReadingsAPI {
 		}
 		return builder.get();
 	}
-	
+
 	public static List<ReadingDataMeta> getReadingDataFromProps(List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {
 		if(props != null && !props.isEmpty()) {
 			List<ReadingDataMeta> metaList = new ArrayList<>();
@@ -511,18 +510,18 @@ public class ReadingsAPI {
 		}
 		return null;
 	}
-	
+
 	public static String getRDMKey(ReadingDataMeta meta) {
 		return getRDMKey(meta.getResourceId(), meta.getField());
 	}
-	
+
 	public static String getRDMKey(long resourceId, FacilioField field) {
 		return getRDMKey(resourceId, field.getFieldId());
 	}
 	public static String getRDMKey(long resourceId, long fieldId) {
 		return resourceId + "_" + fieldId;
 	}
-	
+
 	private static Map<String, ReadingDataMeta> getRDMMapFromProps (List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {
 		if(props != null && !props.isEmpty()) {
 			Map<String, ReadingDataMeta> rdmMap = new HashMap<>();
@@ -534,29 +533,29 @@ public class ReadingsAPI {
 		}
 		return null;
 	}
-	
+
 	public static List<ReadingDataMeta> getControllableRDMs() throws Exception {
-		
+
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingDataMetaFields());
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReadingDataMetaFields())
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("isControllable"), Boolean.TRUE.toString(), BooleanOperators.IS));
-		
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<ReadingDataMeta> readingMetaList = getReadingDataFromProps(props, null);
 		return readingMetaList;
 	}
-	
+
 	private static ReadingDataMeta getRDMFromProp (Map<String, Object> prop, Map<Long, FacilioField> fieldMap) throws Exception {
 		ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
 		fillExtendedPropertiesForRDM(meta, fieldMap);
 		return meta;
 	}
-	
+
 	public static void fillExtendedPropertiesForRDM(ReadingDataMeta meta,Map<Long, FacilioField> fieldMap) throws Exception {
-		
+
 		Object value = meta.getValue();
 		meta.setActualValue((String) value);
 		if (meta.isCustom() && meta.getActualValue().equals("-1")) {
@@ -591,9 +590,9 @@ public class ReadingsAPI {
 		}
 		meta.setValue(FacilioUtil.castOrParseValueAsPerType(field, value));
 		meta.setField(field);
-		
+
 	}
-	
+
 	private static String getReadingTypes(ReadingInputType... types) {
 		StringJoiner joiner = new StringJoiner(",");
 		for (ReadingInputType type : types) {
@@ -601,21 +600,21 @@ public class ReadingsAPI {
 		}
 		return joiner.toString();
 	}
-	
+
 	public static void loadReadingParent(Collection<ReadingContext> readings) throws Exception {
 		if(readings != null && !readings.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_METER);
-			
+
 			try {
 				SelectRecordsBuilder<EnergyMeterContext> selectBuilder = new SelectRecordsBuilder<EnergyMeterContext>()
 																				.select(fields)
 																				.module(module)
 																				.beanClass(EnergyMeterContext.class);
-				
+
 				Map<Long, EnergyMeterContext> parents = selectBuilder.getAsMap();
-				
+
 				for(ReadingContext reading : readings) {
 					Long parentId = reading.getParentId();
 					if(parentId != null) {
@@ -629,14 +628,14 @@ public class ReadingsAPI {
 			}
 		}
 	}
-	
+
 	public static Map<String, Object> getInstanceMapping(String deviceName, String instanceName) throws Exception {
 		return getInstanceMapping(deviceName, instanceName,null);
 	}
-	
+
 	public static Map<String, Object> getInstanceMapping(String deviceName, String instanceName,Long controllerId) throws Exception {
 
-		
+
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = FieldFactory.getPointsFields();
@@ -654,14 +653,14 @@ public class ReadingsAPI {
 			builder=builder.andCustomWhere("CONTROLLER_ID=?", controllerId);
 		}
 
-		List<Map<String, Object>> stats = builder.get();	
+		List<Map<String, Object>> stats = builder.get();
 		if(stats!=null && !stats.isEmpty()) {
 
-			return stats.get(0); 
+			return stats.get(0);
 		}
 		return null;
 	}
-	
+
 	private static List<Map<String, Object>> getDeviceVsInstances() throws Exception {
 
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
@@ -675,25 +674,25 @@ public class ReadingsAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_NOT_EMPTY))
 				.andCustomWhere("ORGID=?",orgId);
 
-		List<Map<String, Object>> stats = builder.get();	
+		List<Map<String, Object>> stats = builder.get();
 		if(stats!=null && !stats.isEmpty()) {
 
-			return stats; 
+			return stats;
 		}
 		return null;
 	}
-	
+
 	public static Map<String, Map<String,Map<String,Object>>> getDeviceMapping() throws Exception {
-		
+
 		List<Map<String, Object>> deviceVsInstances= getDeviceVsInstances();
 		if(deviceVsInstances==null) {
 			return null;
 		}
 		//deviceName: Instancename:stats
 		Map<String, Map<String,Map<String,Object>>> deviceMapping=new HashMap<String, Map<String,Map<String,Object>>>();
-		
+
 		for(Map<String, Object> data: deviceVsInstances) {
-			
+
 			String deviceName=(String)data.remove("device");
 			String instanceName= (String)data.remove("instance");
 			Map<String,Map<String,Object>> instanceMapping= deviceMapping.get(deviceName);
@@ -704,14 +703,14 @@ public class ReadingsAPI {
 			instanceMapping.put(instanceName, data);
 		}
 		return deviceMapping;
-		
+
 	}
-	
+
 	public static List<Map<String, Object>> getUnmodeledData(List<String> deviceList) throws Exception {
 
 		List<FacilioField> fields= getUnmodeledFields();
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		
+
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(ModuleFactory.getPointsModule().getTableName())
@@ -721,13 +720,13 @@ public class ReadingsAPI {
 				.andCondition(CriteriaAPI.getCondition("DEVICE_NAME", "device", StringUtils.join(deviceList,","), StringOperators.IS))
 				.orderBy("TTIME");
 
-		List<Map<String, Object>> stats = builder.get();	
+		List<Map<String, Object>> stats = builder.get();
 		if(stats!=null && !stats.isEmpty()) {
-			return stats; 
+			return stats;
 		}
 		return null;
 	}
-	
+
 	// This is used on update of a reading
 	public static Map<String, ReadingDataMeta> updateReadingDataMeta(FacilioModule module,List<FacilioField> fields,ReadingContext reading,String fieldName)throws Exception{
 		Map<String, ReadingDataMeta> rdmMap=new HashMap<>();
@@ -775,10 +774,10 @@ public class ReadingsAPI {
 					selectBuilder.orderBy(orderBy);
 				}
 				selectBuilder.skipUnitConversion();
-				
+
 		return selectBuilder.fetchFirst();
 	}
-	
+
 	public static ReadingContext getReading(FacilioModule module, List<FacilioField> fields,long id)throws Exception{
 		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 				.select(fields)
@@ -935,14 +934,14 @@ public class ReadingsAPI {
 			}
 		}
 	}
-	
-	private static void updateRDM(StringBuilder timeBuilder, StringBuilder valueBuilder, 
+
+	private static void updateRDM(StringBuilder timeBuilder, StringBuilder valueBuilder,
 			StringBuilder idBuilder, StringJoiner whereClause, long orgId, Connection conn) throws SQLException{
 		String sql = "UPDATE "+ModuleFactory.getReadingDataMetaModule().getTableName()+" SET TTIME = CASE "+timeBuilder.toString()+ " END, "
 				+ "VALUE = CASE "+valueBuilder.toString() + " END, "
 				+ "READING_DATA_ID = CASE "+idBuilder.toString() + " END "
 				+ "WHERE ORGID = "+orgId+" AND ("+whereClause.toString()+")";
-		
+
 		if(sql != null && !sql.isEmpty()) {
 			LOGGER.debug("################ Update RDM sql : "+sql);
 			try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
@@ -961,7 +960,7 @@ public class ReadingsAPI {
 		}
 		return caseString+value;
 	}
-	
+
 	private static List<FacilioField> getUnmodeledFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(FieldFactory.getField("device", "DEVICE_NAME",FieldType.STRING ));
@@ -970,7 +969,7 @@ public class ReadingsAPI {
 		fields.add(FieldFactory.getField("value", "VALUE",FieldType.STRING ));
 		return fields;
 	}
-	
+
 	private static final  List<String> DEFAULT_READING_FIELDS = Collections.unmodifiableList(getDefaultReadingFieldNames());
 	public static final List<String> getDefaultReadingFieldNames() {
 		List<String> fieldNames = new ArrayList<>();
@@ -997,7 +996,7 @@ public class ReadingsAPI {
 			parentId = -1l;
 		}
 		List<Long> fieldsWithValues = null;
-		
+
 		List<ReadingInputType> inputTypes = new ArrayList<>();
 		boolean isAvailableFilter = false;
 		if (StringUtils.isNotEmpty(filter)) {
@@ -1043,12 +1042,12 @@ public class ReadingsAPI {
 				else if (isAvailableFilter) {
 					fieldsToReturn.add(field);
 				}
-				
+
 		    }
 	    }
 		return fieldsToReturn;
 	}
-	
+
 	public static void updateReadingDataMeta(Long assetCategoryId, List<Long> readingModuleIds) throws Exception {
 
 		LOGGER.info("RDM assetCategoryId -- "+assetCategoryId);
@@ -1066,51 +1065,51 @@ public class ReadingsAPI {
 		LOGGER.info("RDM resources list  -- "+resourcesList);
 		updateReadingDataMeta(resourcesList, readingModuleIds);
 	}
-	
+
 	public static void updateReadingDataMeta(List<ResourceContext> resourcesList) throws Exception {
 		updateReadingDataMeta(resourcesList, null);
 	}
-	
-	
+
+
 	public static void updateReadingDataMetaForMeters(List<V3MeterContext> meterList) throws Exception {
-		
+
 		if (meterList == null || meterList.isEmpty()) {
 			return;
 		}
-		
+
 		long orgId=AccountUtil.getCurrentOrg().getOrgId();
-		
+
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
 				.fields(FieldFactory.getReadingDataMetaFields());
-		
+
 		LOGGER.error("meterList size -- "+meterList.size());
 		int i=0;
 		for(V3MeterContext meter:meterList) {
-			
+
 			LOGGER.error(++i +" RDM update running for V3MeterContext -- "+meter.getId());
-			
+
 			List<FacilioModule>	finalModuleList= new ArrayList<FacilioModule>();
-			
+
 			long meterId = meter.getId();
-			
+
 			FacilioContext context = new FacilioContext();
-			
+
 			context.put(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID, meter.getUtilityType().getId());
 			FacilioChain getCategoryReadingChain = FacilioChainFactory.getUtilityTypeReadingsChain();
 			getCategoryReadingChain.execute(context);
 
 			finalModuleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-			
-			
+
+
 			if(finalModuleList==null || finalModuleList.isEmpty()) {
 				continue;
 			}
 			for(FacilioModule module:finalModuleList) {
-				
+
 				List<FacilioField> fieldList= module.getFields();
 				for(FacilioField field:fieldList) {
-					
+
 					ReadingDataMeta oldRdm=  getReadingDataMeta(meterId,field);
 					if(oldRdm!=null) {
 						continue;
@@ -1131,29 +1130,29 @@ public class ReadingsAPI {
 		}
 		builder.save();
 	}
-	
-	
+
+
 	public static void updateReadingDataMeta(List<ResourceContext> resourcesList, List<Long> readingModuleIds) throws Exception {
-		
+
 		if (resourcesList == null || resourcesList.isEmpty()) {
 			return;
 		}
-		
+
 		long orgId=AccountUtil.getCurrentOrg().getOrgId();
-		
+
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
 				.fields(FieldFactory.getReadingDataMetaFields());
 		LOGGER.error("resourcesList size -- "+resourcesList.size());
 		int i=0;
 		for(ResourceContext resource:resourcesList) {
-			
+
 			LOGGER.error(++i +" RDM update running for resource -- "+resource.getId());
 			List<FacilioModule>	moduleList=null;
 			int resourceType = resource.getResourceType();
 			long resourceId = resource.getId();
 			FacilioContext context = new FacilioContext();
-					
+
 			if(resourceType==ResourceContext.ResourceType.SPACE.getValue()) {
 				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
 				FacilioChain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
@@ -1166,27 +1165,27 @@ public class ReadingsAPI {
 				getSpaceSpecifcReadingsChain.execute(context);
 				moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 			}
-			
+
 			List<FacilioModule>	finalModuleList= new ArrayList<FacilioModule>();
 			if(readingModuleIds!= null && !readingModuleIds.isEmpty()) {
 				for(FacilioModule module: moduleList) {
 					if(readingModuleIds.contains(module.getModuleId())) { //filtering user-given modules from allsubmodules
 						finalModuleList.add(module);
 					}
-				}	
+				}
 			}
 			else {
 				finalModuleList = moduleList;
 			}
-			
+
 			if(finalModuleList==null || finalModuleList.isEmpty()) {
 				continue;
 			}
 			for(FacilioModule module:finalModuleList) {
-				
+
 				List<FacilioField> fieldList= module.getFields();
 				for(FacilioField field:fieldList) {
-					
+
 					ReadingDataMeta oldRdm=  getReadingDataMeta(resourceId,field);
 					if(oldRdm!=null) {
 						continue;
@@ -1207,7 +1206,7 @@ public class ReadingsAPI {
 		}
 		builder.save();
 	}
-	public static int getDataInterval(long resourceId, FacilioField field, FacilioModule... module) throws Exception { //Return in minutes	
+	public static int getDataInterval(long resourceId, FacilioField field, FacilioModule... module) throws Exception { //Return in minutes
 		ReadingContext readingContext = new ReadingContext();
 		readingContext.setParentId(resourceId);
 		FacilioModule facilioModule = (module != null && module.length > 0) ? module[0] : field.getModule();
@@ -1220,11 +1219,11 @@ public class ReadingsAPI {
 		setReadingInterval(Collections.singletonList(readingContext), moduleMap);
 		return readingContext.getDataInterval();
 	}
-	
+
 	public static int getDataInterval(List<WorkflowFieldContext> wFields) throws Exception {
 		return getDataInterval(null, wFields);
 	}
-	
+
 	public static int getDataInterval(WorkflowContext workflow, List<WorkflowFieldContext>... wFields) throws Exception {
 		int dataInterval = DEFAULT_DATA_INTERVAL;
 		if (workflow.getExpressions() == null) {
@@ -1251,7 +1250,7 @@ public class ReadingsAPI {
 		}
 		return dataInterval;
 	}
-	
+
 	public static void setReadingInterval(Map<String, List<ReadingContext>> readingMap) throws Exception {
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<Long,FacilioModule> moduleMap = null;
@@ -1269,10 +1268,10 @@ public class ReadingsAPI {
 		}
 		setReadingInterval(readingsList, moduleMap);
 	}
-	
+
 	public static void setReadingInterval(List<ReadingContext> readings, Map<Long, FacilioModule> moduleMap) throws Exception {
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+
 		Set<Pair<Long, Long>> pairs = new HashSet<>();
 		Map<String, Map<String, FacilioField>> allFieldsMap = new HashMap<>();
 		List<ReadingContext> remainingReadings = new ArrayList<>();
@@ -1285,14 +1284,14 @@ public class ReadingsAPI {
 					continue;
 				}
 				remainingReadings.add(reading);
-				
+
 				Map<String, FacilioField> fieldMap = null;
 				if (!allFieldsMap.containsKey(module.getName())) {
 					List<FacilioField> fields = bean.getAllFields(module.getName());
 					if (fields != null) {
 						fieldMap = new HashMap<>(FieldFactory.getAsMap(fields));
 					}
-					allFieldsMap.put(module.getName(), fieldMap);						
+					allFieldsMap.put(module.getName(), fieldMap);
 				}
 				else {
 					fieldMap = allFieldsMap.get(module.getName());
@@ -1305,27 +1304,27 @@ public class ReadingsAPI {
 				}
 			}
 		}
-		
+
 		if (remainingReadings.isEmpty()) {
 			return;
 		}
-		
+
 		// Assuming data interval will be set for all readingcontexts or none
 		if (remainingReadings.get(0).getDataInterval() <= 0) {
-			
+
 			// temp check till pd7 agents are migrated
 			if (AccountUtil.getCurrentOrg().getOrgId() == 146l) {
 				setOldAgentDataInterval(pairs, remainingReadings);
 				return;
 			}
-			
+
 			int defaultInterval = getDefaultInterval();
 			remainingReadings.forEach(reading -> {
 				reading.setDataInterval(defaultInterval);
 			});
 		}
 	}
-	
+
 	private static void setOldAgentDataInterval(Set<Pair<Long, Long>> pairs, List<ReadingContext> readings) throws Exception {
 		int defaultInterval = getDefaultInterval();
 		List<Map<String, Object>> instances = TimeSeriesAPI.getMappedInstances(pairs);
@@ -1340,8 +1339,8 @@ public class ReadingsAPI {
 				}
 			});
 		}
-		
-		
+
+
 		Map<Long, ControllerContext> controllers = null;
 		Set<Long> agentIds = new HashSet<>();
 		if (controllerIds != null && !controllerIds.isEmpty()) {
@@ -1353,13 +1352,13 @@ public class ReadingsAPI {
 				}
 			}
 		}
-		
+
 		Map<Long, FacilioAgent> agentsMap = null;
 		if (CollectionUtils.isNotEmpty(agentIds)) {
 			agentsMap = AgentUtil.getAgentsMap(agentIds);
 		}
 
-		
+
 		for (ReadingContext reading : readings) {
 			int minuteInterval = defaultInterval;
 			if (controllers != null && assetVsControllerIdMap.get(reading.getParentId()) != null) {
@@ -1378,8 +1377,8 @@ public class ReadingsAPI {
 			reading.setDataInterval(minuteInterval);
 		}
 	}
-	
-	
+
+
 	private static int getDefaultInterval() throws Exception {
 		int defaultInterval = DEFAULT_DATA_INTERVAL;
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
@@ -1389,20 +1388,20 @@ public class ReadingsAPI {
 		}
 		return defaultInterval;
 	}
-	
+
 	public static void deleteReadings(long parentId, List<FacilioField> readingFields, List<ReadingContext> readingsList) throws Exception {
-		
+
 		List<Long> fieldIds = new ArrayList<>();
-		
+
 		List<BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
 		List<FacilioField> updateFields = new ArrayList<>();
-		
+
 		boolean isFirst = true;
 		for (ReadingContext readingData : readingsList) {
 			BatchUpdateByIdContext batchValue = new BatchUpdateByIdContext();
 			batchValue.setWhereId(readingData.getId());
-			
-			
+
+
 			for(FacilioField field : readingFields) {
 				Object value = field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL ? -99 : null;
 				batchValue.addUpdateValue(field.getName(), value);
@@ -1414,15 +1413,15 @@ public class ReadingsAPI {
 			batchUpdateList.add(batchValue);
 			isFirst = false;
 		}
-		
+
 		FacilioModule module = readingFields.get(0).getModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(updateFields)
 				;
-		
+
 		updateBuilder.batchUpdateById(batchUpdateList);
-		
+
 		ReadingDataMeta rdm = new ReadingDataMeta();
 		rdm.setValue("-1");
 		rdm.setReadingDataId(-99);
@@ -1430,10 +1429,10 @@ public class ReadingsAPI {
 		rdm.setReadingType(ReadingType.READ);
 		rdm.setIsControllable(false);
 		rdm.setControlActionMode(ControlActionMode.SANDBOX.getIntVal());
-		
+
 		ReadingsAPI.updateReadingDataMeta(parentId, fieldIds, rdm);
 	}
-	
+
 	public static List<Map<String, Object>> getReadingInputValues(long resourceId, long fieldId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		ReadingDataMeta rdm = getReadingDataMeta(resourceId, modBean.getField(fieldId));
@@ -1461,10 +1460,10 @@ public class ReadingsAPI {
 		}
 		return rdmValuesMap;
 	}
-	
-	
+
+
 	public static Map<Long,Map<String, Integer>> getReadingInputValuesMap(List<Long> ids) throws Exception {
-		
+
 		List<Map<String, Object>> props = getReadingInputValueProps(ids, "pointId");
 		Map<Long,Map<String, Integer>> parentValuesMap = null;
 		if(props!=null && !props.isEmpty()) {
@@ -1484,7 +1483,7 @@ public class ReadingsAPI {
 		}
 		return parentValuesMap;
 	}
-	
+
 	private static List<Map<String, Object>> getReadingInputValueProps(List<Long> ids, String fieldName) throws Exception {
 		List<FacilioField> fields = FieldFactory.getReadingInputValuesFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -1496,22 +1495,22 @@ public class ReadingsAPI {
 				;
 		return builder.get();
 	}
-	
-	
+
+
 	public static void addDefaultPMTaskReading(TaskContext task, ReadingContext reading) {
 		reading.addReading("woId", task.getParentTicketId());
 		reading.addReading("taskId", task.getId());
 		reading.addReading("taskUniqueId", task.getUniqueId());
-		
+
 		if (task.getResource() != null && task.getResource().getId() > 0) {
 			reading.addReading("resourceId", task.getResource().getId());
 		}
 	}
-	
+
 	public static void convertUnitForRdmData (ReadingDataMeta meta) throws Exception {
 		if (meta.getField() instanceof NumberField && meta.getActualValue() != null && !meta.getActualValue().equals("-1")) {
 			Object value = meta.getValue();
-			
+
 			NumberField numberField =  (NumberField)meta.getField();
 			if(numberField.getMetric() > 0) {
 				Metric metric = Metric.valueOf(numberField.getMetric());
@@ -1538,7 +1537,7 @@ public class ReadingsAPI {
 		}
 		return fieldValidation;
 	}
-	
+
 	public static void updateDeltaForCurrentAndNextRecords(FacilioModule module,List<FacilioField> fields,ReadingContext reading,boolean currentReadingUpdate,Long curReadingTime,boolean isEnergyModule,Map<String, ReadingDataMeta> rdmMap, boolean ignoreSplNullHandling, boolean isDeltaReset)throws Exception{
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		ReadingContext lastReading,nextReading;
@@ -1556,12 +1555,12 @@ public class ReadingsAPI {
 				Condition condition = CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(reading.getTtime()), NumberOperators.LESS_THAN);
 				String orderBy = fieldMap.get("ttime").getColumnName() + " desc";
 				lastReading = getSingleReading(module, fields, reading, fieldName, condition, orderBy);
-				
+
 				condition = CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(reading.getTtime()),NumberOperators.GREATER_THAN);
 				orderBy = fieldMap.get("ttime").getColumnName() + " asc";
-				
+
 				nextReading = getSingleReading(module, fields, reading, fieldName, condition, orderBy);
-				
+
 				if ((!currentReadingUpdate && !isDeltaReset && ((lastReading!=null&&lastReading.getTtime() > curReadingTime) || (nextReading!=null&&nextReading.getTtime() < curReadingTime))) || ignoreSplNullHandling) {
 					//Delta calculation for next reading, If given date is not between last reading date and next reading date
 					calculateDeltaBtwReadingsAndUpdate(module,fields,field,lastReading,nextReading);
@@ -1581,13 +1580,13 @@ public class ReadingsAPI {
 			}
 		}
 	}
-	
+
 	public static void updateReading(FacilioModule module, List<FacilioField> fields, ReadingContext reading)throws Exception {
         UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>().module(module)
 				.fields(fields).andCondition(CriteriaAPI.getIdCondition(reading.getId(), module));
 		updateBuilder.update(reading);
 	}
-	
+
 	private static void calculateDeltaBtwReadingsAndUpdate(FacilioModule module, List<FacilioField> fields,FacilioField field,ReadingContext firstReading,ReadingContext secondReading)throws Exception{
 		if (secondReading != null) {
 			if (field.getDataTypeEnum() == FieldType.DECIMAL) {
@@ -1611,7 +1610,7 @@ public class ReadingsAPI {
 			AggregatedEnergyConsumptionUtil.recalculateAggregatedEnergyConsumption(Collections.singletonList(secondReading));
 		}
 	}
-	
+
 	public static void addDeltaValue(ReadingContext reading,String fieldName,Object value){
 		 boolean isDeltaKeyPresent= reading.getReadings().entrySet().stream().filter(rd->rd.getKey().equalsIgnoreCase(fieldName+"Delta")).findFirst().isPresent();
 			if (isDeltaKeyPresent) {
@@ -1620,7 +1619,7 @@ public class ReadingsAPI {
 				reading.addReading((fieldName + "Delta"), value);
 			}
 	}
-	
+
 	public static List<ReadingDataMeta> getConnectedLoggedReadings(Long assetId) throws Exception {
 		 FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
 		 FacilioContext context = latestAssetData.getContext();
@@ -1652,5 +1651,17 @@ public class ReadingsAPI {
 		}
 		return dataMeta;
 	}
-	
+
+	public static List<FacilioField> getCategoryReadings(FacilioModule module, Long categoryId) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
+
+		FacilioChain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
+		getCategoryReadingChain.execute(context);
+
+		List<FacilioModule> facilioModules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		return facilioModules.stream().map(r -> r.getFields()).flatMap(r -> r.stream()).collect(Collectors.toList());
+	}
+
 }

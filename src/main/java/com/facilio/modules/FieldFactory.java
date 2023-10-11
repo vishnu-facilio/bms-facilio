@@ -957,6 +957,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDefaultField(AgentConstants.DISCOVER_CONTROLLERS_TIMEOUT, "Discovers Controllers Timeout", "DISCOVER_CONTROLLERS_TIMEOUT", module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentConstants.DISCOVER_POINTS_TIMEOUT, "Discover Points Timeout", "DISCOVER_POINTS_TIMEOUT", module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentConstants.COMMAND_MAX_RETRY_COUNT, "Command Max Retry Count", "COMMAND_MAX_RETRY_COUNT", module, FieldType.NUMBER));
+        fields.add(getDefaultField("autoMappingParentFieldId", "Auto Mapping Parent Field Id", "AUTO_MAPPING_PARENT_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getDefaultField("allowAutoMapping", "Allow Auto Mapping", "ALLOW_AUTO_MAPPING", module, FieldType.BOOLEAN));
 
         SystemEnumField agentType = (SystemEnumField) getDefaultField("agentType", "Agent type", "AGENT_TYPE", module, FieldType.SYSTEM_ENUM);
         agentType.setEnumName("AgentType");

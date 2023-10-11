@@ -29,6 +29,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.V3Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -1732,6 +1733,5 @@ public class AssetsAPI {
 		ruleBuilder.select(Collections.singletonList(FieldFactory.getIdField(module)));
 		return (long) ruleBuilder.fetchFirst().get("id");
 	}
-	
 }
 

@@ -136,6 +136,11 @@ public class AddPointModule extends SignUpData {
         subscribeStatusfield.setAccessType(FacilioField.AccessType.READ.getVal()+FacilioField.AccessType.CRITERIA.getVal());
         fields.add(subscribeStatusfield);
 
+        SystemEnumField mappedTypeField = FieldFactory.getDefaultField(AgentConstants.MAPPED_TYPE, "Mapped Type", "MAPPED_TYPE", module, FieldType.SYSTEM_ENUM);
+        mappedTypeField.setEnumName("MappedType");
+        mappedTypeField.setAccessType(FacilioField.AccessType.READ.getVal()+FacilioField.AccessType.CRITERIA.getVal());
+        fields.add(mappedTypeField);
+
         FacilioField displayName = FieldFactory.getDefaultField(AgentConstants.DISPLAY_NAME, "Name", "DISPLAY_NAME", module, FieldType.STRING);
         displayName.setMainField(true);
         displayName.setAccessType(FacilioField.AccessType.READ.getVal()+FacilioField.AccessType.CRITERIA.getVal());

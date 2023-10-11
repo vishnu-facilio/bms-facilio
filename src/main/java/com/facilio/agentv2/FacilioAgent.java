@@ -1,7 +1,6 @@
 package com.facilio.agentv2;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -58,6 +57,26 @@ public class FacilioAgent implements Serializable {
     private Integer port;
     private String agentSourceType = AgentConstants.AgentSourceType.WEB.getValue();
     private Integer pointAlarmInterval = null;
+    @JsonInclude
+    private long autoMappingParentFieldId;
+    @JsonInclude
+    private boolean allowAutoMapping;
+
+    public boolean isAllowAutoMapping() {
+        return allowAutoMapping;
+    }
+
+    public void setAllowAutoMapping(boolean allowAutoMapping) {
+        this.allowAutoMapping = allowAutoMapping;
+    }
+
+    public long getAutoMappingParentFieldId() {
+        return autoMappingParentFieldId;
+    }
+
+    public void setAutoMappingParentFieldId(long autoMappingParentFieldId) {
+        this.autoMappingParentFieldId = autoMappingParentFieldId;
+    }
 
     public Integer getPort() {
         return port;

@@ -105,7 +105,7 @@ public class AddAgentDataCommand extends FacilioCommand {
             return false;
 
         }catch(Exception e){
-            LOGGER.info(e);
+            LOGGER.error("Exception while add data command", e);
             return false;
         }
     }
@@ -139,8 +139,12 @@ public class AddAgentDataCommand extends FacilioCommand {
             DataLogSummaryContextV3 summaryContext = new DataLogSummaryContextV3();
             summaryContext.setRecordId(recordId);
             summaryContext.setPoint(pointName);
-            summaryContext.setAssetId(point.getResourceId());
-            summaryContext.setReadingId(point.getFieldId());
+            if(point.getResourceId() != null) {
+                summaryContext.setAssetId(point.getResourceId());
+            }
+            if(point.getFieldId() != null) {
+                summaryContext.setReadingId(point.getFieldId());
+            }
             summaryContext.setValue(String.valueOf(value));
             summaryContext.setParentId(parentId);
             summaryContext.setControllerId(controller.getId());

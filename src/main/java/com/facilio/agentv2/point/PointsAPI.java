@@ -970,7 +970,7 @@ public class PointsAPI {
         updateBuilder.batchUpdateById(batchUpdateList);
 
     }
-    
+
     public static List<Point> getPoints(Criteria criteria) throws Exception {
     	GetPointRequest getPointRequest = new GetPointRequest()
 				.withCriteria(criteria)

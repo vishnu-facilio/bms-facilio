@@ -16,7 +16,6 @@ import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
 import com.facilio.alarms.sensor.commands.AddSensorRuleFromReadingsCommand;
 import com.facilio.alarms.sensor.commands.FetchAllSensorRulesCommand;
 import com.facilio.alarms.sensor.commands.FetchSensorRuleListCommand;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.banner.commands.CloseBannerCommand;
 import com.facilio.bmsconsole.ModuleSettingConfig.command.AddGlimpseCommand;
 import com.facilio.bmsconsole.ModuleSettingConfig.command.GetModuleSettingConfigDetailsCommand;
@@ -1628,6 +1627,7 @@ public class TransactionChainFactory {
 	public static FacilioChain getTimeSeriesProcessChainV2() throws Exception {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new ProcessDataCommandV3());
+		//chain.addCommand(new AutoCommissionPoints());
 		chain.addCommand(new UpdateDataCommandStatus());
 		chain.addCommand(new UpdateLastRecordedValueAndFilterPointsCommand());
 		chain.addCommand(new ModeledDataCommandV2());

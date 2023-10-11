@@ -15,6 +15,7 @@ import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.agentv2.point.PointsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -183,7 +184,7 @@ public class DataProcessorV2 {
             //add datalog entry for exception
             LOGGER.info("Exception occurred ,", e);
         }
-        LOGGER.debug(" process status " + processStatus);
+        LOGGER.debug("process status " + processStatus);
         return processStatus;
     }
 

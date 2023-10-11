@@ -164,6 +164,23 @@ public class AgentBeanImpl implements AgentBean {
             }
         }
 
+        if (containsValueCheck(AgentConstants.AUTO_MAPPING_PARENT_FIELD_ID, jsonObject)) {
+            String var = jsonObject.get(AgentConstants.AUTO_MAPPING_PARENT_FIELD_ID).toString();
+            long newAutoMappingParentFieldId = Long.parseLong(var);
+            if (agent.getAutoMappingParentFieldId() != newAutoMappingParentFieldId) {
+                agent.setAutoMappingParentFieldId(newAutoMappingParentFieldId);
+                agent.setLastModifiedTime(currTime);
+            }
+        }
+
+        if (containsValueCheck(AgentConstants.ALLOW_AUTO_MAPPING, jsonObject)) {
+            boolean currentValue = Boolean.parseBoolean(jsonObject.get(AgentConstants.ALLOW_AUTO_MAPPING).toString());
+            if (agent.isAllowAutoMapping() != currentValue) {
+                agent.setAllowAutoMapping(currentValue);
+                agent.setLastModifiedTime(currTime);
+            }
+        }
+
 
         List<Long> oldWorkflowIds = new ArrayList<>();
         addWorkflows(AgentConstants.TRANSFORM_WORKFLOW, agent, jsonObject, agent.getTransformWorkflowId(), oldWorkflowIds, agent::setTransformWorkflowId);

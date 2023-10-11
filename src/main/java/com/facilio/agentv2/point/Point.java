@@ -39,6 +39,21 @@ public abstract class Point extends FacilioPoint implements Serializable {
         setSubscribed(false);
     }
 
+    public Integer getMappedType() {
+        return mappedType.getIndex();
+    }
+
+    public PointEnum.MappedType getMappedTypeEnum() {
+        return mappedType;
+    }
+
+    public void setMappedType(Integer mappedType) {
+        this.mappedType = PointEnum.MappedType.valueOf(mappedType);
+    }
+
+    @JsonInclude
+    private PointEnum.MappedType mappedType;
+
     private long agentId;
     @JsonInclude
     private long orgId;
@@ -137,6 +152,9 @@ public abstract class Point extends FacilioPoint implements Serializable {
         pointJSON.put(AgentConstants.MAPPED_TIME,getMappedTime());
         pointJSON.put(AgentConstants.UNIT,getUnit());
         pointJSON.put(AgentConstants.STATES, getStates());
+        if(getMappedTypeEnum() != null){
+            pointJSON.put(AgentConstants.MAPPED_TYPE, getMappedType());
+        }
         if(getConfigureStatusEnum() != null ){
             pointJSON.put(AgentConstants.CONFIGURE_STATUS,getConfigureStatus());
         }else {

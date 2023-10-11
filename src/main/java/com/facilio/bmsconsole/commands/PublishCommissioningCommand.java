@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
+import com.facilio.agentv2.point.PointEnum;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -272,6 +273,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 					batchValue.addUpdateValue(AgentConstants.UNIT, unit.getUnitId());
 				}
 			}
+			batchValue.addUpdateValue(AgentConstants.MAPPED_TYPE, PointEnum.MappedType.MANUAL.getIndex());
 		}
 
 		batchUpdateList.add(batchValue);
@@ -299,12 +301,13 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		updateFields.add(fieldMap.get(AgentConstants.FIELD_ID));
 		updateFields.add(fieldMap.get(AgentConstants.UNIT));
 		updateFields.add(fieldMap.get(AgentConstants.MAPPED_TIME));
-		
-		
+		if(fieldMap.containsKey(AgentConstants.MAPPED_TYPE) && fieldMap.get(AgentConstants.MAPPED_TYPE)!=null){
+			updateFields.add(fieldMap.get(AgentConstants.MAPPED_TYPE));
+		}
+
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(pointModule.getTableName())
-				.fields(updateFields)
-				;
+				.fields(updateFields);
 		
 		updateBuilder.batchUpdateById(batchUpdateList);
 	}

@@ -13,15 +13,25 @@ import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import com.facilio.agentv2.modbustcp.ModbusUtils;
 import com.facilio.agentv2.rdm.RdmControllerContext;
 import com.facilio.bacnet.BACNetUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.AckUtil;
+import com.facilio.v3.V3Builder.V3Config;
+import com.facilio.v3.context.V3Context;
+import com.facilio.v3.util.ChainUtil;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -194,6 +204,63 @@ public class PointsUtil {
             builder.save();
 
         }
+    }
 
+    public static ReadingDataMeta getRDM(Point point) {
+        ReadingDataMeta meta = new ReadingDataMeta();
+        meta.setResourceId(point.getResourceId());
+        meta.setFieldId(point.getFieldId());
+
+        meta.setInputType(ReadingDataMeta.ReadingInputType.CONTROLLER_MAPPED);
+        if (point.isWritable()) {
+            meta.setReadingType(ReadingDataMeta.ReadingType.WRITE);
+        }
+        meta.setValue("-1");
+        return meta;
+    }
+
+    public static Pair<Long, Long> getCategoryAndParentId(long parentFieldId, String fieldValue) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+        List<FacilioField> fields = getAssetFields(module);
+        V3Context parent = getParentUsingFieldId(module, fields, parentFieldId, fieldValue);
+        if (parent == null) {
+            LOGGER.info("Auto Commission :: Parent is not found with field value of " + fieldValue + ", field id " + parentFieldId);
+            return null;
+        }
+        V3AssetContext assetContext = (V3AssetContext) parent;
+        Pair<Long, Long> pair = new ImmutablePair<>(assetContext.getCategory().getId(), assetContext.getId());
+        return pair;
+    }
+
+    private static V3Context getParentUsingFieldId(FacilioModule module, List<FacilioField> fields, long fieldId, String fieldValue) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioField field = modBean.getField(fieldId, module.getModuleId());
+        Class beanClass = getBeanClass(module);
+
+        SelectRecordsBuilder<V3Context> selectBuilder = new SelectRecordsBuilder<V3Context>()
+                .module(module)
+                .beanClass(beanClass)
+                .select(fields)
+                .andCondition(CriteriaAPI.getCondition(field, fieldValue,  StringOperators.IS));
+
+        List<V3Context> v3Contexts = selectBuilder.get();
+        if(v3Contexts != null && !v3Contexts.isEmpty()) {
+            return v3Contexts.get(0);
+        }
+        return null;
+    }
+
+    private static Class getBeanClass(FacilioModule module) throws Exception {
+        V3Config v3Config = ChainUtil.getV3Config(module.getName());
+        Class beanClass = ChainUtil.getBeanClass(v3Config, module);
+        return beanClass;
+    }
+
+    private static List<FacilioField> getAssetFields(FacilioModule module) {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(FieldFactory.getField("category", "CATEGORY", module, FieldType.LOOKUP));
+        fields.add(FieldFactory.getIdField(module));
+        return fields;
     }
 }
