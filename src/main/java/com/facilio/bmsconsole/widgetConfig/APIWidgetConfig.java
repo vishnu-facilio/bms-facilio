@@ -65,6 +65,17 @@ public class APIWidgetConfig {
                 .fetchCommand(ReadOnlyChainFactory.getRelatedListWidgetDetailChain())
                 .build();
     }
+    @WidgetType(PageWidget.WidgetType.TENANT_CONTACT_RELATED_LIST)
+    public static Supplier<WidgetConfig> getTenantRelatedContactListWidgetCRUD() {
+        return () ->  new WidgetConfig()
+                .create()
+                .saveCommand(TransactionChainFactory.getAddOrUpdateRelatedListWidgetDetailChain())
+                .update()
+                .updateCommand(TransactionChainFactory.getAddOrUpdateRelatedListWidgetDetailChain())
+                .summary()
+                .fetchCommand(ReadOnlyChainFactory.getRelatedListWidgetDetailChain())
+                .build();
+    }
     @WidgetType(PageWidget.WidgetType.RELATIONSHIP_WIDGET)
     public static Supplier<WidgetConfig> getRelationshipWidgetCRUD() {
         return () ->  new WidgetConfig()

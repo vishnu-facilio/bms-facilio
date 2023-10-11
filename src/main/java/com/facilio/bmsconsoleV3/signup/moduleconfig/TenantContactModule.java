@@ -14,11 +14,9 @@ import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -34,7 +32,7 @@ public class TenantContactModule extends BaseModuleConfig{
     }
 
     @Override
-    public List<Map<String, Object>> getViewsAndGroups() {
+    public List<Map<String, Object>> getViewsAndGroups() throws Exception{
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;
 
@@ -42,6 +40,7 @@ public class TenantContactModule extends BaseModuleConfig{
         ArrayList<FacilioView> tenantContact = new ArrayList<FacilioView>();
         tenantContact.add(getAllHiddenTenantContacts().setOrder(order++));
         tenantContact.add(getAllTenantContacts().setOrder(order++));
+        tenantContact.add(getHiddenTenantContactListView().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
@@ -78,6 +77,37 @@ public class TenantContactModule extends BaseModuleConfig{
         allView.setHidden(true);
 
         return allView;
+    }
+    public static FacilioView getHiddenTenantContactListView() throws Exception {
+        FacilioView tenantHistoryView = new FacilioView();
+        tenantHistoryView.setName("tenantContactRelatedList");
+        tenantHistoryView.setDisplayName("Tenant Contacts");
+        tenantHistoryView.setHidden(true);
+
+
+        FacilioModule tenantModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.TENANT_CONTACT);
+        List<FacilioField> allFields =  Constants.getModBean().getAllFields(tenantModule.getName());
+
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+        String[] viewFieldNames = new String[]{"name","phone","email","isPrimaryContact"};
+        List<ViewField> viewFields = new ArrayList<>();
+
+        for(String viewFieldName:viewFieldNames){
+            FacilioField field = fieldMap.get(viewFieldName);
+            ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
+            viewField.setFieldId(field.getFieldId());
+            viewField.setFieldName(field.getName());
+            viewFields.add(viewField);
+        }
+
+        tenantHistoryView.setFields(viewFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        tenantHistoryView.setAppLinkNames(appLinkNames);
+        return tenantHistoryView;
     }
 
     private static FacilioView getAllTenantContacts() {

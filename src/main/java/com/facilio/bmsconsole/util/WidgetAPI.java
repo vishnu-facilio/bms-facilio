@@ -263,6 +263,7 @@ public class WidgetAPI {
             case RELATED_LIST:
             case SITE_LIST_WIDGET:
             case CLIENT_CONTACT_LIST_WIDGET:
+            case TENANT_CONTACT_RELATED_LIST:
                 return FieldUtil.getAsBeanFromJson(widgetDetails, RelatedListWidgetContext.class);
             case RELATIONSHIP_WIDGET:
                 return FieldUtil.getAsBeanFromJson(widgetDetails, RelationshipWidget.class);

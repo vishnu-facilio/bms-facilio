@@ -583,13 +583,16 @@ public class APIModuleWidgets {
                 .addWidgetConfig("webtenantworkorders_3_3","Tenant WorkOrders -3 -3",WidgetConfigContext.ConfigType.FIXED,3,3,PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("webtenantrecentlyclosedworkorderwidget","Recently Closed Work order",PageWidget.WidgetType.TENANT_RECENTLY_CLOSED_WORKORDER)
-                .addWidgetConfig("webtenantrecentlyclosedworkorder_4_3","Recently Closed Work order -4 -3",WidgetConfigContext.ConfigType.FIXED,4,3,PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("webtenantrecentlyclosedworkorder_5_3","Recently Closed Work order -5 -3",WidgetConfigContext.ConfigType.FIXED,5,3,PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("webtenantfacilitybookingwidget","Facility Bookings",PageWidget.WidgetType.TENANT_BOOKINGS)
                 .addWidgetConfig("webtenantfacilitybookingwidget_3_3","Facility Bookings -3 -3",WidgetConfigContext.ConfigType.FIXED,3,3,PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("webtenantupcomingfacilitybookingwidget","Upcoming Facility Booking",PageWidget.WidgetType.TENANT_UPCOMING_BOOKING)
                 .addWidgetConfig("webtenantupcomingfacilitybookingwidget_2_3","Upcoming Facility Booking -2 -3",WidgetConfigContext.ConfigType.FIXED,2,3,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("webtenantcontactrelatedlist","Tenant Related Contact List Widget",PageWidget.WidgetType.TENANT_CONTACT_RELATED_LIST)
+                .addWidgetConfig("webtenantcontactrelatedlistwidget_6","Tenant Related Contact List Widget - 6",WidgetConfigContext.ConfigType.FLEXIBLE,6,-1,PagesContext.PageLayoutType.WEB)
                 .done();
     }
 

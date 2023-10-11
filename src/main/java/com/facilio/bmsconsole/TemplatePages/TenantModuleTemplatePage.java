@@ -9,6 +9,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.util.RelationshipWidgetUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -31,6 +32,9 @@ public class TenantModuleTemplatePage implements TemplatePageFactory{
         tenantSpaceViewParam.put("viewName", "TenantSpaceListView");
         tenantSpaceViewParam.put("viewModuleName","basespace");
 
+        List<String> moduleToRemove=new ArrayList<>();
+        moduleToRemove.add(FacilioConstants.ContextNames.TENANT_CONTACT);
+        moduleToRemove.add("contact");
         return new PagesContext(null, null, "", null, true, false, false)
                 .addWebLayout()
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
@@ -46,11 +50,11 @@ public class TenantModuleTemplatePage implements TemplatePageFactory{
                 .widgetDone()
                 .addWidget("tenantworkorders", "Workorders", PageWidget.WidgetType.TENANT_WORKORDERS, "webtenantworkorders_3_3", 9, 0,null,null )
                 .widgetDone()
-                .addWidget("tenantrecentlyclosedworkorder", "Recently Closed Work order", PageWidget.WidgetType.TENANT_RECENTLY_CLOSED_WORKORDER, "webtenantrecentlyclosedworkorder_4_3", 9, 13,null,null )
+                .addWidget("tenantrecentlyclosedworkorder", "Recently Closed Work order", PageWidget.WidgetType.TENANT_RECENTLY_CLOSED_WORKORDER, "webtenantrecentlyclosedworkorder_5_3", 9, 3,null,null )
                 .widgetDone()
-                .addWidget("tenantfacilitybookingwidget", "Facility Bookings", PageWidget.WidgetType.TENANT_BOOKINGS, "webtenantfacilitybookingwidget_3_3", 9, 36,null,null )
+                .addWidget("tenantfacilitybookingwidget", "Facility Bookings", PageWidget.WidgetType.TENANT_BOOKINGS, "webtenantfacilitybookingwidget_3_3", 9, 8,null,null )
                 .widgetDone()
-                .addWidget("tenantupcomingfacilitybooking", "Upcoming Facility Booking", PageWidget.WidgetType.TENANT_UPCOMING_BOOKING, "webtenantupcomingfacilitybookingwidget_2_3", 9, 49,null,null )
+                .addWidget("tenantupcomingfacilitybooking", "Upcoming Facility Booking", PageWidget.WidgetType.TENANT_UPCOMING_BOOKING, "webtenantupcomingfacilitybookingwidget_2_3", 9, 11,null,null )
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -58,7 +62,7 @@ public class TenantModuleTemplatePage implements TemplatePageFactory{
                 .addTab("tenantcontact", "Tenant Contacts", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("tenantcontactrelatedlist", "", "")
-                .addWidget("tenantcontactrelatedlistWidget", "Tenant Contact", PageWidget.WidgetType.RELATED_LIST, "flexiblewebrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.getSingleRelatedListForModule(module,FacilioConstants.ContextNames.TENANT_CONTACT,"tenant"))
+                .addWidget("tenantcontactrelatedlistWidget", "Tenant Contact", PageWidget.WidgetType.TENANT_CONTACT_RELATED_LIST, "webtenantcontactrelatedlistwidget_6", 0, 0, getTenantContactRelatedListWidgetConfig(), RelatedListWidgetUtil.getSingleRelatedListForModule(module,FacilioConstants.ContextNames.TENANT_CONTACT,"tenant"))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -71,6 +75,18 @@ public class TenantModuleTemplatePage implements TemplatePageFactory{
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
                 .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup())
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("tenantRelationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("tenantBulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0,  null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("tenantRelatedlist", "Related List", "List of related records across modules")
+                .addWidget("tenantBulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_6", 0, 0,  null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module,false,null,moduleToRemove))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -195,5 +211,11 @@ public class TenantModuleTemplatePage implements TemplatePageFactory{
 
 
         return FieldUtil.getAsJSON(widgetGroup);
+    }
+    public static JSONObject getTenantContactRelatedListWidgetConfig(){
+        JSONObject tenantHistory = new JSONObject();
+        tenantHistory.put("viewName","tenantContactRelatedList");
+        tenantHistory.put("viewModuleName","tenantcontact");
+        return tenantHistory;
     }
 }
