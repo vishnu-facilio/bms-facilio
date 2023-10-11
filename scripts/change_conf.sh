@@ -407,3 +407,12 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "stage-user-uk" ]; then
     cp $FACILIO_HOME/deployment-files/service-uk.yml $CONF_DIR/service.yml
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
+
+if [ "$DEPLOYMENT_GROUP_NAME" = "preapp-stage-user-uk" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-preprod-stage2-uk.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/clientAppConfig-stage.yml $CONF_DIR/clientAppConfig.yml
+    cp $FACILIO_HOME/deployment-files/log4j-stage-user-uk.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/deployment-files/service-uk.yml $CONF_DIR/service.yml
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
