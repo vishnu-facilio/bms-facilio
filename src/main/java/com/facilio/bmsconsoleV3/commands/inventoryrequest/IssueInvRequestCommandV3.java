@@ -25,7 +25,6 @@ public class IssueInvRequestCommandV3 extends FacilioCommand {
                 Map<String, Object> bodyParams = Constants.getBodyParams(context);
                 if (MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("issue")) {
                     inventoryRequestContexts.setIsIssued(true);
-
                     FacilioChain chain = TransactionChainFactoryV3.getIssueInventoryRequestChainV3();
                     chain.getContext().put(FacilioConstants.ContextNames.INVENTORY_REQUEST,inventoryRequestContext);
                     chain.execute();

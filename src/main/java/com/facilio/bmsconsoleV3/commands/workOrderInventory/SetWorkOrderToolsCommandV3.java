@@ -1,12 +1,16 @@
 package com.facilio.bmsconsoleV3.commands.workOrderInventory;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.CurrencyContext;
+import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.context.V3WorkOrderServiceContext;
 import com.facilio.bmsconsoleV3.context.V3WorkorderToolsContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.*;
@@ -17,6 +21,7 @@ import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -58,10 +63,17 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
         List<V3WorkorderToolsContext> toolsToBeAdded = new ArrayList<>();
         long toolTypesId = -1;
         if (CollectionUtils.isNotEmpty(workOrderTools)) {
-            long parentId = workOrderTools.get(0).getParentId();
-
             for (V3WorkorderToolsContext workorderTool : workOrderTools) {
+                workorderTool.setIssueTime(System.currentTimeMillis());
+                long parentId = workorderTool.getParentId() > 0 ? workorderTool.getParentId() : -1;
+                if(workorderTool.getWorkorder()!= null && parentId < 0){
+                    parentId = workorderTool.getWorkorder().getId();
+                    workorderTool.setParentId(parentId);
+                }
                 long parentTransactionId = workorderTool.getParentTransactionId();
+                if(parentTransactionId < 0){
+                    validateIssuedQuantity(workorderTool);
+                }
                 V3WorkOrderContext workorder = getWorkorder(parentId);
                 V3ToolContext tool = getStockedTools(workorderTool.getTool().getId());
                 toolTypesId = tool.getToolType().getId();
@@ -87,41 +99,42 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
 //                    if (!eventTypes.contains(EventType.EDIT)) {
 //                        eventTypes.add(EventType.EDIT);
 //                    }
-                    List<V3WorkorderToolsContext> woIt = V3RecordAPI.getRecordsListWithSupplements(workorderToolsModule.getName(),Collections.singletonList(workorderTool.getId()),V3WorkorderToolsContext.class,lookUpfields);
+                    List<V3WorkorderToolsContext> woTool = V3RecordAPI.getRecordsListWithSupplements(workorderToolsModule.getName(),Collections.singletonList(workorderTool.getId()),V3WorkorderToolsContext.class,lookUpfields);
 
-                    if (woIt != null) {
-                        V3WorkorderToolsContext wTool = woIt.get(0);
-                        if (wTool.getTool().getCurrentQuantity() < workorderTool
-                                .getQuantity()) {
-                            throw new IllegalArgumentException("Insufficient quantity in inventory!");
-                        } else {
-                            ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-                            if (workorderTool.getRequestedLineItem() != null && workorderTool.getRequestedLineItem().getId() > 0) {
-                                approvalState = ApprovalState.APPROVED;
-                            }
-                            if (toolTypes.isRotating()) {
-                                wTool = setWorkorderToolObj(null, 1, tool, parentId,
-                                        workorder, workorderTool, approvalState, wTool.getAsset(), workorderTool.getRequestedLineItem(), parentTransactionId, context, baseCurrency, currencyMap);
-
-
+                    if (woTool != null) {
+                        V3WorkorderToolsContext wTool = woTool.get(0);
+                        V3PurchasedToolContext purchasedTool  = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PURCHASED_TOOL,wTool.getPurchasedTool().getId(),V3PurchasedToolContext.class);
+                        if(purchasedTool != null){
+                            double q = wTool.getQuantity();
+                            if (q + purchasedTool.getCurrentQuantity() < workorderTool
+                                    .getQuantity()) {
+                                throw new IllegalArgumentException("Insufficient quantity in inventory!");
                             } else {
-                                wTool = setWorkorderToolObj(null, workorderTool.getQuantity(), tool, parentId,
-                                        workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context, baseCurrency, currencyMap);
-                            }
+                                ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+                                if (workorderTool.getRequestedLineItem() != null && workorderTool.getRequestedLineItem().getId() > 0) {
+                                    approvalState = ApprovalState.APPROVED;
+                                }
+                                if (toolTypes.isRotating()) {
+                                    wTool = setWorkorderToolObj(purchasedTool, 1, tool,toolTypes, parentId,
+                                            workorder, workorderTool, approvalState, wTool.getAsset(), workorderTool.getRequestedLineItem(), parentTransactionId, context, baseCurrency, currencyMap);
 
-                            // update
-                            wTool.setId(workorderTool.getId());
-                            workorderToolslist.add(wTool);
-                            toolsToBeAdded.add(wTool);
+
+                                } else {
+                                    wTool = setWorkorderToolObj(purchasedTool, workorderTool.getQuantity(), tool,toolTypes, parentId,
+                                            workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context, baseCurrency, currencyMap);
+                                }
+
+                                // update
+                                wTool.setId(workorderTool.getId());
+                                workorderToolslist.add(wTool);
+                                toolsToBeAdded.add(wTool);
+                            }
                         }
                     }
                 } else {
 //                    if (!eventTypes.contains(EventType.CREATE)) {
 //                        eventTypes.add(EventType.CREATE);
 //                    }
-                    if (workorderTool.getRequestedLineItem() == null && workorderTool.getParentTransactionId() <= 0 && tool.getCurrentQuantity() < workorderTool.getQuantity()) {
-                        throw new IllegalArgumentException("Insufficient quantity in inventory!");
-                    } else {
                         ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
                         if (workorderTool.getRequestedLineItem() != null && workorderTool.getRequestedLineItem().getId() > 0) {
                             approvalState = ApprovalState.APPROVED;
@@ -136,7 +149,7 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                                     }
                                     V3WorkorderToolsContext woTool = new V3WorkorderToolsContext();
                                     asset.setIsUsed(true);
-                                    woTool = setWorkorderToolObj(null, 1, tool, parentId, workorder,
+                                    woTool = setWorkorderToolObj(null, 1, tool,toolTypes, parentId, workorder,
                                             workorderTool, approvalState, asset, workorderTool.getRequestedLineItem(), parentTransactionId, context, baseCurrency, currencyMap);
                                     updatePurchasedTool(asset);
                                     workorderToolslist.add(woTool);
@@ -144,13 +157,42 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                                 }
                             }
                         } else {
-                            V3WorkorderToolsContext woTool = new V3WorkorderToolsContext();
-                            woTool = setWorkorderToolObj(null, workorderTool.getQuantity(), tool, parentId,
-                                    workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context, baseCurrency, currencyMap);
-                            workorderToolslist.add(woTool);
-                            toolsToBeAdded.add(woTool);
+                            List<V3PurchasedToolContext> purchasedTools = V3InventoryUtil.getPurchasedToolsBasedOnCostType(tool,true);
+                            if (purchasedTools != null && !purchasedTools.isEmpty()){
+                                V3PurchasedToolContext pTool = purchasedTools.get(0);
+                                if(workorderTool.getQuantity() <= pTool.getCurrentQuantity()){
+                                    V3WorkorderToolsContext woTool = new V3WorkorderToolsContext();
+                                    woTool = setWorkorderToolObj(pTool, workorderTool.getQuantity(), tool,toolTypes, parentId,
+                                            workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context, baseCurrency, currencyMap);
+                                    workorderToolslist.add(woTool);
+                                    toolsToBeAdded.add(woTool);
+                                } else {
+                                    double requiredQuantity = workorderTool.getQuantity();
+                                    for (V3PurchasedToolContext purchasedTool : purchasedTools) {
+                                        V3WorkorderToolsContext woTool = new V3WorkorderToolsContext();
+                                        double quantityUsedForTheCost = 0;
+                                        if (requiredQuantity <= purchasedTool.getCurrentQuantity()) {
+                                            quantityUsedForTheCost = requiredQuantity;
+                                        } else {
+                                            quantityUsedForTheCost = purchasedTool.getCurrentQuantity();
+                                        }
+
+                                        woTool = setWorkorderToolObj(pTool, quantityUsedForTheCost, tool,toolTypes, parentId,
+                                                workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context, baseCurrency, currencyMap);
+                                        requiredQuantity -= quantityUsedForTheCost;
+                                        workorderToolslist.add(woTool);
+                                        toolsToBeAdded.add(woTool);
+                                        if (requiredQuantity <= 0) {
+                                            break;
+                                        }
+                                    }
+
+                                }
+
+                            }
+
                         }
-                    }
+//                    }
                 }
             }
             if (CollectionUtils.isNotEmpty(toolsToBeAdded)) {
@@ -182,14 +224,27 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
         return false;
     }
 
+    private void validateIssuedQuantity(V3WorkorderToolsContext workorderTool) throws Exception {
+        User issuedTo = workorderTool.getIssuedTo();
+        if(issuedTo == null){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "tool must be issued to a person before adding it to a workorder");
+        }
+        Double issuedQuantity = V3ToolsApi.getIssuedToolsQuantityForUser(workorderTool.getTool(),issuedTo);
+        if(workorderTool.getQuantity() > issuedQuantity){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "The entered quantity exceeds what has been issued to the User.");
+        }
+
+    }
+
     private V3WorkorderToolsContext setWorkorderToolObj(V3PurchasedToolContext purchasedtool, double quantity,
-                                                        V3ToolContext tool, long parentId, V3WorkOrderContext workorder, V3WorkorderToolsContext workorderTools,
-                                                        ApprovalState approvalState, V3AssetContext asset, V3InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context,
+                                                      V3ToolContext tool,V3ToolTypesContext toolType, long parentId, V3WorkOrderContext workorder, V3WorkorderToolsContext workorderTools,
+                                                      ApprovalState approvalState, V3AssetContext asset, V3InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context,
                                                         CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap) throws Exception{
         V3WorkorderToolsContext woTool = new V3WorkorderToolsContext();
         Long issueTime = workorderTools.getIssueTime();
         Long returnTime = workorderTools.getReturnTime();
         woTool.setIssueTime(issueTime);
+        woTool.setIssuedTo(workorderTools.getIssuedTo());
         woTool.setReturnTime(returnTime);
         CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(woTool, baseCurrency, currencyMap, tool.getCurrencyCode(), tool.getExchangeRate());
         woTool.setTransactionState(TransactionState.USE);
@@ -211,6 +266,11 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
         }
         woTool.setTransactionType(TransactionType.WORKORDER);
         woTool.setIsReturnable(false);
+        if(workorderTools.getInventoryReservation()!=null){
+            woTool.setInventoryReservation(workorderTools.getInventoryReservation());
+            User requestedFor = V3InventoryRequestAPI.getUserToIssueFromReservation(workorderTools.getInventoryReservation());
+            woTool.setIssuedTo(requestedFor);
+        }
         if (purchasedtool != null) {
             woTool.setPurchasedTool(purchasedtool);
         }
@@ -227,11 +287,11 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
         woTool.setSysModifiedTime(System.currentTimeMillis());
         woTool.setParentId(parentId);
         Double rate = null;
-        rate = tool.getRate();
+        rate = toolType.getSellingPrice();
         woTool.setRate(rate);
         Double costOccurred = 0.0;
-        if (tool.getRate()!=null && tool.getRate() > 0 && duration !=null && duration >=0) {
-            costOccurred = tool.getRate() * (duration / 3600) * woTool.getQuantity();
+        if (rate!=null && rate > 0 && duration !=null && duration >=0) {
+            costOccurred = rate * (duration / 3600) * woTool.getQuantity();
         }
         woTool.setCost(costOccurred);
         if(workorder!=null) {
@@ -248,7 +308,6 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
         JSONObject newinfo = new JSONObject();
 
         if (tool.getToolType() != null) {
-            V3ToolTypesContext toolType = V3ToolsApi.getToolTypes(tool.getToolType().getId());
             if(toolType != null && toolType.isRotating() && asset != null && woTool.getTransactionStateEnum() == TransactionState.USE) {
                 if(woTool.getIssuedTo() != null) {
                     asset.setLastIssuedToUser(woTool.getIssuedTo());

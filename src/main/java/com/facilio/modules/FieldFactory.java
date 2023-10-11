@@ -12255,7 +12255,62 @@ public class FieldFactory extends BaseFieldFactory {
         fieldList.add(getNumberField("moduleId","MODULE_ID",module));
         fieldList.add(getNumberField("dateFieldValue","DATE_FIELD_VALUE",module));
         fieldList.add(getNumberField("executionTime","EXECUTION_TIME",module));
+        return fieldList;
+    }
 
+    public static List<FacilioField> getSFG20SettingsFields() {
+        FacilioModule module = ModuleFactory.getSFG20SettingModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getIdField(module));
+        fieldList.add(getStringField("description","DESCRIPTION",module));
+        fieldList.add(getStringField("customerKey","CUSTOMER_KEY",module));
+        fieldList.add(getStringField("customerSecret","CUSTOMER_SECRET",module));
+        return fieldList;
+    }
+
+    public static List<FacilioField> getSFG20JobPlansFields() {
+        FacilioModule module = ModuleFactory.getSFG20JobPlanModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getIdField(module));
+        fieldList.add(getNumberField("syncId","SYNC_ID",module));
+        fieldList.add(getNumberField("jobPlanId","JOB_PLAN_ID",module));
+        fieldList.add(getNumberField("scheduleId","SCHEDULE_ID",module));
+        fieldList.add(getStringField("version","VERSION",module));
+        fieldList.add(getStringField("oldversion","OLD_VERSION",module));
+        fieldList.add(getStringField("title","TITLE",module));
+        fieldList.add(getStringField("code","CODE",module));
+        fieldList.add(getStringField("groupPath","SFG_GROUP_PATH",module));
+        fieldList.add(getBooleanField("isExpired","IS_EXPIRED",module));
+        fieldList.add(getNumberField("fileId","FILE_ID",module));
+        SystemEnumField syncHistoryFlowTypeField = getField("flowType", "FLOW_TYPE", module, FieldType.SYSTEM_ENUM);
+        syncHistoryFlowTypeField.setEnumName("flowType");
+        syncHistoryFlowTypeField.setDisplayName("Flow Type");
+        syncHistoryFlowTypeField.setDisplayType(FieldDisplayType.SELECTBOX);
+        syncHistoryFlowTypeField.setRequired(false);
+        syncHistoryFlowTypeField.setDisabled(false);
+        syncHistoryFlowTypeField.setDefault(true);
+        fieldList.add(syncHistoryFlowTypeField);
+        return fieldList;
+    }
+
+    public static List<FacilioField> getSFG20SyncHistoryFields() {
+        FacilioModule module = ModuleFactory.getSFG20SyncHistoryModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getIdField(module));
+        SystemEnumField syncHistoryStatusField = getField("status", "SYNC_STATUS", module, FieldType.SYSTEM_ENUM);
+        syncHistoryStatusField.setEnumName("status");
+        syncHistoryStatusField.setDisplayName("Sync Status");
+        syncHistoryStatusField.setDisplayType(FieldDisplayType.SELECTBOX);
+        syncHistoryStatusField.setRequired(false);
+        syncHistoryStatusField.setDisabled(false);
+        syncHistoryStatusField.setDefault(true);
+        fieldList.add(syncHistoryStatusField);
+        fieldList.add(getSystemField("sysCreatedBy",module));
+        fieldList.add(getSystemField("sysCreatedTime",module));
+        fieldList.add(getNumberField("jobPlanCreatedCount","JOB_PLAN_CREATED_COUNT",module));
+        fieldList.add(getNumberField("jobPlanUpdatedCount","JOB_PLAN_UPDATED_COUNT",module));
+        fieldList.add(getNumberField("syncStartTime","SYNC_START_TIME",module));
+        fieldList.add(getNumberField("syncEndTime","SYNC_END_TIME",module));
         return fieldList;
     }
 

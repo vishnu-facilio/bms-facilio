@@ -37,7 +37,10 @@ public class InhibitFlaggedEventCommand extends FacilioCommand {
                         updateInhibitTimeStamp(actionContext.getId(),inhibitReasonListContext);
                         JobContext job = FacilioTimer.getJob(actionContext.getId(), RemoteMonitorConstants.FLAGGED_EVENT_BUREAU_TAKE_ACTION_JOB);
                         Long takeCustodyTimeStamp = actionContext.getTakeCustodyTimestamp();
-                        Long takeActionDuration = actionContext.getTakeActionPeriod();
+                        Long takeActionDuration = 0l;
+                        if(actionContext.getTakeActionPeriod() != null){
+                            takeActionDuration= actionContext.getTakeActionPeriod();
+                        }
                         Long nextActionMaxTime = takeCustodyTimeStamp + takeActionDuration;
                         if (job != null) {
                             FacilioTimer.deleteJob(actionContext.getId(), RemoteMonitorConstants.FLAGGED_EVENT_BUREAU_TAKE_ACTION_JOB);

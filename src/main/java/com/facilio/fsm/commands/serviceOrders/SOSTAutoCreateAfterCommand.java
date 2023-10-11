@@ -2,6 +2,7 @@ package com.facilio.fsm.commands.serviceOrders;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -21,10 +22,7 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SOSTAutoCreateAfterCommand extends FacilioCommand {
     @Override
@@ -81,17 +79,20 @@ public class SOSTAutoCreateAfterCommand extends FacilioCommand {
                             List<ServiceTaskContext> selectTasks = selectTasksBuilder.get();
                             selectTasks.add(task);
                             if (serviceAppointment != null) {
+                                FacilioContext appointmentContext = V3Util.getSummary(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, Collections.singletonList(serviceAppointment.getId()));
+                                ServiceAppointmentContext appointment  = (ServiceAppointmentContext) Constants.getRecordList(appointmentContext).get(0);
+
                                 List<ServiceAppointmentTaskContext> data = new ArrayList<>();
-                                if(serviceAppointment.getServiceTasks() != null) {
-                                    data.addAll(serviceAppointment.getServiceTasks());
+                                if(appointment.getServiceTasks() != null) {
+                                    data.addAll(appointment.getServiceTasks());
                                 }
                                 for (ServiceTaskContext taskItems : serviceTasks) {
                                     ServiceAppointmentTaskContext appointmentTasks = new ServiceAppointmentTaskContext();
                                     appointmentTasks.setId(taskItems.getId());
                                     data.add(appointmentTasks);
                                 }
-                                serviceAppointment.setServiceTasks(data);
-                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, serviceAppointment.getId(), FieldUtil.getAsJSON(serviceAppointment), null, null, null, null, null, null, null, null,null);
+                                appointment.setServiceTasks(data);
+                                V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, appointment.getId(), FieldUtil.getAsJSON(appointment), null, null, null, null, null, null, null, null,null);
                             }
                         }
                         }

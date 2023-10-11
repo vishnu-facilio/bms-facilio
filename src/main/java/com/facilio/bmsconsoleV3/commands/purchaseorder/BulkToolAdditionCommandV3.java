@@ -2,10 +2,13 @@ package com.facilio.bmsconsoleV3.commands.purchaseorder;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
+import com.facilio.bmsconsoleV3.enums.CostType;
+import com.facilio.bmsconsoleV3.util.V3InventoryAPI;
 import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -60,6 +63,9 @@ public class BulkToolAdditionCommandV3 extends FacilioCommand {
             for (V3ToolContext tool : toolsList) {
                 tool.setLastPurchasedDate(System.currentTimeMillis());
                 if (!toolTypesId.contains(tool.getToolType().getId())) {
+                    if(tool.getCostType()<=0) {
+                        tool.setCostType(CostType.FIFO.getIndex());
+                    }
                     toolToBeAdded.add(tool);
                 } else {
                     tool.setId(toolTypeVsTool.get(tool.getToolType().getId()));
@@ -94,7 +100,8 @@ public class BulkToolAdditionCommandV3 extends FacilioCommand {
                 }
             }
             if (purchasedTools != null && !purchasedTools.isEmpty()) {
-                size += addPurchasedTool(purchasedTools);
+                List<V3PurchasedToolContext> addedRecords = V3InventoryAPI.addPurchasedTool(purchasedTools);
+                size += addedRecords.size();
             }
 
             setImportProcessContext(context, size);
@@ -119,16 +126,6 @@ public class BulkToolAdditionCommandV3 extends FacilioCommand {
         UpdateRecordBuilder<V3ToolContext> updateBuilder = new UpdateRecordBuilder<V3ToolContext>().module(module)
                 .fields(fields).andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
         updateBuilder.update(tool);
-    }
-
-    private int addPurchasedTool(List<V3PurchasedToolContext> tool) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
-        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
-        InsertRecordBuilder<V3PurchasedToolContext> readingBuilder = new InsertRecordBuilder<V3PurchasedToolContext>()
-                .module(module).fields(fields).addRecords(tool);
-        readingBuilder.save();
-        return readingBuilder.getRecords().size();
     }
 
     private void setImportProcessContext(Context c, int size) throws ParseException {

@@ -63,7 +63,7 @@ public class AlarmNotReceivedJob extends FacilioJob {
                         ControllerAlarmInfoContext updateControllerAlarmInfo = new ControllerAlarmInfoContext();
                         updateControllerAlarmInfo.setFiltered(true);
                         V3RecordAPI.updateRecord(updateControllerAlarmInfo,modBean.getModule(ControllerAlarmInfoModule.MODULE_NAME), Collections.singletonList(modBean.getField("filtered", ControllerAlarmInfoModule.MODULE_NAME)),Collections.singletonList(controllerAlarmInfo.getId()));
-                        RawAlarmContext rawAlarm = constructRawAlarm(filterRuleCriteria,controller);
+                        RawAlarmContext rawAlarm = constructRawAlarm(filterRuleCriteria,controller,controllerAlarmInfo);
                         RawAlarmUtil.addRawAlarm(rawAlarm);
                         AlarmFilterCriteriaType.NO_ALARM_RECEIVED_FOR_SPECIFIC_PERIOD.getHandler(rawAlarm).createFilteredAlarm(rawAlarm,filterRuleCriteria);
                     }
@@ -72,11 +72,12 @@ public class AlarmNotReceivedJob extends FacilioJob {
         }
     }
 
-    private static RawAlarmContext constructRawAlarm(FilterRuleCriteriaContext filterRuleCriteria,Controller controller) throws Exception {
-        if(filterRuleCriteria.getAlarmFilterRule() != null) {
+    private static RawAlarmContext constructRawAlarm(FilterRuleCriteriaContext filterRuleCriteria,Controller controller,ControllerAlarmInfoContext controllerAlarmInfo) throws Exception {
+        if(filterRuleCriteria.getAlarmFilterRule() != null && controllerAlarmInfo != null) {
             RawAlarmContext rawAlarm = new RawAlarmContext();
             rawAlarm.setFiltered(true);
             rawAlarm.setController(controller);
+            rawAlarm.setAsset(controllerAlarmInfo.getAsset());
             rawAlarm.setAlarmType(filterRuleCriteria.getAlarmFilterRule().getAlarmType());
             rawAlarm.setStrategy(filterRuleCriteria.getAlarmFilterRule().getStrategy());
             rawAlarm.setAlarmDefinition(filterRuleCriteria.getAlarmDefinition());

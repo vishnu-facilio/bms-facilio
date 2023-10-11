@@ -159,7 +159,7 @@ public class ClientModule extends BaseModuleConfig{
     private static FacilioView getRemoteMonitoringAllClientView() {
 
         FacilioView allView = new FacilioView();
-        allView.setName("all-remote-monitoring-client");
+        allView.setName("all");
         allView.setDisplayName("Clients");
         allView.setAppLinkNames(Collections.singletonList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         allView.setModuleName(FacilioConstants.ContextNames.CLIENT);

@@ -1,11 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.inventoryrequest;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
@@ -76,7 +72,9 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
             FacilioModule purchasedItemsModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
             List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
             for (Long id : uniquepurchasedItemsIds) {
-                double totalConsumed = getTotalQuantityConsumed(id, "purchasedItem");
+                Map<String, Double> quantityRollup = rollupAllTransactions(id, "purchasedItem", FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+                double currentQuantity = quantityRollup.get(FacilioConstants.ContextNames.CURRENT_QUANTITY);
+                double adjustmentDecrease = quantityRollup.get(FacilioConstants.ContextNames.ADJUSTMENT_DECREASE);
                 V3PurchasedItemContext purchasedItem = new V3PurchasedItemContext();
                 SelectRecordsBuilder<V3PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<V3PurchasedItemContext>()
                         .select(purchasedItemFields).table(purchasedItemsModule.getTableName())
@@ -85,7 +83,9 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
                 List<V3PurchasedItemContext> purchasedItems = selectBuilder.get();
                 if (purchasedItems != null && !purchasedItems.isEmpty()) {
                     purchasedItem = purchasedItems.get(0);
-                    purchasedItem.setCurrentQuantity(totalConsumed);
+                    purchasedItem.setCurrentQuantity(currentQuantity);
+                    Double totalQuantity = purchasedItem.getQuantity() - adjustmentDecrease;
+                    purchasedItem.setQuantity(totalQuantity);
                     UpdateRecordBuilder<V3PurchasedItemContext> updateBuilder = new UpdateRecordBuilder<V3PurchasedItemContext>()
                             .module(purchasedItemsModule).fields(modBean.getAllFields(purchasedItemsModule.getName()))
                             .andCondition(CriteriaAPI.getIdCondition(id, purchasedItemsModule));
@@ -100,7 +100,8 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
             Set<Long> uniqueItemTypeIds = new HashSet<Long>();
             FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
             for (Long id : uniqueItemIds) {
-                double totalConsumed = getTotalQuantityConsumed(id, "item");
+                Map<String, Double> quantityRollup = rollupAllTransactions(id, "item",FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+                double totalConsumed = quantityRollup.get(FacilioConstants.ContextNames.CURRENT_QUANTITY);
                 V3ItemContext item = V3ItemsApi.getItems(id);
                 item.setQuantity(totalConsumed);
                 item.setCurrentQuantity(totalConsumed);
@@ -118,11 +119,11 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
         return false;
     }
 
-    public static double getTotalQuantityConsumed(long inventoryCostId, String fieldName) throws Exception {
+    public static Map<String, Double> rollupAllTransactions(long inventoryCostId, String fieldName, String moduleName) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule consumableModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
-        List<FacilioField> consumableFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+        FacilioModule consumableModule = modBean.getModule(moduleName);
+        List<FacilioField> consumableFields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> consumableFieldMap = FieldFactory.getAsMap(consumableFields);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(consumableModule.getTableName())
@@ -160,8 +161,11 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
                 String.valueOf(inventoryCostId), PickListOperators.IS));
 
         List<Map<String, Object>> rs = builder.get();
+
+        Double currentQuantity = 0.0;
+        Double adjustments_decrease = 0.0;
         if (rs != null && rs.size() > 0) {
-            double addition = 0, issues = 0, returns = 0, used = 0 , adjustments_decrease = 0 , adjustments_increase = 0, transferredFrom=0, transferredTo=0, hardReserve=0;
+            double addition = 0, issues = 0, returns = 0, used = 0 , adjustments_increase = 0, transferredFrom=0, transferredTo=0, hardReserve=0;
             addition = rs.get(0).get("addition") != null ? (double) rs.get(0).get("addition") : 0;
             issues = rs.get(0).get("issues") != null ? (double) rs.get(0).get("issues") : 0;
             returns = rs.get(0).get("returns") != null ? (double) rs.get(0).get("returns") : 0;
@@ -174,9 +178,12 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
             issues += used;
             issues +=transferredFrom;
 
-            return ((addition + returns + adjustments_increase + transferredTo) - issues - adjustments_decrease - hardReserve);
+            currentQuantity = ((addition + returns + adjustments_increase + transferredTo) - issues - adjustments_decrease - hardReserve);
         }
-        return 0d;
+        Map<String,Double> rollupQuantity = new HashMap<>();
+        rollupQuantity.put(FacilioConstants.ContextNames.CURRENT_QUANTITY,currentQuantity);
+        rollupQuantity.put(FacilioConstants.ContextNames.ADJUSTMENT_DECREASE,adjustments_decrease);
+        return rollupQuantity;
     }
 
 }

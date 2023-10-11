@@ -19,6 +19,8 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
+import com.facilio.taskengine.ScheduleInfo;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -28,6 +30,9 @@ import org.apache.kafka.common.protocol.types.Field;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.facilio.plannedmaintenance.PlannedMaintenanceAPI.computeFrequencyForCalendar;
+
 @Log4j
 public class JobPlanAPI {
 
@@ -623,6 +628,146 @@ public class JobPlanAPI {
                 .beanClass(JobPlanTaskSectionContext.class)
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobPlan"),String.valueOf(jobPlanId),NumberOperators.EQUALS));
         return builder.get();
+    }
+
+
+    /**
+     * Methods with {@link V3WorkOrderContext}
+     * @param workOrderContext
+     */
+
+    public static Map<String, List<V3TaskContext>> getScopedSFG20TasksForWo(JobPlanContext jobPlan, Boolean isPreRequest, V3WorkOrderContext workOrderContext) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        LinkedHashMap<String, List<V3TaskContext>> allTasks = new LinkedHashMap<>();
+
+        List<JobPlanTaskSectionContext> initalTaskSections = setJobPlanDetails(jobPlan.getId());
+
+        List<JobPlanTaskSectionContext> updatedTaskSections = new ArrayList<>();
+        List<String> sectionNameList = new ArrayList<>();
+
+        long pmPlannerId = workOrderContext.getPmPlanner();
+
+        PMPlanner pmPlanner = PlannedMaintenanceAPI.getPmPlannerFromId(pmPlannerId);
+
+        PMTriggerV2 pmTriggerV2 = PlannedMaintenanceAPI.getPmV2TriggerFromId(pmPlanner.getTrigger().getId());
+
+
+        if (initalTaskSections != null) {
+            for (JobPlanTaskSectionContext initalTaskSection : initalTaskSections) {
+                long siteId = workOrderContext.getSiteId();
+                if(workOrderContext.getResource() == null && siteId > 0){
+                    ResourceContext resourceContext = ResourceAPI.getResource(siteId);
+                    if(resourceContext == null){
+                        throw new IllegalArgumentException("Resource is Null");
+                    }
+                    workOrderContext.setResource(resourceContext);
+                }
+                List<ResourceContext> sectionResourceList = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(initalTaskSection.getJobPlanSectionCategoryEnum(), Collections.singletonList(workOrderContext.getResource().getId()), initalTaskSection.getSpaceCategory() == null ? null :  initalTaskSection.getSpaceCategory().getId(), initalTaskSection.getAssetCategory() == null ? null :  initalTaskSection.getAssetCategory().getId(), null, null, false);
+
+                if(CollectionUtils.isNotEmpty(sectionResourceList)) {
+
+                    for(ResourceContext sectionResource : sectionResourceList) {
+
+                        JobPlanTaskSectionContext updatedTaskSection = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(initalTaskSection), JobPlanTaskSectionContext.class);
+                        updatedTaskSection.setName(updatedTaskSection.getName() + " - " + sectionResource.getName());
+                        updatedTaskSection.setResource(sectionResource);
+                        updatedTaskSections.add(updatedTaskSection);
+                        sectionNameList.add(updatedTaskSection.getName());  // update sectionName in sectionNameList
+                    }
+                }
+            }
+            if(workOrderContext.getSectionNameList() != null){
+                sectionNameList.addAll(workOrderContext.getSectionNameList());
+            }
+            workOrderContext.setSectionNameList(sectionNameList); // update sectionNameList in workorder
+
+            int taskUniqueId = 1;
+            if(CollectionUtils.isNotEmpty(updatedTaskSections)) {
+
+                for (JobPlanTaskSectionContext sectionContext : updatedTaskSections) {
+
+                    if (sectionContext.getTasks() != null) {
+
+                        List<V3TaskContext> tasks = new ArrayList<>();
+
+
+
+                        List<JobPlanTasksContext> jobPlanTasks = getSFGTaskByFrequency(sectionContext.getTasks(), computeFrequencyForCalendar( pmTriggerV2.getScheduleInfo().getFrequencyTypeEnum())+1);
+                        for (JobPlanTasksContext jobPlanTask : jobPlanTasks) {
+
+                            List<ResourceContext> taskResourceList = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(jobPlanTask.getJobPlanTaskCategoryEnum(), Collections.singletonList(sectionContext.getResource().getId()), jobPlanTask.getSpaceCategory() == null ? null :  jobPlanTask.getSpaceCategory().getId(), jobPlanTask.getAssetCategory() == null ? null :  jobPlanTask.getAssetCategory().getId(), null, null, false);
+
+                            if(CollectionUtils.isNotEmpty(taskResourceList)) {
+
+                                for (ResourceContext taskResource : taskResourceList) {
+                                    V3TaskContext task = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(jobPlanTask), V3TaskContext.class);
+                                    task.setResource(taskResource);
+                                    task.setUniqueId(taskUniqueId++);
+                                    tasks.add(task);
+                                }
+                            }
+                        }
+
+                        String sectionName = sectionContext.getName();
+
+                        if(CollectionUtils.isNotEmpty(tasks)) {
+                            for(V3TaskContext task : tasks) {
+                                if (isPreRequest) {
+                                    task.setPreRequest(true);
+                                    task.setInputType(V3TaskContext.InputType.BOOLEAN.getVal());
+                                }
+                            }
+                        }
+
+                        if (sectionName != null && CollectionUtils.isNotEmpty(tasks)) {
+                            allTasks.put(sectionName, tasks);
+                        }
+                    }
+
+                }
+
+            }
+        }
+        return allTasks;
+    }
+
+    public static List<JobPlanTasksContext> getSFGTaskByFrequency(List<JobPlanTasksContext> taskList,int plannerFrequency) {
+        List<JobPlanTasksContext> orderedJobPlanTaskList = new ArrayList<>();
+        if(CollectionUtils.isEmpty(taskList)){
+            return orderedJobPlanTaskList;
+        }
+        Map<Integer, JobPlanTasksContext> taskMap = taskList.stream().collect(Collectors.toMap(JobPlanTasksContext::getSequence, Function.identity()));
+        List<Integer> sequenceNumberList = taskMap.keySet().stream().collect(Collectors.toList());
+        Collections.sort(sequenceNumberList);
+        for(int sequenceNumber : sequenceNumberList){
+            JobPlanTasksContext tasksContext = taskMap.get(sequenceNumber);
+            if(tasksContext.getTaskFrequency() == null)
+            {
+                orderedJobPlanTaskList.add(taskMap.get(sequenceNumber));
+            }
+            else if(tasksContext.getTaskFrequency() <= plannerFrequency && tasksContext.getTaskFrequency()<=7) {
+                orderedJobPlanTaskList.add(taskMap.get(sequenceNumber));
+            }
+        }
+        return orderedJobPlanTaskList;
+    }
+
+    public static Integer getJobPlanCategory(Long jobPlanId) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(FacilioConstants.ContextNames.JOB_PLAN);
+        List<FacilioField> fieldList = moduleBean.getAllFields(FacilioConstants.ContextNames.JOB_PLAN);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fieldList);
+        SelectRecordsBuilder<JobPlanContext> selectBuilder = new SelectRecordsBuilder<JobPlanContext>()
+                .select(fieldList)
+                .module(module)
+                .beanClass(JobPlanContext.class)
+                .andCondition(CriteriaAPI.getIdCondition(jobPlanId,module));
+
+        JobPlanContext jobPlan =selectBuilder.fetchFirst();
+        return jobPlan.getJobPlanCategory();
+
     }
 
 

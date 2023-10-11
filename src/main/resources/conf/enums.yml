@@ -2,13 +2,13 @@ version: 1.0
 
 enums:
   - name: CostType
-    enumClassName: com.facilio.bmsconsole.context.ItemContext$CostType #If it's static inner class use $
+    enumClassName: com.facilio.bmsconsoleV3.enums.CostType
 
   - name: AlarmType
     enumClassName: com.facilio.bmsconsole.context.BaseAlarmContext$Type
 
   - name: AgentAlarmType
-    enumClassName: com.facilio.agent.alarms.AgentAlarmContext$AgentAlarmType
+    enumClassName: com.facilio.agent.alarms.AgentAlarmContext$AgentAlarmType #If it's static inner class use $
 
   - name: ReservationDurationType
     enumClassName: com.facilio.bmsconsole.context.reservation.ReservationContext$DurationType
@@ -366,7 +366,6 @@ enums:
   - name: BaseMailConversionTypeState
     enumClassName: com.facilio.bmsconsoleV3.context.BaseMailMessageContext$BaseMailConversionType
 
-
   - name: VirtualMeterTemplateStatus
     enumClassName: com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext$VMTemplateStatus
 
@@ -490,7 +489,6 @@ enums:
   - name: ClosureRestriction
     enumClassName: com.facilio.remotemonitoring.context.FlaggedEventRuleClosureConfigContext$ClosureRestriction
 
-
   - name: ConnectedResourceAssignmentType
     enumClassName: com.facilio.connected.ResourceType
 
@@ -529,3 +527,15 @@ enums:
 
   - name: Level
     enumClassName: com.facilio.fsm.context.PeopleSkillLevelContext$Level
+
+  - name: TaskFrequency
+    enumClassName: com.facilio.bmsconsoleV3.context.V3TaskContext$TaskFrequency
+
+  - name: TaskCriticality
+    enumClassName: com.facilio.bmsconsoleV3.context.V3TaskContext$TaskCriticality
+
+  - name: SkillSet
+    enumClassName: com.facilio.bmsconsoleV3.context.V3TaskContext$SkillSet
+
+  - name: SFGType
+    enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext$SFGType

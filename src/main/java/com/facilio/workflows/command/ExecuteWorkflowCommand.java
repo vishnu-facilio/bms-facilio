@@ -48,7 +48,7 @@ public class ExecuteWorkflowCommand extends FacilioCommand {
 		if(context.containsKey(WorkflowV2Util.WORKFLOW_PARAMS)) {
 			workflowContext.setParams((List<Object>) context.get(WorkflowV2Util.WORKFLOW_PARAMS));
 		}
-		
+
 		if(context.containsKey("ignoreNullExpressions")) {
 			workflowContext.setIgnoreNullParams((boolean) context.get("ignoreNullExpressions"));		// check and remove
 		}

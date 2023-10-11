@@ -4,7 +4,9 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.bmsconsoleV3.context.V3ClientContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.modules.FacilioStringEnum;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
@@ -27,7 +29,8 @@ public class FlaggedEventContext extends V3Context {
     private FlaggedEventRuleClosureConfigContext flaggedEventRuleClosureConfig;
     private Long actionRemainingTime;
     List<BureauCloseIssueReasonOptionContext> bureauCloseIssues;
-
+    private V3SiteContext site;
+    private V3AssetContext asset;
     public enum FlaggedEventStatus implements FacilioStringEnum {
         OPEN("Open"),
         WORKORDER_CREATED("Workorder Created"),

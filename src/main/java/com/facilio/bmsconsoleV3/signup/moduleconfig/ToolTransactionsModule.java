@@ -1,16 +1,13 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
-import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
-import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -33,6 +30,8 @@ public class ToolTransactionsModule extends BaseModuleConfig{
         ArrayList<FacilioView> toolTransaction = new ArrayList<FacilioView>();
         toolTransaction.add(getToolPendingApproval().setOrder(order++));
         toolTransaction.add(getAllToolApproval().setOrder(order++));
+        toolTransaction.add(getAllIssuedTools().setOrder(order++));
+
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
@@ -131,5 +130,36 @@ public class ToolTransactionsModule extends BaseModuleConfig{
         criteria.addAndCondition(condition);
 
         return criteria;
+    }
+
+    private FacilioView getAllIssuedTools() {
+        FacilioField createdTime = new FacilioField();
+        createdTime.setName("sysCreatedTime");
+        createdTime.setDataType(FieldType.NUMBER);
+        createdTime.setColumnName("CREATED_TIME");
+        createdTime.setModule(ModuleFactory.getToolTransactionsModule());
+
+        FacilioView allView = new FacilioView();
+        allView.setName("issued-tools");
+        allView.setDisplayName("Issued Tools");
+
+        allView.setFields(getAllIssuedToolsViewColumns());
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        allView.setAppLinkNames(appLinkNames);
+
+        return allView;
+    }
+
+    private List<ViewField> getAllIssuedToolsViewColumns() {
+        List<ViewField> columns = new ArrayList<ViewField>();
+        columns.add(new ViewField("tool","Tool"));
+        columns.add(new ViewField("storeRoom","Storeroom"));
+        columns.add(new ViewField("quantity","Quantity"));
+        columns.add(new ViewField("remainingQuantity","Remaining Quantity"));
+        columns.add(new ViewField("issuedTo","Issued To"));
+        return columns;
     }
 }

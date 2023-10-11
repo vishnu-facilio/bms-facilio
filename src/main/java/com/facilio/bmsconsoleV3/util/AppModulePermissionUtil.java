@@ -127,9 +127,13 @@ public class AppModulePermissionUtil {
             new Permission(getExponentValue(5), "EDIT", "Edit", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(6), "CREATE_EDIT", "Create/Edit", PermissionMapping.GROUP2PERMISSION),
             new Permission(getExponentValue(7), "UPDATE_WORKORDER_TASK", "Execute Task", PermissionMapping.GROUP2PERMISSION),
-            new Permission(getExponentValue(8), "CONTROL", "Control", PermissionMapping.GROUP2PERMISSION)
+            new Permission(getExponentValue(8), "CONTROL", "Control", PermissionMapping.GROUP2PERMISSION),
+            new Permission(getExponentValue(9),"MANAGE_ACCESS","Manage Access",PermissionMapping.GROUP2PERMISSION),
+
             //new Permission(getExponentValue(9), "READ_TASK", "Read Task", PermissionMapping.GROUP2PERMISSION)
-        );
+            new Permission(getExponentValue(10), "MANAGE_INVENTORY", "Manage Inventory", PermissionMapping.GROUP2PERMISSION)
+
+    );
 
     private static long getExponentValue(int exponent) {
         return (long) Math.pow(2, (exponent - 1));
@@ -177,8 +181,9 @@ public class AppModulePermissionUtil {
                 permissionMap.get("UPDATE_TASK"),
                 permissionMap.get("UPDATE_WORKORDER_TASK"),
                 new PermissionGroup("Delete", Arrays.asList(deletePerm, deleteOwnPerm, deleteTeamPerm)),
-                permissionMap.get("EXPORT")
-        );
+                permissionMap.get("EXPORT"),
+                permissionMap.get("MANAGE_INVENTORY")
+                );
         modulePermissionGroupMap.put(getMapKey(FacilioConstants.ContextNames.WORK_ORDER), new ModuleAppPermission(permissionTypes));
 
         //Preventive Maintenance

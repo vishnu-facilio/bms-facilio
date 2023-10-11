@@ -43,16 +43,18 @@ public class WorkOrderPlannedToolsModule extends BaseModuleConfig {
             FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", FacilioConstants.ContextNames.WO_PLANNED_TOOLS);
             FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", FacilioConstants.ContextNames.WO_PLANNED_TOOLS);
             FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", FacilioConstants.ContextNames.WO_PLANNED_TOOLS);
+            FacilioField isReservedField = moduleBean.getField("isReserved", FacilioConstants.ContextNames.WO_PLANNED_TOOLS);
 
-            SummaryWidget pageWidget1 = new SummaryWidget();
+        SummaryWidget pageWidget1 = new SummaryWidget();
             SummaryWidgetGroup widgetGroup1 = new SummaryWidgetGroup();
 
             SummaryWidgetGroupFields groupField11 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField12 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField13 = new SummaryWidgetGroupFields();
             SummaryWidgetGroupFields groupField14 = new SummaryWidgetGroupFields();
+            SummaryWidgetGroupFields groupField15 = new SummaryWidgetGroupFields();
 
-            groupField11.setName(sysCreatedByField.getName());
+        groupField11.setName(sysCreatedByField.getName());
             groupField11.setDisplayName(sysCreatedByField.getDisplayName());
             groupField11.setFieldId(sysCreatedByField.getId());
             groupField11.setRowIndex(1);
@@ -79,6 +81,13 @@ public class WorkOrderPlannedToolsModule extends BaseModuleConfig {
             groupField14.setRowIndex(2);
             groupField14.setColIndex(3);
             groupField14.setColSpan(2);
+
+            groupField15.setName(isReservedField.getName());
+            groupField15.setDisplayName(isReservedField.getDisplayName());
+            groupField15.setFieldId(isReservedField.getId());
+            groupField15.setRowIndex(3);
+            groupField15.setColIndex(1);
+            groupField15.setColSpan(2);
 
 
             List<SummaryWidgetGroupFields> groupOneFields = new ArrayList<>();
@@ -189,8 +198,8 @@ public class WorkOrderPlannedToolsModule extends BaseModuleConfig {
         plannedToolsFormFields.add(new FormField("toolType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tool type", FormField.Required.REQUIRED,"toolTypes", 1, 1));
         plannedToolsFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, 2, 1));
         plannedToolsFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", 3, 1));
-        plannedToolsFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.DECIMAL, "Rate", FormField.Required.OPTIONAL, 4, 1));
-        plannedToolsFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, 5, 1));
+//        plannedToolsFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.DECIMAL, "Rate", FormField.Required.OPTIONAL, 4, 1));
+//        plannedToolsFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, 5, 1));
 //        FormField totalCost = new FormField("totalCost", FacilioField.FieldDisplayType.DECIMAL, "Total Cost", FormField.Required.OPTIONAL, 6, 3);
 //        totalCost.setIsDisabled(true);
 //        plannedToolsFormFields.add(totalCost);

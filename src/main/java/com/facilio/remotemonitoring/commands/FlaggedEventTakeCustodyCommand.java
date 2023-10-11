@@ -68,7 +68,9 @@ public class FlaggedEventTakeCustodyCommand extends FacilioCommand {
     }
 
     private static void startTakeActionJob(FlaggedEventBureauActionsContext action) throws Exception {
-        Long nextExecutionTime = (System.currentTimeMillis() + action.getTakeCustodyPeriod()) / 1000;
-        FacilioTimer.scheduleOneTimeJobWithTimestampInSec(action.getId(), RemoteMonitorConstants.FLAGGED_EVENT_BUREAU_TAKE_ACTION_JOB, nextExecutionTime, "priority");
+        if(action.getTakeCustodyPeriod() != null && action.getTakeCustodyPeriod() > 0) {
+            Long nextExecutionTime = (System.currentTimeMillis() + action.getTakeCustodyPeriod()) / 1000;
+            FacilioTimer.scheduleOneTimeJobWithTimestampInSec(action.getId(), RemoteMonitorConstants.FLAGGED_EVENT_BUREAU_TAKE_ACTION_JOB, nextExecutionTime, "priority");
+        }
     }
 }

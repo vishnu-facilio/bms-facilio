@@ -188,5 +188,10 @@ public class JobPlanTasksContext extends V3TaskContext {
     @Getter
     @Setter
     private List<Map<String, Object>> inputOptions;
+
+
+    @Getter
+    @Setter
+    private Long taskCode;
 }
 

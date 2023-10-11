@@ -7,32 +7,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ControllerType implements FacilioIntEnum {
+
 	MISC(0, "Misc", true),
-
 	BACNET_IP(1,"BACnet Ip", true),
-
 	BACNET_MSTP(2,"BACnet MSTP", true),
-
 	NIAGARA(3, "Niagara", true),
-
 	MODBUS_IP(4,"Modbus_Ip", true),
-
 	MODBUS_RTU(5,"Modbus_Rtu", true),
-
 	OPC_DA (6,"Opc DA"),
-
 	OPC_UA (7,"Opc UA"),
-	
 	LON_WORKS (8,"Lon Works", true),
-	
 	KNX (9, "Knx", true),
-	
 	CUSTOM(10, "Custom"),
-	
 	REST(11, "Rest"),
-	
-	SYSTEM(12, "System");
-	;
+	SYSTEM(12, "System"),
+	RDM(13, "RDM"),
+	E2(14, "E2");
 
 	private int key;
 	private String label;

@@ -286,7 +286,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         List<FormField> scheduleInfoFields=new ArrayList<>();
         generalInformationFields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 1, 3));
         generalInformationFields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.REQUIRED, 2, 3));
-        scheduleInfoFields.add(new FormField("resolutionDueDuration",FacilioField.FieldDisplayType.DURATION,"Resolution Due Duration", FormField.Required.REQUIRED, 3, 3));
+        scheduleInfoFields.add(new FormField("resolutionDueDuration",FacilioField.FieldDisplayType.DURATION,"Resolution Due Duration", FormField.Required.OPTIONAL, 3, 3));
 
         FormSection scheduleInfoSection=new FormSection("Schedule Information",3,scheduleInfoFields,true);
 

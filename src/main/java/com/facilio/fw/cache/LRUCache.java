@@ -74,6 +74,8 @@ public class LRUCache {
 	private static FacilioCache<String, List<FlaggedEventRuleContext>> flaggedEventsRuleCache = new PubSubLRUCache<>("flaggedEventsRuleCache", 500);
 
 	private static FacilioCache<String, FlaggedEventRuleContext> flaggedEventRuleCache = new PubSubLRUCache<>("flaggedEventRuleCache", 500);
+	private static FacilioCache<String, AlarmAssetTaggingContext> alarmAssetTaggingCache = new PubSubLRUCache<>("alarmAssetTaggingCache", 500);
+
 	public static void purgeAllCache() {
 		RedisManager.purgeAllCache();
 	}
@@ -207,5 +209,7 @@ public class LRUCache {
 	public static FacilioCache<String, FlaggedEventRuleContext> getFlaggedEventRuleCache() {
 		return flaggedEventRuleCache;
 	}
-
+	public static FacilioCache<String, AlarmAssetTaggingContext> getAlarmAssetTaggingCache() {
+		return alarmAssetTaggingCache;
+	}
 }

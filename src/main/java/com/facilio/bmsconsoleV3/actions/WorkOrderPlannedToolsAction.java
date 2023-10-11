@@ -12,6 +12,14 @@ import java.util.List;
 
 public class WorkOrderPlannedToolsAction extends V3Action {
     private static final long serialVersionUID = 1L;
+    private List<Long> recordIds;
+    public List<Long> getRecordIds() {
+        return recordIds;
+    }
+    public void setRecordIds(List<Long> recordIds) {
+        this.recordIds = recordIds;
+    }
+
 
     private Long workOrderId;
 
@@ -40,6 +48,14 @@ public class WorkOrderPlannedToolsAction extends V3Action {
         context.put(FacilioConstants.ContextNames.TOOL, plannedToolId);
         chain.execute();
         setData(FacilioConstants.ContextNames.WORKORDER_TOOLS,FieldUtil.getAsJSON(context.get(FacilioConstants.ContextNames.WORKORDER_TOOLS)));
+        return V3Action.SUCCESS;
+    }
+    public String reserve() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.getToolsReserveChainV3();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+        chain.execute();
+        setData(FacilioConstants.ContextNames.WO_PLANNED_TOOLS, FieldUtil.getAsJSONArray((List)context.get(FacilioConstants.ContextNames.WO_PLANNED_TOOLS), WorkOrderPlannedToolsContext.class));
         return V3Action.SUCCESS;
     }
 }

@@ -15,14 +15,17 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.identity.client.IdentityClient;
+import com.facilio.identity.client.dto.AppDomain;
 import com.facilio.identity.client.dto.User;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +34,10 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
+        Map<String, Object> rawInput = Constants.getRawInput(context);
+        long securityPolicyId = (long) rawInput.getOrDefault("selectedSecuritypolicy",-1L);
+        boolean sendInvitation = (boolean) rawInput.getOrDefault("sendInvitation",true);
+        String password = (String) rawInput.getOrDefault("password",null);
         Map<Long, V3PeopleContext> oldPeopleRecordMap = (Map<Long, V3PeopleContext>) context.get(FacilioConstants.ContextNames.OLD_RECORD_MAP);
         String moduleName = Constants.getModuleName(context);
         List<V3PeopleContext> pplList = recordMap.get(moduleName);
@@ -40,7 +47,7 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
                 if(oldPeopleRecordMap != null && !oldPeopleRecordMap.isEmpty()){
                     V3PeopleContext oldPeopleRecord = oldPeopleRecordMap.get(people.getId());
                     Map<String,Long> rolemaps = people.getRolesMap();
-                        updateAccess(oldPeopleRecord,people,rolemaps);
+                        updateAccess(oldPeopleRecord,people,rolemaps,securityPolicyId,sendInvitation,password);
                 }
             }
         }
@@ -48,13 +55,13 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
         return false;
     }
 
-    private static void updateAppAccess(Map<String,Long> rolemaps,V3PeopleContext people,Long orgId) throws Exception{
+    private static void updateAppAccess(Map<String,Long> rolemaps,V3PeopleContext people,Long orgId,Long securityPolicyId,boolean sendInvitation,String password) throws Exception{
         PeopleUserContext user = new PeopleUserContext();
         if(rolemaps != null && !rolemaps.isEmpty()){
             for (Map.Entry<String,Long> entryset : rolemaps.entrySet()){
                 String appLinkName = entryset.getKey();
                 Long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
-                com.facilio.identity.client.dto.AppDomain appDomainObj = null;
+                AppDomain appDomainObj = null;
                 if(appId != null){
                     appDomainObj = ApplicationApi.getAppDomainForApp(appId);
                 }
@@ -82,13 +89,15 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
                         newUser.setAppDomain(appDomainObj);
                         newUser.setTimezone(existingPeople.getTimezone());
                         newUser.setMobile(existingPeople.getMobile());
+                        newUser.setSecurityPolicyId(securityPolicyId);
                         user.setPeopleId(people.getId());
                         user.setRoleId(roleId);
                         user.setApplicationId(appId);
                         user.setUser(newUser);
 
-                        ApplicationUserUtil.addAppUser(user.getUser().getOrgId(),true, user, true, null);
+                        ApplicationUserUtil.addAppUser(user.getUser().getOrgId(),true, user, sendInvitation, password);
                     }else {
+                        existingUser.setSecurityPolicyId(securityPolicyId);
                         user.setPeopleId(people.getId());
                         user.setRoleId(roleId);
                         user.setApplicationId(appId);
@@ -103,60 +112,77 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
         }
     }
 
-    private static void updateAccess(V3PeopleContext oldPeopleRecord,V3PeopleContext people,Map<String,Long> rolemaps) throws Exception{
+    private static void updateAccess(V3PeopleContext oldPeopleRecord,V3PeopleContext people,Map<String,Long> rolemaps,Long securityPolicyId,boolean sendInvitation,String password) throws Exception{
         Long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        Map<String,Long> rolemap = new HashMap<>();
         if(oldPeopleRecord instanceof V3TenantContactContext){
-            if(!(((V3TenantContactContext) oldPeopleRecord).isTenantPortalAccess() == ((V3TenantContactContext)people).isTenantPortalAccess())){
-                if(((V3TenantContactContext)people).isTenantPortalAccess()){
-                    updateAppAccess(rolemaps,people,orgId);
-                }else if(!((V3TenantContactContext)people).isTenantPortalAccess()){
-                    if(StringUtils.isNotEmpty(people.getEmail())){
-                        String appLinkName = FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP;
+            String appLinkName = FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP;
+            if(((V3TenantContactContext)people).isTenantPortalAccess()){
+                rolemap.put(appLinkName, rolemaps.get(appLinkName));
+                updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+            }else if(!((V3TenantContactContext)people).isTenantPortalAccess()){
+                if(StringUtils.isNotEmpty(people.getEmail())){
+                    rolemaps.remove(appLinkName);
+                    Long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
+                    User user = getUser(people.getEmail(),appId);
+                    if(isUserHasAppAccess(user,appId)){
                         deleteOrRevokeAppAccess(appLinkName,orgId,people);
                     }
                 }
             }
-            checkForOccupantPortalAccess(people,oldPeopleRecord,rolemaps);
+            checkForOccupantPortalAccess(people,oldPeopleRecord,rolemaps,securityPolicyId,sendInvitation,password);
 
         }
         if(oldPeopleRecord instanceof V3VendorContactContext){
-            if(!(((V3VendorContactContext)oldPeopleRecord).isVendorPortalAccess() == ((V3VendorContactContext)people).isVendorPortalAccess())){
-                if(((V3VendorContactContext) people).isVendorPortalAccess()){
-                    updateAppAccess(rolemaps,people,orgId);
-                }else if(!((V3VendorContactContext) people).isVendorPortalAccess()){
-                    if(StringUtils.isNotEmpty(people.getEmail())){
-                        String appLinkName = FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP;
+            String appLinkName = FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP;
+            if(((V3VendorContactContext) people).isVendorPortalAccess()){
+                rolemap.put(appLinkName, rolemaps.get(appLinkName));
+                updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+            }else if(!((V3VendorContactContext) people).isVendorPortalAccess()){
+                if(StringUtils.isNotEmpty(people.getEmail())){
+                    rolemaps.remove(appLinkName);
+                    Long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
+                    User user = getUser(people.getEmail(),appId);
+                    if(isUserHasAppAccess(user,appId)){
                         deleteOrRevokeAppAccess(appLinkName,orgId,people);
                     }
                 }
             }
-            checkForOccupantPortalAccess(people,oldPeopleRecord,rolemaps);
+            checkForOccupantPortalAccess(people,oldPeopleRecord,rolemaps,securityPolicyId,sendInvitation,password);
         }
         if(oldPeopleRecord instanceof V3ClientContactContext){
-            if(!(((V3ClientContactContext)oldPeopleRecord).isClientPortalAccess() == ((V3ClientContactContext)people).isClientPortalAccess())){
-                if(((V3ClientContactContext) people).isClientPortalAccess()){
-                    updateAppAccess(rolemaps,people,orgId);
-                }else if(!((V3ClientContactContext) people).isClientPortalAccess()){
-                    if(StringUtils.isNotEmpty(people.getEmail())){
-                        String appLinkName = FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP;
+            String appLinkName = FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP;
+            if(((V3ClientContactContext) people).isClientPortalAccess()){
+                rolemap.put(appLinkName, rolemaps.get(appLinkName));
+                updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+            }else if(!((V3ClientContactContext) people).isClientPortalAccess()){
+                if(StringUtils.isNotEmpty(people.getEmail())){
+                    rolemaps.remove(appLinkName);
+                    Long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
+                    User user = getUser(people.getEmail(),appId);
+                    if(isUserHasAppAccess(user,appId)){
                         deleteOrRevokeAppAccess(appLinkName,orgId,people);
                     }
                 }
             }
-            checkForOccupantPortalAccess(people,oldPeopleRecord,rolemaps);
+            checkForOccupantPortalAccess(people,oldPeopleRecord,rolemaps,securityPolicyId,sendInvitation,password);
         }
         if(oldPeopleRecord instanceof V3EmployeeContext){
-            if(!(oldPeopleRecord.isEmployeePortalAccess() == people.isEmployeePortalAccess())){
-                if(people.isEmployeePortalAccess()){
-                    updateAppAccess(rolemaps,people,orgId);
-                }else if(!people.isEmployeePortalAccess()){
-                    if(StringUtils.isNotEmpty(people.getEmail())){
-                        String appLinkName = FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP;
+            String appLinkName = FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP;
+            if(people.isEmployeePortalAccess()){
+                rolemap.put(appLinkName, rolemaps.get(appLinkName));
+                updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+            }else if(!people.isEmployeePortalAccess()){
+                if(StringUtils.isNotEmpty(people.getEmail())){
+                    rolemaps.remove(appLinkName);
+                    Long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
+                    User user = getUser(people.getEmail(),appId);
+                    if(isUserHasAppAccess(user,appId)){
                         deleteOrRevokeAppAccess(appLinkName,orgId,people);
                     }
                 }
             }
-            checkForOccupantPortalAccess(people,oldPeopleRecord,rolemaps);
+            checkForOccupantPortalAccess(people,oldPeopleRecord,rolemaps,securityPolicyId,sendInvitation,password);
         }
     }
 
@@ -165,7 +191,6 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
         if(user != null){
             List<FacilioField> fields = new ArrayList<>();
             fields.addAll(AccountConstants.getOrgUserAppsFields());
-            fields.add(AccountConstants.getApplicationIdField());
 
             GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                     .select(fields)
@@ -184,16 +209,33 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
        return false;
     }
 
-    private static void deleteOrRevokeAppAccess(String appLinkName,Long orgId,V3PeopleContext people) throws Exception{
+    private static boolean isUserHasAppAccess(User user,Long appId) throws Exception{
+        Long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        if(user != null){
+            List<FacilioField> fields = new ArrayList<>();
+            fields.addAll(AccountConstants.getOrgUserAppsFields());
+
+            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                    .select(fields)
+                    .table("ORG_Users")
+                    .innerJoin("ORG_User_Apps")
+                    .on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID");
+
+            selectBuilder.andCondition(CriteriaAPI.getCondition("USERID","userId",user.getUid()+"", NumberOperators.EQUALS));
+            selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID","orgId",orgId+"",NumberOperators.EQUALS));
+            selectBuilder.andCondition(CriteriaAPI.getCondition("APPLICATION_ID","appId",appId+"",NumberOperators.EQUALS));
+
+            List<Map<String,Object>> props = selectBuilder.get();
+            if(CollectionUtils.isNotEmpty(props)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+        private static void deleteOrRevokeAppAccess(String appLinkName,Long orgId,V3PeopleContext people) throws Exception{
         Long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
-        com.facilio.identity.client.dto.AppDomain appDomainObj = null;
-        if(appId != null){
-            appDomainObj = ApplicationApi.getAppDomainForApp(appId);
-        }
-        if(appDomainObj == null) {
-            throw new IllegalArgumentException("Invalid App Domain");
-        }
-        User user = IdentityClient.getDefaultInstance().getUserBean().getUser(orgId, people.getEmail(), appDomainObj.getIdentifier());
+        User user = getUser(people.getEmail(),appId);
         if(isUserPresentInAnotherApp(user)){
             ApplicationUserUtil.revokeAppAccess(user.getUid(),appId);
         }else{
@@ -202,17 +244,36 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
         }
     }
 
-    private static void checkForOccupantPortalAccess(V3PeopleContext people,V3PeopleContext oldPeopleRecord,Map<String,Long> rolemaps) throws Exception{
+    private static void checkForOccupantPortalAccess(V3PeopleContext people,V3PeopleContext oldPeopleRecord,Map<String,Long> rolemaps,Long securityPolicyId,boolean sendInvitation,String password) throws Exception{
         Long orgId = AccountUtil.getCurrentOrg().getOrgId();
-        if(!(oldPeopleRecord.isOccupantPortalAccess() == people.isOccupantPortalAccess())){
-            if(people.isOccupantPortalAccess()){
-                updateAppAccess(rolemaps,people,orgId);
-            }else if(!people.isOccupantPortalAccess()){
-                if(StringUtils.isNotEmpty(people.getEmail())){
-                    String appLinkName = FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP;
+        Map<String,Long> rolemap = new HashMap<>();
+        String appLinkName = FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP;
+        if(people.isOccupantPortalAccess()){
+            rolemap.put(appLinkName, rolemaps.get(appLinkName));
+            updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+        }else if(!people.isOccupantPortalAccess()){
+            if(StringUtils.isNotEmpty(people.getEmail())){
+                rolemaps.remove(appLinkName);
+                Long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
+                User user = getUser(people.getEmail(),appId);
+                if(isUserHasAppAccess(user,appId)){
                     deleteOrRevokeAppAccess(appLinkName,orgId,people);
                 }
             }
         }
     }
+
+    private static User getUser(String userName,Long appId) throws Exception {
+        Long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        AppDomain appDomainObj = null;
+        if(appId != null){
+            appDomainObj = ApplicationApi.getAppDomainForApp(appId);
+        }
+        if(appDomainObj == null) {
+            throw new IllegalArgumentException("Invalid App Domain");
+        }
+        User user = IdentityClient.getDefaultInstance().getUserBean().getUser(orgId, userName, appDomainObj.getIdentifier());
+        return user;
+    }
+
 }

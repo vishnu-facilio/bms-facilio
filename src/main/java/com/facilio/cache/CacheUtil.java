@@ -261,6 +261,13 @@ public class CacheUtil {
 		return ORG_KEY(orgId) + KEY_SEPARATOR  + FLAGGED_EVENT_KEY(flaggedEventId);
 	}
 
+
+	private static final String ALARM_DEFINITION = "alarmDefinition";
+	private static final String CONTROLLER = "controller";
+
+	public static String ALARM_ASSET_TAGGING_KEY(long orgId, long clientId,long controllerId,long alarmDefinitionId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR  + CLIENTID_KEY(clientId) + KEY_SEPARATOR + CONTROLLER + KEY_SEPARATOR + controllerId + KEY_SEPARATOR + ALARM_DEFINITION + KEY_SEPARATOR + alarmDefinitionId;
+	}
 	public static boolean isCacheEnabled() {
 		// return RedisManager.getInstance().isRedisEnabled();
         return false;

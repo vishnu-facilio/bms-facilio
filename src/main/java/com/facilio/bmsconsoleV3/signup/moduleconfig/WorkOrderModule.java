@@ -50,7 +50,7 @@ public class WorkOrderModule extends BaseModuleConfig {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
         for (String appName : appLinkNames) {
             appNameVsPage.put(appName, createWorkorderDefaultPage(ApplicationApi.getApplicationForLinkName(appName), module, false, true));
         }
@@ -486,7 +486,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         }
 
 
-        }
+    }
 
     private static JSONObject getSummaryWidgetDetails(String moduleName,ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

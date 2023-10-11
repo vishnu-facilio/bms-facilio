@@ -1,11 +1,15 @@
 package com.facilio.bmsconsoleV3.commands.inventoryrequest;
 
+import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
+import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.util.FacilioUtil;
@@ -13,6 +17,7 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.xpath.operations.Bool;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,21 +40,43 @@ public class GetReservedInventoryRequestLineItems extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(inventoryRequestLineItems) && MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("reserve")){
             for(V3InventoryRequestLineItemContext invReqLineItem : inventoryRequestLineItems){
                 Long itemTypeId = invReqLineItem.getItemType() != null ? invReqLineItem.getItemType().getId() : null;
+                Long toolTypeId = invReqLineItem.getToolType() != null ? invReqLineItem.getToolType().getId() : null;
+
                 Long storeRoomId = invReqLineItem.getStoreRoom() != null ? invReqLineItem.getStoreRoom().getId() : null;
                 Double invReqLineItemQuantity = invReqLineItem.getQuantity();
-                if(itemTypeId != null && storeRoomId != null) {
-                    V3ItemContext item = V3ItemsApi.getItem(itemTypeId,storeRoomId);
-                    if(FacilioUtil.isEmptyOrNull(item)) {
-                        errorType = "Non-reservable";
-                        errorMessage = "Item not available in Storeroom";
+                if(storeRoomId != null) {
+                    Double availableItemQuantity = 0.00;
+                    V3StoreRoomContext storeRoom = null;
+                    Boolean availableInStoreRoom = false;
+
+                    if(itemTypeId != null){
+                        V3ItemContext tool = V3ItemsApi.getItem(itemTypeId,storeRoomId);
+                        if(FacilioUtil.isEmptyOrNull(tool)) {
+                            errorType = "Non-reservable";
+                            errorMessage = "Item not available in Storeroom";
+                        } else {
+                            availableItemQuantity = tool.getQuantity();
+                            storeRoom = tool.getStoreRoom();
+                            availableInStoreRoom = true;
+                        }
+                    } if(toolTypeId != null){
+                        V3ToolContext tool = V3ToolsApi.getTool(toolTypeId,storeRoomId);
+                        if(FacilioUtil.isEmptyOrNull(tool)) {
+                            errorType = "Non-reservable";
+                            errorMessage = "Tool not available in Storeroom";
+                        } else {
+                            availableItemQuantity = tool.getQuantity();
+                            storeRoom = tool.getStoreRoom();
+                            availableInStoreRoom = true;
+                        }
                     }
-                    else {
-                        Double availableItemQuantity = item.getQuantity();
+
+                    if(availableInStoreRoom) {
                         invReqLineItem.setDatum("availableQuantity", availableItemQuantity);
                         // checking if storeroom servers the work order's site
                         if(invReqLineItem.getInventoryRequestId().getWorkorder() != null) {
                             Long workOrderId = invReqLineItem.getInventoryRequestId().getWorkorder().getId();
-                            List<Long> servingSiteIds = item.getStoreRoom().getServingsites().stream().map(servingSite -> servingSite.getId()).collect(Collectors.toList());
+                            List<Long> servingSiteIds = storeRoom.getServingsites().stream().map(servingSite -> servingSite.getId()).collect(Collectors.toList());
                             if(workOrderMap.get(workOrderId)==null) {
                                 workOrder = V3InventoryUtil.getWorkOrder(workOrderId);
                                 workOrderMap.put(workOrderId,workOrder);

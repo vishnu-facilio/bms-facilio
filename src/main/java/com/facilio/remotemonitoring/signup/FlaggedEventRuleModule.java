@@ -189,6 +189,16 @@ public class FlaggedEventRuleModule extends SignUpData {
         followUpEmailDelayTimeTwo.setDefault(true);
         modBean.addField(followUpEmailDelayTimeTwo);
 
+        NumberField workflowId = new NumberField();
+        workflowId.setDefault(true);
+        workflowId.setName("workflowId");
+        workflowId.setDisplayName("Workflow ID");
+        workflowId.setModule(mod);
+        workflowId.setDataType(FieldType.NUMBER);
+        workflowId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
+        workflowId.setColumnName("WORKFLOW_ID");
+        modBean.addField(workflowId);
+
         modBean.addField(FieldFactory.getSystemField("sysCreatedTime", mod));
         modBean.addField(FieldFactory.getSystemField("sysCreatedByPeople", mod));
         modBean.addField(FieldFactory.getSystemField("sysModifiedTime", mod));

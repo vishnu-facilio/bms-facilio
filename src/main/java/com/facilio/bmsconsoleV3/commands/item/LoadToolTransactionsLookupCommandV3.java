@@ -28,7 +28,10 @@ public class LoadToolTransactionsLookupCommandV3 extends FacilioCommand {
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> additionalLookup = new ArrayList<LookupField>();
         additionalLookup.add((LookupField) fieldsAsMap.get("storeRoom"));
-
+        additionalLookup.add((LookupField) fieldsAsMap.get("toolType"));
+        additionalLookup.add((LookupField) fieldsAsMap.get("tool"));
+        additionalLookup.add((LookupField) fieldsAsMap.get("issuedTo"));
+        additionalLookup.add((LookupField) fieldsAsMap.get("workorder"));
         for (FacilioField field : fields) {
             if (!field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {
                 additionalLookup.add((LookupField) field);

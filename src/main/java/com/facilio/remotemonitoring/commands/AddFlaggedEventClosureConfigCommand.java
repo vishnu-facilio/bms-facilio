@@ -2,6 +2,7 @@ package com.facilio.remotemonitoring.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -13,6 +14,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringSystemEnumOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -25,6 +27,7 @@ import com.facilio.remotemonitoring.context.FlaggedEventRuleContext;
 import com.facilio.remotemonitoring.signup.AddFlaggedEventClosureConfigModule;
 import com.facilio.remotemonitoring.signup.FlaggedEventModule;
 import com.facilio.remotemonitoring.signup.FlaggedEventRuleModule;
+import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
@@ -42,22 +45,26 @@ public class AddFlaggedEventClosureConfigCommand extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         if (CollectionUtils.isNotEmpty(flaggedEventRules)) {
             for (FlaggedEventRuleContext flaggedEventRule : flaggedEventRules) {
+                FlaggedEventRuleClosureConfigContext oldClosureConfig = RemoteMonitorUtils.getFlaggedEventRuleClosureConfig(flaggedEventRule.getId());
+                if(oldClosureConfig != null ){
+                    deleteCloseEmailRule(oldClosureConfig.getCloseEmailNotificationRuleId());
+                }
                 Criteria delCriteria = new Criteria();
                 delCriteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE_ID","flaggedEventRuleId",String.valueOf(flaggedEventRule.getId()),NumberOperators.EQUALS));
                 V3RecordAPI.deleteRecords(AddFlaggedEventClosureConfigModule.MODULE_NAME,delCriteria,false);
                 FlaggedEventRuleClosureConfigContext closureConfig = flaggedEventRule.getFlaggedEventRuleClosureConfig();
                 if(closureConfig != null) {
-                    deleteCloseEmailRule(closureConfig.getCloseEmailNotificationRuleId());
                     closureConfig.setCloseEmailNotificationRuleId(null);
                     if(closureConfig.getCloseEmailRule() != null) {
                         Criteria criteria = new Criteria();
                         criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("flaggedEventRule", FlaggedEventModule.MODULE_NAME),String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
-                        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status",FlaggedEventModule.MODULE_NAME), StringUtils.join(Arrays.asList(FlaggedEventContext.FlaggedEventStatus.AUTO_CLOSED.getIndex(),FlaggedEventContext.FlaggedEventStatus.CLEARED.getIndex()),","), PickListOperators.IS));
-                        closureConfig.setCloseEmailNotificationRuleId(FlaggedEventUtil.addEmailRule(closureConfig.getCloseEmailRule(),"Email Notification Rule for Flagged Event Close - " + flaggedEventRule.getId(),criteria));
+                        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status",FlaggedEventModule.MODULE_NAME), StringUtils.join(Arrays.asList(FlaggedEventContext.FlaggedEventStatus.AUTO_CLOSED.getIndex(),FlaggedEventContext.FlaggedEventStatus.CLEARED.getIndex()),","), StringSystemEnumOperators.IS));
+                        closureConfig.setCloseEmailNotificationRuleId(FlaggedEventUtil.addEmailRule(closureConfig.getCloseEmailRule(),"Email Notification Rule for Flagged Event Close - " + flaggedEventRule.getId(),criteria, EventType.CREATE_OR_EDIT));
                     }
                     FlaggedEventRuleContext rule = new FlaggedEventRuleContext();
                     rule.setId(flaggedEventRule.getId());
                     closureConfig.setFlaggedEventRule(rule);
+                    closureConfig.setCloseEmailRule(null);
                     FacilioContext closureContext = V3Util.createRecord(modBean.getModule(AddFlaggedEventClosureConfigModule.MODULE_NAME), FieldUtil.getAsProperties(closureConfig));
                     Map<String, List> dataMap = (Map<String, List>) closureContext.get(Constants.RECORD_MAP);
                     List list = dataMap.get(AddFlaggedEventClosureConfigModule.MODULE_NAME);

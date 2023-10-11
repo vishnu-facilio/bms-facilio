@@ -7,12 +7,15 @@ import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -87,19 +90,50 @@ public class ToolQuantityRollUpCommandV3  extends FacilioCommand {
                 V3ToolContext tool = new V3ToolContext();
                 if (tools != null && !tools.isEmpty()) {
                     tool = tools.get(0);
-                    toolTypeId = tool.getToolType().getId();
-                    tool.setQuantity(getTotalQuantity(stId));
-                    double availableQty = 0;
-                    availableQty = getTotalQuantityConsumed(stId);
-                    tool.setCurrentQuantity(availableQty);
-                    tool.setLastPurchasedDate(System.currentTimeMillis());
+                    if(tool.getToolType().getIsRotating() == null || !tool.getToolType().getIsRotating()){
+                        List<V3PurchasedToolContext> purchasedToolContexts = getPurchasedToolsByCostDate(tool.getId());
+                        double quantity = 0;
+                        double currentQuantity = 0;
+                        long lastPurchasedDate = -1;
+                        double lastPurchasedPrice = -1;
+                        if (purchasedToolContexts != null && !purchasedToolContexts.isEmpty()) {
+                            for (V3PurchasedToolContext purchasedTool : purchasedToolContexts) {
+                                quantity += purchasedTool.getQuantity();
+                                currentQuantity += purchasedTool.getCurrentQuantity();
+                            }
+                        }
+                        V3PurchasedToolContext latestPurchasedTool = purchasedToolContexts.get(0);
+                        if(latestPurchasedTool.getCostDate()!=null){
+                            lastPurchasedDate = latestPurchasedTool.getCostDate();
+                        }
+                        if(latestPurchasedTool.getUnitPrice()!=null){
+                            lastPurchasedPrice = latestPurchasedTool.getUnitPrice();
+                        }
+                        tool.setCurrentQuantity(currentQuantity);
+                        tool.setQuantity(quantity);
+                        tool.setLastPurchasedDate(lastPurchasedDate);
+                        tool.setLastPurchasedPrice(lastPurchasedPrice);
+                        if(tool.getCurrentQuantity()!=null &&  tool.getMinimumQuantity()!=null && (tool.getCurrentQuantity() <= tool.getMinimumQuantity())) {
+                            tool.setIsUnderstocked(true);
+                        }
+                        else {
+                            tool.setIsUnderstocked(false);
+                        }
+                    }else {
+                        toolTypeId = tool.getToolType().getId();
+                        tool.setQuantity(getTotalQuantity(stId));
+                        double availableQty = 0;
+                        availableQty = getTotalQuantityConsumed(stId);
+                        tool.setCurrentQuantity(availableQty);
+                        tool.setLastPurchasedDate(System.currentTimeMillis());
+                        if(tool.getCurrentQuantity()!=null &&  tool.getMinimumQuantity()!=null && (tool.getCurrentQuantity() <= tool.getMinimumQuantity())) {
+                            tool.setIsUnderstocked(true);
+                        }
+                        else {
+                            tool.setIsUnderstocked(false);
+                        }
+                    }
                     toolTypesIds.add(tool.getToolType().getId());
-                    if(tool.getCurrentQuantity()!=null &&  tool.getMinimumQuantity()!=null && (tool.getCurrentQuantity() <= tool.getMinimumQuantity())) {
-                        tool.setIsUnderstocked(true);
-                    }
-                    else {
-                        tool.setIsUnderstocked(false);
-                    }
                 }
 
 
@@ -119,6 +153,21 @@ public class ToolQuantityRollUpCommandV3  extends FacilioCommand {
 
         }
         context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
+    }
+
+    private static List<V3PurchasedToolContext> getPurchasedToolsByCostDate(Long toolId) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule purchaseToolsModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
+        List<FacilioField> purchasedToolsFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
+        Map<String, FacilioField> purchasedToolsFieldMap = FieldFactory.getAsMap(purchasedToolsFields);
+        Condition condition = CriteriaAPI.getCondition(purchasedToolsFieldMap.get("tool"), String.valueOf(toolId), PickListOperators.IS);
+        SelectRecordsBuilder<V3PurchasedToolContext> selectBuilder = new SelectRecordsBuilder<V3PurchasedToolContext>()
+                .select(purchasedToolsFields).table(purchaseToolsModule.getTableName())
+                .moduleName(purchaseToolsModule.getName()).beanClass(V3PurchasedToolContext.class)
+                .andCondition(condition);
+        selectBuilder.orderBy("COST_DATE DESC");
+
+        return selectBuilder.get();
     }
 
     private static void notifyToolOutOfStock(List<V3ToolContext> toolRecords, Map<Long, List<UpdateChangeSet>> changes) throws Exception {

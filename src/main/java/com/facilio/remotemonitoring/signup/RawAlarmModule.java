@@ -175,6 +175,17 @@ public class RawAlarmModule extends SignUpData {
         filterRuleCriteriaField.setColumnName("FILTER_RULE_CRITERIA_ID");
         modBean.addField(filterRuleCriteriaField);
 
+        LookupField asset = new LookupField();
+        asset.setDefault(true);
+        asset.setName("asset");
+        asset.setDisplayName("Asset");
+        asset.setModule(rawAlarmMod);
+        asset.setDataType(FieldType.LOOKUP);
+        asset.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        asset.setColumnName("ASSET_ID");
+        asset.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET));
+        modBean.addField(asset);
+
         modBean.addField(FieldFactory.getSystemField("sysCreatedTime", rawAlarmMod));
         modBean.addField(FieldFactory.getSystemField("sysCreatedByPeople", rawAlarmMod));
         modBean.addField(FieldFactory.getSystemField("sysModifiedTime", rawAlarmMod));

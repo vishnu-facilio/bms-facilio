@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsoleV3.context.V3ClientContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioStringEnum;
 import com.facilio.remotemonitoring.handlers.AlarmCriteriaHandler;
@@ -31,6 +32,7 @@ public class RawAlarmContext extends V3Context {
     private Long clearedTime;
     private Long filterRuleCriteriaId;
     private RawAlarmSourceType sourceType;
+    private V3AssetContext asset;
 
     public enum RawAlarmSourceType implements FacilioStringEnum {
         SCRIPT("Script"),

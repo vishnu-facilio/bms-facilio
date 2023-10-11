@@ -420,7 +420,6 @@ public class ServiceAppointmentUtil {
                                 V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
                             }
 
-//                        }
                     } else {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service tasks cannot be empty");
                     }
@@ -509,7 +508,6 @@ public class ServiceAppointmentUtil {
                             V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
                         }
 
-//                        }
                     } else {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service tasks cannot be empty");
                     }
@@ -1097,7 +1095,6 @@ public class ServiceAppointmentUtil {
                 .beanClass(TripContext.class)
                 .select(TripFields)
                 .fetchSupplements(lookUpfields)
-//                .andCondition(CriteriaAPI.getCondition(TripFieldMap.get(FacilioConstants.ContextNames.PEOPLE),String.valueOf(peopleId),NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(TripFieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT),String.valueOf(appointmentId),NumberOperators.EQUALS));
 
         List<TripContext> allTrips = tripBuilder.get();

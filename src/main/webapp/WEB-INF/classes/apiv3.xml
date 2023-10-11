@@ -1614,6 +1614,14 @@
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
                 method="getWorkorderTool">
         </action>
+        <action name="getWorkorderToolFromReservation"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
+                method="getWorkorderToolFromReservation">
+        </action>
+        <action name="getWorkOrderToolFromIssuedTool"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
+                method="getWorkOrderToolFromIssuedTool">
+        </action>
     </package>
 
     <package name="workorderService" namespace="/api/v3/workorderService"
@@ -1650,6 +1658,10 @@
         <action name="forActuals"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedToolsAction"
                 method="getPlannedToolForActuals">
+        </action>
+        <action name="reserve"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedToolsAction"
+                method="reserve">
         </action>
     </package>
     <package name="workOrderPlannedServices" namespace="/api/v3/workOrderPlannedServices"
@@ -1914,6 +1926,7 @@
     <package name="virtualMeterTemplate" namespace="/api/v3/virtualMeterTemplate" extends="v3Api">
         <action name="publish" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="publishVMTemplate"></action>
         <action name="generateVM" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="generateVirtualMeter"></action>
+        <action name="filterResources" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="fetchVMGeneratedResources"></action>
     </package>
 
 
@@ -1931,7 +1944,8 @@
         <action name="ongoingMonitoring" class="com.facilio.utility.UtilityAction" method="ongoingMonitoring"/>
         <action name="fetchBills" class="com.facilio.utility.UtilityAction" method="fetchBills"/>
         <action name="associateMeter" class="com.facilio.utility.UtilityAction" method="associateMeter"/>
-    </package>
+        </package>
+
 
     <package name="v2Analytics" namespace="/api/v3/analytics" extends="v3Api">
         <action name="list" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="list"/>
@@ -2074,4 +2088,22 @@
         </action>
     </package>
 
+    <package name="ruleList" namespace="/api/v3/ruleList" extends="v3Api">
+        <action name="flaggedEvent/ruleStatus/*" class="com.facilio.remotemonitoring.action.RuleAction" method="updateFlaggedEventRuleStatus">
+            <param name="moduleName">flaggedEvent</param>
+            <param name="id">{1}</param>
+            <param name="permission">
+                PATCH:UPDATE
+            </param>
+            <param name="checkPermission">true</param>
+        </action>
+        <action name="alarmFilterRule/ruleStatus/*" class="com.facilio.remotemonitoring.action.RuleAction" method="updateAlarmFilterRuleStatus">
+            <param name="moduleName">alarmFilterRule</param>
+            <param name="id">{1}</param>
+            <param name="permission">
+                PATCH:UPDATE
+            </param>
+            <param name="checkPermission">true</param>
+        </action>
+    </package>
 </struts>

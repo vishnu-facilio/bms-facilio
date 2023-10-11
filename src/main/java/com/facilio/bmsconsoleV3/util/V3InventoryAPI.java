@@ -1,12 +1,13 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedToolContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -37,4 +38,13 @@ public class V3InventoryAPI {
         return vendor;
     }
 
+    public static List<V3PurchasedToolContext> addPurchasedTool(List<V3PurchasedToolContext> tool) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
+        InsertRecordBuilder<V3PurchasedToolContext> readingBuilder = new InsertRecordBuilder<V3PurchasedToolContext>()
+                .module(module).fields(fields).addRecords(tool);
+        readingBuilder.save();
+        return readingBuilder.getRecords();
+    }
 }

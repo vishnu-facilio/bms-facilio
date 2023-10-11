@@ -504,6 +504,7 @@ classes:
   - com.facilio.remotemonitoring.signup.AlarmFilterRuleModule
   - com.facilio.remotemonitoring.signup.FilteredAlarmModule
   - com.facilio.remotemonitoring.signup.AlarmDefinitionTaggingModule
+  - com.facilio.remotemonitoring.signup.AlarmAssetTaggingModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmCategoryModuleConfig
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmTypeModuleConfig
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmDefinitionModuleConfig
@@ -529,6 +530,8 @@ classes:
   - com.facilio.remotemonitoring.signup.AddFlaggedEventClosureConfigModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmFilterRuleCriteriaModuleConfig
   - com.facilio.bmsconsoleV3.signup.moduleconfig.FlaggedEventActionModuleConfig
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AlarmAssetTaggingModuleConfig
+
 
   #FSM Modules
   - com.facilio.fsm.signup.PriorityModule

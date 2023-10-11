@@ -34,6 +34,8 @@ public class LoadPlannedToolsExtraFieldsCommandV3 extends FacilioCommand {
             extraFields.add((allFieldsAsMap.get("sysCreatedBy")));
             extraFields.add((allFieldsAsMap.get("sysModifiedTime")));
             extraFields.add((allFieldsAsMap.get("sysModifiedBy")));
+            extraFields.add((allFieldsAsMap.get("isReserved")));
+
 
             extraFields = extraFields.stream().filter(Objects::nonNull).collect(Collectors.toList());
 

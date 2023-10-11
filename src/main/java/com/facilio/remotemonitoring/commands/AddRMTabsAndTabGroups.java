@@ -48,7 +48,8 @@ public class AddRMTabsAndTabGroups extends FacilioCommand {
                 new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, null, null,null,appId),
                 new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"portfolio\" }", 1,null,appId),
                 new WebTabContext("Alarm Definition Tagging", "alarmtagging", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(AlarmDefinitionTaggingModule.MODULE_NAME)), null, null, null, appId),
-                new WebTabContext("Asset", "asset", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.ASSET)), null, null, null, appId)
+                new WebTabContext("Asset", "asset", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.ASSET)), null, null, null, appId),
+                new WebTabContext("Alarm Asset Tagging", "alarmassettagging", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(AlarmAssetTaggingModule.MODULE_NAME)), null, null, null, appId)
         );
         for (WebTabContext webTab : tabs) {
             tabsMap.put(webTab.getRoute(), webTab);
@@ -64,7 +65,7 @@ public class AddRMTabsAndTabGroups extends FacilioCommand {
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("flaggedevents"),tabsMap.get("flaggedeventrule")), "Flagged Events", "flaggedevents", 1, 6, null, layoutId, IconType.flagged_events),
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("filteredalarms"),tabsMap.get("alarmfilterrule")), "Filtered Alarms", "filteredalarms", 1, 5, null, layoutId, IconType.filtered_alarms),
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("asset"),tabsMap.get("controller")), "Asset & Controllers", "asset", 1, 3, null, layoutId, IconType.asset),
-                new WebTabGroupContext(Arrays.asList(tabsMap.get("rawalarms"),tabsMap.get("alarmregexmapping"),tabsMap.get("alarmtagging"),tabsMap.get("alarmtype"), tabsMap.get("alarmcategory"), tabsMap.get("alarmdefinition")), "Raw Alarms", "rawalarms", 1, 4, null, layoutId, IconType.raw_alarm),
+                new WebTabGroupContext(Arrays.asList(tabsMap.get("rawalarms"),tabsMap.get("alarmregexmapping"),tabsMap.get("alarmtagging"),tabsMap.get("alarmassettagging"),tabsMap.get("alarmtype"), tabsMap.get("alarmcategory"), tabsMap.get("alarmdefinition")), "Raw Alarms", "rawalarms", 1, 4, null, layoutId, IconType.raw_alarm),
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("client"),tabsMap.get("clientcontact")), "Client", "client", 2, 2, null, layoutId, IconType.client)
         );
         return webTabGroups;

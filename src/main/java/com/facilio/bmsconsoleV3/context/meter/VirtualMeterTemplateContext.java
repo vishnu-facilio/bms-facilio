@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3BuildingContext;
 import com.facilio.modules.FacilioIntEnum;
 import lombok.AllArgsConstructor;
@@ -115,6 +116,9 @@ public class VirtualMeterTemplateContext extends V3Context{
 			meterContext.setMeterTypeEnum(V3MeterContext.MeterType.VIRTUAL);
             meterContext.setSiteId(resource.getSiteId());
             meterContext.setUtilityType(getUtilityType());
+			if(resource.getResourceTypeEnum().equals(V3ResourceContext.ResourceType.SPACE)) {
+				meterContext.setMeterLocation((V3BaseSpaceContext)resource);
+			}
             
             generatedMeterContext.put(resourceId,meterContext);
 		}

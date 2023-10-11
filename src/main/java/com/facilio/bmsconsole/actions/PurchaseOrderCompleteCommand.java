@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
+import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.modules.*;
@@ -28,7 +29,8 @@ public class PurchaseOrderCompleteCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		V3PurchaseOrderContext purchaseOrder = (V3PurchaseOrderContext) context.get(FacilioConstants.ContextNames.PURCHASE_ORDERS);
+		V3PurchaseOrderContext purchaseOrder = (V3PurchaseOrderContext) context
+				.get(FacilioConstants.ContextNames.PURCHASE_ORDERS);
 		if (purchaseOrder != null) {
 			List<V3PurchaseOrderLineItemContext> lineItems = (List<V3PurchaseOrderLineItemContext>) context
 					.get(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
@@ -47,7 +49,7 @@ public class PurchaseOrderCompleteCommand extends FacilioCommand {
 			if (purchaseOrder != null) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule pomodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
-				if(purchaseOrder.getStoreRoom() != null) {
+				if (purchaseOrder.getStoreRoom() != null) {
 					storeRoomId = purchaseOrder.getStoreRoom().getId();
 				}
 				vendorId = purchaseOrder.getVendor().getId();
@@ -64,7 +66,8 @@ public class PurchaseOrderCompleteCommand extends FacilioCommand {
 								V3ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
 								if (itemtype.isRotating()) {
 									containsIndividualTrackingItem = true;
-									V3ItemContext item = V3ItemsApi.getItemsForTypeAndStore(purchaseOrder.getStoreRoom().getId(), lineItem.getItemType().getId());
+									V3ItemContext item = V3ItemsApi.getItemsForTypeAndStore(purchaseOrder.getStoreRoom().getId(),
+											lineItem.getItemType().getId());
 									Long lastPurchasedDate = V3ItemsApi.getLastPurchasedItemDateForItemId(item.getId());
 									V3ItemContext update_item = new V3ItemContext();
 									update_item.setId(item.getId());
@@ -74,7 +77,8 @@ public class PurchaseOrderCompleteCommand extends FacilioCommand {
 									V3ItemsApi.updateLastPurchasedDetailsForItemType(itemtype.getId(), baseCurrency, currencyMap);
 								} else {
 									containsIndividualTrackingItem = false;
-									itemsTobeAdded.add(createItem(purchaseOrder, lineItem, containsIndividualTrackingItem, baseCurrency, currencyMap));
+									itemsTobeAdded.add(
+											createItem(purchaseOrder, lineItem, containsIndividualTrackingItem, baseCurrency, currencyMap));
 								}
 							} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
 								toolTypesVendors.add(new V3ToolTypeVendorContext(lineItem.getToolType(),
@@ -82,16 +86,19 @@ public class PurchaseOrderCompleteCommand extends FacilioCommand {
 								V3ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
 								if (toolType.isRotating()) {
 									containsIndividualTrackingTool = true;
-									V3ToolContext tool = V3ToolsApi.getToolsForTypeAndStore(purchaseOrder.getStoreRoom().getId(), toolType.getId());
-									long lastPurchasedDate= V3ToolsApi.getLastPurchasedToolDateForToolId(tool.getId());
+									V3ToolContext tool = V3ToolsApi.getToolsForTypeAndStore(purchaseOrder.getStoreRoom().getId(),
+											toolType.getId());
+									long lastPurchasedDate = V3ToolsApi.getLastPurchasedToolDateForToolId(tool.getId());
 									V3ToolContext update_tool = new V3ToolContext();
 									update_tool.setId(tool.getId());
 									update_tool.setLastPurchasedDate(lastPurchasedDate);
+									update_tool.setLastPurchasedPrice(V3ToolsApi.getLastPurchasedToolPriceForToolId(tool.getId()));
 									V3ToolsApi.updateLastPurchasedDateForTool(update_tool);
 									V3ToolsApi.updatelastPurchaseddetailsInToolType(toolType.getId());
 								} else {
 									containsIndividualTrackingTool = false;
-									toolsToBeAdded.add(createTool(purchaseOrder, lineItem, containsIndividualTrackingTool, baseCurrency, currencyMap));
+									toolsToBeAdded.add(
+											createTool(purchaseOrder, lineItem, containsIndividualTrackingTool, baseCurrency, currencyMap));
 								}
 							}
 						}
@@ -163,15 +170,16 @@ public class PurchaseOrderCompleteCommand extends FacilioCommand {
 	}
 
 	private V3ItemContext createItem(V3PurchaseOrderContext purchaseOrder, V3PurchaseOrderLineItemContext lineItem,
-									 boolean isRotating, CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap) throws Exception {
+			boolean isRotating, CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap) throws Exception {
 		V3ItemContext item = new V3ItemContext();
 		item.setStoreRoom(purchaseOrder.getStoreRoom());
 		item.setItemType(lineItem.getItemType());
-		item.setCostType(ItemContext.CostType.FIFO.getIndex());
+		item.setCostType(CostType.FIFO.getIndex());
 
 		ModuleBean modBean = Constants.getModBean();
 		List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		List<FacilioField> purchasedItemMultiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsFromFields(purchasedItemFields);
+		List<FacilioField> purchasedItemMultiCurrencyFields = CurrencyUtil
+				.getMultiCurrencyFieldsFromFields(purchasedItemFields);
 
 		if (isRotating) {
 			List<String> serialNumbers = getLineItemSerialNumbers(lineItem.getId());
@@ -187,30 +195,39 @@ public class PurchaseOrderCompleteCommand extends FacilioCommand {
 			purchasedItem.setQuantity(lineItem.getQuantityReceived());
 			purchasedItem.setUnitcost(lineItem.getUnitPrice());
 			purchasedItem.setCurrencyCode(lineItem.getCurrencyCode());
-			purchasedItem = (V3PurchasedItemContext) CurrencyUtil.addMultiCurrencyData(FacilioConstants.ContextNames.PURCHASED_ITEM,
-					purchasedItemMultiCurrencyFields, Collections.singletonList(purchasedItem), V3PurchasedItemContext.class, baseCurrency, currencyMap).get(0);
+			purchasedItem = (V3PurchasedItemContext) CurrencyUtil
+					.addMultiCurrencyData(FacilioConstants.ContextNames.PURCHASED_ITEM,
+							purchasedItemMultiCurrencyFields, Collections.singletonList(purchasedItem), V3PurchasedItemContext.class,
+							baseCurrency, currencyMap)
+					.get(0);
 			item.setPurchasedItems(Collections.singletonList(purchasedItem));
 		}
 		return item;
 	}
 
 	private V3ToolContext createTool(V3PurchaseOrderContext purchaseOrder, V3PurchaseOrderLineItemContext lineItem,
-									 boolean isRotating, CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap) throws Exception {
+			boolean isRotating, CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap) throws Exception {
 		V3ToolContext tool = new V3ToolContext();
 		tool.setStoreRoom(purchaseOrder.getStoreRoom());
 		tool.setToolType(lineItem.getToolType());
+		tool.setCostType(CostType.FIFO.getIndex());
 		tool.setQuantity(lineItem.getQuantityReceived());
-		tool.setRate(lineItem.getCost());
 		if (isRotating) {
 			List<String> serialNumbers = getLineItemSerialNumbers(lineItem.getId());
 			if (serialNumbers.size() < lineItem.getQuantityReceived()) {
 				throw new IllegalArgumentException("Please fill all the serial numbers of tool");
 			} else {
-				List<V3PurchasedToolContext> purchasedTools = setPurchasedToolsContext(serialNumbers, lineItem.getCost());
+				List<V3PurchasedToolContext> purchasedTools = setPurchasedToolsContext(serialNumbers, lineItem.getUnitPrice());
 				tool.setPurchasedTools(purchasedTools);
 			}
+		} else {
+			V3PurchasedToolContext purchasedTool = new V3PurchasedToolContext();
+			purchasedTool.setQuantity(lineItem.getQuantityReceived());
+			purchasedTool.setUnitPrice(lineItem.getUnitPrice());
+			tool.setPurchasedTools(Collections.singletonList(purchasedTool));
 		}
-		CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(tool, baseCurrency, currencyMap, lineItem.getCurrencyCode(), lineItem.getExchangeRate());
+		CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(tool, baseCurrency, currencyMap, lineItem.getCurrencyCode(),
+				lineItem.getExchangeRate());
 		return tool;
 	}
 
@@ -252,7 +269,7 @@ public class PurchaseOrderCompleteCommand extends FacilioCommand {
 		for (String serialNumber : serialNumbers) {
 			V3PurchasedToolContext pTool = new V3PurchasedToolContext();
 			pTool.setSerialNumber(serialNumber);
-			pTool.setRate(cost);
+			pTool.setUnitPrice(cost);
 			purchasedTools.add(pTool);
 		}
 		return purchasedTools;

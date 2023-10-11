@@ -1,7 +1,7 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
@@ -9,14 +9,15 @@ import com.facilio.bmsconsoleV3.context.V3WorkorderToolsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
+import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
@@ -139,4 +140,35 @@ public class V3InventoryRequestAPI {
         }
     }
 
+    public static User getUserToIssueFromReservation(InventoryReservationContext inventoryReservation) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule inventoryRequestModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST);
+        FacilioModule inventoryReservationModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_RESERVATION);
+        final String requestedForFieldName = "requestedFor";
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(FieldFactory.getIdField(inventoryRequestModule));
+        fields.add(modBean.getField(requestedForFieldName,FacilioConstants.ContextNames.INVENTORY_REQUEST));
+        FacilioField inventoryRequestField = modBean.getField("inventoryRequest", FacilioConstants.ContextNames.INVENTORY_RESERVATION);
+        fields.add(inventoryRequestField);
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(inventoryReservationModule.getTableName())
+                .innerJoin(inventoryRequestModule.getTableName())
+                .on(inventoryReservationModule.getTableName() + "."+ inventoryRequestField.getColumnName() +" = " + inventoryRequestModule.getTableName() + ".ID");
+
+        selectBuilder.andCondition(CriteriaAPI.getIdCondition(inventoryReservation.getId(),inventoryReservationModule));
+        List<Map<String, Object>> props = selectBuilder.get();
+        if(CollectionUtils.isEmpty(props)){
+            return null;
+        }
+        Long requestedForId = (Long) props.get(0).get(requestedForFieldName);
+        if(requestedForId == null){
+            return null;
+        }
+        User requestedFor = new User();
+        requestedFor.setId(requestedForId);
+        return requestedFor;
+    }
 }

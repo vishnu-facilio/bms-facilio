@@ -77,7 +77,7 @@ public class ToolModule extends BaseModuleConfig{
         stockedToolsFormFields.add(new FormField("toolType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tool Type", FormField.Required.REQUIRED, "toolTypes", 1, 1));
         stockedToolsFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Store Room", FormField.Required.REQUIRED, "storeRoom", 2, 1));
         stockedToolsFormFields.add(new FormField("minimumQuantity", FacilioField.FieldDisplayType.DECIMAL, "Minimum Quantity", FormField.Required.OPTIONAL, 3, 1));
-        stockedToolsFormFields.add(new FormField("rate", FacilioField.FieldDisplayType.DECIMAL, "Rate/Hour", FormField.Required.OPTIONAL, 4, 1));
+        stockedToolsFormFields.add(new FormField("costType", FacilioField.FieldDisplayType.SELECTBOX, "Cost Type", FormField.Required.OPTIONAL, 5, 1));
 
 
         FormSection section = new FormSection("Default", 1, stockedToolsFormFields, false);

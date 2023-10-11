@@ -1260,7 +1260,7 @@ public class FormsAPI {
 				fields.add(new FormField("scheduledStartTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled Start Time", FormField.Required.REQUIRED, 10, 3));
 				fields.add(new FormField("scheduledEndTime", FacilioField.FieldDisplayType.DATETIME, "Scheduled End Time", FormField.Required.REQUIRED, 11, 3));
 				fields.add(new FormField("responseDueDuration", FacilioField.FieldDisplayType.DURATION, "Response Due Duration", FormField.Required.REQUIRED, 12, 4));
-				fields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.REQUIRED, 13, 4));
+				fields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", Required.OPTIONAL, 13, 4));
 				break;
 			case ContextNames.FieldServiceManagement.SERVICE_ORDER:
 				fields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
@@ -1276,7 +1276,7 @@ public class FormsAPI {
 				fields.add(new FormField("scheduledEndTime",FacilioField.FieldDisplayType.DATETIME,"Scheduled End Time", Required.OPTIONAL,7,1));
 				fields.add(new FormField("autoCreateSa",FacilioField.FieldDisplayType.DECISION_BOX,"AutoCreate SA", Required.OPTIONAL,7,1));
 				fields.add(new FormField("responseDueDuration", FieldDisplayType.DURATION,"Response Due Duration", Required.OPTIONAL,7,1));
-				fields.add(new FormField("resolutionDueDuration", FieldDisplayType.DURATION,"Resoultion Due Duration", Required.OPTIONAL,7,1));
+				fields.add(new FormField("resolutionDueDuration", FieldDisplayType.DURATION,"Resolution Due Duration", Required.OPTIONAL,7,1));
 				fields.add(new FormField("serviceTasks", FacilioField.FieldDisplayType.SERVICE_TASK_ITEMS,"Tasks", Required.OPTIONAL,7,1));
 				break;
 			case ContextNames.SITE:

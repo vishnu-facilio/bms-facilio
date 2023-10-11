@@ -38,3 +38,4 @@ alarmDefinitionTaggingCache
 alarmFilterRuleCache
 flaggedEventsRuleCache
 flaggedEventRuleCache
+alarmAssetTaggingCache

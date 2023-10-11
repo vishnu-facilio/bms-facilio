@@ -3,6 +3,7 @@ package com.facilio.remotemonitoring.context;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.bmsconsoleV3.context.V3ClientContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,4 +23,5 @@ public class FilteredAlarmContext extends V3Context {
     private FlaggedEventRuleContext flaggedEventRule;
     private FlaggedEventContext flaggedEvent;
     private AlarmFilterRuleContext alarmFilterRule;
+    private V3AssetContext asset;
 }

@@ -6,9 +6,11 @@ import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
 import com.facilio.bmsconsoleV3.enums.InventoryReservationStatus;
 import com.facilio.bmsconsoleV3.enums.ReservationSource;
+import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedToolsContext;
 import com.facilio.bmsconsoleV3.enums.ReservationType;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
@@ -24,10 +26,12 @@ public class InventoryReservationContext extends V3Context {
     private V3InventoryRequestContext inventoryRequest;
     private V3PeopleContext requestedBy;
     private V3ItemTypesContext itemType;
+    private V3ToolTypesContext toolType;
     private Double reservedQuantity;
     private Double issuedQuantity;
     private Double balanceReservedQuantity;
     private WorkOrderPlannedItemsContext workOrderPlannedItem;
+    private WorkOrderPlannedToolsContext workOrderPlannedTool;
     private V3InventoryRequestLineItemContext inventoryRequestLineItem;
 
 
@@ -118,6 +122,14 @@ public class InventoryReservationContext extends V3Context {
         this.itemType = itemType;
     }
 
+    public V3ToolTypesContext getToolType() {
+        return toolType;
+    }
+
+    public void setToolType(V3ToolTypesContext toolType) {
+        this.toolType = toolType;
+    }
+
     public Double getReservedQuantity() {
         return reservedQuantity;
     }
@@ -148,6 +160,14 @@ public class InventoryReservationContext extends V3Context {
 
     public void setWorkOrderPlannedItem(WorkOrderPlannedItemsContext workOrderPlannedItem) {
         this.workOrderPlannedItem = workOrderPlannedItem;
+    }
+
+    public WorkOrderPlannedToolsContext getWorkOrderPlannedTool() {
+        return workOrderPlannedTool;
+    }
+
+    public void setWorkOrderPlannedTool(WorkOrderPlannedToolsContext workOrderPlannedTool) {
+        this.workOrderPlannedTool = workOrderPlannedTool;
     }
 
     public V3InventoryRequestLineItemContext getInventoryRequestLineItem() {

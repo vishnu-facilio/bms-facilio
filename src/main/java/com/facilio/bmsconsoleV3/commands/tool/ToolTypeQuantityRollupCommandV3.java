@@ -37,6 +37,7 @@ public class ToolTypeQuantityRollupCommandV3 extends FacilioCommand {
             Map<String, FacilioField> transactionFieldMap = FieldFactory.getAsMap(transactionFields);
 
             long lastPurchasedDate = -1, lastIssuedDate = -1;
+            double lastPurchasedPrice = -1;
 
             if (toolTypesIds != null && !toolTypesIds.isEmpty()) {
                 for (Long id : toolTypesIds) {
@@ -56,6 +57,9 @@ public class ToolTypeQuantityRollupCommandV3 extends FacilioCommand {
                         if(tool.getLastPurchasedDate()!=null){
                             lastPurchasedDate = tool.getLastPurchasedDate();
                         }
+                        if(tool.getLastPurchasedPrice() != null){
+                            lastPurchasedPrice = tool.getLastPurchasedPrice();
+                        }
                     }
 
                     SelectRecordsBuilder<V3ToolTransactionContext> issuetransactionsbuilder = new SelectRecordsBuilder<V3ToolTransactionContext>()
@@ -65,7 +69,6 @@ public class ToolTypeQuantityRollupCommandV3 extends FacilioCommand {
                             .andCondition(CriteriaAPI.getCondition(transactionFieldMap.get("transactionState"),
                                     String.valueOf(2), NumberOperators.EQUALS))
                             .beanClass(V3ToolTransactionContext.class).orderBy("CREATED_TIME DESC");
-
                     List<V3ToolTransactionContext> transactions = issuetransactionsbuilder.get();
                     V3ToolTransactionContext transaction;
                     if (transactions != null && !transactions.isEmpty()) {
@@ -73,11 +76,14 @@ public class ToolTypeQuantityRollupCommandV3 extends FacilioCommand {
                         lastIssuedDate = transaction.getSysCreatedTime();
                     }
 
-                    double quantity = getTotalQuantity(id, toolModule, toolFieldMap);
+                    double currentQuantity = getTotalQuantity(id, toolModule, toolFieldMap,true);
+                    double quantity = getTotalQuantity(id, toolModule, toolFieldMap,false);
                     V3ToolTypesContext toolType = new V3ToolTypesContext();
                     toolType.setId(id);
-                    toolType.setCurrentQuantity(quantity);
+                    toolType.setCurrentQuantity(currentQuantity);
+                    toolType.setQuantity(quantity);
                     toolType.setLastPurchasedDate(lastPurchasedDate);
+                    toolType.setLastPurchasedPrice(lastPurchasedPrice);
                     toolType.setLastIssuedDate(lastIssuedDate);
 
                     UpdateRecordBuilder<V3ToolTypesContext> updateBuilder = new UpdateRecordBuilder<V3ToolTypesContext>()
@@ -93,7 +99,7 @@ public class ToolTypeQuantityRollupCommandV3 extends FacilioCommand {
         return false;
     }
 
-    public static double getTotalQuantity(long id, FacilioModule toolModule, Map<String, FacilioField> toolFieldMap)
+    public static double getTotalQuantity(long id, FacilioModule toolModule, Map<String, FacilioField> toolFieldMap, Boolean getCurrentQuantity)
             throws Exception {
 
         if (id <= 0) {
@@ -101,7 +107,12 @@ public class ToolTypeQuantityRollupCommandV3 extends FacilioCommand {
         }
 
         List<FacilioField> field = new ArrayList<>();
-        field.add(FieldFactory.getField("totalQuantity", "sum(CURRENT_QUANTITY)", FieldType.DECIMAL));
+        if(getCurrentQuantity){
+            field.add(FieldFactory.getField("totalQuantity", "sum(CURRENT_QUANTITY)", FieldType.DECIMAL));
+        }
+        else{
+            field.add(FieldFactory.getField("quantity", "sum(QUANTITY)", FieldType.DECIMAL));
+        }
 
         SelectRecordsBuilder<V3ToolContext> builder = new SelectRecordsBuilder<V3ToolContext>()
                 .select(field).moduleName(toolModule.getName()).andCondition(CriteriaAPI
@@ -110,8 +121,11 @@ public class ToolTypeQuantityRollupCommandV3 extends FacilioCommand {
 
         List<Map<String, Object>> rs = builder.getAsProps();
         if (rs != null && rs.size() > 0) {
-            if (rs.get(0).get("totalQuantity") != null) {
+            if (rs.get(0).get("totalQuantity") != null && getCurrentQuantity) {
                 return (double) rs.get(0).get("totalQuantity");
+            }
+            else if (rs.get(0).get("quantity") != null && !getCurrentQuantity){
+                return (double) rs.get(0).get("quantity");
             }
             return 0d;
         }

@@ -66,3 +66,20 @@ activity:
       -2:
         name: "Stopped"
         color: "#FF0000"
+  sfg_sync:
+    status:
+      0:
+        name: "Started"
+        color: "#4974a5"
+      20:
+        name: "Initiated"
+        color: "#99854d"
+      100:
+        name: "Done"
+        color: "#1d7130"
+      50:
+        name: "Sync In Progress"
+        color: "#e83a8a"
+      -2:
+        name: "Stopped"
+        color: "#FF0000"

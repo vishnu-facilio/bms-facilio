@@ -37,7 +37,7 @@ public class AlarmRuleBeanCacheImpl extends AlarmRuleBeanImpl implements AlarmRu
         FacilioCache<String, List<AlarmDefinitionTaggingContext>> alarmDefinitionTaggingCache = LRUCache.getAlarmDefinitionTaggingCache();
         String key = CacheUtil.ALARM_DEFINITION_TAGGING_ID_KEY(AccountUtil.getCurrentOrg().getId(), alarmDefinitionId);
         return FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(alarmDefinitionTaggingCache, key, () -> {
-            return super.getAlarmDefinitionTaggings(alarmDefinitionId,controllerType);
+            return super.getAlarmDefinitionTaggings(alarmDefinitionId, controllerType);
         });
     }
 
@@ -65,6 +65,15 @@ public class AlarmRuleBeanCacheImpl extends AlarmRuleBeanImpl implements AlarmRu
         String key = CacheUtil.FLAGGED_EVENT_ID_KEY(AccountUtil.getCurrentOrg().getId(), id);
         return FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(flaggedEventRuleCache, key, () -> {
             return super.getFlaggedEventRule(id);
+        });
+    }
+
+    @Override
+    public AlarmAssetTaggingContext getAlarmAssetTagging(@NonNull Long clientId, @NonNull Long alarmDefinitionId, @NonNull Long controllerId) throws Exception {
+        FacilioCache<String, AlarmAssetTaggingContext> alarmAssetTaggingCache = LRUCache.getAlarmAssetTaggingCache();
+        String key = CacheUtil.ALARM_ASSET_TAGGING_KEY(AccountUtil.getCurrentOrg().getId(), clientId, controllerId,alarmDefinitionId);
+        return FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(alarmAssetTaggingCache, key, () -> {
+            return super.getAlarmAssetTagging(clientId,alarmDefinitionId,controllerId);
         });
     }
 }

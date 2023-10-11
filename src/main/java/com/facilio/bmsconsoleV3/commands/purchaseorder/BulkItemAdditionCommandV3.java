@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -50,7 +51,7 @@ public class BulkItemAdditionCommandV3 extends FacilioCommand {
             for (V3ItemContext item : itemsList) {
                 if (!itemTypesId.contains(item.getItemType().getId())) {
                     if(item.getCostType()<=0) {
-                        item.setCostType(ItemContext.CostType.FIFO.getIndex());
+                        item.setCostType(CostType.FIFO.getIndex());
                     }
                     itemToBeAdded.add(item);
                 } else {

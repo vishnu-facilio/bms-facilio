@@ -2564,6 +2564,7 @@
             <property name="user" type="object">
                 <property name="applicationId" type="number"/>
                 <property name="uid" type="number"/>
+                <property name="appLinkName" type="string"/>
             </property>
         </requestbody>
     </request>
@@ -2600,6 +2601,7 @@
         <urlparams>
             <property name="email" type="string"/>
             <property name="appId" type="number"/>
+            <property name="appLinkName" type="string"/>
         </urlparams>
     </request>
     <request path="/api/v1/setup/iamuser/addorupdateportaluser" method="POST">
@@ -2709,7 +2711,18 @@
             <property name="itemId" type="number" mandatory="true"/>
         </requestbody>
     </request>
+    <request path="/api/v3/getWorkorderTools">
+        <requestbody type="object">
+            <property name="workOrderId" type="number" mandatory="true"/>
+            <property name="toolId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
     <request path="/api/v3/workOrderItem/getWorkorderItemFromReservation">
+        <requestbody type="object">
+            <property name="reservationId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/workorderTools/getWorkorderToolFromReservation">
         <requestbody type="object">
             <property name="reservationId" type="number" mandatory="true"/>
         </requestbody>
@@ -2718,6 +2731,12 @@
         <requestbody type="object">
             <property name="workOrderId" type="number" mandatory="true"/>
             <property name="itemTransactionId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/workorderTools/getWorkOrderToolFromIssuedTool">
+        <requestbody type="object">
+            <property name="workOrderId" type="number" mandatory="true"/>
+            <property name="toolTransactionId" type="number" mandatory="true"/>
         </requestbody>
     </request>
     <request path="/api/v3/workorderService/getWorkorderService">
@@ -2733,6 +2752,11 @@
         </requestbody>
     </request>
     <request path="/api/v3/workOrderPlannedItems/reserve">
+        <requestbody type="object">
+            <property name="recordIds" type="array" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/workOrderPlannedTools/reserve">
         <requestbody type="object">
             <property name="recordIds" type="array" mandatory="true"/>
         </requestbody>
@@ -3167,6 +3191,13 @@
         </urlparams>
     </request>
 
+    <request path="/api/v2/application/users/getUserFromPeopleId" method="GET">
+        <urlparams>
+            <property name="peopleId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
     <!-- WorkOrder Settings API -->
     <request path="/api/v1/setup/womodulesetting/fetch" method="GET"/>
     <request path="/api/v1/setup/womodulesetting/add" method="POST">
@@ -3529,6 +3560,7 @@
             <property name="rawAlarmList" type="array">
                 <items type="object">
                     <property name="controllerId" type="number"/>
+                    <property name="assetId" type="number"/>
                     <property name="message" type="string"/>
                     <property name="occurredTime" type="number"/>
                     <property name="clearedTime" type="number"/>
@@ -3638,8 +3670,6 @@
             <property name="moduleName" type="string"></property>
         </requestbody>
     </request>
-
-
 
     <request path="/api/v1/setup/dispatcher/:updateDispatcherConfig" method="POST">
         <requestbody type="object">
@@ -3818,6 +3848,64 @@
                 </property>
             </property>
         </requestbody>
+    </request>
+    <request path="/api/v1/setup/sfgSetting/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="customerKey" type="string"></property>
+            <property name="customerSecret" type="string"></property>
+            <property name="description" type="string"></property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/sfgHistory/details" method="GET">
+        <urlparams >
+            <property name="syncId" type="number"></property>
+            <property name="flowType" type="number"></property>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/sfgHistory/detailsCount" method="GET">
+        <urlparams >
+            <property name="syncId" type="number"></property>
+            <property name="flowType" type="number"></property>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/sfgHistory/list" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/sfgSetting/connect" method="GET">
+    </request>
+    <request path="/api/v1/setup/sfgSetting/get" method="GET">
+    </request>
+
+    <request path="/api/v1/setup/sfgSetting/sync" method="GET">
+    </request>
+    <request path="/api/v1/setup/jobPlan/bulkPublish" method="POST">
+        <requestbody type="object">
+            <property name="jobPlanIds" type="array"></property>
+        </requestbody>
+    </request>
+    
+    <request path="/api/v2/pdftemplates/preview/:moduleName/:id/:recordId" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="id" type="number"></property>
+            <property name="recordId" type="number"></property>
+
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/pdftemplates/download/:moduleName/:id/:recordId" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="id" type="number"></property>
+            <property name="recordId" type="number"></property>
+        </urlparams>
     </request>
 
 </config>

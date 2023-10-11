@@ -4,9 +4,11 @@ import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.util.JobPlanAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.kafka.common.protocol.types.Field;
@@ -42,7 +44,8 @@ public class FillTasksAndPrerequisitesCommand extends FacilioCommand {
         }
 
         if (jobPlan != null) {
-            Map<String, List<V3TaskContext>> jobPlanTasks = JobPlanAPI.getScopedTasksForWo(jobPlan, false, workOrderContext);
+            Map<String, List<V3TaskContext>> jobPlanTasks = new HashMap<>();
+                jobPlanTasks = JobPlanAPI.getScopedSFG20TasksForWo(jobPlan, false, workOrderContext);
             allTasks.putAll(jobPlanTasks);
         }
 

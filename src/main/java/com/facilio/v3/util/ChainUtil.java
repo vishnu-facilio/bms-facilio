@@ -127,7 +127,7 @@ public class ChainUtil {
                 beforeCountCommand = listHandler.getBeforeCountCommand();
             }
         }
-        
+
         addIfNotNull(nonTransactionChain, beforeCountCommand);
         nonTransactionChain.addCommand(new GenerateCriteriaFromFilterCommand());
         nonTransactionChain.addCommand(new GenerateCriteriaFromClientCriteriaCommand());
@@ -233,7 +233,7 @@ public class ChainUtil {
 
         FacilioChain nonTransactionChain = FacilioChain.getNonTransactionChain();
         FacilioContext context = nonTransactionChain.getContext();
-       
+
         V3Config.PickListHandler pickListHandler = null;
         if (v3Config != null) {
             pickListHandler = v3Config.getPickListHandler();
@@ -602,7 +602,7 @@ public class ChainUtil {
         addIfNotNull(transactionChain, afterTransactionCommand);
 
         transactionChain.addCommand(new AddActivitiesCommandV3());
-         transactionChain.addCommand(new AddOneTimeJobForScheduledRule(WorkflowRuleRecordRelationshipContext.EventType.PATCH));
+        transactionChain.addCommand(new AddOneTimeJobForScheduledRule(WorkflowRuleRecordRelationshipContext.EventType.PATCH));
 
         return transactionChain;
     }
@@ -761,7 +761,7 @@ public class ChainUtil {
     }
 
     public static void addWorkflowChain(Chain chain) throws Exception {
-      addWorkflowChain(chain,null);
+        addWorkflowChain(chain,null);
     }
     public static void addWorkflowChain(Chain chain,ConfigParams configParams) throws Exception{
         if(configParams!=null && configParams.isOnlyRestrictedWorkflows()){
@@ -772,8 +772,8 @@ public class ChainUtil {
     }
     private static void defaultAddWorkflowChain(Chain chain){
         chain.addCommand(new ExecuteStateFlowCommand());
-		chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));
-		chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));
+        chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SURVEY_ACTION_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.MODULE_RULE));
         chain.addCommand(new ExecuteStateTransitionsCommand(WorkflowRuleContext.RuleType.STATE_RULE));
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW));
@@ -802,11 +802,11 @@ public class ChainUtil {
         updateWorkflowChain(chain,null);
     }
     public static void updateWorkflowChain(Chain chain,ConfigParams configParams) throws Exception {
-      if(configParams!=null && configParams.isOnlyRestrictedWorkflows()){
-          updateRestrictedWorkflowChain(chain);
-      }else{
-          defaultUpdateWorkflowChain(chain);
-      }
+        if(configParams!=null && configParams.isOnlyRestrictedWorkflows()){
+            updateRestrictedWorkflowChain(chain);
+        }else{
+            defaultUpdateWorkflowChain(chain);
+        }
     }
     private static void defaultUpdateWorkflowChain(Chain chain) throws Exception{
         chain.addCommand(new ExecuteAllWorkflowsCommand(WorkflowRuleContext.RuleType.SATISFACTION_SURVEY_RULE));

@@ -454,6 +454,7 @@ public class PageWidget {
 		WORKORDER_HAZARD_PRECAUTIONS("workorderHazardPrecautions"),
 		FAILURE_CLASS_ASSOCIATED_PROBELMS("failureclassassociatedproblems"),
 		PURCHASED_ITEMS("purchaseditems"),
+		PURCHASED_TOOLS("purchasedtools"),
 		ISSUES_RETURNS("issuesReturns"),
 		ITEM_TRANSACTIONS("transactionsitem"),
 		TOOL_TRANSACTIONS("transactionstool"),
@@ -631,8 +632,11 @@ public class PageWidget {
 		ONGOING_TIMESHEET_WIDGET("ongoingTimeSheetWidget"),
 		OVERDUE_SERVICE_APPOINTMENTS_WIDGET("overdueServiceAppointmentsWidget"),
 		TODAY_SERVICE_APPOINTMENTS_WIDGET("todayServiceAppointmentsWidget"),
-		OPEN_SERVICE_APPOINTMENTS_WIDGET("openServiceAppointmentsWidget")
-		;
+		OPEN_SERVICE_APPOINTMENTS_WIDGET("openServiceAppointmentsWidget"),
+		EVALUATION_TIME_REMAINING("evaluationTimeRemaining"),
+		EVALUATION_TEAM_DETAILS("evaluationTeamDetails"),
+		JOBPLAN_TASK_SECTIONS("jobPlanTaskSections"),
+		JOBPLAN_SFG_LEGISLATIONS("jobPlanSFGLegislations");
 
 		private String name;
 		@Getter

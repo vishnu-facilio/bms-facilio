@@ -8,6 +8,7 @@ import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
+import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -268,7 +269,7 @@ public class V3ItemsApi {
         V3ItemContext item = new V3ItemContext();
         item.setStoreRoom(store);
         item.setItemType(itemType);
-        item.setCostType(V3ItemContext.CostType.FIFO.getIndex());
+        item.setCostType(CostType.FIFO.getIndex());
         InsertRecordBuilder<V3ItemContext> readingBuilder = new InsertRecordBuilder<V3ItemContext>().module(module)
                 .fields(fields);
         readingBuilder.withLocalId();

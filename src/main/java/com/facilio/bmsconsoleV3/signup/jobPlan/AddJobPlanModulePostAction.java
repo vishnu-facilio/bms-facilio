@@ -239,7 +239,13 @@ public class AddJobPlanModulePostAction extends BaseModuleConfig {
 			
 		  chain.execute();
 	}
-	private void addScopeSectionDisableRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap,Map<Long, FormField> formFieldMap) throws Exception{
+
+	@Override
+	public void addWidgets() throws Exception {
+		return;
+	}
+
+	private void addScopeSectionDisableRule(FacilioForm defaultForm, Map<String, FacilioField> fieldMap, Map<Long, FormField> formFieldMap) throws Exception{
 		FormRuleContext singleRule = new FormRuleContext();
 		singleRule.setName("Scope Section Disable");
 		singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());

@@ -19,6 +19,7 @@ import com.facilio.remotemonitoring.signup.RawAlarmModule;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +41,13 @@ public class AlarmOpenForDurationOfTimeRTNHandler implements AlarmCriteriaHandle
             criteria.addAndCondition(CriteriaAPI.getCondition("SITE", "site", String.valueOf(rawAlarm.getSite().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", null, CommonOperators.IS_EMPTY));
             criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(rawAlarm.getId()), NumberOperators.LESS_THAN));
+
+            if(rawAlarm.getAsset() != null && rawAlarm.getAsset().getId() > 0) {
+                criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(rawAlarm.getAsset().getId()), NumberOperators.EQUALS));
+            } else {
+                criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
+            }
+
             List<RawAlarmContext> rawAlarms = V3RecordAPI.getRecordsListWithSupplements(RawAlarmModule.MODULE_NAME, null, RawAlarmContext.class, criteria, null);
             if(CollectionUtils.isNotEmpty(rawAlarms)) {
                 List<Long> ids = rawAlarms.stream().map(RawAlarmContext::getId).collect(Collectors.toList());
@@ -58,7 +66,7 @@ public class AlarmOpenForDurationOfTimeRTNHandler implements AlarmCriteriaHandle
 
     @Override
     public void createFilteredAlarm(RawAlarmContext rawAlarm,FilterRuleCriteriaContext filterRuleCriteria) throws Exception {
-        if(rawAlarm != null && rawAlarm.getClearedTime() == null || rawAlarm.getClearedTime() <= 0) {
+        if(rawAlarm != null && (rawAlarm.getClearedTime() == null || rawAlarm.getClearedTime() <= 0)) {
             if(!rawAlarm.isFiltered()) {
                 FilteredAlarmContext filteredAlarm = FilterAlarmUtil.constructFilteredAlarm(rawAlarm);
                 filteredAlarm.setAlarmFilterRule(filterRuleCriteria.getAlarmFilterRule());

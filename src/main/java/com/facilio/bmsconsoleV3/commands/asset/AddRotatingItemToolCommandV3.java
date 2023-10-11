@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
+import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.bmsconsoleV3.util.V3AssetAPI;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -63,7 +64,7 @@ public class AddRotatingItemToolCommandV3 extends FacilioCommand {
                         V3ItemContext rotatingItem = new V3ItemContext();
                         rotatingItem.setItemType(asset.getRotatingItemType());
                         rotatingItem.setStoreRoom(asset.getStoreRoom());
-                        rotatingItem.setCostType(ItemContext.CostType.FIFO.getIndex());
+                        rotatingItem.setCostType(CostType.FIFO.getIndex());
                         FacilioContext rotatingItemCreated =  V3Util.createRecord(itemModule, FieldUtil.getAsJSON(rotatingItem));
                         if(rotatingItemCreated.get("records")!=null && ((List<V3ItemContext>) rotatingItemCreated.get("records")).size() > 0){
                             item  =((List<V3ItemContext>) rotatingItemCreated.get("records")).get(0);

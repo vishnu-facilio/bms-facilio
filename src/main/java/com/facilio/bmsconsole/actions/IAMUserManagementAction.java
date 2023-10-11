@@ -6,21 +6,23 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.ApplicationUserUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.PeopleUserContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
-import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.identity.client.IdentityClient;
 import com.facilio.identity.client.dto.User;
 import com.facilio.identity.client.dto.UserMFA;
-import com.facilio.modules.FieldUtil;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.sandbox.utils.SandboxAPI;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,12 +30,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 
 @Getter @Setter
@@ -76,6 +78,7 @@ public class IAMUserManagementAction extends FacilioAction{
         this.fetchCount = fetchCount;
     }
     private List<Long> peopleIds;
+    private long peopleId;
     private List<Long> peopleTypeList;
     private String filters;
     private List<Long> userIds;
@@ -180,7 +183,6 @@ public class IAMUserManagementAction extends FacilioAction{
         if(appDomainObj == null) {
             throw new IllegalArgumentException("Invalid App Domain");
         }
-
         List<User>  iamUserList = IdentityClient.getDefaultInstance().getUserBean().getUserList(orgId,appDomainObj.getIdentifier(), search,  userStatus, inviteStatus,isUserVerified,withMFA,orderBy,  isAscending,  offset,5000);
 
         FacilioContext context = new FacilioContext();
@@ -341,8 +343,12 @@ public class IAMUserManagementAction extends FacilioAction{
         long orgId = org.getOrgId();
         if(user != null ) {
             user.setUser(IdentityClient.getDefaultInstance().getUserBean().getUser(orgId, user.getUid()));
+            Long appId = user.getApplicationId();
+            if((appId == null || appId <= 0) && StringUtils.isNotEmpty(appLinkName)){
+                 appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
+            }
 
-            com.facilio.identity.client.dto.AppDomain appDomainObj = ApplicationApi.getAppDomainForApp(user.getApplicationId());
+            com.facilio.identity.client.dto.AppDomain appDomainObj = ApplicationApi.getAppDomainForApp(appId);
             if (appDomainObj == null) {
                 throw new IllegalArgumentException("Invalid App Domain");
             }
@@ -391,6 +397,9 @@ public class IAMUserManagementAction extends FacilioAction{
     public String getExistingIamUser() throws Exception{
         Organization org = AccountUtil.getCurrentOrg();
         long orgId = org.getOrgId();
+        if((appId == null || appId <= 0) && StringUtils.isNotEmpty(appLinkName)){
+            appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
+        }
         AppDomain appDomainObj = ApplicationApi.getAppDomainForApplication(appId);
         if(appDomainObj == null) {
             throw new IllegalArgumentException("Invalid App Domain");
@@ -484,6 +493,37 @@ public class IAMUserManagementAction extends FacilioAction{
 
         setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
 
+        return SUCCESS;
+    }
+
+    public String getUserFromPeopleId() throws Exception{
+        FacilioModule module = ModuleFactory.getOrgUserModule();
+        FacilioField userIdField = FieldFactory.getField("userId", "USERID", module, FieldType.NUMBER);
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(userIdField);
+
+        GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(module.getTableName());
+
+        selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID","peopleId",String.valueOf(peopleId), NumberOperators.EQUALS));
+        List<Map<String,Object>> props = selectRecordsBuilder.get();
+        User user = null;
+        if(CollectionUtils.isNotEmpty(props)){
+            for(Map<String,Object> prop : props){
+                long uid = (long)prop.get("userId");
+                user =  IdentityClient.getDefaultInstance().getUserBean().getUser(uid);
+                if(user != null){
+                    break;
+                }
+            }
+        }
+        setResult("user", user);
+        if(user!=null){
+            com.facilio.accounts.dto.User invitedBy = AccountUtil.getUserBean().getUser(-1, user.getOrgId(), user.getInvitedBy(), null);
+            setResult("invitedBy",invitedBy);
+        }
         return SUCCESS;
     }
 

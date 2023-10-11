@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.workOrderInventory;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -253,6 +254,8 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
         Double unitPrice = null;
         if(workOrderItem.getInventoryReservation()!=null){
             woItem.setInventoryReservation(workOrderItem.getInventoryReservation());
+            User requestedFor = V3InventoryRequestAPI.getUserToIssueFromReservation(workOrderItem.getInventoryReservation());
+            woItem.setIssuedTo(requestedFor);
         }
         if (purchasedItem != null) {
             woItem.setPurchasedItem(purchasedItem);

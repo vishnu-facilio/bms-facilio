@@ -236,9 +236,6 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 		woTool.setCost(costOccured);
 		if(workorder!=null) {
 			woTool.setWorkorder(workorder);
-			if(workorder.getAssignedTo()!=null) {
-				woTool.setIssuedTo(workorder.getAssignedTo());
-			}
 		}
 		
 		if(parentTransactionId != -1) {

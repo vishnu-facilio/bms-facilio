@@ -48,6 +48,8 @@ public class ToolPageFactory  extends PageFactory{
 
         if(isRotating(tool)){
             addSubModuleRelatedListWidget(tab1Sec1, FacilioConstants.ContextNames.ASSET, module.getModuleId());
+        } else {
+            addPurchasedToolsWidget(tab1Sec1);
         }
 
         addTransactionsWidget(tab1Sec1);
@@ -71,6 +73,16 @@ public class ToolPageFactory  extends PageFactory{
         }
 
         return page;
+    }
+
+    private static PageWidget addPurchasedToolsWidget(Page.Section section) {
+
+        PageWidget purchasedToolsWidget = new PageWidget();
+        purchasedToolsWidget.addToLayoutParams(section, 24, 8);
+        purchasedToolsWidget.setWidgetType(PageWidget.WidgetType.PURCHASED_TOOLS);
+        section.addWidget(purchasedToolsWidget);
+
+        return purchasedToolsWidget;
     }
     private static PageWidget addTransactionsWidget(Page.Section section) {
 

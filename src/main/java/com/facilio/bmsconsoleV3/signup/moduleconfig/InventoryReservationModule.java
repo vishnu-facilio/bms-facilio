@@ -22,7 +22,7 @@ public class InventoryReservationModule extends BaseModuleConfig{
         int order = 1;
         ArrayList<FacilioView> inventoryReservationViews = new ArrayList<FacilioView>();
         inventoryReservationViews.add(getAllInventoryReservationViews().setOrder(order++));
-
+        inventoryReservationViews.add(getInventoryReservationToolsViews().setOrder(order++));
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
         groupDetails.put("displayName", "System Views");
@@ -59,6 +59,44 @@ public class InventoryReservationModule extends BaseModuleConfig{
     private static List<ViewField> getViewOneColumns() {
         List<ViewField> columns = new ArrayList<ViewField>();
         columns.add(new ViewField("itemType","Item"));
+        columns.add(new ViewField("storeRoom","Storeroom"));
+//        columns.add(new ViewField("reservationType","Reservation Type"));
+        columns.add(new ViewField("reservedQuantity","Reserved Quantity"));
+        columns.add(new ViewField("balanceReservedQuantity","Balance Reserved Quantity"));
+        columns.add(new ViewField("inventoryRequest","Inventory Request"));
+        columns.add(new ViewField("workOrder", "Work Order"));
+        columns.add(new ViewField("issuedQuantity","Issued Quantity"));
+        columns.add(new ViewField("reservationSource","Reservation Source"));
+        columns.add(new ViewField("reservationStatus","Reservation Status"));
+        return columns;
+    }
+
+    private  FacilioView getInventoryReservationToolsViews() {
+        FacilioField createdTime = new FacilioField();
+        createdTime.setName("sysCreatedTime");
+        createdTime.setDataType(FieldType.NUMBER);
+        createdTime.setColumnName("SYS_CREATED_TIME");
+        createdTime.setModule(ModuleFactory.getInventoryReservationModule());
+        SortField sortField = new SortField(createdTime, false);
+
+        FacilioView viewOne = new FacilioView();
+        viewOne.setName("all-tools");
+        viewOne.setDisplayName("All Inventory Reservation tool");
+        viewOne.setSortFields(Collections.singletonList(sortField));
+        viewOne.setFields(getToolsViewColumns());
+
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        viewOne.setAppLinkNames(appLinkNames);
+
+        return viewOne;
+    }
+
+    private static List<ViewField> getToolsViewColumns() {
+        List<ViewField> columns = new ArrayList<ViewField>();
+        columns.add(new ViewField("toolType","Tool"));
         columns.add(new ViewField("storeRoom","Storeroom"));
 //        columns.add(new ViewField("reservationType","Reservation Type"));
         columns.add(new ViewField("reservedQuantity","Reserved Quantity"));

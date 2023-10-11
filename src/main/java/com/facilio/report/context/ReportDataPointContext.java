@@ -213,13 +213,16 @@ public class ReportDataPointContext implements  Cloneable{
 	
 	@JsonIgnore
 	public Criteria getAllCriteria() {
-		if (this.criteria == null && this.otherCriteria == null) {
+		if (this.criteria == null && this.otherCriteria == null && this.parentCriteriaFilter == null) {
 			return null;
 		}
 		
 		Criteria c = new Criteria();
 		c.andCriteria(this.criteria);
 		c.andCriteria(this.otherCriteria);
+		if(this.parentCriteriaFilter != null ){
+			c.andCriteria(this.parentCriteriaFilter);
+		}
 		return c;
 	}
 

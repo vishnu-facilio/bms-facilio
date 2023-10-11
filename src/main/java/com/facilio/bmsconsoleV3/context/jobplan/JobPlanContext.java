@@ -1,8 +1,5 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
-import com.facilio.bmsconsole.context.PlannedMaintenance;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.PlannedMaintenance.PMStatus;
 import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.modules.FacilioIntEnum;
@@ -10,7 +7,6 @@ import com.facilio.v3.context.V3Context;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -170,5 +166,137 @@ public class JobPlanContext extends V3Context {
             return ordinal() + 1;
         }
     }
+
+
+    public static enum SFGType implements FacilioIntEnum {
+        CORE("Core"),
+        CUSTOM("Custom");
+
+        @Override
+        public String getValue() {
+            return this.name;
+        }
+
+        private String name;
+
+        SFGType(String name) {
+            this.name = name;
+        }
+
+        public static SFGType valueOf(int index) {
+            if (index >= 1 && index <= values().length) {
+                return values()[index - 1];
+            }
+            return null;
+        }
+
+        public int getVal() {
+            return ordinal() + 1;
+        }
+    }
+
+    public Integer getSfgType() {
+        if(sfgType == null)
+        {
+            return null;
+        }
+        return sfgType.getVal();
+    }
+
+    public void setSfgType(Integer sfgType) {
+        if (sfgType != null) {
+            this.sfgType = SFGType.valueOf(sfgType);
+        } else {
+            this.sfgType = null;
+        }
+    }
+
+    public void setSfgTypeEnum(SFGType sfgType) {
+        this.sfgType = sfgType;
+    }
+
+    public SFGType getSfgTypeEnum() {
+        return sfgType;
+    }
+
+    private SFGType sfgType;
+
+    public Integer getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(Integer scheduleId) {
+        this.scheduleId = scheduleId;
+    }
+
+    private Integer scheduleId;
+
+    public String getSfgCode() {
+        return sfgCode;
+    }
+
+    public void setSfgCode(String sfgCode) {
+        this.sfgCode = sfgCode;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    private String sfgCode;
+    private String content;
+    private String notes;
+
+    public String getSfgVersion() {
+        return sfgVersion;
+    }
+
+    public void setSfgVersion(String sfgVersion) {
+        this.sfgVersion = sfgVersion;
+    }
+
+    private String sfgVersion="";
+
+    public Boolean getSfg() {
+        return isSfg;
+    }
+
+    public void setSfg(Boolean sfg) {
+        isSfg = sfg;
+    }
+
+    private Boolean isSfg;
+
+    public String getUnitOfMeasure() {
+        return unitOfMeasure;
+    }
+
+    public void setUnitOfMeasure(String unitOfMeasure) {
+        this.unitOfMeasure = unitOfMeasure;
+    }
+
+    private String unitOfMeasure;
+
+    public String getSfgLegislations() {
+        return sfgLegislations;
+    }
+
+    public void setSfgLegislations(String sfgLegislations) {
+        this.sfgLegislations = sfgLegislations;
+    }
+
+    private String sfgLegislations;
 
 }

@@ -36,6 +36,7 @@ public class CreateReservationCommandV3 extends FacilioCommand {
                 Map<String, List> recordMap = (Map<String, List>) inventoryReservationContext.get(Constants.RECORD_MAP);
 
                 InventoryReservationContext inventoryReservation = (InventoryReservationContext) recordMap.get(FacilioConstants.ContextNames.INVENTORY_RESERVATION).get(0);
+
                 rollUpReservedItem(workOrderPlannedItem.getItemType(), workOrderPlannedItem.getStoreRoom(), workOrderPlannedItem.getReservationType(), workOrderPlannedItem.getQuantity(), inventoryReservation);
             }
         }
