@@ -6796,8 +6796,23 @@
 			<param name="setupTab">PORTALS,USERS,API_SETUP,AUDIT_LOGS</param>
 		</action>
 		<action name="getUserFromPeopleId" class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="getUserFromPeopleId">
-			<param name="moduleName">${moduleName}</param>
-			<param name="permission">MANAGE_ACCESS</param>
+			<param name="checkTabPermission">true</param>
+			<param name="permission">GET:MANAGE_ACCESS</param>
+		</action>
+		<action name="invite"
+				class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="resendInvite">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:MANAGE_ACCESS</param>
+		</action>
+		<action name="resetpassword"
+				class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="sendResetPasswordLink">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">POST:MANAGE_ACCESS</param>
+		</action>
+		<action name="getIamUser"
+				class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="getExistingIamUser">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">GET:MANAGE_ACCESS</param>
 		</action>
 		<action name="summary" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="getApplicationUserDetails">
@@ -6811,7 +6826,7 @@
 		<action name="deleteSignature" class="com.facilio.bmsconsole.actions.ApplicationAction" method="deleteUserSignature">
 		</action>
 	</package>
-	
+
 	<package name="fetchApplicationDetails" namespace="/api/v2/application/fetchDetails"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.ApplicationAction"
@@ -7531,6 +7546,10 @@
 	</package>
 
 	<package name="scoping" namespace="/api/v2/scoping" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsoleV3.actions.UserScopingAction" method="list">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">GET:MANAGE_ACCESS</param>
+		</action>
 		<action name="addOrUpdateConfig"
 				class="com.facilio.bmsconsole.actions.ScopingAction" method="addOrUpdateScopingConfig">
 		</action>
@@ -7556,6 +7575,12 @@
 	</action>
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.ScopingAction" method="addOrUpdateScoping">
+		</action>
+	</package>
+	<package name="permissionSets" namespace="/api/v2/permissionSets" extends="v2Api">
+		<action name="list" class="com.facilio.permission.action.PermissionSetAction" method="list">
+			<param name="checkTabPermission">true</param>
+			<param name="permission">GET:MANAGE_ACCESS</param>
 		</action>
 	</package>
 

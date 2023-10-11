@@ -3205,6 +3205,49 @@
         </urlparams>
     </request>
 
+    <request path="/api/v2/application/users/invite" method="POST">
+        <requestbody type="object">
+            <property name="user" type="object">
+                <property name="uid" type="number"/>
+            </property>
+            <property name="appLinkName" type="string"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/application/users/resetpassword" method="POST">
+        <requestbody type="object">
+            <property name="user" type="object">
+                <property name="uid" type="number"/>
+            </property>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/application/users/getIamUser" method="GET">
+        <urlparams>
+            <property name="email" type="string"/>
+            <property name="appLinkName" type="string"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/scoping/list" method="GET">
+        <urlparams>
+            <property name="search" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/permissionSets/list" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
     <!-- WorkOrder Settings API -->
     <request path="/api/v1/setup/womodulesetting/fetch" method="GET"/>
     <request path="/api/v1/setup/womodulesetting/add" method="POST">
