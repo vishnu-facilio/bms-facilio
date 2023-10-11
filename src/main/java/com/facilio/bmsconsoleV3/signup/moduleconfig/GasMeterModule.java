@@ -106,8 +106,8 @@ public class GasMeterModule extends BaseModuleConfig{
 
     private void addRelationships() throws Exception {
         ModuleBean modBean = Constants.getModBean();
-        FacilioModule parentModule = modBean.getModule(FacilioConstants.Meter.BTU_METER);
-        FacilioModule childModule = modBean.getModule(FacilioConstants.Meter.BTU_METER);
+        FacilioModule parentModule = modBean.getModule(FacilioConstants.Meter.GAS_METER);
+        FacilioModule childModule = modBean.getModule(FacilioConstants.Meter.GAS_METER);
         RelationRequestContext parentMeterVsChildMeterRelation = new RelationRequestContext();
         parentMeterVsChildMeterRelation.setName("parentmeter");
         parentMeterVsChildMeterRelation.setDescription("Parent Vs Child meter relationship");
