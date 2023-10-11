@@ -1,10 +1,17 @@
 package com.facilio.readingrule.signup;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.SystemButtonApi;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -26,9 +33,69 @@ public class AddReadingRuleModules extends SignUpData {
             FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
             addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(readingRule));
             addModuleChain.execute();
+            addSystemButtonsForRules();
         }catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void addSystemButtonsForRules() throws Exception {
+
+        SystemButtonRuleContext editNewRules = new SystemButtonRuleContext();
+        editNewRules.setName("Edit");
+        editNewRules.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editNewRules.setIdentifier("editNewRules");
+        editNewRules.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editNewRules.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editNewRules.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ReadingRules.NEW_READING_RULE, editNewRules);
+
+        SystemButtonRuleContext addRules = new SystemButtonRuleContext();
+        addRules.setName("Add NewRules");
+        addRules.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        addRules.setIdentifier("addNewRules");
+        addRules.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addRules.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        addRules.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ReadingRules.NEW_READING_RULE, addRules);
+
+        SystemButtonRuleContext deactivateRule = new SystemButtonRuleContext();
+        deactivateRule.setName("Deactivate");
+        deactivateRule.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        deactivateRule.setIdentifier("deactivateRule");
+        deactivateRule.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        deactivateRule.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        deactivateRule.setPermissionRequired(true);
+        Criteria deactivateCriteria=getRuleStatusCriteria(Boolean.TRUE);
+        deactivateRule.setCriteria(deactivateCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ReadingRules.NEW_READING_RULE, deactivateRule);
+
+
+        SystemButtonRuleContext activateRule = new SystemButtonRuleContext();
+        activateRule.setName("Activate");
+        activateRule.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        activateRule.setIdentifier("activateRule");
+        activateRule.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        activateRule.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        activateRule.setPermissionRequired(true);
+        Criteria activateCriteria=getRuleStatusCriteria(Boolean.FALSE);
+        activateRule.setCriteria(activateCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ReadingRules.NEW_READING_RULE, activateRule);
+
+        
+        SystemButtonRuleContext fddToWo = new SystemButtonRuleContext();
+        fddToWo.setName("Fault To Workorder");
+        fddToWo.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        fddToWo.setIdentifier("fddToWO");
+        fddToWo.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ReadingRules.NEW_READING_RULE, fddToWo);
+
+    }
+
+    private Criteria getRuleStatusCriteria(boolean status) {
+        Criteria statusCriteria=new Criteria();
+        statusCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS","status",String.valueOf(status), BooleanOperators.IS));
+        return statusCriteria;
     }
 
     private FacilioModule addReadingRuleModule() throws Exception {
