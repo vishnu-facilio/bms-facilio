@@ -94,10 +94,7 @@ public class ReadingKPIContext extends V3Context implements IConnectedRule {
     }
 
     public int getKpiType() {
-        if (kpiType != null) {
-            return kpiType.ordinal() + 1;
-        }
-        return -1;
+        return (kpiType != null) ? kpiType.getIndex() : -1;
     }
 
     public void setKpiType(Integer type) {
