@@ -28,6 +28,11 @@ public class NewReadingAlarmModule extends BaseModuleConfig{
     }
 
     @Override
+    public void addData() throws Exception {
+        addSystemButtonsForReadingAlarm();
+    }
+
+    @Override
     public List<Map<String, Object>> getViewsAndGroups() {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;
@@ -236,7 +241,7 @@ public class NewReadingAlarmModule extends BaseModuleConfig{
         return appNameVsPage;
     }
 
-    public static void addSystemButtonsForBMSAlarm() throws Exception {
+    public static void addSystemButtonsForReadingAlarm() throws Exception {
         addAcknowledgeButton();
         addCreateWorkOrderButton();
         addViewWorkOrderButton();

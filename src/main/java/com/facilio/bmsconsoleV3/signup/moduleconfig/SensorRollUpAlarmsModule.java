@@ -30,6 +30,11 @@ public class SensorRollUpAlarmsModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM);
     }
 
+    @Override
+    public void addData() throws Exception {
+        addSystemButtonsForSensorAlarm();
+    }
+
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -282,7 +287,7 @@ public class SensorRollUpAlarmsModule extends BaseModuleConfig{
         return appNameVsPage;
     }
 
-    public static void addSystemButtonsForBMSAlarm() throws Exception {
+    public static void addSystemButtonsForSensorAlarm() throws Exception {
         addAcknowledgeButton();
         addCreateWorkOrderButton();
         addViewWorkOrderButton();
