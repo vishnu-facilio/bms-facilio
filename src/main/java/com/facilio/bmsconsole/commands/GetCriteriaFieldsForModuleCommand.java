@@ -62,14 +62,8 @@ public class GetCriteriaFieldsForModuleCommand extends FacilioCommand {
                         fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
                         break;
                     case FacilioConstants.ContextNames.SERVICE_REQUEST:
-                        fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
-                        break;
                     case FacilioConstants.ContextNames.FacilityBooking.FACILITY:
-                        fields=FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(),moduleName);
-                        break;
                     case FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING:
-                        fields=FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(),moduleName);
-                        break;
                     case FacilioConstants.ContextNames.EMPLOYEE:
                     case FacilioConstants.ContextNames.VENDOR_CONTACT:
                     case FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT:
@@ -78,7 +72,11 @@ public class GetCriteriaFieldsForModuleCommand extends FacilioCommand {
                     case FacilioConstants.TimeSheet.TIME_SHEET:
                     case FacilioConstants.Territory.TERRITORY:
                     case FacilioConstants.TimeOff.TIME_OFF:
+                    case FacilioConstants.ContextNames.SERVICE:
+                    case FacilioConstants.ContextNames.TOOL_TYPES:
+                    case FacilioConstants.ContextNames.ITEM_TYPES:
                         fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
+                        break;
                     default:
                         fields = null;
                 }

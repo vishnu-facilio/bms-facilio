@@ -639,9 +639,14 @@ public class APIModuleWidgets {
                 .addModuleWidget("servicerequestemailthread", "Service Request Email Thread", PageWidget.WidgetType.SR_EMAIL_THREAD)
                 .addWidgetConfig("flexibleservicerequestemailthread_10","Service Request Email Thread - 10",WidgetConfigContext.ConfigType.FLEXIBLE,10,-1, PagesContext.PageLayoutType.WEB)
                 .done()
+                .addModuleWidget("servicerequestsitewidget", "Service Request Site Widget", PageWidget.WidgetType.SR_SITE_WIDGET)
+                .addWidgetConfig("flexibleservicerequestsitewidget_3","Service Request Site Widget - 3",WidgetConfigContext.ConfigType.FLEXIBLE,3,-1, PagesContext.PageLayoutType.WEB)
+                .done()
                 .addModuleWidget("servicerequestdetailswidget", "Service Request Details Widget", PageWidget.WidgetType.SR_DETAILS_WIDGET)
-                .addWidgetConfig("servicerequestdetails_10_3","Service Request Details Widget - 10 - 3",WidgetConfigContext.ConfigType.FLEXIBLE,10,3,PagesContext.PageLayoutType.WEB)
+                .addWidgetConfig("flexibleservicerequestdetails_7","Service Request Details Widget - 7",WidgetConfigContext.ConfigType.FLEXIBLE,7,-1,PagesContext.PageLayoutType.WEB)
                 .done();
+
+
     }
     @WidgetsForModule(FacilioConstants.ContextNames.FacilityBooking.FACILITY)
     public static Supplier<ModuleWidgets> getFacilityWidgets(){
@@ -760,6 +765,31 @@ public class APIModuleWidgets {
                 .addWidgetConfig("evaluationTeamDetails_4_3","Evaluation Team Details - 18 - 3",WidgetConfigContext.ConfigType.FIXED,18,3,PagesContext.PageLayoutType.WEB)
                 .done();
 
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.ITEM_TYPES)
+    public static Supplier<ModuleWidgets> getItemTypesWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("itemtypedetailscard","Item Type Details Card",PageWidget.WidgetType.ITEM_TYPE_DETAILS_CARD)
+                .addFixedWidgetConfig("webitemtypedetailscard_3_4","Item Type Details Card - 3 - 4",3,4,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("storeroom","Store Room",PageWidget.WidgetType.STORE_ROOM)
+                .addFlexibleWidgetConfig("flexiblewebstoreroom_6","Store Room - 6",6,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("itemtypelineitem","Item Type Line Item",PageWidget.WidgetType.WHERE_USED)
+                .addFlexibleWidgetConfig("flexiblewebitemtypelineitem_6","Item Type Line Item - 6",6,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("itemtransactions","Item Transactions",PageWidget.WidgetType.ITEM_TRANSACTIONS)
+                .addFlexibleWidgetConfig("flexiblewebitemtransactions_7","Item Transactions - 7",7,PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.SERVICE)
+    public static Supplier<ModuleWidgets> getServiceWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("servicevendors","Service Vendors",PageWidget.WidgetType.SERVICE_VENDORS)
+                .addFlexibleWidgetConfig("flexiblewebservicevendors_11","Service Vendors - 11",11,PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
     }
 
     @WidgetsForModule(FacilioConstants.ContextNames.PURCHASE_REQUEST)

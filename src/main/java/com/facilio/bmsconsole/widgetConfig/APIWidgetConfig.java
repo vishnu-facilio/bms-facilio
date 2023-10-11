@@ -43,6 +43,17 @@ public class APIWidgetConfig {
                 .fetchCommand(ReadOnlyChainFactory.getSummaryWidgetForPageWidgetChain())
                 .build();
     }
+    @WidgetType(PageWidget.WidgetType.SR_DETAILS_WIDGET)
+    public static Supplier<WidgetConfig> getServiceRequestDetailsWidgetCRUD() {
+        return () -> new WidgetConfig()
+                .create()
+                .saveCommand(TransactionChainFactory.getAddSummaryWidgetChainInPage())
+                .update()
+                .updateCommand(TransactionChainFactory.getUpdateSummaryWidgetChainInPage())
+                .summary()
+                .fetchCommand(ReadOnlyChainFactory.getSummaryWidgetForPageWidgetChain())
+                .build();
+    }
     @WidgetType(PageWidget.WidgetType.BULK_RELATED_LIST)
     public static Supplier<WidgetConfig> getBulkRelatedListWidgetCRUD() {
         return () ->  new WidgetConfig()

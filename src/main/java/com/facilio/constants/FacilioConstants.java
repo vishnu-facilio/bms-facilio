@@ -2235,6 +2235,8 @@ public class FacilioConstants {
 
 		public static final String SERVICE = "service";
 		public static final String SERVICES = "services";
+		public static final String SERVICE_NOTES="servicenotes";
+		public static final String SERVICE_ATTACHMENTS="serviceattachments";
 
 		public static final String SERVICE_CONTRACTS = "servicecontracts";
 		public static final String SERVICE_CONTRACT = "servicecontract";

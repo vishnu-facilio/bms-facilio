@@ -80,6 +80,9 @@ public class PageBuilderConfigUtil {
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG));
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
 
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE));
 
             if (CollectionUtils.isNotEmpty(moduleList)) {
                 List<Long> moduleIds = moduleList.stream().filter(Objects::nonNull).map(FacilioModule::getModuleId).collect(Collectors.toList());

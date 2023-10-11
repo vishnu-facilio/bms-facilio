@@ -164,7 +164,7 @@ public class FacilityModule extends BaseModuleConfig{
                 .widgetDone()
                 .sectionDone()
                 .addSection("facilityphotos", null, null)
-                .addWidget("facilityphotoswidget", "Photoes", PageWidget.WidgetType.FACILITY_PHOTOS, "webfacilityphotos_3_12", 0, 0, null, null)
+                .addWidget("facilityphotoswidget", "Photos", PageWidget.WidgetType.FACILITY_PHOTOS, "webfacilityphotos_3_12", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)

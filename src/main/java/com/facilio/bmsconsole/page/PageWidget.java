@@ -208,7 +208,7 @@ public class PageWidget {
 		DETAILS_WIDGET("detailsWidget"),
 		PRIMARY_DETAILS_WIDGET("primaryDetailsWidget"),
 		SPARE_PARTS("spareParts"),
-		WHERE_USED("whereUsed"),
+		WHERE_USED("whereUsed", AccountUtil.FeatureLicense.ASSET_SPARE_PARTS.getFeatureId()),
 		MV_DETAILS_WIDGET("mvSummaryWidget"),
 		SECONDARY_DETAILS_WIDGET("secondaryDetailsWidget"),
 		WORKORDER_SECONDARY_DETAILS_WIDGET("workOrderSecondaryDetailsWidget"),
@@ -376,6 +376,7 @@ public class PageWidget {
 		// Service Request Module Widgets
 		SR_EMAIL_THREAD("srEmailThread"),
 		SR_DETAILS_WIDGET("srDetailsWidget"),
+		SR_SITE_WIDGET("srSiteWidget"),
 
 		COMBINED_RELATED_LIST("combinedRelatedListWidget"),
 		BOOKINGS_RELATED_LIST("bookingRelatedListWidget"),
@@ -647,7 +648,8 @@ public class PageWidget {
 		GROUP_INVITE_LIST_WIDGET("groupInviteListWidget"),
 		VISITOR_LIST_WIDGET("visitorListWidget"),
 		TOTAL_INVITE_WIDGET("totalInviteWidget"),
-		CHECKIN_COUNT_WIDGET("checkedInCountWidget")
+		CHECKIN_COUNT_WIDGET("checkedInCountWidget"),
+		ITEM_TYPE_DETAILS_CARD("itemTypesDetailsCard"),
 		;
 
 		private String name;

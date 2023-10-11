@@ -38,13 +38,17 @@ public class ServiceRequestTemplatePage implements TemplatePageFactory {
                 .sectionDone()
                 .columnDone()
                 .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                .addSection("servicerequestsitesection", null, null)
+                .addWidget("servicerequestsitewidget", "Location Details", PageWidget.WidgetType.SR_SITE_WIDGET, "flexibleservicerequestsitewidget_3", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
                 .addSection("servicerequestpropertiessection", null, null)
-                .addWidget("servicerequestpropertieswidget", "Properties", PageWidget.WidgetType.SR_DETAILS_WIDGET, "servicerequestdetails_10_3", 0, 0, null, null)
+                .addWidget("servicerequestpropertieswidget", "Properties", PageWidget.WidgetType.SR_DETAILS_WIDGET, "flexibleservicerequestdetails_7", 0, 0, getPropertiesWidgetParams(), getPropertiesWidgetDetails(module.getName(),app))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("properties", "Properties", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("properties", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("servicerequestsummaryfields", null, null)
                 .addWidget("servicerequestsummaryfieldwidget", "Properties", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
@@ -79,6 +83,11 @@ public class ServiceRequestTemplatePage implements TemplatePageFactory {
                 .layoutDone();
 
     }
+    private static JSONObject getPropertiesWidgetParams(){
+        JSONObject widgetParams=new JSONObject();
+        widgetParams.put("visibleRowCount",4);
+        return widgetParams;
+    }
     private static JSONObject getWidgetGroup() throws Exception {
         JSONObject commentWidgetParam = new JSONObject();
         commentWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.SERVICE_REQUEST_NOTES);
@@ -97,6 +106,67 @@ public class ServiceRequestTemplatePage implements TemplatePageFactory {
         return FieldUtil.getAsJSON(widgetGroup);
     }
 
+    private static JSONObject getPropertiesWidgetDetails(String moduleName,ApplicationContext app) throws Exception{
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(moduleName);
+
+        //general information
+
+        FacilioField urgency = moduleBean.getField("urgency", moduleName);
+        FacilioField assignedTo = moduleBean.getField("assignedTo", moduleName);
+        FacilioField classificationType = moduleBean.getField("classificationType", moduleName);
+        FacilioField dueDate = moduleBean.getField("dueDate", moduleName);
+
+
+
+
+        SummaryWidgetGroup generalInformationwidgetGroup = new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, urgency, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, assignedTo, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, classificationType, 3, 1, 1);
+        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, dueDate, 4, 1, 1);
+
+
+
+        // Requested By
+
+        FacilioField requesterName = moduleBean.getField("name",FacilioConstants.ContextNames.PEOPLE);
+        FacilioField requesterPhone = moduleBean.getField("phone",FacilioConstants.ContextNames.PEOPLE);
+        FacilioField requesterEmail = moduleBean.getField("email",FacilioConstants.ContextNames.PEOPLE);
+        FacilioField requester = moduleBean.getField("requester", moduleName);
+
+        SummaryWidgetGroup requestedBywidgetGroup = new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(requestedBywidgetGroup, requesterName, 1, 1, 1,requester);
+        addSummaryFieldInWidgetGroup(requestedBywidgetGroup, requesterPhone, 2, 1, 1,requester);
+        addSummaryFieldInWidgetGroup(requestedBywidgetGroup, requesterEmail, 3, 1, 1,requester);
+
+
+        generalInformationwidgetGroup.setName("moduleDetails");
+        generalInformationwidgetGroup.setDisplayName("General");
+        generalInformationwidgetGroup.setColumns(1);
+
+
+        requestedBywidgetGroup.setName("requestedBy");
+        requestedBywidgetGroup.setDisplayName("Requested By");
+        requestedBywidgetGroup.setColumns(1);
+
+
+        List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
+        widgetGroupList.add(generalInformationwidgetGroup);
+        widgetGroupList.add(requestedBywidgetGroup);
+
+        SummaryWidget pageWidget = new SummaryWidget();
+        SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
+        widgetGroup.setName("properties");
+        widgetGroup.setDisplayName("Properties");
+        pageWidget.setModuleId(module.getModuleId());
+        pageWidget.setAppId(app.getId());
+        pageWidget.setGroups(widgetGroupList);
+
+        return FieldUtil.getAsJSON(pageWidget);
+    }
     private static JSONObject getSummaryWidgetDetails(String moduleName,ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
