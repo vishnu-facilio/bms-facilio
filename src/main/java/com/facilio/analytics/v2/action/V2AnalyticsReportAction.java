@@ -3,10 +3,13 @@ package com.facilio.analytics.v2.action;
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.analytics.v2.context.V2ReportContext;
+import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.ims.handler.AuditLogHandler;
 import com.facilio.modules.FacilioModule;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFactoryFields;
@@ -17,7 +20,10 @@ import com.facilio.v3.exception.RESTException;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import java.util.function.Function;
 
 
 @Getter @Setter
@@ -41,6 +47,7 @@ public class V2AnalyticsReportAction extends V3Action {
         chain.execute();
         ReportContext report = (ReportContext)context.get(FacilioConstants.ContextNames.REPORT);
         setData(FacilioConstants.ContextNames.REPORT_ID, report != null ? report.getId() : -1);
+        this.setReportAuditLogs(report.getModule().getDisplayName(), report, "Analytics Report {%s} has been created.", AuditLogHandler.ActionType.ADD);
         return V3Action.SUCCESS;
     }
     public String update()throws Exception
@@ -53,6 +60,7 @@ public class V2AnalyticsReportAction extends V3Action {
         chain.execute();
         ReportContext report = (ReportContext)context.get(FacilioConstants.ContextNames.REPORT);
         setData(FacilioConstants.ContextNames.REPORT_ID, report != null ? report.getId() : -1);
+        setReportAuditLogs(report.getModule().getDisplayName(), report, "Analytics Report {%s} has been updated.", AuditLogHandler.ActionType.ADD);
         return V3Action.SUCCESS;
     }
 
@@ -66,6 +74,7 @@ public class V2AnalyticsReportAction extends V3Action {
         context.put("actionType", FacilioConstants.ContextNames.DELETE);
         chain.execute();
         setData("result", "success");
+        sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Analytics Report {%s} has been deleted.", (String)context.get("reportName")), "", AuditLogHandler.RecordType.MODULE, (String) context.get("moduleName"), reportId));
         return V3Action.SUCCESS;
     }
 
@@ -156,5 +165,25 @@ public class V2AnalyticsReportAction extends V3Action {
         {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "ReportContext is mandatory.");
         }
+    }
+    public void setReportAuditLogs(String moduleDisplayName, ReportContext reportContext, String log_message, AuditLogHandler.ActionType actionType) throws Exception
+    {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String moduleName = FacilioConstants.ContextNames.ENERGY_DATA_READING;
+        Long moduleId = modBean.getModule(moduleName).getModuleId();
+        AuditLogHandler.AuditLogContext auditLog = new AuditLogHandler.AuditLogContext(String.format(log_message, reportContext.getName(), moduleDisplayName), reportContext.getDescription(), AuditLogHandler.RecordType.MODULE, moduleName, reportContext.getId())
+                .setActionType(actionType)
+                .setLinkConfig(((Function<Void, String>) o -> {
+                    JSONArray array = new JSONArray();
+                    JSONObject json = new JSONObject();
+                    json.put("reportId", reportContext.getId());
+                    json.put("moduleName", moduleName);
+                    json.put("moduleId", moduleId);
+                    json.put("reportType", reportContext.getType());
+                    json.put("moduleType", false);
+                    array.add(json);
+                    return array.toJSONString();
+                }).apply(null));
+        sendAuditLogs(auditLog);
     }
 }
