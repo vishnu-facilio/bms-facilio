@@ -21,3 +21,6 @@ clientapps:
   - name: dashboard
     baseUrl: https://static.facilio.com/dashboard
     stageBaseUrl: https://static.facilio.com/dev
+  - name: dispatcher
+    baseUrl: https://static.facilio.com/dispatcher
+    stageBaseUrl: https://static.facilio.com/dev
