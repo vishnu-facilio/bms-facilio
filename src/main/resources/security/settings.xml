@@ -3874,8 +3874,6 @@
         </requestbody>
     </request>
     
-    <request path="/api/v2/pdftemplates/preview/:id/:recordId" method="GET">
-        <requestbody type="object">
     <request path="/api/v2/pdftemplates/preview/:moduleName/:id/:recordId" method="GET">
         <urlparams>
             <property name="moduleName" type="string"/>
