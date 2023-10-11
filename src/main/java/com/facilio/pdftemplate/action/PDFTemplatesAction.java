@@ -50,6 +50,8 @@ public class PDFTemplatesAction extends V3Action {
         FacilioContext context = chain.getContext();
 
         context.put(FacilioConstants.ContextNames.ID, getId());
+        context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
         chain.execute();
 
         setData(FacilioConstants.ContextNames.PDF_TEMPLATE, context.get(FacilioConstants.ContextNames.PDF_TEMPLATE));
@@ -73,6 +75,9 @@ public class PDFTemplatesAction extends V3Action {
 
         FacilioChain chain = ReadOnlyChainFactory.getPreviewPDFTemplateChain();
         FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, getId());
+        context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
         chain.execute();
 
         setData(FacilioConstants.ContextNames.PDF_TEMPLATE_HTML, context.get(FacilioConstants.ContextNames.PDF_TEMPLATE_HTML));
@@ -85,6 +90,9 @@ public class PDFTemplatesAction extends V3Action {
 
         FacilioChain chain = ReadOnlyChainFactory.getDownloadPDFTemplateChain();
         FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, getId());
+        context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
         chain.execute();
 
         setData(FacilioConstants.ContextNames.FILE_ID, context.get(FacilioConstants.ContextNames.FILE_ID));

@@ -3771,11 +3771,12 @@
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/pdftemplates/preview/:id/:recordId" method="GET">
-        <requestbody type="object">
-            <property name="id" type="number"></property>
-            <property name="recordId" type="number"></property>
-        </requestbody>
+    <request path="/api/v1/setup/pdftemplates/preview" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="id" type="number" />
+            <property name="recordId" type="number" />
+        </urlparams>
     </request>
 
     <request path="/api/v1/setup/pdftemplates/addOrUpdate" method="POST">
@@ -4004,16 +4005,15 @@
         </requestbody>
     </request>
     
-    <request path="/api/v2/pdftemplates/preview/:moduleName/:id/:recordId" method="GET">
+    <request path="/api/v3/pdftemplates/preview/:moduleName/:id/:recordId" method="GET">
         <urlparams>
             <property name="moduleName" type="string"/>
             <property name="id" type="number"></property>
             <property name="recordId" type="number"></property>
-
         </urlparams>
     </request>
 
-    <request path="/api/v2/pdftemplates/download/:moduleName/:id/:recordId" method="GET">
+    <request path="/api/v3/pdftemplates/download/:moduleName/:id/:recordId" method="GET">
         <urlparams>
             <property name="moduleName" type="string"/>
             <property name="id" type="number"></property>
