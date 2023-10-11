@@ -351,7 +351,7 @@ public class ApplicationAction extends FacilioAction {
 					return "unauthorized";
 				}
 				if (currentUserRole.getIsPrevileged() == null || !currentUserRole.getIsPrevileged()) {
-					if (CollectionUtils.isEmpty(currentUserRole.getPermissions()) && CollectionUtils.isEmpty(currentUserRole.getNewPermissions())) {
+					if (CollectionUtils.isEmpty(currentUserRole.getNewPermissions())) {
 						return "unauthorized";
 					}
 				}
