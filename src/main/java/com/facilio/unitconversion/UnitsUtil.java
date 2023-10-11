@@ -67,20 +67,20 @@ public class UnitsUtil {
 			if(!from.isSiUnit()) {
 				String toSiUnitFormula = from.getToSiUnit();
 				toSiUnitFormula = toSiUnitFormula.replaceAll(FORMULA_THIS_PLACE_HOLDER_STRING, value.toString());
-				Expression expression = new Expression(toSiUnitFormula).setPrecision(8);
+				Expression expression = new Expression(toSiUnitFormula).setPrecision(11);
 				value = expression.eval();
 			}
 			
 			if(!to.isSiUnit()) {
 				String fromSiUnitFormula = to.getFromSiUnit();
 				fromSiUnitFormula = fromSiUnitFormula.replaceAll(FORMULA_SI_PLACE_HOLDER_STRING, value.toString());
-				Expression expression = new Expression(fromSiUnitFormula).setPrecision(8);
+				Expression expression = new Expression(fromSiUnitFormula).setPrecision(11);
 				value = expression.eval();
 			}
-			double returnValue =  Double.valueOf(value.toString());
+			double returnValue =  Double.parseDouble(value.toString());
 			
 			if(to.isRoundOffNeeded()) {
-				returnValue = Double.valueOf(String.valueOf(Math.round(returnValue)));
+				returnValue = Double.parseDouble(String.valueOf(Math.round(returnValue)));
 			}
 			
 			return returnValue;
