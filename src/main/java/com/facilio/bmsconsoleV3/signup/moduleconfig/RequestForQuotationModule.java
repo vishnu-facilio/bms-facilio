@@ -1,31 +1,137 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
+import com.facilio.bmsconsole.TemplatePages.PurchaseOrderTemplatePage;
+import com.facilio.bmsconsole.TemplatePages.RequestForQuotationTemplatePage;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.util.RelationshipWidgetUtil;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
 public class RequestForQuotationModule extends BaseModuleConfig{
     public RequestForQuotationModule(){
         setModuleName(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+    }
+    public void addData() throws Exception {
+        addSystemButtons();
+    }
+    private static void addSystemButtons() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> rfqFields = modBean.getAllFields(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+        Map<String,FacilioField> rfqFieldMap = FieldFactory.getAsMap(rfqFields);
+
+        SystemButtonRuleContext downloadPdf = new SystemButtonRuleContext();
+        downloadPdf.setName("Download Pdf");
+        downloadPdf.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadPdf.setIdentifier("downloadPdf");
+        downloadPdf.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,downloadPdf);
+
+        SystemButtonRuleContext printPdf = new SystemButtonRuleContext();
+        printPdf.setName("Print Pdf");
+        printPdf.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        printPdf.setIdentifier("printPdf");
+        printPdf.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,printPdf);
+
+        SystemButtonRuleContext publishRfq = new SystemButtonRuleContext();
+        publishRfq.setName("Publish RFQ");
+        publishRfq.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        publishRfq.setIdentifier("publishRfq");
+        publishRfq.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria publishBtnCriteria = new Criteria();
+        publishBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("isRfqFinalized"),"false", BooleanOperators.IS));
+        publishBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("approvalStatus"), CommonOperators.IS_EMPTY));
+        publishBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("approvalFlowId"), CommonOperators.IS_EMPTY));
+        publishRfq.setCriteria(publishBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,publishRfq);
+
+        SystemButtonRuleContext closeSubmissionBtn = new SystemButtonRuleContext();
+        closeSubmissionBtn.setName("Close Submission");
+        closeSubmissionBtn.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        closeSubmissionBtn.setIdentifier("closeSubmission");
+        closeSubmissionBtn.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria closeSubmissionBtnCriteria = new Criteria();
+        closeSubmissionBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("isRfqFinalized"),"true", BooleanOperators.IS));
+        closeSubmissionBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("isQuoteReceived"),"false", BooleanOperators.IS));
+        closeSubmissionBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("approvalStatus"), CommonOperators.IS_EMPTY));
+        closeSubmissionBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("approvalFlowId"), CommonOperators.IS_EMPTY));
+        closeSubmissionBtn.setCriteria(closeSubmissionBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,closeSubmissionBtn);
+
+        SystemButtonRuleContext assessAndAwardBtn = new SystemButtonRuleContext();
+        assessAndAwardBtn.setName("Assess & Award");
+        assessAndAwardBtn.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        assessAndAwardBtn.setIdentifier("assessAndAward");
+        assessAndAwardBtn.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria assessAndAwardBtnCriteria = new Criteria();
+        assessAndAwardBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("isQuoteReceived"),"true", BooleanOperators.IS));
+        assessAndAwardBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("isAwarded"),"false", BooleanOperators.IS));
+        assessAndAwardBtn.setCriteria(assessAndAwardBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,assessAndAwardBtn);
+
+        SystemButtonRuleContext viewAwardSummaryBtn = new SystemButtonRuleContext();
+        viewAwardSummaryBtn.setName("View Award Summary");
+        viewAwardSummaryBtn.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        viewAwardSummaryBtn.setIdentifier("viewAwardSummary");
+        viewAwardSummaryBtn.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria viewAwardSummaryBtnCriteria = new Criteria();
+        viewAwardSummaryBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("isAwarded"),"true", BooleanOperators.IS));
+        viewAwardSummaryBtn.setCriteria(viewAwardSummaryBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,viewAwardSummaryBtn);//
+
+        SystemButtonRuleContext discardRfqBtn = new SystemButtonRuleContext();
+        discardRfqBtn.setName("Discard RFQ");
+        discardRfqBtn.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        discardRfqBtn.setIdentifier("discardRfq");
+        discardRfqBtn.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria discardRfqBtnCriteria = new Criteria();
+        discardRfqBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("isAwarded"),"false", BooleanOperators.IS));
+        discardRfqBtn.setCriteria(discardRfqBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,discardRfqBtn);
+
+        SystemButtonRuleContext edit = new SystemButtonRuleContext();
+        edit.setName("Edit");
+        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        edit.setIdentifier("edit");
+        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        edit.setPermissionRequired(true);
+        Criteria editBtnCriteria = new Criteria();
+        editBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("isRfqFinalized"),"false", BooleanOperators.IS));
+        edit.setCriteria(editBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,edit);
+
+
     }
 
     @Override
@@ -307,4 +413,71 @@ public class RequestForQuotationModule extends BaseModuleConfig{
 
     }
 
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String> appNames = new ArrayList<>();
+        appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,getRequestForQuotationViewPage(app, module));
+        }
+        return appNameVsPage;
+    }
+    private List<PagesContext> getRequestForQuotationViewPage(ApplicationContext app, FacilioModule module) throws Exception {
+        JSONObject historyWidgetParam = new JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_ACTIVITY);
+        return new ModulePages()
+                .addPage("requestForQuotationViewPage", "Default Request For Quotation View Page", "", null, false, true, true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("requestForQuotationPdfViewer", null, null)
+                .addWidget("requestForQuotationPdfViewerWidget", null, PageWidget.WidgetType.PDF_VIEWER, "flexiblewebpdfviewer_19", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("vendors", "Vendors", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("vendorsfields", null, null)
+                .addWidget("vendorsFieldsWidget", "Vendors", PageWidget.WidgetType.REQUEST_FOR_QUOTATION_VENDOR_LIST, "flexiblewebrequestforquotationvendorlist_9", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("noteandinformation","Notes & Information", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("requestForQuotationSummaryFields", null, null)
+                .addWidget("requestForQuotationSummaryFieldsWidget", "Request For Quotation Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, RequestForQuotationTemplatePage.getSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("requestForQuotationwidgetGroup", null,  null)
+                .addWidget("requestForQuotationcommentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, RequestForQuotationTemplatePage.getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("requestForQuotationrelatedlist", "Related List", "List of related records across modules")
+                .addWidget("requestForQuotationbulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_6", 0, 0,  null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("history","History",PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("purchaseOrderHistory",null,null)
+                .addWidget("purchaseOrderHistoryWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0,  historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone()
+                .getCustomPages();
+    }
 }

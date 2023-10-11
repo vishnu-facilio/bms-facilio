@@ -1,11 +1,20 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.TemplatePages.ReceivablesTemplatePage;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -17,7 +26,27 @@ public class ReceivableModule extends BaseModuleConfig{
     public ReceivableModule(){
         setModuleName(FacilioConstants.ContextNames.RECEIVABLE);
     }
+    public void addData() throws Exception {
+        addSystemButtons();
+    }
 
+    private static void addSystemButtons() throws Exception {
+
+        SystemButtonRuleContext addReceiptButton = new SystemButtonRuleContext();
+        addReceiptButton.setName("Add Receipt");
+        addReceiptButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        addReceiptButton.setIdentifier("addReceiptButton");
+        addReceiptButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.RECEIVABLE,addReceiptButton);
+
+        SystemButtonRuleContext returnReceiptButton = new SystemButtonRuleContext();
+        returnReceiptButton.setName("Return");
+        returnReceiptButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        returnReceiptButton.setIdentifier("returnReceiptButton");
+        returnReceiptButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.RECEIVABLE,returnReceiptButton);
+
+    }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
@@ -107,4 +136,43 @@ public class ReceivableModule extends BaseModuleConfig{
 
         return receivableStatusCriteria;
     }
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String> appNames = new ArrayList<>();
+        appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,getReceivableViewPage(app, module));
+        }
+        return appNameVsPage;
+    }
+    private List<PagesContext> getReceivableViewPage(ApplicationContext app, FacilioModule module) throws Exception {
+
+        return new ModulePages()
+                .addPage("receivableViewPage", "Default Receivable View Page", "", null, false, true, true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summaryfields", null, null)
+                .addWidget("summaryFieldsWidget", "Receivable Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, ReceivablesTemplatePage.getSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("receipts", null, null)
+                .addWidget("receiptsWidget", "Receipts", PageWidget.WidgetType.RECEIVABLE_RECEIPT_LIST, "flexiblewebreceiptlist_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null,  null)
+                .addWidget("commentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, ReceivablesTemplatePage.getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone()
+                .getCustomPages();
+    }
+
 }

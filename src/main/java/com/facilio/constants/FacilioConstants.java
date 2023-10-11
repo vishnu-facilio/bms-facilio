@@ -2063,12 +2063,14 @@ public class FacilioConstants {
 
 		public static final String PURCHASE_REQUEST = "purchaserequest";
 		public static final String PURCHASE_REQUEST_NOTES = "purchaserequestnotes";
+		public static final String PURCHASE_REQUEST_ATTACHMENTS = "purchaserequestattachments";
 		public static final String PURCHASE_REQUESTS = "purchaserequests";
 		public static final String PURCHASE_REQUEST_LINE_ITEMS = "purchaserequestlineitems";
 		public static final String STATUS = "status";
 
 		public static final String PURCHASE_ORDER = "purchaseorder";
 		public static final String PURCHASE_ORDER_NOTES = "purchaseordernotes";
+		public static final String PURCHASE_ORDER_ATTACHMENTS = "purchaseorderattachments";
 		public static final String PURCHASE_ORDERS = "purchaseorders";
 
 		public static final String PURCHASE_ORDER_ACTIVITY = "poactivity";
@@ -2422,6 +2424,8 @@ public class FacilioConstants {
 		public static final String SERVICE_REQUEST_ATTACHMENT = "servicerequestsattachments";
 
 		public static final String SAFETY_PLAN = "safetyPlan";
+		public static final String SAFETY_PLAN_NOTES = "safetyPlanNotes";
+		public static final String SAFETY_PLAN_ATTACHMENTS = "safetyPlanAttachments";
 		public static final String HAZARD = "hazard";
 
 		public static final String SAFETY_PLANS = "safetyPlans";
@@ -2609,12 +2613,16 @@ public class FacilioConstants {
 		public static final String SCATTER_BASELINE_DATA = "baselineData";
 		public static final String SCATTER_BASELINE_COLOR = "baselineDataColor";
 		public static final String TRANSFER_REQUEST = "transferrequest";
+		public static final String TRANSFER_REQUEST_NOTES ="transferrequestnotes";
+		public static final String TRANSFER_REQUEST_ATTACHMENT ="transferrequestattachments";
 		public static final String TRANSFER_REQUEST_LINE_ITEM = "transferrequestlineitems";
 		public static final String TRANSFER_REQUEST_PURCHASED_ITEMS = "transferrequestpurchaseditems";
 		public static final String TRANSFER_REQUEST_PURCHASED_TOOLS= "transferrequestpurchasedtools";
 		public static final String TRANSFER_REQUEST_SHIPMENT = "transferrequestshipment";
 		public static final String TRANSFER_REQUEST_SHIPMENT_RECEIVABLES = "transferrequestshipmentreceivables";
 		public static final String REQUEST_FOR_QUOTATION = "requestForQuotation";
+		public static final String REQUEST_FOR_QUOTATION_NOTES ="requestForQuotationNotes";
+		public static final String REQUEST_FOR_QUOTATION_ATTACHMENTS ="requestForQuotationAttachment";
 		public static final String REQUEST_FOR_QUOTATION_VENDORS = "requestForQuotationVendors";
 		public static final String REQUEST_FOR_QUOTATION_LINE_ITEMS = "requestForQuotationLineItems";
 		public static final String REQUEST_FOR_QUOTATION_CONTEXT = "requestForQuotationContext";

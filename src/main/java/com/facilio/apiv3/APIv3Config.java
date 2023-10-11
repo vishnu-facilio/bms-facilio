@@ -864,7 +864,14 @@ public class APIv3Config {
                 .delete()
                 .build();
     }
-
+    @Module(FacilioConstants.ContextNames.TRANSFER_REQUEST_LINE_ITEM)
+    public static Supplier<V3Config> getTransferRequestLineItems() {
+        return () -> new V3Config(V3TransferRequestContext.class, new ModuleCustomFieldCount30())
+                .list()
+                .fetchSupplement(FacilioConstants.ContextNames.TRANSFER_REQUEST_LINE_ITEM, "itemType")
+                .fetchSupplement(FacilioConstants.ContextNames.TRANSFER_REQUEST_LINE_ITEM, "toolType")
+                .build();
+    }
     @Module("transferrequestshipment")
     public static Supplier<V3Config> getTransferRequestShipment() {
         return () -> new V3Config(V3TransferRequestShipmentContext.class, new ModuleCustomFieldCount30())

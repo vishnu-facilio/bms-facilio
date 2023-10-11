@@ -1,21 +1,36 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
-import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
+import com.facilio.bmsconsole.TemplatePages.PurchaseOrderTemplatePage;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.util.RelationshipWidgetUtil;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -23,7 +38,73 @@ public class PurchaseOrderModule extends BaseModuleConfig{
     public PurchaseOrderModule(){
         setModuleName(FacilioConstants.ContextNames.PURCHASE_ORDER);
     }
+    public void addData() throws Exception {
+        addSystemButtons();
+    }
 
+    private static void addSystemButtons() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> poFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_ORDER);
+        Map<String,FacilioField> poFieldMap = FieldFactory.getAsMap(poFields);
+
+        SystemButtonRuleContext downloadPdf = new SystemButtonRuleContext();
+        downloadPdf.setName("Download Pdf");
+        downloadPdf.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadPdf.setIdentifier("downloadPdf");
+        downloadPdf.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_ORDER,downloadPdf);
+
+        SystemButtonRuleContext printPdf = new SystemButtonRuleContext();
+        printPdf.setName("Print Pdf");
+        printPdf.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        printPdf.setIdentifier("printPdf");
+        printPdf.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_ORDER,printPdf);
+
+        SystemButtonRuleContext associateTerms = new SystemButtonRuleContext();
+        associateTerms.setName("Associate Terms");
+        associateTerms.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        associateTerms.setIdentifier("associateTerms");
+        associateTerms.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_ORDER,associateTerms);
+
+        SystemButtonRuleContext gotoReceivables = new SystemButtonRuleContext();
+        gotoReceivables.setName("Go to Receivables");
+        gotoReceivables.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        gotoReceivables.setIdentifier("gotoReceivables");
+        gotoReceivables.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_ORDER,gotoReceivables);
+
+        SystemButtonRuleContext completePo = new SystemButtonRuleContext();
+        completePo.setName("Complete PO");
+        completePo.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        completePo.setIdentifier("completePo");
+        completePo.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        completePo.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        completePo.setPermissionRequired(true);
+        Criteria poBtnCriteria = new Criteria();
+        poBtnCriteria.addAndCondition(CriteriaAPI.getCondition(poFieldMap.get("receivableStatus"),String.valueOf(ReceivableContext.Status.RECEIVED.getValue()), EnumOperators.ISN_T));
+        poBtnCriteria.addAndCondition(CriteriaAPI.getCondition(poFieldMap.get("approvalStatus"), CommonOperators.IS_EMPTY));
+        poBtnCriteria.addAndCondition(CriteriaAPI.getCondition(poFieldMap.get("approvalFlowId"), CommonOperators.IS_EMPTY));
+        poBtnCriteria.addAndCondition(CriteriaAPI.getCondition(poFieldMap.get("completedTime"), CommonOperators.IS_EMPTY));
+        completePo.setCriteria(poBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_ORDER,completePo);
+
+        SystemButtonRuleContext edit = new SystemButtonRuleContext();
+        edit.setName("Edit");
+        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        edit.setIdentifier("edit");
+        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        edit.setPermissionRequired(true);
+        Criteria poEditBtnCriteria = new Criteria();
+        poEditBtnCriteria.addAndCondition(CriteriaAPI.getCondition(poFieldMap.get("receivableStatus"),String.valueOf(ReceivableContext.Status.YET_TO_RECEIVE.getValue()), EnumOperators.IS));
+        poEditBtnCriteria.addAndCondition(CriteriaAPI.getCondition(poFieldMap.get("completedTime"),CommonOperators.IS_EMPTY));
+        edit.setCriteria(poEditBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_ORDER,edit);
+
+
+    }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
@@ -145,6 +226,70 @@ public class PurchaseOrderModule extends BaseModuleConfig{
 
         return glimpseList;
 
+    }
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String> appNames = new ArrayList<>();
+        appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,getPurchaseOrderViewPage(app, module));
+        }
+        return appNameVsPage;
+    }
+    private List<PagesContext> getPurchaseOrderViewPage(ApplicationContext app, FacilioModule module) throws Exception {
+        JSONObject historyWidgetParam = new JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.PURCHASE_ORDER_ACTIVITY);
+        return new ModulePages()
+                .addPage("purchaseOrderViewPage", "Default Purchase Order View Page", "", null, false, true, true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("purchaseOrderPdfViewer", null, null)
+                .addWidget("purchaseOrderPdfViewerWidget", "", PageWidget.WidgetType.PDF_VIEWER, "flexiblewebpdfviewer_19", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("noteandinformation","Notes & Information",PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("purchaseOrderSummaryfields", null, null)
+                .addWidget("purchaseOrderSummaryFieldsWidget", "Purchase Order Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, PurchaseOrderTemplatePage.getSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("purchaseorderwidgetGroup", null,  null)
+                .addWidget("purchaseordercommentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, PurchaseOrderTemplatePage.getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("purchaseorderrelationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("purchaseorderbulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("purchaseorderrelatedlist", "Related List", "List of related records across modules")
+                .addWidget("purchaseorderbulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_6", 0, 0,  null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("history","History",PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("purchaseOrderHistory",null,null)
+                .addWidget("purchaseOrderHistoryWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0,  historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone()
+                .getCustomPages();
     }
 
 }

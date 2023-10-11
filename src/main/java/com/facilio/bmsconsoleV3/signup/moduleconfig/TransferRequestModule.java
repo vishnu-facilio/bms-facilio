@@ -1,13 +1,23 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.TemplatePages.TransferRequestTemplatePage;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -20,6 +30,73 @@ import java.util.*;
 public class TransferRequestModule extends BaseModuleConfig{
     public TransferRequestModule(){
         setModuleName(FacilioConstants.ContextNames.TRANSFER_REQUEST);
+    }
+
+    public void addData() throws Exception {
+        addSystemButtons();
+    }
+
+    private static void addSystemButtons() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> trFields = modBean.getAllFields(FacilioConstants.ContextNames.TRANSFER_REQUEST);
+        Map<String,FacilioField> trFieldMap = FieldFactory.getAsMap(trFields);
+
+        SystemButtonRuleContext stageRequest = new SystemButtonRuleContext();
+        stageRequest.setName("Stage Request");
+        stageRequest.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        stageRequest.setIdentifier("stageRequest");
+        stageRequest.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria stageRequestBtnCriteria = new Criteria();
+        stageRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isStaged"),"false", BooleanOperators.IS));
+        stageRequest.setCriteria(stageRequestBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TRANSFER_REQUEST,stageRequest);
+
+        SystemButtonRuleContext shipRequest = new SystemButtonRuleContext();
+        shipRequest.setName("Ship Request");
+        shipRequest.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        shipRequest.setIdentifier("shipRequest");
+        shipRequest.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria shipRequestBtnCriteria = new Criteria();
+        shipRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isStaged"),"true", BooleanOperators.IS));
+        shipRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isShipped"),"false", BooleanOperators.IS));
+        shipRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isShipmentTrackingNeeded"),"true", BooleanOperators.IS));
+        shipRequest.setCriteria(shipRequestBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TRANSFER_REQUEST,shipRequest);
+
+        SystemButtonRuleContext completeRequest = new SystemButtonRuleContext();
+        completeRequest.setName("Complete Request");
+        completeRequest.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        completeRequest.setIdentifier("completeRequest");
+        completeRequest.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria completeRequestBtnCriteria = new Criteria();
+        completeRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isStaged"),"true", BooleanOperators.IS));
+        completeRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isShipped"),"true", BooleanOperators.IS));
+        completeRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isCompleted"),"false", BooleanOperators.IS));
+        completeRequest.setCriteria(completeRequestBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TRANSFER_REQUEST,completeRequest);
+
+        SystemButtonRuleContext goToShipment = new SystemButtonRuleContext();
+        goToShipment.setName("Go To Shipment");
+        goToShipment.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        goToShipment.setIdentifier("goToShipment");
+        goToShipment.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria goToShipmentBtnCriteria = new Criteria();
+        goToShipmentBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isShipped"),"true", BooleanOperators.IS));
+        goToShipment.setCriteria(goToShipmentBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TRANSFER_REQUEST,goToShipment);
+
+        SystemButtonRuleContext edit = new SystemButtonRuleContext();
+        edit.setName("Edit");
+        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        edit.setIdentifier("edit");
+        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        edit.setPermissionRequired(true);
+        Criteria editBtnCriteria = new Criteria();
+        editBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isStaged"),"false", BooleanOperators.IS));
+        edit.setCriteria(editBtnCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TRANSFER_REQUEST,edit);
+
     }
 
     @Override
@@ -108,4 +185,52 @@ public class TransferRequestModule extends BaseModuleConfig{
 
         return Collections.singletonList(transferRequestForm);
     }
+
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String> appNames = new ArrayList<>();
+        appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,getTransferRequestViewPage(app, module));
+        }
+        return appNameVsPage;
+    }
+    private List<PagesContext> getTransferRequestViewPage(ApplicationContext app, FacilioModule module) throws Exception {
+
+        return new ModulePages()
+                .addPage("transferRequestViewPage", "Default Transfer Request View Page", "", null, false, true, true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("transferrequestsummaryfields", null, null)
+                .addWidget("transferrequestsummaryFieldsWidget", "Transfer Requests",  PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, TransferRequestTemplatePage.getSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("summaryDetailsCard",null,null)
+                .addWidget("transferrequestcard1","",PageWidget.WidgetType.TRANSFER_REQUEST_DETAILS_CARD,"webtransferrequestitemlist_2_4",0,0,TransferRequestTemplatePage.getSummaryCardDetails("Transfer from store","transferFromStore.name","Transfer to store","transferToStore.name",false),null)
+                .widgetDone()
+                .addWidget("transferrequestcard2","",PageWidget.WidgetType.TRANSFER_REQUEST_DETAILS_CARD,"webtransferrequestitemlist_2_4",4,0,TransferRequestTemplatePage.getSummaryCardDetails("Transfer initiated on","transferInitiatedOn","Expected arrival date","expectedCompletionDate",true),null)
+                .widgetDone()
+                .addWidget("transferrequestcard3","",PageWidget.WidgetType.TRANSFER_REQUEST_DETAILS_CARD,"webtransferrequestitemlist_2_4",8,0,TransferRequestTemplatePage.getSummaryCardDetails("Transferred by","transferredBy.name","Created By","sysCreatedBy.name",false),null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("transferItemListItem", null, null)
+                .addWidget("transferItemList", "Line Items", PageWidget.WidgetType.LINE_ITEMS_LIST,"flexiblewebtransferitemlist_6", 0, 0,  TransferRequestTemplatePage.getLineItemListParams(), null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("transferrequestwidgetGroup", null,  null)
+                .addWidget("transferrequestcommentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, TransferRequestTemplatePage.getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone()
+                .getCustomPages();
+    }
+
 }

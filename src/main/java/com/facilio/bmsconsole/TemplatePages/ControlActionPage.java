@@ -61,7 +61,7 @@ public class ControlActionPage implements TemplatePageFactory{
                 .widgetDone()
                 .addWidget("controlactionsitecriteriafieldswidget", "Site Field Criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_6_6", 6, 0, getSummaryCriteriaListWidgetDetails(FacilioConstants.ContextNames.SITE,"siteCriteriaId"),null)
                 .widgetDone()
-                .addWidget("controlactioncontrollercriteriafieldswidget", "Controller Field Criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_6_6", 0, 28, getSummaryCriteriaListWidgetDetails("controllers","controllerCriteriaId"),null)
+                .addWidget("controlactioncontrollercriteriafieldswidget", "Controller Field Criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_6_6", 0, 6, getSummaryCriteriaListWidgetDetails("controllers","controllerCriteriaId"),null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
