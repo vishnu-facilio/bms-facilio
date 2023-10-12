@@ -7,11 +7,14 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.context.RelationContext;
+import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ public class WaterMeterModule extends BaseModuleConfig{
         addModuleChain.execute();
 
         insertWaterUtilityType();
+        addRelationships();
 
     }
 
@@ -98,5 +102,24 @@ public class WaterMeterModule extends BaseModuleConfig{
 
         insertWaterMeterBuilder.addRecord(waterTypeContext);
         insertWaterMeterBuilder.save();
+    }
+
+    private void addRelationships() throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule parentModule = modBean.getModule(FacilioConstants.Meter.WATER_METER);
+        FacilioModule childModule = modBean.getModule(FacilioConstants.Meter.WATER_METER);
+        RelationRequestContext parentMeterVsChildMeterRelation = new RelationRequestContext();
+        parentMeterVsChildMeterRelation.setName("parentmeter");
+        parentMeterVsChildMeterRelation.setDescription("Parent Vs Child meter relationship");
+        parentMeterVsChildMeterRelation.setFromModuleId(parentModule.getModuleId());
+        parentMeterVsChildMeterRelation.setToModuleId(childModule.getModuleId());
+        parentMeterVsChildMeterRelation.setRelationType(RelationRequestContext.RelationType.ONE_TO_MANY);
+        parentMeterVsChildMeterRelation.setRelationName("parent to");
+        parentMeterVsChildMeterRelation.setReverseRelationName("child of");
+        parentMeterVsChildMeterRelation.setRelationCategory(RelationContext.RelationCategory.METER);
+        FacilioChain chain = TransactionChainFactory.getAddOrUpdateRelationChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.RELATION, parentMeterVsChildMeterRelation);
+        chain.execute();
     }
 }

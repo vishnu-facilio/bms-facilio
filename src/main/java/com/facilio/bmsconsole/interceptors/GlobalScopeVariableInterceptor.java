@@ -78,7 +78,7 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
                     List<Long> evaluatedValues = null;
                     if(needValueGeneration(valueGeneratorContext)) {
                         if (gs.getType() == GlobalScopeVariableContext.Type.SCOPED.getIndex()) {
-                            computedValGenIds = computeAndSetValueGenerators(ValueGenLinkName);
+//                            computedValGenIds = computeAndSetValueGenerators(ValueGenLinkName);
                         }
                         if (CollectionUtils.isNotEmpty(switchValues)) {
                             if (computedValGenIds != null) { //When empty list all values are accessible

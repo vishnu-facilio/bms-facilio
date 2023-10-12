@@ -224,6 +224,11 @@ public class RelatedListWidgetUtil {
             }
             else {
                 switch (module.getName()) {
+                    case FacilioConstants.ContextNames.SAFETY_PLAN:
+                    case FacilioConstants.ContextNames.PURCHASE_ORDER:
+                    case FacilioConstants.ContextNames.PURCHASE_REQUEST:
+                    case FacilioConstants.ContextNames.TRANSFER_REQUEST:
+                    case FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION:
                     case AlarmFilterRuleModule.MODULE_NAME:
                         moduleTypes.add(FacilioModule.ModuleType.SUB_ENTITY);
                         break;

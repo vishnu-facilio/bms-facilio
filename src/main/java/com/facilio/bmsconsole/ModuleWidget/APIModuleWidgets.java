@@ -592,6 +592,14 @@ public class APIModuleWidgets {
                 .addWidgetConfig("webtenantupcomingfacilitybookingwidget_2_3","Upcoming Facility Booking -2 -3",WidgetConfigContext.ConfigType.FIXED,2,3,PagesContext.PageLayoutType.WEB)
                 .done();
     }
+
+    @WidgetsForModule(FacilioConstants.ContextNames.PURCHASE_ORDER)
+    public static Supplier<ModuleWidgets> getPurchaseOrderWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("pdfViewer" , "Pdf Viewer",PageWidget.WidgetType.PDF_VIEWER)
+                .addFlexibleWidgetConfig("flexiblewebpdfviewer_19", "Pdf Viewer - 19",19, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
     @WidgetsForModule(FacilioConstants.ContextNames.VENDOR_QUOTES)
     public static Supplier<ModuleWidgets> getVendorQuoteTemplateWidgets() {
         return () -> new ModuleWidgets()
@@ -749,6 +757,50 @@ public class APIModuleWidgets {
                 .addWidgetConfig("evaluationTeamDetails_4_3","Evaluation Team Details - 18 - 3",WidgetConfigContext.ConfigType.FIXED,18,3,PagesContext.PageLayoutType.WEB)
                 .done();
 
+    }
+
+    @WidgetsForModule(FacilioConstants.ContextNames.PURCHASE_REQUEST)
+    public static Supplier<ModuleWidgets> getPurchaseRequestWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("pdfViewer" , "Pdf Viewer",PageWidget.WidgetType.PDF_VIEWER)
+                .done();
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.SAFETY_PLAN)
+    public static Supplier<ModuleWidgets> getSafetyPlanWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("workAssetList" , "Work Asset List",PageWidget.WidgetType.WORK_ASSET_LIST)
+                .addFlexibleWidgetConfig("flexiblewebsafetyplanworkassetwidget_6", "Work Asset List - 6",6, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("safetyplanhazard", "SafetyPlan Hazard", PageWidget.WidgetType.SAFETYPLAY_HAZARD)
+                .done()
+                .addModuleWidget("safetyplanprecautions", "Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .done();
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION)
+    public static Supplier<ModuleWidgets> getRequestForQuotationWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("pdfViewer" , "Pdf Viewer",PageWidget.WidgetType.PDF_VIEWER)
+                .done()
+                .addModuleWidget("requestForQuotationVendorList","Request For Quotation Vendor List",PageWidget.WidgetType.REQUEST_FOR_QUOTATION_VENDOR_LIST)
+                .addFlexibleWidgetConfig("flexiblewebrequestforquotationvendorlist_9", "Request For Quotation Vendor List - 9",9, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.TRANSFER_REQUEST)
+    public static Supplier<ModuleWidgets> getTransferRequestWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("TransferRequestDetailsCard" , "Transfer Request Details Card",PageWidget.WidgetType.TRANSFER_REQUEST_DETAILS_CARD)
+                .addFixedWidgetConfig("webtransferrequestitemlist_2_4","Transfer Request Detail Card - 2 - 4",2,4,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("lineItemsList" , "Line Items List",PageWidget.WidgetType.LINE_ITEMS_LIST)
+                .addFlexibleWidgetConfig("flexiblewebtransferitemlist_6","Transfer Request Item List - 6",6, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.RECEIVABLE)
+    public static Supplier<ModuleWidgets> getReceivableWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("receiptList","Receipt List",PageWidget.WidgetType.RECEIVABLE_RECEIPT_LIST)
+                .addFlexibleWidgetConfig("flexiblewebreceiptlist_6", "Receipt List - 6",6, PagesContext.PageLayoutType.WEB)
+                .done();
     }
 
 

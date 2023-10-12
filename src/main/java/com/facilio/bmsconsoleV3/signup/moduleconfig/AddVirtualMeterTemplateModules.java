@@ -297,7 +297,7 @@ public class AddVirtualMeterTemplateModules extends SignUpData {
         SystemButtonRuleContext editVMTemplate = new SystemButtonRuleContext();
         editVMTemplate.setName("Edit");
         editVMTemplate.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        editVMTemplate.setIdentifier("editVirtualMeterTemplate");
+        editVMTemplate.setIdentifier("edit");
         editVMTemplate.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE,editVMTemplate);
 

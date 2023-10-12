@@ -28,5 +28,10 @@ services:
     instanceName: default
     dbName: accesslog
 
+  - serviceName: clickhouse
+    instanceName: default
+    dbName: bms
+    publicAccess: false
+
   - serviceName: app
     handlerClass: com.facilio.accounts.util.AppDataSourceImpl

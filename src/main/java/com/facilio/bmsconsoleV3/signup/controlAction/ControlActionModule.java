@@ -124,7 +124,7 @@ public class ControlActionModule extends BaseModuleConfig {
                 .widgetDone()
                 .addWidget("controlactionsitecriteriafieldswidget", "Site Field Criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_6_6", 6, 0, ControlActionPage.getSummaryCriteriaListWidgetDetails(FacilioConstants.ContextNames.SITE,"siteCriteriaId"),null)
                 .widgetDone()
-                .addWidget("controlactioncontrollercriteriafieldswidget", "Controller Field Criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_6_6", 0, 28, ControlActionPage.getSummaryCriteriaListWidgetDetails("controllers","controllerCriteriaId"),null)
+                .addWidget("controlactioncontrollercriteriafieldswidget", "Controller Field Criteria", PageWidget.WidgetType.CRITERIA_LIST_VIEW, "webCriteriaListView_6_6", 0, 6, ControlActionPage.getSummaryCriteriaListWidgetDetails("controllers","controllerCriteriaId"),null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

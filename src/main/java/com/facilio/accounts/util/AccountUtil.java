@@ -622,7 +622,8 @@ public class AccountUtil {
 		SANDBOX(155,getExponentValue(28),LicenseMapping.GROUP3LICENSE),//2^28
 		REMOTE_MONITORING(156,getExponentValue(29),LicenseMapping.GROUP3LICENSE),//2^29
 		FSM(157,getExponentValue(30),LicenseMapping.GROUP3LICENSE),//2^30
-		SFG_20(158,getExponentValue(31),LicenseMapping.GROUP3LICENSE); //2^31
+		SFG_20(158,getExponentValue(31),LicenseMapping.GROUP3LICENSE), //2^31
+		CLICKHOUSE(159,getExponentValue(32),LicenseMapping.GROUP3LICENSE);//2^32
 
 		public int featureId;
 		private long license;

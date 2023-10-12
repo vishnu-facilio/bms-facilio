@@ -145,6 +145,11 @@ public class V3ModuleAPI {
         SERVICE_APPOINTMENT(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
         TIME_SHEET(FacilioConstants.TimeSheet.TIME_SHEET,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
         TRIP(FacilioConstants.Trip.TRIP,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP))
+        //ELECTRICITY_METER(FacilioConstants.Meter.ELECTRICITY_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        //GAS_METER(FacilioConstants.Meter.GAS_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        //WATER_METER(FacilioConstants.Meter.WATER_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        //HEAT_METER(FacilioConstants.Meter.HEAT_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        //BTU_METER(FacilioConstants.Meter.BTU_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP))
         ;
 
 

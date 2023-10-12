@@ -1,17 +1,16 @@
 package com.facilio.bmsconsoleV3.actions;
 
 
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.commands.workorder.workorderFeature.*;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.context.workorder.setup.V3WorkOrderFeatureSettingsContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.pmv1ToPmv2Migration.PMv1TasksToJobPlanMigration;
 import com.facilio.v3.V3Action;
@@ -28,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import com.facilio.bmsconsoleV3.context.workorder.setup.FetchWorkOrderFeatureSettingsCommand;
 @Getter
 @Setter
 public class WorkorderAction extends V3Action {
@@ -210,6 +209,44 @@ public class WorkorderAction extends V3Action {
 //        setData("workOrderFeatureSettingValues", featureSettingValueMap);
 
         return SUCCESS;
+    }
+
+    /**
+     * workOrderFeatureSettingsList() function fetches the WorkOrder Feature Settings List and sends in following format.
+     * This API was requested for mobile offline support.
+     * API: /api/v3/workorders/states/featureSettings
+     * This API returns:
+     *  "data": {
+     *         "workOrderStatesFeatureSettings": {
+     *             "16": [
+     *                 {
+     *                     "allowedTicketStatusId": 16,
+     *                     "id": 2,
+     *                     "isAllowed": true,
+     *                     "lastModifiedTime": 1696417326124,
+     *                     "orgId": 1,
+     *                     "settingType": 1,
+     *                     "settingTypeEnum": "PLANNING",
+     *                 }
+     *             ],
+     *             }
+     *         }
+     * @return
+     * @throws Exception
+     */
+    public String workOrderFeatureSettingsList() throws Exception {
+
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+        chain.addCommand(new FetchWorkOrderFeatureSettingsCommand());
+        chain.addCommand(new FormatWorkOrderFeatureSettingsBasedOnStates());
+        chain.execute();
+        Map<Long, ArrayList<V3WorkOrderFeatureSettingsContext>> workOrderStatesFeatureSettings = (Map<Long, ArrayList<V3WorkOrderFeatureSettingsContext>>) chain.getContext().get(FacilioConstants.ContextNames.WORK_ORDER_STATES_FEATURE_SETTINGS);
+        if(workOrderStatesFeatureSettings == null){
+            workOrderStatesFeatureSettings = new HashMap<>();
+        }
+        setData(FacilioConstants.ContextNames.WORK_ORDER_STATES_FEATURE_SETTINGS, workOrderStatesFeatureSettings);
+        return  SUCCESS;
     }
 
     @Getter

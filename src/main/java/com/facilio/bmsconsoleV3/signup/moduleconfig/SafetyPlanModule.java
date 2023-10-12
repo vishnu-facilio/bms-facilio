@@ -1,16 +1,26 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.TemplatePages.SafetyPlanTemplatePage;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.util.RelationshipWidgetUtil;
 
 import java.util.*;
 
@@ -18,7 +28,27 @@ public class SafetyPlanModule extends BaseModuleConfig{
     public SafetyPlanModule(){
         setModuleName(FacilioConstants.ContextNames.SAFETY_PLAN);
     }
+    public void addData() throws Exception {
+        addSystemButtons();
+    }
 
+    private static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext addHazard = new SystemButtonRuleContext();
+        addHazard.setName("Add Hazard");
+        addHazard.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        addHazard.setIdentifier("addHazard");
+        addHazard.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SAFETY_PLAN,addHazard);
+
+        SystemButtonRuleContext edit = new SystemButtonRuleContext();
+        edit.setName("Edit");
+        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        edit.setIdentifier("edit");
+        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        edit.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SAFETY_PLAN,edit);
+    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -94,6 +124,56 @@ public class SafetyPlanModule extends BaseModuleConfig{
 
         scopeConfigList = Arrays.asList(maintenanceApp);
         return scopeConfigList;
+    }
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String> appNames = new ArrayList<>();
+        appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,getSafetyPlanViewPage(app, module));
+        }
+        return appNameVsPage;
+    }
+    private List<PagesContext> getSafetyPlanViewPage(ApplicationContext app, FacilioModule module) throws Exception {
+
+        return new ModulePages()
+                .addPage("safetyPlanViewPage", "Default Safety Plan View Page", "", null, false, true, true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("safetyplansummaryfields", null, null)
+                .addWidget("safetyplansummaryFieldsWidget", "Safety Plan Details",  PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, SafetyPlanTemplatePage.getSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("safetyplanhazard", null, null)
+                .addWidget("safetyplanhazard", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("safetyplanprecaution", null, null)
+                .addWidget("safetyplanprecaution", "Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("safetyplanwidgetGroup", null,  null)
+                .addWidget("safetyplancommentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, SafetyPlanTemplatePage.getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("workassettab", "Work Asset", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("workassetsection", null, null)
+                .addWidget("workAssetList", "Work Asset", PageWidget.WidgetType.WORK_ASSET_LIST,"flexiblewebsafetyplanworkassetwidget_6", 0, 0,  null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone()
+                .getCustomPages();
     }
 }
 

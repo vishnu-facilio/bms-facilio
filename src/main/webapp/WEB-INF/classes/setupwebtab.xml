@@ -738,7 +738,7 @@
         </action>
 
     </package>
-    <package name="pdfTemplate" namespace="/api/v1/setup/pdftemplates" extends="v3Api">
+    <package name="pdftemplate" namespace="/api/v1/setup/pdftemplates" extends="v3Api">
         <action name="list" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="list">
             <param name="permission">ALL</param>
             <param name="setupTab">PDF_TEMPLATES</param>

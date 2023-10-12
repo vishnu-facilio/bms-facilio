@@ -68,6 +68,13 @@ public class PageBuilderConfigUtil {
             moduleList.add(modBean.getModule(FacilioConstants.Trip.TRIP));
             moduleList.add(modBean.getModule(FacilioConstants.Attendance.ATTENDANCE));
             moduleList.add(modBean.getModule(FacilioConstants.Break.BREAK));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.TRANSFER_REQUEST));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.SAFETY_PLAN));
 
             if (CollectionUtils.isNotEmpty(moduleList)) {
                 List<Long> moduleIds = moduleList.stream().filter(Objects::nonNull).map(FacilioModule::getModuleId).collect(Collectors.toList());

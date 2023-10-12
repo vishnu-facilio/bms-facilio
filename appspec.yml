@@ -153,6 +153,8 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-stage-user-uk.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-preprod-stage2-uk.properties
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-scheduler-critical.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-syd-user-critical.properties

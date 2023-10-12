@@ -1,5 +1,7 @@
 package com.facilio.weather.actions;
 
+import lombok.Setter;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -9,7 +11,7 @@ import com.facilio.ims.handler.LongRunningTaskHandler;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.V3Action;
 import com.facilio.weather.commands.WeatherReadOnlyChainFactory;
-import lombok.Setter;
+import com.facilio.weather.util.WeatherAPI;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -28,6 +30,7 @@ public class WeatherAction extends V3Action {
     private String emailAddress;
 
     public String getStationCode() throws Exception {
+        WeatherAPI.callDummyClickhouseApi();
         FacilioChain chain = WeatherReadOnlyChainFactory.getWeatherStationChain();
         FacilioContext context = chain.getContext();
         context.put("lat", lat);

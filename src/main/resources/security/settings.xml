@@ -3031,6 +3031,13 @@
         </urlparams>
     </request>
 
+    <!-- WORKORDER FEATURE SETTINGS API: STATES MAPPING -->
+    <request path="/api/v3/workorders/states/featureSettings" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v2/userMobileSetting/updateFcmToken" method="POST">
         <requestbody type="object">
             <property name="oldFcmToken" type="string" mandatory="true"/>
@@ -3198,6 +3205,49 @@
         </urlparams>
     </request>
 
+    <request path="/api/v2/application/users/invite" method="POST">
+        <requestbody type="object">
+            <property name="user" type="object">
+                <property name="uid" type="number"/>
+            </property>
+            <property name="appLinkName" type="string"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/application/users/resetpassword" method="POST">
+        <requestbody type="object">
+            <property name="user" type="object">
+                <property name="uid" type="number"/>
+            </property>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/application/users/getIamUser" method="GET">
+        <urlparams>
+            <property name="email" type="string"/>
+            <property name="appLinkName" type="string"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/scoping/list" method="GET">
+        <urlparams>
+            <property name="search" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/permissionSets/list" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
     <!-- WorkOrder Settings API -->
     <request path="/api/v1/setup/womodulesetting/fetch" method="GET"/>
     <request path="/api/v1/setup/womodulesetting/add" method="POST">
@@ -3304,6 +3354,86 @@
         <urlparams type="object">
             <property name="categoryId" type="number" mandatory="true"/>
             <property name="readingFieldId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/scopeVariable/detail" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/scopeVariable/meta" method="GET">
+        <urlparams>
+            <property name="appId" type="number" mandatory="true" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/scopeVariable/delete" method="POST">
+        <requestbody type="object" >
+            <property name="scopeVariable" type="object" mandatory="true">
+                <property name="id" type="number" mandatory="true" />
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/scopeVariable/applicableFieldsMap" method="GET">
+        <urlparams>
+            <property name="appId" type="number" mandatory="true" />
+            <property name="lookupModuleName" type="string" mandatory="true" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/scopeVariable/applicableValueGenerators" method="GET">
+        <urlparams>
+            <property name="applicableModuleName" type="string" mandatory="true" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/scopeVariable/setStatus" method="POST">
+        <requestbody type="object" >
+            <property name="id" type="number" mandatory="true" />
+            <property name="status" type="boolean" mandatory="true" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/scopeVariable/addOrUpdate" method="POST">
+        <requestbody type="object" >
+            <property name="scopeVariable" type="object" mandatory="true" >
+                <property name="appId" type="number" mandatory="true" />
+                <property name="displayName" type="string" mandatory="true" />
+                <property name="id" type="number" mandatory="true" />
+                <property name="scopeVariableModulesFieldsList" type="array" mandatory="true" >
+                    <items type="object">
+                        <property name="moduleId" type="number" mandatory="true"/>
+                        <property name="fieldName" type="string" mandatory="true"/>
+                    </items>
+                </property>
+                <property name="status" type="boolean" mandatory="true" />
+                <property name="type" type="number" mandatory="true" />
+                <property name="valueGeneratorId" type="number" />
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/scopeVariable/list" method="GET">
+        <urlparams>
+            <property name="appId" type="number" mandatory="true" />
+            <property name="perPage" type="number" mandatory="true" />
+            <property name="page" type="number" mandatory="true" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/scopeVariable/setSwitchStatus" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true" />
+            <property name="status" type="boolean" mandatory="true" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/myApps/listMyAppsForUser" method="GET">
+        <urlparams>
+            <property name="ouId" type="number" mandatory="true" />
+            <property name="appId" type="number" mandatory="true" />
         </urlparams>
     </request>
 
@@ -3658,11 +3788,12 @@
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/pdftemplates/preview/:id/:recordId" method="GET">
-        <requestbody type="object">
-            <property name="id" type="number"></property>
-            <property name="recordId" type="number"></property>
-        </requestbody>
+    <request path="/api/v1/setup/pdftemplates/preview" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="id" type="number" />
+            <property name="recordId" type="number" />
+        </urlparams>
     </request>
 
     <request path="/api/v1/setup/pdftemplates/addOrUpdate" method="POST">
@@ -3891,16 +4022,15 @@
         </requestbody>
     </request>
     
-    <request path="/api/v2/pdftemplates/preview/:moduleName/:id/:recordId" method="GET">
+    <request path="/api/v3/pdftemplates/preview/:moduleName/:id/:recordId" method="GET">
         <urlparams>
             <property name="moduleName" type="string"/>
             <property name="id" type="number"></property>
             <property name="recordId" type="number"></property>
-
         </urlparams>
     </request>
 
-    <request path="/api/v2/pdftemplates/download/:moduleName/:id/:recordId" method="GET">
+    <request path="/api/v3/pdftemplates/download/:moduleName/:id/:recordId" method="GET">
         <urlparams>
             <property name="moduleName" type="string"/>
             <property name="id" type="number"></property>
