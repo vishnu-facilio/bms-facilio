@@ -63,7 +63,10 @@ public class GetUtilityTypeReadingsCommand extends FacilioCommand {
 				if (CollectionUtils.isNotEmpty(props)) {
 					for(Map<String, Object> prop : props) {
 						FacilioModule readingModule = modBean.getModule((long) prop.get("childModuleId"));
-						readings.add(readingModule);
+						if(readingModule.getTypeEnum().isReadingType())
+						{
+							readings.add(readingModule);
+						}
 					}
 				}
 			}
