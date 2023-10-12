@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 import static com.facilio.modules.FieldFactory.getStringField;
 
@@ -111,13 +112,14 @@ public class CommonConnectedSummaryAPI {
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
-        int columnNo = 1, rowNo = 1, colSpan = 1;
+        int columnNo = 1, rowNo = 1;
+        Stack<FacilioField> stack = new Stack<>();
         for (FacilioField field : fields) {
             if("description".equals(field.getName()) ||(FieldType.BIG_STRING.equals(field.getDataTypeEnum())) || (FieldType.LARGE_TEXT.equals(field.getDataTypeEnum()))) {
-                colSpan = 4;
+                stack.push(field);
+                continue;
             }
-            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, colSpan);
-            colSpan = 1;
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1);
             columnNo++;
             if(columnNo > 4) {
                 columnNo = 1;
@@ -125,6 +127,15 @@ public class CommonConnectedSummaryAPI {
             }
         }
 
+        while (!stack.isEmpty()) {
+            FacilioField bigStringField = stack.pop();
+            if(columnNo > 1) {
+                columnNo = 1;
+                rowNo ++;
+            }
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, bigStringField, rowNo, columnNo, 4);
+            rowNo++;
+        }
         allFieldsWidgetGroup.setName("otherDetails");
         allFieldsWidgetGroup.setDisplayName("Other Details");
         allFieldsWidgetGroup.setColumns(4);
@@ -256,18 +267,29 @@ public class CommonConnectedSummaryAPI {
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
-        int columnNo = 1, rowNo = 1, colSpan = 1;
+        int columnNo = 1, rowNo = 1;
+        Stack<FacilioField> stack = new Stack<>();
         for (FacilioField field : fields) {
             if((FieldType.BIG_STRING.equals(field.getDataTypeEnum())) || (FieldType.LARGE_TEXT.equals(field.getDataTypeEnum()))) {
-                colSpan = 4;
+                stack.push(field);
+                continue;
             }
-            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, colSpan, false);
-            colSpan = 1;
+            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1, false);
             columnNo++;
             if(columnNo > 4) {
                 columnNo = 1;
                 rowNo ++;
             }
+        }
+
+        while (!stack.isEmpty()) {
+            FacilioField bigStringField = stack.pop();
+            if(columnNo > 1) {
+                columnNo = 1;
+                rowNo ++;
+            }
+            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, bigStringField, rowNo, columnNo, 4, false);
+            rowNo++;
         }
 
         allFieldsWidgetGroup.setName("otherDetails");
@@ -361,18 +383,29 @@ public class CommonConnectedSummaryAPI {
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
-        int columnNo = 1, rowNo = 1, colSpan = 1;
+        int columnNo = 1, rowNo = 1;
+        Stack<FacilioField> stack = new Stack<>();
         for (FacilioField field : fields) {
             if((FieldType.BIG_STRING.equals(field.getDataTypeEnum())) || (FieldType.LARGE_TEXT.equals(field.getDataTypeEnum()))) {
-                colSpan = 4;
+                stack.push(field);
+                continue;
             }
-            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, colSpan, false);
-            colSpan = 1;
+            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1, false);
             columnNo++;
             if(columnNo > 4) {
                 columnNo = 1;
                 rowNo ++;
             }
+        }
+
+        while (!stack.isEmpty()) {
+            FacilioField bigStringField = stack.pop();
+            if(columnNo > 1) {
+                columnNo = 1;
+                rowNo ++;
+            }
+            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, bigStringField, rowNo, columnNo, 4, false);
+            rowNo++;
         }
 
         allFieldsWidgetGroup.setName("otherDetails");
@@ -462,18 +495,29 @@ public class CommonConnectedSummaryAPI {
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
-        int columnNo = 1, rowNo = 1, colSpan = 1;
+        int columnNo = 1, rowNo = 1;
+        Stack<FacilioField> stack = new Stack<>();
         for (FacilioField field : fields) {
             if((FieldType.BIG_STRING.equals(field.getDataTypeEnum())) || (FieldType.LARGE_TEXT.equals(field.getDataTypeEnum()))) {
-                colSpan = 4;
+                stack.push(field);
+                continue;
             }
-            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, colSpan, false);
-            colSpan = 1;
+            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1, false);
             columnNo++;
             if(columnNo > 4) {
                 columnNo = 1;
                 rowNo ++;
             }
+        }
+
+        while (!stack.isEmpty()) {
+            FacilioField bigStringField = stack.pop();
+            if(columnNo > 1) {
+                columnNo = 1;
+                rowNo ++;
+            }
+            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, bigStringField, rowNo, columnNo, 4, false);
+            rowNo++;
         }
 
         allFieldsWidgetGroup.setName("otherDetails");
