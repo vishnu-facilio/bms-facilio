@@ -1,13 +1,21 @@
 package com.facilio.relation.action;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.relation.util.RelationUtil;
 import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RelationAction extends FacilioAction {
 
@@ -82,6 +90,55 @@ public class RelationAction extends FacilioAction {
 
         chain.execute();
         setResult(FacilioConstants.ContextNames.MESSAGE, "Relation deleted successfully");
+        return SUCCESS;
+    }
+
+    private long fromModuleId = -1;
+    public long getFromModuleId() {
+        return fromModuleId;
+    }
+    public void setFromModuleId(long fromModuleId) {
+        this.fromModuleId = fromModuleId;
+    }
+
+    private long toModuleId = -1;
+    public long getToModuleId() {
+        return toModuleId;
+    }
+    public void setToModuleId(long toModuleId) {
+        this.toModuleId = toModuleId;
+    }
+
+    private int relationType = -1;
+    public int getRelationType() {
+        return relationType;
+    }
+    public void setRelationType(int relationType) {
+        this.relationType = relationType;
+    }
+
+    private int relationCategory = -1;
+    public int getRelationCategory() {
+        return relationCategory;
+    }
+    public void setRelationCategory(int relationCategory) {
+        this.relationCategory = relationCategory;
+    }
+
+    public String fetchRelations() throws Exception {
+        FacilioChain fetchExistingRelationships = TransactionChainFactoryV3.fetchExistingRelationsChain();
+        FacilioContext context = fetchExistingRelationships.getContext();
+        context.put("fromModuleId", fromModuleId);
+        context.put("toModuleId", toModuleId);
+        context.put("relationType", relationType);
+        context.put("relationCategory", relationCategory);
+        context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+        fetchExistingRelationships.execute();
+        List<RelationRequestContext> relationList = new ArrayList<>();
+        if(context.get(FacilioConstants.ContextNames.RELATION_LIST) != null) {
+            relationList = (List<RelationRequestContext>) context.get(FacilioConstants.ContextNames.RELATION_LIST);
+        }
+        setResult(FacilioConstants.ContextNames.RELATION_LIST, relationList);
         return SUCCESS;
     }
 }

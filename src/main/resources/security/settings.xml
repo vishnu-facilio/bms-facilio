@@ -4096,4 +4096,13 @@
         </urlparams>
     </request>
 
+    <request path="/api/v2/relation/fetchRelations" method="GET">
+        <urlparams>
+            <property name="fromModuleId" type="number"/>
+            <property name="toModuleId" type="number"/>
+            <property name="relationType" type="number"/>
+            <property name="relationCategory" type="number"/>
+        </urlparams>
+    </request>
+
 </config>

@@ -545,4 +545,29 @@ public class RelationUtil {
         }
         return relations;
     }
+    
+    public static List<RelationRequestContext> getAllRelationships(Long fromModuleId, Long toModuleId, int relatioinType, int relationCategory, String searchString) throws Exception {
+
+        Map<String, FacilioField> relationFields = FieldFactory.getAsMap(FieldFactory.getRelationFields());
+        Map<String, FacilioField> mappingFields = FieldFactory.getAsMap(FieldFactory.getRelationMappingFields());
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getRelationModule().getTableName())
+                .innerJoin(ModuleFactory.getRelationMappingModule().getTableName())
+                .on(relationFields.get("id").getCompleteColumnName() + " = " + mappingFields.get("relationId").getCompleteColumnName())
+                .select(FieldFactory.getRelationFields())
+                .andCondition(CriteriaAPI.getCondition(mappingFields.get("fromModuleId"), String.valueOf(fromModuleId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(mappingFields.get("toModuleId"), String.valueOf(toModuleId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(mappingFields.get("relationType"), String.valueOf(relatioinType), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(relationFields.get("relationCategory"), String.valueOf(relationCategory), NumberOperators.EQUALS));
+
+        if (StringUtils.isNotEmpty(searchString)) {
+            builder.andCondition(CriteriaAPI.getCondition(relationFields.get("name"), searchString, StringOperators.CONTAINS));
+        }
+
+        List<RelationContext> relationList = FieldUtil.getAsBeanListFromMapList(builder.get(), RelationContext.class);
+        RelationUtil.fillRelation(relationList);
+        List<RelationRequestContext> relationRequests = RelationUtil.convertToRelationRequest(relationList, fromModuleId);
+        return relationRequests;
+    }
 }

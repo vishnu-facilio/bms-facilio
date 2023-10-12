@@ -697,6 +697,8 @@
 				class="com.facilio.relation.action.RelationAction" method="list" />
 		<action name="delete"
 				class="com.facilio.relation.action.RelationAction" method="delete" />
+		<action name="fetchRelations"
+				class="com.facilio.relation.action.RelationAction" method="fetchRelations" />
 	</package>
 
 	<package name="stateTransition"

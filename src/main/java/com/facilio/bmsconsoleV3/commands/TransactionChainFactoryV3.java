@@ -3767,7 +3767,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getCreateVirtualMeterTemplateBeforeChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FillDefaultValuesAndValidateForVMTemplates());
-        c.addCommand(new AddRelationshipWithParentModuleCommand());
+        //c.addCommand(new AddRelationshipWithParentModuleCommand());
         c.addCommand(new AssignVMTemplateActivityModuleCommand());
         return c;
     }
@@ -3836,6 +3836,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new UpdateNameSpaceForVMReadingsCommand());
         c.addCommand(new UpdateNamespaceCommand());
         c.addCommand(new UpdateWorkflowCommand());
+        return c;
+    }
+    public static FacilioChain fetchExistingRelationsChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchExistingRelationsCommand());
         return c;
     }
     public static FacilioChain getSFG20ConnectCommand() {
