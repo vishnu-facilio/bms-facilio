@@ -14,6 +14,23 @@
     </request>
 
 
+    <request path="/api/v2/basespace/tree/fetchParentNodes">
+        <requestbody type="object">
+            <property name="baseSpaceId" type="string"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/portfolio/cards">
+    </request>
+    <request path="/api/v2/portfolio/search">
+        <requestbody type="object">
+            <property name="search" type="string"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/portfolio/tree">
+        <requestbody type="object">
+            <property name="baseSpaceId" type="string"/>
+        </requestbody>
+    </request>
     <request path="/api/campus/spaceInsights">
         <requestbody type="object">
             <property name="campusId" type="string"/>
@@ -3683,6 +3700,25 @@
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
+    </request>
+
+    <request path="/api/v3/ruleList/flaggedEvent/ruleStatus/:id" method="POST">
+        <requestbody type="object">
+            <property name="data" type="object"  mandatory="true">
+                <property name="clientId" type="number" mandatory="true"/>
+                <property name="id" type="number" mandatory="true"/>
+                <property name="status" type="boolean" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/ruleList/alarmFilterRule/ruleStatus/:id" method="POST">
+        <requestbody type="object">
+            <property name="data" type="object"  mandatory="true">
+                <property name="id" type="number" mandatory="true"/>
+                <property name="status" type="boolean" mandatory="true"/>
+            </property>
+        </requestbody>
     </request>
 
     <request path="/api/v3/alarms/generateRawAlarms" method="POST">

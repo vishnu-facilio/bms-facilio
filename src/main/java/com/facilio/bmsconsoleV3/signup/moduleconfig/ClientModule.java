@@ -48,17 +48,6 @@ public class ClientModule extends BaseModuleConfig{
         groupDetails.put("views", clientContact);
         groupVsViews.add(groupDetails);
 
-        ArrayList<FacilioView> rmClient = new ArrayList<>();
-        rmClient.add(getRemoteMonitoringAllClientView().setOrder(order++));
-
-        Map<String, Object> rmGroupDetails;
-        rmGroupDetails = new HashMap<>();
-        rmGroupDetails.put("name", "systemviews");
-        rmGroupDetails.put("displayName", "System Views");
-        rmGroupDetails.put("moduleName", FacilioConstants.ContextNames.CLIENT);
-        rmGroupDetails.put("views", rmClient);
-        groupVsViews.add(rmGroupDetails);
-
         return groupVsViews;
     }
     @Override
@@ -152,7 +141,7 @@ public class ClientModule extends BaseModuleConfig{
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("Clients");
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         return allView;
     }
 

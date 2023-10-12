@@ -53,15 +53,6 @@ public class ClientContactModule extends BaseModuleConfig{
         groupDetails.put("views", clientContact);
         groupVsViews.add(groupDetails);
 
-        ArrayList<FacilioView> remoteMonitorClientContact = new ArrayList<>();
-        remoteMonitorClientContact.add(getAllRemoteMonitorClientContacts().setOrder(1));
-
-        Map<String, Object> rmGroupDetails = new HashMap<>();
-        rmGroupDetails.put("name", "systemviews");
-        rmGroupDetails.put("displayName", "System Views");
-        rmGroupDetails.put("moduleName", FacilioConstants.ContextNames.CLIENT_CONTACT);
-        rmGroupDetails.put("views", remoteMonitorClientContact);
-        groupVsViews.add(rmGroupDetails);
 
         return groupVsViews;
     }
@@ -77,7 +68,7 @@ public class ClientContactModule extends BaseModuleConfig{
         allView.setDisplayName("All Client Contacts");
         allView.setModuleName(clientContactModule.getName());
         allView.setSortFields(sortFields);
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         allView.setHidden(true);
 
         return allView;
@@ -153,7 +144,7 @@ public class ClientContactModule extends BaseModuleConfig{
         allView.setName("all-contacts");
         allView.setDisplayName("All Client Contacts");
         allView.setModuleName(clientContactModule.getName());
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         allView.setSortFields(sortFields);
 
         return allView;

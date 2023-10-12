@@ -298,6 +298,23 @@ public class BaseSpaceAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String getPortfolioCardData() throws Exception{
+		FacilioChain portfolioCardsChain = ReadOnlyChainFactory.getPortfolioCardsChain();
+		FacilioContext portfolioCardsContext = new FacilioContext();
+		portfolioCardsChain.execute(portfolioCardsContext);
+		setResult("cardResult",portfolioCardsContext.get("cardData"));
+		return SUCCESS;
+	}
+	public String getSearchResult() throws Exception{
+		FacilioChain portfolioSearchChain = ReadOnlyChainFactory.getPortfolioSearchChain();
+		FacilioContext searchContext = portfolioSearchChain.getContext();
+		searchContext.put(ContextNames.SEARCH,getSearch());
+		portfolioSearchChain.execute();
+		setResult(ContextNames.BASE_SPACE_LIST,searchContext.get(ContextNames.SEARCH_RESULT));
+		setResult(ContextNames.COUNT,searchContext.get(ContextNames.COUNT));
+		return SUCCESS;
+	}
+
 	public long getBaseSpaceId() {
 		return baseSpaceId;
 	}

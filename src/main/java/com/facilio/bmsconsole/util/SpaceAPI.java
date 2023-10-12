@@ -1272,7 +1272,71 @@ public static long getSitesCount() throws Exception {
 			return result.get(0).getId();
 		}
 	}
-	
+
+	public static long getBuildingsCount() throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.BUILDING);
+
+		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(BuildingContext.class)
+				.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module))
+				;
+
+		List<BuildingContext> result = selectBuilder.get();
+		if (result == null || result.isEmpty()) {
+			return 0;
+		}
+		else {
+			return result.get(0).getId();
+		}
+	}
+
+	public static long getSpacesCount() throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.SPACE);
+
+		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>()
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(SpaceContext.class)
+				.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module))
+				;
+
+		List<SpaceContext> result = selectBuilder.get();
+		if (result == null || result.isEmpty()) {
+			return 0;
+		}
+		else {
+			return result.get(0).getId();
+		}
+	}
+
+	public static long getFloorsCount() throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.FLOOR);
+
+		SelectRecordsBuilder<FloorContext> selectBuilder = new SelectRecordsBuilder<FloorContext>()
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(FloorContext.class)
+				.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module))
+				;
+
+		List<FloorContext> result = selectBuilder.get();
+		if (result == null || result.isEmpty()) {
+			return 0;
+		}
+		else {
+			return result.get(0).getId();
+		}
+	}
+
+
 	private static List<BaseSpaceContext> getFloorChildren(long floorId) throws Exception {
 		List<Long> floorIds = new ArrayList<>();
 		floorIds.add(floorId);

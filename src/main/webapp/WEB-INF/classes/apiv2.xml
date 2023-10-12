@@ -7148,6 +7148,20 @@
 				method="getBaseSpaceDirectChildren">
 		</action>
 	</package>
+	<package name="portfolioApiV2" namespace="/api/v2/portfolio" extends="v2Api">
+		<action name="cards"
+				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+				method="getPortfolioCardData"
+		/>
+		<action name="search"
+				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+				method="getSearchResult"
+		/>
+		<action name="tree"
+				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+				method="fetchParentNodes"
+		/>
+	</package>
 
 	<package name="siteApiv2" namespace="/api/v2/site" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.CampusAction" method="v2SitesList" />
@@ -7155,6 +7169,7 @@
 		<action name="siteInfo" class="com.facilio.bmsconsole.actions.CampusAction" method="getSiteDetails" />
 	</package>
 
+	<!--	to remove after client code change-->
 	<package name="baseSpaceTreeApiV2" namespace="/api/v2/basespace/tree" extends="v2Api">
 		<action name="fetchParentNodes" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="fetchParentNodes" />
 	</package>
