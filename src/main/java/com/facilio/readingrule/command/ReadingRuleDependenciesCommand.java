@@ -94,13 +94,16 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.ASSET_CATEGORY);
                 context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, rule.getCategoryId());
                 context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+                break;
             case METER_CATEGORY:
                 context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.METER);
                 context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, rule.getCategoryId());
-//                context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+//                ext.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+                break;
             case SITE:
                 context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.SITE);
                 context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, rule.getCategoryId());
+                break;
         }
     }
 }
