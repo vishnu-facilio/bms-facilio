@@ -495,6 +495,7 @@ public class PageWidget {
 		SPACE_BOOKING_CARD_DETAILS("spaceBookingCardDetails"),
 		SPACE_BOOKING_SECONDARY_DETAILS("spaceBookingSecondaryDetails"),
 		SUMMARY_FIELDS_WIDGET("summaryFieldsWidget"),
+		FIXED_SUMMARY_FIELDS_WIDGET("fixedSummaryFieldsWidget"),
 		CLASSIFICATION("classification", AccountUtil.FeatureLicense.CLASSIFICATION.getFeatureId()),
 		NEW_RELATED_LIST("newRelatedList"),
 		MULTIRESOURCE("multiResource",AccountUtil.FeatureLicense.ROUTES_AND_MULTI_RESOURCE.getFeatureId()),

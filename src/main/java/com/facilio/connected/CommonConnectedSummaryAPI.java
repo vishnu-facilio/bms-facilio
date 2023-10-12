@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import org.json.simple.JSONObject;
@@ -35,7 +36,7 @@ public class CommonConnectedSummaryAPI {
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("ruleDetails", null, null)
-                .addWidget("ruleDetails", "Rule Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getReadingRuleSummaryWidgetDetails(FacilioConstants.ReadingRules.NEW_READING_RULE, app))
+                .addWidget("ruleDetails", "Rule Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getReadingRuleSummaryWidgetDetails(FacilioConstants.ReadingRules.NEW_READING_RULE, app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("faultDetails", null, null)
@@ -110,9 +111,13 @@ public class CommonConnectedSummaryAPI {
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
-        int columnNo = 1, rowNo = 1;
+        int columnNo = 1, rowNo = 1, colSpan = 1;
         for (FacilioField field : fields) {
-            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1);
+            if("description".equals(field.getName()) ||(FieldType.BIG_STRING.equals(field.getDataTypeEnum())) || (FieldType.LARGE_TEXT.equals(field.getDataTypeEnum()))) {
+                colSpan = 4;
+            }
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, colSpan);
+            colSpan = 1;
             columnNo++;
             if(columnNo > 4) {
                 columnNo = 1;
@@ -171,7 +176,7 @@ public class CommonConnectedSummaryAPI {
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("alarmDetails", null, null)
-                .addWidget("readingAlarmDetails", "Faults Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_6_9", 0, 0, null, getReadingAlarmSummaryWidgetDetails(FacilioConstants.ContextNames.NEW_READING_ALARM, app))
+                .addWidget("readingAlarmDetails", "Faults Details", PageWidget.WidgetType.FIXED_SUMMARY_FIELDS_WIDGET, "webfixedsummaryfieldswidget_6_9", 0, 0, null, getReadingAlarmSummaryWidgetDetails(FacilioConstants.ContextNames.NEW_READING_ALARM, app))
                 .widgetDone()
                 .addWidget("readingAlarmLocationDetails", "Location details",PageWidget.WidgetType.LOCATION_DETAILS,"webLocationDetails_3_3",9,0,null,null)
                 .widgetDone()
@@ -251,9 +256,13 @@ public class CommonConnectedSummaryAPI {
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
-        int columnNo = 1, rowNo = 1;
+        int columnNo = 1, rowNo = 1, colSpan = 1;
         for (FacilioField field : fields) {
-            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1, false);
+            if((FieldType.BIG_STRING.equals(field.getDataTypeEnum())) || (FieldType.LARGE_TEXT.equals(field.getDataTypeEnum()))) {
+                colSpan = 4;
+            }
+            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, colSpan, false);
+            colSpan = 1;
             columnNo++;
             if(columnNo > 4) {
                 columnNo = 1;
@@ -295,7 +304,7 @@ public class CommonConnectedSummaryAPI {
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("alarmDetails", null, null)
-                .addWidget("bmsAlarmDetails", "BMS Alarm Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_6_9", 0, 0, null, getBMSAlarmSummaryWidgetDetails(FacilioConstants.ContextNames.BMS_ALARM, app))
+                .addWidget("bmsAlarmDetails", "BMS Alarm Details", PageWidget.WidgetType.FIXED_SUMMARY_FIELDS_WIDGET, "webfixedsummaryfieldswidget_6_9", 0, 0, null, getBMSAlarmSummaryWidgetDetails(FacilioConstants.ContextNames.BMS_ALARM, app))
                 .widgetDone()
                 .addWidget("bmsAlarmLocationDetails", "Location details",PageWidget.WidgetType.LOCATION_DETAILS,"webLocationDetails_3_3",9,0,null,null)
                 .widgetDone()
@@ -352,9 +361,13 @@ public class CommonConnectedSummaryAPI {
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
-        int columnNo = 1, rowNo = 1;
+        int columnNo = 1, rowNo = 1, colSpan = 1;
         for (FacilioField field : fields) {
-            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1, false);
+            if((FieldType.BIG_STRING.equals(field.getDataTypeEnum())) || (FieldType.LARGE_TEXT.equals(field.getDataTypeEnum()))) {
+                colSpan = 4;
+            }
+            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, colSpan, false);
+            colSpan = 1;
             columnNo++;
             if(columnNo > 4) {
                 columnNo = 1;
@@ -397,7 +410,7 @@ public class CommonConnectedSummaryAPI {
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("alarmDetails", null, null)
-                .addWidget("sensorAlarmDetails", "Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_6_9", 0, 0, null, getSensorAlarmSummaryWidgetDetails(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM, app))
+                .addWidget("sensorAlarmDetails", "Details", PageWidget.WidgetType.FIXED_SUMMARY_FIELDS_WIDGET, "webfixedsummaryfieldswidget_6_9", 0, 0, null, getSensorAlarmSummaryWidgetDetails(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM, app))
                 .widgetDone()
                 .addWidget("sensorAlarmLocationDetails", "Location details",PageWidget.WidgetType.LOCATION_DETAILS,"webLocationDetails_3_3",9,0,null,null)
                 .widgetDone()
@@ -449,9 +462,13 @@ public class CommonConnectedSummaryAPI {
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
-        int columnNo = 1, rowNo = 1;
+        int columnNo = 1, rowNo = 1, colSpan = 1;
         for (FacilioField field : fields) {
-            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1, false);
+            if((FieldType.BIG_STRING.equals(field.getDataTypeEnum())) || (FieldType.LARGE_TEXT.equals(field.getDataTypeEnum()))) {
+                colSpan = 4;
+            }
+            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, colSpan, false);
+            colSpan = 1;
             columnNo++;
             if(columnNo > 4) {
                 columnNo = 1;
