@@ -22,8 +22,8 @@ import java.util.*;
 import static com.facilio.connected.CommonConnectedSummaryAPI.getReadingAlarmSystemPage;
 
 
-public class NewReadingAlarmModule extends BaseModuleConfig{
-    public NewReadingAlarmModule() throws Exception{
+public class NewReadingAlarmModule extends BaseModuleConfig {
+    public NewReadingAlarmModule() throws Exception {
         setModuleName(FacilioConstants.ContextNames.NEW_READING_ALARM);
     }
 
@@ -156,6 +156,7 @@ public class NewReadingAlarmModule extends BaseModuleConfig{
 
         return alarmCondition;
     }
+
     public static Condition getReadingAlarmSeverityCondition(String severity, boolean equals) {
         LookupField severityField = new LookupField();
         severityField.setName("severity");
@@ -228,7 +229,7 @@ public class NewReadingAlarmModule extends BaseModuleConfig{
 
     @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
-        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        Map<String, List<PagesContext>> appNameVsPage = new HashMap<>();
         List<String> appNames = new ArrayList<>();
 
         appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
@@ -236,7 +237,9 @@ public class NewReadingAlarmModule extends BaseModuleConfig{
 
         for (String appName : appNames) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName,getReadingAlarmSystemPage(app, false,  true));
+            if (app != null) {
+                appNameVsPage.put(appName, getReadingAlarmSystemPage(app, false, true));
+            }
         }
         return appNameVsPage;
     }
@@ -256,11 +259,12 @@ public class NewReadingAlarmModule extends BaseModuleConfig{
     public static void addCreateWorkOrderButton() throws Exception {
         //Reading Alarm Create Workorder Button
         SystemButtonRuleContext createWorkorderSystemButton = NewAlarmAPI.getCreateWoSystemButton();
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.NEW_READING_ALARM,createWorkorderSystemButton);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.NEW_READING_ALARM, createWorkorderSystemButton);
     }
+
     public static void addViewWorkOrderButton() throws Exception {
         //Reading Alarm View Workorder Button
         SystemButtonRuleContext viewWorkorderSystemButton = NewAlarmAPI.getViewWoSystemButton();
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.NEW_READING_ALARM,viewWorkorderSystemButton);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.NEW_READING_ALARM, viewWorkorderSystemButton);
     }
 }

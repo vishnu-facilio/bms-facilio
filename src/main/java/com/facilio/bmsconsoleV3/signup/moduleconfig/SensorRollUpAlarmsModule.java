@@ -282,7 +282,9 @@ public class SensorRollUpAlarmsModule extends BaseModuleConfig{
 
         for (String appName : appNames) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName,getSensorAlarmSystemPage(app, false,  true));
+            if(app != null){
+                appNameVsPage.put(appName,getSensorAlarmSystemPage(app, false,  true));
+            }
         }
         return appNameVsPage;
     }

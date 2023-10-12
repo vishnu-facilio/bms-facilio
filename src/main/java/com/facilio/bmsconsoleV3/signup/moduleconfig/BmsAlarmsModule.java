@@ -22,8 +22,8 @@ import java.util.*;
 
 import static com.facilio.connected.CommonConnectedSummaryAPI.getBMSAlarmSystemPage;
 
-public class BmsAlarmsModule extends BaseModuleConfig{
-    public BmsAlarmsModule() throws Exception{
+public class BmsAlarmsModule extends BaseModuleConfig {
+    public BmsAlarmsModule() throws Exception {
         setModuleName(FacilioConstants.ContextNames.BMS_ALARM);
     }
 
@@ -207,7 +207,7 @@ public class BmsAlarmsModule extends BaseModuleConfig{
 
     @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
-        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        Map<String, List<PagesContext>> appNameVsPage = new HashMap<>();
         List<String> appNames = new ArrayList<>();
 
         appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
@@ -215,7 +215,9 @@ public class BmsAlarmsModule extends BaseModuleConfig{
 
         for (String appName : appNames) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName,getBMSAlarmSystemPage(app, false,  true));
+            if (app != null) {
+                appNameVsPage.put(appName, getBMSAlarmSystemPage(app, false, true));
+            }
         }
         return appNameVsPage;
     }
@@ -237,13 +239,15 @@ public class BmsAlarmsModule extends BaseModuleConfig{
     public static void addCreateWorkOrderButton() throws Exception {
         //BMS Alarm Create Workorder Button
         SystemButtonRuleContext createWorkorderSystemButton = NewAlarmAPI.getCreateWoSystemButton();
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM,createWorkorderSystemButton);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM, createWorkorderSystemButton);
     }
+
     public static void addViewWorkOrderButton() throws Exception {
         //BMS Alarm View Workorder Button
         SystemButtonRuleContext viewWorkorderSystemButton = NewAlarmAPI.getViewWoSystemButton();
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM,viewWorkorderSystemButton);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM, viewWorkorderSystemButton);
     }
+
     public static void addExportCsvButton() throws Exception {
         //BMS Alarm Export CSV Button
         SystemButtonRuleContext exportCsvSystemButton = new SystemButtonRuleContext();
@@ -251,8 +255,9 @@ public class BmsAlarmsModule extends BaseModuleConfig{
         exportCsvSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         exportCsvSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
         exportCsvSystemButton.setName("Export CSV");
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM,exportCsvSystemButton);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM, exportCsvSystemButton);
     }
+
     public static void addExportExcelButton() throws Exception {
         //BMS Alarm Export CSV Button
         SystemButtonRuleContext exportExcelSystemButton = new SystemButtonRuleContext();
@@ -260,6 +265,6 @@ public class BmsAlarmsModule extends BaseModuleConfig{
         exportExcelSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         exportExcelSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
         exportExcelSystemButton.setName("Export Excel");
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM,exportExcelSystemButton);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BMS_ALARM, exportExcelSystemButton);
     }
 }
