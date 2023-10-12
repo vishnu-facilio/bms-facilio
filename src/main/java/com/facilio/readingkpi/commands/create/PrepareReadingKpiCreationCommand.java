@@ -80,15 +80,18 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
 
     private void setReadingParent(ReadingKPIContext kpi, Context context) throws Exception {
         switch (kpi.getResourceTypeEnum()) {
-            case SPACE_CATEGORY:
-                context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.SPACE_CATEGORY);
-                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, kpi.getSpaceCategoryId());
-                context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getSpaceCategoryReadingRelModule());
-                break;
             case ASSET_CATEGORY:
                 context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.ASSET_CATEGORY);
-                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, kpi.getAssetCategoryId());
+                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, kpi.getCategoryId());
                 context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+                break;
+            case METER_CATEGORY:
+                context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.METER);
+                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, kpi.getCategoryId());
+                break;
+            case SITE:
+                context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.SITE);
+                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, kpi.getCategoryId());
                 break;
         }
     }
