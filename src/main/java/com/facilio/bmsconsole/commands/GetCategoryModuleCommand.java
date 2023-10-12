@@ -65,23 +65,23 @@ public class GetCategoryModuleCommand extends FacilioCommand {
     private void handleMeterCategoryChain(long categoryId, Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-        FacilioModule assetCategoryModule = modBean.getModule("utilitytype");
+        FacilioModule utilityTypeModule = modBean.getModule("utilitytype");
         SelectRecordsBuilder<V3UtilityTypeContext> builder = new SelectRecordsBuilder<V3UtilityTypeContext>()
-                .module(assetCategoryModule)
+                .module(utilityTypeModule)
                 .beanClass(V3UtilityTypeContext.class)
-                .select(modBean.getAllFields(assetCategoryModule.getName()))
-                .andCondition(CriteriaAPI.getIdCondition(categoryId, assetCategoryModule));
+                .select(modBean.getAllFields(utilityTypeModule.getName()))
+                .andCondition(CriteriaAPI.getIdCondition(categoryId, utilityTypeModule));
         List<V3UtilityTypeContext> list = builder.get();
 
         if (CollectionUtils.isEmpty(list)) {
             throw new Exception("Cannot find utility type");
         }
 
-        V3UtilityTypeContext assetCategory = list.get(0);
-        long assetModuleID = assetCategory.getMeterModuleID();
-        FacilioModule assetModule = modBean.getModule(assetModuleID);
+        V3UtilityTypeContext utilityTypeCtx = list.get(0);
+        long utilityTypeId = utilityTypeCtx.getMeterModuleID();
+        FacilioModule utilityModule = modBean.getModule(utilityTypeId);
 
-        context.put(FacilioConstants.ContextNames.PARENT_MODULE, assetModule.getName());
+        context.put(FacilioConstants.ContextNames.PARENT_MODULE, utilityModule.getName());
     }
 
     private List<FacilioModule> splitFields(FacilioModule module, List<FacilioField> allFields) {
