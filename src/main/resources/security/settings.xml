@@ -3702,6 +3702,25 @@
         </urlparams>
     </request>
 
+    <request path="/api/v3/ruleList/flaggedEvent/ruleStatus/:id" method="POST">
+        <requestbody type="object">
+            <property name="data" type="object"  mandatory="true">
+                <property name="clientId" type="number" mandatory="true"/>
+                <property name="id" type="number" mandatory="true"/>
+                <property name="status" type="boolean" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/ruleList/alarmFilterRule/ruleStatus/:id" method="POST">
+        <requestbody type="object">
+            <property name="data" type="object"  mandatory="true">
+                <property name="id" type="number" mandatory="true"/>
+                <property name="status" type="boolean" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+
     <request path="/api/v3/alarms/generateRawAlarms" method="POST">
         <requestbody type="object">
             <property name="rawAlarmList" type="array">
