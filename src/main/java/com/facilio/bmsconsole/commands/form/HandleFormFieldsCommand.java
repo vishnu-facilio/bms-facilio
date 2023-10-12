@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.facilio.fs.FileInfo;
@@ -98,13 +99,12 @@ public class HandleFormFieldsCommand extends FacilioCommand {
 	}
 
 	private void handleRelationshipFields(FacilioModule module, List<FormField> sectionFields) throws Exception {
-		List<FormField> relationshipFieldFromFields = FormsAPI.getRelationshipFieldFromFields(sectionFields);
+		List<FormField> relationshipFieldFromFields = sectionFields.stream().filter(formField -> Objects.equals(formField.getDisplayTypeEnum(), FieldDisplayType.RELATIONSHIP)).collect(Collectors.toList());
 		if (CollectionUtils.isEmpty(relationshipFieldFromFields)) {
 			return;
 		}
 		List<Long> relationMappingIds = relationshipFieldFromFields.stream().map(FormField::getRelationMappingId).collect(Collectors.toList());
-		List<RelationRequestContext> relations = RelationUtil.getAllRelations(module, relationMappingIds);
-		Map<Long, RelationRequestContext> relationMappingIdVsRelationRequest = RelationUtil.getRelationMappingIdVsRelationRequest(relations);
+		Map<Long, RelationRequestContext> relationMappingIdVsRelationRequest = RelationUtil.getAllRelationsForRelMappingIds(module, relationMappingIds);
 
 		for (FormField sectionField : sectionFields) {
 			sectionField.setRelationData(relationMappingIdVsRelationRequest.get(sectionField.getRelationMappingId()));

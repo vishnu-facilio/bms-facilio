@@ -27,7 +27,7 @@ public class GetAllRelationsCountCommand extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         String searchString = (String) context.get(FacilioConstants.ContextNames.SEARCH);
         boolean includeHiddenRelations = (boolean) context.getOrDefault(FacilioConstants.Relationship.INCLUDE_HIDDEN_RELATIONS, false);
-        int relationCategoryInt = (int) context.getOrDefault(FacilioConstants.Relationship.RELATION_CATEGORY, 1);
+        int relationCategoryInt = (int) context.getOrDefault(FacilioConstants.Relationship.RELATION_CATEGORY, RelationContext.RelationCategory.NORMAL.getIndex());
         RelationContext.RelationCategory relationCategory = RelationContext.RelationCategory.valueOf(relationCategoryInt);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

@@ -25,7 +25,7 @@ public class GetAllRelationForSetupPageCommand extends FacilioCommand {
             throw new IllegalArgumentException("Invalid module");
         }
 
-        List<RelationRequestContext> relationRequests = RelationUtil.getAllRelations(module, true, pagination, search, false);
+        List<RelationRequestContext> relationRequests = RelationUtil.getAllRelations(module, true, pagination, search);
         context.put(FacilioConstants.ContextNames.RELATION_LIST, relationRequests);
 
         return false;

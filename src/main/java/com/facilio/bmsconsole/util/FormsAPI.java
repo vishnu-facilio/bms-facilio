@@ -446,26 +446,25 @@ public class FormsAPI {
 	}
 
 	private static void setNameAndDisplayNameForRelationshipField(FormField field, List<FormField> existingFields) {
-		String originalName = field.getName();
+		String fieldName = field.getName();
+		fieldName = "relationship_" + fieldName;
+		String baseName;
 		int count = 1;
 
-		for (FormField existingField : existingFields) {
-			if (existingField.getName().startsWith(originalName + "_")) {
-				int number = parseNumber(existingField.getName().substring(originalName.length() + 1));
-				count = Math.max(count, number + 1);
+		Set<String> existingFieldsNames = existingFields.stream().map(FormField::getName).collect(Collectors.toSet());
+		while (existingFieldsNames.contains(fieldName)) {
+			if (fieldName.endsWith("_" + count)) {
+				int lastIndex = fieldName.lastIndexOf('_');
+				baseName = fieldName.substring(0, lastIndex);
+				count = Integer.parseInt(fieldName.substring(lastIndex + 1)) + 1;
+			} else {
+				baseName = fieldName;
+				count = 1;
 			}
+			fieldName = baseName + "_" + count;
 		}
 
-		field.setName(originalName + "_" + count);
-		field.setDisplayName(field.getDisplayName());
-	}
-
-	private static int parseNumber(String s) {
-		try {
-			return Integer.parseInt(s);
-		} catch (NumberFormatException e) {
-			return 0;
-		}
+		field.setName(fieldName);
 	}
 
 
@@ -2369,8 +2368,5 @@ public class FormsAPI {
 
 		addFormSections(parentFormId,Collections.singletonList(subFormSection));
 
-	}
-	public static List<FormField> getRelationshipFieldFromFields(List<FormField> fields) {
-		return fields.stream().filter(formField -> formField.getDisplayTypeEnum().equals(FieldDisplayType.RELATIONSHIP)).collect(Collectors.toList());
 	}
 }

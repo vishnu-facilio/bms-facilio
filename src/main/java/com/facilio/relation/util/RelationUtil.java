@@ -127,18 +127,12 @@ public class RelationUtil {
         return getAllRelations(module, false, null, null, false, null, RelationContext.RelationCategory.NORMAL);
     }
 
-    public static List<RelationRequestContext> getAllRelations(FacilioModule module, List<Long> relationMappingIds) throws Exception {
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getIdCondition(relationMappingIds, ModuleFactory.getRelationMappingModule()));
-        return getAllRelations(module, false, null, null, false, criteria, RelationContext.RelationCategory.NORMAL);
+    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString) throws Exception {
+        return getAllRelations(module, isSetupPage, pagination, searchString, false, null, RelationContext.RelationCategory.NORMAL);
     }
 
-    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean includeHiddenRelations) throws Exception {
-        return getAllRelations(module, false, null, null, includeHiddenRelations, null, RelationContext.RelationCategory.NORMAL);
-    }
-
-    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString, boolean includeHiddenRelations) throws Exception {
-        return getAllRelations(module, isSetupPage, pagination, searchString, includeHiddenRelations, null, RelationContext.RelationCategory.NORMAL);
+    public static List<RelationRequestContext> getAllRelations(FacilioModule module, Criteria criteria) throws Exception {
+        return getAllRelations(module, false, null, null, false, criteria, null);
     }
 
     public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString, boolean includeHiddenRelations, Criteria criteria, RelationContext.RelationCategory relationCategory) throws Exception {
@@ -470,8 +464,7 @@ public class RelationUtil {
         return new ArrayList<>();
     }
 
-    public static void addRelationCategoryCriteriaToBuilder(RelationContext.RelationCategory relationCategory,
-            GenericSelectRecordBuilder builder, FacilioField relationCategoryField) {
+    public static void addRelationCategoryCriteriaToBuilder(RelationContext.RelationCategory relationCategory, GenericSelectRecordBuilder builder, FacilioField relationCategoryField) {
         if (relationCategory != null) {
             Criteria relationCategoryCriteria = new Criteria();
             if (relationCategory.equals(RelationContext.RelationCategory.NORMAL)) {
@@ -487,12 +480,18 @@ public class RelationUtil {
             }
         }
     }
-    
-    public static Map<Long, RelationRequestContext> getRelationMappingIdVsRelationRequest(List<RelationRequestContext> relationRequests) {
+
+    public static Map<Long, RelationRequestContext> getAllRelationsForRelMappingIds(FacilioModule module, List<Long> relationMappingIds) throws Exception {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getIdCondition(relationMappingIds, ModuleFactory.getRelationMappingModule()));
+        List<RelationRequestContext> relationRequests = getAllRelations(module, criteria);
+
         Map<Long, RelationRequestContext> relationRequestContextMap = new HashMap<>();
         for (RelationRequestContext relationRequest : relationRequests) {
             relationRequestContextMap.put(relationRequest.getRelMappingId(), relationRequest);
         }
+
         return relationRequestContextMap;
     }
+
 }

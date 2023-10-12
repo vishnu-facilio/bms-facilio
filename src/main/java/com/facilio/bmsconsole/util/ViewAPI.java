@@ -390,9 +390,7 @@ public class ViewAPI {
 									setCommonCalendarViewObjects(calendarViewContext);
 									view.setCalendarViewContext(calendarViewContext);
 								}
-							}
-//							timeline view
-							if (calendarViewLicenseEnabled && view.isTimelineView()) {
+							} else if (calendarViewLicenseEnabled && view.isTimelineView()) {
 								if (MapUtils.isNotEmpty(timelineScheduledViewContextMap) && timelineScheduledViewContextMap.containsKey(viewId)) {
 									TimelineScheduledViewContext timelineScheduledViewContext = timelineScheduledViewContextMap.get(viewId);
 									setTimelineScheduledView(timelineScheduledViewContext, modBean, orgId);

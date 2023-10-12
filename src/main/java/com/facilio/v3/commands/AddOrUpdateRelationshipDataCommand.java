@@ -18,7 +18,7 @@ import org.json.simple.JSONObject;
 import java.util.List;
 import java.util.Map;
 
-public class AddOrUpdateRelationShipDataCommand extends FacilioCommand {
+public class AddOrUpdateRelationshipDataCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -31,16 +31,16 @@ public class AddOrUpdateRelationShipDataCommand extends FacilioCommand {
 
         for (ModuleBaseWithCustomFields record : records) {
             long id = record.getId();
-            Map<String, Map<String, List<Long>>> relationShip = record.getRelationShip();
-            if (MapUtils.isEmpty(relationShip)) {
+            Map<String, Map<String, List<Long>>> relationship = record.getRelationship();
+            if (MapUtils.isEmpty(relationship)) {
                 continue;
             }
 
-            for (String relationshipLinkName : relationShip.keySet()) {
+            for (String relationshipLinkName : relationship.keySet()) {
                 RelationMappingContext relationMapping = RelationUtil.getRelationMapping(relationshipLinkName);
                 String toModuleName = relationMapping.getToModule().getName();
 
-                Map<String, List<Long>> associateDissociateIdsMap = relationShip.get(relationshipLinkName);
+                Map<String, List<Long>> associateDissociateIdsMap = relationship.get(relationshipLinkName);
                 List<Long> associateIds = associateDissociateIdsMap.get(FacilioConstants.RelationshipField.ASSOCIATE_IDS);
                 List<Long> dissociateIds = associateDissociateIdsMap.get(FacilioConstants.RelationshipField.DISSOCIATE_IDS);
 
