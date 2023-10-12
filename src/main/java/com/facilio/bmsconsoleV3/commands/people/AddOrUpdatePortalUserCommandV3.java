@@ -47,7 +47,9 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
                 if(oldPeopleRecordMap != null && !oldPeopleRecordMap.isEmpty()){
                     V3PeopleContext oldPeopleRecord = oldPeopleRecordMap.get(people.getId());
                     Map<String,Long> rolemaps = people.getRolesMap();
+                    if(rolemaps != null && !rolemaps.isEmpty()){
                         updateAccess(oldPeopleRecord,people,rolemaps,securityPolicyId,sendInvitation,password);
+                    }
                 }
             }
         }
