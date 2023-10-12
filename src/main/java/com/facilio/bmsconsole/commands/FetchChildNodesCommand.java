@@ -32,15 +32,16 @@ public class FetchChildNodesCommand extends FacilioCommand {
             for (Map<String, Object> nodeProp : nodeProps) {
                 if (!nodeProp.containsKey("parentId")) {
                     Map<String, Object> modifiedProp = nodeProp;
-                    if (parentIdVsChildrenMap.containsKey(nodeProp.get("key").toString())) {
-                        getChilNodes(modifiedProp, parentIdVsChildrenMap, nodeProp.get("key").toString(), addedKeys);
+                    if (parentIdVsChildrenMap.containsKey(nodeProp.get("id").toString())) {
+                        getChilNodes(modifiedProp, parentIdVsChildrenMap, nodeProp.get("id").toString(), addedKeys);
                     }
                     modifiedProp.put("children", modifiedProp.get("children"));
+                    modifiedProp.put("isOpen",true);
                     childNodes.add(modifiedProp);
                 }
             }
             for (int i=0;i<siteChildren.size();i++){
-                if(siteChildren.get(i).get("key").equals(childNodes.get(0).get("key"))){
+                if(siteChildren.get(i).get("id").equals(childNodes.get(0).get("id"))){
                     siteChildren.remove(i);
                     siteChildren.add(i,childNodes.get(0));
                 }
@@ -57,18 +58,22 @@ public class FetchChildNodesCommand extends FacilioCommand {
         if(siteChildren != null && !siteChildren.isEmpty()) {
             for (BuildingContext building : siteChildren) {
                 Map<String, Object> buildingProp = new HashMap<>();
-                buildingProp.put("name", building.getName());
-                buildingProp.put("key", building.getId());
-                buildingProp.put("moduleName", building.getSpaceTypeEnum().getModuleName());
+                buildingProp.put("title", building.getName());
+                buildingProp.put("id", building.getId());
+                buildingProp.put("isOpen",false);
+                buildingProp.put("isEnd",false);
+                buildingProp.put("moduleName", building.getSpaceTypeEnum().getStringVal());
                 siteChildrenProps.add(buildingProp);
             }
         }
         if(independantSpaces != null && !independantSpaces.isEmpty()) {
             for (SpaceContext space : independantSpaces) {
                 Map<String, Object> buildingProp = new HashMap<>();
-                buildingProp.put("name", space.getName());
-                buildingProp.put("key", space.getId());
-                buildingProp.put("moduleName", space.getSpaceTypeEnum().getModuleName());
+                buildingProp.put("title", space.getName());
+                buildingProp.put("id", space.getId());
+                buildingProp.put("moduleName", space.getSpaceTypeEnum().getStringVal());
+                buildingProp.put("isOpen",false);
+                buildingProp.put("isEnd", false);
                 siteChildrenProps.add(buildingProp);
             }
         }
@@ -80,9 +85,9 @@ public class FetchChildNodesCommand extends FacilioCommand {
         List<Map<String,Object>> childNode = (List<Map<String, Object>>) parent.get("children");
         for(int i=0;i<childNode.size();i++){
             Map<String,Object> childrenProp = childNode.get(i);
-            if(parentIdVsChildrenMap.containsKey(childrenProp.get("key").toString())){
-                addedKeys.add((Long) childrenProp.get("key"));
-                getChilNodes(childrenProp,parentIdVsChildrenMap,childrenProp.get("key").toString(),addedKeys);
+            if(parentIdVsChildrenMap.containsKey(childrenProp.get("id").toString())){
+                addedKeys.add((Long) childrenProp.get("id"));
+                getChilNodes(childrenProp,parentIdVsChildrenMap,childrenProp.get("id").toString(),addedKeys);
             }
         }
     }
@@ -111,8 +116,8 @@ public class FetchChildNodesCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(props)){
             props.forEach((prop)->{
                 Map<String,Object> nodeProp = new HashMap<>();
-                nodeProp.put("name",prop.get("name"));
-                nodeProp.put("key",prop.get("id"));
+                nodeProp.put("title",prop.get("name"));
+                nodeProp.put("id",prop.get("id"));
                 nodeProp.put("moduleName", BaseSpaceContext.SpaceType.getType((Integer) prop.get("spaceType")).getStringVal());
                 if(nodeProp.get("moduleName").equals("Floor")){
                     nodeProp.put("parentId",prop.get("building"));

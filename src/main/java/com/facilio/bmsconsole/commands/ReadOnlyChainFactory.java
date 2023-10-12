@@ -3605,4 +3605,17 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new FetchChildNodesCommand());
 		return chain;
     }
+
+    public static FacilioChain getPortfolioCardsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new FetchPortfolioCardsDataCommand());
+		return chain;
+    }
+
+    public static FacilioChain getPortfolioSearchChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetPortfolioSpacesCommand());
+		chain.addCommand(new GetPortfolioSpacesCountCommand());
+		return chain;
+    }
 }

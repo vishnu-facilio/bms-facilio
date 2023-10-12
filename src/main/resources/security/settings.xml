@@ -14,6 +14,23 @@
     </request>
 
 
+    <request path="/api/v2/basespace/tree/fetchParentNodes">
+        <requestbody type="object">
+            <property name="baseSpaceId" type="string"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/portfolio/cards">
+    </request>
+    <request path="/api/v2/portfolio/search">
+        <requestbody type="object">
+            <property name="search" type="string"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/portfolio/tree">
+        <requestbody type="object">
+            <property name="baseSpaceId" type="string"/>
+        </requestbody>
+    </request>
     <request path="/api/campus/spaceInsights">
         <requestbody type="object">
             <property name="campusId" type="string"/>
