@@ -72,3 +72,7 @@ topics:
   - topic: default-single
     keys:
       - { key: controlActionTemplate/+, handler: com.facilio.wmsv2.handler.ControlActionGenerationHandler, recordTimeout: 600 }
+
+  - topic: default-single
+    keys:
+      - { key: __fsm_silent_notification_logs__/#/#, handler: com.facilio.ims.handler.WorkFlowRuleLogHandler }

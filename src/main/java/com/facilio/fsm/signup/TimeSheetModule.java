@@ -4,9 +4,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -18,7 +16,9 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
@@ -353,7 +353,7 @@ public class TimeSheetModule extends BaseModuleConfig {
         generalSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormField> serviceTasksFields = new ArrayList<>();
-        serviceTasksFields.add(new FormField("serviceTasks", FacilioField.FieldDisplayType.SERVICE_APPOINTMENT_TASKS, "Tasks", FormField.Required.REQUIRED, 1, 1));
+        serviceTasksFields.add(new FormField("serviceTasks", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Tasks", FormField.Required.REQUIRED, 1, 1));
         FormSection serviceTaskSection = new FormSection("Service Task Details", 2, serviceTasksFields, true);
 
         serviceTaskSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -365,9 +365,48 @@ public class TimeSheetModule extends BaseModuleConfig {
         timeSheetForm.setSections(webTimeSheetFormSection);
         timeSheetForm.setIsSystemForm(true);
         timeSheetForm.setType(FacilioForm.Type.FORM);
+
+        FormRuleContext singleRule = addTasksFilterRule();
+        timeSheetForm.setDefaultFormRules(Arrays.asList(singleRule));
+
         List<FacilioForm> timeSheetModuleForms = new ArrayList<>();
         timeSheetModuleForms.add(timeSheetForm);
         return timeSheetModuleForms;
+    }
+
+    private FormRuleContext addTasksFilterRule() {
+
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Service Tasks Filter Rule");
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_FORM.getIntVal());
+
+        FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
+        triggerField.setFieldName("Service Appointment");
+        singleRule.setTriggerFields(Collections.singletonList(triggerField));
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+
+        FormRuleActionContext filterAction = new FormRuleActionContext();
+        filterAction.setActionType(FormActionType.APPLY_FILTER.getVal());
+
+        FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
+
+        actionField.setFormFieldName("Tasks");
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("SERVICE_TASK.SERVICE_APPOINTMENT","serviceAppointment", "${timesheet.serviceAppointment.id}", NumberOperators.EQUALS));
+
+        actionField.setCriteria(criteria);
+
+        filterAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+
+        actions.add(filterAction);
+
+        singleRule.setActions(actions);
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
+        return singleRule;
     }
 
     @Override

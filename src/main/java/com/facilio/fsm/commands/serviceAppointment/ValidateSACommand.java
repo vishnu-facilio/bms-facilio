@@ -12,6 +12,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class ValidateSACommand extends FacilioCommand {
     @Override
@@ -20,13 +21,16 @@ public class ValidateSACommand extends FacilioCommand {
         List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName"));
         if(CollectionUtils.isNotEmpty(serviceAppointments)) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
-                if (serviceAppointment.getScheduledStartTime() != null && serviceAppointment.getScheduledEndTime() != null) {
-                    if (serviceAppointment.getScheduledStartTime() > serviceAppointment.getScheduledEndTime() ) {
+                if(Optional.ofNullable(serviceAppointment.getScheduledStartTime()).orElse(0L) > 0 &&
+                        Optional.ofNullable(serviceAppointment.getScheduledEndTime()).orElse(0L) > 0) {
+                    if (serviceAppointment.getScheduledStartTime() >= serviceAppointment.getScheduledEndTime() ) {
                         throw new FSMException(FSMErrorCode.SA_SCHEDULED_TIME_MISMATCH);
                     }
                     else if(serviceAppointment.getScheduledStartTime()<serviceAppointment.getCurrentTime()){
                         throw new FSMException(FSMErrorCode.SA_SCHEDULED_TIME_INVALID);
                     }
+                }else{
+                    throw new FSMException(FSMErrorCode.SA_DETAILS_REQUIED);
                 }
             }
             }

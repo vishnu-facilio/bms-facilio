@@ -26,6 +26,14 @@ public class PeopleSkillLevelContext extends V3Context {
         return this.level;
     }
 
+    private String levelName;
+    public String getLevelName() {
+        if(this.level != null){
+            return this.level.getDisplayName();
+        }
+        return null;
+    }
+
     private Level level;
     public static enum Level implements FacilioIntEnum {
         EXPERT("Expert"),
@@ -48,6 +56,9 @@ public class PeopleSkillLevelContext extends V3Context {
         @Override
         public String getValue() {
             return this.name();
+        }
+        public String getDisplayName() {
+            return name;
         }
     }
 

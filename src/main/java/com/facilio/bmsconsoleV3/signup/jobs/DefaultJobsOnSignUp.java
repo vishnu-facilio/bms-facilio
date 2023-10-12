@@ -141,5 +141,7 @@ public class DefaultJobsOnSignUp extends SignUpData {
         FacilioTimer.scheduleCalendarJob(orgId, "DeleteScheduledOneTimeRuleExecution", System.currentTimeMillis(), constructMonthlyScheduleInfoWithOneTime("00:00",28), "facilio");
         //Job to update people status
         FacilioTimer.schedulePeriodicJob(orgId, "PeopleStatusUpdateJob", 1800, 1800, "facilio");
+        //Job to send silent notification for shift start and end
+        FacilioTimer.schedulePeriodicJob(orgId,"SilentNotificationForShiftJob",1800,1800,"facilio");
     }
 }

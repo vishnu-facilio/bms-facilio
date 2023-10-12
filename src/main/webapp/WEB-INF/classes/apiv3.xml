@@ -270,18 +270,19 @@
             <param name="identifier">{2}</param>
             <param name="buttonPermission">true</param>
         </action>
+        <action name="serviceOrder/*/systemButton/*" class="com.facilio.fsm.actions.ServiceOrderAction" method="updateServiceOrders">
+            <param name="moduleName">serviceOrder</param>
+            <param name="orderId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">{2}</param>
+            <param name="buttonPermission">true</param>
+        </action>
         <action name="*/*/systemButton/*">
             <param name="moduleName">{1}</param>
             <param name="recordId">{2}</param>
             <param name="buttonAction">systemButton</param>
             <param name="identifier">{3}</param>
             <param name="buttonPermission">true</param>
-        </action>
-        <action name="serviceOrder/*/systemButton/*" class="com.facilio.fsm.actions.ServiceOrderAction" method="updateServiceOrders">
-            <param name="moduleName">serviceOrder</param>
-            <param name="orderId">{1}</param>
-            <param name="buttonAction">systemButton</param>
-            <param name="identifier">{2}</param>
         </action>
     </package>
     <package name="newTimelineV3Api" namespace="/api/v3/modules/timeline" extends="v3Api">

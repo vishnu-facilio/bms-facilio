@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
+import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -30,6 +31,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fsm.context.TimeOffContext;
+import com.facilio.fsm.util.SilentNotificationUtilForFsm;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
@@ -51,6 +53,9 @@ import org.apache.log4j.Logger;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.facilio.modules.ModuleFactory.getShiftModule;
+
 public class V3PeopleAPI {
 
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+&-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$", Pattern.CASE_INSENSITIVE);
@@ -1364,4 +1369,39 @@ public class V3PeopleAPI {
         }
         return selectRecordsBuilder;
     }
+    public static void sendSilentNotification()throws Exception {
+
+        Long currentTime = DateTimeUtil.getCurrenTime();
+        Long lastExecutionTime = currentTime - 1800;
+        List<Map<String, Object>> mapList = ShiftAPI.getShifts(lastExecutionTime, currentTime);
+        if (CollectionUtils.isNotEmpty(mapList)) {
+            long dayStartTime = DateTimeUtil.getDayStartTimeOf(lastExecutionTime);
+            Long fromRange = lastExecutionTime - dayStartTime;
+
+            long dayStart = DateTimeUtil.getDayStartTimeOf(currentTime);
+            Long toRange = currentTime - dayStart;
+            List<Long> peopleIdsForShiftStart = new ArrayList<>();
+            List<Long> peopleIdsForShiftEnd = new ArrayList<>();
+            FacilioModule shiftMod = ModuleFactory.getShiftModule();
+            for (Map<String, Object> map : mapList) {
+
+            Long peopleId = (Long) map.get("peopleId");
+            Long startTime = (Long) map.get("startTime");
+            Long endTime = (Long) map.get("endTime");
+            if (startTime >= fromRange && startTime <= toRange) {
+                peopleIdsForShiftStart.add(peopleId);
+            } else if (endTime >= fromRange && endTime <= toRange) {
+                peopleIdsForShiftEnd.add(peopleId);
+            }
+            if(CollectionUtils.isNotEmpty(peopleIdsForShiftStart)){
+                SilentNotificationUtilForFsm.sendNotificationForFsm(shiftMod, peopleIdsForShiftStart, SilentPushNotificationContext.ActionType.SHIFT_START,300000L,120000L);
+            }
+            if(CollectionUtils.isNotEmpty(peopleIdsForShiftEnd)){
+                SilentNotificationUtilForFsm.sendNotificationForFsm(shiftMod, peopleIdsForShiftEnd, SilentPushNotificationContext.ActionType.SHIFT_END,300000L,120000L);
+            }
+            }
+        }
+    }
+
+
 }

@@ -21,6 +21,7 @@ import com.facilio.security.MalwareInterceptor;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -835,4 +836,149 @@ public class ShiftAPI {
         }
         return FacilioUtil.parseInt(resultSet.get(0).get("count"));
     }
+    /**
+     * Returns a list of shiftPeopleRel for shift ids and time range
+     *
+     * @param shiftIds  shiftIds
+     * @param rangeFrom  time span start
+     * @param rangeTo    time span end
+     * @return retrieved list of Shifts for the given time span
+     */
+
+    public static List<Map<String, Object>> fetchShifts(Set<Long> shiftIds, Long rangeFrom, Long rangeTo) throws Exception {
+
+
+        FacilioModule shiftPeopleRelMod = getShiftPeopleRelPseudoModule();
+
+
+        Map<String, FacilioField> fieldMap =
+                FieldFactory.getAsMap(FieldFactory.getShiftPeopleRelPseudoModuleFields());
+
+        // A.1 Shift Condition | SHIFT_ID = shiftId
+        Condition shiftCondition = CriteriaAPI.getCondition(fieldMap.get("shiftId"),
+                shiftIds,
+                NumberOperators.EQUALS);
+
+        // B.1 Bound Condition | START_TIME = -2
+        Condition perpetualStartTimeCond = CriteriaAPI.getCondition(fieldMap.get("startTime"),
+                Collections.singletonList(UNLIMITED_PERIOD),
+                NumberOperators.EQUALS);
+
+        // B.2 Bound Condition | END_TIME = -2
+        Condition perpetualEndTimeCond = CriteriaAPI.getCondition(fieldMap.get("endTime"),
+                Collections.singletonList(UNLIMITED_PERIOD),
+                NumberOperators.EQUALS);
+
+        Criteria slotStartIncidentInView = new Criteria();
+        slotStartIncidentInView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"),
+                Collections.singletonList(rangeFrom),
+                NumberOperators.GREATER_THAN_EQUAL));
+
+        slotStartIncidentInView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"),
+                Collections.singletonList(rangeTo),
+                NumberOperators.LESS_THAN_EQUAL));
+
+        Criteria slotEndIncidentInView = new Criteria();
+        slotEndIncidentInView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("endTime"),
+                Collections.singletonList(rangeFrom),
+                NumberOperators.GREATER_THAN_EQUAL));
+
+        slotEndIncidentInView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("endTime"),
+                Collections.singletonList(rangeTo),
+                NumberOperators.LESS_THAN_EQUAL));
+
+        Criteria slotOvershadowingTheView = new Criteria();
+        slotOvershadowingTheView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"),
+                Collections.singletonList(rangeFrom),
+                NumberOperators.LESS_THAN_EQUAL));
+
+        slotOvershadowingTheView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("endTime"),
+                Collections.singletonList(rangeTo),
+                NumberOperators.GREATER_THAN_EQUAL));
+
+        Criteria timeCriteria = new Criteria();
+        timeCriteria.addOrCondition(perpetualStartTimeCond);
+        timeCriteria.addOrCondition(perpetualEndTimeCond);
+        timeCriteria.orCriteria(slotStartIncidentInView);
+        timeCriteria.orCriteria(slotEndIncidentInView);
+        timeCriteria.orCriteria(slotOvershadowingTheView);
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(shiftPeopleRelMod.getTableName())
+                .select(FieldFactory.getShiftPeopleRelPseudoModuleFields())
+                .andCondition(shiftCondition)
+                .andCriteria(timeCriteria);
+
+        List<Map<String, Object>> resultSet = builder.get();
+
+        return resultSet;
+    }
+    /**
+     * Returns a list of all Shifts for given time range
+     *
+     * @param rangeFrom  time span start
+     * @param rangeTo    time span end
+     * @return retrieved list of Shifts for the given time span
+     */
+
+    public static List<Map<String, Object>> getShifts(Long rangeFrom, Long rangeTo) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getShiftFields());
+
+
+        long dayStartTime = DateTimeUtil.getDayStartTimeOf(rangeFrom);
+        Long fromRange = rangeFrom - dayStartTime;
+
+        long startTime = DateTimeUtil.getDayStartTimeOf(rangeTo);
+        Long toRange = rangeTo - startTime;
+
+        Criteria slotStartIncidentInView = new Criteria();
+        slotStartIncidentInView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"),
+                Collections.singletonList(fromRange),
+                NumberOperators.GREATER_THAN_EQUAL));
+
+        slotStartIncidentInView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("startTime"),
+                Collections.singletonList(toRange),
+                NumberOperators.LESS_THAN_EQUAL));
+
+        Criteria slotEndIncidentInView = new Criteria();
+        slotEndIncidentInView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("endTime"),
+                Collections.singletonList(fromRange),
+                NumberOperators.GREATER_THAN_EQUAL));
+
+        slotEndIncidentInView.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("endTime"),
+                Collections.singletonList(toRange),
+                NumberOperators.LESS_THAN_EQUAL));
+
+        Criteria timeCriteria = new Criteria();
+        timeCriteria.andCriteria(slotStartIncidentInView);
+        timeCriteria.orCriteria(slotEndIncidentInView);
+
+        SelectRecordsBuilder<Shift> builder = new SelectRecordsBuilder<Shift>()
+                .beanClass(Shift.class)
+                .module(module)
+                .select(modBean.getAllFields(module.getName()))
+                .andCriteria(timeCriteria);
+        List<Shift> shifts = builder.get();
+
+        if (CollectionUtils.isNotEmpty(shifts)) {
+            Map<Long,Object> shiftMap =  shifts.stream().collect(Collectors.toMap(tab -> (Long) tab.getId(),tab -> (Object) tab));
+
+            List<Map<String, Object>> shiftData = fetchShifts(shiftMap.keySet(),rangeFrom,rangeTo);
+            if(CollectionUtils.isNotEmpty(shiftData)){
+            for(Map<String,Object> data:shiftData){
+                Shift shift = (Shift) shiftMap.get(data.get("shiftId"));
+                data.put("startTime",shift.getStartTime());
+                data.put("endTime",shift.getEndTime());
+
+            }
+            return shiftData;
+            }
+
+        }
+
+       return null;
+    }
+
 }

@@ -70,7 +70,7 @@ public class UpdatePeopleLocationFromTripCommand extends FacilioCommand {
             fieldList.add(batteryInfo);
             fieldList.add(signalInfo);
 
-            V3PeopleContext pplRecord = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,peopleId);
+            V3PeopleContext pplRecord = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,peopleId,V3PeopleContext.class);
             Long peopleLastSyncTime = pplRecord.getLastSyncTime();
             if(time > peopleLastSyncTime){
                 V3PeopleContext peopleContext = new V3PeopleContext();

@@ -3422,6 +3422,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new UpdateAttendance());
         c.addCommand(new UpdatePeopleAvailabilityStatusCommand());
+        c.addCommand(new SilentNotificationForAttendanceTransactionCommand());
         return c;
     }
 

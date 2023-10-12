@@ -8,27 +8,24 @@ public enum ServiceAppointmentActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             String fieldAgent = (String) json.get("fieldAgent");
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy).append(" dispatched the appointment to ").append(fieldAgent);
+            builder.append(" dispatched the appointment to ").append(fieldAgent);
             return builder.toString();
         }
     },
     RESCHEDULED(143){
         @Override
         public String constructMessage(JSONObject json) {
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy).append(" rescheduled the appointment");
+            builder.append(" rescheduled the appointment");
             return builder.toString();
         }
     },
     START_WORK(144){
         @Override
         public String constructMessage(JSONObject json) {
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy).append(" started the appointment");
+            builder.append(" started the appointment");
             return builder.toString();
         }
     },
@@ -36,9 +33,8 @@ public enum ServiceAppointmentActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             String trip = (String) json.get("trip");
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy).append(" started the trip ");
+            builder.append(" started the trip ");
             builder.append(trip);
             return builder.toString();
         }
@@ -47,9 +43,8 @@ public enum ServiceAppointmentActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             String trip = (String) json.get("trip");
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy).append(" ended the trip ");
+            builder.append(" ended the trip ");
             builder.append(trip);
             return builder.toString();
         }
@@ -57,18 +52,16 @@ public enum ServiceAppointmentActivityType implements ActivityType {
     COMPLETE_WORK(147){
         @Override
         public String constructMessage(JSONObject json) {
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy).append(" completed the appointment");
+            builder.append(" completed the appointment");
             return builder.toString();
         }
     },
     CANCELLED(148){
         @Override
         public String constructMessage(JSONObject json) {
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy).append(" cancelled the appointment");
+            builder.append(" cancelled the appointment");
             return builder.toString();
         }
     },
@@ -76,9 +69,8 @@ public enum ServiceAppointmentActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             String timeSheet = (String) json.get("timeSheet");
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy).append(" started the time sheet ");
+            builder.append(" started the time sheet ");
             builder.append(timeSheet);
             return builder.toString();
         }
@@ -87,9 +79,8 @@ public enum ServiceAppointmentActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             String timeSheet = (String) json.get("timeSheet");
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy).append(" deleted the time sheet ");
+            builder.append(" deleted the time sheet ");
             builder.append(timeSheet);
             return builder.toString();
         }
@@ -98,9 +89,8 @@ public enum ServiceAppointmentActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             String trip = (String) json.get("trip");
-            String doneBy = (String) json.get("doneBy");
             StringBuilder builder = new StringBuilder();
-            builder.append(doneBy).append(" deleted the trip ");
+            builder.append(" deleted the trip ");
             builder.append(trip);
             return builder.toString();
         }

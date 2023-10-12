@@ -289,6 +289,8 @@
 
 	<job name="FlaggedEventAutoClosureJob" classname="com.facilio.remotemonitoring.jobs.FlaggedEventAutoClosureJob" transactionTimeout="300000"/>
 	<job name='PeopleStatusUpdateJob' classname='com.facilio.fsm.jobs.UpdatePeopleStatusJob' transactionTimeout='900000'/>
+	<job name='SilentNotificationForShiftJob' classname='com.facilio.fsm.jobs.SilentNotificationForShiftJob' transactionTimeout='900000'/>
+
 
 
 </scheduler>
