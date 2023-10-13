@@ -24,6 +24,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.report.context.*;
+import com.facilio.report.module.v2.context.V2ModuleReportContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import com.facilio.v3.context.Constants;
@@ -221,6 +222,20 @@ public class V2AnalyticsOldUtil {
         if (props != null && !props.isEmpty())
         {
             return FieldUtil.getAsBeanFromMap(props.get(0), V2ReportContext.class);
+        }
+        return null;
+    }
+    public static V2ModuleReportContext getV2ModuleReport(Long reportId)throws Exception
+    {
+        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getV2ReportModuleFields())
+                .table(ModuleFactory.getV2ReportModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", reportId.toString(), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> props = select.get();
+        if (props != null && !props.isEmpty())
+        {
+            return FieldUtil.getAsBeanFromMap(props.get(0), V2ModuleReportContext.class);
         }
         return null;
     }

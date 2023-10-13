@@ -30,7 +30,9 @@ import java.util.function.Function;
 public class V2AnalyticsReportAction extends V3Action {
 
     public V2ReportContext report = new V2ReportContext();
+    public Long appId;
     public Long reportId ;
+    private int reportType;
     private int page=1;
     private int perPage=50;
     private boolean withCount;
@@ -88,9 +90,11 @@ public class V2AnalyticsReportAction extends V3Action {
         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
         context.put(FacilioConstants.ContextNames.ORDER_TYPE, orderType);
         context.put(FacilioConstants.ContextNames.WITH_COUNT, withCount);
+        context.put(FacilioConstants.ContextNames.APP_ID,appId);
+        context.put("reportType",reportType);
         context.put("folderId", folderId);
         chain.execute();
-        setData("reportFolders", context.get("reportFolders"));
+        setData("reports", context.get("reports"));
         setData("count", context.get(Constants.COUNT));
         return V3Action.SUCCESS;
     }
@@ -124,8 +128,8 @@ public class V2AnalyticsReportAction extends V3Action {
             ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
             setData("report", reportContext);
         }
-        if(context.get("v2_report") != null){
-            setData("v2_report", context.get("v2_report"));
+        if(context.get("report_v2") != null){
+            setData("report_v2", context.get("report_v2"));
         }
         setData("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES)); // This can be removed
         // from new format

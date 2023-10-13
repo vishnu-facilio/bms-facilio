@@ -503,4 +503,28 @@
             <property name="folderId" type="number"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/module/report/folder/list" method="GET">
+        <urlparams>
+            <property name="appId" type="number"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v3/module/report/fetch" method="PUT">
+        <requestbody/>
+    </request>
+    <request path="/api/v3/module/report/create" method="POST">
+        <requestbody/>
+    </request>
+    <request path="/api/v3/module/report/update" method="POST">
+        <requestbody/>
+    </request>
+    <request path="/api/v3/module/report/delete/:reportId" method="DELETE">
+        <urlparams>
+            <property name="reportId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v3/module/report/edit/:reportId" method="GET">
+        <urlparams>
+            <property name="reportId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
 </config>

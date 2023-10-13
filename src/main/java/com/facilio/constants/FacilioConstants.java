@@ -1561,6 +1561,7 @@ public class FacilioConstants {
 		public static final String SEARCH = "search";
 		public static final String EXCLUDE_PARENT_FILTER="excludeParentFilter";
 		public static final String WITH_COUNT="withCount";
+		public static final String FOLDER_ID="folderId";
 		public static final String GENERIC_SEARCH = "genericSearch";
 		public static final String SEARCH_RESULT = "searchResult";
 		public static final String SEARCH_CRITERIA = "searchCriteria";

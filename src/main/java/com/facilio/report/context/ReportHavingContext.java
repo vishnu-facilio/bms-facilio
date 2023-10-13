@@ -4,11 +4,16 @@ import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 public class ReportHavingContext {
 
     private String fieldName;
+    @Getter
+    @Setter
+    private String moduleName;
     public String getFieldName() {
         if (StringUtils.isEmpty(fieldName) && getField() != null) {
             fieldName = field.getName();
