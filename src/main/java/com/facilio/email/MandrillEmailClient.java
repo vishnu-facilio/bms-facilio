@@ -87,6 +87,13 @@ public class MandrillEmailClient extends EmailClient {
     }
 
     @Override
+    public JSONObject getSuppressionStatus(String email) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("message", "not handled in Mandrill email client");
+        return jsonObject;
+    }
+
+    @Override
     public String sendEmailImpl(JSONObject mailJson) throws Exception {
         return sendEmailImpl(mailJson, new HashMap<>());
     }

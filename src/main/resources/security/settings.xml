@@ -1018,6 +1018,25 @@
         </requestbody>
     </request>
 
+    <request path="/api/v3/ogmail/history">
+        <requestbody type="object">
+            <property name="startId" type="number"/>
+            <property name="endId" type="number"/>
+            <property name="rullAll" type="boolean"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/ogmail/apiStats">
+        <requestbody type="object">
+            <property name="startTime" type="number"/>
+            <property name="endTime" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/ogmail/checkSuppressionInfo">
+        <requestbody type="object">
+            <property name="emailAddress" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+
     <request path="/api/v3/wms/stats">
         <requestbody type="object">
             <property name="orgId" type="number"/>

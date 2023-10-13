@@ -39,6 +39,13 @@ public class SGEmailClient extends EmailClient{
     }
 
     @Override
+    public JSONObject getSuppressionStatus(String email) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("message", "not handled in SG email client");
+        return jsonObject;
+    }
+
+    @Override
     protected String sendEmailImpl(JSONObject mailJson) throws Exception {
         return sendEmailImpl(mailJson, null);
     }

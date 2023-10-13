@@ -1428,6 +1428,9 @@
         <action name="apiStats"
                 class="com.facilio.mailtracking.actions.OutgoingMailAction"
                 method="apiStats"/>
+        <action name="checkSuppressionInfo"
+                class="com.facilio.mailtracking.actions.OutgoingMailAction"
+                method="getSuppressionInfo"/>
     </package>
 
     <package name="wms" namespace="/api/v3/wms" extends="v3Api">

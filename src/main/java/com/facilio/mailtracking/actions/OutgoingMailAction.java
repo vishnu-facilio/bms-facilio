@@ -1,10 +1,14 @@
 package com.facilio.mailtracking.actions;
 
+import lombok.Setter;
+
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
+import com.facilio.services.email.EmailClient;
+import com.facilio.services.email.EmailFactory;
 import com.facilio.v3.V3Action;
-import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 @Setter
@@ -16,6 +20,7 @@ public class OutgoingMailAction extends V3Action {
 
     private long startTime;
     private long endTime = -1L;
+    private String emailAddress;
 
     public String resendFailedMails() throws Exception {
         FacilioChain chain = MailReadOnlyChainFactory.runHistoricChain();
@@ -44,6 +49,18 @@ public class OutgoingMailAction extends V3Action {
         context.put("endTime", endTime);
         chain.execute();
         setData((JSONObject) context.get("data"));
+        return V3Action.SUCCESS;
+    }
+
+    public String getSuppressionInfo() {
+        if(!StringUtils.isEmpty(emailAddress)) {
+            EmailClient emailClient = EmailFactory.getEmailClient();
+            for(String email : emailAddress.split(",")) {
+                setData(email, emailClient.getSuppressionStatus(email));
+            }
+        } else {
+            setData("message", "emailAddress is not found");
+        }
         return V3Action.SUCCESS;
     }
 }

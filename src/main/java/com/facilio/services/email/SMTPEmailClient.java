@@ -124,4 +124,11 @@ class SMTPEmailClient extends EmailClient {
                 });
     }
 
+    @Override
+    public JSONObject getSuppressionStatus(String email) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("message", "not handled in smtp email client");
+        return jsonObject;
+    }
+
 }

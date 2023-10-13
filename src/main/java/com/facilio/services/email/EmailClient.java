@@ -60,6 +60,8 @@ public abstract class EmailClient extends BaseEmailClient {
     public static final String ERROR_AND_ALERT_AT_FACILIO="error+alert@" + mailDomain;
     protected abstract Session getSession();
 
+    public abstract JSONObject getSuppressionStatus(String email);
+
     private static boolean checkIfActiveUserFromEmail(String email) throws Exception { //TODO Have to handle this in bulk. For now all emails are not sent in user thread and so okay I guess
         UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
         User user = userBean.getUserFromEmail(email, null, AccountUtil.getCurrentOrg().getOrgId(), true);

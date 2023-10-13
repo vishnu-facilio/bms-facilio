@@ -72,7 +72,10 @@ class AwsEmailClient extends EmailClient {
         return Session.getDefaultInstance(new Properties());
     }
 
-
+    @Override
+    public JSONObject getSuppressionStatus(String email) {
+        return AwsUtil.getSuppressionStatus(email);
+    }
 
 
 }

@@ -31,6 +31,13 @@ public class AzureEmailClient extends EmailClient{
     }
 
     @Override
+    public JSONObject getSuppressionStatus(String email) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("message", "not handled in Azure email client");
+        return jsonObject;
+    }
+
+    @Override
     protected String sendEmailImpl(JSONObject mailJson) throws Exception {
         return sendEmailViaAzure(mailJson,null);
     }
