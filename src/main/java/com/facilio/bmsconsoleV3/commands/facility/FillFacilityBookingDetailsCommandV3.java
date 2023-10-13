@@ -1,11 +1,10 @@
 package com.facilio.bmsconsoleV3.commands.facility;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.WebTabUtil;
 import com.facilio.bmsconsoleV3.context.facilitybooking.BookingSlotsContext;
-import com.facilio.bmsconsoleV3.context.facilitybooking.SlotContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
 import com.facilio.bmsconsoleV3.context.facilitybooking.V3FacilityBookingContext;
-import com.facilio.bmsconsoleV3.util.BudgetAPI;
 import com.facilio.bmsconsoleV3.util.FacilityAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
@@ -29,11 +28,29 @@ public class FillFacilityBookingDetailsCommandV3 extends FacilioCommand {
                     if(CollectionUtils.isNotEmpty(booking.getSlotList()))
                     {
                         BookingSlotsContext firstSlot = booking.getSlotList().get(0);
-                        booking.setCanShowCancel(firstSlot.getSlot().getSlotStartTime() > System.currentTimeMillis() && !booking.isCancelled());
+                        boolean showCancel = false;
+                        if(firstSlot.getSlot().getSlotStartTime() > System.currentTimeMillis() && !booking.isCancelled()){
+                            if(booking.getBookingRequestedBy().getOuid() == AccountUtil.getCurrentUser().getOuid()) {
+                                showCancel = true;
+                            }
+                            showCancel = checkTabPermissions(showCancel);
+                        }
+                        booking.setCanShowCancel(showCancel);
                     }
                 }
             }
         }
         return false;
     }
+
+    private boolean checkTabPermissions(boolean showCancel) throws Exception{
+        boolean hasUpdatePermission = WebTabUtil.checkModulePermissionForTab("UPDATE",FacilioConstants.ContextNames.FACILITY_BOOKING);
+        boolean hasDeletePermission = WebTabUtil.checkModulePermissionForTab("DELETE",FacilioConstants.ContextNames.FACILITY_BOOKING);
+        if(hasDeletePermission || hasUpdatePermission){
+            return true;
+        }else{
+            return showCancel;
+        }
+    }
+
 }
