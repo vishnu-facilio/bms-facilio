@@ -16,6 +16,11 @@ public class FlowChain {
         chain.addCommand(new GetFlowListCommand());
         return chain;
     }
+    public static FacilioChain getKPIFlowListChain(){
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
+        chain.addCommand(new GetKPIFlowListCommand());
+        return chain;
+    }
 
     public static FacilioChain getFlowChain(){
         FacilioChain chain = FacilioChain.getNonTransactionChain();

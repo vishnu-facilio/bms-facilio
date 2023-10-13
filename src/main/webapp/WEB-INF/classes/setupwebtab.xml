@@ -550,6 +550,9 @@
         <action name="executeFlow" class="com.facilio.flows.action.FlowAction" method="executeFlow"/>
         <action name="operators" class="com.facilio.flows.action.FlowAction" method="getFlowOperators"/>
     </package>
+    <package name="KPI_flowsSetupAPI" namespace="/api/v1/setup/flows/kpi" extends="v2Api">
+        <action name="list" class="com.facilio.flows.action.FlowAction" method="getKPIFlowList"/>
+    </package>
 
     <package name="flowTransitionSetupAPI" namespace="/api/v1/setup/flowTransition" extends="v2Api">
         <action name="addOrUpdate"

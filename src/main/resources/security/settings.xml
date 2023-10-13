@@ -2891,6 +2891,10 @@
             <property name="moduleName" type="string"/>
         </urlparams>
     </request>
+    <request path="/api/v2/flows/kpi/list" method="GET">
+    </request>
+    <request path="/api/v1/setup/flows/kpi/list" method="GET">
+    </request>
 
     <request path="/api/v2/flows/get" method="GET">
         <urlparams>
@@ -2933,6 +2937,8 @@
     </request>
     <request path="/api/v1/setup/flows/operators" method="GET">
     </request>
+
+
 
     <!-- Flow Transition-->
     <request path="/api/v2/flowTransition/addOrUpdate" method="POST">

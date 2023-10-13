@@ -55,6 +55,16 @@ public class FlowAction extends FacilioAction {
         return SUCCESS;
 
     }
+    public String getKPIFlowList() throws Exception{
+        FacilioChain chain = FlowChain.getKPIFlowListChain();
+        FacilioContext context = chain.getContext();
+
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.FLOWS, context.get(FacilioConstants.ContextNames.FLOWS));
+
+        return SUCCESS;
+    }
 
     public String viewFlow() throws Exception {
         FacilioChain chain = FlowChain.getFlowChain();
