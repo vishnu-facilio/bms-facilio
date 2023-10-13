@@ -61,29 +61,6 @@ public class FlowContext implements Serializable {
         this.flowType = FlowType.valueOf(flowType);
     }
 
-    public enum FlowType implements FacilioIntEnum {
-
-        GENERIC,
-        MODULE
-        ;
-
-        @Override
-        public Integer getIndex() {
-            return FacilioIntEnum.super.getIndex();
-        }
-
-        @Override
-        public String getValue() {
-            return FacilioIntEnum.super.getValue();
-        }
-
-        public static FlowType valueOf(int value){
-            if (value > 0 && value <= values().length) {
-                return values()[value - 1];
-            }
-            return null;
-        }
-    }
     @JsonIgnore
     public String getModuleName() throws Exception {
         if(moduleId!=-1l){

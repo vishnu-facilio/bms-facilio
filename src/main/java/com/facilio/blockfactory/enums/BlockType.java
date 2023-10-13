@@ -1,6 +1,7 @@
 package com.facilio.blockfactory.enums;
 
 import com.facilio.blockfactory.blocks.*;
+import com.facilio.flows.context.FlowType;
 import com.facilio.modules.FacilioStringEnum;
 import lombok.Getter;
 import org.apache.commons.beanutils.ConstructorUtils;
@@ -9,26 +10,32 @@ import java.util.*;
 
 
 public enum BlockType implements FacilioStringEnum {
-    set_variable(Group.LOGIC, "Set Variable", SetVariableBlock.class),
-    if_else(Group.LOGIC, "Decision", If_Else_Block.class),
-    summary_record(Group.CRUD, "Get Record", SummaryRecordBlock.class),
-    delete_record(Group.CRUD, "Delete Record", DeleteRecordBlock.class),
-    create_record(Group.CRUD,"Create Record", CreateRecordBlock.class),
-    update_record(Group.CRUD,"Update Record", UpdateRecordBlock.class),
-    change_status(Group.ACTION,"Change Status",ChangeStatusBlock.class),
-    script(Group.ACTION,"Script", ScriptBlock.class),
-    send_notification(Group.ACTION,"Send Notification", SendPushNotificationBlock.class),
-    send_mail(Group.ACTION,"Send Mail", BaseBlock.class);
+    set_variable(Group.LOGIC, "Set Variable", SetVariableBlock.class, FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
+    if_else(Group.LOGIC, "Decision", If_Else_Block.class, FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
+    summary_record(Group.CRUD, "Get Record", SummaryRecordBlock.class, FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
+    delete_record(Group.CRUD, "Delete Record", DeleteRecordBlock.class, FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
+    create_record(Group.CRUD,"Create Record", CreateRecordBlock.class,FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
+    update_record(Group.CRUD,"Update Record", UpdateRecordBlock.class,FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
+    change_status(Group.ACTION,"Change Status",ChangeStatusBlock.class,FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
+    script(Group.ACTION,"Script", ScriptBlock.class,FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
+    send_notification(Group.ACTION,"Send Notification", SendPushNotificationBlock.class,FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
+    send_mail(Group.ACTION,"Send Mail", BaseBlock.class,FlowType.GENERIC,FlowType.MODULE,FlowType.KPI);
 
     private Class clazz;
     @Getter
     private String name;
     private Group group;
+    @Getter
+    private Long supportedFlowTypes;
 
-    BlockType(Group group, String name, Class clazz) {
+    BlockType(Group group, String name, Class clazz, FlowType... supportedFlowTypes) {
         this.group = group;
         this.name = name;
         this.clazz = clazz;
+        this.supportedFlowTypes = sum(supportedFlowTypes);
+    }
+    private long sum(FlowType... supportedFlowTypes){
+        return Arrays.stream(supportedFlowTypes).map(flowType -> flowType.getKey()).reduce((key,sum)->key+sum).get();
     }
 
     public Group getGroup() {
@@ -62,6 +69,7 @@ public enum BlockType implements FacilioStringEnum {
     }
     private static final Map<String, Object> GROUP_BLOCK_MAP = Collections.unmodifiableMap(initGroupBlockMap());
     private static final List<Map<String, Object>> GROUP_BLOCK_LIST = Collections.unmodifiableList(initList());
+    //private static final Map<FlowType,List<Map<String, Object>>> FLOW_TYPE_VS_SUPPORTED_BLOCKS = Collections.unmodifiableMap(initFlowTypeVsSupportedBlocks());
     public static List<Map<String, Object>> getGroupBlockList() {
         return GROUP_BLOCK_LIST;
     }
@@ -103,6 +111,9 @@ public enum BlockType implements FacilioStringEnum {
             }
         }
         return typeMap;
+    }
+    public boolean isSupportedBlock(FlowType flowType){
+        return (supportedFlowTypes & flowType.getKey()) == flowType.getKey();
     }
 }
 
