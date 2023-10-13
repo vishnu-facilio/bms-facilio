@@ -75,6 +75,11 @@ public class PageBuilderConfigUtil {
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS));
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.TRANSFER_REQUEST));
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.SAFETY_PLAN));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.GROUP_VISITOR_INVITE));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR));
+
 
             if (CollectionUtils.isNotEmpty(moduleList)) {
                 List<Long> moduleIds = moduleList.stream().filter(Objects::nonNull).map(FacilioModule::getModuleId).collect(Collectors.toList());

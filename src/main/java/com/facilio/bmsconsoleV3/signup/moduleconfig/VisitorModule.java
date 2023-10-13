@@ -1,20 +1,36 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
+import com.facilio.bmsconsole.util.VisitorManagementModulePageUtil;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
+import com.facilio.bmsconsoleV3.signup.util.AddModuleViewsAndGroups;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
 public class VisitorModule extends BaseModuleConfig{
     public VisitorModule(){
         setModuleName(FacilioConstants.ContextNames.VISITOR);
+    }
+    @Override
+    public void addData() throws Exception {
+        addSystemButton();
     }
 
     @Override
@@ -126,5 +142,63 @@ public class VisitorModule extends BaseModuleConfig{
 
         return visitorModuleForms;
     }
+    public static void addSystemButton() throws Exception{
+        SystemButtonRuleContext editButton = new SystemButtonRuleContext();
+        editButton.setName("Edit");
+        editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButton.setIdentifier(FacilioConstants.VisitorManagementSystemButton.VISITOR_EDIT_BUTTON);
+        editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editButton.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VISITOR,editButton);
 
+    }
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String>  appNameList=new ArrayList<>();
+        appNameList.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
+        for(String appName:appNameList) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+                appNameVsPage.put(appName, buildVisitorPage(app, module, false, true));
+        }
+        return appNameVsPage;
+    }
+    private List<PagesContext> buildVisitorPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+        String pageName, pageDisplayName;
+        pageName = module.getName() + "defaultpage";
+        pageDisplayName = "Default " + module.getDisplayName() + " Page ";
+        JSONObject viewParam = new JSONObject();
+        viewParam.put("viewName", "VisitorLogListView");
+        viewParam.put("viewModuleName","visitorlog");
+        return new ModulePages()
+                .addPage(pageName, pageDisplayName, "", null, isTemplate, isDefault, false)
+                .addWebLayout()
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summaryfields", null, null)
+                .addWidget("visitorSummaryDetails", "Visitor Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, VisitorManagementModulePageUtil.getSummaryWidgetDetailsForVisitorModule(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("visitsDetails", null, null)
+                .addWidget("visitsDetails", "Visits", PageWidget.WidgetType.VISITOR_LIST_WIDGET, "flexiblewebvisitorwidget_6", 0, 0, viewParam, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null,  null)
+                .addWidget("visitorcommentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, VisitorManagementModulePageUtil.getWidgetGroup(false,module.getName()))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone().getCustomPages();
+    }
 }

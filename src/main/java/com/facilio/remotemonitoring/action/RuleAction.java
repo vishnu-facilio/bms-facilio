@@ -6,12 +6,13 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.remotemonitoring.commands.updateAlaramFilterRuleStatusCommand;
 import com.facilio.remotemonitoring.commands.updateFlaggedEventRuleStatuscommand;
+import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
 
 @Getter @Setter
-public class RuleAction extends FacilioAction {
+public class RuleAction extends V3Action {
 
     private JSONObject data;
     public String updateAlarmFilterRuleStatus() throws Exception{

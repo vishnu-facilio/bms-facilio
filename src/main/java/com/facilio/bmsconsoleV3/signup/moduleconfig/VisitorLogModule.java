@@ -1,9 +1,13 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.VisitorManagementModulePageUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -27,7 +31,7 @@ public class VisitorLogModule extends BaseModuleConfig{
     }
 
     @Override
-    public List<Map<String, Object>> getViewsAndGroups() {
+    public List<Map<String, Object>> getViewsAndGroups() throws Exception {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;
 
@@ -37,6 +41,7 @@ public class VisitorLogModule extends BaseModuleConfig{
         visitorLog.add(getVisitorsLogCheckedInCurrentlyView().setOrder(order++));
         visitorLog.add(getPendingVisitLogsView().setOrder(order++));
         visitorLog.add(getAllVisitorCheckInLogsView().setOrder(order++));
+        visitorLog.add(getHiddenVisitorLogView().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
@@ -58,6 +63,35 @@ public class VisitorLogModule extends BaseModuleConfig{
         groupVsViews.add(groupDetails);
 
         return groupVsViews;
+    }
+    public static FacilioView getHiddenVisitorLogView() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioView baseSpaceView = new FacilioView();
+        baseSpaceView.setName("VisitorLogListView");
+        baseSpaceView.setDisplayName("Visitor Log List View");
+        baseSpaceView.setHidden(true);
+        FacilioModule visitorLogModule = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
+        List<FacilioField> allFields =  modBean.getAllFields(visitorLogModule.getName());
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+        String[] viewFieldNames = new String[]{"host","checkInTime","checkOutTime","purposeOfVisit"};
+
+        List<ViewField> viewFields = new ArrayList<>();
+        for(String viewFieldName:viewFieldNames){
+            FacilioField field = fieldMap.get(viewFieldName);
+            ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
+            viewField.setField(field);
+            viewFields.add(viewField);
+        }
+        baseSpaceView.setFields(viewFields);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        baseSpaceView.setAppLinkNames(appLinkNames);
+        return baseSpaceView;
     }
 
     private static FacilioView getVisitorsLogCheckedInTodayView() {
@@ -231,6 +265,46 @@ public class VisitorLogModule extends BaseModuleConfig{
         condition.setCriteriaValue(statusCriteria);
 
         return condition;
+    }
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String>  appNameList=new ArrayList<>();
+        appNameList.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
+        for(String appName:appNameList) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+            appNameVsPage.put(appName, buildVisitorPage(app, module, false, true));
+        }
+        return appNameVsPage;
+    }
+    private List<PagesContext> buildVisitorPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+        String pageName, pageDisplayName;
+        pageName = module.getName() + "defaultpage";
+        pageDisplayName = "Default " + module.getDisplayName() + " Page ";
+        return new ModulePages()
+                .addPage(pageName, pageDisplayName, "", null, isTemplate, isDefault, false)
+                .addWebLayout()
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summaryfields", null, null)
+                .addWidget("inviteVisitorDetails", "Invite Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, VisitorManagementModulePageUtil.getSummaryWidgetDetailsForIniviteVisitorModule(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null,  null)
+                .addWidget("inivitevisitorlogcommentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, VisitorManagementModulePageUtil.getWidgetGroup(false,module.getName()))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone().getCustomPages();
     }
 
 /*    @Override

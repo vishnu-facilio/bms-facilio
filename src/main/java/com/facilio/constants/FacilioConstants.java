@@ -128,6 +128,12 @@ public class FacilioConstants {
 		}
 	}
 
+	public static class VisitorManagementSystemButton{
+		public static final String GROUP_INVITE_EDIT_BUTTON="groupInviteEditButton";
+		public static final String GROUP_INVITE_DELETE_BUTTON="groupInviteDeleteButton";
+		public static final String VISITOR_EDIT_BUTTON="visitorEditButton";
+		public static final String VISITOR_DELETE_BUTTON="visitorDeleteButton";
+	}
 	public static class SystemLookup {
 		public static final String URL_RECORD = "urlRecord";
 		public static final String CURRENCY_RECORD = "currencyRecord";

@@ -817,7 +817,27 @@ public class APIModuleWidgets {
                 .addFlexibleWidgetConfig("flexibleweblegislationsWidget_5","Legislation, Regulations and Guidance - 5", 5, PagesContext.PageLayoutType.WEB)
                 .done()
                 .addModuleWidget("plans", "Plans", PageWidget.WidgetType.PLANS)
-                .addFlexibleWidgetConfig("flexiblewebJPplansWidget_5","Plans - 5", 5, PagesContext.PageLayoutType.WEB)
+                .addFlexibleWidgetConfig("flexiblewebJPplansWidget_5", "Plans - 5", 5, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.GROUP_VISITOR_INVITE)
+    public static Supplier<ModuleWidgets> getGroupInviteWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("groupInviteWidget" , "Group Invite Widget",PageWidget.WidgetType.GROUP_INVITE_LIST_WIDGET)
+                .addWidgetConfig("fexiblewebgroupinvitewidget_6","Group Invite Widget - 6",WidgetConfigContext.ConfigType.FLEXIBLE,6,-1,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("totalInviteeWidget" , "Total Invites Widget",PageWidget.WidgetType.TOTAL_INVITE_WIDGET)
+                .addWidgetConfig("webtotalinvitewidget_3_3","Total Invites Widget - 3 - 3",WidgetConfigContext.ConfigType.FIXED,3,3,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("totalCheckedInInviteeWidget" , "Total Checked In Invites Widget",PageWidget.WidgetType.CHECKIN_COUNT_WIDGET)
+                .addWidgetConfig("webtotalcheckedininvitewidget_3_3","Total Checked In Invites Widget - 3 - 3",WidgetConfigContext.ConfigType.FIXED,3,3,PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.VISITOR)
+    public static Supplier<ModuleWidgets> getVisitorWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("visitorWidget" , "visitor Widget",PageWidget.WidgetType.VISITOR_LIST_WIDGET)
+                .addWidgetConfig("flexiblewebvisitorwidget_6","visitor Widget - 6",WidgetConfigContext.ConfigType.FLEXIBLE,6,-1,PagesContext.PageLayoutType.WEB)
                 .done();
     }
 }

@@ -1,5 +1,11 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.ClientContactModuleUtil;
+import com.facilio.bmsconsole.util.VisitorManagementModulePageUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -7,6 +13,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -19,7 +26,7 @@ public class InviteVisitorModule extends BaseModuleConfig{
     }
 
     @Override
-    public List<Map<String, Object>> getViewsAndGroups() {
+    public List<Map<String, Object>> getViewsAndGroups() throws Exception {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;
 
@@ -54,6 +61,7 @@ public class InviteVisitorModule extends BaseModuleConfig{
         tenantPortalInviteVisitor.add(getExpiredInviteVisitorInvites().setOrder(order++));
         tenantPortalInviteVisitor.add(getMyExpiredInviteVisitorInvites().setOrder(order++));
         tenantPortalInviteVisitor.add(getMyActiveInviteVisitorInvites().setOrder(order++));
+        tenantPortalInviteVisitor.add(getHiddenInviteVisitorView().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "tenantportal-systemviews");
@@ -94,6 +102,34 @@ public class InviteVisitorModule extends BaseModuleConfig{
         view.setAppLinkNames(appLinkNames);
 
         return view;
+    }
+    public static FacilioView getHiddenInviteVisitorView() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioView baseSpaceView = new FacilioView();
+        baseSpaceView.setName("InviteVisitorListView");
+        baseSpaceView.setDisplayName("Invite Visitor List View");
+        baseSpaceView.setHidden(true);
+        FacilioModule visitorLogModule = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
+        List<FacilioField> allFields =  modBean.getAllFields(visitorLogModule.getName());
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+        String[] viewFieldNames = new String[]{"visitorName","visitorPhone","visitorEmail","host","expectedCheckInTime","expectedCheckOutTime"};
+        List<ViewField> viewFields = new ArrayList<>();
+        for(String viewFieldName:viewFieldNames){
+            FacilioField field = fieldMap.get(viewFieldName);
+            ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
+            viewField.setField(field);
+            viewFields.add(viewField);
+        }
+        baseSpaceView.setFields(viewFields);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        baseSpaceView.setAppLinkNames(appLinkNames);
+        return baseSpaceView;
     }
 
     private static FacilioView getPendingInviteVisitorInvitesView() {
@@ -433,5 +469,45 @@ public class InviteVisitorModule extends BaseModuleConfig{
         myVisitorInvitesView.setAppLinkNames(Collections.singletonList(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP));
 
         return myVisitorInvitesView;
+    }
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String>  appNameList=new ArrayList<>();
+        appNameList.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        appNameList.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
+        for(String appName:appNameList) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+                appNameVsPage.put(appName, buildInviteVisitorPage(app, module, false, true));
+        }
+        return appNameVsPage;
+    }
+    private List<PagesContext> buildInviteVisitorPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+        String pageName, pageDisplayName;
+        pageName = module.getName() + "defaultpage";
+        pageDisplayName = "Default " + module.getDisplayName() + " Page ";
+        return new ModulePages()
+                .addPage(pageName, pageDisplayName, "", null, isTemplate, isDefault, false)
+                .addWebLayout()
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summaryfields", null, null)
+                .addWidget("inviteVisitorDetails", "Invite Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, VisitorManagementModulePageUtil.getSummaryWidgetDetailsForIniviteVisitorModule(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null,  null)
+                .addWidget("inivitevisitorlogcommentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, VisitorManagementModulePageUtil.getWidgetGroup(false,module.getName()))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone().getCustomPages();
     }
 }

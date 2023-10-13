@@ -643,7 +643,12 @@ public class PageWidget {
 		EVALUATION_TIME_REMAINING("evaluationTimeRemaining"),
 		EVALUATION_TEAM_DETAILS("evaluationTeamDetails"),
 		JOBPLAN_TASK_SECTIONS("jobPlanTaskSections"),
-		JOBPLAN_SFG_LEGISLATIONS("jobPlanSFGLegislations");
+		JOBPLAN_SFG_LEGISLATIONS("jobPlanSFGLegislations"),
+		GROUP_INVITE_LIST_WIDGET("groupInviteListWidget"),
+		VISITOR_LIST_WIDGET("visitorListWidget"),
+		TOTAL_INVITE_WIDGET("totalInviteWidget"),
+		CHECKIN_COUNT_WIDGET("checkedInCountWidget")
+		;
 
 		private String name;
 		@Getter
