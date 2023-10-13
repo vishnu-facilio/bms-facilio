@@ -2939,6 +2939,8 @@ public class FacilioConstants {
 			public static final String OLD_SERVICE_TASK_IDS = "oldServiceTaskIds";
 			public static final String SERVICE_TASK_STATUS_ACTIONS = "serviceTaskStatusActions";
 			public static final String SERVICE_TASK_STATUS = "serviceTaskStatus";
+			public static final String COLOR="color";
+			public static final String STATUS_TYPE="statusType";
 		}
 		public static class ServiceTaskStatus {
 			public static final String NEW = "new";
@@ -4745,7 +4747,6 @@ public class FacilioConstants {
 		public static final String CANCELLED = "cancelled";
 		public static final String SCHEDULE = "schedule";
 		public static final String DISPATCH = "dispatch";
-
 		public static final String REDISPATCH = "redispatch";
 		public static final String RESCHEDULE = "reschedule";
 		public static final String COMPLETE = "complete";

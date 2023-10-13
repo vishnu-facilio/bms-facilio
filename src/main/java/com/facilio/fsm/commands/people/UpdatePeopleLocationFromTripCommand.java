@@ -72,7 +72,7 @@ public class UpdatePeopleLocationFromTripCommand extends FacilioCommand {
 
             V3PeopleContext pplRecord = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,peopleId,V3PeopleContext.class);
             Long peopleLastSyncTime = pplRecord.getLastSyncTime();
-            if(time > peopleLastSyncTime){
+            if(peopleLastSyncTime != null && time > peopleLastSyncTime){
                 V3PeopleContext peopleContext = new V3PeopleContext();
                 peopleContext.setId(peopleId);
                 peopleContext.setLastSyncTime(time);

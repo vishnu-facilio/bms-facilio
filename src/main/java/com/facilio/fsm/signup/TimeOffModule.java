@@ -55,6 +55,8 @@ public class TimeOffModule extends BaseModuleConfig {
         timeOffTypeFields.add(description);
         StringField color = new StringField(timeOffTypeModule,"color","Color", FacilioField.FieldDisplayType.TEXTBOX,"COLOR",FieldType.STRING,true,false,true,false);
         timeOffTypeFields.add(color);
+        StringField backgroundColor = new StringField(timeOffTypeModule,"backgroundColor","Background Color", FacilioField.FieldDisplayType.TEXTBOX,"BACKGROUND_COLOR",FieldType.STRING,true,false,true,false);
+        timeOffTypeFields.add(backgroundColor);
         StringField textColor = new StringField(timeOffTypeModule,"textColor","Text Color", FacilioField.FieldDisplayType.TEXTBOX,"TEXT_COLOR",FieldType.STRING,true,false,true,false);
         timeOffTypeFields.add(textColor);
 
@@ -75,43 +77,49 @@ public class TimeOffModule extends BaseModuleConfig {
         TimeOffTypeContext standBy = new TimeOffTypeContext();
         standBy.setName("standBy");
         standBy.setDisplayName("Stand By");
-        standBy.setColor("#FDE49D");
-        standBy.setTextColor("#000000");
+        standBy.setColor("cyan");
+        standBy.setBackgroundColor("var(--colors-background-accent-cyan-subtle)");
+        standBy.setTextColor("var(--colors-text-description)");
         defaultTypes.add(standBy);
 
         TimeOffTypeContext holiday = new TimeOffTypeContext();
         holiday.setName("holiday");
         holiday.setDisplayName("Holiday");
-        holiday.setColor("#F4C8E7");
-        holiday.setTextColor("#000000");
+        holiday.setColor("green");
+        holiday.setBackgroundColor("var(--colors-background-semantic-green-subtle)");
+        holiday.setTextColor("var(--colors-text-description)");
         defaultTypes.add(holiday);
 
         TimeOffTypeContext sick = new TimeOffTypeContext();
         sick.setName("sick");
         sick.setDisplayName("Sick");
-        sick.setColor("#E5F4FF");
-        sick.setTextColor("#000000");
+        sick.setColor("red");
+        sick.setBackgroundColor("var(--colors-background-semantic-red-subtler)");
+        sick.setTextColor("var(--colors-text-description)");
         defaultTypes.add(sick);
 
         TimeOffTypeContext vacation = new TimeOffTypeContext();
         vacation.setName("vacation");
         vacation.setDisplayName("Vacation");
-        vacation.setColor("#D7CCF0");
-        vacation.setTextColor("#000000");
+        vacation.setColor("purple");
+        vacation.setBackgroundColor("var(--colors-background-accent-purple-subtle)");
+        vacation.setTextColor("var(--colors-text-description)");
         defaultTypes.add(vacation);
 
         TimeOffTypeContext truckBreakdown = new TimeOffTypeContext();
         truckBreakdown.setName("truckBreakdown");
         truckBreakdown.setDisplayName("Truck Breakdown");
-        truckBreakdown.setColor("#F6D1C8");
-        truckBreakdown.setTextColor("#000000");
+        truckBreakdown.setColor("orange");
+        truckBreakdown.setBackgroundColor("var(--colors-background-semantic-orange-subtle)");
+        truckBreakdown.setTextColor("var(--colors-text-description)");
         defaultTypes.add(truckBreakdown);
 
         TimeOffTypeContext training = new TimeOffTypeContext();
         training.setName("training");
         training.setDisplayName("Training");
-        training.setColor("#FCE0C3");
-        training.setTextColor("#000000");
+        training.setColor("violet");
+        training.setBackgroundColor("var(--colors-background-accent-violet-subtle)");
+        training.setTextColor("var(--colors-text-description)");
         defaultTypes.add(training);
 
         insertRecordBuilder.addRecords(defaultTypes);

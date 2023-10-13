@@ -26,19 +26,20 @@ public class ValidateSAUpdateCommand extends FacilioCommand {
         List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName"));
         if (CollectionUtils.isNotEmpty(serviceAppointments)) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
-                if(Optional.ofNullable(serviceAppointment.getScheduledStartTime()).orElse(0L) > 0 &&
+                ServiceAppointmentContext oldSA = (ServiceAppointmentContext) oldServiceAppointments.get(serviceAppointment.getId());
+                if ((serviceAppointment.getScheduledStartTime() != oldSA.getScheduledStartTime())
+                        || (serviceAppointment.getScheduledEndTime() != oldSA.getScheduledEndTime())) {
+                    if (Optional.ofNullable(serviceAppointment.getScheduledStartTime()).orElse(0L) > 0 &&
                             Optional.ofNullable(serviceAppointment.getScheduledEndTime()).orElse(0L) > 0) {
-                        if (serviceAppointment.getScheduledStartTime() >= serviceAppointment.getScheduledEndTime() ) {
+                        if (serviceAppointment.getScheduledStartTime() >= serviceAppointment.getScheduledEndTime()) {
                             throw new FSMException(FSMErrorCode.SA_SCHEDULED_TIME_MISMATCH);
-                        }
-                        else if(serviceAppointment.getScheduledStartTime()<serviceAppointment.getCurrentTime()){
+                        } else if (serviceAppointment.getScheduledStartTime() < serviceAppointment.getCurrentTime()) {
                             throw new FSMException(FSMErrorCode.SA_SCHEDULED_TIME_INVALID);
                         }
-                    }else{
+                    } else {
                         throw new FSMException(FSMErrorCode.SA_DETAILS_REQUIED);
+                    }
                 }
-
-                ServiceAppointmentContext oldSA = (ServiceAppointmentContext) oldServiceAppointments.get(serviceAppointment.getId());
                 if (serviceAppointment.getServiceOrder().getId() != oldSA.getServiceOrder().getId()) {
                     throw new FSMException(FSMErrorCode.SA_FIELD_UPDATE_PREVENT);
                 }
@@ -50,7 +51,6 @@ public class ValidateSAUpdateCommand extends FacilioCommand {
                         }
                     }
                 }
-
             }
         }
 

@@ -147,8 +147,16 @@ public class FetchDispatcherResourcesCommand extends FacilioCommand {
                             shift.put("startTime", DateTimeUtil.getDayStartTimeOf(time));
                             shift.put("endTime", DateTimeUtil.getDayEndTimeOf(time));
                         } else {
-                            shift.put("startTime", time + defaultShift.getStartTime());
-                            shift.put("endTime", time + defaultShift.getEndTime());
+                            Long shiftStartTime = defaultShift.getStartTime();
+                            Long shiftEndTime = defaultShift.getEndTime();
+
+                            if(shiftEndTime != null && shiftStartTime != null) {
+                                if(shiftStartTime > shiftEndTime){
+                                    shiftEndTime += 86400000;
+                                }
+                                shift.put("startTime", shiftStartTime + time);
+                                shift.put("endTime", shiftEndTime + time);
+                            }
                         }
                         shift.put("isWeeklyOff", isWeeklyOff);
                         shiftSchedule.add(shift);
@@ -177,8 +185,16 @@ public class FetchDispatcherResourcesCommand extends FacilioCommand {
                                 shiftObj.put("startTime", DateTimeUtil.getDayStartTimeOf(time));
                                 shiftObj.put("endTime", DateTimeUtil.getDayEndTimeOf(time));
                             } else {
-                                shiftObj.put("startTime", shift.getStartTime() + time);
-                                shiftObj.put("endTime", shift.getEndTime() + time);
+                                Long shiftStartTime = shift.getStartTime();
+                                Long shiftEndTime = shift.getEndTime();
+
+                                if(shiftEndTime != null && shiftStartTime != null) {
+                                    if(shiftStartTime > shiftEndTime){
+                                        shiftEndTime += 86400000;
+                                    }
+                                    shiftObj.put("startTime", shiftStartTime + time);
+                                    shiftObj.put("endTime", shiftEndTime + time);
+                                }
                             }
                             shiftObj.put("isWeeklyOff", isWeeklyOff);
                         }

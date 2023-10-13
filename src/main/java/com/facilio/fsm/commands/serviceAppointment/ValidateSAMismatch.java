@@ -131,6 +131,9 @@ public class ValidateSAMismatch extends FacilioCommand {
             if (currentShift != null) {
                 long shiftStart = currentShift.getStartTime();
                 long shiftEnd = currentShift.getEndTime();
+                if(shiftEnd < shiftStart){
+                    shiftEnd += 86400000;
+                }
                 long startTimeDayStart = DateTimeUtil.getDayStartTimeOf(serviceAppointment.getScheduledStartTime());
                 long endTimeDayStart = DateTimeUtil.getDayStartTimeOf(serviceAppointment.getScheduledEndTime());
                 if ((serviceAppointment.getScheduledStartTime() < (shiftStart + startTimeDayStart)) || (serviceAppointment.getScheduledStartTime() > (shiftEnd + startTimeDayStart))) {

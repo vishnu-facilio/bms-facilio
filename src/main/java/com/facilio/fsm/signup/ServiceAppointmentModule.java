@@ -1334,6 +1334,9 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         reschedule.setPermission("DISPATCH");
         reschedule.setPermissionRequired(true);
         List<Long> statusIdList = new ArrayList<>();
+        if(scheduledStatus != null) {
+            statusIdList.add(scheduledStatus.getId());
+        }
         if(dispatchedStatus != null) {
             statusIdList.add(dispatchedStatus.getId());
         }

@@ -26,7 +26,7 @@ public class ValidateSACommand extends FacilioCommand {
                     if (serviceAppointment.getScheduledStartTime() >= serviceAppointment.getScheduledEndTime() ) {
                         throw new FSMException(FSMErrorCode.SA_SCHEDULED_TIME_MISMATCH);
                     }
-                    else if(serviceAppointment.getScheduledStartTime()<serviceAppointment.getCurrentTime()){
+                    else if(serviceAppointment.getScheduledStartTime() < serviceAppointment.getCurrentTime()){
                         throw new FSMException(FSMErrorCode.SA_SCHEDULED_TIME_INVALID);
                     }
                 }else{
