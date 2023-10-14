@@ -4,6 +4,7 @@ import com.facilio.blockfactory.enums.BlockType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -25,9 +26,8 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class FlowUtil {
@@ -272,5 +272,54 @@ public class FlowUtil {
         }
         FlowTransitionContext flowTransition = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), FlowTransitionContext.class);
         return flowTransition;
+    }
+    public static void addOrUpdateParametersUsingParamName(List<ParameterContext> payLoadParameters,long flowId) throws Exception {
+        if(CollectionUtils.isEmpty(payLoadParameters)){
+            return;
+        }
+        List<ParameterContext> dbParameters = FlowUtil.getParameters(flowId);
+
+        Map<String,ParameterContext> dbParamNameVsParamMap = dbParameters.stream().collect(Collectors.toMap(ParameterContext::getParameterName, Function.identity()));
+
+        for(ParameterContext parameter : payLoadParameters){
+            String parameterName = parameter.getParameterName();
+            if(dbParamNameVsParamMap.containsKey(parameterName)){
+                ParameterContext dbParam = dbParamNameVsParamMap.get(parameterName);
+                parameter.setId(dbParam.getId());
+                parameter.setFlowId(dbParam.getFlowId());
+            }
+        }
+        List<ParameterContext> toBeDeletedParams = getTobeDeletedParameters(dbParameters,payLoadParameters);
+        deleteParameters(toBeDeletedParams);
+        for (ParameterContext parameter : payLoadParameters){
+            parameter.setFlowId(flowId);
+            FlowUtil.addOrUpdateParameter(parameter);
+        }
+    }
+    private static List<ParameterContext> getTobeDeletedParameters(List<ParameterContext> oldParameters,List<ParameterContext> payLoadParameters){
+        if(CollectionUtils.isEmpty(oldParameters)){
+            return Collections.EMPTY_LIST;
+        }
+        if(payLoadParameters==null){
+            payLoadParameters = new ArrayList<>();
+        }
+        Map<Long,ParameterContext> updatePayLoadParametersMap = payLoadParameters.stream().filter(p->p.getId()!=-1l)
+                .collect(Collectors.toMap((ParameterContext::getId), Function.identity()));
+
+
+        List<ParameterContext>  toBeDeletedParams = oldParameters.stream().filter(oldParameter->!updatePayLoadParametersMap.containsKey(oldParameter.getId())).collect(Collectors.toList());
+
+        return toBeDeletedParams;
+    }
+    public static void deleteParameters(List<ParameterContext> toBeDeletedParams) throws Exception {
+        if(CollectionUtils.isEmpty(toBeDeletedParams)){
+            return;
+        }
+
+        Set<Long> ids = toBeDeletedParams.stream().map(ParameterContext::getId).collect(Collectors.toSet());
+        GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getFlowParameters().getTableName());
+
+        deleteRecordBuilder.batchDeleteById(ids);
     }
 }
