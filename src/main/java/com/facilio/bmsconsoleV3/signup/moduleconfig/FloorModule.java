@@ -378,13 +378,14 @@ public class FloorModule extends BaseModuleConfig {
     }
 
     @Override
-    public List<Map<String, Object>> getViewsAndGroups() {
+    public List<Map<String, Object>> getViewsAndGroups() throws Exception {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;
 
         int order = 1;
         ArrayList<FacilioView> floor = new ArrayList<FacilioView>();
         floor.add(getAllFloors().setOrder(order++));
+        floor.add(getSearchView().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
@@ -395,6 +396,37 @@ public class FloorModule extends BaseModuleConfig {
 
         return groupVsViews;
     }
+    public static FacilioView getSearchView() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioView searchView = new FacilioView();
+        searchView.setName("hidden-search");
+        searchView.setDisplayName("Floor search view");
+        searchView.setHidden(true);
+        FacilioModule floorModule = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
+        List<FacilioField> allFields =  modBean.getAllFields(floorModule.getName());
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+        String[] viewFieldNames = new String[]{"name","site","building","maxOccupancy","createdBy","createdTime","modifiedBy","modifiedTime"};
+        List<ViewField> viewFields = new ArrayList<>();
+        for(String viewFieldName:viewFieldNames){
+            if(fieldMap.containsKey(viewFieldName) && fieldMap.get(viewFieldName) != null) {
+                FacilioField field = fieldMap.get(viewFieldName);
+                ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
+                viewField.setField(field);
+                viewFields.add(viewField);
+            }
+        }
+        searchView.setFields(viewFields);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
+        searchView.setAppLinkNames(appLinkNames);
+        return searchView;
+    }
+
 
     private static FacilioView getAllFloors() {
 
