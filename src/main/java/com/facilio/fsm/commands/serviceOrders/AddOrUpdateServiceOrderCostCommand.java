@@ -33,7 +33,7 @@ public class AddOrUpdateServiceOrderCostCommand extends FacilioCommand {
                 Double cost = null;
                 Long quantity = null;
                 if(serviceOrder==null){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Work Order cannot be empty");
                 }
                 if(inventorySource.equals(InventorySource.PLANS)){
                     if(inventoryCostType.equals(InventoryCostType.ITEMS)){

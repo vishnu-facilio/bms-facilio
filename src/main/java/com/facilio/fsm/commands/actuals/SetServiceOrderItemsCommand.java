@@ -56,7 +56,7 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
             for(ServiceOrderItemsContext serviceOrderItem : serviceOrderItems){
                 V3ItemTransactionsContext itemTransaction = new V3ItemTransactionsContext();
                 if(serviceOrderItem.getServiceOrder()==null){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Work Order cannot be empty");
                 }
 
                 if(serviceOrderItem.getQuantity()== null){
@@ -75,7 +75,7 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
 
                 ServiceOrderContext serviceOrderRecord = getServiceOrder(serviceOrderItem.getServiceOrder().getId());
                 if(!isStoreroomServingServiceOderSite(serviceOrderItem.getItem(),serviceOrderRecord)){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storeroom does not serve the selected Service Order's site");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Storeroom does not serve the selected Work Order's site");
                 }
                 V3ItemContext item = getItem(serviceOrderItem.getItem().getId());
                 if(item.getQuantity() < serviceOrderItem.getQuantity()){
@@ -233,7 +233,7 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
         rotatingAssetRecord.setRotatingItem(null);
         //set asset site
         if(serviceOrderRecord.getSite()==null){
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order's site cannot be empty");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Work Order's site cannot be empty");
         }else{
             rotatingAssetRecord.setSiteId(serviceOrderRecord.getSite().getId());
         }

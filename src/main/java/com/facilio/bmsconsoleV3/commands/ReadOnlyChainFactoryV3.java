@@ -62,6 +62,7 @@ import com.facilio.bmsconsoleV3.commands.visitorlogging.LoadVisitorLoggingLookup
 import com.facilio.bmsconsoleV3.commands.visitorlogging.SetInviteConditionForVisitsListCommandV3;
 import com.facilio.bmsconsoleV3.commands.workorder.*;
 import com.facilio.chain.FacilioChain;
+import com.facilio.fsm.commands.people.FetchPeopleSkillLevelCommand;
 import com.facilio.permission.commands.*;
 import com.facilio.relation.command.*;
 import com.facilio.remotemonitoring.commands.*;
@@ -310,6 +311,7 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new FetchRolesForPeopleCommandV3());
         c.addCommand(new FetchScopingForPeopleCommandV3());
         c.addCommand(new AddSpaceDetailsToTenantContact());
+        c.addCommand(new FetchPeopleSkillLevelCommand());
         return c;
     }
 

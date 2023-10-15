@@ -50,7 +50,7 @@ public class ScheduleServiceOrderCommand extends FacilioCommand {
                         updateProps.put("status", FieldUtil.getAsProperties(scheduledStatus));
                         updateBuilder.updateViaMap(updateProps);
                     } else {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing service order states");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing work order states");
                     }
                 }
             }

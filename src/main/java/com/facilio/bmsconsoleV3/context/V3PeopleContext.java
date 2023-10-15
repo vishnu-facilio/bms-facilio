@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
+import com.facilio.fsm.context.PeopleSkillLevelContext;
 import com.facilio.fsm.context.TerritoryContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
@@ -270,4 +271,5 @@ public class V3PeopleContext extends V3Context {
     private Long lastCheckedInTime;
     private Long lastCheckedOutTime;
     private boolean checkedIn;
+    private List<PeopleSkillLevelContext> peopleSkillLevel;
 }

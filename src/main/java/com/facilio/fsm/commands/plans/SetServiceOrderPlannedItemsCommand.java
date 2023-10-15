@@ -41,7 +41,7 @@ public class SetServiceOrderPlannedItemsCommand extends FacilioCommand {
                     }
                 }
                 if(serviceOrderPlannedItem.getServiceOrder()==null){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Work Order cannot be empty");
                 }
                 if(serviceOrderPlannedItem.getQuantity()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");

@@ -37,7 +37,7 @@ public enum ServiceOrderActivityType implements ActivityType {
         public String constructMessage(JSONObject json) {
             String serviceAppointmentName = (String) json.get("serviceAppointmentName");
             StringBuilder builder = new StringBuilder();
-            builder.append(" added Service Appointment - ")
+            builder.append(" added Appointment - ")
                     .append(serviceAppointmentName);
             return builder.toString();
         }
@@ -47,7 +47,7 @@ public enum ServiceOrderActivityType implements ActivityType {
         public String constructMessage(JSONObject json) {
             String serviceAppointmentName = (String) json.get("serviceAppointmentName");
             StringBuilder builder = new StringBuilder();
-            builder.append(" deleted Service Appointment - ")
+            builder.append(" deleted Appointment - ")
                     .append(serviceAppointmentName);
             return builder.toString();
         }
@@ -98,21 +98,21 @@ public enum ServiceOrderActivityType implements ActivityType {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " Completed the Service Order ";
+            return " Completed the Work Order ";
         }
     },
     CLOSED_SERVICE_ORDER(139) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " Closed the Service Order ";
+            return " Closed the Work Order ";
         }
     },
     CANCELLED_SERVICE_ORDER(140) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return " Cancelled the Service Order ";
+            return " Cancelled the Work Order ";
         }
     },
     ADD(141){

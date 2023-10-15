@@ -5,8 +5,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.*;
 import org.apache.commons.chain.Context;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +21,12 @@ public class LoadEmployeeLookupCommandV3 extends FacilioCommand {
             fields = modBean.getAllFields(moduleName);
         }
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-        List<LookupField> additionalLookups = new ArrayList<LookupField>();
+        List<SupplementRecord> additionalLookups = new ArrayList<>();
         additionalLookups.add((LookupField) fieldsAsMap.get("sysCreatedBy"));
         additionalLookups.add((LookupField) fieldsAsMap.get("sysModifiedBy"));
+        if(fieldsAsMap.get("territories")!=null){
+            additionalLookups.add((MultiLookupField) fieldsAsMap.get("territories"));
+        }
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionalLookups);
         return false;
     }

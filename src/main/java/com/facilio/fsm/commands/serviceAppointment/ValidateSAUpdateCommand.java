@@ -7,6 +7,7 @@ import com.facilio.fsm.context.ServiceAppointmentContext;
 import com.facilio.fsm.context.ServiceAppointmentTicketStatusContext;
 import com.facilio.fsm.exception.FSMErrorCode;
 import com.facilio.fsm.exception.FSMException;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,14 +27,15 @@ public class ValidateSAUpdateCommand extends FacilioCommand {
         List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName"));
         if (CollectionUtils.isNotEmpty(serviceAppointments)) {
             for (ServiceAppointmentContext serviceAppointment : serviceAppointments) {
+                Long dayStartTime = DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis());
                 ServiceAppointmentContext oldSA = (ServiceAppointmentContext) oldServiceAppointments.get(serviceAppointment.getId());
-                if ((serviceAppointment.getScheduledStartTime() != oldSA.getScheduledStartTime())
-                        || (serviceAppointment.getScheduledEndTime() != oldSA.getScheduledEndTime())) {
+                if ((!serviceAppointment.getScheduledStartTime().equals(oldSA.getScheduledStartTime()))
+                        || (!serviceAppointment.getScheduledEndTime().equals(oldSA.getScheduledEndTime()))) {
                     if (Optional.ofNullable(serviceAppointment.getScheduledStartTime()).orElse(0L) > 0 &&
                             Optional.ofNullable(serviceAppointment.getScheduledEndTime()).orElse(0L) > 0) {
                         if (serviceAppointment.getScheduledStartTime() >= serviceAppointment.getScheduledEndTime()) {
                             throw new FSMException(FSMErrorCode.SA_SCHEDULED_TIME_MISMATCH);
-                        } else if (serviceAppointment.getScheduledStartTime() < serviceAppointment.getCurrentTime()) {
+                        } else if (serviceAppointment.getScheduledStartTime() < dayStartTime) {
                             throw new FSMException(FSMErrorCode.SA_SCHEDULED_TIME_INVALID);
                         }
                     } else {

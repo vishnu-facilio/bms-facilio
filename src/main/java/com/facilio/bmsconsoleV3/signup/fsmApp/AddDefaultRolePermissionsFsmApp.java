@@ -239,8 +239,9 @@ public class AddDefaultRolePermissionsFsmApp extends FacilioCommand {
         dispatcherRolePermissions.put(FacilioConstants.Trip.TRIP, permission);
 
         permission = 0L; // TODO: Reinitialize
-        permission += dispatchConsoleTabPermissions.get("CAN_ASSIGN")
-                + dispatchConsoleTabPermissions.get("READ");
+        permission += dispatchConsoleTabPermissions.get("DISPATCH")
+                + dispatchConsoleTabPermissions.get("READ")
+                + dispatchConsoleTabPermissions.get("EXECUTE");
         dispatcherRolePermissions.put(FacilioConstants.ServiceAppointment.DISPATCH, permission);
 
         permission = 0L; // TODO: Reinitialize

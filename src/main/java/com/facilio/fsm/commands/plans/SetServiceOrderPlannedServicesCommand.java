@@ -37,7 +37,7 @@ public class SetServiceOrderPlannedServicesCommand  extends FacilioCommand {
                 }
                 V3ServiceContext service = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SERVICE,serviceOrderPlannedService.getService().getId(),V3ServiceContext.class);
                 if(serviceOrderPlannedService.getServiceOrder()==null){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Work Order cannot be empty");
                 }
                 if(serviceOrderPlannedService.getQuantity()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");

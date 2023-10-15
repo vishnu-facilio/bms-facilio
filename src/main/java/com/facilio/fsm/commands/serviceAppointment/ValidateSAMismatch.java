@@ -133,9 +133,9 @@ public class ValidateSAMismatch extends FacilioCommand {
             }
             Map<String,Object> currentShift = ShiftAPI.getPeopleShiftForGivenTime(peopleId,serviceAppointment.getScheduledStartTime());
             if (currentShift != null) {
-                long shiftStart = (long) currentShift.getOrDefault("startTime",0);
-                long shiftEnd = (long) currentShift.getOrDefault("endTime",0);
-                if( shiftStart > 0 && shiftEnd > 0) {
+                long shiftStart = (long) currentShift.getOrDefault("startTime",-1);
+                long shiftEnd = (long) currentShift.getOrDefault("endTime",-1);
+                if( shiftStart > -1 && shiftEnd > -1) {
                     long startTimeDayStart = DateTimeUtil.getDayStartTimeOf(serviceAppointment.getScheduledStartTime());
                     //    Need to check Night and morning shift overlap case
                     if (shiftEnd < shiftStart) {

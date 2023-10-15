@@ -27,7 +27,7 @@ public class SetServiceOrderServiceCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(serviceOrderServices)){
             for(ServiceOrderServiceContext serviceOrderService :serviceOrderServices){
                 if(serviceOrderService.getServiceOrder()==null){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Work Order cannot be empty");
                 }
                 if(serviceOrderService.getStartTime()!=null && serviceOrderService.getEndTime()!=null &&  serviceOrderService.getStartTime() > serviceOrderService.getEndTime()){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Start time cannot be greater than end time");

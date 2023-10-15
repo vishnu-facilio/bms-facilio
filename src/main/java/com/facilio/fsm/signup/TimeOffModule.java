@@ -137,7 +137,7 @@ public class TimeOffModule extends BaseModuleConfig {
         timeOffFields.add(localId);
         ModuleLocalIdUtil.insertModuleLocalId(FacilioConstants.TimeOff.TIME_OFF);
 
-        timeOffFields.add(new StringField(timeOffModule,"code","Code",FacilioField.FieldDisplayType.TEXTBOX,"CODE", FieldType.STRING,true,false,true,false));
+        timeOffFields.add(new StringField(timeOffModule,"code","Code",FacilioField.FieldDisplayType.TEXTBOX,"CODE", FieldType.STRING,true,false,true,true));
 
         DateField startTime = new DateField(timeOffModule,"startTime","Start Time", FacilioField.FieldDisplayType.DATETIME,"START_TIME",FieldType.DATE_TIME,true,false,true,false);
         timeOffFields.add(startTime);
@@ -145,7 +145,7 @@ public class TimeOffModule extends BaseModuleConfig {
         DateField endTime = new DateField(timeOffModule,"endTime","End Time", FacilioField.FieldDisplayType.DATETIME,"END_TIME",FieldType.DATE_TIME,true,false,true,false);
         timeOffFields.add(endTime);
 
-        LookupField peopleField = new LookupField(timeOffModule,"people","Field Agent Name", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"PEOPLE_ID",FieldType.LOOKUP,true,false,true,true,"Related Field Agents", Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE));
+        LookupField peopleField = new LookupField(timeOffModule,"people","Field Agent Name", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"PEOPLE_ID",FieldType.LOOKUP,true,false,true,false,"Related Field Agents", Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE));
         timeOffFields.add(peopleField);
 
         LookupField typeField = new LookupField(timeOffModule,"type","Type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"TYPE",FieldType.LOOKUP,true,false,true,false,"Type",moduleBean.getModule(FacilioConstants.TimeOff.TIME_OFF_TYPE));
@@ -312,17 +312,20 @@ public class TimeOffModule extends BaseModuleConfig {
     private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
+        List<FacilioField> timeOffFields = moduleBean.getAllFields(FacilioConstants.TimeOff.TIME_OFF);
+        Map<String, FacilioField> timeOffFieldsMap = FieldFactory.getAsMap(timeOffFields);
 
-        FacilioField people = moduleBean.getField("people", moduleName);
-        FacilioField type = moduleBean.getField("type", moduleName);
-        FacilioField startTime = moduleBean.getField("startTime", moduleName);
-        FacilioField endTime = moduleBean.getField("endTime", moduleName);
-        FacilioField comments=moduleBean.getField("comments",moduleName);
 
-        FacilioField sysCreatedBy = moduleBean.getField("sysCreatedBy", moduleName);
-        FacilioField sysCreatedTime = moduleBean.getField("sysCreatedTime", moduleName);
-        FacilioField sysModifiedBy = moduleBean.getField("sysModifiedBy", moduleName);
-        FacilioField sysModifiedTime = moduleBean.getField("sysModifiedTime", moduleName);
+        FacilioField people = timeOffFieldsMap.get("people");
+        FacilioField type = timeOffFieldsMap.get("type");
+        FacilioField startTime = timeOffFieldsMap.get("startTime");
+        FacilioField endTime = timeOffFieldsMap.get("endTime");
+        FacilioField comments=timeOffFieldsMap.get("comments");
+
+        FacilioField sysCreatedBy = timeOffFieldsMap.get("sysCreatedBy");
+        FacilioField sysCreatedTime = timeOffFieldsMap.get("sysCreatedTime");
+        FacilioField sysModifiedBy = timeOffFieldsMap.get("sysModifiedBy");
+        FacilioField sysModifiedTime = timeOffFieldsMap.get("sysModifiedTime");
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
@@ -432,7 +435,7 @@ public class TimeOffModule extends BaseModuleConfig {
 
 
         List<ViewField> timeOffViewFields = new ArrayList<>();
-
+        timeOffViewFields.add(new ViewField("code","Code"));
         timeOffViewFields.add(new ViewField("people","Field Agent"));
         timeOffViewFields.add(new ViewField("type","Time-Off Type"));
         timeOffViewFields.add(new ViewField("startTime","Start Time"));

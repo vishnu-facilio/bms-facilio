@@ -313,7 +313,9 @@ public class NewPermissionUtil {
     private static Map<String, Integer> initDispatcherBoardMap() {
         dispatcherBoardTabType = new HashMap<>();
         dispatcherBoardTabType.put("READ", 1);
-        dispatcherBoardTabType.put("CAN_ASSIGN", 2);
+        dispatcherBoardTabType.put("DISPATCH", 2);
+        dispatcherBoardTabType.put("EXECUTE", 4);
+
         return dispatcherBoardTabType;
     }
 
@@ -765,7 +767,8 @@ public class NewPermissionUtil {
         permissions = new ArrayList<>();
         permissionMap = new HashMap<>();
         permissions.add(new Permission("READ", "Read", dispatcherBoardTabType.get("READ"), null));
-        permissions.add(new Permission("CAN_ASSIGN", "Can Assign", dispatcherBoardTabType.get("CAN_ASSIGN"), null));
+        permissions.add(new Permission("DISPATCH", "Dispatch", dispatcherBoardTabType.get("DISPATCH"), null));
+        permissions.add(new Permission("EXECUTE", "Execute", dispatcherBoardTabType.get("EXECUTE"), null));
         permissionMap.put("*", permissions);
         permissionList.put(Type.DISPATCHER_CONSOLE.getIndex(), permissionMap);
 

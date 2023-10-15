@@ -178,7 +178,7 @@ public class fsmAction extends V3Action {
                     context.put(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME,getScheduledEndTime());
                     FacilioChain dispatchChain = FsmTransactionChainFactoryV3.rescheduleChain();
                     dispatchChain.execute(context);
-                    successMsg.put("message","Service Appointment Rescheduled Successfully");
+                    successMsg.put("message","Appointment Rescheduled Successfully");
                 } else {
                     throw new FSMException(FSMErrorCode.SA_DETAILS_REQUIED);
                 }
@@ -189,7 +189,7 @@ public class fsmAction extends V3Action {
                     context.put(FacilioConstants.ServiceAppointment.SKIP_VALIDATION,isSkipValidation());
                     FacilioChain dispatchChain = FsmTransactionChainFactoryV3.dispatchChain();
                     dispatchChain.execute(context);
-                    successMsg.put("message","Service Appointment Redispatched Successfully");
+                    successMsg.put("message","Appointment Redispatched Successfully");
                 } else {
                     throw new FSMException(FSMErrorCode.SA_DETAILS_REQUIED);
                 }
@@ -202,7 +202,7 @@ public class fsmAction extends V3Action {
                     context.put(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME,getScheduledEndTime());
                     FacilioChain dispatchChain = FsmTransactionChainFactoryV3.dispatchChain();
                     dispatchChain.execute(context);
-                    successMsg.put("message","Service Appointment Dispatched Successfully");
+                    successMsg.put("message","Appointment Dispatched Successfully");
                 }
                 else {
                     throw new FSMException(FSMErrorCode.SA_DETAILS_REQUIED);
@@ -233,17 +233,17 @@ public class fsmAction extends V3Action {
             case FacilioConstants.ServiceAppointment.START_WORK:
                 FacilioChain startSAChain = FsmTransactionChainFactoryV3.startSAChain();
                 startSAChain.execute(context);
-                successMsg.put("message","Service Appointment Started Successfully");
+                successMsg.put("message","Appointment Started Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.COMPLETE:
                 FacilioChain completeSAChain = FsmTransactionChainFactoryV3.completeSAChain();
                 completeSAChain.execute(context);
-                successMsg.put("message","Service Appointment Completed Successfully");
+                successMsg.put("message","Appointment Completed Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.CANCEL:
                 FacilioChain cancelSAChain = FsmTransactionChainFactoryV3.cancelSAChain();
                 cancelSAChain.execute(context);
-                successMsg.put("message","Service Appointment Cancelled Successfully");
+                successMsg.put("message","Appointment Cancelled Successfully");
                 break;
         }
         setData(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_STATUS_ACTIONS,successMsg);

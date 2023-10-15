@@ -40,7 +40,7 @@ public class SetServiceOrderToolsCommand extends FacilioCommand {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Return time cannot be greater than issued time");
                 }
                 if(serviceOrderTool.getServiceOrder()==null){
-                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service Order cannot be empty");
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR, "Work Order cannot be empty");
                 }
                 if(serviceOrderTool.getQuantity() <= 0) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");

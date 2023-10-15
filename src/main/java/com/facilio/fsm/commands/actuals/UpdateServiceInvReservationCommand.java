@@ -30,7 +30,7 @@ public class UpdateServiceInvReservationCommand extends FacilioCommand {
 
                     Double soQuantity = serviceOrderItem.getQuantity();
                     if(  serviceOrderItem.getServiceOrder()!=null && reservation.getServiceOrder()!=null &&  serviceOrderItem.getServiceOrder().getId() != reservation.getServiceOrder().getId()){
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Plan created in one Service Order cannot be issued to another");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Plan created in one Work Order cannot be issued to another");
                     }
                     if(reservation.getReservationStatusEnum().equals(InventoryReservationStatus.ISSUED)){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Selected reserved item is fully issued");

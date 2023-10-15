@@ -830,6 +830,28 @@ public class ServiceOrderModule extends BaseModuleConfig {
         ServiceOrderTicketStatusContext closedState = ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.CLOSED);
 
         /* PRIMARY BUTTON DECLARATIONS GOES HERE */
+
+//
+//        SystemButtonRuleContext edit = new SystemButtonRuleContext();
+//        edit.setName("Edit");
+//        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+//        edit.setIdentifier(FacilioConstants.ContextNames.UPDATE);
+//        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        edit.setPermission("UPDATE");
+//        edit.setPermissionRequired(true);
+//
+//        addSystemButton(FacilioConstants.ServiceOrder.SERVICE_ORDER,edit);
+//
+//        SystemButtonRuleContext delete = new SystemButtonRuleContext();
+//        delete.setName("Delete");
+//        delete.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+//        delete.setIdentifier(FacilioConstants.ContextNames.DELETE);
+//        delete.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        delete.setPermission("DELETE");
+//        delete.setPermissionRequired(true);
+//
+//        addSystemButton(FacilioConstants.ServiceOrder.SERVICE_ORDER,delete);
+
         Criteria inprogressCriteria = new Criteria();
         inprogressCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Collections.singletonList(inprogressState.getId()), PickListOperators.IS));
 
@@ -958,6 +980,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioField locationField = serviceOrderFieldsMap.get("location");
         FacilioField spaceField = serviceOrderFieldsMap.get("space");
         FacilioField assetField = serviceOrderFieldsMap.get("asset");
+        FacilioField territoryField = serviceOrderFieldsMap.get("territory");
         FacilioField fieldAgentField = serviceOrderFieldsMap.get("fieldAgent");
 
         FacilioField vendorField = serviceOrderFieldsMap.get("vendor");
@@ -999,6 +1022,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         addSummaryFieldInWidgetGroup(siteWidgetGroup, spaceField, 1, 2, 1);
         addSummaryFieldInWidgetGroup(siteWidgetGroup, assetField, 1, 3, 1);
         addSummaryFieldInWidgetGroup(siteWidgetGroup, locationField, 1, 4, 1);
+//        addSummaryFieldInWidgetGroup(siteWidgetGroup, territoryField, 1, 5,1);
+
 
         // Group 3
         SummaryWidgetGroup userDetailsWidgetGroup = new SummaryWidgetGroup();

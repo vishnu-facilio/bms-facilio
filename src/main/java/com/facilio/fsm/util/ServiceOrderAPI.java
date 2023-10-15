@@ -160,7 +160,7 @@ public class ServiceOrderAPI {
             updateProps.put("status", dispatchedStatus);
             updateBuilder.updateViaMap(updateProps);
         } else {
-            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing service order states");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing work order states");
         }
     }
 
@@ -192,7 +192,7 @@ public class ServiceOrderAPI {
             updateProps.put(FacilioConstants.ServiceAppointment.ACTUAL_START_TIME, startTime);
             updateBuilder.updateViaMap(updateProps);
         } else {
-            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing service order states");
+            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing work order states");
         }
     }
 

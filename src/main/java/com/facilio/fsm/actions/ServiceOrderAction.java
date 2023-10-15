@@ -68,14 +68,14 @@ public class ServiceOrderAction extends V3Action {
                     throw new FSMException(FSMErrorCode.SO_CANCEL_FAILED);
                 }
                 if(validate){
-                    successMsg.put("title","Cancel Service Order");
-                    successMsg.put("message","Cancelling Service Order will affect all its Appointments and Tasks, Do you still want to proceed?");
+                    successMsg.put("title","Cancel Work Order");
+                    successMsg.put("message","Cancelling Work Order will affect all its Appointments and Tasks, Do you still want to proceed?");
                     setData(FacilioConstants.ServiceOrder.SERVICE_ORDER_STATUS_ACTIONS,successMsg);
                     return V3Action.SUCCESS;
                 }
                 serviceOrderInfo.setStatus(newStatus);
                 updateServiceOrder(serviceOrderInfo);
-                successMsg.put("message","Service Order Cancelled Successfully");
+                successMsg.put("message","Work Order Cancelled Successfully");
             }
 
             if(newStatus != null && newStatus.getId() == completedState.getId()){
@@ -83,8 +83,8 @@ public class ServiceOrderAction extends V3Action {
                     throw new FSMException(FSMErrorCode.SO_COMPLETE_WARNING);
                 }
                 if(validate){
-                    successMsg.put("title","Complete Service Order");
-                    successMsg.put("message","Completing Service Order will affect all its Appointments and Tasks, Do you still want to proceed?");
+                    successMsg.put("title","Complete Work Order");
+                    successMsg.put("message","Completing Work Order will affect all its Appointments and Tasks, Do you still want to proceed?");
                     setData(FacilioConstants.ServiceOrder.SERVICE_ORDER_STATUS_ACTIONS,successMsg);
                     return V3Action.SUCCESS;
                 }
@@ -95,7 +95,7 @@ public class ServiceOrderAction extends V3Action {
                 serviceOrderInfo.setActualEndTime(endDuration);
                 serviceOrderInfo.setActualDuration(endDuration - startDuration);
                 updateServiceOrder(serviceOrderInfo);
-                successMsg.put("message","Service Order Completed Successfully");
+                successMsg.put("message","Work Order Completed Successfully");
             }
 
             if(newStatus !=null && newStatus.getId() == closedState.getId()){
@@ -104,7 +104,7 @@ public class ServiceOrderAction extends V3Action {
                 }
                 serviceOrderInfo.setStatus(closedState);
                 updateServiceOrder(serviceOrderInfo);
-                successMsg.put("message","Service Order Closed Successfully");
+                successMsg.put("message","Work Order Closed Successfully");
             }
             setData(FacilioConstants.ServiceOrder.SERVICE_ORDER_STATUS_ACTIONS,successMsg);
 

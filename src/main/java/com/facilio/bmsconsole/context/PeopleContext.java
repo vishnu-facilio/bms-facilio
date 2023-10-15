@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
+import com.facilio.fsm.context.PeopleSkillLevelContext;
 import com.facilio.fsm.context.TerritoryContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -284,5 +285,6 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	private Long lastCheckedInTime;
 	private Long lastCheckedOutTime;
 	private boolean checkedIn;
+	private List<PeopleSkillLevelContext> peopleSkillLevel;
 
 }

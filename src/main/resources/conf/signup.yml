@@ -171,9 +171,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkOrderLabourPlanModules
   - com.facilio.bmsconsoleV3.signup.workOrder.AddWorkorderActualsLabourModule
 
-  #Add System Value Generators
-  - com.facilio.bmsconsoleV3.signup.scopeVariable.AddValueGenerators
-  - com.facilio.bmsconsoleV3.signup.scopeVariable.AddDefaultGlobalScopeVariable
 
   # Shift & Shift Related Modules
   - com.facilio.bmsconsoleV3.signup.shift.ShiftModules
@@ -574,3 +571,7 @@ classes:
 
 #  adding default email templates of workorder
   - com.facilio.bmsconsoleV3.signup.moduleconfig.DefaultEmailTemplateForWorkorder
+
+  #Add System Value Generators
+  - com.facilio.bmsconsoleV3.signup.scopeVariable.AddValueGenerators
+  - com.facilio.bmsconsoleV3.signup.scopeVariable.AddDefaultGlobalScopeVariable
