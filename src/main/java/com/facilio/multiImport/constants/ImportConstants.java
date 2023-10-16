@@ -4,8 +4,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.multiImport.context.ImportDataDetails;
+import com.facilio.multiImport.context.ImportFieldMappingContext;
 import com.facilio.multiImport.context.ImportFileSheetsContext;
 import com.facilio.multiImport.context.ImportRowContext;
+import com.facilio.relation.context.RelationContext;
+import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.v3.context.V3Context;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
@@ -28,6 +31,9 @@ public class ImportConstants{
     public static final String SKIP_RECORDS_COUNT = "skipRecordsCount";
     public static final String IMPORT_FIELDS="importFields";
     public static final String BATCH_COLLECT_MAP= "batchCollectMap";
+    public static final String RELATED_FIELDS_MAP = "relatedFieldsMapping";
+    public static final String RELATION_MAPPING_VS_RELATION_MAP = "relationMappingVsRelationMap";
+    public static final String VALIDATED_REL_RECORD = "validatedRelRecords";
     public static Collection<Pair<Long,Map<String,Object>>> getInsertRecords(Context context) {
         return (Collection<Pair<Long,Map<String,Object>>>) context.get(INSERT_RECORDS);
     }
@@ -92,4 +98,24 @@ public class ImportConstants{
     public static  Map<String,Object> getBatchCollectMap(Context context){
         return (Map<String,Object>) context.get(ImportConstants.BATCH_COLLECT_MAP);
     }
+    public static Map<ImportFieldMappingContext, RelationMappingContext> getRelationshipFieldMapping(Context context){
+        return (Map<ImportFieldMappingContext, RelationMappingContext>) context.get(RELATED_FIELDS_MAP);
+    }
+    public static void setRelationshipFieldMapping(Context context,Map<ImportFieldMappingContext, RelationMappingContext> relatedFieldsMap){
+        context.put(RELATED_FIELDS_MAP,relatedFieldsMap);
+    }
+    public static Map<RelationMappingContext, RelationContext> getRelationMappingVsFieldMapping(Context context){
+        return (Map<RelationMappingContext, RelationContext>) context.get(RELATION_MAPPING_VS_RELATION_MAP);
+    }
+    public static void setRelationMappingVsRelationMap(Context context,  Map<RelationMappingContext, RelationContext> relationMappingVsRelationMap){
+        context.put(RELATION_MAPPING_VS_RELATION_MAP,relationMappingVsRelationMap);
+    }
+    public static Map<RelationMappingContext,Map<ImportRowContext,List<Map<String, Object>>>> getValidatedRelRecord(Context context){
+        return (Map<RelationMappingContext,Map<ImportRowContext,List<Map<String, Object>>>> ) context.get(VALIDATED_REL_RECORD);
+    }
+    public static void setValidatedRelRecord(Context context,  Map<RelationMappingContext,Map<ImportRowContext,List<Map<String, Object>>>> validatedRelRecords){
+        context.put(VALIDATED_REL_RECORD,validatedRelRecords);
+    }
+
+
 }

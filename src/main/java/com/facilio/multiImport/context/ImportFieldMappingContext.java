@@ -17,4 +17,28 @@ public class ImportFieldMappingContext implements Serializable {
     private int unitId=-1;
     private boolean isMandatory;
     private String dateFormat;
+    private LookupIdentifierEnum lookupIdentifier;
+    private long relMappingId = -1l;
+
+    public int getLookupIdentifier() {
+        if(lookupIdentifier!=null){
+            return lookupIdentifier.getIndex();
+        }
+        return 1;
+    }
+    public LookupIdentifierEnum getLookupIdentifierEnum(){
+        if(lookupIdentifier!=null){
+            return lookupIdentifier;
+        }
+        return LookupIdentifierEnum.PRIMARY_FIELD;
+    }
+    public void setLookupIdentifier(LookupIdentifierEnum lookupIdentifier) {
+        this.lookupIdentifier = lookupIdentifier;
+    }
+    public void setLookupIdentifier(int lookupIdentifier) {
+        this.lookupIdentifier =LookupIdentifierEnum.getLookupIdentifier(lookupIdentifier);
+        if( this.lookupIdentifier==null){
+           throw new IllegalArgumentException("Invalid lookupIdentifier:"+lookupIdentifier);
+        }
+    }
 }

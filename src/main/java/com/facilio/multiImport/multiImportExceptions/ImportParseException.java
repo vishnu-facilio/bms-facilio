@@ -29,7 +29,7 @@ public class ImportParseException extends FacilioException {
 			exceptionString.append(((ImportLookupModuleValueNotFoundException)e).getClientMessage());
 		}
 		else if (e instanceof IllegalArgumentException){
-			exceptionString.append(e.getMessage());
+			exceptionString.append(e.getMessage()+" under column "+this.columnName);
 		}
 		else if (e instanceof ImportTimeColumnParseException){
 			exceptionString.append(((ImportTimeColumnParseException)e).getClientMessage());

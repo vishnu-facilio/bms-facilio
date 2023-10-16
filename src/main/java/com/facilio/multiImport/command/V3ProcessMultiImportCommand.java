@@ -24,16 +24,15 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.multiImport.annotations.RowFunction;
 import com.facilio.multiImport.constants.ImportConstants;
-import com.facilio.multiImport.context.ImportDataDetails;
-import com.facilio.multiImport.context.ImportFieldMappingContext;
-import com.facilio.multiImport.context.ImportFileSheetsContext;
-import com.facilio.multiImport.context.ImportRowContext;
+import com.facilio.multiImport.context.*;
 import com.facilio.multiImport.enums.MultiImportSetting;
 import com.facilio.multiImport.multiImportExceptions.ImportFieldValueMissingException;
 import com.facilio.multiImport.multiImportExceptions.ImportLookupModuleValueNotFoundException;
 import com.facilio.multiImport.multiImportExceptions.ImportParseException;
 import com.facilio.multiImport.util.MultiImportApi;
 import com.facilio.multiImport.util.MultiImportChainUtil;
+import com.facilio.relation.context.RelationMappingContext;
+import com.facilio.relation.util.RelationUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
@@ -96,6 +95,12 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
     List<ImportRowContext> recordsToBeAdded = new ArrayList<>();
     List<ImportRowContext> recordsSkipped = new ArrayList<>();
     int insertRecordsCount,updateRecordsCount,skipRecordsCount;
+    private static final int SIZE_FOR_REL_RECORD_LOADING = 500;   //500 * 10  we can select 5000 mapped record ids at a time
+    Map<ImportFieldMappingContext, RelationMappingContext> fieldMapVsRelationMapping = new HashMap<>();
+    Map<RelationMappingContext, ImportFieldMappingContext> relationMapVsFieldMap = new HashMap<>();
+    Map<RelationMappingContext, Map<String,Long>> relationMappingVsMappedRecordIdsMap = new HashMap<>();
+    private int fromIndex = 0;
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         LOGGER.info("V3ProcessMultiImportCommand started time:"+System.currentTimeMillis());
@@ -154,10 +159,14 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         }
         moduleBean = Constants.getModBean();
         beanClass = (Class) context.get(Constants.BEAN_CLASS);
+        loadRelationShipMap();
+        ImportConstants.setRelationshipFieldMapping(context, fieldMapVsRelationMapping);
     }
 
     private void processRecords(List<ImportRowContext> rows) throws Exception {
+        int curIndex = 0;
         for (ImportRowContext rowContext : rows) {
+            checkAndRefreshRelationshipData(curIndex++, rows);
 
             validateRow(rowContext);
 
@@ -172,7 +181,6 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 recordsSkipped.add(rowContext);
                 continue;
             }
-
             HashMap<String, Object> processedProps = getProcessedRawRecordMap(rowContext);
 
             rowContext.setProcessedRawRecordMap(processedProps);
@@ -184,9 +192,23 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         importRecords();
         processSkippedRecords();
     }
+    private void checkAndRefreshRelationshipData(int curIndex, List<ImportRowContext> rows) throws Exception{
+       if(MapUtils.isEmpty(fieldMapVsRelationMapping)){
+            return;
+       }
+       if(curIndex == fromIndex){
+           int toIndex = Math.min(fromIndex + SIZE_FOR_REL_RECORD_LOADING,rows.size());
+           refreshRelationMappingVsMappedRecordIdsMap(rows.subList(fromIndex,toIndex));
+           fromIndex = toIndex;
+       }
+    }
     private void processSkippedRecords() throws Exception {
+        int curIndex = 0;
+        fromIndex = 0; // re-initialize fromIndex
         while (CollectionUtils.isNotEmpty(recordsSkipped)){
+            curIndex++;
             refreshLookupMap();  //refresh lookup map
+            checkAndRefreshRelationshipData(curIndex, recordsSkipped); // refresh relationship data
             Iterator<ImportRowContext> iterator = recordsSkipped.listIterator();
             List<ImportRowContext> nexRecordsSkippedList = new ArrayList<>();
 
@@ -372,67 +394,86 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         setSiteIdInPropsOnlyForInsertImport(props, rowVal);
         setDefaultStateFlowIdAndModuleState(props);
 
-        if (beforeProcessRowFunction != null) {
-            beforeProcessRowFunction.apply(rowContext, rowVal, props, context);
-        }
 
+        String sheetColumnName = null;
 
-        for (FacilioField field : fields) {
-
-            if (!MultiImportApi.isFieldMappingPresent(importSheet, field)) { // there is no mapping for this field. Don't do anything
-                continue;
+        try {
+            if (beforeProcessRowFunction != null) {
+                beforeProcessRowFunction.apply(rowContext, rowVal, props, context);
             }
 
-            String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(importSheet, field);
 
-            Object cellValue = rowVal.get(sheetColumnName);
-            if (isEmpty(cellValue)) {
-                // The value of row is empty. Set it as null. // todo check this flow
-                props.put(field.getName(), null);
-                continue;
-            }
+            for (FacilioField field : fields) {
 
-            try {
+                if (!MultiImportApi.isFieldMappingPresent(importSheet, field)) { // there is no mapping for this field. Don't do anything
+                    continue;
+                }
+
+                sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(importSheet, field);
+
+                Object cellValue = rowVal.get(sheetColumnName);
+                if (isEmpty(cellValue)) {
+                    // The value of row is empty. Set it as null. // todo check this flow
+                    props.put(field.getName(), null);
+                    continue;
+                }
+
+
                 if (field.getName().equals(FacilioConstants.ContextNames.SITE_ID)) {
                     String cellValueString = cellValue.toString();
                     if (StringUtils.isNotEmpty(cellValueString)) {
                         SiteContext site = sitesMap.get(cellValueString);
-                        FacilioUtil.throwIllegalArgumentException(site == null || site.getId()<0,"Site named as "+cellValueString+" not found under column "+sheetColumnName);
+                        FacilioUtil.throwIllegalArgumentException(site == null || site.getId() < 0, "Site named as " + cellValueString + " not found under column " + sheetColumnName);
                         props.put(field.getName(), site.getId());
                     }
                     continue;
                 }
-                if(field.getName().equals(FacilioConstants.ContextNames.STATE_FLOW_ID)){
+                if (field.getName().equals(FacilioConstants.ContextNames.STATE_FLOW_ID)) {
                     String cellValueString = cellValue.toString();
-                    long stateFlowId = (long)Double.parseDouble(cellValueString);
+                    long stateFlowId = (long) Double.parseDouble(cellValueString);
                     StateFlowRuleContext stateFlowRuleContext = stateFlowIdVsStateFlowContext.get(stateFlowId);
-                    FacilioUtil.throwIllegalArgumentException(stateFlowRuleContext==null,"In valid State flow id");
+                    FacilioUtil.throwIllegalArgumentException(stateFlowRuleContext == null, "In valid State flow id");
                     props.put(FacilioConstants.ContextNames.STATE_FLOW_ID, stateFlowRuleContext.getId());
-                    Map<String,Object> moduleState = new HashMap<>();
+                    Map<String, Object> moduleState = new HashMap<>();
                     moduleState.put("id", stateFlowRuleContext.getDefaultStateId());
                     props.put(FacilioConstants.ContextNames.MODULE_STATE, moduleState);
 
                     continue;
                 }
 
-                formatCellValueBasedOnFieldType(field,rowNo,sheetColumnName,cellValue,props,rowContext);
+                formatCellValueBasedOnFieldType(field, rowNo, sheetColumnName, cellValue, props, rowContext);
 
-            } catch (Exception ex) {
-                LOGGER.severe("Process Import Exception -- Row No --" + rowNo + " Fields Mapping --" + sheetColumnName);
-                String errorMessage =null;
-
-                ImportParseException parseException = new ImportParseException(sheetColumnName, ex);
-                errorMessage = parseException.getClientMessage();
-
-                rowContext.setErrorOccurredRow(true);
-                rowContext.setErrorMessage(errorMessage);
-                LOGGER.severe("Reason for failed :" + errorMessage);
             }
 
-        }
+            //Relationship Mapped record ids validation (mapped record id should present in DB)
+            if (MapUtils.isNotEmpty(fieldMapVsRelationMapping)) {
+                for (Map.Entry<ImportFieldMappingContext, RelationMappingContext> entry : fieldMapVsRelationMapping.entrySet()) {
+                    ImportFieldMappingContext fieldMappingContext = entry.getKey();
+                    RelationMappingContext relationMappingContext = entry.getValue();
+                    sheetColumnName = fieldMappingContext.getSheetColumnName();
+                    Object cellValue = rowVal.get(sheetColumnName);
+                    if (isEmpty(cellValue)) {
+                        continue;
+                    }
+                    validateMappedRelRecord(relationMappingContext, sheetColumnName, cellValue, props, rowContext);
+                }
+            }
 
-        if (afterProcessRowFunction != null) {
-            afterProcessRowFunction.apply(rowContext, rowVal, props, context);
+
+            if (afterProcessRowFunction != null) {
+                afterProcessRowFunction.apply(rowContext, rowVal, props, context);
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Process Import Exception -- Row No --" + rowNo + " Fields Mapping --" + sheetColumnName);
+            String errorMessage = null;
+
+            ImportParseException parseException = new ImportParseException(sheetColumnName, e);
+            errorMessage = parseException.getClientMessage();
+
+            rowContext.setErrorOccurredRow(true);
+            rowContext.setErrorMessage(errorMessage);
+            return props;  // if any sheet column data processing throws error means just mark entire row as error record
+
         }
 
         rowContext.setProcessedRawRecordMap(props);
@@ -506,7 +547,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 break;
             }
             case MULTI_LOOKUP: {
-                String multiLookupValue = cellValue.toString();
+                String multiLookupValue = getLookupIdentifierData((BaseLookupField) field,cellValue.toString().trim());
                 String[] split = multiLookupValue.split(",");
                 List<Object> values = new ArrayList<>();
 
@@ -538,7 +579,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 Map<String, Map<String, Object>> nameVsIds = lookupMap.get(field);
                 List<FacilioField> uniqueFields = getImportLookupUniqueFields((BaseLookupField) field);
                 String lookUpValueKey = getLookUKeyValueFromSheet((BaseLookupField) field,uniqueFields,rowContext, true);
-                String name = cellValue.toString().trim();
+                String name = getLookupIdentifierData((BaseLookupField) field,cellValue.toString().trim());
                 if (!lookUpValueKey.isEmpty()) {
                     name = name + VALUES_SEPARATOR + lookUpValueKey;
                 }
@@ -654,6 +695,11 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 }
             }
             String uniqueCellStringValue = uniqueCellValue.toString();
+            /* to be removed after parsing cell data based on facilio field type in sheet reader */
+            if(uniqueField.getDataTypeEnum()==FieldType.NUMBER && NumberUtils.isNumber(uniqueCellStringValue)){
+                  Long numberValue = (long) Double.parseDouble(uniqueCellStringValue);
+                  uniqueCellStringValue =numberValue.toString();
+            }
 
             keyValue.append(uniqueCellStringValue.trim());
             if (i == uniqueFields.size() - 1) {
@@ -930,22 +976,34 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         String lookupFieldName = lookupField.getName();
         String lookupModuleName = lookupField.getLookupModule().getName();
 
-        Map<String, List<String>> lookupMainFieldMap = (Map<String, List<String>>) context.get(MultiImportApi.ImportProcessConstants.LOOKUP_UNIQUE_FIELDS_MAP);
+        String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(importSheet,lookupField);
+        ImportFieldMappingContext fieldMappingContext = sheetColumnNameVsFieldMapping.get(sheetColumnName);
+        LookupIdentifierEnum lookupIdentifier = fieldMappingContext.getLookupIdentifierEnum();
+
         List<FacilioField> uniqueFields = new ArrayList<>();
-        if (MapUtils.isNotEmpty(lookupMainFieldMap) && lookupMainFieldMap.containsKey(lookupFieldName)) {
-            List<String> fieldNames = lookupMainFieldMap.get(lookupFieldName);
-            for (String fieldName : fieldNames) {
-                if(fieldName.startsWith("*")){
-                    fieldName = fieldName.substring(1,fieldName.length());
+        switch (lookupIdentifier){
+            case ID:  //look up data loading using id
+                FacilioField idField = FieldFactory.getIdField(lookupField.getLookupModule());
+                uniqueFields.add(idField);
+                break;
+            case PRIMARY_FIELD:
+                Map<String, List<String>> lookupMainFieldMap = (Map<String, List<String>>) context.get(MultiImportApi.ImportProcessConstants.LOOKUP_UNIQUE_FIELDS_MAP);
+                if (MapUtils.isNotEmpty(lookupMainFieldMap) && lookupMainFieldMap.containsKey(lookupFieldName)) {
+                    List<String> fieldNames = lookupMainFieldMap.get(lookupFieldName);
+                    for (String fieldName : fieldNames) {
+                        if(fieldName.startsWith("*")){
+                            fieldName = fieldName.substring(1,fieldName.length());
+                        }
+                        FacilioField uniqueField = modBean.getField(fieldName, lookupModuleName);
+                        uniqueFields.add(uniqueField);
+                    }
                 }
-                FacilioField uniqueField = modBean.getField(fieldName, lookupModuleName);
-                uniqueFields.add(uniqueField);
-            }
+                if (CollectionUtils.isEmpty(uniqueFields)) {   //if uniqueFields not configured by module owners ,take lookup module's primary field as a unique field
+                    FacilioField primaryField = modBean.getPrimaryField(lookupModuleName);
+                    uniqueFields.add(primaryField);
+                }
         }
-        if (CollectionUtils.isEmpty(uniqueFields)) {   //if uniqueFields not configured by module owners ,take lookup module's primary field as a unique field
-            FacilioField primaryField = modBean.getPrimaryField(lookupModuleName);
-            uniqueFields.add(primaryField);
-        }
+
         return uniqueFields;
     }
     private Set<String> getCanBeEmptyFieldNames(BaseLookupField lookupField){
@@ -1088,8 +1146,8 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         if (MapUtils.isEmpty(sitesMap)) {
             return;
         }
-        if (rowVal.containsKey(fieldNameVsSheetColumnNameMap.get("siteId"))) {
-            String sheetColumnName = fieldNameVsSheetColumnNameMap.get("siteId");
+        String sheetColumnName = fieldNameVsSheetColumnNameMap.get("siteId");
+        if (rowVal.get(sheetColumnName)!=null) {
             Object cellValue = rowVal.get(sheetColumnName);
             String siteName = cellValue.toString();
             SiteContext siteContext = sitesMap.get(siteName.trim());
@@ -1157,6 +1215,236 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
             return set;
         }
         return set.stream().map(s->"\'"+s+"\'").collect(Collectors.toSet());
+    }
+    private String getLookupIdentifierData(BaseLookupField lookupField,String data) throws Exception{
+        String lookupFieldName = lookupField.getName();
+        String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(importSheet,lookupField);
+        ImportFieldMappingContext fieldMappingContext = sheetColumnNameVsFieldMapping.get(sheetColumnName);
+        LookupIdentifierEnum lookupIdentifier = fieldMappingContext.getLookupIdentifierEnum();
+
+        switch (lookupIdentifier){
+            case ID: {
+                if (lookupField.getDataTypeEnum() == FieldType.MULTI_LOOKUP) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String values[] = data.split(",");
+                    int n = values.length;
+                    for (int i = 0; i < n; i++) {
+                        String val = values[i];
+                        if (!NumberUtils.isNumber(val)) {
+                            throw new IllegalArgumentException(lookupFieldName + " field value:" + val + " is not number");
+                        }
+                        Long numberData = (long) Double.parseDouble(data);
+                        stringBuilder.append(numberData.toString());
+                        if (i != n - 1) {
+                            stringBuilder.append(",");
+                        }
+                    }
+                    return stringBuilder.toString();
+                } else if (lookupField.getDataTypeEnum() == FieldType.LOOKUP) {
+                    if (!NumberUtils.isNumber(data)) {
+                        throw new IllegalArgumentException(lookupFieldName + " field value:" + data + " is not number");
+                    }
+                    Long numberData = (long) Double.parseDouble(data);
+                    data = numberData.toString();
+                    return data;
+                }
+            }
+            break;
+        }
+        return data;
+    }
+    private Map<RelationMappingContext, Map<String,Long>> loadRelationMappingVsMappedRecordIdsMap(List<ImportRowContext> allRows) throws Exception {
+        Map<RelationMappingContext, Map<String,Long>> relationMappingVsRecordIdsMap = new HashMap<>();
+        fieldMapVsRelationMapping.values().forEach(value -> relationMappingVsRecordIdsMap.put(value, new HashMap<>()));
+        for (ImportRowContext rowContext : allRows) {
+            Map<String, Object> rowVal = rowContext.getRawRecordMap();
+            String sheetColumnName = null;
+            try {
+                for (Map.Entry<ImportFieldMappingContext, RelationMappingContext> entry : fieldMapVsRelationMapping.entrySet()) {
+                    ImportFieldMappingContext fieldMappingContext = entry.getKey();
+                    RelationMappingContext relationMappingContext = entry.getValue();
+                    Map<String,Long>  globalRelationMappingVsRecordIdsMap = null;
+                    if(MapUtils.isNotEmpty(this.relationMappingVsMappedRecordIdsMap)){
+                        globalRelationMappingVsRecordIdsMap = this.relationMappingVsMappedRecordIdsMap.get(relationMappingContext);
+                    }
+
+                    sheetColumnName = fieldMappingContext.getSheetColumnName();
+                    Object cellValue = rowVal.get(sheetColumnName);
+                    if (isEmpty(cellValue)) {
+                        continue;
+                    }
+                    String[] values;
+                    String realCellValue = getRelationshipIdentifierData(fieldMappingContext,cellValue.toString());
+                    if (realCellValue.contains(",")) {
+                        values = realCellValue.split(",");
+                    } else {
+                        values = new String[]{realCellValue};
+                    }
+                    if (values.length > 10) {
+                        throw new IllegalArgumentException("Mapped Related record should be less than or equal to 10");
+                    }
+                    MultiImportApi.duplicateRecordsCheckAndThrowError(Arrays.stream(values).collect(Collectors.toList()));
+                    HashMap<String,Long> recordIdentifierVsRecordId = new HashMap<>();
+                    for(String value : values){
+                        if(globalRelationMappingVsRecordIdsMap!=null && globalRelationMappingVsRecordIdsMap.containsKey(value)){
+                            continue;
+                        }
+                        recordIdentifierVsRecordId.put(value,-1l);
+                    }
+
+                    relationMappingVsRecordIdsMap.get(relationMappingContext).putAll(recordIdentifierVsRecordId);
+                }
+
+            } catch (Exception e) {
+                LOGGER.severe("Exception while relationMappingVsRecordIds loading -- Row No --" + rowContext.getRowNumber() + " Fields Mapping --" + sheetColumnName);
+                rowContext.setErrorOccurredRow(true);
+                ImportParseException parseException = new ImportParseException(sheetColumnName, e);
+                String errorMessage = parseException.getClientMessage();
+                rowContext.setErrorMessage(errorMessage);
+                LOGGER.severe("Reason for failed:" + errorMessage);
+            }
+
+
+        }
+
+        for (Map.Entry<RelationMappingContext, Map<String,Long>> entry : relationMappingVsRecordIdsMap.entrySet()) {
+            RelationMappingContext relationMappingContext = entry.getKey();
+            Map<String,Long> uniqueIdentifierVsRecordIdMap = entry.getValue();
+            ImportFieldMappingContext  fieldMappingContext = relationMapVsFieldMap.get(relationMappingContext);
+            if(MapUtils.isEmpty(uniqueIdentifierVsRecordIdMap)){
+                continue;
+            }
+
+            FacilioModule toModule = relationMappingContext.getToModule();
+            FacilioField uniqueField = getUniqueFieldForRelationMapping(fieldMappingContext,toModule);
+            String uniqueFieldName = uniqueField.getName();
+            Criteria criteria = getCriteriaForRelationshipRecordFetch(fieldMappingContext,toModule,uniqueIdentifierVsRecordIdMap.keySet());
+            SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
+                    .module(toModule)
+                    .select(Collections.singletonList(FieldFactory.getIdField(toModule)))
+                    .andCriteria(criteria);
+
+            List<Map<String, Object>> props = selectBuilder.getAsProps();
+            if (CollectionUtils.isNotEmpty(props)) {
+               for(Map<String, Object> prop : props){
+                  String uniqueIdentifier =  prop.get(uniqueFieldName).toString();
+                  Long recordId = (Long) prop.get("id");
+                  uniqueIdentifierVsRecordIdMap.put(uniqueIdentifier,recordId);
+               }
+                relationMappingVsRecordIdsMap.put(relationMappingContext, uniqueIdentifierVsRecordIdMap);
+            }
+
+        }
+
+        return relationMappingVsRecordIdsMap;
+    }
+    private Criteria getCriteriaForRelationshipRecordFetch(ImportFieldMappingContext fieldMappingContext,FacilioModule module,Set<String> recordIdentifiers) throws Exception {
+        Criteria criteria = new Criteria();
+        LookupIdentifierEnum lookupIdentifier = fieldMappingContext.getLookupIdentifierEnum();
+        switch (lookupIdentifier){
+            case ID:
+                Set<Long> ids = recordIdentifiers.stream().map(Long::parseLong).collect(Collectors.toSet());
+                criteria.addAndCondition(CriteriaAPI.getIdCondition(ids,module));
+                break;
+            case PRIMARY_FIELD:
+                FacilioField primaryField = Constants.getModBean().getPrimaryField(module.getName());
+                criteria.addAndCondition(CriteriaAPI.getCondition(primaryField,StringUtils.join(recordIdentifiers,","),StringOperators.IS));
+        }
+        return criteria;
+    }
+    private FacilioField  getUniqueFieldForRelationMapping(ImportFieldMappingContext fieldMappingContext,FacilioModule module) throws Exception {
+        LookupIdentifierEnum lookupIdentifier = fieldMappingContext.getLookupIdentifierEnum();
+        switch (lookupIdentifier){
+            case ID:
+                return FieldFactory.getIdField(module);
+            default:
+                FacilioField primaryField = Constants.getModBean().getPrimaryField(module.getName());
+                return primaryField;
+        }
+    }
+
+    private void loadRelationShipMap() throws Exception {
+        List<ImportFieldMappingContext> fieldMappingContextList = importSheet != null ? importSheet.getRelationFieldMapping() : Collections.EMPTY_LIST;
+        for (ImportFieldMappingContext fieldMapping : fieldMappingContextList) {
+            if (fieldMapping.getRelMappingId() == -1l) {
+                continue;
+            }
+            RelationMappingContext relationMappingContext = RelationUtil.getRelationMapping(fieldMapping.getRelMappingId());
+            fieldMapVsRelationMapping.put(fieldMapping, relationMappingContext);
+            relationMapVsFieldMap.put(relationMappingContext,fieldMapping);
+            relationMappingVsMappedRecordIdsMap.put(relationMappingContext, new HashMap<>());
+        }
+    }
+    private void validateMappedRelRecord(RelationMappingContext relationMappingContext, String sheetColumnName,
+                                         Object cellValue,
+                                         HashMap<String, Object> props, ImportRowContext rowContext) throws Exception {
+        String[] values;
+        ImportFieldMappingContext fieldMappingContext = relationMapVsFieldMap.get(relationMappingContext);
+        String realCellValue = getRelationshipIdentifierData(fieldMappingContext,cellValue.toString());
+        if (realCellValue.contains(",")) {
+            values = realCellValue.split(",");
+        } else {
+            values = new String[]{realCellValue};
+        }
+
+        List<String> relMappingRecordInSheet = Arrays.stream(values).collect(Collectors.toList()); //data -:primary value or id in string
+
+        Map<String,Long> dbNameVsRecordIdMap = relationMappingVsMappedRecordIdsMap.get(relationMappingContext);
+
+        if(MapUtils.isEmpty(dbNameVsRecordIdMap)){
+            throw new IllegalArgumentException("Mapped related record ids not in Facilio");
+        }
+        else{
+            StringBuilder stringBuilder = new StringBuilder();
+            List<Long> mappedRelRecordIds = new ArrayList<>();
+            for(String uniqueIdentifier : relMappingRecordInSheet){
+                if(!dbNameVsRecordIdMap.containsKey(uniqueIdentifier) ||  dbNameVsRecordIdMap.get(uniqueIdentifier)==-1L){
+                    stringBuilder.append(uniqueIdentifier).append(",");
+                }
+                mappedRelRecordIds.add(dbNameVsRecordIdMap.get(uniqueIdentifier));
+            }
+            if(StringUtils.isNotEmpty(stringBuilder.toString())){
+                String str = stringBuilder.toString();
+                str = str.substring(0, str.lastIndexOf(","));
+
+                if(str.split(",").length==1){
+                    str = str + " related record is not in Facilio";
+                }else{
+                    str = str + " related records are not in Facilio";
+                }
+                throw new IllegalArgumentException(str);
+            }
+            props.put(relationMappingContext.getMappingLinkName(),mappedRelRecordIds);
+        }
+    }
+    private void refreshRelationMappingVsMappedRecordIdsMap(List<ImportRowContext> subList) throws Exception{
+        Map<RelationMappingContext, Map<String,Long>> relationMappingVsRecordIdsMap  = loadRelationMappingVsMappedRecordIdsMap(subList);
+        for(RelationMappingContext relationMappingContext : this.relationMappingVsMappedRecordIdsMap.keySet()){
+            Map<String,Long> newRecordIdsFromDB = relationMappingVsRecordIdsMap.get(relationMappingContext);
+            this.relationMappingVsMappedRecordIdsMap.get(relationMappingContext).putAll(newRecordIdsFromDB);
+        }
+    }
+    private String getRelationshipIdentifierData(ImportFieldMappingContext fieldMappingContext,String data) throws Exception{
+        LookupIdentifierEnum lookupIdentifier = fieldMappingContext.getLookupIdentifierEnum();
+        switch (lookupIdentifier){
+            case ID:
+                StringBuilder stringBuilder = new StringBuilder();
+                String[] values = data.split(",");
+                int n = values.length;
+                for(int i=0;i<n;i++){
+                    String val = values[i];
+                    if(!NumberUtils.isNumber(val)){
+                        throw new IllegalArgumentException(fieldMappingContext.getSheetColumnName()+" column value:"+val+" is not number");
+                    }
+                    long numberData = (long)Double.parseDouble(val);
+                    stringBuilder.append(numberData);
+                    if(i!=n-1){
+                        stringBuilder.append(",");
+                    }
+                }
+                return stringBuilder.toString();
+        }
+        return data;
     }
 
 }

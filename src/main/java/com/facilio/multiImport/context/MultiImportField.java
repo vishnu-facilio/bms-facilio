@@ -9,5 +9,6 @@ import java.io.Serializable;
 @Getter@Setter
 public class MultiImportField implements Serializable {
     private FacilioField field;
+    private ImportRelationshipRequestContext relation;
     private boolean mandatory;
 }

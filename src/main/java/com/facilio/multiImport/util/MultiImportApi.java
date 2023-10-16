@@ -25,6 +25,8 @@ import com.facilio.multiImport.importFileReader.CSVFileReader;
 import com.facilio.multiImport.importFileReader.XLFileReader;
 import com.facilio.multiImport.multiImportExceptions.ImportFieldValueMissingException;
 import com.facilio.multiImport.multiImportExceptions.ImportMandatoryFieldsException;
+import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.relation.util.RelationUtil;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -1091,6 +1093,18 @@ public class MultiImportApi {
             }
             multiImportFields.add(importField);
         }
+
+        //fill relations
+        List<ImportRelationshipRequestContext> relations = RelationUtil.getAllRelationshipRequestForImport(module);
+
+        if(CollectionUtils.isNotEmpty(relations)){
+            for(ImportRelationshipRequestContext relation : relations){
+                MultiImportField importField =  new MultiImportField();
+                importField.setRelation(relation);
+                multiImportFields.add(importField);
+            }
+        }
+
         return multiImportFields;
     }
     public static List<FacilioField> getFields(String moduleName) throws Exception {
@@ -1158,6 +1172,65 @@ public class MultiImportApi {
             return isResourceExtendedModule(module.getExtendModule());
         }
         return false;
+    }
+    public static void duplicateRecordsCheckAndThrowError(List<String> mappedRecordIdentifiers){
+        Set<String> duplicateRecordIdentifiers = getDuplicateRecordIdentifiers(mappedRecordIdentifiers);
+        if(CollectionUtils.isNotEmpty(duplicateRecordIdentifiers)){
+
+            String result = joinRecordIdentifiersByComma(duplicateRecordIdentifiers);
+            StringBuilder errorMessage = new StringBuilder();
+            if( duplicateRecordIdentifiers.size()==1){
+                errorMessage.append("Duplicate record relation mapping is found:"+result);
+            }else{
+                errorMessage.append("Duplicate records relation mapping are found:"+result);
+            }
+            throw new IllegalArgumentException(errorMessage.toString());
+
+        }
+    }
+    public static String joinByComma(Collection<Long> recordIds){
+        if(CollectionUtils.isEmpty(recordIds)){
+            return "";
+        }
+        String result = recordIds.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+        return result;
+    }
+    public static String joinRecordIdentifiersByComma(Collection<String> recordIds){
+        if(CollectionUtils.isEmpty(recordIds)){
+            return "";
+        }
+        String result = recordIds.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+        return result;
+    }
+    public static Set<Long> getDuplicateRecordIds(List<Long> recordIds){
+        Map<Long, Long> numberCountMap = recordIds.stream()
+                .collect(Collectors.groupingBy(
+                        Long::longValue,
+                        Collectors.counting()
+                ));
+
+        Set<Long> duplicateNumbers = numberCountMap.entrySet().stream()
+                .filter(entry -> entry.getValue() > 1)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+        return duplicateNumbers;
+    }
+    public static Set<String> getDuplicateRecordIdentifiers(List<String> recordIds){
+        Map<String, Long> numberCountMap = recordIds.stream()
+                .collect(Collectors.groupingBy(
+                        Object::toString,
+                        Collectors.counting()
+                ));
+
+        Set<String> duplicateIdentifiers = numberCountMap.entrySet().stream()
+                .filter(entry -> entry.getValue() > 1)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+        return duplicateIdentifiers;
     }
     public static class ImportProcessConstants {
         public static final String UNIQUE_FUNCTION = "uniqueFunction";

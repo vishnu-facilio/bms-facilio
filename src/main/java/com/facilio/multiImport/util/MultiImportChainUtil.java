@@ -198,7 +198,9 @@ public class MultiImportChainUtil {
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeSaveCommand);
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
+        transactionChain.addCommand(new ValidateRelationshipConstraints(false));
         transactionChain.addCommand(new ImportSaveCommand(module));
+        transactionChain.addCommand(new AssociateRelationshipCommand(false));
         addIfNotNull(transactionChain, afterSaveCommand);
         addIfNotNull(transactionChain, afterTransactionCommand);
 
@@ -231,7 +233,9 @@ public class MultiImportChainUtil {
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeUpdateCommand);
         transactionChain.addCommand(new SetSupplementsForImportUpdateCommand());
+        transactionChain.addCommand(new ValidateRelationshipConstraints(true));
         transactionChain.addCommand(new ImportUpdateCommand(module));
+        transactionChain.addCommand(new AssociateRelationshipCommand(true));
         addIfNotNull(transactionChain, afterUpdateCommand);
         addIfNotNull(transactionChain, afterTransactionCommand);
         return transactionChain;

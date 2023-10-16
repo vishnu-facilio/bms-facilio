@@ -14,6 +14,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.multiImport.context.ImportRelationshipRequestContext;
 import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationDataContext;
 import com.facilio.relation.context.RelationMappingContext;
@@ -494,4 +495,54 @@ public class RelationUtil {
         return relationRequestContextMap;
     }
 
+    public static List<RelationMappingContext> getAllRelationMappings(FacilioModule module) throws Exception{
+        Map<String, FacilioField> mappingFields = FieldFactory.getAsMap(FieldFactory.getRelationMappingFields());
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getRelationMappingModule().getTableName())
+                .select(FieldFactory.getRelationMappingFields())
+                .andCondition(CriteriaAPI.getCondition(mappingFields.get("fromModuleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+        List<RelationMappingContext> mappingList = FieldUtil.getAsBeanListFromMapList(builder.get(), RelationMappingContext.class);
+        return mappingList;
+    }
+    public static List<ImportRelationshipRequestContext> getAllRelationshipRequestForImport(FacilioModule module) throws Exception{
+        List<ImportRelationshipRequestContext> requestContextList = new ArrayList<>();
+        List<RelationMappingContext> relMappings = getAllRelationMappings(module);
+
+        if(CollectionUtils.isEmpty(relMappings)){
+            return null;
+        }
+        Map<Long,List<RelationMappingContext>> relationIdVsRelMap = relMappings.stream().collect(Collectors.groupingBy(RelationMappingContext::getRelationId));
+
+        List<RelationContext> relations = getRelations(relationIdVsRelMap.keySet(),false);
+
+        for(RelationContext relationContext : relations){
+            ImportRelationshipRequestContext importRelationRequest = new ImportRelationshipRequestContext();
+            importRelationRequest.setId(relationContext.getId());
+            importRelationRequest.setName(relationContext.getName());
+
+            List<RelationMappingContext> importRequestMappings = relationIdVsRelMap.get(relationContext.getId());
+            importRelationRequest.setMappings(importRequestMappings);
+            requestContextList.add(importRelationRequest);
+
+        }
+        return requestContextList;
+    }
+
+
+    public static List<RelationContext> getRelations(Collection<Long> ids ,boolean fetchRelations) throws Exception {
+        FacilioModule module = ModuleFactory.getRelationModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(FieldFactory.getRelationFields())
+                .andCondition(CriteriaAPI.getIdCondition(ids,module));
+
+        List<RelationContext> relations = FieldUtil.getAsBeanListFromMapList(builder.get(), RelationContext.class);
+        if (relations != null) {
+            if (fetchRelations) {
+                fillRelation(relations);
+            }
+        }
+        return relations;
+    }
 }

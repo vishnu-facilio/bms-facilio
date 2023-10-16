@@ -19,6 +19,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter@Setter
 public class ImportFileSheetsContext implements Serializable {
@@ -41,6 +42,7 @@ public class ImportFileSheetsContext implements Serializable {
     private JSONObject firstRow,secondRow;
     private long insertCount,skipCount,updateCount,failCount;
     private MultiImportSetting importSetting;
+    private List<ImportFieldMappingContext> relationFieldMapping;
     public void setImportSetting(int importSetting) {
         this.importSetting = MultiImportSetting.valueOf(importSetting);
     }
@@ -179,6 +181,14 @@ public class ImportFileSheetsContext implements Serializable {
         }else {
             return false;
         }
+    }
+    @JsonIgnore
+    @JSON(serialize = false)
+    public List<ImportFieldMappingContext> getRelationFieldMapping() {
+        if(CollectionUtils.isNotEmpty(fieldMapping)&& CollectionUtils.isEmpty(relationFieldMapping)){
+            relationFieldMapping=fieldMapping.stream().filter(p->p.getRelMappingId()!=-1).collect(Collectors.toList());
+        }
+        return relationFieldMapping;
     }
 
     @Override
