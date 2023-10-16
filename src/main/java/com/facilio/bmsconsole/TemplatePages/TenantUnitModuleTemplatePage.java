@@ -41,15 +41,35 @@ public class TenantUnitModuleTemplatePage implements TemplatePageFactory{
                 .addSection("locationdetails",null,null)
                 .addWidget("locationdetailswidget", "Location Details", PageWidget.WidgetType.TENANT_UNIT_LOCATION, "webtenantunitlocationwidget_3", 0, 0,null,null )
                 .widgetDone()
-                .addWidget("insights", "Insights", PageWidget.WidgetType.TENANT_UNIT_OVERVIEW, "webtenantunitinsightswidget_4", 0, 0,null,null )
-                .widgetDone()
-                .addWidget("tenantunitworkorders", "Workorders", PageWidget.WidgetType.TENANT_UNIT_WORKORDER, "webtenantunitworkorderswidget_3", 0, 0,null,null )
-                .widgetDone()
-                .addWidget("tenantunitrecentlyclosedworkorder", "Recently Closed Work order", PageWidget.WidgetType.TENANT_UNIT_RECENTLY_CLOSED_WORKORDER, "webtenantunitrecentlyclosedworkorderwidget_5", 0, 0,null,null )
+                .addWidget("insights", "Insights", PageWidget.WidgetType.TENANT_UNIT_OVERVIEW, "webtenantunitinsightswidget_6", 0, 0,null,null )
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
                 .tabDone()
+
+                .addTab("maintenance", "Maintenance", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                .addSection("plannedmaintenance", "", null)
+                .addWidget("spaceplannedmaintenance", "Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE, "flexiblewebplannedmaintenance_7", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("unplannedmaintenance", "", null)
+                .addWidget("spaceunplannedmaintenance", "Reactive Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE, "flexiblewebunplannedmaintenance_7", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                .addSection("tenantunitworkorderdetails", null, null)
+                .addWidget("tenantunitworkorderdetail", "Workorders", PageWidget.WidgetType.TENANT_UNIT_WORKORDER, "webtenantunitworkorderswidget_3", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("tenantunitrecentlyclosedworkorder", null, null)
+                .addWidget("tenantunitrecentlyclosedworkorderwidget", "Recently Closed Work order", PageWidget.WidgetType.TENANT_UNIT_RECENTLY_CLOSED_WORKORDER, "webtenantunitrecentlyclosedworkorderwidget_4", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
                 .addTab("information", "Notes & Information", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
@@ -62,6 +82,7 @@ public class TenantUnitModuleTemplatePage implements TemplatePageFactory{
                 .sectionDone()
                 .columnDone()
                 .tabDone()
+
                 .addTab("related", "Related", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
@@ -93,7 +114,6 @@ public class TenantUnitModuleTemplatePage implements TemplatePageFactory{
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup generalInformationWidgetGroup = new SummaryWidgetGroup();
         generalInformationWidgetGroup.setName("generalInformation");
-        generalInformationWidgetGroup.setDisplayName("General Information");
         generalInformationWidgetGroup.setColumns(4);
 
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, descriptionField, 1, 1, 4);
@@ -159,8 +179,8 @@ public class TenantUnitModuleTemplatePage implements TemplatePageFactory{
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
-                .addSection("comments", "Comments", "")
-                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
+                .addSection("comments", "Notes", "")
+                .addWidget("commentwidget", "Notes", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")

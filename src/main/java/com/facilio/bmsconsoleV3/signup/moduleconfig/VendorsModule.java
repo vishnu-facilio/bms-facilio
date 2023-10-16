@@ -1,6 +1,5 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
@@ -11,23 +10,24 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.CustomButtonAPI;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
+import com.facilio.bmsconsoleV3.signup.vendorQuote.VendorQuotesSystemButton;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Criteria;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.relation.util.RelationshipWidgetUtil;
-import com.facilio.utility.context.UtilityDisputeContext;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -356,6 +356,13 @@ public class VendorsModule extends BaseModuleConfig{
         return FieldUtil.getAsJSON(widgetGroup);
     }
     public static void addSystemButtons() throws Exception {
+       for(SystemButtonRuleContext btn : getSystemButtons()){
+           SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDORS, btn);
+       }
+    }
+    public static List<SystemButtonRuleContext> getSystemButtons(){
+        List<SystemButtonRuleContext> btnList = new ArrayList<>();
+
         SystemButtonRuleContext editButton = new SystemButtonRuleContext();
         editButton.setName("Edit");
         editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
@@ -363,7 +370,63 @@ public class VendorsModule extends BaseModuleConfig{
         editButton.setIdentifier("edit");
         editButton.setPermissionRequired(true);
         editButton.setPermission("UPDATE");
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDORS, editButton);
+
+        btnList.add(editButton);
+        return btnList;
+    }
+
+    public void migrateButtons() throws Exception{
+        String[] moduleNames=new String[]{FacilioConstants.ContextNames.VENDORS,
+                      FacilioConstants.ContextNames.VENDOR_CONTACT,FacilioConstants.ContextNames.TENANT,
+                      FacilioConstants.ContextNames.TENANT_CONTACT,FacilioConstants.ContextNames.TENANT_UNIT_SPACE,
+                      FacilioConstants.ContextNames.VENDOR_QUOTES};
+
+        for(String moduleName:moduleNames){
+            List<SystemButtonRuleContext> btns = getSystemButtons(moduleName);
+            for(SystemButtonRuleContext btn :btns){
+                if(isBtnPresent(btn,moduleName)){
+                    System.out.println(btn.getIdentifier() +" button already exists");
+                }else {
+                    SystemButtonApi.addSystemButton(moduleName, btn);
+                }
+            }
+        }
+
+    }
+    public List<SystemButtonRuleContext> getSystemButtons(String moduleName) throws Exception{
+        if(moduleName.equals(FacilioConstants.ContextNames.VENDORS)){
+            return VendorsModule.getSystemButtons();
+        } else if (moduleName.equals(FacilioConstants.ContextNames.VENDOR_CONTACT)) {
+            return VendorContactModule.getSystemButtons();
+        }else if (moduleName.equals(FacilioConstants.ContextNames.TENANT)){
+            return TenantModule.getSystemButtons();
+        } else if (moduleName.equals(FacilioConstants.ContextNames.TENANT_CONTACT)) {
+            return TenantContactModule.getSystemButtons();
+        } else if (moduleName.equals(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)) {
+            return TenantUnitSpaceModule.getSystemButtons();
+        } else if (moduleName.equals(FacilioConstants.ContextNames.VENDOR_QUOTES)) {
+            return VendorQuotesSystemButton.getSystemButtons();
+        }
+        return null;
+    }
+    public  boolean isBtnPresent(SystemButtonRuleContext btn,String moduleName) throws Exception{
+        long moduleId=Constants.getModBean().getModule(moduleName).getModuleId();
+        List<FacilioField> fields= FieldFactory.getSystemButtonRuleFields();
+        Map<String,FacilioField> fieldMap=FieldFactory.getAsMap(FieldFactory.getSystemButtonRuleFields());
+        Map<String,FacilioField> workflowFieldMap=FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
+        GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(ModuleFactory.getSystemButtonRuleModule().getTableName())
+                .innerJoin(ModuleFactory.getWorkflowRuleModule().getTableName())
+                .on(ModuleFactory.getSystemButtonRuleModule().getTableName()+".ID="+ModuleFactory.getWorkflowRuleModule().getTableName()+".ID")
+                .andCondition(CriteriaAPI.getCondition(workflowFieldMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("identifier"),btn.getIdentifier(), StringOperators.IS));
+
+        if(CollectionUtils.isNotEmpty(builder.get())){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 }

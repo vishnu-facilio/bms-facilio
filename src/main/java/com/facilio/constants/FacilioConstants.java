@@ -370,6 +370,8 @@ public class FacilioConstants {
 		public static final String CLIENT_MODULE_EDIT_BUTTON="clientModuleEditButton";
 		public static final String INSURANCE_MODULE_EDIT_BUTTON="insuranceModuleEditButton";
 		public static final String CLIENTCONTACT_MODULE_PORTAL_BUTTON="clientConatctModulePortalButton";
+		public static final String TENANTCONTACT_MODULE_PORTAL_BUTTON="tenantConatctModulePortalButton";
+		public static final String VENDORCONTACT_MODULE_PORTAL_BUTTON="vendorConatctModulePortalButton";
 		public static final String CLIENTCONTACT_MODULE_EDIT_BUTTON="clientContactModuleEditButton";
 		public static final String WORKFLOW_RULE_LOGS="workflowRuleLogs";
 		public static final String ONE_LEVEL_LOOKUP="oneLevelLookup";

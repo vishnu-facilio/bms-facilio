@@ -8,13 +8,14 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TenantContactTemplatePage implements TemplatePageFactory{
+public class TenantContactTemplatePage implements TemplatePageFactory {
     @Override
     public String getModuleName() {
         return FacilioConstants.ContextNames.TENANT_CONTACT;
@@ -27,7 +28,7 @@ public class TenantContactTemplatePage implements TemplatePageFactory{
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
-                .addWidget("summaryfieldswidget", "Vendor Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .addWidget("summaryfieldswidget", "Contact Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -56,10 +57,9 @@ public class TenantContactTemplatePage implements TemplatePageFactory{
 
         SummaryWidgetGroup generalInformationWidgetGroup = new SummaryWidgetGroup();
         generalInformationWidgetGroup.setName("generalInformation");
-        generalInformationWidgetGroup.setDisplayName("General Information");
         generalInformationWidgetGroup.setColumns(4);
 
-        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, tenantField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, tenantField, 1, 1, 1,null,"Tenant");
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, isPrimaryContactField, 1, 2, 1);
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, emailField, 1, 3, 1);
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, phoneField, 1, 4, 1);
@@ -89,14 +89,20 @@ public class TenantContactTemplatePage implements TemplatePageFactory{
     }
 
     private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan) {
-        addSummaryFieldInWidgetGroup(widgetGroup, field, rowIndex, colIndex, colSpan, null);
+        addSummaryFieldInWidgetGroup(widgetGroup, field, rowIndex, colIndex, colSpan, null,null);
     }
 
-    private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan, FacilioField lookupField) {
+    private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan, FacilioField lookupField,String displayName) {
         if (field != null) {
             SummaryWidgetGroupFields summaryField = new SummaryWidgetGroupFields();
             summaryField.setName(field.getName());
-            summaryField.setDisplayName(field.getDisplayName());
+
+            if(StringUtils.isNotEmpty(displayName)){
+                summaryField.setDisplayName(displayName);
+            }else {
+                summaryField.setDisplayName(field.getDisplayName());
+            }
+
             summaryField.setFieldId(field.getFieldId());
             summaryField.setRowIndex(rowIndex);
             summaryField.setColIndex(colIndex);
@@ -116,15 +122,15 @@ public class TenantContactTemplatePage implements TemplatePageFactory{
 
     private static JSONObject getWidgetGroup() throws Exception {
         JSONObject notesWidgetParam = new JSONObject();
-        notesWidgetParam.put("notesModuleName", "peoplenotes");
+        notesWidgetParam.put("notesModuleName", "tenantnotes");
 
         JSONObject attachmentsWidgetParam = new JSONObject();
-        attachmentsWidgetParam.put("attachmentsModuleName", "peopleattachments");
+        attachmentsWidgetParam.put("attachmentsModuleName", "tenantattachments");
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
-                .addSection("comments", "Comments", "")
-                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
+                .addSection("notes", "Notes", "")
+                .addWidget("commentwidget", "Notes", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")

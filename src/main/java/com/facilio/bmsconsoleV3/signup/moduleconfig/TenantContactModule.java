@@ -17,6 +17,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -217,7 +218,7 @@ public class TenantContactModule extends BaseModuleConfig{
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
-                .addWidget("summaryfieldswidget", "Vendor Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .addWidget("summaryfieldswidget", "Contact Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -247,10 +248,9 @@ public class TenantContactModule extends BaseModuleConfig{
 
         SummaryWidgetGroup generalInformationWidgetGroup = new SummaryWidgetGroup();
         generalInformationWidgetGroup.setName("generalInformation");
-        generalInformationWidgetGroup.setDisplayName("General Information");
         generalInformationWidgetGroup.setColumns(4);
 
-        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, tenantField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, tenantField, 1, 1, 1,null,"Tenant");
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, isPrimaryContactField, 1, 2, 1);
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, emailField, 1, 3, 1);
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, phoneField, 1, 4, 1);
@@ -280,14 +280,20 @@ public class TenantContactModule extends BaseModuleConfig{
     }
 
     private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan) {
-        addSummaryFieldInWidgetGroup(widgetGroup, field, rowIndex, colIndex, colSpan, null);
+        addSummaryFieldInWidgetGroup(widgetGroup, field, rowIndex, colIndex, colSpan, null,null);
     }
 
-    private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan, FacilioField lookupField) {
+    private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan, FacilioField lookupField,String displayName) {
         if (field != null) {
             SummaryWidgetGroupFields summaryField = new SummaryWidgetGroupFields();
             summaryField.setName(field.getName());
-            summaryField.setDisplayName(field.getDisplayName());
+
+            if(StringUtils.isNotEmpty(displayName)){
+                summaryField.setDisplayName(displayName);
+            }else {
+                summaryField.setDisplayName(field.getDisplayName());
+            }
+
             summaryField.setFieldId(field.getFieldId());
             summaryField.setRowIndex(rowIndex);
             summaryField.setColIndex(colIndex);
@@ -314,8 +320,8 @@ public class TenantContactModule extends BaseModuleConfig{
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
-                .addSection("comments", "Comments", "")
-                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
+                .addSection("comments", "Notes", "")
+                .addWidget("commentwidget", "Notes", PageWidget.WidgetType.COMMENT, "flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Documents", "")
@@ -327,6 +333,13 @@ public class TenantContactModule extends BaseModuleConfig{
         return FieldUtil.getAsJSON(widgetGroup);
     }
     public static void addSystemButtons() throws Exception {
+        for(SystemButtonRuleContext btn : getSystemButtons()){
+            SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TENANT_CONTACT, btn);
+        }
+    }
+    public static List<SystemButtonRuleContext> getSystemButtons(){
+        List<SystemButtonRuleContext> btnList = new ArrayList<>();
+
         SystemButtonRuleContext editButton = new SystemButtonRuleContext();
         editButton.setName("Edit");
         editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
@@ -334,8 +347,19 @@ public class TenantContactModule extends BaseModuleConfig{
         editButton.setIdentifier("edit");
         editButton.setPermissionRequired(true);
         editButton.setPermission("UPDATE");
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TENANT_CONTACT, editButton);
-    }
 
+        SystemButtonRuleContext portalAccessButton = new SystemButtonRuleContext();
+        portalAccessButton.setName("PortalAccess");
+        portalAccessButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        portalAccessButton.setIdentifier(FacilioConstants.ContextNames.TENANTCONTACT_MODULE_PORTAL_BUTTON);
+        portalAccessButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        portalAccessButton.setPermission("MANAGE_ACCESS");
+        portalAccessButton.setPermissionRequired(true);
+
+        btnList.add(editButton);
+        btnList.add(portalAccessButton);
+
+        return btnList;
+    }
 
 }

@@ -29,13 +29,20 @@ import java.util.Map;
 public class VendorQuotesSystemButton extends SignUpData {
     @Override
     public void addData() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule vendorQuotesModule = modBean.getModule(FacilioConstants.ContextNames.VENDOR_QUOTES);
-        addSystemButtons(vendorQuotesModule);
+        addSystemButtons();
     }
-    public static void addSystemButtons(FacilioModule module) throws Exception {
-
+    public static void addSystemButtons() throws Exception {
+        for (SystemButtonRuleContext btn:getSystemButtons()){
+            SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, btn);
+        }
+    }
+    public static List<SystemButtonRuleContext> getSystemButtons() throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VENDOR_QUOTES);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(module.getName()));
+
+        List<SystemButtonRuleContext> btnList = new ArrayList<>();
+
         SystemButtonRuleContext addQuote = new SystemButtonRuleContext();
         addQuote.setName("Add quote");
         addQuote.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
@@ -44,7 +51,6 @@ public class VendorQuotesSystemButton extends SignUpData {
         addQuote.setPermissionRequired(true);
         addQuote.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         addQuote.setCriteria(checkAddQuotePermission(module,fieldMap));
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, addQuote);
 
         SystemButtonRuleContext updateQuote = new SystemButtonRuleContext();
         updateQuote.setName("Update quote");
@@ -54,7 +60,7 @@ public class VendorQuotesSystemButton extends SignUpData {
         updateQuote.setPermissionRequired(true);
         updateQuote.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         updateQuote.setCriteria(checkAddQuotePermission(module,fieldMap));
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, updateQuote);
+
 
         SystemButtonRuleContext submitButton = new SystemButtonRuleContext();
         submitButton.setName("Submit");
@@ -64,7 +70,7 @@ public class VendorQuotesSystemButton extends SignUpData {
         submitButton.setPermissionRequired(true);
         submitButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         submitButton.setCriteria(checkAddQuotePermission(module,fieldMap));
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, submitButton);
+
 
         SystemButtonRuleContext negotiateButton = new SystemButtonRuleContext();
         negotiateButton.setName("Negotiate");
@@ -87,7 +93,7 @@ public class VendorQuotesSystemButton extends SignUpData {
         negotiateButton.setSystemButtonAppRels(systemButtonAppRels);
 
         negotiateButton.setCriteria(checkPermissionForNegotiation(fieldMap));
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, negotiateButton);
+
 
         SystemButtonRuleContext downloadRFQButton = new SystemButtonRuleContext();
         downloadRFQButton.setName("Download RFQ");
@@ -96,7 +102,7 @@ public class VendorQuotesSystemButton extends SignUpData {
         downloadRFQButton.setIdentifier("downloadRFQ");
         downloadRFQButton.setPermissionRequired(true);
         downloadRFQButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, downloadRFQButton);
+
 
         SystemButtonRuleContext goToRFQButton = new SystemButtonRuleContext();
         goToRFQButton.setName("Go To RFQ");
@@ -105,7 +111,16 @@ public class VendorQuotesSystemButton extends SignUpData {
         goToRFQButton.setIdentifier("goToRFQ");
         goToRFQButton.setPermissionRequired(true);
         goToRFQButton.setPermission(AccountConstants.ModulePermission.READ.name());
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, goToRFQButton);
+
+
+        btnList.add(addQuote);
+        btnList.add(updateQuote);
+        btnList.add(submitButton);
+        btnList.add(negotiateButton);
+        btnList.add(downloadRFQButton);
+        btnList.add(goToRFQButton);
+
+        return btnList;
     }
     private static Criteria checkRfqAndApprovalPermission(Map<String,FacilioField> fieldMap) throws Exception{
         Criteria criteria = new Criteria();

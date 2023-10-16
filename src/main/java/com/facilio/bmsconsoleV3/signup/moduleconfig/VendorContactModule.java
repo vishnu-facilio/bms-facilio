@@ -22,6 +22,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -219,16 +220,43 @@ public class VendorContactModule extends BaseModuleConfig{
         Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
         for (String appName : appNames) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName,createVendorPage(app, module, false,true));
+            appNameVsPage.put(appName,createVendorContactPage(app, module, false,true));
         }
         return appNameVsPage;
     }
-    private static List<PagesContext> createVendorPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+    private static List<PagesContext> createVendorContactPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
 
-        return new ModulePages()
-                .addPage("vendor", "Default Vendor Page","", null, isTemplate, isDefault, false)
+        if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FSM_APP)){
+            return createFSMVendorContactPage(app,module,isTemplate,isDefault);
+        }
+
+        String pageName, pageDisplayName;
+        pageName = module.getName()+ "defaultpage";
+        pageDisplayName = "Default "+module.getDisplayName()+" Page ";
+        return new ModulePages().addPage(pageName, pageDisplayName, "", null, isTemplate, isDefault, true)
                 .addWebLayout()
-                .addTab("vendorSummary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summaryfields", null, null)
+                .addWidget("summaryfieldswidget", "Contact Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(app, module.getName()))
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getSummaryWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone()
+                .getCustomPages();
+
+    }
+    private static List<PagesContext> createFSMVendorContactPage(ApplicationContext app,FacilioModule module,boolean isTemplate,boolean isDefault) throws Exception{
+        return new ModulePages()
+                .addPage("vendorContact", "Default Vendor Contact Page","", null, isTemplate, isDefault, false)
+                .addWebLayout()
+                .addTab("vendorContactSummary", "Summary",PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("vendorSummaryFields", null, null)
                 .addWidget("vendorSummaryFieldsWidget", "Vendor Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.ContextNames.VENDOR_CONTACT))
@@ -277,11 +305,60 @@ public class VendorContactModule extends BaseModuleConfig{
                 .tabDone()
                 .layoutDone()
                 .pageDone().getCustomPages();
-
-
     }
 
     private static JSONObject getSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {
+        if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FSM_APP)){
+            return getFSMSummaryWidgetDetails(app,moduleName);
+        }
+
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(moduleName);
+
+        FacilioField vendorField = moduleBean.getField("vendor", moduleName);
+        FacilioField isPrimaryContactField = moduleBean.getField("isPrimaryContact", moduleName);
+        FacilioField emailField = moduleBean.getField("email", moduleName);
+        FacilioField phoneField = moduleBean.getField("phone", moduleName);
+        FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", moduleName);
+        FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", moduleName);
+        FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", moduleName);
+        FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", moduleName);
+
+        SummaryWidget pageWidget = new SummaryWidget();
+
+        SummaryWidgetGroup generalInformationWidgetGroup = new SummaryWidgetGroup();
+        generalInformationWidgetGroup.setName("generalInformation");
+        generalInformationWidgetGroup.setColumns(4);
+
+        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, vendorField, 1, 1, 1,"Vendor");
+        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, isPrimaryContactField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, emailField, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, phoneField, 1, 4, 1);
+
+
+        SummaryWidgetGroup systemInformationWidgetGroup = new SummaryWidgetGroup();
+        systemInformationWidgetGroup.setName("systemInformation");
+        systemInformationWidgetGroup.setDisplayName("System Information");
+        systemInformationWidgetGroup.setColumns(4);
+
+        addSummaryFieldInWidgetGroup(systemInformationWidgetGroup, sysCreatedByField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(systemInformationWidgetGroup, sysCreatedTimeField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(systemInformationWidgetGroup, sysModifiedByField, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(systemInformationWidgetGroup, sysModifiedTimeField, 1, 4, 1);
+
+        List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
+        widgetGroupList.add(generalInformationWidgetGroup);
+        widgetGroupList.add(systemInformationWidgetGroup);
+
+        pageWidget.setDisplayName("");
+        pageWidget.setModuleId(module.getModuleId());
+        pageWidget.setAppId(app.getId());
+        pageWidget.setGroups(widgetGroupList);
+
+        return FieldUtil.getAsJSON(pageWidget);
+
+    }
+    private static JSONObject getFSMSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -318,10 +395,17 @@ public class VendorContactModule extends BaseModuleConfig{
     }
 
     private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan) {
+       addSummaryFieldInWidgetGroup(widgetGroup,field,rowIndex,colIndex,colSpan,null);
+    }
+    private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan,String displayName) {
         if (field != null) {
             SummaryWidgetGroupFields summaryField = new SummaryWidgetGroupFields();
             summaryField.setName(field.getName());
-            summaryField.setDisplayName(field.getDisplayName());
+            if(StringUtils.isNotEmpty(displayName)){
+                summaryField.setDisplayName(displayName);
+            }else {
+                summaryField.setDisplayName(field.getDisplayName());
+            }
             summaryField.setFieldId(field.getFieldId());
             summaryField.setRowIndex(rowIndex);
             summaryField.setColIndex(colIndex);
@@ -374,6 +458,13 @@ public class VendorContactModule extends BaseModuleConfig{
         return FieldUtil.getAsJSON(widgetGroup);
     }
     public static void addSystemButtons() throws Exception {
+        for(SystemButtonRuleContext btn:getSystemButtons()){
+            SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_CONTACT, btn);
+        }
+    }
+    public static List<SystemButtonRuleContext> getSystemButtons(){
+        List<SystemButtonRuleContext> btnList = new ArrayList<>();
+
         SystemButtonRuleContext editButton = new SystemButtonRuleContext();
         editButton.setName("Edit");
         editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
@@ -381,7 +472,20 @@ public class VendorContactModule extends BaseModuleConfig{
         editButton.setIdentifier("edit");
         editButton.setPermissionRequired(true);
         editButton.setPermission("UPDATE");
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_CONTACT, editButton);
+
+        SystemButtonRuleContext portalAccessButton = new SystemButtonRuleContext();
+        portalAccessButton.setName("PortalAccess");
+        portalAccessButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        portalAccessButton.setIdentifier(FacilioConstants.ContextNames.VENDORCONTACT_MODULE_PORTAL_BUTTON);
+        portalAccessButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        portalAccessButton.setPermission("MANAGE_ACCESS");
+        portalAccessButton.setPermissionRequired(true);
+
+
+        btnList.add(editButton);
+        btnList.add(portalAccessButton);
+
+        return btnList;
     }
 }
 

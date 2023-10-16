@@ -476,6 +476,7 @@ public class PageWidget {
 		INVENTORY_CARD("inventorycard"),
 		TENANT_PRIMARY_CONTACT("tenantprimarycontact"),
 		TENANT_WORKORDERS("tenantworkorders"),
+		TENANT_SERVICE_REQUEST("tenantservicerequest"),
 		TENANT_CONTACT_RELATED_LIST("tenantContactRelatedListWidget"),
 		TENANT_BOOKINGS("tenantbookings"),
 		TENANT_UPCOMING_BOOKING("tenantupcomingbooking"),
