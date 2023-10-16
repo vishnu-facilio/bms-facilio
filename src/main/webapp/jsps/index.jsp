@@ -14,6 +14,7 @@
 <%@ page import="com.facilio.client.app.util.ClientAppUtil" %>
 <%@ page import="com.facilio.aws.util.FacilioProperties" %>
 <%@ page import="com.facilio.sandbox.utils.SandboxAPI" %>
+<%@ page import="com.facilio.db.util.DBConf" %>
 <%@page contentType="text/html; charset=UTF-8" %>
 
 <%! static Map<String, String> indexHtmls = new ConcurrentHashMap<>(); %> <%-- Maybe change this to LRU Cache later --%>
@@ -144,6 +145,7 @@
         placeHolderParams.put("dataDogClientId", datadogClientID);
         placeHolderParams.put("identityServerURL", identityServerURL);
         placeHolderParams.put("isGoogleAnalytics", Boolean.toString(isGoogleAnalytics));
+        placeHolderParams.put("isNewVersion", Boolean.toString(DBConf.getInstance().isNewVersion()));
         if(SandboxAPI.isSandboxSubDomain(request.getServerName())) {
             placeHolderParams.put("addOrgDomainInRootPath", Boolean.toString(true));
         } else {
