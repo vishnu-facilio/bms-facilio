@@ -1318,10 +1318,15 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
             FacilioModule toModule = relationMappingContext.getToModule();
             FacilioField uniqueField = getUniqueFieldForRelationMapping(fieldMappingContext,toModule);
             String uniqueFieldName = uniqueField.getName();
+
+            List<FacilioField> selectableFields = new ArrayList<>();
+            selectableFields.add(FieldFactory.getIdField(toModule));
+            selectableFields.add(uniqueField);
+
             Criteria criteria = getCriteriaForRelationshipRecordFetch(fieldMappingContext,toModule,uniqueIdentifierVsRecordIdMap.keySet());
             SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
                     .module(toModule)
-                    .select(Collections.singletonList(FieldFactory.getIdField(toModule)))
+                    .select(selectableFields)
                     .andCriteria(criteria);
 
             List<Map<String, Object>> props = selectBuilder.getAsProps();
