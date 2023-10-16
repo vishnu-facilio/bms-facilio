@@ -9,6 +9,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import lombok.var;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -400,7 +401,16 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		IAMUtil.getUserBean().deleteDefaultAppDomains(orgId);
 		return true;
 	}
-	
+
+	@Override
+	public int rollbackDefaultJobs(long orgId) throws Exception{
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getJobsModule().getTableName());
+
+		deleteBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", orgId+"", NumberOperators.EQUALS));
+		return deleteBuilder.delete();
+	}
+
 	private boolean deleteSignedUpOrgv2(long orgId) throws Exception {
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		fields.add(IAMAccountConstants.getOrgDeletedTimeField());

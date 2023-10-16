@@ -32,6 +32,8 @@ public interface IAMOrgBean {
 	public boolean rollbackSignUpOrg(long orgId, long superAdminUserId) throws Exception;
 
 	public boolean rollbackSignUpOrgv2(long orgId, long superAdminUserId) throws Exception;
+
+	public int rollbackDefaultJobs(long orgId) throws Exception;
 	
 	public List<Organization> getOrgs() throws Exception ;
 

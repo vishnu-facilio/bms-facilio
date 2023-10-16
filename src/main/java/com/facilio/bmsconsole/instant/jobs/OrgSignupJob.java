@@ -74,6 +74,7 @@ public class OrgSignupJob implements Runnable {
 				LRUCache.getFeatureLicenseCache().remove(CacheUtil.ORG_KEY(orgId));
 				LRUCache.getSuperAdminCache().remove(CacheUtil.ORG_KEY(orgId));
 				IAMOrgUtil.rollBackSignedUpOrgv2(orgId, iamUserId);
+				IAMOrgUtil.rollbackDefaultJobs(orgId);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
