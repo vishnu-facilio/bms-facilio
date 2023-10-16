@@ -7240,6 +7240,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("fileFormat", "FILE_FORMAT", module, FieldType.NUMBER));
         fields.add(getField("templateId", "TEMPLATEID", module, FieldType.NUMBER));
         fields.add(getField("moduleID", "MODULEID", module, FieldType.NUMBER));
+        fields.add(getField("createdBy", "SYS_CREATED_BY", module, FieldType.NUMBER));
 
         return fields;
     }

@@ -112,8 +112,7 @@ public class ViewAction extends FacilioAction {
 			return ErrorUtil.UNAUTHORIZED;
 		}
 		emailTemplate.setName("Report");
-		emailTemplate.setFrom("report@${org.domain}.${org.emailDomain}");
-		
+
 		FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
 
@@ -147,8 +146,7 @@ public class ViewAction extends FacilioAction {
 			return ErrorUtil.UNAUTHORIZED;
 		}
 		emailTemplate.setName("Report");
-		emailTemplate.setFrom("report@${org.domain}.${org.emailDomain}");
-		
+
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
@@ -210,7 +208,6 @@ public class ViewAction extends FacilioAction {
 
 		FacilioContext context = mailReportChain.getContext();
 		emailTemplate.setName("Report");
-		emailTemplate.setFrom("report@${org.domain}.${org.emailDomain}");
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
@@ -229,7 +226,6 @@ public class ViewAction extends FacilioAction {
 
 		FacilioContext context = mailReportChain.getContext();
 		emailTemplate.setName("Report");
-		emailTemplate.setFrom("report@${org.domain}.${org.emailDomain}");
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);

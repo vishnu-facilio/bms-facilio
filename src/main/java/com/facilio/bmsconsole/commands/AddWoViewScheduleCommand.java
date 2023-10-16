@@ -69,6 +69,7 @@ public class AddWoViewScheduleCommand extends FacilioCommand {
 			props.put("fileFormat", fileFormat);
 			props.put("templateId", emailTemplate.getId());
 			props.put("moduleID", moduleId);
+			props.put("createdBy", AccountUtil.getCurrentUser().getPeopleId());
 			
 			FacilioModule viewInfoModule = ModuleFactory.getViewScheduleInfoModule();
 			List<FacilioField> fields = FieldFactory.getViewScheduleInfoFields();

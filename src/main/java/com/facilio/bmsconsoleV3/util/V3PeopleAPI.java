@@ -1148,6 +1148,17 @@ public class V3PeopleAPI {
         return null;
     }
 
+    public static User getUserContext(long peopleId, long appId) throws Exception {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
+
+        GenericSelectRecordBuilder builder = UserBeanImpl.fetchUserSelectBuilder(appId, criteria, AccountUtil.getCurrentOrg().getOrgId(), null);
+        List<Map<String,Object>> props = builder.get();
+        List<User> users = UserBeanImpl.populateProps(props);
+
+        return CollectionUtils.isNotEmpty(users) ? users.get(0) : null;
+    }
+
 
     public static boolean checkForEmailMisMatch(String email,Long peopleId) throws Exception {
         try{

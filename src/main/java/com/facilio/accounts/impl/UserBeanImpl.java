@@ -567,7 +567,7 @@ public class UserBeanImpl implements UserBean {
 		return CollectionUtils.isNotEmpty(users)?users:null;
 
 	}
-	private List<User> populateProps(List<Map<String, Object>> props) throws Exception{
+	public static List<User> populateProps(List<Map<String, Object>> props) throws Exception{
 		if (props != null && !props.isEmpty()) {
 			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			if(CollectionUtils.isNotEmpty(props)) {

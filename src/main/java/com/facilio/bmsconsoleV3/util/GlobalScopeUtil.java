@@ -29,6 +29,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.util.ValueGeneratorUtil;
+import com.opensymphony.xwork2.ActionContext;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -379,6 +380,9 @@ public class GlobalScopeUtil {
         return false;
     }
     public static JSONObject getFilterRecordIdMapFromHeader() throws Exception {
+        if (ActionContext.getContext() == null) {
+            return null;
+        }
         HttpServletRequest request = ServletActionContext.getRequest();
         String switchVariable = request.getHeader("X-Switch-Value");
         if (StringUtils.isNotEmpty(switchVariable)) {

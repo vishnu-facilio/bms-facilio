@@ -79,6 +79,7 @@ public class ReportsChainFactory {
 	
 	public static FacilioChain getWoViewScheduleChain() {
 		FacilioChain c = getDefaultChain();
+		c.addCommand(new ValidateFromEmailCommand());
 		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new AddWoViewScheduleCommand());
 		return c;
@@ -93,6 +94,7 @@ public class ReportsChainFactory {
 	
 	public static FacilioChain updateWoScheduledViewChain() {
 		FacilioChain c = getDefaultChain();
+		c.addCommand(new ValidateFromEmailCommand());
 		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new DeleteWoScheduledViewCommand());
 		c.addCommand(new AddWoViewScheduleCommand());

@@ -1,11 +1,20 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.context.MailSourceType;
+import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -14,7 +23,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.templates.Template;
@@ -59,6 +67,13 @@ public class ViewEmailScheduler extends FacilioJob {
 				FacilioModule viewModule = modBean.getModule(view.getModuleId());
 				view.setModuleName(viewModule.getName());
 
+				// Setting createdBy as currentUser to apply Scoping Config on report generation
+				long sysCreatedBy = prop.containsKey("createdBy") ? (long) prop.get("createdBy") : -1;
+				User createdByUser = getCreatedByUser(view, sysCreatedBy);
+				if (createdByUser != null) {
+					setCurrentAccount(AccountUtil.getCurrentOrg(), createdByUser);
+				}
+
 				String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.getFileFormat((int) prop.get("fileFormat")), view.getModuleName(), view.getName(), null,null, true, false, 2000);
 				Map<String, String> files = new HashMap<>();
 				String fileName = view.getDisplayName();
@@ -91,6 +106,19 @@ public class ViewEmailScheduler extends FacilioJob {
 			log.info("Exception occurred ViewEmailScheduler", e);
 		}
 		
+	}
+
+	private static User getCreatedByUser(FacilioView view, long peopleId) throws Exception {
+		long appId = view.getAppId() > 0 ? view.getAppId() : ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        return (appId > 0 && peopleId > 0) ? V3PeopleAPI.getUserContext(peopleId, appId) : null;
+	}
+
+	private static void setCurrentAccount(Organization org, User user) throws Exception {
+		Account account = new Account(org, null);
+		AccountUtil.setCurrentAccount(account);
+
+		account.setUser(user);
+		AccountUtil.setScopingMap(account);
 	}
 	
 }
