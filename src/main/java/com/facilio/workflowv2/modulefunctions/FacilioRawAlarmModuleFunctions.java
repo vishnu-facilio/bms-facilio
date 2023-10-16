@@ -12,6 +12,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.remotemonitoring.compute.RawAlarmUtil;
+import com.facilio.remotemonitoring.context.IncomingRawAlarmContext;
 import com.facilio.remotemonitoring.context.RawAlarmContext;
 import com.facilio.remotemonitoring.signup.RawAlarmModule;
 import com.facilio.scriptengine.annotation.ScriptModule;
@@ -32,11 +33,11 @@ public class FacilioRawAlarmModuleFunctions extends FacilioModuleFunctionImpl {
         if(CollectionUtils.isNotEmpty(objects) && objects.size() > 1) {
             List<Map<String,Object>> rawAlarmsList = (List<Map<String, Object>>) objects.get(1);
             if(CollectionUtils.isNotEmpty(rawAlarmsList)) {
-                List<RawAlarmContext> rawAlarms = FieldUtil.getAsBeanListFromMapList(rawAlarmsList, RawAlarmContext.class);
+                List<IncomingRawAlarmContext> rawAlarms = FieldUtil.getAsBeanListFromMapList(rawAlarmsList, IncomingRawAlarmContext.class);
                 if(CollectionUtils.isNotEmpty(rawAlarms)) {
-                    for(RawAlarmContext rawAlarm : rawAlarms) {
+                    for(IncomingRawAlarmContext rawAlarm : rawAlarms) {
                         if(rawAlarm.getSourceType() == null) {
-                            rawAlarm.setSourceType(RawAlarmContext.RawAlarmSourceType.SCRIPT);
+                            rawAlarm.setSourceType(IncomingRawAlarmContext.RawAlarmSourceType.SCRIPT);
                         }
                         RawAlarmUtil.pushToStormRawAlarmQueue(rawAlarm);
                     }

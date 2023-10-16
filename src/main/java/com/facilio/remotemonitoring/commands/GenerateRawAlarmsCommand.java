@@ -23,6 +23,7 @@ import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.remotemonitoring.RemoteMonitorConstants;
 import com.facilio.remotemonitoring.compute.RawAlarmUtil;
 import com.facilio.remotemonitoring.context.AlarmStrategy;
+import com.facilio.remotemonitoring.context.IncomingRawAlarmContext;
 import com.facilio.remotemonitoring.context.RawAlarmContext;
 import com.facilio.remotemonitoring.signup.*;
 import com.facilio.util.FacilioUtil;
@@ -49,7 +50,7 @@ public class GenerateRawAlarmsCommand extends FacilioCommand {
             int i = 0;
             for(Map<String,Object> alarm : alarmList) {
                 ++i;
-                RawAlarmContext rawAlarmContext = new RawAlarmContext();
+                IncomingRawAlarmContext rawAlarmContext = new IncomingRawAlarmContext();
                 rawAlarmContext.setMessage((String) alarm.get("message"));
                 if (alarm.containsKey("occurredTime")){
                     rawAlarmContext.setOccurredTime((Long) alarm.get("occurredTime"));
@@ -63,7 +64,7 @@ public class GenerateRawAlarmsCommand extends FacilioCommand {
                 Controller controller = new Controller();
                 controller.setId((Long) alarm.get("controllerId"));
                 rawAlarmContext.setController(controller);
-                rawAlarmContext.setSourceType(RawAlarmContext.RawAlarmSourceType.SIMULATOR);
+                rawAlarmContext.setSourceType(IncomingRawAlarmContext.RawAlarmSourceType.SIMULATOR);
                 if (alarm.containsKey("assetId")){
                     V3AssetContext asset = new V3AssetContext();
                     if(alarm.get("assetId") != null) {

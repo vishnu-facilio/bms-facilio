@@ -163,7 +163,7 @@ public class FlaggedEventUtil {
             Messenger.getMessenger().sendMessage(new Message()
                     .setKey(Topics.FlaggedEventCreation.flaggedEventTopic + "/" + AccountUtil.getCurrentOrg().getId())
                     .setOrgId(AccountUtil.getCurrentOrg().getId())
-                    .setContent(FieldUtil.getAsJSON(flaggedEvent)));
+                    .setContent(FieldUtil.getAsJSON(flaggedEvent)),true);
         }
     }
 

@@ -53,7 +53,7 @@ public class RawAlarmUtil {
     }
 
 
-    public static void pushToStormRawAlarmQueue(RawAlarmContext rawAlarm) throws Exception {
+    public static void pushToStormRawAlarmQueue(IncomingRawAlarmContext rawAlarm) throws Exception {
         if (AccountUtil.getCurrentOrg() != null && rawAlarm != null && rawAlarm.getController() != null && rawAlarm.getController().getId() > -1) {
             long orgId = AccountUtil.getCurrentOrg().getId();
             MessageQueue queue = MessageQueueFactory.getMessageQueue(MessageSourceUtil.getDefaultSource());
