@@ -7163,6 +7163,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getAddSummaryPdfWidgetChainInPage(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddSummaryPdfWidgetCommand());
+		return chain;
+	}
+
 	public static FacilioChain getUpdateSummaryWidgetChainInPage(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new UpdateSummaryWidgetCommand());

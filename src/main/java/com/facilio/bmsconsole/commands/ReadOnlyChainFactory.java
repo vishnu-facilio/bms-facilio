@@ -3628,4 +3628,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetBoundedSpacesCommand());
 		return chain;
     }
+
+	public static FacilioChain getPDFTemplateWidgetChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetPDFTemplateWidgetCommand());
+		return chain;
+	}
 }

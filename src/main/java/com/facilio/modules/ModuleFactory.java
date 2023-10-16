@@ -5958,6 +5958,14 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return module;
 	}
 
+	public static FacilioModule getPdfTemplateWidgetRelation() {
+		FacilioModule module = new FacilioModule();
+		module.setName("pdfTemplateWidgetRelation");
+		module.setTableName("Pdf_Viewer_Widget_Relation");
+		module.setDisplayName("Pdf Viewer Widget Relation");
+		return module;
+	}
+
 	public static FacilioModule getSFG20JobPlanModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("sfg20JobPlan");

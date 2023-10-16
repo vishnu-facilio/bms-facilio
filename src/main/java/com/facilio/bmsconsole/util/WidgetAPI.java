@@ -270,6 +270,8 @@ public class WidgetAPI {
                 return FieldUtil.getAsBeanFromJson(widgetDetails, RelatedListWidgetContext.class);
             case RELATIONSHIP_WIDGET:
                 return FieldUtil.getAsBeanFromJson(widgetDetails, RelationshipWidget.class);
+            case PDF_VIEWER:
+                return FieldUtil.getAsBeanFromJson(widgetDetails, PdfTemplateWidgetContext.class);
             default:
                 return null;
 

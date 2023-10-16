@@ -12330,6 +12330,15 @@ public class FieldFactory extends BaseFieldFactory {
         return fieldList;
     }
 
+    public static List<FacilioField> getPdfTemplateWidgetRelationFields() {
+        FacilioModule module = ModuleFactory.getPdfTemplateWidgetRelation();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getIdField(module));
+        fieldList.add(getNumberField("widgetId","WIDGETID",module));
+        fieldList.add(getNumberField("templateId","TEMPLATE_ID",module));
+        return fieldList;
+    }
+
     public static List<FacilioField> getSFG20JobPlansFields() {
         FacilioModule module = ModuleFactory.getSFG20JobPlanModule();
         List<FacilioField> fieldList = new ArrayList<>();

@@ -54,6 +54,15 @@ public class APIWidgetConfig {
                 .fetchCommand(ReadOnlyChainFactory.getSummaryWidgetForPageWidgetChain())
                 .build();
     }
+    @WidgetType(PageWidget.WidgetType.PDF_VIEWER)
+    public static Supplier<WidgetConfig> getPdfViewerCRUD() {
+        return () -> new WidgetConfig()
+                .update()
+                .updateCommand(TransactionChainFactory.getAddSummaryPdfWidgetChainInPage())
+                .summary()
+                .fetchCommand(ReadOnlyChainFactory.getPDFTemplateWidgetChain())
+                .build();
+    }
     @WidgetType(PageWidget.WidgetType.SR_DETAILS_WIDGET)
     public static Supplier<WidgetConfig> getServiceRequestDetailsWidgetCRUD() {
         return () -> new WidgetConfig()
