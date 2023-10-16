@@ -3625,6 +3625,16 @@ public class ModuleFactory {
 		module.setExtendModule(getCustomButtonRuleModule());
 		return module;
 	}
+
+	public static FacilioModule getSystemButtonAppRelModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("systemButtonAppRel");
+		module.setDisplayName("SystemButton App Relation");
+		module.setTableName("SystemButtonAppRel");
+		module.setExtendModule(getSystemButtonRuleModule());
+		return module;
+	}
+
 	public static FacilioModule getSystemButtonRuleModule(){
 		FacilioModule module = new FacilioModule();
 		module.setName("system_Button");

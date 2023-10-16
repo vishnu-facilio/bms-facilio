@@ -2223,6 +2223,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getSystemButtonChain(){
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetSystemButtonCommand());
+		chain.addCommand(new SetSystemButtonAppCommand());
 		return chain;
 	}
 

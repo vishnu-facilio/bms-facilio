@@ -9501,6 +9501,16 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getSystemButtonAppRelFields(){
+        FacilioModule module = ModuleFactory.getSystemButtonAppRelModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("systemButtonId","SYSTEM_BUTTON_ID",module));
+        fields.add(getNumberField("appId","APP_ID",module));
+
+        return fields;
+    }
     public static List<FacilioField> getSystemButtonRuleFields() {
         FacilioModule module = ModuleFactory.getSystemButtonRuleModule();
         List<FacilioField> fields = new ArrayList<>();

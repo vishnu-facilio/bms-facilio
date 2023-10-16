@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -11,8 +12,10 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -43,8 +46,18 @@ public class SystemButtonApi {
                 NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition("MODULEID","moduleId",String.valueOf(module.getModuleId()),NumberOperators.EQUALS));
 
-        List<WorkflowRuleContext> systemButtons = WorkflowRuleAPI.getExtendedWorkflowRules(ModuleFactory.getSystemButtonRuleModule(), FieldFactory.getSystemButtonRuleFields(),
-                criteria,null,null, SystemButtonRuleContext.class);
+        Criteria appCriteria = new Criteria();
+        appCriteria.addAndCondition(CriteriaAPI.getCondition("APP_ID","appId","NULL", CommonOperators.IS_EMPTY));
+        ApplicationContext app = AccountUtil.getCurrentApp();
+        if (app != null) {
+            appCriteria.addOrCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(app.getId()), NumberOperators.EQUALS));
+        }
+        criteria.andCriteria(appCriteria);
+
+        String joinCondition = "SystemButtonAppRel.SYSTEM_BUTTON_ID = " + ModuleFactory.getSystemButtonRuleModule().getTableName() + ".ID";
+        List<WorkflowRuleContext> systemButtons = WorkflowRuleAPI.getExtendedButtonRules(ModuleFactory.getSystemButtonRuleModule(), FieldFactory.getSystemButtonRuleFields(),
+                ModuleFactory.getSystemButtonAppRelModule(),FieldFactory.getSystemButtonAppRelFields(),joinCondition,criteria, null,null, SystemButtonRuleContext.class);
+
         systemButtons = WorkflowRuleAPI.getWorkFlowsFromMapList(FieldUtil.getAsMapList(systemButtons,SystemButtonRuleContext.class),true,true);
 
         List<WorkflowRuleContext> systemButtonList = new ArrayList<>();
@@ -122,5 +135,19 @@ public class SystemButtonApi {
         FacilioContext workflowContext = chain.getContext();
         workflowContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
         chain.execute();
+    }
+
+    public static void deleteSystemButtonAppRelForButtonId(long systemButtonId) throws Exception{
+
+        if (systemButtonId == -1l){
+            return;
+        }
+
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getSystemButtonAppRelModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("SYSTEM_BUTTON_ID","systemButtonId", String.valueOf(systemButtonId),NumberOperators.EQUALS));
+
+        builder.delete();
+
     }
 }

@@ -5,6 +5,7 @@ import com.facilio.modules.FacilioIntEnum;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 public class SystemButtonRuleContext extends ApproverWorkflowRuleContext {
@@ -40,6 +41,10 @@ public class SystemButtonRuleContext extends ApproverWorkflowRuleContext {
     public void setPositionType(int positionType) {
         this.positionType = CustomButtonRuleContext.PositionType.valueOf(positionType);
     }
+
+    @Getter
+    @Setter
+    List<SystemButtonAppRelContext> systemButtonAppRels;
 
     @Override
     public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext

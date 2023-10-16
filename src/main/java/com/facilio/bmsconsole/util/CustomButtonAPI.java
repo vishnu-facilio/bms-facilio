@@ -42,8 +42,9 @@ public class CustomButtonAPI {
         }
         criteria.andCriteria(appCriteria);
 
-        List<WorkflowRuleContext> customButtons = WorkflowRuleAPI.getExtendedCustomButtonRules(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(),
-                criteria, null,null,CustomButtonRuleContext.class);
+        String joinCondition = "CustomButton_App_Rel.CUSTOM_BUTTON_ID = " + ModuleFactory.getCustomButtonRuleModule().getTableName() + ".ID";
+        List<WorkflowRuleContext> customButtons = WorkflowRuleAPI.getExtendedButtonRules(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(),
+                ModuleFactory.getCustomButtonAppRelModule(),FieldFactory.getCustomButtonAppRelFields(),joinCondition,criteria, null,null,CustomButtonRuleContext.class);
 
         customButtons = WorkflowRuleAPI.getWorkFlowsFromMapList(FieldUtil.getAsMapList(FieldUtil.getAsMapList(customButtons, CustomButtonRuleContext.class), CustomButtonRuleContext.class), true, true);
         return customButtons;
