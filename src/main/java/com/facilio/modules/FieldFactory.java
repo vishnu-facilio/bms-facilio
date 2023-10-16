@@ -460,7 +460,10 @@ public class FieldFactory extends BaseFieldFactory {
                 "siteId",
                 "id",
                 "rotatingItemType",
-                "storeRoom"
+                "storeRoom",
+                "decommission",
+                "decommissionedBy",
+                "commissionedTime"
         }));
 
         public static final List<String> QUOTE_FIELDS_INCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{
