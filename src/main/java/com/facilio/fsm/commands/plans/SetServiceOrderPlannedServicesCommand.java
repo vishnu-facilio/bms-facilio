@@ -29,7 +29,6 @@ public class SetServiceOrderPlannedServicesCommand  extends FacilioCommand {
                     ServiceTaskContext serviceTask = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,serviceOrderPlannedService.getServiceTask().getId(), ServiceTaskContext.class);
                     if(serviceTask.getServiceOrder()!=null){
                         serviceOrderPlannedService.setServiceOrder(serviceTask.getServiceOrder());
-                        serviceOrders.add(serviceTask.getServiceOrder());
                     }
                     if(serviceTask.getServiceAppointment()!=null){
                         serviceOrderPlannedService.setServiceAppointment(serviceTask.getServiceAppointment());
@@ -39,6 +38,7 @@ public class SetServiceOrderPlannedServicesCommand  extends FacilioCommand {
                 if(serviceOrderPlannedService.getServiceOrder()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Work Order cannot be empty");
                 }
+                serviceOrders.add(serviceOrderPlannedService.getServiceOrder());
                 if(serviceOrderPlannedService.getQuantity()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Quantity cannot be empty");
                 }

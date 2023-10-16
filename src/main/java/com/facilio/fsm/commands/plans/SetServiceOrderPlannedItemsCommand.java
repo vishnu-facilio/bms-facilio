@@ -34,7 +34,6 @@ public class SetServiceOrderPlannedItemsCommand extends FacilioCommand {
                  ServiceTaskContext serviceTask = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,serviceOrderPlannedItem.getServiceTask().getId(), ServiceTaskContext.class);
                     if(serviceTask.getServiceOrder()!=null){
                         serviceOrderPlannedItem.setServiceOrder(serviceTask.getServiceOrder());
-                        serviceOrders.add(serviceTask.getServiceOrder());
                     }
                     if(serviceTask.getServiceAppointment()!=null){
                         serviceOrderPlannedItem.setServiceAppointment(serviceTask.getServiceAppointment());
@@ -49,6 +48,7 @@ public class SetServiceOrderPlannedItemsCommand extends FacilioCommand {
                 if(serviceOrderPlannedItem.getItemType()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item Type cannot be empty");
                 }
+                serviceOrders.add(serviceOrderPlannedItem.getServiceOrder());
                 serviceOrderPlannedItem.setReservationType(ReservationType.SOFT.getIndex());
 
                 if(MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("reserve") && (boolean) bodyParams.get("reserve")){

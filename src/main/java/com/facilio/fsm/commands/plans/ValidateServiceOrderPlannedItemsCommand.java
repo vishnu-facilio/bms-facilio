@@ -30,9 +30,9 @@ public class ValidateServiceOrderPlannedItemsCommand extends FacilioCommand {
         ServiceOrderContext so = new ServiceOrderContext();
         if (CollectionUtils.isNotEmpty(serviceOrderPlannedItems)) {
             for (ServiceOrderPlannedItemsContext serviceOrderPlannedItem : serviceOrderPlannedItems) {
-                if(serviceOrderPlannedItem.getIsReserved()){
-                    throw new FSMException(FSMErrorCode.ALREADY_RESERVED);
-                }
+//                if(serviceOrderPlannedItem.getIsReserved()){
+//                    throw new FSMException(FSMErrorCode.ALREADY_RESERVED);
+//                }
                 if (MapUtils.isNotEmpty(bodyParams) && (bodyParams.containsKey("reserve"))) {
                     // Quantity Validation
                     if (serviceOrderPlannedItem.getQuantity() == null || serviceOrderPlannedItem.getQuantity() == 0) {
