@@ -32,9 +32,11 @@ public class FetchSensorRuleSummaryCommand extends FacilioCommand {
             }
             SensorAlarmDetailsContext sensorAlarmDetails=NewSensorRuleUtil.getSensorAlarmDetails(sensorRule.getId());
             sensorRule.setSensorAlarmDetails(sensorAlarmDetails);
+            NewSensorRuleUtil.setCategory(sensorRule);
 
             NameSpaceContext nameSpaceContext = NamespaceAPI.getNameSpaceByRuleId(sensorRule.getId(), NSType.SENSOR_RULE);
             sensorRule.setNs(nameSpaceContext);
+
         }
         return false;
     }

@@ -37,6 +37,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -1888,10 +1889,15 @@ public class ReadingAction extends FacilioAction {
 		this.assetReading = assetReading;
 	}
 
+	private Boolean site;
+
 	public String v2getCategoryReadings() throws Exception {
 		setParentCategoryId(id);
 		if (assetReading != null && assetReading == false) {
 			getSpaceReadings();
+		}
+		else if(BooleanUtils.isTrue(site)){
+			getCategoryReadings(ModuleFactory.getSiteModule());
 		}
 		else {
 			getAssetReadings();

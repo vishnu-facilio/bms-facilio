@@ -2,6 +2,7 @@ package com.facilio.alarms.sensor.commands;
 
 import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.alarms.sensor.context.SensorRulePropContext;
+import com.facilio.alarms.sensor.util.NewSensorRuleUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
@@ -22,6 +23,7 @@ public class SensorRulePreCreationCommand extends FacilioCommand {
             for (SensorRuleContext sensorRule : sensorRules) {
                 List<SensorRulePropContext> sensorRuleTypes = sensorRule.getSensorRuleTypes();
                 sensorRule.setStatus(Boolean.TRUE);
+                NewSensorRuleUtil.setCategory(sensorRule);
                 context.put(FacilioConstants.ContextNames.SENSOR_RULE_TYPES, sensorRuleTypes);
             }
 

@@ -2944,6 +2944,15 @@
 				<param name="excludeProperties">result.readings.*\.dataTypeEnum.(operators|columnNames)</param>
 			</result>
 		</action>
+		<action name="site" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
+			<param name="site">true</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.readings.*\.dataTypeEnum.(operators|columnNames)</param>
+			</result>
+		</action>
 		<action name="utilitytype" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getUtilityTypeReadings">
 			<param name="permission">ALL</param>
 			<param name="setupTab">READINGS</param>

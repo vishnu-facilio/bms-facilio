@@ -1,19 +1,22 @@
 package com.facilio.ns.context;
 
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioIntEnum;
 
 public enum NSType implements FacilioIntEnum {
-    READING_RULE("Reading Rule"),
-    FAULT_IMPACT_RULE("Fault Impact Rule"),
-    KPI_RULE("KPI"),
-    SENSOR_RULE("Sensor Rule"),
-    VIRTUAL_METER("Virtual Meter")
+    READING_RULE("Reading Rule", FacilioConstants.ReadingRules.NEW_READING_RULE),
+    FAULT_IMPACT_RULE("Fault Impact Rule",FacilioConstants.FaultImpact.MODULE_NAME),
+    KPI_RULE("KPI",FacilioConstants.ReadingKpi.READING_KPI),
+    SENSOR_RULE("Sensor Rule",FacilioConstants.ContextNames.SENSOR_RULE_MODULE),
+    VIRTUAL_METER("Virtual Meter",FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE)
     ;
 
     private String name;
+    private String moduleName;
 
-    NSType(String name) {
+    NSType(String name,String moduleName) {
         this.name = name;
+        this.moduleName=moduleName;
     }
 
     @Override
@@ -33,4 +36,7 @@ public enum NSType implements FacilioIntEnum {
         return null;
     }
 
+    public  String getModuleName(){
+        return moduleName;
+    }
 }

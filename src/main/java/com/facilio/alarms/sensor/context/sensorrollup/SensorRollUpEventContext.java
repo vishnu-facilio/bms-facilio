@@ -128,15 +128,12 @@ public class SensorRollUpEventContext extends BaseEventContext {
 
 		sensorRollUpEvent.setIsMeterRollUpEvent(isMeterRollUpEvent);
 		sensorRollUpEvent.setCreatedTime(ttime);
-		String eventMessage;
 		if (!isMeterRollUpEvent) {
 			sensorRollUpEvent.setReadingFieldId(NewReadingRuleAPI.getPrimaryFieldId(sensorRule.getNs()));
-			eventMessage = "Faulty " + sensorRule.getSensorField().getDisplayName().toLowerCase() + " sensor of " + resource.getName().toLowerCase();
 		} else {
 			sensorRollUpEvent.setReadingFieldId(NewReadingRuleAPI.getPrimaryFieldId(sensorRule.getNs()));
-			eventMessage = "Faulty " + resource.getName().toLowerCase();
 		}
-		sensorRollUpEvent.setEventMessage(eventMessage);
+		sensorRollUpEvent.setEventMessage(sensorAlarmDetails.getMessage());
 		sensorRollUpEvent.setSensorRule(sensorRule);
 
 		return sensorRollUpEvent;
@@ -147,22 +144,22 @@ public class SensorRollUpEventContext extends BaseEventContext {
 		SensorRollUpEventContext sensorRollUpEvent = new SensorRollUpEventContext();
 		ResourceContext resource = ResourceAPI.getResource(resourceId);
 
+		SensorAlarmDetailsContext alarmDetailsContext=sensorRule.getSensorAlarmDetails();
+
 		sensorRollUpEvent.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
 		sensorRollUpEvent.setResource(resource);
 		sensorRollUpEvent.setSiteId(resource.getSiteId());
 
 		sensorRollUpEvent.setIsMeterRollUpEvent(isMeterRollUpEvent);
 		sensorRollUpEvent.setCreatedTime(ttime);
-		String eventMessage;
+
 		if (!isMeterRollUpEvent) {
 			sensorRollUpEvent.setReadingFieldId(NewReadingRuleAPI.getPrimaryFieldId(sensorRule.getNs()));
-			eventMessage = "Faulty " + sensorRule.getSensorField().getDisplayName().toLowerCase() + " sensor of " + resource.getName().toLowerCase();
 		} else {
 			sensorRollUpEvent.setReadingFieldId(NewReadingRuleAPI.getPrimaryFieldId(sensorRule.getNs()));
-			eventMessage = "Faulty " + resource.getName().toLowerCase();
 		}
 		sensorRollUpEvent.setComment("Sensor alarm auto cleared because associated rule executed clear condition for the associated asset.");
-		sensorRollUpEvent.setEventMessage(eventMessage);
+		sensorRollUpEvent.setEventMessage(alarmDetailsContext.getMessage());
 		sensorRollUpEvent.setSensorRule(sensorRule);
 
 		return sensorRollUpEvent;

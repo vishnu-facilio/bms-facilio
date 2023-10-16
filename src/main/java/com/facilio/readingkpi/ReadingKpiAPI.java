@@ -539,14 +539,14 @@ public class ReadingKpiAPI {
         AssetContext assetInfo = AssetsAPI.getAssetInfo(resourceId);
         AssetCategoryContext category = assetInfo.getCategory();
         return getDynamicKpisOfCategory(category.getId()).stream()
-                .filter(dynKpi -> getMatchedResources(dynKpi.getNs(), category.getId()).contains(resourceId))
+                .filter(dynKpi -> getMatchedResources(dynKpi.getNs(),dynKpi.getCategory()).contains(resourceId))
                 .map(dynKpi -> new KpiContextWrapper(dynKpi.getId(), dynKpi.getName()))
                 .collect(Collectors.toList());
     }
 
-    private static List<Long> getMatchedResources(NameSpaceContext ns, Long categoryId) {
+    private static List<Long> getMatchedResources(NameSpaceContext ns,ResourceCategory resourceCategory) {
         try {
-            return CollectionUtils.isEmpty(ns.getIncludedAssetIds()) ? NamespaceAPI.getMatchedResources(ns, categoryId) : ns.getIncludedAssetIds();
+            return CollectionUtils.isEmpty(ns.getIncludedAssetIds()) ? NamespaceAPI.getMatchedResources(ns, resourceCategory) : ns.getIncludedAssetIds();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -973,7 +973,7 @@ public class ReadingKpiAPI {
         props.put(FacilioConstants.ContextNames.RESOURCE_LIST, assetIds);
         props.put(FacilioConstants.ReadingKpi.READING_KPI, kpi.getId());
 
-        Long parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), startTime, endTime, false, CollectionUtils.isNotEmpty(assetIds) ? assetIds.size() : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getAssetCategory().getId()).size());
+        Long parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), startTime, endTime, false, CollectionUtils.isNotEmpty(assetIds) ? assetIds.size() : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getCategory()).size());
         props.put(FacilioConstants.ReadingKpi.PARENT_LOGGER_ID, parentLoggerId);
 
         scheduleOneTimeJobWithProps(ReadingKpiLoggerAPI.getNextJobId(), FacilioConstants.ReadingKpi.READING_KPI_HISTORICAL_JOB, 1, "facilio", props);

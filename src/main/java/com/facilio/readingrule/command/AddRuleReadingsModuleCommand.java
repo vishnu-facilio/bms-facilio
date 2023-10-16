@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class AddRuleReadingsModuleCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        NewReadingRuleContext readingRule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
+        NewReadingRuleContext readingRule = (NewReadingRuleContext) context.get(FacilioConstants.ReadingRules.NEW_READING_RULE);
         if (readingRule != null) {
 
             String ruleName = readingRule.getName();

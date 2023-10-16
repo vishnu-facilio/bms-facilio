@@ -61,7 +61,7 @@ public class FacilioKpiFunctions {
         Long kpiId = (Long) objects[0];
         ReadingKPIContext kpi = getReadingKpi(kpiId);
 
-        List<Long> assetIds = CollectionUtils.isNotEmpty((List<Long>) objects[1]) ? (List<Long>) objects[1] : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getAssetCategory().getId());
+        List<Long> assetIds = CollectionUtils.isNotEmpty((List<Long>) objects[1]) ? (List<Long>) objects[1] : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getCategory());
 
         DirectedAcyclicGraph<Long, DefaultEdge> graph = CommonConnectedUtil.fetchConRuleFamilyUpwardGraph(kpiId, NSType.KPI_RULE, assetIds);
         return "Dependent kpis : " + graph.vertexSet() + "\n Graph: " + graph.edgeSet();
@@ -79,7 +79,7 @@ public class FacilioKpiFunctions {
 
         Long kpiId = (Long) objects[0];
         ReadingKPIContext kpi = getReadingKpi(kpiId);
-        List<Long> assetIds = CollectionUtils.isNotEmpty((List<Long>) objects[1]) ? (List<Long>) objects[1] : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getAssetCategory().getId());
+        List<Long> assetIds = CollectionUtils.isNotEmpty((List<Long>) objects[1]) ? (List<Long>) objects[1] : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getCategory());
         Long startTime = (Long) objects[2];
         Long endTime = (Long) objects[3];
         boolean executeDependencies = (Boolean) objects[4];

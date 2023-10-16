@@ -18,7 +18,7 @@ public class UpdateRCAGroupCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         NewReadingRuleContext newReadingRule = NewReadingRuleAPI.destructureRuleFromRecordMap(context).get(0);
-        NewReadingRuleContext oldReadingRule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
+        NewReadingRuleContext oldReadingRule = (NewReadingRuleContext) context.get(FacilioConstants.ReadingRules.NEW_READING_RULE);
 
         ReadingRuleRCAContext rcaContext = newReadingRule.getRca();
         List<Long> newGroupIds = rcaContext.getGroups().stream().map(x -> x.getId()).collect(Collectors.toList());

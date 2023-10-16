@@ -45,7 +45,7 @@ public class FetchSensorRuleListCommand extends FacilioCommand {
                     .select(FieldFactory.getSensorRuleFields())
                     .table(ModuleFactory.getSensorRuleModule().getTableName())
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("sensorFieldId"), String.valueOf(readingFieldId), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("assetCategoryId"), String.valueOf(categoryId), NumberOperators.EQUALS));
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("categoryId"), String.valueOf(categoryId), NumberOperators.EQUALS));
 
             List<Map<String, Object>> props = selectBuilder.get();
 

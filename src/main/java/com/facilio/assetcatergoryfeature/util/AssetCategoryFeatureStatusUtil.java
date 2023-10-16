@@ -38,24 +38,15 @@ public class AssetCategoryFeatureStatusUtil {
         updateRecordBuilder.update(FieldUtil.getAsProperties(categoryContext));
     }
 
-    public static V3AssetCategoryContext validateCategoryWithNSType(Long categoryId) throws Exception {
-        AssetCategoryFeatureActivationContext result = fetchStatusFromCategory(categoryId);
-        V3AssetCategoryContext assetCategory = new V3AssetCategoryContext();
-        assetCategory.setId(categoryId);
 
-        if (result!=null) {
-            assetCategory.setAssetCategoryFeatureContext(result);
-        }
-        return assetCategory;
-    }
-
-    public static Boolean validateFldWithNs(V3AssetCategoryContext assetCategoryContext, NSType type) {
-        AssetCategoryFeatureActivationContext assetCategoryFeature = assetCategoryContext.getAssetCategoryFeatureContext();
-        //TODO:add sensor and set type once merged in v1
+    public static Boolean validateFldWithNs(Long categoryId, NSType type) throws Exception {
+        AssetCategoryFeatureActivationContext assetCategoryFeature = fetchStatusFromCategory(categoryId);
         if (assetCategoryFeature != null) {
             switch (type) {
                 case READING_RULE:
                     return assetCategoryFeature.getReadingRulesStatus();
+                case SENSOR_RULE:
+                    return assetCategoryFeature.getSensorRulesStatus();
             }
         }
         return Boolean.TRUE;

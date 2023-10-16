@@ -1,6 +1,7 @@
 package com.facilio.ns.command;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.ns.NamespaceConstants;
 import com.facilio.ns.context.NameSpaceContext;
@@ -14,13 +15,12 @@ public class AddNamespaceCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         NameSpaceContext ns = (NameSpaceContext) context.get(NamespaceConstants.NAMESPACE);
+        ResourceType resourceType=(ResourceType) context.get(FacilioConstants.ContextNames.RESOURCE_TYPE);
+
         V3Util.throwRestException(ns == null, ErrorCode.VALIDATION_ERROR, "Namespace cannot be null.");
         V3Util.throwRestException(ns.getParentRuleId() == null, ErrorCode.VALIDATION_ERROR, "Parent rule id cannot be null.");
 
-        Long categoryId = (Long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID); //todel
-        ns.setCategoryId(categoryId);
-
-        Long id = Constants.getNsBean().addNamespace(ns);
+        Long id = Constants.getNsBean().addNamespace(ns,resourceType);
 
         context.put(NamespaceConstants.NAMESPACE_ID, id);
         return Boolean.FALSE;

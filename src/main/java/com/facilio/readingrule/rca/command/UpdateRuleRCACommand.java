@@ -12,7 +12,7 @@ public class UpdateRuleRCACommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         NewReadingRuleContext readingRule = NewReadingRuleAPI.destructureRuleFromRecordMap(context).get(0);
-        NewReadingRuleContext oldReadingRule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
+        NewReadingRuleContext oldReadingRule = (NewReadingRuleContext) context.get(FacilioConstants.ReadingRules.NEW_READING_RULE);
         if (readingRule.getRca() != null && oldReadingRule.getRca() == null) {
             ReadingRuleRcaAPI.createRCA(readingRule);
         }

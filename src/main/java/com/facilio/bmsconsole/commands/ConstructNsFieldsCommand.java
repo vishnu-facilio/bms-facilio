@@ -31,6 +31,7 @@ public class ConstructNsFieldsCommand extends FacilioCommand {
         NameSpaceContext ns=new NameSpaceContext();
         ns.setWorkflowContext(null);
         ns.setType(NSType.SENSOR_RULE.getIndex());
+        ns.setStatus(Boolean.TRUE);
         //ns.setExecInterval() - intentionally avoid this attribute
         sensorRule.setNs(ns);
         constructNameSpaceFields(sensorRule);

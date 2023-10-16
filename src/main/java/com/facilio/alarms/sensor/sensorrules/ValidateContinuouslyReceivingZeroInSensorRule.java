@@ -37,7 +37,7 @@ public class ValidateContinuouslyReceivingZeroInSensorRule implements SensorRule
 
 	@Override
 	public boolean evaluateSensorRule(SensorRuleContext sensorRule, Object record, JSONObject fieldConfig, boolean isHistorical, List<ReadingContext> historicalReadings, LinkedHashMap<String, List<ReadingContext>> completeHistoricalReadingsMap) throws Exception {
-		
+
 		ReadingContext reading = (ReadingContext)record;
 		FacilioField readingField = sensorRule.getSensorField();
 
@@ -45,22 +45,22 @@ public class ValidateContinuouslyReceivingZeroInSensorRule implements SensorRule
 		{
 			AssetContext asset = (AssetContext)reading.getParent();
 			NumberField numberField = (NumberField) readingField;
-			if(asset != null && asset.getCategory().getId() == sensorRule.getAssetCategoryId()) 
-			{		
+			if(asset != null && asset.getCategory().getId() == sensorRule.getCategoryId())
+			{
 				Object currentReadingValue = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
 				currentReadingValue = (Double) currentReadingValue;
 				if(currentReadingValue == null || !currentReadingValue.equals(0.0) || !SensorRuleUtil.isAllowedSensorMetric(numberField)){
 					return false;
 				}
-				
+
 				Integer noOfHoursToBeFetched = (Integer)fieldConfig.get("timeInterval");
 				if(noOfHoursToBeFetched == null) {
 					noOfHoursToBeFetched = 6;
 				}
-				
-				List<Double> readings =  SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated(numberField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched.intValue(), isHistorical, historicalReadings, completeHistoricalReadingsMap, getSensorRuleTypeFromValidator());						
-				if(readings != null && !readings.isEmpty()) 
-				{ 	
+
+				List<Double> readings =  SensorRuleUtil.getLiveOrHistoryReadingsToBeEvaluated(numberField, asset.getId(), reading.getTtime(), noOfHoursToBeFetched.intValue(), isHistorical, historicalReadings, completeHistoricalReadingsMap, getSensorRuleTypeFromValidator());
+				if(readings != null && !readings.isEmpty())
+				{
 					LinkedHashSet<Double> readingSet = new LinkedHashSet<Double>();
 					readingSet.addAll(readings);
 					if(readingSet != null && readingSet.size() == 1)
@@ -68,13 +68,13 @@ public class ValidateContinuouslyReceivingZeroInSensorRule implements SensorRule
 						for(Double readingSetValue :readingSet) {
 							if(readingSetValue != null && readingSetValue.equals((double)currentReadingValue)) {
 								return true;
-							}	
+							}
 						}
-					}	
-				}		
+					}
+				}
 			}
 		}
-		return false;	
+		return false;
 	}
 
 	@Override

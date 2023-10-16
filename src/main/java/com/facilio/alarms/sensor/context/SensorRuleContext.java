@@ -7,6 +7,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.connected.IConnectedRule;
+import com.facilio.connected.ResourceCategory;
+import com.facilio.connected.ResourceType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -44,9 +46,7 @@ public class SensorRuleContext extends V3Context implements IConnectedRule {
 
     FacilioModule sensorModule;
 
-    Long assetCategoryId;
-
-    AssetCategoryContext assetCategory;
+    Long categoryId;
 
     SensorRuleType sensorRuleType; //TODO:to del
 
@@ -66,10 +66,11 @@ public class SensorRuleContext extends V3Context implements IConnectedRule {
 
     SensorAlarmDetailsContext sensorAlarmDetails;
 
-    @Override
-    public String getName() {
-        return getSubject();
-    }
+    int resourceType=ResourceType.ASSET_CATEGORY.getIndex();
+
+    ResourceCategory<? extends V3Context> category;
+
+    ResourceType resourceTypeEnum;
 
     public static void processNewSensorAlarmMeta(SensorRuleContext sensorRule, ResourceContext resource, SensorRuleType sensorRuleType, SensorEventContext sensorEvent) throws Exception {
         HashMap<String, SensorRuleAlarmMeta> metaMap = sensorRule.getAlarmMetaMap();
@@ -85,6 +86,16 @@ public class SensorRuleContext extends V3Context implements IConnectedRule {
         }
     }
 
+    @Override
+    public String getName() {
+        return getSubject();
+    }
+
+    public void setResourceType(int resourceType) {
+        this.resourceType = resourceType;
+        this.resourceTypeEnum = ResourceType.valueOf(resourceType);
+    }
+
     public FacilioField getSensorField() {
         try {
             if (sensorField == null && sensorFieldId > 0) {
@@ -92,7 +103,7 @@ public class SensorRuleContext extends V3Context implements IConnectedRule {
                 sensorField = modBean.getField(sensorFieldId);
             }
         } catch (Exception e) {
-			LOGGER.error("Error in SensorRollUpAlarmContext while fetching reading fieldid : "+sensorFieldId, e);
+            LOGGER.error("Error in SensorRollUpAlarmContext while fetching reading fieldid : " + sensorFieldId, e);
         }
         return sensorField;
     }
@@ -106,8 +117,8 @@ public class SensorRuleContext extends V3Context implements IConnectedRule {
         return getRecordFieldId();
     }
 
-    public NameSpaceContext getNs() {
-        return ns;
+    public Boolean getStatus() {
+        return status != null ? status : Boolean.FALSE;
     }
 
     @Override
@@ -154,7 +165,7 @@ public class SensorRuleContext extends V3Context implements IConnectedRule {
                 ", readingFieldId : " + sensorFieldId +
                 ", sensorRuleType : " + sensorRuleType +
                 ", moduleId : " + sensorModuleId +
-                ", assetCategory : " + assetCategoryId;
+                ", assetCategory : " + categoryId;
 
         return builder;
     }

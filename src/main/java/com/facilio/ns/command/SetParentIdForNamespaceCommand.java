@@ -2,6 +2,7 @@ package com.facilio.ns.command;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.connected.IConnectedRule;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
@@ -26,6 +27,7 @@ public class SetParentIdForNamespaceCommand extends FacilioCommand {
                     if (ns.getWorkflowContext() != null) {
                         ns.getWorkflowContext().setIsV2Script(true);
                     }
+                    context.put(FacilioConstants.ContextNames.RESOURCE_TYPE,connectedRule.getCategory().getResType());
                 }
             }
         }

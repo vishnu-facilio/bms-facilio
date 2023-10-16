@@ -76,6 +76,7 @@ public class V2AlarmAction extends FacilioAction {
         setResult(ContextNames.SENSOR_RULE_MODULE, context.get(ContextNames.SENSOR_RULE_MODULE));
         return SUCCESS;
     }
+
     public String fetchCategoryAlarmsDetails() throws Exception {
         FacilioChain facilioChain = TransactionChainFactoryV3.fetchConnectedCategoryStatusChain();
         FacilioContext context=facilioChain.getContext();

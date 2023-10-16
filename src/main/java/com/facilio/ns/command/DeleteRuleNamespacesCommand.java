@@ -14,7 +14,7 @@ import org.apache.commons.chain.Context;
 public class DeleteRuleNamespacesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        NewReadingRuleContext rule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
+        NewReadingRuleContext rule = (NewReadingRuleContext) context.get(FacilioConstants.ReadingRules.NEW_READING_RULE);
         V3Util.throwRestException(rule == null, ErrorCode.VALIDATION_ERROR, "Rule cannot be null.");
 
         GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()

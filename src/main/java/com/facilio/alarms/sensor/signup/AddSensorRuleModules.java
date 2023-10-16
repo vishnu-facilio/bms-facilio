@@ -43,6 +43,13 @@ public class AddSensorRuleModules extends SignUpData {
         assetCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY));
         fields.add(assetCategory);
 
+        SystemEnumField resourceType = FieldFactory.getDefaultField("resourceType", "Resource Type", "RESOURCE_TYPE", FieldType.SYSTEM_ENUM);
+        resourceType.setEnumName("ConnectedResourceAssignmentType");
+        fields.add(resourceType);
+
+        NumberField categoryId = FieldFactory.getDefaultField("categoryId", "Category ID", "CATEGORY_ID", FieldType.NUMBER);
+        fields.add(categoryId);
+
         NumberField sensorModuleId = FieldFactory.getDefaultField("sensorModuleId", "Sensor Module ID", "MODULE_ID", FieldType.NUMBER);
         fields.add(sensorModuleId);
 

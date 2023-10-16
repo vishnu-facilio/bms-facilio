@@ -29,7 +29,6 @@ public class AddSensorRuleFromReadingsCommand extends FacilioCommand {
 
             List<SensorRuleContext> sensorRuleList = (List<SensorRuleContext>) context.get(FacilioConstants.ContextNames.SENSOR_RULE_LIST);
             Long moduleId = (Long) context.get(FacilioConstants.ContextNames.MODULE_ID);
-            Long assetCategoryId = (Long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
 
             if (CollectionUtils.isNotEmpty(sensorRuleList)) {
                 List<Long> fieldIds = (List<Long>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_IDS);
@@ -37,7 +36,7 @@ public class AddSensorRuleFromReadingsCommand extends FacilioCommand {
 
                 AtomicInteger indexHolder = new AtomicInteger();
                 for (SensorRuleContext m : sensorRuleList) {
-                    addSensorRules(m, filteredFieldIds.get(indexHolder.getAndIncrement()), moduleId,assetCategoryId);
+                    addSensorRules(m, filteredFieldIds.get(indexHolder.getAndIncrement()), moduleId);
                 }
 
             }
@@ -53,15 +52,12 @@ public class AddSensorRuleFromReadingsCommand extends FacilioCommand {
         return new ArrayList<>();
     }
 
-    private void addSensorRules(SensorRuleContext sensorRule ,Long fieldId,Long moduleId,Long assetCategoryId) throws Exception {
+    private void addSensorRules(SensorRuleContext sensorRule ,Long fieldId,Long moduleId) throws Exception {
         if (CollectionUtils.isNotEmpty(sensorRule.getSensorRuleTypes())) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SENSOR_RULE_MODULE);
-            AssetCategoryContext assetCategoryContext=new AssetCategoryContext();
-            assetCategoryContext.setId(assetCategoryId);
 
-            sensorRule.setAssetCategory(assetCategoryContext);
             sensorRule.setSensorFieldId(fieldId);
             sensorRule.setSensorModuleId(moduleId);
 

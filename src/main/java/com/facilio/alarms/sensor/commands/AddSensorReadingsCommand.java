@@ -36,7 +36,7 @@ public class AddSensorReadingsCommand extends FacilioCommand {
             context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, FacilioConstants.SensorRule.SENSOR_RULE_TABLE_NAME);
 
             context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.ASSET_CATEGORY);
-            context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, sensorRule.getAssetCategory().getId());
+            context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, sensorRule.getCategoryId());
             context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
 
             context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fieldList);

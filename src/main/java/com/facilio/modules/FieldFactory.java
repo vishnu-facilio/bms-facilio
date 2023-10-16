@@ -1512,7 +1512,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("sensorModuleId", "MODULE_ID", module, FieldType.LOOKUP));
         fields.add(getField("sensorFieldId", "READING_FIELD_ID", module, FieldType.LOOKUP));
-        fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
+        fields.add(getField("categoryId", "CATEGORY_ID", module, FieldType.NUMBER));
+        fields.add(getField("resourceType", "RESOURCE_TYPE", module, FieldType.LOOKUP));
         fields.add(getField("recordModuleId","RECORD_MODULE_ID",module,FieldType.NUMBER));
         fields.add(getField("status","STATUS",module,FieldType.BOOLEAN));
         fields.add(getField("recordFieldId","RECORD_FIELD_ID",module,FieldType.NUMBER));

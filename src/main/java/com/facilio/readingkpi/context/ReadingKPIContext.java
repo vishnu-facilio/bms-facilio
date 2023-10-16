@@ -71,6 +71,9 @@ public class ReadingKPIContext extends V3Context implements IConnectedRule {
         this.kpiType = kpiType;
     }
 
+    public Boolean getStatus() {
+        return status != null ? status : Boolean.FALSE;
+    }
     public ResourceType getResourceTypeEnum() {
         return resourceType;
     }

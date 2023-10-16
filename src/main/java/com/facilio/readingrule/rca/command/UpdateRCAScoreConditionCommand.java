@@ -19,7 +19,7 @@ public class UpdateRCAScoreConditionCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         NewReadingRuleContext newReadingRule = NewReadingRuleAPI.destructureRuleFromRecordMap(context).get(0);
-        NewReadingRuleContext oldReadingRule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
+        NewReadingRuleContext oldReadingRule = (NewReadingRuleContext) context.get(FacilioConstants.ReadingRules.NEW_READING_RULE);
 
         for (RCAGroupContext group : newReadingRule.getRca().getGroups()) {
             List<RCAGroupContext> oldGroups = oldReadingRule.getRca() != null ? oldReadingRule.getRca().getGroups().stream().filter(x -> x.getId() == group.getId()).collect(Collectors.toList()) : null;

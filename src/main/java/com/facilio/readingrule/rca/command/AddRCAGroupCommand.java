@@ -24,7 +24,7 @@ import java.util.Map;
 public class AddRCAGroupCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        NewReadingRuleContext rule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
+        NewReadingRuleContext rule = (NewReadingRuleContext) context.get(FacilioConstants.ReadingRules.NEW_READING_RULE);
         ReadingRuleRCAContext rca = rule.getRca();
         if (rca != null && CollectionUtils.isNotEmpty(rca.getGroups())) {
             List<RCAGroupContext> groups = rca.getGroups();

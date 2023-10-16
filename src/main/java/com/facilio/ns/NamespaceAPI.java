@@ -6,6 +6,14 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.beans.NamespaceBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.ConnectionUtil;
+import com.facilio.bmsconsole.util.MetersAPI;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
+import com.facilio.connected.CommonConnectedUtil;
+import com.facilio.connected.IConnectedRule;
+import com.facilio.connected.ResourceCategory;
+import com.facilio.connected.ResourceType;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -43,7 +51,6 @@ public class NamespaceAPI {
                 .select(Collections.singleton(FieldFactory.getField("id", "DISTINCT Namespace.ID", FieldType.NUMBER)))
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
                 .innerJoin(NamespaceModuleAndFieldFactory.getNamespaceFieldsModule().getTableName()).on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
-                .andCondition(CriteriaAPI.getCondition("Namespace.STATUS", "status", String.valueOf(true), BooleanOperators.IS))
                 .andCondition(CriteriaAPI.getCondition("Namespace_Fields.FIELD_ID", "fieldId", String.valueOf(fieldId), NumberOperators.EQUALS));
 
         List<Map<String, Object>> maps = selectBuilder.get();
@@ -91,14 +98,27 @@ public class NamespaceAPI {
                 field.setRelatedInfo(relatedInfo);
             }
             ns.addField(field);
-            LOGGER.debug("Namespace ID : " + ns.getId() + " NameSpace Category Id => " + ns.getCategoryId());
-            ns.setAssetCategoryContext(AssetCategoryFeatureStatusUtil.validateCategoryWithNSType(ns.getCategoryId()));
+            setNsStatusNdResourceType(ns);
             FacilioField readingField = modBean.getField(field.getFieldId());
             field.setVarDataType(getScriptDataType(readingField));
             field.setField(readingField);
         }
         return new ArrayList<>(nsMap.values());
     }
+
+    private static void setNsStatusNdResourceType(NameSpaceContext ns) throws Exception {
+        Map<String, Object> connectedProp = CommonConnectedUtil.getConnectedData(ns);
+        Boolean ruleStatus = (boolean) connectedProp.get("status");
+
+        Long categoryId = (Long) connectedProp.get("categoryId");
+        Boolean categoryLevelStatus = AssetCategoryFeatureStatusUtil.validateFldWithNs(categoryId, ns.getTypeEnum());
+
+        ns.setStatus(ruleStatus && categoryLevelStatus);
+        //TODO:remove impact check once resourceType supported in impact
+        int resourceType = connectedProp.containsKey("resourceType") ? (Integer) connectedProp.get("resourceType") : ResourceType.ASSET_CATEGORY.getIndex();
+        ns.setResourceType(ns.getTypeEnum().equals(NSType.VIRTUAL_METER) ? ResourceType.METER_CATEGORY.getIndex() : resourceType);
+    }
+
 
     private static String getScriptDataType(FacilioField readingField) {
         String typeAsString = readingField.getDataTypeEnum().getTypeAsString();
@@ -142,41 +162,36 @@ public class NamespaceAPI {
     }
 
     public static List<Long> getMatchedResources(NameSpaceContext ns, V3Context ruleCtx) throws Exception {
-        Set<Long> resourceIds = new HashSet<>();
+        List<Long> resourceIds = new ArrayList<>();
 
         List<Long> inclusions = CollectionUtils.isEmpty(ns.getIncludedAssetIds()) ? fetchResourceIdsFromNamespaceInclusions(ns.getId()) : ns.getIncludedAssetIds();
         if (CollectionUtils.isNotEmpty(inclusions)) {
             return inclusions;
         }
         if (ruleCtx != null) {
-            Long assetCategoryId;
+            Long categoryId;
             if (ruleCtx instanceof ReadingKPIContext) {
-                assetCategoryId = ((ReadingKPIContext) ruleCtx).getCategory().fetchId();
+                categoryId = ((ReadingKPIContext) ruleCtx).getCategory().fetchId();
             } else {
-                assetCategoryId = ((NewReadingRuleContext) ruleCtx).getCategory().fetchId();
+                categoryId = ((NewReadingRuleContext) ruleCtx).getCategory().fetchId();
             }
-            List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(assetCategoryId, null, ruleCtx.getSiteId());
-            resourceIds.addAll(assets.stream().map((assetContext) -> assetContext.getId()).collect(Collectors.toList()));
-
+            resourceIds = CommonConnectedUtil.getResourceIdsBasedOnCategory(((IConnectedRule) ruleCtx).getCategory().getResType(), categoryId);
+            //TODO:remove this method after testing
         }
-        return new ArrayList<>(resourceIds);
+        return resourceIds;
     }
 
-    public static List<Long> getMatchedResources(NameSpaceContext ns, Long categoryId) throws Exception {
-        Set<Long> resourceIds = new HashSet<>();
+    public static List<Long> getMatchedResources(NameSpaceContext ns, ResourceCategory resourceCategory) throws Exception {
+        List<Long> resourceIds ;
 
         List<Long> inclusions = fetchResourceIdsFromNamespaceInclusions(ns.getId());
         if (CollectionUtils.isNotEmpty(inclusions)) {
             return inclusions;
         }
 
-        List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(categoryId);
-        if (CollectionUtils.isNotEmpty(assets)) {
-            resourceIds.addAll(assets.stream().map((assetContext) -> assetContext.getId()).collect(Collectors.toList()));
-            return new ArrayList<>(resourceIds);
-        }
+        resourceIds = CommonConnectedUtil.getResourceIdsBasedOnCategory(resourceCategory.getResType(),resourceCategory.fetchId());
 
-        return new ArrayList<>();
+        return resourceIds;
     }
 
     public static List<Long> fetchMatchedResourceIds(Long nsId) throws Exception {
@@ -226,17 +241,16 @@ public class NamespaceAPI {
         return props;
     }
 
-    public static void addInclusions(NameSpaceContext ns) throws Exception {
+    public static void addInclusions(NameSpaceContext ns,ResourceType resourceType) throws Exception {
         List<Long> assetIds = ns.getIncludedAssetIds();
         if (CollectionUtils.isNotEmpty(assetIds)) {
-            List<AssetContext> assetInfo = AssetsAPI.getAssetInfo(assetIds);
+            List<Long> filteredResourceIds=CommonConnectedUtil.getResourcesBasedOnType(resourceType,assetIds);
 
-            throwIfAssetNotFound(assetIds, assetInfo);
-            List<Long> newAssetIds = assetInfo.stream().map(info -> info.getId()).collect(Collectors.toList());
+            throwIfAssetNotFound(assetIds,filteredResourceIds);
 
             deleteExistingInclusionRecords(ns);
 
-            List<Map<String, Object>> inclusionList = getInclusionList(ns.getId(), newAssetIds);
+            List<Map<String, Object>> inclusionList = getInclusionList(ns.getId(), filteredResourceIds);
 
             new GenericInsertRecordBuilder()
                     .fields(NamespaceModuleAndFieldFactory.getNamespaceInclusionFields())
@@ -245,6 +259,7 @@ public class NamespaceAPI {
                     .save();
         }
     }
+
 
 
     public static List<Long> fetchResourceIdsFromNamespaceInclusions(Long nameSpaceId) throws Exception {
@@ -266,10 +281,10 @@ public class NamespaceAPI {
     }
 
 
-    private static void throwIfAssetNotFound(List<Long> assetIds, List<AssetContext> assetInfo) {
-        if (assetIds.size() != assetInfo.size()) {
+    private static void throwIfAssetNotFound(List<Long> assetIds, List<Long> filteredResourceIds) {
+        if (assetIds.size() != filteredResourceIds.size()) {
             for (Long asset : assetIds) {
-                boolean present = assetInfo.stream().filter(assetCtx -> assetCtx.getId() == asset).findAny().isPresent();
+                boolean present = filteredResourceIds.stream().filter(assetCtx -> assetCtx== asset).findAny().isPresent();
                 if (!present) {
                     throw new RuntimeException("Asset (" + asset + ") is not found");
                 }

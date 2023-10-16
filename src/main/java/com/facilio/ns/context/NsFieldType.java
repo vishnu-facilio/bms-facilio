@@ -8,7 +8,10 @@ public enum NsFieldType implements FacilioIntEnum {
     RELATED_READING,
     ASSET,
     SPACE,
-    METER_READING
+    METER_READING,
+    METER,
+    SITE,
+    SITE_READING,
     ;
 
     public static NsFieldType valueOf(int idx) {

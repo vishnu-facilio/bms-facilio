@@ -7,6 +7,9 @@ import com.facilio.alarms.sensor.context.SensorRulePropContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.connected.CommonConnectedUtil;
+import com.facilio.connected.ResourceCategory;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -21,7 +24,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -214,6 +219,14 @@ public class NewSensorRuleUtil {
         }
         else{
             sensorRuleTypes.add(newContext);
+        }
+    }
+
+    public static void setCategory(SensorRuleContext rule) throws Exception {
+        ResourceType type = rule.getResourceTypeEnum();
+        V3Context category = CommonConnectedUtil.getCategory(type, rule.getCategoryId());
+        if(category != null) {
+            rule.setCategory(new ResourceCategory<>(type, category));
         }
     }
 }

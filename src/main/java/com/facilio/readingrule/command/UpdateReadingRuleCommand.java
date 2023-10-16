@@ -27,7 +27,7 @@ public class UpdateReadingRuleCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        this.rule = (NewReadingRuleContext) context.get(FacilioConstants.ContextNames.NEW_READING_RULE);
+        this.rule = (NewReadingRuleContext) context.get(FacilioConstants.ReadingRules.NEW_READING_RULE);
 
         updateAlarmDetails();
         updateNamespaceStatus();

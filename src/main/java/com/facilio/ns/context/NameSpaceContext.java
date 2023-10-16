@@ -2,6 +2,7 @@ package com.facilio.ns.context;
 
 import com.facilio.annotations.ImmutableChildClass;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.connected.IConnectedRule;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import lombok.Getter;
@@ -24,9 +25,7 @@ public class NameSpaceContext implements Serializable {
         this.execInterval = ns.execInterval;
         this.includedAssetIds = ns.includedAssetIds;
         this.type = ns.type;
-        this.assetCategoryId = ns.assetCategoryId;
         this.workflowId = ns.workflowId;
-        this.categoryId = ns.categoryId;
         this.workflowContext = ns.workflowContext;
         this.status = ns.status;
         this.fields = ns.fields;
@@ -34,6 +33,8 @@ public class NameSpaceContext implements Serializable {
         this.assetCategoryContext = ns.assetCategoryContext;
         this.execMode = ns.execMode;
         this.executorId = ns.executorId;
+        this.resourceType=ns.resourceType;
+        this.parentRule=ns.parentRule;
     }
 
     /**
@@ -46,9 +47,7 @@ public class NameSpaceContext implements Serializable {
         this.execInterval = ns.execInterval;
         this.includedAssetIds = ns.includedAssetIds;
         this.type = ns.type;
-        this.assetCategoryId = ns.assetCategoryId;
         this.workflowId = ns.workflowId;
-        this.categoryId = ns.categoryId;
         this.workflowContext = ns.workflowContext;
         this.status = ns.status;
         this.fields = ns.fields;
@@ -56,6 +55,8 @@ public class NameSpaceContext implements Serializable {
         this.assetCategoryContext = ns.assetCategoryContext;
         this.execMode = ns.execMode;
         this.executorId = ns.executorId;
+        this.resourceType=ns.resourceType;
+        this.parentRule=ns.parentRule;
     }
 
     Long id;
@@ -69,10 +70,6 @@ public class NameSpaceContext implements Serializable {
     List<Long> includedAssetIds;
 
     NSType type;
-
-    Long assetCategoryId;
-
-    Long categoryId;
 
     Integer execMode;
 
@@ -99,18 +96,21 @@ public class NameSpaceContext implements Serializable {
 
     int loggerLevel;
 
+    int resourceType;
+
     V3AssetCategoryContext assetCategoryContext;
 
     {
         fields = new ArrayList<>();
     }
 
-    public NameSpaceContext(NSType type, Long parentRuleId, Long execInterval, Long workflowId, Long categoryId) {
+    IConnectedRule parentRule;
+
+    public NameSpaceContext(NSType type, Long parentRuleId, Long execInterval, Long workflowId) {
         this.type = type;
         this.parentRuleId = parentRuleId;
         this.execInterval = execInterval;
         this.workflowId = workflowId;
-        this.categoryId = categoryId;
     }
 
     public void addField(NameSpaceField... fs) {

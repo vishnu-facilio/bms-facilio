@@ -81,7 +81,7 @@ public class SensorRuleUtil {
 	}
 
 	private static void setMatchedResourcesIds(SensorRuleContext sensorRule) throws Exception {
-		List<AssetContext> categoryAssets = AssetsAPI.getAssetListOfCategory(sensorRule.getAssetCategoryId());
+		List<AssetContext> categoryAssets = AssetsAPI.getAssetListOfCategory(sensorRule.getCategoryId());
 		List<Long> assetIds = categoryAssets.stream().map(asset -> asset.getId()).collect(Collectors.toList());
 //		sensorRule.setMatchedResourceIds(assetIds);
 	}
@@ -142,7 +142,7 @@ public class SensorRuleUtil {
 
 				for (SensorRuleContext sensorRule : sensorRules) {
 					fieldIds.add(sensorRule.getSensorFieldId());
-					assetCategories.add(sensorRule.getAssetCategoryId());
+					assetCategories.add(sensorRule.getCategoryId());
 				}
 
 				List<FacilioField> fields = modBean.getFields(fieldIds);

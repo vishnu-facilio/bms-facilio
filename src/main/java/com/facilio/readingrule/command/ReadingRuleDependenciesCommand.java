@@ -42,7 +42,7 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
                     throw new Exception("WorkFlow can not be null for reading rule");
                 }
                 ctx.put(NamespaceConstants.NAMESPACE, readingRule.getNs());
-                ctx.put(FacilioConstants.ContextNames.NEW_READING_RULE, readingRule);
+                ctx.put(FacilioConstants.ReadingRules.NEW_READING_RULE, readingRule);
 
                 ctx.put(WorkflowV2Util.WORKFLOW_CONTEXT, readingRule.getNs().getWorkflowContext());
                 ctx.put(NamespaceConstants.NAMESPACE_FIELDS, readingRule.getNs().getFields());

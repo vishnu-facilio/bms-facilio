@@ -1,7 +1,13 @@
 package com.facilio.connected;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.MetersAPI;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
+import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -9,8 +15,8 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
@@ -18,6 +24,7 @@ import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingkpi.ReadingKpiAPI;
+import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.storm.InstructionType;
 import com.facilio.v3.context.Constants;
@@ -38,6 +45,7 @@ import org.json.simple.JSONObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.facilio.modules.FieldFactory.getField;
 import static com.facilio.readingkpi.ReadingKpiAPI.getReadingKpis;
 import static com.facilio.readingrule.util.NewReadingRuleAPI.getReadingRules;
 
@@ -213,10 +221,11 @@ public class CommonConnectedUtil {
 
     public static DirectedAcyclicGraph<Long, DefaultEdge> fetchConRuleFamilyUpwardGraph(Long connectedRuleId, NSType type, List<Long> resourceIds) throws Exception {
         IConnectedRule conRule = fetchConnectedRules(Collections.singleton(connectedRuleId), type).get(0);
+        ResourceCategory resourceCategory=conRule.getCategory();
         NameSpaceContext ns = conRule.getNs();
-        Long categoryId = ns.getCategoryId();
+        Long categoryId = resourceCategory.fetchId();
         if (CollectionUtils.isEmpty(resourceIds)) {
-            resourceIds = NamespaceAPI.getMatchedResources(ns, ns.getCategoryId());
+            resourceIds = NamespaceAPI.getMatchedResources(ns, resourceCategory);
         }
 
         DirectedAcyclicGraph<Long, DefaultEdge> directedGraph = new DirectedAcyclicGraph<>(DefaultEdge.class);
@@ -299,8 +308,9 @@ public class CommonConnectedUtil {
             if (resourceIds.contains(resourceId)) {
                 firstCircle.add(parentRuleId);
                 categoryIds.add(catId);
-                NameSpaceContext ns = fetchConnectedRule(parentRuleId, type).getNs();
-                resourceIds.addAll(NamespaceAPI.getMatchedResources(ns, ns.getCategoryId()));
+                IConnectedRule connectedRule = fetchConnectedRule(parentRuleId, type);
+                ResourceCategory resourceCategory=connectedRule.getCategory();
+                resourceIds.addAll(NamespaceAPI.getMatchedResources(connectedRule.getNs(),resourceCategory));
             }
         }
         return firstCircle;
@@ -412,8 +422,8 @@ public class CommonConnectedUtil {
 
         Map<Long, Long> conRuleIdVsParentLoggerId = new HashMap<>();
         for (IConnectedRule conRule : conRules) {
-            instructionData.put("assetCategoryId", conRule.getNs().getCategoryId());
-            long parentLoggerId = conRule.insertLog(startTime, endTime, CollectionUtils.isNotEmpty(assets) ? assets.size() : NamespaceAPI.getMatchedResources(conRule.getNs(), conRule.getNs().getCategoryId()).size(), false);
+            instructionData.put("assetCategoryId", conRule.getCategory().fetchId());
+            long parentLoggerId = conRule.insertLog(startTime, endTime, CollectionUtils.isNotEmpty(assets) ? assets.size() : NamespaceAPI.getMatchedResources(conRule.getNs(), conRule.getCategory()).size(), false);
             conRuleIdVsParentLoggerId.put(conRule.getId(), parentLoggerId);
         }
         instructionData.put("conRuleIdVsParentLoggerId", conRuleIdVsParentLoggerId);
@@ -435,13 +445,85 @@ public class CommonConnectedUtil {
                 List<V3AssetCategoryContext> assetCategoriesCtx = Constants.getRecordListFromContext(resultCtx, FacilioConstants.ContextNames.ASSET_CATEGORY);
                 return CollectionUtils.isNotEmpty(assetCategoriesCtx) ? assetCategoriesCtx.get(0) : null;
             case METER_CATEGORY:
-//                resultCtx = V3Util.getSummary(FacilioConstants.Meter.UTILITY_TYPE, Lists.newArrayList(categoryId));
-//                List<V3UtilityTypeContext> utilityCtxs = Constants.getRecordListFromContext(resultCtx, FacilioConstants.Meter.UTILITY_TYPE);
-//                return CollectionUtils.isNotEmpty(utilityCtxs) ? utilityCtxs.get(0) : null;
-                throw new Exception("Not supported yet");
+                resultCtx = V3Util.getSummary(FacilioConstants.Meter.UTILITY_TYPE, Lists.newArrayList(categoryId));
+                List<V3UtilityTypeContext> utilityCtxs = Constants.getRecordListFromContext(resultCtx, FacilioConstants.Meter.UTILITY_TYPE);
+                return CollectionUtils.isNotEmpty(utilityCtxs) ? utilityCtxs.get(0) : null;
             case SITE:
                 throw new Exception("Not supported yet");
         }
         return null;
+    }
+
+    public static List<Long> getResourceIdsBasedOnCategory(ResourceType resourceType, Long categoryId) throws Exception {
+        switch (resourceType) {
+            case ASSET_CATEGORY:
+                List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(categoryId);
+                return assets.stream().map(asset -> asset.getId()).collect(Collectors.toList());
+            case METER_CATEGORY:
+                List<V3MeterContext> meters = MetersAPI.getMeterListOfUtilityType(categoryId);
+                return meters.stream().map(meter -> meter.getId()).collect(Collectors.toList());
+            case SITE:
+                throw new Exception("Not supported yet");
+        }
+        return new ArrayList<>();
+    }
+
+    public static List<Long> getResourcesBasedOnType(int resourceType, List<Long> assetIds) throws Exception {
+        ResourceType resourceTypeEnum=ResourceType.valueOf(resourceType);
+        return getResourcesBasedOnType(resourceTypeEnum,assetIds);
+    }
+    public static List<Long> getResourcesBasedOnType(ResourceType resourceType, List<Long> assetIds) throws Exception {
+        switch (resourceType) {
+            case ASSET_CATEGORY:
+                List<AssetContext> assetInfo = AssetsAPI.getAssetInfo(assetIds);
+                return assetInfo.stream().map(m -> m.getId()).collect(Collectors.toList());
+            case METER_CATEGORY:
+                List<V3MeterContext> meterInfo = MetersAPI.getMeters(assetIds);
+                return meterInfo.stream().map(m -> m.getId()).collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
+    public static Map<String, Object> getConnectedData(NameSpaceContext ns) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        NSType type = ns.getTypeEnum();
+        FacilioModule module = modBean.getModule(type.getModuleName());
+
+        List<FacilioField> fields = getFields(type, module);
+
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(module.getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(ns.getParentRuleId(), module));
+
+        if(type.equals(NSType.FAULT_IMPACT_RULE)){
+            selectRecordBuilder.innerJoin(ModuleFactory.getNewReadingRuleModule().getTableName()).on(ModuleFactory.getNewReadingRuleModule().getTableName()+".IMPACT_ID = "+module.getTableName()+".ID");
+        }
+
+        List<Map<String, Object>> props = selectRecordBuilder.get();
+
+        if (CollectionUtils.isNotEmpty(props)) {
+            return props.get(0);
+        }
+        return null;
+    }
+
+    private static List<FacilioField> getFields(NSType type, FacilioModule module) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = new ArrayList<FacilioField>() {{
+            add(getField("status", "STATUS", FieldType.BOOLEAN));
+        }};
+        switch (type) {
+            case FAULT_IMPACT_RULE:
+                fields.add(getField("categoryId", "ASSET_CATEGORY", FieldType.NUMBER));
+                break;
+            case VIRTUAL_METER:
+                fields.add(getField("categoryId", "UTILITY_TYPE_ID", FieldType.NUMBER));
+                break;
+            default:
+                fields.add(getField("categoryId", "CATEGORY_ID", FieldType.NUMBER));
+                fields.add(getField("resourceType", "RESOURCE_TYPE", FieldType.NUMBER));
+        }
+        return fields;
     }
 }

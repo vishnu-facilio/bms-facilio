@@ -2,6 +2,7 @@ package com.facilio.beans;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.cache.CacheUtil;
+import com.facilio.connected.ResourceType;
 import com.facilio.fw.cache.FWLRUCaches;
 import com.facilio.fw.cache.FacilioCache;
 import com.facilio.fw.cache.LRUCache;
@@ -39,8 +40,8 @@ public class NamespaceBeanCacheImpl extends NamespaceBeanImpl implements Namespa
 
 
     @Override
-    public Long addNamespace(NameSpaceContext ns) throws Exception {
-        Long nsId = super.addNamespace(ns);
+    public Long addNamespace(NameSpaceContext ns, ResourceType resourceType) throws Exception {
+        Long nsId = super.addNamespace(ns,resourceType);
         removeCacheWithFieldsList(ns.getFields());
         return nsId;
     }
@@ -60,8 +61,8 @@ public class NamespaceBeanCacheImpl extends NamespaceBeanImpl implements Namespa
     }
 
     @Override
-    public void updateNamespace(NameSpaceContext ns) throws Exception {
-        super.updateNamespace(ns);
+    public void updateNamespace(NameSpaceContext ns,ResourceType resourceType) throws Exception {
+        super.updateNamespace(ns,resourceType);
 
         FacilioCache<String, NameSpaceCacheContext> nameSpaceCache = LRUCache.getNameSpaceCache();
         nameSpaceCache.remove(CacheUtil.NAMESPACE_KEY(AccountUtil.getCurrentOrg().getId(), ns.getId()));

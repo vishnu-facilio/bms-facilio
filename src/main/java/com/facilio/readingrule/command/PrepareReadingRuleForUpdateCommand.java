@@ -45,7 +45,7 @@ public class PrepareReadingRuleForUpdateCommand extends FacilioCommand {
         }
         constructRuleDetails(context, readingRule, oldRule);
         setAssets(oldRule);
-        context.put(FacilioConstants.ContextNames.NEW_READING_RULE, oldRule);
+        context.put(FacilioConstants.ReadingRules.NEW_READING_RULE, oldRule);
         context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 
         return false;

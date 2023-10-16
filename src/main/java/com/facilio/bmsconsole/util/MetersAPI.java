@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
 import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext;
@@ -13,7 +14,7 @@ import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.v3.util.V3Util;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -256,6 +257,25 @@ public class MetersAPI {
 				.andCondition(CriteriaAPI.getIdCondition(meterIds, module));
 		return updateBuilder.update(meter);
 	}
-	
+
+
+	public static List<V3MeterContext> getMeters(List<Long> meterIds) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.METER);
+
+		SelectRecordsBuilder<V3MeterContext> selectBuilder = new SelectRecordsBuilder<V3MeterContext>()
+				.moduleName(module.getName())
+				.beanClass(V3MeterContext.class)
+				.select(modBean.getAllFields(module.getName()))
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(meterIds, module));
+
+		List<V3MeterContext> meters = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(meters)) {
+			return meters;
+		}
+		return new ArrayList<>();
+	}
+
 }
 

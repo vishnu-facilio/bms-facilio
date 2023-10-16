@@ -1,5 +1,6 @@
 package com.facilio.beans;
 
+import com.facilio.connected.ResourceType;
 import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceCacheContext;
 import com.facilio.ns.context.NameSpaceContext;
@@ -13,9 +14,9 @@ public interface NamespaceBean {
     
     NameSpaceCacheContext getNamespaceForParent(Long parentId, NSType type) throws Exception;
 
-    Long addNamespace(NameSpaceContext ns) throws Exception;
+    Long addNamespace(NameSpaceContext ns,ResourceType resourceType) throws Exception;
 
-    void updateNamespace(NameSpaceContext ns) throws Exception;
+    void updateNamespace(NameSpaceContext ns, ResourceType resourceType) throws Exception;
 
     void updateNsStatus(Long ruleId, boolean status, List<NSType> nsList) throws Exception;
 
