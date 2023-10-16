@@ -129,7 +129,7 @@ public class V2AnalyticsReportAction extends V3Action {
             setData("report", reportContext);
         }
         if(context.get("v2_report") != null){
-            setData("v2_report", context.get("report_v2"));
+            setData("v2_report", context.get("v2_report"));
         }
         setData("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES)); // This can be removed
         // from new format
