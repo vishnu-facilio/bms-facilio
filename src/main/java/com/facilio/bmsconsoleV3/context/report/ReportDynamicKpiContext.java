@@ -13,4 +13,6 @@ public class ReportDynamicKpiContext
 {
     public String dynamicKpi;
     public List<Long> parentId;
+    public Long category;
+    public boolean isV2Analytics;
 }

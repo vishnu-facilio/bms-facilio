@@ -83,5 +83,11 @@ public class V2AnalyticsTransactionChain
         chain.addCommand(new V2AnalyticsReportListCommand());
         return chain;
     }
+    public static FacilioChain getReadingsFromCategoryChain()throws Exception
+    {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new V2GetReadingsFromCategoryCommand());
+        return chain;
+    }
 }
 

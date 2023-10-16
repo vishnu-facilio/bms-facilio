@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
+import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.analytics.v2.context.V2MeasuresContext;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
@@ -13,6 +14,8 @@ import com.facilio.bmsconsole.util.AggregationAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsoleV3.context.report.ReportDynamicKpiContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -205,52 +208,54 @@ public class FetchReportDataCommand extends FacilioCommand {
                 {
                     ReportDynamicKpiContext dynamicKpi = dataPointList.get(0).getDynamicKpi();
                     ReadingKPIContext dynKpi = getReadingKpi(Long.valueOf(dynamicKpi.getDynamicKpi()));
-                    if(dynamicKpi.getParentId() != null && dynamicKpi.getParentId().size() > 0 && report.getxAggrEnum()!=null ) {
 
-                        DateRange dateRange = report.getDateRange();
-                        Map<Long, List<Map<String, Object>>> resultForDynamicKpi = null;
-                        Map<String, List<Map<String, Object>>> props = new HashMap<>();
-                        ReportDataContext kpiData = new ReportDataContext();
-                        ReportBaseLineContext reportBaseLine = null;
-                        DateRange dynamicBaseLineRange = null;
-                        Map<Long, List<Map<String, Object>>> resultForBaseLine = null;
-                        if(report.getBaseLines() != null && !report.getBaseLines().isEmpty()){
-                            reportBaseLine = report.getBaseLines().get(0);
-                            dynamicBaseLineRange = reportBaseLine.getBaseLineRange();
-                            kpiData.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
-                        }
-
-                        if(dynamicKpi.getParentId().get(0) != null) {
-
-                            resultForDynamicKpi = getResultForDynamicKpi(Collections.singletonList(dynamicKpi.getParentId().get(0)), dateRange, report.getxAggrEnum(), dynKpi.getNs());
-                            props.put(FacilioConstants.Reports.ACTUAL_DATA, resultForDynamicKpi.get(dynamicKpi.getParentId().get(0)));
-                            if (reportBaseLine!=null) {
-                                    resultForBaseLine = getResultForDynamicKpi(Collections.singletonList(dynamicKpi.getParentId().get(0)), dynamicBaseLineRange,report.getxAggrEnum(), dynKpi.getNs());
-                                    props.put(reportBaseLine.getBaseLine().getName(), resultForBaseLine.get(dynamicKpi.getParentId().get(0)));
-
-                                }
-
-                        }
-                        else
-                        {
-                            List<Long> parentIds = new ArrayList<>();
-                            resultForDynamicKpi = getResultForDynamicKpi(parentIds, dateRange, report.getxAggrEnum(), dynKpi.getNs());
-                            if (reportBaseLine!=null) {
-                                    resultForBaseLine = getResultForDynamicKpi(parentIds, dynamicBaseLineRange,report.getxAggrEnum(), dynKpi.getNs());
-                            }
-                            for(Long parentId : parentIds){
-                                props.put(FacilioConstants.Reports.ACTUAL_DATA, resultForDynamicKpi.get(parentId));
-                                if(resultForBaseLine!=null){
-                                    props.put(reportBaseLine.getBaseLine().getName(), resultForBaseLine.get(parentId));
-                                }
-                            }
-                        }
-//                        ReportDataContext kpiData = new ReportDataContext();
-                        kpiData.setDataPoints(dataPointList);
-                        kpiData.setProps(props);
-                        reportData.add(kpiData);
+                    DateRange dateRange = report.getDateRange();
+                    Map<Long, List<Map<String, Object>>> resultForDynamicKpi = null;
+                    Map<String, List<Map<String, Object>>> props = new HashMap<>();
+                    ReportDataContext kpiData = new ReportDataContext();
+                    ReportBaseLineContext reportBaseLine = null;
+                    DateRange dynamicBaseLineRange = null;
+                    Map<Long, List<Map<String, Object>>> resultForBaseLine = null;
+                    if(report.getBaseLines() != null && !report.getBaseLines().isEmpty()){
+                        reportBaseLine = report.getBaseLines().get(0);
+                        dynamicBaseLineRange = reportBaseLine.getBaseLineRange();
+                        kpiData.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
                     }
-//                    setData("readings", resultForDynamicKpi);
+
+                    if(dynamicKpi.getParentId() != null && dynamicKpi.getParentId().get(0) != null) {
+
+                        resultForDynamicKpi = getResultForDynamicKpi(Collections.singletonList(dynamicKpi.getParentId().get(0)), dateRange, report.getxAggrEnum(), dynKpi.getNs());
+                        props.put(FacilioConstants.Reports.ACTUAL_DATA, resultForDynamicKpi.get(dynamicKpi.getParentId().get(0)));
+                        if (reportBaseLine!=null) {
+                            resultForBaseLine = getResultForDynamicKpi(Collections.singletonList(dynamicKpi.getParentId().get(0)), dynamicBaseLineRange,report.getxAggrEnum(), dynKpi.getNs());
+                            props.put(reportBaseLine.getBaseLine().getName(), resultForBaseLine.get(dynamicKpi.getParentId().get(0)));
+
+                        }
+                    }
+                    else if(dynamicKpi.isV2Analytics())
+                    {
+                        FacilioChain chain = V2AnalyticsTransactionChain.getCategoryModuleChain();
+                        FacilioContext kpi_context = chain.getContext();
+                        kpi_context.put("categoryId", dynamicKpi.getCategory());
+                        kpi_context.put("type", "asset");
+                        chain.execute();
+                        List<Long> parentIds = V2AnalyticsOldUtil.getAssetIdsFromCriteria((String)kpi_context.get("moduleName"), dataPointList.get(0).getV2Criteria());
+                        parentIds = parentIds.stream().limit(10).collect(Collectors.toList());
+                        resultForDynamicKpi = getResultForDynamicKpi(parentIds, dateRange, report.getxAggrEnum(), dynKpi.getNs());
+                        if (reportBaseLine!=null) {
+                            resultForBaseLine = getResultForDynamicKpi(parentIds, dynamicBaseLineRange,report.getxAggrEnum(), dynKpi.getNs());
+                        }
+                        for(Long parentId : parentIds){
+                            props.put(FacilioConstants.Reports.ACTUAL_DATA, resultForDynamicKpi.get(parentId));
+                            if(resultForBaseLine!=null){
+                                props.put(reportBaseLine.getBaseLine().getName(), resultForBaseLine.get(parentId));
+                            }
+                        }
+                    }
+//                        ReportDataContext kpiData = new ReportDataContext();
+                    kpiData.setDataPoints(dataPointList);
+                    kpiData.setProps(props);
+                    reportData.add(kpiData);
                 }
             }
             if (dataPoints.isEmpty()) {

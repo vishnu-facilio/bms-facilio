@@ -2004,6 +2004,10 @@
             <param name="reportId">{1}</param>
         </action>
         <action name="dimension/modes" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="getAllReportModes"/>
+        <action name="readings/*" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="readings">
+            <param name="categoryId">{1}</param>
+        </action>
+
     </package>
     <package name="remotemonitor" extends="v3Api" namespace="/api/v3/alarms">
         <action name="generateRawAlarms" class="com.facilio.remotemonitoring.action.RawAlarmAction" method="generateRawAlarms"/>

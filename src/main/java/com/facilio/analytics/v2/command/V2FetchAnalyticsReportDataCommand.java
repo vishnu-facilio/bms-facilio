@@ -63,7 +63,8 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 if(dataPointList.get(0) != null && dataPointList.get(0).getDynamicKpi() != null && dataPointList.get(0).getDynamicKpi().getDynamicKpi() != null)
                 {
                     LOGGER.info("this is for dynamic kpi");
-                    fetchLiveKpiDataForAnalytics(report, dataPoints);
+                    ReportDataContext data = fetchLiveKpiDataForAnalytics(report, dataPoints);
+                    reportData.add(data);
                 }
                 else
                 {
@@ -282,7 +283,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
             kpiData.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
         }
 
-        if(dynamicKpi.getParentId().get(0) != null)
+        if(dynamicKpi.getParentId() != null && dynamicKpi.getParentId().get(0) != null)
         {
             resultForDynamicKpi = getResultForDynamicKpi(Collections.singletonList(dynamicKpi.getParentId().get(0)), dateRange, report.getxAggrEnum(), dynKpi.getNs());
             props.put(FacilioConstants.Reports.ACTUAL_DATA, resultForDynamicKpi.get(dynamicKpi.getParentId().get(0)));
@@ -294,11 +295,11 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         else
         {
             FacilioChain chain = V2AnalyticsTransactionChain.getCategoryModuleChain();
-            FacilioContext context = chain.getContext();
-            context.put("categoryId", "categoryId");
-            context.put("type", "asset");
+            FacilioContext kpi_context = chain.getContext();
+            kpi_context.put("categoryId", dynamicKpi.getCategory());
+            kpi_context.put("type", "asset");
             chain.execute();
-            List<Long> parentIds = V2AnalyticsOldUtil.getAssetIdsFromCriteria((String)context.get("moduleName"), dataPointList.get(0).getV2Criteria());
+            List<Long> parentIds = V2AnalyticsOldUtil.getAssetIdsFromCriteria((String)kpi_context.get("moduleName"), dataPointList.get(0).getV2Criteria());
             parentIds = parentIds.stream().limit(10).collect(Collectors.toList());
             resultForDynamicKpi = getResultForDynamicKpi(parentIds, dateRange, report.getxAggrEnum(), dynKpi.getNs());
             if (reportBaseLine!=null) {

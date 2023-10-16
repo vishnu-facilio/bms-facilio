@@ -52,10 +52,8 @@ public class V2AnalyticsOldUtil {
         String baseLinesString = report.getBaseLinesString();
         V2AnalyticsOldUtil.fetchBaseLines(report, baseLinesString,report_context);
         report_context.setChartState(report.getChartState());
-        if(report.getTimeFilter().getDateOperator() != -1)
-        {
-            report_context.setDateOperator(report.getTimeFilter().getDateOperator());
-        }
+        report_context.setDateOperator(report.getTimeFilter().getDateOperator() > 0 ? report.getTimeFilter().getDateOperator() : DateOperators.BETWEEN.getOperatorId());
+
         report_context.setxAlias(FacilioConstants.ContextNames.REPORT_DEFAULT_X_ALIAS);
         report_context.setxAggr(report.getDimensions().getxAggr());
         report_context.setAnalyticsType(ReadingAnalysisContext.AnalyticsType.PORTFOLIO);
@@ -634,16 +632,15 @@ public class V2AnalyticsOldUtil {
 
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(moduleName);
-        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
 
         SelectRecordsBuilder selectBuilder = new SelectRecordsBuilder()
                 .select(Collections.singleton(FieldFactory.getIdField(module)))
-                .table(module.getTableName());
+                .module(module);
 
         if(criteria != null) {
             selectBuilder.andCriteria(criteria);
         }
-        List<Map<String, Object>> props = selectBuilder.get();
+        List<Map<String, Object>> props = selectBuilder.getAsProps();
         List<Long> assetIds = new ArrayList<>();
         if(props != null && props.size() > 0)
         {

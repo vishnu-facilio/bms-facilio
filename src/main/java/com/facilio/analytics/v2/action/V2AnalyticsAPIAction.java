@@ -31,4 +31,15 @@ public class V2AnalyticsAPIAction extends V3Action {
         setData("moduleName", context.get("moduleName"));
         return V3Action.SUCCESS;
     }
+
+    public String readings()throws Exception
+    {
+        FacilioChain chain = V2AnalyticsTransactionChain.getReadingsFromCategoryChain();
+        FacilioContext context = chain.getContext();
+        context.put("category", categoryId);
+        context.put("type", type);
+        chain.execute();
+        setData("fields", context.get("fields"));
+        return V3Action.SUCCESS;
+    }
 }

@@ -527,4 +527,9 @@
             <property name="reportId" type="number" mandatory="true"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/analytics/readings/:categoryId" method="GET">
+        <urlparams>
+            <property name="categoryId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
 </config>

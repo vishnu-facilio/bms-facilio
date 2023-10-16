@@ -25,6 +25,11 @@ public class V2MeasuresContext {
     public Long category;
     public String displayName;
 
+    /**
+     *  dataType key is used to calcluate aggrgation baseed on datatype
+     */
+    public Integer dataType;
+
     public Criteria criteria;
     public long criteriaId;
     private Map<String, String> aliases;
@@ -34,6 +39,7 @@ public class V2MeasuresContext {
     private boolean duplicateDataPoint;
     private boolean defaultSortPoint;
     public int aggr;
+    public Long dynamicKpiId;
     private ReportDataPointContext.OrderByFunction orderByFunction;
 
     public void setAggr(int aggr){
