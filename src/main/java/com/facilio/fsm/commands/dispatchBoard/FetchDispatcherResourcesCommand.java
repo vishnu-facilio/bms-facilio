@@ -130,76 +130,77 @@ public class FetchDispatcherResourcesCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(people)){
             for(V3PeopleContext resource : people){
                 DispatcherResourceContext dispatcherResource = new DispatcherResourceContext();
-                List<ShiftSlot> slots = ShiftAPI.fetchShiftSlots(Collections.singletonList(resource.getId()), startTime, endTime);
-
-                ShiftSlot defaultShiftSlot = slots.get(0);
-                List<Map<String, Object>> shiftSchedule = new ArrayList<>();
-                Map<Long, Map<String, Object>> shiftScheduleMap = new HashMap<>();
-                for (long time = startTime; time <= endTime; time += DAY_IN_MILLIS) {
-                    if( defaultShiftSlot != null && defaultShiftSlot.getShift() != null ) {
-                        Shift defaultShift = defaultShiftSlot.getShift();
-                        Map<String, Object> shift = new HashMap<>();
-                        shift.put("name", defaultShift.getName());
-                        shift.put("shiftId", defaultShift.getId());
-                        shift.put("colorCode", defaultShift.getColorCode());
-                        boolean isWeeklyOff = defaultShift.isWeeklyOff(time);
-                        if (isWeeklyOff) {
-                            shift.put("startTime", DateTimeUtil.getDayStartTimeOf(time));
-                            shift.put("endTime", DateTimeUtil.getDayEndTimeOf(time));
-                        } else {
-                            Long shiftStartTime = defaultShift.getStartTime();
-                            Long shiftEndTime = defaultShift.getEndTime();
-
-                            if(shiftEndTime != null && shiftStartTime != null) {
-                                if(shiftStartTime > shiftEndTime){
-                                    shiftEndTime += 86400000;
-                                }
-                                shift.put("startTime", shiftStartTime + time);
-                                shift.put("endTime", shiftEndTime + time);
-                            }
-                        }
-                        shift.put("isWeeklyOff", isWeeklyOff);
-                        shiftSchedule.add(shift);
-                        shiftScheduleMap.put(time, shift);
-                    }
-                }
-                for (ShiftSlot slot : slots) {
-                    if(slot != null){
-                        long modificationStart = slot.getFrom();
-                        long modificationEnd = slot.getTo();
-                        if (modificationStart == UNLIMITED_PERIOD || modificationEnd == UNLIMITED_PERIOD) {
-                            continue;
-                        }
-                        Shift shift = slot.getShift();
-
-                        for (long time = modificationStart; time <= modificationEnd; time += DAY_IN_MILLIS) {
-                            Map<String, Object> shiftObj = shiftScheduleMap.get(time);
-                            if (shiftObj == null) {
-                                continue;
-                            }
-                            shiftObj.put("name", shift.getName());
-                            shiftObj.put("shiftId", shift.getId());
-                            shiftObj.put("colorCode", shift.getColorCode());
-                            boolean isWeeklyOff = shift.isWeeklyOff(time);
-                            if (isWeeklyOff) {
-                                shiftObj.put("startTime", DateTimeUtil.getDayStartTimeOf(time));
-                                shiftObj.put("endTime", DateTimeUtil.getDayEndTimeOf(time));
-                            } else {
-                                Long shiftStartTime = shift.getStartTime();
-                                Long shiftEndTime = shift.getEndTime();
-
-                                if(shiftEndTime != null && shiftStartTime != null) {
-                                    if(shiftStartTime > shiftEndTime){
-                                        shiftEndTime += 86400000;
-                                    }
-                                    shiftObj.put("startTime", shiftStartTime + time);
-                                    shiftObj.put("endTime", shiftEndTime + time);
-                                }
-                            }
-                            shiftObj.put("isWeeklyOff", isWeeklyOff);
-                        }
-                    }
-                }
+                List<Map<String, Object>> shiftSchedule = ShiftAPI.getShiftListDecoratedWithWeeklyOff(resource.getId(), startTime, endTime);
+//                List<ShiftSlot> slots = ShiftAPI.fetchShiftSlotsForDispatcher(Collections.singletonList(resource.getId()), startTime, endTime);
+//
+//                ShiftSlot defaultShiftSlot = slots.get(0);
+//                List<Map<String, Object>> shiftSchedule = new ArrayList<>();
+//                Map<Long, Map<String, Object>> shiftScheduleMap = new HashMap<>();
+//                for (long time = startTime; time <= endTime; time += DAY_IN_MILLIS) {
+//                    if( defaultShiftSlot != null && defaultShiftSlot.getShift() != null ) {
+//                        Shift defaultShift = defaultShiftSlot.getShift();
+//                        Map<String, Object> shift = new HashMap<>();
+//                        shift.put("name", defaultShift.getName());
+//                        shift.put("shiftId", defaultShift.getId());
+//                        shift.put("colorCode", defaultShift.getColorCode());
+//                        boolean isWeeklyOff = defaultShift.isWeeklyOff(time);
+//                        if (isWeeklyOff) {
+//                            shift.put("startTime", DateTimeUtil.getDayStartTimeOf(time));
+//                            shift.put("endTime", DateTimeUtil.getDayEndTimeOf(time));
+//                        } else {
+//                            Long shiftStartTime = defaultShift.getStartTime();
+//                            Long shiftEndTime = defaultShift.getEndTime();
+//
+//                            if(shiftEndTime != null && shiftStartTime != null) {
+//                                if(shiftStartTime > shiftEndTime){
+//                                    shiftEndTime += 86400000;
+//                                }
+//                                shift.put("startTime", shiftStartTime + time);
+//                                shift.put("endTime", shiftEndTime + time);
+//                            }
+//                        }
+//                        shift.put("isWeeklyOff", isWeeklyOff);
+//                        shiftSchedule.add(shift);
+//                        shiftScheduleMap.put(time, shift);
+//                    }
+//                }
+//                for (ShiftSlot slot : slots) {
+//                    if(slot != null){
+//                        long modificationStart = slot.getFrom();
+//                        long modificationEnd = slot.getTo();
+//                        if (modificationStart == UNLIMITED_PERIOD || modificationEnd == UNLIMITED_PERIOD) {
+//                            continue;
+//                        }
+//                        Shift shift = slot.getShift();
+//
+//                        for (long time = modificationStart; time <= modificationEnd; time += DAY_IN_MILLIS) {
+//                            Map<String, Object> shiftObj = shiftScheduleMap.get(time);
+//                            if (shiftObj == null) {
+//                                continue;
+//                            }
+//                            shiftObj.put("name", shift.getName());
+//                            shiftObj.put("shiftId", shift.getId());
+//                            shiftObj.put("colorCode", shift.getColorCode());
+//                            boolean isWeeklyOff = shift.isWeeklyOff(time);
+//                            if (isWeeklyOff) {
+//                                shiftObj.put("startTime", DateTimeUtil.getDayStartTimeOf(time));
+//                                shiftObj.put("endTime", DateTimeUtil.getDayEndTimeOf(time));
+//                            } else {
+//                                Long shiftStartTime = shift.getStartTime();
+//                                Long shiftEndTime = shift.getEndTime();
+//
+//                                if(shiftEndTime != null && shiftStartTime != null) {
+//                                    if(shiftStartTime > shiftEndTime){
+//                                        shiftEndTime += 86400000;
+//                                    }
+//                                    shiftObj.put("startTime", shiftStartTime + time);
+//                                    shiftObj.put("endTime", shiftEndTime + time);
+//                                }
+//                            }
+//                            shiftObj.put("isWeeklyOff", isWeeklyOff);
+//                        }
+//                    }
+//                }
                 dispatcherResource.setPeople(resource);
                 dispatcherResource.setShifts(shiftSchedule);
                 resources.add(dispatcherResource);
