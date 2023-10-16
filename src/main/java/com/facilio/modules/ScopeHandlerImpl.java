@@ -1,33 +1,28 @@
 package com.facilio.modules;
 
-import java.util.*;
-
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
-import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
-import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
-import com.facilio.bmsconsoleV3.util.GlobalScopeUtil;
-import com.facilio.bmsconsoleV3.util.ScopingUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.datastructure.dag.DAG;
-import com.facilio.datastructure.dag.DAGCache;
-import com.facilio.db.criteria.operators.*;
-import com.facilio.fw.BeanFactory;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
+import com.facilio.bmsconsoleV3.util.GlobalScopeUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.datastructure.dag.DAGCache;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.*;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
 
 public class ScopeHandlerImpl extends ScopeHandler {
 
@@ -200,20 +195,19 @@ public class ScopeHandlerImpl extends ScopeHandler {
 		Criteria criteria = null;
 
 		for(FacilioModule module : joinModules) {
-			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
-				Pair<List<FacilioField>, Criteria> fieldsAndCriteriaForSubquery = constructScopeVariableCriteria(module,isSuperAdmin);
-				if (fieldsAndCriteriaForSubquery != null) {
-					if(!isInsert) {
-						if (CollectionUtils.isNotEmpty(fieldsAndCriteriaForSubquery.getLeft())) {
-							fields.addAll(fieldsAndCriteriaForSubquery.getLeft());
-						}
-						if (criteria == null) {
-							criteria = new Criteria();
-						}
-						criteria.andCriteria(fieldsAndCriteriaForSubquery.getRight());
+			Pair<List<FacilioField>, Criteria> fieldsAndCriteriaForSubquery = constructScopeVariableCriteria(module,isSuperAdmin);
+			if (fieldsAndCriteriaForSubquery != null) {
+				if(!isInsert) {
+					if (CollectionUtils.isNotEmpty(fieldsAndCriteriaForSubquery.getLeft())) {
+						fields.addAll(fieldsAndCriteriaForSubquery.getLeft());
 					}
+					if (criteria == null) {
+						criteria = new Criteria();
+					}
+					criteria.andCriteria(fieldsAndCriteriaForSubquery.getRight());
 				}
 			}
+
 			ScopingConfigContext scoping = AccountUtil.getCurrentAppScopingMap(module.getModuleId());
 			ScopingConfigContext moduleScoping = FieldUtil.cloneBean(scoping,ScopingConfigContext.class);
 			if(moduleScoping != null && !isSuperAdmin) {

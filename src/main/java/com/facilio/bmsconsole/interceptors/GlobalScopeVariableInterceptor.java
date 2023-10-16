@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.interceptors;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
-import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
 import com.facilio.bmsconsoleV3.util.GlobalScopeUtil;
@@ -41,7 +40,7 @@ public class GlobalScopeVariableInterceptor extends AbstractInterceptor {
         try {
             Parameter parameter = ActionContext.getContext().getParameters().get("globalScopeInterceptor");
             if(parameter == null || parameter.getValue() == null || parameter.getValue().equals("true")) {
-                if (AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
+                if (AccountUtil.getCurrentOrg() != null ) {
                     computeScopeVariable();
                 }
             }

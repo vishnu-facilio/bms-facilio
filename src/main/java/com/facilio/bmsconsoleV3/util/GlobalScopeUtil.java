@@ -20,12 +20,14 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ValueGenerator;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
-import com.facilio.util.FacilioUtil;
 import com.facilio.util.ValueGeneratorUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -468,29 +470,22 @@ public class GlobalScopeUtil {
             return null;
         }
 
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCOPE_VARIABLE)) {
-            GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>> scopeVsValueGen = scopeBean.getAllScopeVariableAndValueGen(AccountUtil.getCurrentApp().getId());
-            FacilioModule siteModule = modBean.getModule("site");
-            if(scopeVsValueGen != null) {
-                for (Pair<GlobalScopeVariableContext, ValueGeneratorContext> value : scopeVsValueGen.values()) {
-                    GlobalScopeVariableContext scopeVariableContext = value.getKey();
-                    if (scopeVariableContext != null && ((scopeVariableContext.getApplicableModuleId() != null && scopeVariableContext.getApplicableModuleId() == siteModule.getModuleId()) || (scopeVariableContext.getApplicableModuleName() != null && scopeVariableContext.getApplicableModuleName().equals(siteModule.getName())))) {
-                        JSONObject switchMap = getFilterRecordIdMapFromHeader();
-                        if (switchMap != null) {
-                            List<Long> ids = getFilterRecordIdFromHeader(switchMap, scopeVariableContext.getLinkName());
-                            if (CollectionUtils.isNotEmpty(ids)) {
-                                return ids;
-                            }
+        GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        Map<String, Pair<GlobalScopeVariableContext, ValueGeneratorContext>> scopeVsValueGen = scopeBean.getAllScopeVariableAndValueGen(AccountUtil.getCurrentApp().getId());
+        FacilioModule siteModule = modBean.getModule("site");
+        if(scopeVsValueGen != null) {
+            for (Pair<GlobalScopeVariableContext, ValueGeneratorContext> value : scopeVsValueGen.values()) {
+                GlobalScopeVariableContext scopeVariableContext = value.getKey();
+                if (scopeVariableContext != null && ((scopeVariableContext.getApplicableModuleId() != null && scopeVariableContext.getApplicableModuleId() == siteModule.getModuleId()) || (scopeVariableContext.getApplicableModuleName() != null && scopeVariableContext.getApplicableModuleName().equals(siteModule.getName())))) {
+                    JSONObject switchMap = getFilterRecordIdMapFromHeader();
+                    if (switchMap != null) {
+                        List<Long> ids = getFilterRecordIdFromHeader(switchMap, scopeVariableContext.getLinkName());
+                        if (CollectionUtils.isNotEmpty(ids)) {
+                            return ids;
                         }
                     }
                 }
-            }
-        } else {
-            long currentSiteId = AccountUtil.getCurrentSiteId();
-            if (currentSiteId > 0) {
-                return Collections.singletonList(currentSiteId);
             }
         }
         return null;
