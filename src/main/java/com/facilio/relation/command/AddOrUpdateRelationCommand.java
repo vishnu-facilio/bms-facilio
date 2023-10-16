@@ -123,14 +123,14 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
                 .fields(FieldFactory.getRelationMappingFields());
 
         List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> data = new ArrayList<>();
-        Map<Long, RelationMappingContext> oldRelationMap = oldRelation.getMappings().stream().collect(Collectors.toMap(RelationMappingContext::getFromModuleId, Function.identity()));
+        Map<RelationMappingContext.Position, RelationMappingContext> oldRelationMap = oldRelation.getMappings().stream().collect(Collectors.toMap(RelationMappingContext::getPositionEnum, Function.identity()));
         for (RelationMappingContext mapping : relationContext.getMappings()) {
-            RelationMappingContext oldMapping = oldRelationMap.get(mapping.getFromModuleId());
+            RelationMappingContext oldMapping = oldRelationMap.get(mapping.getPositionEnum());
             if (oldMapping == null) {
                 throw new IllegalArgumentException("The modules in relation cannot be changed");
             }
 
-            if (oldMapping.getToModuleId() != mapping.getToModuleId()) {
+            if ((oldMapping.getFromModuleId() != mapping.getFromModuleId()) || (oldMapping.getToModuleId() != mapping.getToModuleId())) {
                 throw new IllegalArgumentException("The modules in relation cannot be changed");
             }
 

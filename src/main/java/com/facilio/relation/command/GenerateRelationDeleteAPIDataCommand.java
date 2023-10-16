@@ -45,9 +45,11 @@ public class GenerateRelationDeleteAPIDataCommand extends FacilioCommand {
         }
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioField moduleIdField = FieldFactory.getModuleIdField(relation.getRelationModule());
         FacilioField parentField = modBean.getField(relationMapping.getPositionEnum().getFieldName(), relation.getRelationModule().getName());
         FacilioField childField = modBean.getField(relationMapping.getReversePosition().getFieldName(), relation.getRelationModule().getName());
         Criteria addonCriteria = new Criteria();
+        addonCriteria.addAndCondition(CriteriaAPI.getCondition(moduleIdField, String.valueOf(relation.getRelationModuleId()), NumberOperators.EQUALS));
         addonCriteria.addAndCondition(CriteriaAPI.getCondition(parentField, String.valueOf(parentId), NumberOperators.EQUALS));
         addonCriteria.addAndCondition(CriteriaAPI.getCondition(childField, StringUtils.join(associateArray, ","), NumberOperators.EQUALS));
 
