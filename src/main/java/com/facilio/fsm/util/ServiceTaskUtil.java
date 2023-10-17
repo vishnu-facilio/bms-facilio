@@ -124,7 +124,7 @@ public class ServiceTaskUtil {
 
                 if (appointment.getFieldAgent() != null) {
                     Long fieldAgentId = appointment.getFieldAgent().getId();
-                    V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, fieldAgentId);
+                    V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, fieldAgentId,V3PeopleContext.class);
                     if (people != null) {
                         if (people.getStatus() != null){
                             if (people.getStatus() != V3PeopleContext.Status.ON_SITE.getIndex() && people.getStatus() != V3PeopleContext.Status.EN_ROUTE.getIndex()) {
@@ -361,7 +361,7 @@ public class ServiceTaskUtil {
                     if (timeSheet != null && timeSheet.getFieldAgent() != null) {
 
                         Long fieldAgentId = timeSheet.getFieldAgent().getId();
-                        V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, fieldAgentId);
+                        V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, fieldAgentId,V3PeopleContext.class);
                         if (people != null) {
                             if (people.getStatus() != null) {
                                 if (people.getStatus() != V3PeopleContext.Status.EN_ROUTE.getIndex()) {
