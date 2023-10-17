@@ -1042,4 +1042,24 @@ public class ShiftAPI {
         return builder.fetchFirst();
     }
 
+    public static boolean checkIfPeopleAvailable(long peopleId, long time) throws Exception {
+        if(V3PeopleAPI.isTimeOff(peopleId,time)){
+            return false;
+        }
+        else {
+            Map<String, Object> shiftData = getPeopleShiftForGivenTime(peopleId, time);
+            if (shiftData != null) {
+                Long startTime = (Long) shiftData.get("startTime");
+                Long endTime = (Long) shiftData.get("endTime");
+                Long dayStartTime = DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis());
+                Long fromRange = dayStartTime + startTime;
+                Long toRange = dayStartTime + endTime;
+                if (time >= fromRange && time <= toRange) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }

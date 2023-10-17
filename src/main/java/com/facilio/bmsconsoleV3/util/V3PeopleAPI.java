@@ -1244,43 +1244,22 @@ public class V3PeopleAPI {
 
         List<V3PeopleContext> peopleList =  getAllPeople();
         Long currentTime = DateTimeUtil.getCurrenTime();
-        Long startTime = DateTimeUtil.getDayStartTimeOf(currentTime);
-        Long endTime = DateTimeUtil.getDayEndTimeOf(currentTime);
 
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
         if(CollectionUtils.isNotEmpty(peopleList)) {
             for (V3PeopleContext people : peopleList) {
-                if(isTimeOff(people.getId(), currentTime)) {
-                    if (people.getStatus() == V3PeopleContext.Status.AVAILABLE.getIndex() || people.getStatus() == null) {
-                        FacilioField status = Constants.getModBean().getField("status", FacilioConstants.ContextNames.PEOPLE);
-                        people.setStatus(V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
-                        V3RecordAPI.updateRecord(people, peopleModule, Collections.singletonList(status));
-                    }
-                }
-                else {
-                    List<Map<String, Object>> shifts = ShiftAPI.getShiftList(people.getId(),startTime,endTime);
-                    if(CollectionUtils.isNotEmpty(shifts)) {
-                        if(checkIfAvailable(shifts,currentTime) ) {
-                            if (people.getStatus() == V3PeopleContext.Status.NOT_AVAILABLE.getIndex() || people.getStatus() == null) {
-                                FacilioField status = Constants.getModBean().getField("status", FacilioConstants.ContextNames.PEOPLE);
-                                people.setStatus(V3PeopleContext.Status.AVAILABLE.getIndex());
-                                V3RecordAPI.updateRecord(people, peopleModule, Collections.singletonList(status));
-                            }
-                        }
-                        else {
-                            if (people.getStatus() == V3PeopleContext.Status.AVAILABLE.getIndex() || people.getStatus() == null) {
-                                FacilioField status = Constants.getModBean().getField("status", FacilioConstants.ContextNames.PEOPLE);
-                                people.setStatus(V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
-                                V3RecordAPI.updateRecord(people, peopleModule, Collections.singletonList(status));
-                            }
-                        }
-                    }
-                    }
-                }
 
+                if (people.getStatus() != null) {
+                    if (people.getStatus() != V3PeopleContext.Status.EN_ROUTE.getIndex() || people.getStatus() != V3PeopleContext.Status.ON_SITE.getIndex()) {
+                        V3PeopleAPI.updatePeopleAvailability(people,currentTime);
+                    }
+                }else{
+                    V3PeopleAPI.updatePeopleAvailability(people,currentTime);
+                }
             }
+
         }
+    }
+
 
     public static boolean isTimeOff(long peopleId,long time)throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1402,6 +1381,33 @@ public class V3PeopleAPI {
             }
         }
     }
+    public static void updatePeopleStatus(Long peopleId, Integer status) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule peopleModule = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+        List<FacilioField> peopleFields = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+        Map<String, FacilioField> peopleFieldMap = FieldFactory.getAsMap(peopleFields);
+
+        V3PeopleContext people = new V3PeopleContext();
+        people.setId(peopleId);
+        people.setStatus(status);
+        V3RecordAPI.updateRecord(people, peopleModule, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
+
+    }
+
+
+    public static void updatePeopleAvailability(V3PeopleContext people,Long currentTime)throws Exception{
+        if (people.isCheckedIn()) {
+            V3PeopleAPI.updatePeopleStatus(people.getId(), V3PeopleContext.Status.AVAILABLE.getIndex());
+        } else {
+            boolean isAvailable = ShiftAPI.checkIfPeopleAvailable(people.getId(), currentTime);
+            if (isAvailable) {
+                V3PeopleAPI.updatePeopleStatus(people.getId(), V3PeopleContext.Status.AVAILABLE.getIndex());
+            } else {
+                V3PeopleAPI.updatePeopleStatus(people.getId(), V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
+            }
+        }
+    }
+
 
 
 }

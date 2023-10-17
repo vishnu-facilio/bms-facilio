@@ -1,6 +1,8 @@
 package com.facilio.fsm.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -109,13 +111,28 @@ public class ServiceTaskUtil {
             updateSAFields.add(saFieldMap.get("status"));
             updateSAFields.add(saFieldMap.get("actualStartTime"));
 
-            FacilioContext appointmentContext = V3Util.getSummary(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,Collections.singletonList(serviceAppointmentContext.getId()));
+            FacilioContext appointmentContext = V3Util.getSummary(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, Collections.singletonList(serviceAppointmentContext.getId()));
 
-            ServiceAppointmentContext appointment  = (ServiceAppointmentContext) Constants.getRecordList(appointmentContext).get(0);
-            appointment.setActualStartTime(currentTime);
-            ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("inProgress");
-            appointment.setStatus(appointmentStatus);
-            V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,appointment.getId(), FieldUtil.getAsJSON(appointment), null, null, null, null, null,null, null, null,null);
+            ServiceAppointmentContext appointment = (ServiceAppointmentContext) Constants.getRecordList(appointmentContext).get(0);
+            if (appointment != null) {
+                appointment.setActualStartTime(currentTime);
+                ServiceAppointmentTicketStatusContext appointmentStatus = ServiceAppointmentUtil.getStatus("inProgress");
+                appointment.setStatus(appointmentStatus);
+                V3Util.processAndUpdateSingleRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, appointment.getId(), FieldUtil.getAsJSON(appointment), null, null, null, null, null, null, null, null, null);
+
+                //updating field agent status to on-site
+
+                if (appointment.getFieldAgent() != null) {
+                    Long fieldAgentId = appointment.getFieldAgent().getId();
+                    V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, fieldAgentId);
+                    if (people != null) {
+
+                        if (people.getStatus() != V3PeopleContext.Status.ON_SITE.getIndex() && people.getStatus() != V3PeopleContext.Status.EN_ROUTE.getIndex()) {
+                            V3PeopleAPI.updatePeopleStatus(fieldAgentId,V3PeopleContext.Status.ON_SITE.getIndex());
+                        }
+                    }
+                }
+            }
         }
 
     }
@@ -337,13 +354,25 @@ public class ServiceTaskUtil {
                 Long appointmentId = timeSheet.getServiceAppointment().getId();
                 if (getAppointmentStatus(appointmentId)) {
                     updateServiceAppointments(appointmentId, currentTime, FacilioConstants.ServiceAppointment.COMPLETED);
+                    //updating field agent status
+                    if (timeSheet != null && timeSheet.getFieldAgent() != null) {
+
+                        Long fieldAgentId = timeSheet.getFieldAgent().getId();
+                        V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, fieldAgentId);
+                        if (people != null) {
+                            if (people.getStatus() != null) {
+                                if (people.getStatus() != V3PeopleContext.Status.EN_ROUTE.getIndex()) {
+                                    V3PeopleAPI.updatePeopleAvailability(people,currentTime);
+                                }
+                            }else{
+                                V3PeopleAPI.updatePeopleAvailability(people,currentTime);
+                            }
+                        }
+                    }
+
                 }
             }
-
-
-
         }
-
     }
     public static void updateServiceTasks(List<Long> taskIds, String status, Long currentTime) throws Exception {
 
@@ -359,12 +388,16 @@ public class ServiceTaskUtil {
         List<Long> endStatus = new ArrayList<>();
         ServiceTaskStatusContext completedStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED);
         ServiceTaskStatusContext cancelledStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.CANCELLED);
+        ServiceTaskStatusContext onHoldStatus = ServiceOrderAPI.getTaskStatus(FacilioConstants.ContextNames.ServiceTaskStatus.ON_HOLD);
 
         if(completedStatus!=null){
             endStatus.add(completedStatus.getId());
         }
         if(cancelledStatus!=null){
             endStatus.add(cancelledStatus.getId());
+        }
+        if(onHoldStatus != null){
+            endStatus.add(onHoldStatus.getId());
         }
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getIdCondition(taskIds, taskModule));
