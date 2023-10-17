@@ -61,7 +61,8 @@ public enum ComponentType implements FacilioIntEnum {
     GLOBAL_GROUP_VARIABLE(GlobalVariableGroupPackageBeanImpl.class,MODULE,false),
     GLOBAL_VARIABLE(GlobalVariablePackageBeanImpl.class,MODULE,false),
     SLA_ENTITY(SLAEntityPackageBeanImpl.class,MODULE,false),
-    SLA_POLICY(SLAPackageBeanImpl.class,MODULE,false)
+    SLA_POLICY(SLAPackageBeanImpl.class,MODULE,false),
+    CONNECTOR(ConnectorPackageBeanImpl.class,null,false)
     ;
 
     public static final List<ComponentType> ORDERED_COMPONENT_TYPE_LIST = Collections.unmodifiableList(initOrderedList());
@@ -114,6 +115,7 @@ public enum ComponentType implements FacilioIntEnum {
             add(GLOBAL_VARIABLE);
             add(SLA_ENTITY);
             add(SLA_POLICY);
+            add(CONNECTOR);
         }};
         return componentOrder;
     }

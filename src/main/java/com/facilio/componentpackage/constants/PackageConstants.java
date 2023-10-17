@@ -611,4 +611,17 @@ public class PackageConstants {
         public static final String LINK_NAME = "Link_Name";
         public static final String GROUP_NAME = "Variable_Name";
     }
+
+    public static class ConnectionContext {
+
+        public static final String NAME = "name";
+        public static final String SERVICE_NAME = "serviceName";
+        public static final String AUTH_TYPE = "authType";
+        public static final String GRANT_TYPE = "grantType";
+        public static final String STATE = "state";
+        public static final String AUDIENCE = "audience";
+        public static final String RESOURCE = "resource";
+        public static final String SCOPE = "scope";
+
+    }
 }
