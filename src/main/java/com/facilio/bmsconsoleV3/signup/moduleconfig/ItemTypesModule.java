@@ -8,8 +8,11 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -26,6 +29,11 @@ import java.util.*;
 public class ItemTypesModule extends BaseModuleConfig{
     public ItemTypesModule(){
         setModuleName(FacilioConstants.ContextNames.ITEM_TYPES);
+    }
+
+    @Override
+    public void addData() throws Exception {
+        addSystemButtons();
     }
 
     @Override
@@ -288,5 +296,13 @@ public class ItemTypesModule extends BaseModuleConfig{
         itemTypesForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(itemTypesForm);
+    }
+    private static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editItemTypes = new SystemButtonRuleContext();
+        editItemTypes.setName("Edit");
+        editItemTypes.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editItemTypes.setIdentifier("edit");
+        editItemTypes.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.ITEM_TYPES,editItemTypes);
     }
 }

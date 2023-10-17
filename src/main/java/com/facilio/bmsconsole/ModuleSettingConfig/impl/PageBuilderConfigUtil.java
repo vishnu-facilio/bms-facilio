@@ -83,6 +83,7 @@ public class PageBuilderConfigUtil {
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES));
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES));
             moduleList.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE));
+            moduleList.add(modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST));
 
             if (CollectionUtils.isNotEmpty(moduleList)) {
                 List<Long> moduleIds = moduleList.stream().filter(Objects::nonNull).map(FacilioModule::getModuleId).collect(Collectors.toList());

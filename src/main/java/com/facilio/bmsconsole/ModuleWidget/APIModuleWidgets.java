@@ -873,4 +873,11 @@ public class APIModuleWidgets {
                 .addWidgetConfig("flexiblewebvisitorwidget_6","visitor Widget - 6",WidgetConfigContext.ConfigType.FLEXIBLE,6,-1,PagesContext.PageLayoutType.WEB)
                 .done();
     }
+    @WidgetsForModule(FacilioConstants.ContextNames.INVENTORY_REQUEST)
+    public static Supplier<ModuleWidgets> getInventoryRequestWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("inventoryRequestLineItems" , "Inventory Request Line Items",PageWidget.WidgetType.INVENTORY_REQUEST_LINE_ITEMS)
+                .addWidgetConfig("flexiblewebinventoryrequestlineitems_6","Inventory Request Line Items - 6",WidgetConfigContext.ConfigType.FLEXIBLE,6,-1,PagesContext.PageLayoutType.WEB)
+                .done();
+    }
 }

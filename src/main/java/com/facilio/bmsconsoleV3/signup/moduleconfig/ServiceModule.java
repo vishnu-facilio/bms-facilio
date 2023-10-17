@@ -7,8 +7,11 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -23,6 +26,11 @@ import java.util.*;
 public class ServiceModule extends BaseModuleConfig{
     public ServiceModule(){
         setModuleName(FacilioConstants.ContextNames.SERVICE);
+    }
+
+    @Override
+    public void addData() throws Exception {
+        addSystemButtons();
     }
 
     @Override
@@ -222,6 +230,21 @@ public class ServiceModule extends BaseModuleConfig{
         serviceModuleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(serviceModuleForm);
+    }
+    private static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editService = new SystemButtonRuleContext();
+        editService.setName("Edit");
+        editService.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editService.setIdentifier("edit");
+        editService.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SERVICE,editService);
+
+        SystemButtonRuleContext deleteService = new SystemButtonRuleContext();
+        deleteService.setName("Delete");
+        deleteService.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        deleteService.setIdentifier("delete");
+        deleteService.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SERVICE,deleteService);
     }
 
 }
