@@ -28,7 +28,8 @@ public class ViewFieldsResponseCommand extends FacilioCommand {
         fieldsList = CollectionUtils.isNotEmpty(fieldsList) ? fieldsList : new ArrayList<>();
 
         // siteId Field
-        if (Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER, FacilioConstants.ContextNames.TENANT, FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.SERVICE_REQUEST, FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(module.getName())) {
+        if ((Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER, FacilioConstants.ContextNames.TENANT, FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.SERVICE_REQUEST, FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(module.getName()))
+        && fieldsList.stream().noneMatch(f->f.getName().equals("siteId"))) {
             fieldsList.add(FieldFactory.getSiteIdField());
         }
 
@@ -38,7 +39,7 @@ public class ViewFieldsResponseCommand extends FacilioCommand {
         Map<String, JSONObject> customization = (Map<String, JSONObject>) context.get(FacilioConstants.FieldsConfig.CUSTOMIZATION);
 
         // localId Field
-        if (ModuleLocalIdUtil.MODULES_WITH_LOCAL_ID.contains(moduleName)) {
+        if (!ModuleLocalIdUtil.MODULES_WITH_LOCAL_ID.contains(moduleName)) {
             fieldsList.add(FieldFactory.getNumberField("localId", null, module));
         }
 

@@ -2,11 +2,9 @@ package com.facilio.fields;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fields.commands.RemoveCustomLookupFields;
 import com.facilio.fields.fieldBuilder.FieldConfig;
 import com.facilio.fields.util.FieldsConfigList;
 import com.facilio.mailtracking.MailConstants;
-import com.facilio.modules.FieldType;
 import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
 
@@ -50,7 +48,7 @@ public class APIFieldsConfig {
                 .done()
 
                 .viewFields()
-                .add(FieldsConfigList.WORKORDERE_VIEW_FIELDS_INCLUDE)
+                .add(FieldsConfigList.WORKORDER_VIEW_FIELDS_INCLUDE)
                 .addFixedFields(FieldsConfigList.WORKORDER_VIEW_FIXED_FIELDS)
                 .done();
     }
@@ -115,7 +113,7 @@ public class APIFieldsConfig {
                 .viewFields()
                 .add(Arrays.asList("resource", "lastOccurredTime", "lastCreatedTime", "acknowledgedBy",
                         "acknowledged", "readingalarmcategory", "acknowledgedTime",
-                        "severity","subject","severity", "noOfOccurrences"))
+                        "severity","subject", "noOfOccurrences"))
                 .addFixedSelectableFields(Arrays.asList("severity", "noOfOccurrences", "acknowledgedBy"))
                 .done();
     }
@@ -179,6 +177,7 @@ public class APIFieldsConfig {
                 .viewFields()
                 .add(Arrays.asList( "user", "checkInTime", "checkOutTime", "workingHours",
                         "status", "lastCheckInTime", "totalPaidBreakHrs", "lastBreakStartTime"))
+                .addFixedFields(Arrays.asList("day"))
                 .done();
     }
 
@@ -187,7 +186,8 @@ public class APIFieldsConfig {
         return () -> new FieldConfig()
 
                 .viewFields()
-                .skip(Arrays.asList(
+                .add(Arrays.asList(
+                        "subject","severity", "acknowledgedBy", "noOfEvents",
                         "alarmClass", "alarmType", "previousSeverity", "condition",
                         "modifiedTime", "createdTime", "clearedTime", "source",
                         "resource"))
@@ -335,7 +335,7 @@ public class APIFieldsConfig {
         return () -> new FieldConfig()
 
                 .viewFields()
-                .addFixedFields(Arrays.asList("localId", "visitorName"))
+                .addFixedFields(Arrays.asList("visitor", "localId", "visitorName"))
                 .done();
 
     }
@@ -365,7 +365,7 @@ public class APIFieldsConfig {
         return () -> new FieldConfig()
 
                 .viewFields()
-                .addFixedFields(Arrays.asList("id","sysCreatedTime", "sysCreatedBy"))
+                .addFixedFields(Arrays.asList("id","name","sysCreatedTime", "sysCreatedBy"))
                 .done();
 
     }

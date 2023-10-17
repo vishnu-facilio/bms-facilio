@@ -17,7 +17,8 @@ public class FieldsConfigList {
             "description", "jobPlan", "pmV2", "parentWO"
     );
 
-    public static final List<String> WORKORDERE_VIEW_FIELDS_INCLUDE = Arrays.asList(
+    public static final List<String> WORKORDER_VIEW_FIELDS_INCLUDE = Arrays.asList(
+            "subject", "localId",
             "category","description","dueDate", "responseDueDate",
             "moduleState", "sourceType", "assignedTo", "createdTime",
             "createdBy", "priority","resource","type",
