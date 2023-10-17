@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum EventTypeEnum implements FacilioEnum {
-    SPECIAL_TYPE(10, "Special Type", "backgroundNeutralGrey01Subtle", "backgroundNeutralGrey01Medium") {
+    SPECIAL_TYPE(10, "Special Type", "backgroundNeutralGrey01Light", "backgroundNeutralGrey01Medium") {
         @Override
         public boolean isMatch(V3EventContext eventContext, LocalDate localDate) throws Exception {
             boolean check = checkForValidity(localDate,eventContext);

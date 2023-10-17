@@ -41,6 +41,7 @@ public class AddCommonModuleWidgetsCommand extends FacilioCommand {
                         .addFlexibleWidgetConfig("flexiblewebwidgetgroup_4","Widget Group - 4", 4, PagesContext.PageLayoutType.WEB)
                         .addFixedWidgetConfig("webwidgetgroup_6_6","Widget Group - 6 - 6", 6,6, PagesContext.PageLayoutType.WEB)
                         .addFlexibleWidgetConfig("flexiblemobilewidgetgroup_8","Widget Group - 8", 8, PagesContext.PageLayoutType.MOBILE)
+                        .addFlexibleWidgetConfig("flexiblewebwidgetgroup_8","Web Widget Group - 8", 8, PagesContext.PageLayoutType.WEB)
                         .addFlexibleWidgetConfig("flexiblewebwidgetgroup_10","Widget Group - 10", 10, PagesContext.PageLayoutType.WEB)
                     .done()
                     .addModuleWidget("comment", "Comment", PageWidget.WidgetType.COMMENT)

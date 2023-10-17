@@ -23,6 +23,8 @@ public class CalendarViewTemplatePage implements TemplatePageFactory {
 
     @Override
     public PagesContext getTemplatePage(ApplicationContext app, FacilioModule module) throws Exception {
+        JSONObject calendarActivityWidgetParam = new JSONObject();
+        calendarActivityWidgetParam.put("activityModuleName", FacilioConstants.Calendar.CALENDAR_ACTIVITY_MODULE);
         return new PagesContext(null, null, "", null, true, false, false)
                 .addLayout(PagesContext.PageLayoutType.WEB)
                 .addTab("calendarEventView", "Calendar View", PageTabContext.TabType.SIMPLE,true, null)
@@ -33,14 +35,30 @@ public class CalendarViewTemplatePage implements TemplatePageFactory {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("calendarsummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("calendarAssociation", "Calendar Association", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("calendarsummaryfields", null, null)
                 .addWidget("calendarsummaryfieldswidget", "Calendar Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Calendar.CALENDAR_MODULE_NAME, app))
                 .widgetDone()
                 .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_8", 0, 0, null, getWidgetGroup())
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("relatedEventsList", "Related Events", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("calendareventList", null, null)
                 .addWidget("calendareventlistwidget", "Events List", PageWidget.WidgetType.CALENDAR_EVENT_LIST, "webCalendarEventList_6_12", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("calendarhistory", "History", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("calendarHistoryFields", null, null)
+                .addWidget("calendarhistorywidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, calendarActivityWidgetParam,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -87,5 +105,24 @@ public class CalendarViewTemplatePage implements TemplatePageFactory {
                 widgetGroup.getFields().add(summaryField);
             }
         }
+    }
+    public static JSONObject getWidgetGroup() throws Exception {
+        JSONObject assetTabWidgetParam = new JSONObject();
+        assetTabWidgetParam.put("moduleName", "asset");
+
+        JSONObject siteTabWidgetParam = new JSONObject();
+        siteTabWidgetParam.put("moduleName", "site");
+
+        WidgetGroupContext widgetGroup = new WidgetGroupContext()
+                .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
+                .addSection("asset", "Asset", "")
+                .addWidget("assetwidget", "Asset", PageWidget.WidgetType.CALENDAR_ASSOCIATION_LIST, "flexiblewebcalendarassociationlist_8", 0, 0, assetTabWidgetParam, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone()
+                .addSection("sites", "Sites", "")
+                .addWidget("sitewidget", "Sites", PageWidget.WidgetType.CALENDAR_ASSOCIATION_LIST, "flexiblewebcalendarassociationlist_8", 0, 0, siteTabWidgetParam, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone();
+        return FieldUtil.getAsJSON(widgetGroup);
     }
 }

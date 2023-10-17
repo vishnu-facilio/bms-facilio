@@ -650,6 +650,7 @@ public class PageWidget {
 		TOTAL_INVITE_WIDGET("totalInviteWidget"),
 		CHECKIN_COUNT_WIDGET("checkedInCountWidget"),
 		ITEM_TYPE_DETAILS_CARD("itemTypesDetailsCard"),
+		CALENDAR_ASSOCIATION_LIST("calendarAssociationList")
 		;
 
 		private String name;

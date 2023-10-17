@@ -265,6 +265,9 @@ public class APIModuleWidgets {
                 .done()
                 .addModuleWidget("calendarEventList","Calendar Event List",PageWidget.WidgetType.CALENDAR_EVENT_LIST)
                 .addFixedWidgetConfig("webCalendarEventList_6_12","Calendar Event List - 6 - 12",6,12,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("calendarAssociationList","Calendar Association List",PageWidget.WidgetType.CALENDAR_ASSOCIATION_LIST)
+                .addFlexibleWidgetConfig("flexiblewebcalendarassociationlist_8","Calendar Association List - 8",8,PagesContext.PageLayoutType.WEB)
                 .done();
     }
     @WidgetsForModule(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME)

@@ -27,6 +27,7 @@ public class SiteFillLookupFieldsCommand extends FacilioCommand {
         fetchLookupsList.add((LookupField) fieldsAsMap.get("client"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("failureClass"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("decommissionedBy"));
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("managedBy"));
         if(fieldsAsMap.get("territory") != null){
             fetchLookupsList.add((LookupField) fieldsAsMap.get("territory"));
         }
