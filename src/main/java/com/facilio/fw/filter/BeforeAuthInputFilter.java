@@ -79,16 +79,16 @@ public class BeforeAuthInputFilter implements Filter {
             try {
                 if (StringUtils.isNotEmpty(httpServletRequest.getRequestURI()) && StringUtils.isNotEmpty(httpServletRequest.getRemoteHost()) && httpServletRequest.getRemotePort() != -1) {
                     APIRateLimiter ratelimit = RateLimiterAPI.getRateLimiter();
-                    if (!(ratelimit.allow(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteHost(), String.valueOf(httpServletRequest.getRemotePort())))) {
+                    if (!(ratelimit.allow(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteHost()))) {
                         log(securityRequestWrapper, "Rate Limiter Strike: API strike limit was reached");
                         Map<String, String> errorMap = new HashMap<>();
                         errorMap.put("errorMessage", "Too Many Request your limit is crossed, Try again after a minute");
                         write(errorMap, 429, servletResponse);
                         return;
                     }
-                    long expiryTime = ratelimit.getKeyExpiryTime(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteHost(), String.valueOf(httpServletRequest.getRemotePort()));
+                    long expiryTime = ratelimit.getKeyExpiryTime(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteHost());
                     httpServletResponse.setHeader("X-Rate-Limit-Limit", String.valueOf(FacilioProperties.getRateLimiterAllowedRequest()));
-                    httpServletResponse.setHeader("X-Rate-Limit-Remaining", String.valueOf(ratelimit.getAvailableRequests(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteHost(), String.valueOf(httpServletRequest.getRemotePort()))));
+                    httpServletResponse.setHeader("X-Rate-Limit-Remaining", String.valueOf(ratelimit.getAvailableRequests(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteHost())));
                     httpServletResponse.setHeader("X-Rate-Limit-Reset", String.valueOf(Instant.ofEpochMilli(expiryTime).atZone(ZoneId.systemDefault()).toLocalDateTime()));
                 }
             } catch (Exception e) {
