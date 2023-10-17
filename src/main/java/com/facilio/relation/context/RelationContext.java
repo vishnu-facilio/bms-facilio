@@ -22,6 +22,7 @@ public class RelationContext implements Serializable {
     private String name;
     private String linkName;
     private String description;
+    private Boolean isCustom;
 
     private long relationModuleId = -1;
     public FacilioModule getRelationModule() throws Exception {
@@ -64,7 +65,9 @@ public class RelationContext implements Serializable {
     public enum RelationCategory implements FacilioIntEnum {
         NORMAL("normal"),
         HIDDEN("hidden"),
-        METER("meter");
+        METER("meter"),
+        VIRTUAL("virtual"),
+        ;
 
         RelationCategory(String name) {
         }
@@ -91,4 +94,16 @@ public class RelationContext implements Serializable {
         }
         return -1;
     }
+
+    public Boolean getIsCustom() {
+        return isCustom;
+    }
+
+    public void setIsCustom(Boolean isCustom) {
+        this.isCustom = isCustom;
+    }
+    public boolean isCustom() {
+        return this.isCustom != null ? this.isCustom : true;
+    }
+
 }

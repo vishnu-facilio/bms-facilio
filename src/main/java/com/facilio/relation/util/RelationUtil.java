@@ -375,6 +375,7 @@ public class RelationUtil {
         relationContext.setName(relationRequest.getName());
         relationContext.setDescription(relationRequest.getDescription());
         relationContext.setLinkName(relationRequest.getLinkName());
+        relationContext.setIsCustom(relationRequest.getIsCustom());
 
         relationContext.addMapping(getRelationMapping(relationContext, relationRequest.getRelationName(),
                 relationRequest.getRelationTypeEnum(), relationRequest.getFromModuleId(), relationRequest.getToModuleId(), RelationMappingContext.Position.LEFT));

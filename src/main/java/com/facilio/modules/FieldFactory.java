@@ -3441,6 +3441,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField("description", "DESCRIPTION", module));
         fields.add(getNumberField("relationModuleId", "RELATION_MODULE_ID", module));
         fields.add(getNumberField("relationCategory", "RELATION_CATEGORY", module));
+        fields.add(getBooleanField("isCustom", "IS_CUSTOM", module));
 
         return fields;
     }

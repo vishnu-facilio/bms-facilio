@@ -30,7 +30,16 @@ public class RelationRequestContext implements Serializable {
     private RelationMappingContext.Position position;
     private String reversePositionFieldName;
     private RelationContext.RelationCategory relationCategory;
-
+    private Boolean isCustom;
+    public Boolean getIsCustom() {
+        return this.isCustom;
+    }
+    public void setIsCustom(Boolean isCustom) {
+        this.isCustom = isCustom;
+    }
+    public boolean isCustom() {
+        return this.isCustom != null ? this.isCustom : true;
+    }
     public void setRelationCategory(RelationContext.RelationCategory relationCategory) {
         this.relationCategory = relationCategory;
     }

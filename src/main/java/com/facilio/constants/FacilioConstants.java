@@ -83,8 +83,6 @@ import com.facilio.taskengine.common.JobConstants;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.util.ChainUtil;
-import com.sun.jna.platform.unix.solaris.LibKstat;
-import org.apache.kafka.common.protocol.types.Field;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -4734,6 +4732,19 @@ public class FacilioConstants {
 	public static class Relationship {
 		public static final String INCLUDE_HIDDEN_RELATIONS = "includeHiddenRelations";
 		public static final String RELATION_CATEGORY = "relationCategory";
+
+    }
+	public static class SystemRelationMappingNames {
+        public static final String BUILDING_TO_SPACE_MAPPING_NAME = "buildingToSpaceRelation";
+        public static final String SPACE_TO_BUILDING_MAPPING_NAME = "spaceToBuildingRelation";
+        public static final String SITE_TO_SPACE_MAPPING_NAME = "siteToSpaceRelation";
+        public static final String SPACE_TO_SITE_MAPPING_NAME = "spaceToSiteRelation";
+        public static final String BUILDING_TO_FLOOR_MAPPING_NAME = "buildingToFloorRelation";
+        public static final String FLOOR_TO_BUILDING_MAPPING_NAME = "floorToBuildingRelation";
+        public static final String SPACE_TO_FLOOR_MAPPING_NAME = "spaceToFloorRelation";
+        public static final String FLOOR_TO_SPACE_MAPPING_NAME = "floorToSpaceRelation";
+        public static final String SITE_TO_BUILDING_MAPPING_NAME = "siteToBuildingRelation";
+        public static final String BUILDING_TO_SITE_MAPPING_NAME = "buildingToSiteRelation";
     }
 	public static class Dispatcher {
 		public static final String DISPATCHER_CONFIG = "dispatcherConfig";

@@ -60,8 +60,7 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
             computeLinkName(relationRequest);
 
             relationContext = RelationUtil.convertToRelationContext(relationRequest);
-            RelationContext.RelationCategory relationCategory = relationRequest.getRelationCategoryEnum() == null ? RelationContext.RelationCategory.NORMAL : relationRequest.getRelationCategoryEnum();
-            relationContext.setRelationCategory(relationCategory);
+            setRelationFields(relationContext, relationRequest);
 
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(relationModule.getTableName())
@@ -86,6 +85,15 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
         context.put(FacilioConstants.ContextNames.RELATION, RelationUtil.convertToRelationRequest(relationContext, relationRequest.getFromModuleId()));
 
         return false;
+    }
+
+    private void setRelationFields(RelationContext relationContext, RelationRequestContext relationRequest) {
+        RelationContext.RelationCategory relationCategory = relationRequest.getRelationCategoryEnum() == null ? RelationContext.RelationCategory.NORMAL : relationRequest.getRelationCategoryEnum();
+        relationContext.setRelationCategory(relationCategory);
+        if (!relationRequest.isCustom()) {
+            relationContext.getMapping1().setMappingLinkName(relationRequest.getForwardRelationLinkName());
+            relationContext.getMapping2().setMappingLinkName(relationRequest.getReverseRelationLinkName());
+        }
     }
 
     private long addRelationModule(RelationContext relation) throws Exception {
@@ -153,7 +161,7 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
                 .fields(FieldFactory.getRelationMappingFields());
         for (RelationMappingContext mappingContext : relationContext.getMappings()) {
             mappingContext.setRelationId(relationContext.getId());
-            computeMappingLinkName(mappingContext);
+            computeMappingLinkName(mappingContext, relationContext.isCustom());
             builder.addRecord(FieldUtil.getAsProperties(mappingContext));
         }
         builder.save();
@@ -186,8 +194,12 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
         }
     }
 
-    private void computeMappingLinkName(RelationMappingContext mappingContext) throws Exception {
-        mappingContext.setMappingLinkName(mappingContext.getRelationName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+    private void computeMappingLinkName(RelationMappingContext mappingContext, boolean isCustomRelation) throws Exception {
+        if (!isCustomRelation) {
+            return;
+        }
+        String mappingLinkName = mappingContext.getRelationName().toLowerCase().replaceAll("[^a-zA-Z0-9]+","");
+        mappingContext.setMappingLinkName(mappingLinkName);
 
         FacilioModule module = ModuleFactory.getRelationMappingModule();
         List<FacilioField> fields = new ArrayList<>();
@@ -239,8 +251,13 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
         if(relationRequest.getRelationName().equals(relationRequest.getReverseRelationName())) {
             throw new IllegalArgumentException("Forward and Reverse Relation Name should not be same");
         }
-        if (relationRequest.getRelationCategoryEnum() == null) {
-            relationRequest.setRelationCategory(RelationContext.RelationCategory.NORMAL);
-        }
+        if (!relationRequest.isCustom()) {
+            if (StringUtils.isEmpty(relationRequest.getForwardRelationLinkName())) {
+                throw new IllegalArgumentException("Forward Relation Link Name is required for system relation");
+            }
+            if (StringUtils.isEmpty(relationRequest.getReverseRelationLinkName())) {
+                throw new IllegalArgumentException("Reverse Relation Link Name is required for system relation");
+            }
+         }
     }
 }

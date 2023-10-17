@@ -113,6 +113,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultLicenseCommand());
 			c.addCommand(new AddDefaultModulesCommand());
 			c.addCommand(new AddRelatedListTitleCommand());
+			c.addCommand(new AddDefaultRelationsCommand());
 			c.addCommand(new AddDefaultUnitsCommand());
 			c.addCommand(new AddDefaultGraphicsCommand());
 			c.addCommand(new AddDefaultWoStateflowCommand());
