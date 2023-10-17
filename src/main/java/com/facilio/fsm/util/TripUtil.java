@@ -6,10 +6,12 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.attendance.Attendance;
 import com.facilio.bmsconsoleV3.util.AttendanceAPI;
+import com.facilio.bmsconsoleV3.util.ShiftAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -20,6 +22,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -111,12 +114,20 @@ public class TripUtil {
             if (ongoingTrip != null) {
                 if(ongoingTrip.getPeople() != null) {
                     long agentId = ongoingTrip.getPeople().getId();
-                    V3PeopleContext agent = new V3PeopleContext();
-                    agent.setId(agentId);
-                    Attendance attendance = AttendanceAPI.getAttendanceForToday(agentId);
-                    agent.setStatus(V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
-                    if(attendance != null && attendance.getCheckInTime() != null && attendance.getCheckOutTime() == null){
+                    V3PeopleContext agent = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,agentId,V3PeopleContext.class);
+                    ServiceAppointmentTicketStatusContext InProgressStatus = ServiceAppointmentUtil.getStatus("inProgress");
+
+                    Criteria openAppointmentCriteria = new Criteria();
+                    openAppointmentCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get("fieldAgent"),String.valueOf(agentId),NumberOperators.EQUALS));
+                    openAppointmentCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get("status"),String.valueOf(InProgressStatus.getId()),NumberOperators.EQUALS));
+
+                    List<ServiceAppointmentContext> OpenAppointmentsForAgent = ServiceAppointmentUtil.getServiceAppointmentsList(serviceAppointment,saFields,Collections.singletonList((LookupField) saFieldMap.get("status")),openAppointmentCriteria,null,null,null,-1,-1);
+                    if(org.apache.commons.collections.CollectionUtils.isNotEmpty(OpenAppointmentsForAgent)){
+                        agent.setStatus(V3PeopleContext.Status.ON_SITE.getIndex());
+                    } else if(agent.isCheckedIn() || ShiftAPI.checkIfPeopleAvailable(agentId,DateTimeUtil.getCurrenTime())){
                         agent.setStatus(V3PeopleContext.Status.AVAILABLE.getIndex());
+                    } else {
+                        agent.setStatus(V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
                     }
                     V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
 

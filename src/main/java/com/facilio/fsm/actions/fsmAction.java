@@ -23,8 +23,12 @@ import com.facilio.fsm.util.HomePageUtil;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
 import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.fsm.util.ServiceTaskUtil;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
@@ -256,6 +260,16 @@ public class fsmAction extends V3Action {
         Long fieldAgentId = getFieldAgentId();
         JSONObject bodyParams = new JSONObject();
 
+        List<FacilioField> saFields = Constants.getModBean().getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        Map<String,FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+
+        List<SupplementRecord> supplementFields = new ArrayList<>();
+        supplementFields.add((SupplementRecord) saFieldMap.get("location"));
+        supplementFields.add((SupplementRecord) saFieldMap.get("site"));
+        supplementFields.add((SupplementRecord) saFieldMap.get("priority"));
+        supplementFields.add((SupplementRecord) saFieldMap.get("status"));
+        supplementFields.add((SupplementRecord) saFieldMap.get("territory"));
+
         if (appointmentId == null || appointmentId < 0) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR,"appointment id is mandatory");
         }
@@ -265,6 +279,17 @@ public class fsmAction extends V3Action {
             mapping.put("fieldAgent", fieldAgent);
             ServiceAppointmentTicketStatusContext dispatch = ServiceAppointmentUtil.getStatus(FacilioConstants.ServiceAppointment.DISPATCHED);
             if(dispatch != null) {
+                List<ServiceAppointmentContext> existingAppointments = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,Collections.singletonList(appointmentId),ServiceAppointmentContext.class,supplementFields);
+                if(CollectionUtils.isNotEmpty(existingAppointments)) {
+                    for (ServiceAppointmentContext existingAppointment : existingAppointments) {
+                        if(existingAppointment.getStatus() != null) {
+                            if (existingAppointment.getStatus().getTypeCode() != 1) {
+                                throw new FSMException(FSMErrorCode.SA_CANNOT_DISPATCH);
+                            }
+                        }
+                    }
+                }
+
                 mapping.put("status", dispatch);
                 bodyParams.put("updateStatus",true);
             }
@@ -280,9 +305,9 @@ public class fsmAction extends V3Action {
 
         if(MapUtils.isNotEmpty(mapping)) {
             bodyParams.put("skipValidation",skipValidation);
-            FacilioContext context = V3Util.updateBulkRecords(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, mapping, Collections.singletonList(appointmentId), bodyParams,null,false,false);
-            HashMap<String,Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
-            List<ServiceAppointmentContext> serviceAppointments = (List<ServiceAppointmentContext>) recordMap.get(context.get("moduleName"));
+            V3Util.updateBulkRecords(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, mapping, Collections.singletonList(appointmentId), bodyParams,null,false,false);
+
+            List<ServiceAppointmentContext> serviceAppointments = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,Collections.singletonList(appointmentId),ServiceAppointmentContext.class,supplementFields);
             if(CollectionUtils.isNotEmpty(serviceAppointments)) {
                 ServiceAppointmentContext serviceAppointment = serviceAppointments.get(0);
                 if(serviceAppointment != null){
@@ -294,13 +319,10 @@ public class fsmAction extends V3Action {
                     dispatcherSAEvent.setStartTime(serviceAppointment.getScheduledStartTime());
                     dispatcherSAEvent.setEndTime(serviceAppointment.getScheduledEndTime());
                     ServiceAppointmentTicketStatusContext saStatus = serviceAppointment.getStatus();
-                    if(saStatus != null){
-                        ServiceAppointmentTicketStatusContext statusObj = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_TICKET_STATUS,saStatus.getId(),ServiceAppointmentTicketStatusContext.class);
-                        dispatcherSAEvent.setBackgroundColor(statusObj.getBackgroundColor());
-                        dispatcherSAEvent.setTextColor(statusObj.getTextColor());
-                        dispatcherSAEvent.setBackgroundColorHover(statusObj.getBackgroundColorHover());
-                        dispatcherSAEvent.setTextColorHover(statusObj.getTextColorHover());
-                    }
+                    dispatcherSAEvent.setBackgroundColor(saStatus.getBackgroundColor());
+                    dispatcherSAEvent.setTextColor(saStatus.getTextColor());
+                    dispatcherSAEvent.setBackgroundColorHover(saStatus.getBackgroundColorHover());
+                    dispatcherSAEvent.setTextColorHover(saStatus.getTextColorHover());
                 }
             }
         }

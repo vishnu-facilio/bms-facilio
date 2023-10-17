@@ -41,7 +41,7 @@ public class FetchDispatcherResourcesCommand extends FacilioCommand {
         List<FacilioField> allPeopleFields = moduleBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(allPeopleFields);
         List<FacilioField> selectFields = new ArrayList<>();
-        List<String> defaultFieldNames = new ArrayList<>(Arrays.asList("name","status","currentLocation","avatar"));
+        List<String> defaultFieldNames = new ArrayList<>(Arrays.asList("name","status","currentLocation","avatar","checkedIn","lastCheckedOutTime","lastCheckedInTime"));
         for (String fieldName : defaultFieldNames){
             selectFields.add(fieldMap.get(fieldName));
         }
