@@ -1249,7 +1249,7 @@ public class V3PeopleAPI {
             for (V3PeopleContext people : peopleList) {
 
                 if (people.getStatus() != null) {
-                    if (people.getStatus() != V3PeopleContext.Status.EN_ROUTE.getIndex() || people.getStatus() != V3PeopleContext.Status.ON_SITE.getIndex()) {
+                    if (people.getStatus() != V3PeopleContext.Status.EN_ROUTE.getIndex() && people.getStatus() != V3PeopleContext.Status.ON_SITE.getIndex()) {
                         V3PeopleAPI.updatePeopleAvailability(people,currentTime);
                     }
                 }else{
