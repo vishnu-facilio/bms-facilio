@@ -646,26 +646,6 @@ public class ServiceAppointmentUtil {
             if (existingAppointment != null) {
                 if(existingAppointment.getFieldAgent() != null) {
                     long agentId = existingAppointment.getFieldAgent().getId();
-                    // updating agent status to
-                    V3PeopleContext agent = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,agentId,V3PeopleContext.class);
-                    ServiceAppointmentTicketStatusContext InProgressStatus = ServiceAppointmentUtil.getStatus("inProgress");
-
-                    Criteria openAppointmentCriteria = new Criteria();
-                    openAppointmentCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get("fieldAgent"),String.valueOf(agentId),NumberOperators.EQUALS));
-                    openAppointmentCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get("status"),String.valueOf(InProgressStatus.getId()),NumberOperators.EQUALS));
-                    openAppointmentCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(serviceAppointment),String.valueOf(appointmentId),NumberOperators.NOT_EQUALS));
-
-                    List<ServiceAppointmentContext> OpenAppointmentsForAgent = ServiceAppointmentUtil.getServiceAppointmentsList(serviceAppointment,saFields,Collections.singletonList((LookupField) saFieldMap.get("status")),openAppointmentCriteria,null,null,null,-1,-1);
-                    if(CollectionUtils.isNotEmpty(OpenAppointmentsForAgent)){
-                        agent.setStatus(V3PeopleContext.Status.ON_SITE.getIndex());
-                    } else if(agent.isCheckedIn() || ShiftAPI.checkIfPeopleAvailable(agentId,DateTimeUtil.getCurrenTime())){
-                        agent.setStatus(V3PeopleContext.Status.AVAILABLE.getIndex());
-                    } else {
-                        agent.setStatus(V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
-                    }
-                    V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
-
-
                     OngoingTrips = getOngoingTrips(agentId,existingAppointment.getId());
                     if(CollectionUtils.isNotEmpty(OngoingTrips)){
                         for(TripContext OngoingTrip : OngoingTrips){
@@ -723,6 +703,27 @@ public class ServiceAppointmentUtil {
                     }
                 }
                 V3RecordAPI.updateRecord(existingAppointment, serviceAppointment, Collections.singletonList(saFieldMap.get(FacilioConstants.ContextNames.STATUS)));
+                if(existingAppointment.getFieldAgent() != null){
+                    long agentId = existingAppointment.getFieldAgent().getId();
+                    // updating agent status to
+                    V3PeopleContext agent = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,agentId,V3PeopleContext.class);
+
+                    ServiceAppointmentTicketStatusContext InProgressStatus = ServiceAppointmentUtil.getStatus("inProgress");
+
+                    Criteria openAppointmentCriteria = new Criteria();
+                    openAppointmentCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get("fieldAgent"),String.valueOf(agentId),NumberOperators.EQUALS));
+                    openAppointmentCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get("status"),String.valueOf(InProgressStatus.getId()),NumberOperators.EQUALS));
+
+                    List<ServiceAppointmentContext> OpenAppointmentsForAgent = ServiceAppointmentUtil.getServiceAppointmentsList(serviceAppointment,saFields,Collections.singletonList((LookupField) saFieldMap.get("status")),openAppointmentCriteria,null,null,null,-1,-1);
+                    if(CollectionUtils.isNotEmpty(OpenAppointmentsForAgent)){
+                        agent.setStatus(V3PeopleContext.Status.ON_SITE.getIndex());
+                    } else if(agent.isCheckedIn() || ShiftAPI.checkIfPeopleAvailable(agentId,DateTimeUtil.getCurrenTime())){
+                        agent.setStatus(V3PeopleContext.Status.AVAILABLE.getIndex());
+                    } else {
+                        agent.setStatus(V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
+                    }
+                    V3RecordAPI.updateRecord(agent, people, Collections.singletonList(peopleFieldMap.get(FacilioConstants.ContextNames.STATUS)));
+                }
             }
         }
         return OngoingTrips;

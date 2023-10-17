@@ -126,9 +126,12 @@ public class ServiceTaskUtil {
                     Long fieldAgentId = appointment.getFieldAgent().getId();
                     V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE, fieldAgentId);
                     if (people != null) {
-
-                        if (people.getStatus() != V3PeopleContext.Status.ON_SITE.getIndex() && people.getStatus() != V3PeopleContext.Status.EN_ROUTE.getIndex()) {
-                            V3PeopleAPI.updatePeopleStatus(fieldAgentId,V3PeopleContext.Status.ON_SITE.getIndex());
+                        if (people.getStatus() != null){
+                            if (people.getStatus() != V3PeopleContext.Status.ON_SITE.getIndex() && people.getStatus() != V3PeopleContext.Status.EN_ROUTE.getIndex()) {
+                                V3PeopleAPI.updatePeopleStatus(fieldAgentId, V3PeopleContext.Status.ON_SITE.getIndex());
+                            }
+                        } else {
+                            V3PeopleAPI.updatePeopleStatus(fieldAgentId, V3PeopleContext.Status.ON_SITE.getIndex());
                         }
                     }
                 }

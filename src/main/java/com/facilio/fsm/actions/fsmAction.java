@@ -305,7 +305,14 @@ public class fsmAction extends V3Action {
 
         if(MapUtils.isNotEmpty(mapping)) {
             bodyParams.put("skipValidation",skipValidation);
-            V3Util.updateBulkRecords(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, mapping, Collections.singletonList(appointmentId), bodyParams,null,false,false);
+            FacilioContext context = new FacilioContext();
+            context.put(FacilioConstants.ContextNames.RECORD_ID,getAppointmentId());
+            context.put(FacilioConstants.ServiceAppointment.FIELD_AGENT_ID,getFieldAgentId());
+            context.put(FacilioConstants.ServiceAppointment.SKIP_VALIDATION,isSkipValidation());
+            context.put(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME,getScheduledStartTime());
+            context.put(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME,getScheduledEndTime());
+            FacilioChain dispatchChain = FsmTransactionChainFactoryV3.dispatchChain();
+            dispatchChain.execute(context);
 
             List<ServiceAppointmentContext> serviceAppointments = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,Collections.singletonList(appointmentId),ServiceAppointmentContext.class,supplementFields);
             if(CollectionUtils.isNotEmpty(serviceAppointments)) {
