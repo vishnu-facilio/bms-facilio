@@ -66,7 +66,7 @@ public class ValidateServiceOrderPlannedItemsCommand extends FacilioCommand {
                                     throw new FSMException(FSMErrorCode.STORE_DOES_NOT_SERVE_SITE);
                                 }
                             }
-                            if (item.getQuantity() < serviceOrderPlannedItem.getQuantity() && serviceOrderPlannedItem.getReservationTypeEnum().equals(ReservationType.HARD)) {
+                            if (item.getQuantity()==null || (item.getQuantity() < serviceOrderPlannedItem.getQuantity() && serviceOrderPlannedItem.getReservationTypeEnum().equals(ReservationType.HARD))) {
                                 throw new FSMException(FSMErrorCode.INSUFFICIENT_QUANTITY);
                             }
                         }
