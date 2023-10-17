@@ -484,13 +484,15 @@ public class FloorModule extends BaseModuleConfig {
         FacilioModule floorModule = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
         List<FacilioField> allFields =  modBean.getAllFields(floorModule.getName());
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-        String[] viewFieldNames = new String[]{"name","site","building","maxOccupancy","createdBy","createdTime","modifiedBy","modifiedTime"};
+        String[] viewFieldNames = new String[]{"name","site","building","maxOccupancy","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"};
         List<ViewField> viewFields = new ArrayList<>();
         for(String viewFieldName:viewFieldNames){
             if(fieldMap.containsKey(viewFieldName) && fieldMap.get(viewFieldName) != null) {
                 FacilioField field = fieldMap.get(viewFieldName);
                 ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
                 viewField.setField(field);
+                viewField.setFieldId(field.getFieldId());
+                viewField.setFieldName(field.getName());
                 viewFields.add(viewField);
             }
         }

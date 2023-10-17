@@ -309,6 +309,8 @@ public class BaseSpaceAction extends FacilioAction {
 		FacilioChain portfolioSearchChain = ReadOnlyChainFactory.getPortfolioSearchChain();
 		FacilioContext searchContext = portfolioSearchChain.getContext();
 		searchContext.put(ContextNames.SEARCH,getSearch());
+		searchContext.put(ContextNames.OFFSET,getPage());
+		searchContext.put(ContextNames.MODULE_NAME,getModuleName());
 		portfolioSearchChain.execute();
 		setResult(ContextNames.BASE_SPACE_LIST,searchContext.get(ContextNames.SEARCH_RESULT));
 		setResult(ContextNames.COUNT,searchContext.get(ContextNames.COUNT));

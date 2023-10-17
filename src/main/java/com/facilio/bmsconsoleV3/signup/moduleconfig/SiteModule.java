@@ -213,13 +213,15 @@ public class SiteModule extends BaseModuleConfig {
         FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
         List<FacilioField> allFields =  modBean.getAllFields(siteModule.getName());
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-        String[] viewFieldNames = new String[]{"name","siteType","managedBy","area","maxOccupancy","createdBy","createdTime","modifiedBy","modifiedTime"};
+        String[] viewFieldNames = new String[]{"name","siteType","managedBy","area","maxOccupancy","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"};
         List<ViewField> viewFields = new ArrayList<>();
         for(String viewFieldName:viewFieldNames){
             if(fieldMap.containsKey(viewFieldName) && fieldMap.get(viewFieldName) != null) {
                 FacilioField field = fieldMap.get(viewFieldName);
                 ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
                 viewField.setField(field);
+                viewField.setFieldId(field.getFieldId());
+                viewField.setFieldName(field.getName());
                 viewFields.add(viewField);
             }
         }
@@ -709,7 +711,6 @@ public class SiteModule extends BaseModuleConfig {
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
         widgetGroup.setName("primaryDetails");
-        widgetGroup.setDisplayName("General Details");
 
         addSummaryFieldInWidgetGroup(widgetGroup, descFields,1, 1, 4);
         addSummaryFieldInWidgetGroup(widgetGroup, managedByField, 2 , 1, 1);

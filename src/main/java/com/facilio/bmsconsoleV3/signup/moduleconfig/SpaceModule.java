@@ -181,13 +181,15 @@ public class SpaceModule extends BaseModuleConfig {
         FacilioModule spaceModule = modBean.getModule(FacilioConstants.ContextNames.SPACE);
         List<FacilioField> allFields =  modBean.getAllFields(spaceModule.getName());
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-        String[] viewFieldNames = new String[]{"name","site","building","floor","category","maxOccupancy","createdBy","createdTime","modifiedBy","modifiedTime"};
+        String[] viewFieldNames = new String[]{"name","site","building","floor","category","maxOccupancy","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"};
         List<ViewField> viewFields = new ArrayList<>();
         for(String viewFieldName:viewFieldNames){
             if(fieldMap.containsKey(viewFieldName) && fieldMap.get(viewFieldName) != null) {
                 FacilioField field = fieldMap.get(viewFieldName);
                 ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
                 viewField.setField(field);
+                viewField.setFieldId(field.getFieldId());
+                viewField.setFieldName(field.getName());
                 viewFields.add(viewField);
             }
         }

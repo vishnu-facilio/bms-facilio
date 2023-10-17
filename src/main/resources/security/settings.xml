@@ -14,32 +14,34 @@
     </request>
 
 
-    <request path="/api/v2/basespace/tree/fetchParentNodes">
+    <request path="/api/v2/basespace/tree/fetchParentNodes" method="GET">
+        <urlparams type="object">
+            <property name="baseSpaceId" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/portfolio/cards" method="GET">
+    </request>
+    <request path="/api/v2/portfolio/search" method="POST">
         <requestbody type="object">
-            <property name="baseSpaceId" type="string"/>
+            <property name="search" type="string" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="page" type="number" mandatory="true"/>
         </requestbody>
     </request>
-    <request path="/api/v2/portfolio/cards">
+    <request path="/api/v2/portfolio/tree" method="GET">
+        <urlparams type="object">
+            <property name="baseSpaceId" type="string" mandatory="true"/>
+        </urlparams>
     </request>
-    <request path="/api/v2/portfolio/search">
-        <requestbody type="object">
-            <property name="search" type="string"/>
-        </requestbody>
+    <request path="/api/campus/spaceInsights" method="GET">
+        <urlparams type="object">
+            <property name="campusId" type="string" mandatory="true"/>
+        </urlparams>
     </request>
-    <request path="/api/v2/portfolio/tree">
-        <requestbody type="object">
-            <property name="baseSpaceId" type="string"/>
-        </requestbody>
-    </request>
-    <request path="/api/campus/spaceInsights">
-        <requestbody type="object">
-            <property name="campusId" type="string"/>
-        </requestbody>
-    </request>
-    <request path="/api/v2/site/siteInfo">
-        <requestbody type="object">
-            <property name="id" type="string"/>
-        </requestbody>
+    <request path="/api/v2/site/siteInfo" method="GET">
+        <urlparams type="object">
+            <property name="id" type="string" mandatory="true"/>
+        </urlparams>
     </request>
 <!--    <request path="/api/campus/getBaseSpaceChildren">-->
 <!--        <requestbody type="object">-->
@@ -47,22 +49,22 @@
 <!--        </requestbody>-->
 <!--    </request>-->
 
-    <request path="/api/building/spaceInsights">
-        <requestbody type="object">
-            <property name="buildingId" type="string"/>
-        </requestbody>
+    <request path="/api/building/spaceInsights" method="GET">
+        <urlparams type="object">
+            <property name="buildingId" type="string" mandatory="true"/>
+        </urlparams>
     </request>
 
-    <request path="/api/floor/spaceInsights">
-        <requestbody type="object">
-            <property name="floorId" type="string"/>
-        </requestbody>
+    <request path="/api/floor/spaceInsights" method="GET">
+        <urlparams type="object">
+            <property name="floorId" type="string" mandatory="true"/>
+        </urlparams>
     </request>
 
-    <request path="/api/space/spaceInsights">
-        <requestbody type="object">
-            <property name="spaceId" type="string"/>
-        </requestbody>
+    <request path="/api/space/spaceInsights" method="GET">
+        <urlparams type="object">
+            <property name="spaceId" type="string" mandatory="true"/>
+        </urlparams>
     </request>
 
     <request path="/api/v3/modules/data/create">
