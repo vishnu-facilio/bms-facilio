@@ -20,7 +20,8 @@ public class ReadingKpiListAction extends V3Action {
     private String searchText;
     private List<Long> frequencies;
     private Boolean fetchCount;
-    private String groupBy; // Can have values kpi, asset
+    private String groupBy; // Can have values kpi, asset, meter, site, space
+    private String searchModuleName;
     private Long assetCategoryId;
     private Long resourceType;
 
@@ -38,7 +39,7 @@ public class ReadingKpiListAction extends V3Action {
         context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
         context.put(FacilioConstants.ContextNames.REPORT_GROUP_BY, getGroupBy());
         setPaginationAndFetchCount(context);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, getGroupBy().equals("kpi") ? FacilioConstants.ContextNames.ASSET : FacilioConstants.ReadingKpi.READING_KPI);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, getSearchModuleName());
         addFiltersToContext(context);
         chain.execute();
         setDataFromContext(context);
@@ -50,7 +51,7 @@ public class ReadingKpiListAction extends V3Action {
         FacilioChain chain = ReadOnlyChainFactory.getDynamicKpiReadings();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.REPORT_GROUP_BY, getGroupBy());
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ReadingKpi.READING_KPI);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, getSearchModuleName());
         context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
         setPaginationAndFetchCount(context);
         addFiltersToContext(context);

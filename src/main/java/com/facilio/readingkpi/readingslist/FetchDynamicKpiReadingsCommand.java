@@ -35,6 +35,7 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
         String groupBy = (String) context.get(FacilioConstants.ContextNames.REPORT_GROUP_BY);
+        String searchModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
         List<String> resourceTypes = new ArrayList<>();
         resourceTypes.add(FacilioConstants.ContextNames.ASSET);
@@ -44,13 +45,16 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
         List<Map<String, Object>> props;
         List<Map<String, Object>> records = new ArrayList<>();
 
+        Map<String, Object> countProps;
         if (resourceTypes.contains(groupBy)) {
             props = fetchBuilderForResourceSelected(context, recordId, false).get();
+            countProps = fetchBuilderForResourceSelected(context, recordId, true).fetchFirst();
+
         } else {
             NameSpaceContext ns = getNameSpaceByRuleId(recordId, NSType.KPI_RULE);
             List<Long> resourceIds = NamespaceAPI.getMatchedResources(ns, ns.getCategoryId());
-            props = fetchBuilderForKpiSelected(context, resourceIds, false).get();
-
+            props = fetchBuilderForKpiSelected(context, resourceIds, searchModuleName, false).get();
+            countProps = fetchBuilderForKpiSelected(context, resourceIds, searchModuleName, true).fetchFirst();
         }
 
         for (Map<String, Object> prop : props) {
@@ -61,7 +65,6 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
         }
 
         long count = 0;
-        Map<String, Object> countProps = fetchBuilderForResourceSelected(context, recordId, true).fetchFirst();
         if (MapUtils.isNotEmpty(countProps)) {
             count = (long) countProps.get("id");
         }
@@ -72,13 +75,16 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
         return false;
     }
 
-    private static GenericSelectRecordBuilder fetchBuilderForKpiSelected(Context context, List<Long> resourceIds, boolean fetchCount) throws Exception {
+    private static GenericSelectRecordBuilder fetchBuilderForKpiSelected(Context context, List<Long> resourceIds, String searchModuleName, boolean fetchCount) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+        FacilioModule module = modBean.getModule(searchModuleName);
+        FacilioModule resourcesModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(module.getTableName())
+                .innerJoin(resourcesModule.getTableName())
+                .on(module.getTableName() + ".ID=" + resourcesModule.getTableName() + ".ID")
                 .andCondition(CriteriaAPI.getIdCondition(resourceIds, module));
 
         return ReadingKpiAPI.addFilterAndReturnBuilder(context, fetchCount, module, fieldsMap, builder);
@@ -97,7 +103,6 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
      * AND ReadingKPI.STATUS = true
      * AND ReadingKPI.CATEGORY_ID = 1
      * LIMIT 20 OFFSET 0
-     *
      */
     private static GenericSelectRecordBuilder fetchBuilderForResourceSelected(Context context, Long recordId, boolean fetchCount) throws Exception {
 
