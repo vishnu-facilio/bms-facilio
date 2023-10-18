@@ -15,6 +15,9 @@ import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
@@ -95,6 +98,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
     	
     	addJobPlanLookupToWoModule(jobPlanModule);
         addGroupField(jobPlanModule);
+        addSystemButtons();
 
     }
     
@@ -824,15 +828,11 @@ public class AddJobPlanModule extends BaseModuleConfig{
         FacilioField jobPlanCategoryField = moduleBean.getField("jobPlanCategory", moduleName);
         FacilioField jpStatusField = moduleBean.getField("jpStatus", moduleName);
         FacilioField jobPlanVersionField = moduleBean.getField("jobPlanVersion", moduleName);
-        FacilioField sfgVersionField = moduleBean.getField("sfgVersion", moduleName);
-        FacilioField nameField = moduleBean.getField("name", moduleName);
         FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", moduleName);
         FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", moduleName);
         FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", moduleName);
         FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", moduleName);
-        FacilioField contentField = moduleBean.getField("content", moduleName);
-        FacilioField notesField = moduleBean.getField("notes", moduleName);
-        FacilioField scheduleIdField = moduleBean.getField("scheduleId", moduleName);
+
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
@@ -840,12 +840,11 @@ public class AddJobPlanModule extends BaseModuleConfig{
         addSummaryFieldInWidgetGroup(widgetGroup, jobPlanCategoryField,1, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, jpStatusField, 1 , 2, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, jobPlanVersionField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sfgVersionField, 1, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, scheduleIdField,2, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedByField,2, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedTimeField, 2, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, contentField, 3, 1, 4);
-        addSummaryFieldInWidgetGroup(widgetGroup, notesField, 4, 1, 4);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedByField,1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedTimeField, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedByField,2, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTimeField, 2, 3, 1);
+
 
 
         widgetGroup.setName("generalInformation");
@@ -974,6 +973,62 @@ public class AddJobPlanModule extends BaseModuleConfig{
 
 
         return FieldUtil.getAsJSON(widgetGroup);
+    }
+
+    public static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editButton = new SystemButtonRuleContext();
+        editButton.setName("Edit");
+        editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editButton.setIdentifier("jobplanEdit");
+        editButton.setPermissionRequired(true);
+        editButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.JOB_PLAN, editButton);
+
+        SystemButtonRuleContext publishJPButton = new SystemButtonRuleContext();
+        publishJPButton.setName("Publish");
+        publishJPButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        publishJPButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        publishJPButton.setIdentifier("jobplanPublish");
+        publishJPButton.setPermissionRequired(true);
+        publishJPButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.JOB_PLAN, publishJPButton);
+
+        SystemButtonRuleContext reviseJPButton = new SystemButtonRuleContext();
+        reviseJPButton.setName("Revise");
+        reviseJPButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        reviseJPButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        reviseJPButton.setIdentifier("jobplanRevise");
+        reviseJPButton.setPermissionRequired(true);
+        reviseJPButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.JOB_PLAN, reviseJPButton);
+
+        SystemButtonRuleContext cloneJPButton = new SystemButtonRuleContext();
+        cloneJPButton.setName("Clone");
+        cloneJPButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        cloneJPButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        cloneJPButton.setIdentifier("jobplanClone");
+        cloneJPButton.setPermissionRequired(true);
+        cloneJPButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.JOB_PLAN, cloneJPButton);
+
+        SystemButtonRuleContext disableJPButton = new SystemButtonRuleContext();
+        disableJPButton.setName("Disable");
+        disableJPButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        disableJPButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        disableJPButton.setIdentifier("jobplanDisable");
+        disableJPButton.setPermissionRequired(true);
+        disableJPButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.JOB_PLAN, disableJPButton);
+
+        SystemButtonRuleContext versionButton = new SystemButtonRuleContext();
+        versionButton.setName("Version History");
+        versionButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        versionButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        versionButton.setIdentifier("jobplanVersionHistory");
+        versionButton.setPermissionRequired(true);
+        versionButton.setPermission("READ");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.JOB_PLAN, versionButton);
     }
 
 }
