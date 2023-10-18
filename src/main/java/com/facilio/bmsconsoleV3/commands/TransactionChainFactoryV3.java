@@ -31,7 +31,7 @@ import com.facilio.bmsconsoleV3.commands.people.*;
 import com.facilio.bmsconsoleV3.commands.pivot.GetPivotModulesListCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.*;
 import com.facilio.bmsconsoleV3.commands.purchaseorder.*;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPurchaseRequestExtraFields;
+import com.facilio.bmsconsoleV3.commands.purchaserequest.*;
 import com.facilio.bmsconsoleV3.commands.quotation.*;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivableLookupCommandV3;
 import com.facilio.bmsconsoleV3.commands.receivable.LoadReceivablesExtraFields;
@@ -174,9 +174,6 @@ import com.facilio.bmsconsoleV3.commands.licensinginfo.DeleteLicensingInfoComman
 import com.facilio.bmsconsoleV3.commands.licensinginfo.FetchLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.licensinginfo.UpdateLicensingInfoCommand;
 import com.facilio.bmsconsoleV3.commands.peoplegroup.FetchPeopleGroupMembersCommand;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.LoadPoPrListLookupCommandV3;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.PreFillAddPurchaseRequestCommand;
-import com.facilio.bmsconsoleV3.commands.purchaserequest.PurchaseRequestTotalCostRollUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.AddReadingImportAppDataCommand;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.DeleteReadingImportDataCommand;
 import com.facilio.bmsconsoleV3.commands.readingimportapp.UpdateReadingImportDataCommand;
@@ -3574,7 +3571,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ValidateRotatingAssetPMResource());
         return c;
     }
-    
+
     public static FacilioChain addSensorRuleNsChain(){
 
         FacilioChain c = getDefaultChain();
@@ -4108,6 +4105,25 @@ public class TransactionChainFactoryV3 {
 
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteQuoteSettingCommand());
+        return c;
+    }
+
+    public static FacilioChain addNumberformat() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new addNumberFormatCommand());
+        return c;
+    }
+
+    public static FacilioChain updateNumberFormat() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new updateNumberFormatCommand());
+        return c;
+    }
+
+    public static FacilioChain deleteNumberFormat() {
+
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteNumberFormatCommand());
         return c;
     }
 

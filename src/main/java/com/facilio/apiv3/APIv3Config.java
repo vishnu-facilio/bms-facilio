@@ -402,6 +402,7 @@ public class APIv3Config {
 
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getQuoteBeforeFetchChain())
+                .afterFetch(new HandleQuoteDecimalValuesCommand())
 
                 .build();
     }

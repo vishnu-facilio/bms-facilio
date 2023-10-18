@@ -882,4 +882,10 @@
         <action name="list" class="com.facilio.fsm.actions.DispatcherAction" method="fetchDispatcherBoardList" />
         <action name="delete" class="com.facilio.fsm.actions.DispatcherAction" method="deleteDispatcherBoard" />
     </package>
+    <package name="numberformat" namespace="/api/v1/setup/numberformat" extends="v3Api">
+        <action name="add" class="com.facilio.bmsconsoleV3.actions.NumberFormatAction" method="addNumberFormat"/>
+        <action name="fetch" class="com.facilio.bmsconsoleV3.actions.NumberFormatAction" method="fetchNumberFormat"/>
+        <action name="update" class="com.facilio.bmsconsoleV3.actions.NumberFormatAction" method="updateNumberFormat"/>
+        <action name="delete" class="com.facilio.bmsconsoleV3.actions.NumberFormatAction" method="deleteNumberFromat"/>
+    </package>
 </struts>

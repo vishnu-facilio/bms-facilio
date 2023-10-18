@@ -938,4 +938,20 @@ public class QuotationAPI {
         }
         return null;
     }
+    public static NumberFormatContext fetchNumberFormat() throws Exception {
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getNumberFormatFields())
+                .table(ModuleFactory.getNumberformatModule().getTableName())
+                .limit(1);
+
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        if (props != null && !props.isEmpty()) {
+            NumberFormatContext numberformatData = FieldUtil.getAsBeanFromMap(props.get(0), NumberFormatContext.class);
+
+            return numberformatData;
+        }
+        return null;
+    }
 }

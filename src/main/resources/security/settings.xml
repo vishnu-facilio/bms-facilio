@@ -4082,7 +4082,7 @@
             <property name="jobPlanIds" type="array"></property>
         </requestbody>
     </request>
-    
+
     <request path="/api/v3/pdftemplates/preview/:moduleName/:id/:recordId" method="GET">
         <urlparams>
             <property name="moduleName" type="string"/>
@@ -4106,6 +4106,39 @@
             <property name="relationType" type="number"/>
             <property name="relationCategory" type="number"/>
         </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/numberformat/add" method="POST">
+        <requestbody type="object">
+            <property name="enableNumberFormat" type="boolean" />
+            <property name="canTruncateValue" type="boolean" />
+            <property name="id" type="number" />
+            <property name="numberOfDecimal" type="number" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/numberformat/fetch" method="GET">
+        <requestbody type="object">
+            <property name="enableNumberFormat" type="boolean" />
+            <property name="canTruncateValue" type="boolean" />
+            <property name="id" type="number" />
+            <property name="numberOfDecimal" type="number" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/numberformat/update" method="POST">
+        <requestbody type="object">
+            <property name="enableNumberFormat" type="boolean" />
+            <property name="canTruncateValue" type="boolean" />
+            <property name="id" type="number" />
+            <property name="numberOfDecimal" type="number" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/numberformat/delete" method="POST">
+        <requestbody type="object">
+            <property name="delete" type="boolean" />
+        </requestbody>
     </request>
 
 </config>

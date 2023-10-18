@@ -12366,6 +12366,17 @@ public class FieldFactory extends BaseFieldFactory {
         return fieldList;
     }
 
+    public static List<FacilioField> getNumberFormatFields(){
+        FacilioModule module = ModuleFactory.getNumberformatModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getBooleanField("enableNumberFormat","ENABLE_NUMBERFORMAT",module));
+        fieldList.add(getNumberField("id","ID",module));
+        fieldList.add(getNumberField("numberOfDecimal","NUMBER_OF_DECIMAL",module));
+        fieldList.add(getBooleanField("canTruncateValue","CAN_TRUNCATE",module));
+
+        return fieldList;
+    }
+
     public static List<FacilioField> getPDFTemplatesFields() {
         FacilioModule module = ModuleFactory.getPDFTemplatesModule();
 

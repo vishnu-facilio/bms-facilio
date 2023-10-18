@@ -5557,6 +5557,14 @@ public class ModuleFactory {
 		return readingImportModule;
 	}
 
+	public static FacilioModule getNumberformatModule() {
+		FacilioModule numberformatModule = new FacilioModule();
+		numberformatModule.setName("numberformat");
+		numberformatModule.setDisplayName("Number Format");
+		numberformatModule.setTableName("Number_Format");
+		return numberformatModule;
+	}
+
 public static FacilioModule getSpaceBookingFormRelationModule(){
 		FacilioModule spaceBookingFormRelationModule = new FacilioModule();
 		spaceBookingFormRelationModule.setName(ContextNames.SpaceCategoryFormRelation.SPACE_CATEGORY_FORM_RELATION);

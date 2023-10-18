@@ -603,11 +603,19 @@ public class ReadOnlyChainFactoryV3 {
         return c;
     }
 
+    public static  FacilioChain getNumberFormatData() {
+
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchNumberFormat());
+        return c;
+    }
+
     public static FacilioChain getQuoteAfterfetchSummayChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new HandlePortalQuoteSettingCommand());
         c.addCommand(new QuotationFillDetailsCommand());
         c.addCommand(new HandlePortalSummaryMarkupDataCommand());
+        c.addCommand(new HandleQuoteDecimalValuesCommand());
         return c;
     }
 
