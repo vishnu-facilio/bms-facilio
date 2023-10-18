@@ -1,11 +1,20 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.TemplatePages.QuoteTemplatePage;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
@@ -15,6 +24,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.util.RelationshipWidgetUtil;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -41,6 +52,59 @@ public class QuoteModule extends BaseModuleConfig{
 
         return groupVsViews;
     }
+    public void addData() throws Exception {
+        addSystemButtons();
+    }
+
+    private static void addSystemButtons() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        SystemButtonRuleContext downloadPdf = new SystemButtonRuleContext();
+        downloadPdf.setName("Download Pdf");
+        downloadPdf.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadPdf.setIdentifier("downloadPdf");
+        downloadPdf.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE,downloadPdf);
+
+        SystemButtonRuleContext printPdf = new SystemButtonRuleContext();
+        printPdf.setName("Print Pdf");
+        printPdf.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        printPdf.setIdentifier("printPdf");
+        printPdf.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE,printPdf);
+
+        SystemButtonRuleContext associateTerms = new SystemButtonRuleContext();
+        associateTerms.setName("Associate Terms");
+        associateTerms.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        associateTerms.setIdentifier("associateTerms");
+        associateTerms.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE,associateTerms);
+
+        SystemButtonRuleContext sendMail = new SystemButtonRuleContext();
+        sendMail.setName("Send Mail");
+        sendMail.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        sendMail.setIdentifier("sendMail");
+        sendMail.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE,sendMail);
+
+        SystemButtonRuleContext reviseQuoute = new SystemButtonRuleContext();
+        reviseQuoute.setName("Revise");
+        reviseQuoute.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        reviseQuoute.setIdentifier("reviseQuoute");
+        reviseQuoute.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE,reviseQuoute);
+
+
+        SystemButtonRuleContext edit = new SystemButtonRuleContext();
+        edit.setName("Edit");
+        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        edit.setIdentifier("edit");
+        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        edit.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE,edit);
+
+
+    }
 
     private static FacilioView getAllQuotations() {
 
@@ -62,6 +126,73 @@ public class QuoteModule extends BaseModuleConfig{
 
         return allView;
     }
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String> appNames = new ArrayList<>();
+        appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName,getQuotePage(app, module));
+        }
+        return appNameVsPage;
+    }
+
+
+    private List<PagesContext> getQuotePage(ApplicationContext app, FacilioModule module) throws Exception {
+        JSONObject historyWidgetParam = new JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.QUOTE_ACTIVITY);
+        return new ModulePages()
+                .addPage("QuoteViewPage", "Default Quote Page", "", null, false, true, true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("quotePdfViewer", null, null)
+                .addWidget("quotePdfViewerWidget", "Summary", PageWidget.WidgetType.PDF_VIEWER, "flexiblewebpdfviewer_19", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("noteandinformation","Notes & Information",PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("quoteSummaryFields", null, null)
+                .addWidget("quoteSummaryFieldsWidget", "Quote Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, QuoteTemplatePage.getSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("quotewidgetGroup", null,  null)
+                .addWidget("quotecommentandattachmentwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, QuoteTemplatePage.getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("quoterelationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("quotebulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("quoterelatedlist", "Related List", "List of related records across modules")
+                .addWidget("quotebulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST,"flexiblewebbulkrelatedlist_6", 0, 0,  null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("history","History",PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("quoteHistory",null,null)
+                .addWidget("quoteHistoryWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0,  historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone()
+                .getCustomPages();
+    }
+
 
     @Override
     public List<FacilioForm> getModuleForms() throws Exception {

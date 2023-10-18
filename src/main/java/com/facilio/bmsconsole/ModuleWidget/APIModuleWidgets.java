@@ -932,4 +932,10 @@ public class APIModuleWidgets {
                 .addModuleWidget("safetyplanhazard", "SafetyPlan Hazard", PageWidget.WidgetType.SAFETYPLAY_HAZARD)
                 .done();
     }
+    @WidgetsForModule(FacilioConstants.ContextNames.QUOTE)
+    public static Supplier<ModuleWidgets> getQuoteWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("pdfViewer" , "Pdf Viewer",PageWidget.WidgetType.PDF_VIEWER)
+                .done();
+    }
 }
