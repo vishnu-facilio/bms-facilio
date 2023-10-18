@@ -48,7 +48,7 @@ public class UpdatePeopleAvailabilityStatusCommand extends FacilioCommand {
                     fields.add(fieldMap.get(FacilioConstants.ContextNames.LAST_CHECKED_IN_TIME));
                     people.setCheckedIn(true);
                     people.setLastCheckedInTime(transaction.getTransactionTime());
-                    if(people.getStatusEnum().equals(V3PeopleContext.Status.NOT_AVAILABLE)) {
+                    if(people.getStatusEnum() == null || people.getStatusEnum().equals(V3PeopleContext.Status.NOT_AVAILABLE)) {
                         fields.add(fieldMap.get(FacilioConstants.ContextNames.STATUS));
                         people.setStatus(V3PeopleContext.Status.AVAILABLE.getIndex());
                     }
@@ -57,7 +57,7 @@ public class UpdatePeopleAvailabilityStatusCommand extends FacilioCommand {
                     people.setCheckedIn(false);
                     people.setLastCheckedOutTime(transaction.getTransactionTime());
                     if(!ShiftAPI.checkIfPeopleAvailable(peopleId,DateTimeUtil.getCurrenTime())
-                            && people.getStatusEnum().equals(V3PeopleContext.Status.AVAILABLE)) {
+                            && (people.getStatusEnum() == null ||people.getStatusEnum().equals(V3PeopleContext.Status.AVAILABLE))) {
                         fields.add(fieldMap.get(FacilioConstants.ContextNames.STATUS));
                         people.setStatus(V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
                     }

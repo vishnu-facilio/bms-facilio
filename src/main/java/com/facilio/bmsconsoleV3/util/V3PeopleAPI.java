@@ -12,6 +12,7 @@ import com.facilio.beans.PermissionSetBean;
 import com.facilio.bmsconsole.commands.ExecuteStateFlowCommand;
 import com.facilio.bmsconsole.commands.ExecuteStateTransitionsCommand;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
@@ -1372,7 +1373,6 @@ public class V3PeopleAPI {
             Long toRange = currentTime - dayStart;
             List<Long> peopleIdsForShiftStart = new ArrayList<>();
             List<Long> peopleIdsForShiftEnd = new ArrayList<>();
-            FacilioModule shiftMod = ModuleFactory.getShiftModule();
             for (Map<String, Object> map : mapList) {
 
             Long peopleId = (Long) map.get("peopleId");
@@ -1383,12 +1383,14 @@ public class V3PeopleAPI {
             } else if (endTime >= fromRange && endTime <= toRange) {
                 peopleIdsForShiftEnd.add(peopleId);
             }
-            if(CollectionUtils.isNotEmpty(peopleIdsForShiftStart)){
-                SilentNotificationUtilForFsm.sendNotificationForFsm(shiftMod, peopleIdsForShiftStart, SilentPushNotificationContext.ActionType.SHIFT_START,300000L,120000L);
-            }
-            if(CollectionUtils.isNotEmpty(peopleIdsForShiftEnd)){
-                SilentNotificationUtilForFsm.sendNotificationForFsm(shiftMod, peopleIdsForShiftEnd, SilentPushNotificationContext.ActionType.SHIFT_END,300000L,120000L);
-            }
+                    if(CollectionUtils.isNotEmpty(peopleIdsForShiftStart)){
+                        SilentNotificationUtilForFsm.sendNotificationForFsm( peopleIdsForShiftStart, SilentPushNotificationContext.ActionType.SHIFT_START,300000L,120000L);
+                    }
+                    if(CollectionUtils.isNotEmpty(peopleIdsForShiftEnd)){
+                        SilentNotificationUtilForFsm.sendNotificationForFsm( peopleIdsForShiftEnd, SilentPushNotificationContext.ActionType.SHIFT_END,300000L,120000L);
+                    }
+
+
             }
         }
     }
@@ -1417,6 +1419,16 @@ public class V3PeopleAPI {
                 V3PeopleAPI.updatePeopleStatus(people.getId(), V3PeopleContext.Status.NOT_AVAILABLE.getIndex());
             }
         }
+    }
+
+    public static List<User> getUserList(List<Long> peopleIds, long appId) throws Exception {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId",StringUtils.join(peopleIds,","), NumberOperators.EQUALS));
+        GenericSelectRecordBuilder builder = UserBeanImpl.fetchUserSelectBuilder(appId, criteria, AccountUtil.getCurrentOrg().getOrgId(), null);
+        List<Map<String,Object>> props = builder.get();
+        List<User> users = UserBeanImpl.populateProps(props);
+
+        return users;
     }
 
 

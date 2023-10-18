@@ -20,6 +20,7 @@ topics:
       - { key: controlActionTemplate/+, handler: com.facilio.wmsv2.handler.ControlActionGenerationHandler, recordTimeout: 600 }
       - { key: __flow_logs__/#, handler: com.facilio.ims.handler.FlowLogHandler, recordTimeout: 60 }
       - { key: __flaggedEvent__/#, handler: com.facilio.remotemonitoring.wms.FlaggedEventHandler, recordTimeout: 120 }
+      - { key: __fsm_silent_notification_logs__/#, handler: com.facilio.ims.handler.SilentNotificationForFsmHandler }
 
   - topic: receive-mail
     keys:
@@ -63,7 +64,3 @@ topics:
   - topic: workflow-rulelog
     keys:
       - { key: __workflow_rule_logs__/#/#/#, handler: com.facilio.ims.handler.WorkFlowRuleLogHandler }
-
-  - topic: default-single
-    keys:
-      - { key: __fsm_silent_notification_logs__/#/#, handler: com.facilio.ims.handler.WorkFlowRuleLogHandler }
