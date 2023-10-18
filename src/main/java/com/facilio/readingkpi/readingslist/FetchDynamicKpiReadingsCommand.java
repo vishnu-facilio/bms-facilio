@@ -139,7 +139,7 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
         String groupBy = (String) context.get(FacilioConstants.ContextNames.REPORT_GROUP_BY);
         switch (groupBy) {
             case FacilioConstants.ContextNames.ASSET:
-                return Optional.of(AssetsAPI.getAssetInfo(recordId))
+                return Optional.ofNullable(AssetsAPI.getAssetInfo(recordId))
                         .map(AssetContext::getCategory)
                         .map(ModuleBaseWithCustomFields::getId)
                         .orElse(-1L);
