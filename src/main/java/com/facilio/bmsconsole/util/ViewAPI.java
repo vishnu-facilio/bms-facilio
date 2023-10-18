@@ -745,7 +745,7 @@ public class ViewAPI {
 	}
 
 	private static Map<String, Object> getTimeLineViewProps(Map<String, Object> viewProp) {
-		Map<String, Object> timelineViewContext = (Map<String, Object>) viewProp.get("timelineViewContext");
+		Map<String, Object> timelineViewContext = (Map<String, Object>) viewProp.get("timelineScheduledViewContext");
 		if (MapUtils.isNotEmpty(timelineViewContext)) {
 			Map<String, Object> timelineViewProps = new HashMap<>(timelineViewContext);
 			timelineViewProps.put("orgId", viewProp.get("orgId"));
