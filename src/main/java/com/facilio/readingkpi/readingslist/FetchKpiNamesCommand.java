@@ -9,14 +9,15 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.readingkpi.context.KPIType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
-import org.mockito.internal.runners.StrictRunner;
 
 import java.util.*;
 
@@ -31,6 +32,7 @@ public class FetchKpiNamesCommand extends FacilioCommand {
             row.put("name", prop.get("name"));
             row.put("id", prop.get("id"));
             row.put("frequency", prop.get("frequency"));
+            row.put("kpiType", prop.get("kpiType"));
 
             kpis.add(row);
         }
@@ -41,10 +43,21 @@ public class FetchKpiNamesCommand extends FacilioCommand {
             count = (long) countProps.get("id");
         }
         context.put(FacilioConstants.ContextNames.COUNT, count);
-        context.put(FacilioConstants.ContextNames.KPI_LIST, kpis);
+        context.put(FacilioConstants.ContextNames.DATA, kpis);
         return false;
     }
 
+    /**
+     * Query:
+     * SELECT DISTINCT(ReadingKPI.ID) AS `id`, ReadingKPI.NAME AS `name`, ReadingKPI.KPI_TYPE AS `kpiType`, ReadingKPI.FREQUENCY AS `frequency`
+     * FROM ReadingKPI
+     * LEFT JOIN Reading_Data_Meta ON Reading_Data_Meta.FIELD_ID=ReadingKPI.READING_FIELD_ID
+     * WHERE ReadingKPI.ORGID = 1 AND
+     * ReadingKPI.STATUS = true AND (Reading_Data_Meta.VALUE IS NULL OR Reading_Data_Meta.VALUE != -1)
+     * AND ReadingKPI.RESOURCE_TYPE = resType
+     * AND (ReadingKPI.SYS_DELETED IS NULL OR ReadingKPI.SYS_DELETED = false)
+     * LIMIT 20 OFFSET 0;
+     */
     private GenericSelectRecordBuilder fetchBuilder(Context context, Boolean fetchCount) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -58,21 +71,21 @@ public class FetchKpiNamesCommand extends FacilioCommand {
         selectDistinctField.setColumnName("DISTINCT(" + readingKpiIdField.getCompleteColumnName() + ")");
         selectDistinctField.setModule(null);
 
-        List<FacilioField> selectFields = Arrays.asList(selectDistinctField, readingKpiFieldMap.get("name"), readingKpiFieldMap.get("frequency"));
+        List<FacilioField> selectFields = Arrays.asList(selectDistinctField, readingKpiFieldMap.get("name"), readingKpiFieldMap.get("kpiType"), readingKpiFieldMap.get("frequency"));
 
         FacilioModule rdmModule = ModuleFactory.getReadingDataMetaModule();
         Map<String, FacilioField> rdmFieldMap = FieldFactory.getAsMap(FieldFactory.getReadingDataMetaFields());
 
-        String kpiTypeString = (String) context.get(FacilioConstants.ReadingKpi.KPI_TYPE);
-        KPIType kpiType = KPIType.valueOf(kpiTypeString.toUpperCase());
+
+        Long resourceType = (Long) context.get(FacilioConstants.ContextNames.RESOURCE_TYPE);
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(rdmModule.getTableName())
-                .innerJoin(readingKpiModule.getTableName()).on(rdmFieldMap.get("fieldId").getCompleteColumnName() + "=" + readingKpiFieldMap.get("readingFieldId").getCompleteColumnName())
+                .table(readingKpiModule.getTableName())
+                .leftJoin(rdmModule.getTableName()).on(rdmFieldMap.get("fieldId").getCompleteColumnName() + "=" + readingKpiFieldMap.get("readingFieldId").getCompleteColumnName())
                 .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("status"), "true", BooleanOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS))
-                .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("kpiType"), String.valueOf(kpiType.getIndex()), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(readingKpiModule.getTableName() +".SYS_DELETED", "sysDeleted", String.valueOf(Boolean.FALSE), BooleanOperators.IS));
-
+                .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("resourceType"), String.valueOf(resourceType), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(readingKpiModule.getTableName() + ".SYS_DELETED", "sysDeleted", String.valueOf(Boolean.FALSE), BooleanOperators.IS));
 
 
         if (!fetchCount) {

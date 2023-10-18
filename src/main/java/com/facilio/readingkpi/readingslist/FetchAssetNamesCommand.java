@@ -5,21 +5,17 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.readingkpi.context.KPIType;
+import com.facilio.readingkpi.ReadingKpiAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.xml.stream.events.Namespace;
 import java.util.*;
 
 public class FetchAssetNamesCommand extends FacilioCommand {
@@ -31,73 +27,43 @@ public class FetchAssetNamesCommand extends FacilioCommand {
         for (Map<String, Object> prop : assetProps) {
             Map<String, Object> row = new HashMap<>();
             row.put("name", prop.get("name"));
-            row.put("id", prop.get("resourceId"));
+            row.put("id", prop.get("id"));
             assets.add(row);
         }
 
         long count = 0;
-        Map<String, Object> countProps = fetchBuilder(context,true).fetchFirst();
+        Map<String, Object> countProps = fetchBuilder(context, true).fetchFirst();
         if (MapUtils.isNotEmpty(countProps)) {
             count = (long) countProps.get("id");
         }
 
         context.put(FacilioConstants.ContextNames.COUNT, count);
-        context.put(FacilioConstants.ContextNames.ASSETS, assets);
+        context.put(FacilioConstants.ContextNames.DATA, assets);
         return false;
     }
 
     private GenericSelectRecordBuilder fetchBuilder(Context context, Boolean fetchCount) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule readingKpiModule = modBean.getModule(FacilioConstants.ReadingKpi.READING_KPI);
-        List<FacilioField> fields = modBean.getAllFields(readingKpiModule.getName());
-        Map<String, FacilioField> readingKpiFieldMap = FieldFactory.getAsMap(fields);
-
-        FacilioModule rdmModule = ModuleFactory.getReadingDataMetaModule();
-        Map<String, FacilioField> rdmFieldMap = FieldFactory.getAsMap(FieldFactory.getReadingDataMetaFields());
-
+        FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
         FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-        String resourceTable = resourceModule.getTableName();
-        Map<String, FacilioField> resourceFieldMap = FieldFactory.getAsMap(modBean.getAllFields(resourceModule.getName()));
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(assetModule.getName()));
 
-        FacilioField resourceIdField = FieldFactory.getIdField(resourceModule);
-        resourceIdField.setColumnName("DISTINCT(" + resourceIdField.getCompleteColumnName() + ")");
-        resourceIdField.setModule(null);
-
-        KPIType kpiType = KPIType.valueOf((String) context.get(FacilioConstants.ReadingKpi.KPI_TYPE));
-        List<FacilioField> rdmSelectFields = Arrays.asList(resourceIdField, resourceFieldMap.get("name"), rdmFieldMap.get("resourceId"));
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(rdmModule.getTableName())
-                .innerJoin(readingKpiModule.getTableName()).on(rdmFieldMap.get("fieldId").getCompleteColumnName() + "=" + readingKpiFieldMap.get("readingFieldId").getCompleteColumnName())
-                .innerJoin(resourceTable).on(rdmFieldMap.get("resourceId").getCompleteColumnName() + "=" + resourceTable + ".ID")
-                .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("status"), "true", BooleanOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS))
-                .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("kpiType"), String.valueOf(kpiType.getIndex()), NumberOperators.EQUALS));
-
-        if (!fetchCount) {
-            int page = (int) context.get(FacilioConstants.ContextNames.PAGE);
-            int perPage = (int) context.get(FacilioConstants.ContextNames.PER_PAGE);
-
-            if (perPage != -1) {
-                int offset = ((page - 1) * perPage);
-                if (offset < 0) {
-                    offset = 0;
-                }
-
-                builder.offset(offset);
-                builder.limit(perPage);
-
-            }
-            builder.select(rdmSelectFields);
-
-        } else {
-            builder.select(new HashSet<>()).aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, resourceIdField);
+                .table(assetModule.getTableName())
+                .innerJoin(resourceModule.getTableName())
+                .on(resourceModule.getTableName() + ".ID=" + assetModule.getTableName() + ".ID")
+                .orderBy(assetModule.getTableName()+".ID DESC");
+        Long categoryId = (Long) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY_ID);
+        if (categoryId != null) {
+            builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("category"), Collections.singleton(categoryId), NumberOperators.EQUALS));
         }
+
         String searchText = (String) context.get(FacilioConstants.ContextNames.SEARCH_QUERY);
         if (StringUtils.isNotEmpty(searchText)) {
-            builder.andCondition(CriteriaAPI.getCondition(resourceFieldMap.get("name"), searchText, StringOperators.CONTAINS));
-
+            builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), searchText, StringOperators.CONTAINS));
         }
-        return builder;
+        return ReadingKpiAPI.addFilterAndReturnBuilder(context, fetchCount, assetModule, fieldsMap, builder);
     }
 }
+

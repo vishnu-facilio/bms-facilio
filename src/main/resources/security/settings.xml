@@ -2035,6 +2035,9 @@
     <request path="/api/v3/readingKpi/fetchReadings">
         <requestbody type="object"/>
     </request>
+    <request path="/api/v3/readingKpi/fetchDynamicKpiReadings">
+        <requestbody type="object"/>
+    </request>
     <request path="/api/v3/readingKpi/fetchAssetNames">
         <requestbody type="object"/>
     </request>

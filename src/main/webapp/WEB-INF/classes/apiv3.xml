@@ -1237,6 +1237,11 @@
             <param name="checkPermission">true</param>
             <param name="moduleName">readingkpi</param>
         </action>
+        <action name="fetchDynamicKpiReadings" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchDynamicKpiReadings">
+            <param name="permission">GET:VIEW</param>
+            <param name="checkPermission">true</param>
+            <param name="moduleName">readingkpi</param>
+        </action>
         <action name="fetchAssetNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchAssetNames">
             <param name="permission">GET:VIEW</param>
             <param name="checkPermission">true</param>

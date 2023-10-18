@@ -65,7 +65,7 @@ public class ReadingKpiAction extends V3Action {
     }
 
     public String getDynamicKpisForAsset() throws Exception {
-        setData("dynamicKpis", ReadingKpiAPI.getDynamicKpisForAsset(assetId));
+        setData("dynamicKpis", ReadingKpiAPI.getDynamicKpisForResource(assetId));
         return SUCCESS;
     }
 

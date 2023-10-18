@@ -15,7 +15,6 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
-import com.facilio.readingkpi.context.KPIType;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.v3.context.Constants;
@@ -31,7 +30,6 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
         Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
         String groupBy = (String) context.get(FacilioConstants.ContextNames.REPORT_GROUP_BY);
         Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
-        KPIType kpiType = KPIType.valueOf((String) context.get(FacilioConstants.ReadingKpi.KPI_TYPE));
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -59,7 +57,6 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(rdmModule.getTableName())
                 .andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS))
-                .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("kpiType"), String.valueOf(kpiType.getIndex()), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(readingKpiModule.getTableName() + ".SYS_DELETED", "sysDeleted", String.valueOf(Boolean.FALSE), BooleanOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("status"), String.valueOf(Boolean.TRUE), BooleanOperators.IS));
 

@@ -40,6 +40,7 @@ import com.facilio.workflows.context.WorkflowContext;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jgrapht.Graph;
@@ -63,7 +64,7 @@ import static com.facilio.connected.CommonConnectedUtil.postConRuleHistoryInstru
 @Log4j
 public class ReadingKpiAPI {
 
-    public static List<ReadingKPIContext> getAllActiveKpis(Map<String, Object> paramsMap, Criteria userCriteria) throws Exception {
+    public static FacilioContext getAllActiveKpisWithMeta(Map<String, Object> paramsMap, Criteria userCriteria) throws Exception {
         String moduleName = FacilioConstants.ReadingKpi.READING_KPI;
         String search = null;
         int page = 0, perPage = 50;
@@ -82,10 +83,13 @@ public class ReadingKpiAPI {
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS));
         criteria.andCriteria(userCriteria);
 
-        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, orderBy, orderType, search, page, perPage, true, null, criteria, null);
-        Map<String, Object> readingKpiContexts = (Map<String, Object>) fetch.get(Constants.RECORD_MAP);
+        return V3Util.fetchList(moduleName, true, null, null, false, null, orderBy, orderType, search, page, perPage, true, null, criteria, null);
+    }
 
-        return (List<ReadingKPIContext>) readingKpiContexts.get(moduleName);
+    public static List<ReadingKPIContext> getAllActiveKpis(Map<String, Object> paramsMap, Criteria userCriteria) throws Exception {
+        FacilioContext context = getAllActiveKpisWithMeta(paramsMap, userCriteria);
+        Map<String, Object> readingKpiMap = (Map<String, Object>) context.get(Constants.RECORD_MAP);
+        return (List<ReadingKPIContext>) readingKpiMap.get(FacilioConstants.ReadingKpi.READING_KPI);
     }
 
     public static List<Map<String, Object>> getListOfAssetCategoriesOfAllKpis() throws Exception {
@@ -531,11 +535,11 @@ public class ReadingKpiAPI {
 
     // Dynamic KPI Util
 
-    public static List<KpiContextWrapper> getDynamicKpisForAsset(Long assetId) throws Exception {
-        AssetContext assetInfo = AssetsAPI.getAssetInfo(assetId);
+    public static List<KpiContextWrapper> getDynamicKpisForResource(Long resourceId) throws Exception {
+        AssetContext assetInfo = AssetsAPI.getAssetInfo(resourceId);
         AssetCategoryContext category = assetInfo.getCategory();
         return getDynamicKpisOfCategory(category.getId()).stream()
-                .filter(dynKpi -> getMatchedResources(dynKpi.getNs(), category.getId()).contains(assetId))
+                .filter(dynKpi -> getMatchedResources(dynKpi.getNs(), category.getId()).contains(resourceId))
                 .map(dynKpi -> new KpiContextWrapper(dynKpi.getId(), dynKpi.getName()))
                 .collect(Collectors.toList());
     }
@@ -981,6 +985,52 @@ public class ReadingKpiAPI {
         if(category != null) {
             kpi.setCategory(new ResourceCategory<>(type, category));
         }
+    }
+
+
+    public static GenericSelectRecordBuilder addFilterAndReturnBuilder(Context context, boolean fetchCount, FacilioModule module, Map<String, FacilioField> fieldsMap, GenericSelectRecordBuilder builder) throws Exception {
+        Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+        if (filterCriteria != null) {
+            builder.andCriteria(filterCriteria);
+        }
+        return fetchCount
+                ? getCountBuilder(builder, module)
+                : getDataBuilder(context, module, fieldsMap, builder);
+    }
+
+    private static GenericSelectRecordBuilder getCountBuilder(GenericSelectRecordBuilder builder, FacilioModule module) throws Exception {
+        FacilioField selectDistinctField = getSelectDistinctIdField(module);
+        builder.select(new HashSet<>()).aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, selectDistinctField);
+        return builder;
+    }
+
+    private static GenericSelectRecordBuilder getDataBuilder(Context context, FacilioModule module, Map<String, FacilioField> fieldsMap, GenericSelectRecordBuilder builder) {
+        FacilioField selectDistinctField = getSelectDistinctIdField(module);
+        builder.select(Arrays.asList(selectDistinctField, fieldsMap.get("name")));
+        return addPaginationPropsToBuilder(context, builder);
+    }
+
+    private static FacilioField getSelectDistinctIdField(FacilioModule module) {
+        FacilioField idField = FieldFactory.getIdField(module);
+        FacilioField selectDistinctField = idField.clone();
+        selectDistinctField.setColumnName("DISTINCT(" + idField.getCompleteColumnName() + ")");
+        selectDistinctField.setModule(null);
+        return selectDistinctField;
+    }
+
+    private static GenericSelectRecordBuilder addPaginationPropsToBuilder(Context context, GenericSelectRecordBuilder builder) {
+        Integer page = (Integer) context.get(FacilioConstants.ContextNames.PAGE);
+        Integer perPage = (Integer) context.get(FacilioConstants.ContextNames.PER_PAGE);
+
+        if (perPage != null) {
+            int offset = ((page - 1) * perPage);
+            if (offset < 0) {
+                offset = 0;
+            }
+            builder.offset(offset);
+            builder.limit(perPage);
+        }
+        return builder;
     }
 
 }

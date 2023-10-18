@@ -59,6 +59,7 @@ import com.facilio.pdftemplate.command.DownloadPDFTemplateCommand;
 import com.facilio.permission.commands.FetchPermissionSetsForUserCommand;
 import com.facilio.readingkpi.commands.list.FetchResourceNamesForKpiLogger;
 import com.facilio.readingkpi.readingslist.FetchAssetNamesCommand;
+import com.facilio.readingkpi.readingslist.FetchDynamicKpiReadingsCommand;
 import com.facilio.readingkpi.readingslist.FetchKpiNamesCommand;
 import com.facilio.readingkpi.readingslist.FetchKpiReadingsCommand;
 import com.facilio.readingrule.rca.command.AddBooleanChartDataCommand;
@@ -3396,6 +3397,12 @@ public class ReadOnlyChainFactory {
 
 		return c;
 
+	}
+	public static FacilioChain getDynamicKpiReadings(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new FetchDynamicKpiReadingsCommand());
+		return chain;
 	}
 	public static FacilioChain getKpiReadings(){
 		FacilioChain chain = getDefaultChain();

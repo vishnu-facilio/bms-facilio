@@ -4424,6 +4424,12 @@ public class FacilioConstants {
 		public static final String READING_KPI_LOGS_MODULE = "readingkpilogs";
 		public static final String KPI_SCRIPT_LOGS_MODULE = "kpiscriptlogs";
 		public static final String IS_DYNAMIC_KPI = "isDynamicKpi";
+		public static final String REALTIME_KPI_FILTERS = "realTimeKpiFilters";
+		public static final String REALTIME_KPI_FILTER_CRITERIA = "realTimeKpiFilterCriteria";
+		public static final String KPI_FILTERS = "kpiFilters";
+		public static final String KPI_FILTER_CRITERIA = "kpiFilterCriteria";
+		public static final String KPI_RECORDS = "kpiRecords";
+		public static final String REALTIME_KPI_RECORDS = "realTimeKpiRecords";
 	}
 
 

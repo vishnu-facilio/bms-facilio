@@ -91,7 +91,7 @@ public class ReadingRuleAction extends V3Action {
 
     public String runHistorical() throws Exception {
         NewReadingRuleContext rule = NewReadingRuleAPI.getReadingRules(Collections.singletonList(getRecordId())).get(0);
-        postConRuleHistoryInstructionToStorm(Collections.singletonList(rule), startTime, endTime, rule.getNs().getIncludedAssetIds(), false, InstructionType.READING_RULE_HISTORICAL);
+        postConRuleHistoryInstructionToStorm(Collections.singletonList(rule), startTime, endTime, getAssetIds(), false, InstructionType.READING_RULE_HISTORICAL);
         setData("success", "Instruction Processing has begun");
 
         return SUCCESS;
