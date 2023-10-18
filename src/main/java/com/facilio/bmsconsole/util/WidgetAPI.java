@@ -254,6 +254,7 @@ public class WidgetAPI {
     public static PageSectionWidgetContext parsePageWidgetDetails(PageWidget.WidgetType type, JSONObject widgetDetails) throws Exception {
         switch (type){
             case SUMMARY_FIELDS_WIDGET:
+            case FIXED_SUMMARY_FIELDS_WIDGET:
             case SR_DETAILS_WIDGET:
                 return  FieldUtil.getAsBeanFromJson(widgetDetails, SummaryWidget.class);
             case BULK_RELATED_LIST:
