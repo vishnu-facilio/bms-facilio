@@ -11,6 +11,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
 public class ReportDataPointContext implements  Cloneable{
 
@@ -547,4 +549,9 @@ public class ReportDataPointContext implements  Cloneable{
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
+
+	@Setter @Getter
+	public Long relationship_id;
+	@Setter @Getter
+	public String parent_measure_alias;
 }

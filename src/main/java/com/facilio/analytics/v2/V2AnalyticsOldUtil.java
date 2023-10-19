@@ -23,6 +23,9 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
+import com.facilio.relation.context.RelationContext;
+import com.facilio.relation.context.RelationMappingContext;
+import com.facilio.relation.util.RelationUtil;
 import com.facilio.report.context.*;
 import com.facilio.report.module.v2.context.V2ModuleReportContext;
 import com.facilio.report.util.ReportUtil;
@@ -34,6 +37,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class V2AnalyticsOldUtil {
     private static final List<ReadingAnalysisContext.ReportMode> SUPPORTED_PORTFOLIO_MODES = Arrays.asList(
@@ -649,5 +653,91 @@ public class V2AnalyticsOldUtil {
             }
         }
         return assetIds;
+    }
+
+    public static HashMap<String, ReportDataPointContext> getAliasVsDataPointMap(List<ReportDataPointContext> dataPoints)throws Exception
+    {
+        if(dataPoints != null && dataPoints.size() > 0) {
+            return (HashMap<String, ReportDataPointContext>) dataPoints
+                    .stream()
+                    .collect(Collectors.toMap(
+                            measure -> measure.getAliases().get("actual"),
+                            measure -> measure
+                    ));
+        }
+        return null;
+    }
+    public static String getParentIdsFromRelationship(Long relationship_id,String parent_module_name, Criteria parent_criteria)throws Exception
+    {
+        RelationContext relation = RelationUtil.getRelation(relationship_id, true);
+        if(relation != null)
+        {
+            ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule fromModule = moduleBean.getModule(parent_module_name);
+            RelationMappingContext mappingData = null;
+            if(relation.getMapping1() != null && relation.getMapping1().getFromModuleId() == fromModule.getModuleId()){
+                mappingData = relation.getMapping1();
+            }
+            else if(relation.getMapping2() != null && relation.getMapping2().getFromModuleId() == fromModule.getModuleId()){
+                mappingData = relation.getMapping2();
+            }
+
+           return V2AnalyticsOldUtil.getRelationshipParentIds(parent_criteria, relation.getRelationModuleId(), fromModule, mappingData);
+        }
+        return null;
+    }
+
+    public static void getAndSetRelationShipSubQuery(List<ReportDataPointContext> dataPoints, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, HashMap<String, String> moduleVsAlias)throws Exception
+    {
+        if(dataPoint.getParent_measure_alias() != null && dataPoint.getRelationship_id() > 0)
+        {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            Map<String, ReportDataPointContext> measures_map = V2AnalyticsOldUtil.getAliasVsDataPointMap(dataPoints);
+            if (measures_map.containsKey(dataPoint.getParent_measure_alias()))
+            {
+                ReportDataPointContext parent_datapoint = measures_map.get(dataPoint.getParent_measure_alias());
+                if (dataPoint.getyAxis().getField() != null && dataPoint.getyAxis().getField().getModule() != null)
+                {
+                    FacilioModule yaxis_module_name = dataPoint.getyAxis().getField().getModule();
+                    Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(yaxis_module_name.getName()));
+                    if (fieldsMap.containsKey("parentId"))
+                    {
+                        FacilioField parentField = fieldsMap.get("parentId").clone();
+                        if (moduleVsAlias.containsKey(parentField.getModule().getName())) {
+                            parentField.setTableAlias(moduleVsAlias.get(parentField.getModule().getName()));
+                        }
+                        String relationship_subquery = V2AnalyticsOldUtil.getParentIdsFromRelationship(dataPoint.getRelationship_id(), parent_datapoint.getParentReadingModule().getName(), parent_datapoint.getV2Criteria());
+                        selectBuilder.andCustomWhere(new StringBuilder(parentField.getCompleteColumnName()).append(" IN (").append(relationship_subquery).append(" )").toString());
+                    }
+                }
+            }
+        }
+    }
+
+    private static String getRelationshipParentIds(Criteria criteria, Long  relation_module_id, FacilioModule fromModule, RelationMappingContext relation_mapping)throws Exception
+    {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule customRelModule = moduleBean.getModule(relation_module_id);
+        List<FacilioField> selectedFields = new ArrayList<>();
+        FacilioField selectField = null;
+        if(relation_mapping.getPositionEnum() == RelationMappingContext.Position.LEFT){
+            selectField = moduleBean.getField(RelationMappingContext.Position.RIGHT.getFieldName(), customRelModule.getName());
+        }else{
+            selectField = moduleBean.getField(RelationMappingContext.Position.LEFT.getFieldName(), customRelModule.getName());
+        }
+        selectedFields.add(selectField);
+
+        SelectRecordsBuilder selectBuilder = new SelectRecordsBuilder()
+                .module(customRelModule)
+                .select(selectedFields)
+                .setAggregation()
+                .innerJoin(fromModule.getTableName() )
+                .on(new StringBuilder(customRelModule.getTableName()).append(".").append(relation_mapping.getPositionEnum().getColumnName()).append(" = ").append(fromModule.getTableName()).append(".ID").append(" AND ")
+                        .append(customRelModule.getTableName()).append(".").append("MODULEID = ").append(relation_module_id).toString());
+
+        if(criteria != null) {
+            selectBuilder.andCriteria(criteria);
+        }
+        return selectBuilder.constructQueryString();
     }
 }

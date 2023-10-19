@@ -40,6 +40,15 @@ public class V2MeasuresContext {
     private boolean defaultSortPoint;
     public int aggr;
     public Long dynamicKpiId;
+    /**
+     * below keys added for supporting relationship measure specific relationship
+     */
+    public Long relationship_id;
+    public String parent_measure_alias;
+
+    /**
+     * above keys added for supporting relationship measure specific relationship
+     */
     private ReportDataPointContext.OrderByFunction orderByFunction;
 
     public void setAggr(int aggr){

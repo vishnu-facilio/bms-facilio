@@ -2,24 +2,22 @@ package com.facilio.analytics.v2.action;
 
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
+import com.facilio.analytics.v2.context.V2AnalyticsContextForDashboardFilter;
 import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.ims.handler.AuditLogHandler;
 import com.facilio.modules.FacilioModule;
 import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportFactoryFields;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -39,6 +37,7 @@ public class V2AnalyticsReportAction extends V3Action {
     private String orderType;
     private long folderId = -1;
 
+    V2AnalyticsContextForDashboardFilter db_filter;
     public String create()throws Exception
     {
         validateData(FacilioConstants.ContextNames.CREATE);
@@ -105,6 +104,7 @@ public class V2AnalyticsReportAction extends V3Action {
             FacilioChain chain = V2AnalyticsTransactionChain.getReportWithDataChain();
             FacilioContext context = chain.getContext();
             context.put("reportId", reportId);
+            context.put("db_filter", db_filter);
             chain.execute();
             this.setReportResult(context);
         }

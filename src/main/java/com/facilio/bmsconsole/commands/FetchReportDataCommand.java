@@ -880,6 +880,10 @@ public class FetchReportDataCommand extends FacilioCommand {
             if (reportType == ReportType.PIVOT_REPORT && globalContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA) != null) {
                 newSelectBuilder.andCriteria((Criteria) globalContext.get(FacilioConstants.ContextNames.FILTER_CRITERIA));
             }
+            if(dp.getRelationship_id() != null && dp.getRelationship_id() > 0 && dp.getParent_measure_alias() != null)
+            {
+                V2AnalyticsOldUtil.getAndSetRelationShipSubQuery(report.getDataPoints(), dp, newSelectBuilder, moduleVsAlias);
+            }
             props = newSelectBuilder.getAsProps();
             pivotFieldsList.clear();
 

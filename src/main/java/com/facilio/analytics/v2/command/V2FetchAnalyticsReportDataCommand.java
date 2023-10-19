@@ -259,6 +259,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         V2AnalyticsOldUtil.applyTimeFilterCriteria(report, dataPoint, newSelectBuilder, baseLine);
         V2AnalyticsOldUtil.applyDashboardUserFilterCriteria(baseModule, dashboard_user_filter, dataPoint, newSelectBuilder);
         V2AnalyticsOldUtil.applyMeasureCriteriaV2(moduleVsAlias, xAggrField, baseModule, dataPoint, newSelectBuilder, xValues);
+        V2AnalyticsOldUtil.getAndSetRelationShipSubQuery(report.getDataPoints(), dataPoint, newSelectBuilder, moduleVsAlias);
         List<Map<String, Object>> props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE ,
                 ()-> newSelectBuilder.getAsProps());
         LOGGER.debug("SELECT BUILDER --- " + newSelectBuilder);

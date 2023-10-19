@@ -103,6 +103,10 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
                     dataPoint.getyAxis().setAggr(null);
                     dataPoint.setHandleEnum(true);
                 }
+                if(measure.getRelationship_id() != null && measure.getRelationship_id() > 0 && measure.getParent_measure_alias() != null){
+                    dataPoint.setRelationship_id(measure.getRelationship_id());
+                    dataPoint.setParent_measure_alias(measure.getParent_measure_alias());
+                }
             }
             dataPoint.setDefaultSortPoint(measure.isDefaultSortPoint());
             dataPoint.setAssetCategoryId(measure.getCategory() != null ? measure.getCategory(): -1);
