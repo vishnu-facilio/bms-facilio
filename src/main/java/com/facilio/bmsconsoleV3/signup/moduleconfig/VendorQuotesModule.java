@@ -1,8 +1,7 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.ModuleWidget.APIModuleWidgets;
-import com.facilio.bmsconsole.TemplatePages.VendorTemplatePage;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -11,9 +10,11 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
-import com.facilio.bmsconsole.util.WidgetAPI;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.chain.FacilioChain;
@@ -25,7 +26,6 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.relation.util.RelationshipWidgetUtil;
 import com.facilio.util.SummaryWidgetUtil;
-import com.facilio.v3.context.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -42,6 +42,7 @@ public class VendorQuotesModule extends BaseModuleConfig{
         FacilioModule vendorQuotesModule = modBean.getModule(FacilioConstants.ContextNames.VENDOR_QUOTES);
         addVendorQuotesActivityModuleChain(vendorQuotesModule);
         addRfqDetailsSummaryWidget();
+        addSystemButtons();
     }
 
     private void addRfqDetailsSummaryWidget() throws Exception {
@@ -488,6 +489,53 @@ public class VendorQuotesModule extends BaseModuleConfig{
 
 
         return FieldUtil.getAsJSON(widgetGroup);
+    }
+    public static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext updateQuote = new SystemButtonRuleContext();
+        updateQuote.setName("Update quote");
+        updateQuote.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        updateQuote.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        updateQuote.setIdentifier("updateQuote");
+        updateQuote.setPermissionRequired(true);
+        updateQuote.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, updateQuote);
+
+        SystemButtonRuleContext submitButton = new SystemButtonRuleContext();
+        submitButton.setName("Submit");
+        submitButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        submitButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        submitButton.setIdentifier("submitQuote");
+        submitButton.setPermissionRequired(true);
+        submitButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, submitButton);
+
+        SystemButtonRuleContext negotiateButton = new SystemButtonRuleContext();
+        negotiateButton.setName("Negotiate");
+        negotiateButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        negotiateButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        negotiateButton.setIdentifier("Quote");
+        negotiateButton.setPermissionRequired(true);
+        negotiateButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, negotiateButton);
+
+
+        SystemButtonRuleContext downloadRFQButton = new SystemButtonRuleContext();
+        downloadRFQButton.setName("Download RFQ");
+        downloadRFQButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadRFQButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        downloadRFQButton.setIdentifier("downloadRFQ");
+        downloadRFQButton.setPermissionRequired(true);
+        downloadRFQButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, downloadRFQButton);
+
+        SystemButtonRuleContext goToRFQButton = new SystemButtonRuleContext();
+        goToRFQButton.setName("Go To RFQ");
+        goToRFQButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        goToRFQButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        goToRFQButton.setIdentifier("goToRFQ");
+        goToRFQButton.setPermissionRequired(true);
+        goToRFQButton.setPermission(AccountConstants.ModulePermission.READ.name());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, goToRFQButton);
     }
 
 }
