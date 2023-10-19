@@ -283,6 +283,71 @@ public class MetersAPI {
 		}
 		return new ArrayList<>();
 	}
+		
+	public static Double fetchMeterAggregatedReading(long meterId, long startTime, long endTime, String aggrFieldName, FacilioModule readingModule, AggregateOperator aggr) throws Exception {
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(readingModule.getTableName())
+				.select(new HashSet<>())
+				.andCustomWhere(readingModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(readingModule), String.valueOf(readingModule.getModuleId()), NumberOperators.EQUALS))
+				;
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> readingModuleFields = modBean.getAllFields(readingModule.getName());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(readingModuleFields);
+		builder.aggregate(aggr, fieldMap.get(aggrFieldName));
+
+		builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentMeterId", String.valueOf(meterId), NumberOperators.EQUALS));
+		builder.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN));
+
+		List<Map<String, Object>> rs = builder.get();
+		Double totalConsumption = 0d;
+		if (rs != null && rs.size() > 0) {
+			Double res1 = (Double) rs.get(0).get(aggrFieldName);
+			if(res1 != null) {
+				totalConsumption = res1;
+			}
+		}
+		return totalConsumption;
+	}
+
+	public static Map<String, Object> fetchMeterAggregatedReadingWithTime(long meterId, long startTime, long endTime, String aggrFieldName, FacilioModule readingModule, AggregateOperator aggr) throws Exception {
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(readingModule.getTableName())
+				.andCustomWhere(readingModule.getTableName()+".ORGID = "+ AccountUtil.getCurrentOrg().getOrgId())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(readingModule), String.valueOf(readingModule.getModuleId()), NumberOperators.EQUALS))
+				;
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> readingModuleFields = modBean.getAllFields(readingModule.getName());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(readingModuleFields);
+
+		FacilioField readingField = fieldMap.get(aggrFieldName);
+		FacilioField ttimeField = fieldMap.get("ttime");
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(readingField);
+		fields.add(ttimeField);
+
+		builder.select(fields);
+		builder.aggregate(aggr, fieldMap.get(aggrFieldName));
+		builder.groupBy(readingModule.getTableName()+".ID");
+		builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentMeterId", String.valueOf(meterId), NumberOperators.EQUALS));
+		builder.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN));
+
+		List<Map<String, Object>> rs = builder.get();
+
+		Map<String, Object> resultMap = new HashMap<>();
+		if (rs != null && rs.size() > 0) {
+			Double reading = (Double) rs.get(0).get(aggrFieldName);
+			long ttime = (long) rs.get(0).get("ttime");
+			resultMap.put("reading", reading);
+			resultMap.put("ttime", ttime);
+		}
+		return resultMap;
+	}
 
 }
 

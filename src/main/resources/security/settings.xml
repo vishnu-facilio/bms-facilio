@@ -4200,4 +4200,46 @@
             </property>
         </requestbody>
     </request>
+    
+    <request path="/api/v3/meterConsumption/monthlyConsumption" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+            <property name="utilityTypeModuleName" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/meterConsumption/yearlyConsumption" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+            <property name="utilityTypeModuleName" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/meterConsumption/peak" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+            <property name="utilityTypeModuleName" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/virtualMeterTemplate/publish" method="POST">
+        <requestbody type="object">
+            <property name="vmTemplateId" type="number"></property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/virtualMeterTemplate/generateVM" method="POST">
+        <requestbody type="object">
+            <property name="vmTemplateId" type="number"></property>
+            <property name="resourceIds" type="array">
+                <items type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/virtualMeterTemplate/filterResources" method="GET">
+        <urlparams>
+            <property name="relationShipId" type="number"/>
+        </urlparams>
+    </request>    
 </config>

@@ -2184,4 +2184,10 @@
             <param name="checkPermission">true</param>
         </action>
     </package>
+
+    <package name="meterConsumption" namespace="/api/v3/meterConsumption" extends="v3Api">
+        <action name="monthlyConsumption" class="com.facilio.bmsconsoleV3.actions.MeterAction" method="getMeterMonthlyConsumption"></action>
+        <action name="yearlyConsumption" class="com.facilio.bmsconsoleV3.actions.MeterAction" method="getMeterYearlyConsumption"></action>
+        <action name="peak" class="com.facilio.bmsconsoleV3.actions.MeterAction" method="getMeterPeak"></action>
+    </package>    
 </struts>

@@ -3852,6 +3852,23 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FetchMeterRelationsCommand());
         return c;
     }
+
+    public static FacilioChain getMeterMonthlyConsumptionChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetMeterMonthlyConsumptionCommand());
+        return c;
+    }
+    public static FacilioChain getMeterYearlyConsumptionChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetMeterYearlyConsumptionCommand());
+        return c;
+    }
+    public static FacilioChain getMeterPeakChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetMeterPeakCommand());
+        return c;
+    }
+        
     public static FacilioChain getSFG20ConnectCommand() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SFG20ConnectCommand());

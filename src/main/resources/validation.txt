@@ -2787,5 +2787,4 @@
 /api/v2/assets/downtimehistory
 /api/v2/readings/meter/add
 /api/v2/readings/utilitytype
-/api/v3/virtualMeterTemplate/publish
 
