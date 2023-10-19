@@ -119,11 +119,13 @@ public class EmailTemplatePackageBeanImpl implements PackageBean<EMailStructure>
         XMLBuilder attachmentList = element.element(PackageConstants.EmailConstants.ATTACHMENT_LIST);
         if (component.getIsAttachmentAdded() != null && component.getIsAttachmentAdded()) {
             List<? extends TemplateAttachment> fileAttachments = component.getAttachments();
-            for (TemplateFileContext templateFileContext: (List<TemplateFileContext>)fileAttachments){
-                XMLBuilder attachment = attachmentList.element(PackageConstants.EmailConstants.ATTACHMENT);
-                FileStore fs = FacilioFactory.getFileStore();
-                FileInfo fileInfo = fs.getFileInfo(templateFileContext.getFileId());
-                attachmentList.addElement(PackageFileUtil.constructMetaAttachmentXMLBuilder(ComponentType.EMAIL_TEMPLATE , component.getId(), attachment, fileInfo));
+            if(fileAttachments != null) {
+                for (TemplateFileContext templateFileContext : (List<TemplateFileContext>) fileAttachments) {
+                    XMLBuilder attachment = attachmentList.element(PackageConstants.EmailConstants.ATTACHMENT);
+                    FileStore fs = FacilioFactory.getFileStore();
+                    FileInfo fileInfo = fs.getFileInfo(templateFileContext.getFileId());
+                    attachmentList.addElement(PackageFileUtil.constructMetaAttachmentXMLBuilder(ComponentType.EMAIL_TEMPLATE, component.getId(), attachment, fileInfo));
+                }
             }
         }
     }

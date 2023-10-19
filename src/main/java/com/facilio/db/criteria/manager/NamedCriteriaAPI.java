@@ -84,7 +84,7 @@ public class NamedCriteriaAPI {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getNamedCriteriaModule().getTableName())
                 .select(FieldFactory.getNamedCriteriaFields())
-                .andCondition(CriteriaAPI.getCondition("NAME","name",name, StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition("NAME","name",name.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS));
         NamedCriteria namedCriteria = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), NamedCriteria.class);
         populateChildren(Collections.singletonList(namedCriteria));
         return namedCriteria;

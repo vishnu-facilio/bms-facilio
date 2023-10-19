@@ -260,8 +260,8 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
             for (XMLBuilder builder : stateBuilder) {
                 Map<String, Object> statesMap = new HashMap<>();
                 String name = builder.getAttribute("name");
-                Long x = Long.parseLong(builder.getAttribute("x"));
-                Long y = Long.parseLong(builder.getAttribute("y"));
+                Double x = Double.parseDouble(builder.getAttribute("x"));
+                Double y = Double.parseDouble(builder.getAttribute("y"));
                 statesMap.put("x", x);
                 statesMap.put("y", y);
                 XMLBuilder anchorsBuilder = builder.getElement("Anchors");
