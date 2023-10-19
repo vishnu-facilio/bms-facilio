@@ -106,7 +106,7 @@ public class MeterModule extends BaseModuleConfig{
         NumberField localId = new NumberField(module, "localId", "ID", FacilioField.FieldDisplayType.NUMBER, "LOCAL_ID", FieldType.NUMBER, false, false, true, null);
         fields.add(localId);
 
-        BooleanField isCommissioned = new BooleanField(module, "isCommissioned", "Is Commissioned", FacilioField.FieldDisplayType.DECISION_BOX, "IS_COMMISSIONED", FieldType.BOOLEAN, false, false, true, null);
+        BooleanField isCommissioned = new BooleanField(module, "isCommissioned", "Commissioned", FacilioField.FieldDisplayType.DECISION_BOX, "IS_COMMISSIONED", FieldType.BOOLEAN, false, false, true, null);
         fields.add(isCommissioned);
 
         LookupField moduleState = new LookupField(module, "moduleState", "Module State", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "MODULE_STATE", FieldType.LOOKUP, false, false, true, null, "Module State", moduleBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS));
@@ -121,7 +121,7 @@ public class MeterModule extends BaseModuleConfig{
         LookupField virtualMeterTemplate = new LookupField(module, "virtualMeterTemplate", "Virtual Meter Template", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "VIRTUAL_METER_TEMPLATE_ID", FieldType.LOOKUP, false, false, true, null, "Child Meters", moduleBean.getModule(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE));
         fields.add(virtualMeterTemplate);
 
-        BooleanField isCheckMeter = new BooleanField(module, "isCheckMeter", "Is Check Meter", FacilioField.FieldDisplayType.DECISION_BOX, "IS_CHECK_METER", FieldType.BOOLEAN, false, false, true, null);
+        BooleanField isCheckMeter = new BooleanField(module, "isCheckMeter", "Check Meter", FacilioField.FieldDisplayType.DECISION_BOX, "IS_CHECK_METER", FieldType.BOOLEAN, false, false, true, null);
         fields.add(isCheckMeter);
 
         fields.add((FacilioField) FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.DATE_TIME));
@@ -329,7 +329,7 @@ public class MeterModule extends BaseModuleConfig{
         MeterFormFields.add(utilityTypeField);
         MeterFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 4, 2));
         MeterFormFields.add(new FormField("meterLocation", FacilioField.FieldDisplayType.SPACECHOOSER, "Meter Location", FormField.Required.REQUIRED, 5, 2));
-        MeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Is Check Meter", FormField.Required.OPTIONAL, 6, 2));
+        MeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Check Meter", FormField.Required.OPTIONAL, 6, 2));
 
         FormSection section = new FormSection("Meter Details", 1, MeterFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
@@ -393,7 +393,7 @@ public class MeterModule extends BaseModuleConfig{
         Constants.getModBean().addField(field);
     }
 
-    private static void addSystemButtons() throws Exception {
+    public static void addSystemButtons() throws Exception {
         SystemButtonRuleContext editMeter = new SystemButtonRuleContext();
         editMeter.setName("Edit");
         editMeter.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
@@ -418,7 +418,7 @@ public class MeterModule extends BaseModuleConfig{
         columns.add(new ViewField("meterType", "Meter Type"));
         columns.add(new ViewField("meterLocation", "Meter Location"));
         columns.add(new ViewField("siteId", "Site"));
-        columns.add(new ViewField("isCheckMeter", "Is Check Meter"));
+        columns.add(new ViewField("isCheckMeter", "Check Meter"));
         columns.add(new ViewField("virtualMeterTemplate", "Virtual Meter Template"));
 
         return columns;
@@ -775,7 +775,7 @@ public class MeterModule extends BaseModuleConfig{
         addSummaryFieldInWidgetGroup(widgetGroup, description, 2, 1, 4);
 
         widgetGroup.setName("meterModuleDetails");
-        widgetGroup.setDisplayName("General Information");
+        //widgetGroup.setDisplayName("General Information");
         widgetGroup.setColumns(4);
 
 
@@ -857,7 +857,7 @@ public class MeterModule extends BaseModuleConfig{
         addSummaryFieldInWidgetGroup(widgetGroup, meterType, 1, 4, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, description, 2, 1, 4);
         widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("General Information");
+        //widgetGroup.setDisplayName("General Information");
         widgetGroup.setColumns(4);
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(widgetGroup);

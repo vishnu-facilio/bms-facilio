@@ -4083,7 +4083,7 @@ public class ApplicationApi {
             webTabGroups.add(new WebTabGroupContext("Portfolio Settings", "portfoliosettings", layout.getId(), 204, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Readings", "readings", WebTabContext.Type.READINGS, null, appId, null));
-            webTabs.add(new WebTabContext("Meter Customization", "metercustomization", WebTabContext.Type.METER_CUSTOMIZATION, null, appId, null,AccountUtil.FeatureLicense.METER.getFeatureId()));
+            webTabs.add(new WebTabContext("Meter Customization", "metercustomization", WebTabContext.Type.METER_CUSTOMIZATION, null, appId, null));
             webTabs.add(new WebTabContext("Asset Customization", "assetcustomization", WebTabContext.Type.SPACE_ASSET_CUSTOMIZATION, null, appId, null));
             webTabs.add(new WebTabContext("Asset Depreciation", "depreciation", WebTabContext.Type.ASSET_DEPRECIATION, null, appId, null));
             webTabs.add(new WebTabContext("Space Categories", "spacecategory", WebTabContext.Type.SPACE_CATEGORIES, null, appId, null));

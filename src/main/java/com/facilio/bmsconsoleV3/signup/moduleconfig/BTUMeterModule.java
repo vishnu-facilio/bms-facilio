@@ -73,7 +73,7 @@ public class BTUMeterModule extends BaseModuleConfig{
         btuMeterFormFields.add(utilityTypeField);
         btuMeterFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site", 4, 2));
         btuMeterFormFields.add(new FormField("meterLocation", FacilioField.FieldDisplayType.SPACECHOOSER, "Meter Location", FormField.Required.REQUIRED, 5, 2));
-        btuMeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Is Check Meter", FormField.Required.OPTIONAL, 6, 2));
+        btuMeterFormFields.add(new FormField("isCheckMeter", FacilioField.FieldDisplayType.DECISION_BOX, "Check Meter", FormField.Required.OPTIONAL, 6, 2));
 
         FormSection section = new FormSection("BTU Meter Details", 1, btuMeterFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);

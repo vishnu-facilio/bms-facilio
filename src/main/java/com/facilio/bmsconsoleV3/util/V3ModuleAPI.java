@@ -111,8 +111,8 @@ public class V3ModuleAPI {
         VENDOR_DOCUMENTS(ContextNames.VENDOR_DOCUMENTS, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         SENSOR_ROLLUP_ALARM(FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
 
-//        METER(FacilioConstants.Meter.METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-//        VIRTUAL_METER_TEMPLATE(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        METER(FacilioConstants.Meter.METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        VIRTUAL_METER_TEMPLATE(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
 
         CALENDAR(FacilioConstants.Calendar.CALENDAR_MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         EVENT(FacilioConstants.Calendar.EVENT_MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
@@ -151,11 +151,11 @@ public class V3ModuleAPI {
         FAILURE_CODE_CAUSES(ContextNames.FAILURE_CODE_CAUSES,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         FAILURE_CODE_REMEDIES(ContextNames.FAILURE_CODE_REMEDIES,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
 
-        //ELECTRICITY_METER(FacilioConstants.Meter.ELECTRICITY_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        //GAS_METER(FacilioConstants.Meter.GAS_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        //WATER_METER(FacilioConstants.Meter.WATER_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        //HEAT_METER(FacilioConstants.Meter.HEAT_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        //BTU_METER(FacilioConstants.Meter.BTU_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP))
+        ELECTRICITY_METER(FacilioConstants.Meter.ELECTRICITY_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        GAS_METER(FacilioConstants.Meter.GAS_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        WATER_METER(FacilioConstants.Meter.WATER_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        HEAT_METER(FacilioConstants.Meter.HEAT_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        BTU_METER(FacilioConstants.Meter.BTU_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP))
         ;
 
 

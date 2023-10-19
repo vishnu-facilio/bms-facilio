@@ -1003,5 +1003,29 @@ public class APIFieldsConfig {
                 .skip(FieldsConfigList.BOOKING_FIELDS_EXCLUDE)
                 .done();
     }
+    @Module(FacilioConstants.Meter.METER)
+    public static Supplier<FieldConfig> getMeterFieldConfig(){
+        return () -> new FieldConfig()
+
+                .advancedFields()
+                .skip(FieldsConfigList.METER_FIELDS_EXCLUDE)
+                .done()
+
+                .viewFields()
+                .skip(FieldsConfigList.METER_FIELDS_EXCLUDE)
+                .done();
+    }
+    @Module(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE)
+    public static Supplier<FieldConfig> getVirtualMeterTemplateFieldConfig(){
+        return () -> new FieldConfig()
+
+                .advancedFields()
+                .add(FieldsConfigList.VIRTUAL_METER_TEMPLATE_FIELDS_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.VIRTUAL_METER_TEMPLATE_FIELDS_INCLUDE)
+                .done();
+     }           
 
 }

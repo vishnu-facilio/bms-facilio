@@ -66,6 +66,17 @@ public class VMTemplateModule extends BaseModuleConfig{
         allView.setModuleName(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
         allView.setSortFields(sortFields);
 
+        List<ViewField> vmTemplateFields = new ArrayList<>();
+
+        vmTemplateFields.add(new ViewField("name", "Name"));
+        vmTemplateFields.add(new ViewField("utilityType", "Utility Type"));
+        vmTemplateFields.add(new ViewField("scope", "Scope"));
+        vmTemplateFields.add(new ViewField("vmTemplateStatus", "Status"));
+        vmTemplateFields.add(new ViewField("sysModifiedTime", "Modified Time"));
+        vmTemplateFields.add(new ViewField("sysModifiedByPeople","Modified By"));
+
+        allView.setFields(vmTemplateFields);
+
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
@@ -91,11 +102,11 @@ public class VMTemplateModule extends BaseModuleConfig{
                 .addTab("virtualmetertemplatesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("vmTemplateSection", null, null)
-                .addWidget("vmTemplateWidget", "VM Templates", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getSummaryWidgetDetails(vmTemplateModule.getName()))
+                .addWidget("vmTemplateWidget", "General Information", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getSummaryWidgetDetails(vmTemplateModule.getName()))
                 .widgetDone()
                 .sectionDone()
                 .addSection("vmTemplateReadingsSection", null, null)
-                .addWidget("vmTemplateReadingsWidget", "List Of Readings", PageWidget.WidgetType.VIRTUAL_METER_TEMPLATE_READINGS, "flexiblewebvmtemplatereadings_6", 0, 0, null, null)
+                .addWidget("vmTemplateReadingsWidget", "Readings", PageWidget.WidgetType.VIRTUAL_METER_TEMPLATE_READINGS, "flexiblewebvmtemplatereadings_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -114,15 +125,15 @@ public class VMTemplateModule extends BaseModuleConfig{
                 .addTab("virtualmetertemplatesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("vmTemplateSection", null, null)
-                .addWidget("vmTemplateWidget", "VM Templates", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getSummaryWidgetDetails(vmTemplateModule.getName()))
-                .widgetDone()
-                .sectionDone()
-                .addSection("vmTemplateReadingsSection", null, null)
-                .addWidget("vmTemplateReadingsWidget", "List Of Readings", PageWidget.WidgetType.VIRTUAL_METER_TEMPLATE_READINGS, "flexiblewebvmtemplatereadings_6", 0, 0, null, null)
+                .addWidget("vmTemplateWidget", "General Information", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getSummaryWidgetDetails(vmTemplateModule.getName()))
                 .widgetDone()
                 .sectionDone()
                 .addSection("relatedVMSection", null, null)
-                .addWidget("relatedVMWidget", "List Of Related VirtualMeters", PageWidget.WidgetType.RELATED_VIRTUAL_METERS_LIST, "flexiblewebrelatedvmlist_6", 0, 0, null, getSummaryWidgetDetails(vmTemplateModule.getName()))
+                .addWidget("relatedVMWidget", "Associated Virtual Meters", PageWidget.WidgetType.RELATED_VIRTUAL_METERS_LIST, "flexiblewebrelatedvmlist_6", 0, 0, null, getSummaryWidgetDetails(vmTemplateModule.getName()))
+                .widgetDone()
+                .sectionDone()
+                .addSection("vmTemplateReadingsSection", null, null)
+                .addWidget("vmTemplateReadingsWidget", "Readings", PageWidget.WidgetType.VIRTUAL_METER_TEMPLATE_READINGS, "flexiblewebvmtemplatereadings_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -168,17 +179,15 @@ public class VMTemplateModule extends BaseModuleConfig{
         FacilioField name = moduleBean.getField("name", moduleName);
         FacilioField utilityType = moduleBean.getField("utilityType", moduleName);
         FacilioField scope = moduleBean.getField("scope",moduleName);
-        FacilioField spaceCategory = moduleBean.getField("spaceCategory", moduleName);
         FacilioField description = moduleBean.getField("description", moduleName);
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
         addSummaryFieldInWidgetGroup(widgetGroup, name, 1, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, utilityType, 1, 2, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, scope, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, spaceCategory, 1, 4, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, description, 2, 1, 4);
         widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("General Information");
+        //widgetGroup.setDisplayName("General Information");
         widgetGroup.setColumns(4);
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(widgetGroup);

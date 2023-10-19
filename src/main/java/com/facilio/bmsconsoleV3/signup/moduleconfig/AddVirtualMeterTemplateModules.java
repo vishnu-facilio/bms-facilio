@@ -210,7 +210,7 @@ public class AddVirtualMeterTemplateModules extends SignUpData {
         resourceType.setEnumName("MultiResourceAssignmentType");
         fields.add(resourceType);
 
-        SystemEnumField vmTemplateStatus = (SystemEnumField) FieldFactory.getDefaultField("vmTemplateStatus", "VM Template Status", "VM_TEMPLATE_STATUS", FieldType.SYSTEM_ENUM);
+        SystemEnumField vmTemplateStatus = (SystemEnumField) FieldFactory.getDefaultField("vmTemplateStatus", "Status", "VM_TEMPLATE_STATUS", FieldType.SYSTEM_ENUM);
         vmTemplateStatus.setEnumName("VirtualMeterTemplateStatus");
 
         fields.add(vmTemplateStatus);
@@ -268,7 +268,7 @@ public class AddVirtualMeterTemplateModules extends SignUpData {
 		moduleBean.addField(sitesField);
 	}
 
-    private static void addSystemButtons() throws Exception {
+    public static void addSystemButtons() throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
