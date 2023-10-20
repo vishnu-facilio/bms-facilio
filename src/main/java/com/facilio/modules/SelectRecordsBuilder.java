@@ -116,7 +116,12 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	public SelectRecordsBuilder<E> table(String tableName) {
 		return this;
 	}
-	
+
+	@Override
+	public SelectBuilderIfc<E> tableAlias(String tableAlias) {
+		throw new UnsupportedOperationException("This is not supported here");
+	}
+
 	@Override
 	public SelectRecordsBuilder<E> useExternalConnection (Connection conn) {
 		builder.useExternalConnection(conn);
