@@ -1,5 +1,7 @@
 package com.facilio.flows.util;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.blockfactory.enums.BlockType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -17,10 +19,12 @@ import com.facilio.flowengine.context.Constants;
 import com.facilio.flows.context.FlowContext;
 import com.facilio.flows.context.FlowTransitionContext;
 import com.facilio.flows.context.ParameterContext;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -273,6 +277,120 @@ public class FlowUtil {
         FlowTransitionContext flowTransition = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), FlowTransitionContext.class);
         return flowTransition;
     }
+    public static void addOrUpdateFlow(FlowContext flowContext) throws Exception{
+        if(flowContext == null){
+            return;
+        }
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        if ((flowContext.getModuleId() > 0) && (modBean.getModule(flowContext.getModuleId()) == null)) {
+            throw new IllegalArgumentException("Invalid module");
+        }
+
+        if ((flowContext.getFlowType() == 2) && (flowContext.getModuleId() <= 0)){
+            throw new IllegalArgumentException("Module Id cannot be null");
+        }
+
+        flowContext.setModifiedBy(AccountUtil.getCurrentUser().getOuid());
+        flowContext.setSysModifiedTime(DateTimeUtil.getCurrenTime());
+
+        Map<String, Object> props = FieldUtil.getAsProperties(flowContext);
+
+        if (flowContext.getId() > 0) {
+
+            GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                    .table(ModuleFactory.getFlowModule().getTableName())
+                    .fields(FieldFactory.getFlowFields())
+                    .andCondition(CriteriaAPI.getIdCondition(flowContext.getId(),ModuleFactory.getFlowModule()));
+
+            builder.update(props);
+
+        } else {
+
+            flowContext.setCreatedBy(AccountUtil.getCurrentUser().getOuid());
+            flowContext.setSysCreatedTime(DateTimeUtil.getCurrenTime());
+
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getFlowModule().getTableName())
+                    .fields(FieldFactory.getFlowFields());
+
+            builder.addRecord(props);
+            builder.save();
+        }
+
+        flowContext.setId((long) props.get("id"));
+        List<ParameterContext> parameters = flowContext.getParameters();
+
+        deleteUnSentParameters(parameters,flowContext.getId());
+        addOrUpdateParameters(parameters, flowContext.getId());
+
+    }
+    private static void addOrUpdateParameters(List<ParameterContext> parameters,long flowId) throws Exception {
+        if(CollectionUtils.isEmpty(parameters)){
+            return;
+        }
+        for (ParameterContext parameter : parameters){
+            parameter.setFlowId(flowId);
+            FlowUtil.addOrUpdateParameter(parameter);
+        }
+    }
+    private static void deleteUnSentParameters(List<ParameterContext> parameters,long flowId) throws Exception {
+        List<ParameterContext> oldParameters = FlowUtil.getParameters(flowId);
+        List<ParameterContext> toBeDeletedParams = getTobeDeleteParameters(oldParameters,parameters);
+        if(CollectionUtils.isEmpty(toBeDeletedParams)){
+            return;
+        }
+
+        Set<Long> ids = toBeDeletedParams.stream().map(ParameterContext::getId).collect(Collectors.toSet());
+        GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getFlowParameters().getTableName());
+
+        int deleteCount = deleteRecordBuilder.batchDeleteById(ids);
+    }
+    private static List<ParameterContext> getTobeDeleteParameters(List<ParameterContext> oldParameters,List<ParameterContext> payLoadParameters){
+        if(CollectionUtils.isEmpty(oldParameters)){
+            return Collections.EMPTY_LIST;
+        }
+        if(payLoadParameters==null){
+            payLoadParameters = new ArrayList<>();
+        }
+        Map<Long,ParameterContext> updatePayLoadParametersMap = payLoadParameters.stream().filter(p->p.getId()!=-1l)
+                .collect(Collectors.toMap(ParameterContext::getId, Function.identity()));
+
+
+        List<ParameterContext>  toBeDeletedParams = oldParameters.stream().filter(oldParameter->!updatePayLoadParametersMap.containsKey(oldParameter.getId())).collect(Collectors.toList());
+
+        return toBeDeletedParams;
+    }
+    public static void updateFlowTransitionConnectedFrom(List<FlowTransitionContext> flowTransitions) throws Exception{
+
+        Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getFlowTransitionFields());
+
+        List<GenericUpdateRecordBuilder.BatchUpdateContext> updateBatch = new ArrayList<>();
+
+        for(FlowTransitionContext flowTransitionContext : flowTransitions){
+            GenericUpdateRecordBuilder.BatchUpdateContext updateContext = new GenericUpdateRecordBuilder.BatchUpdateContext();
+            updateContext.addUpdateValue("connectedFrom",flowTransitionContext.getConnectedFrom());
+            updateContext.addWhereValue("id",flowTransitionContext.getId());
+            updateContext.addWhereValue("flowId",flowTransitionContext.getFlowId());
+            updateBatch.add(updateContext);
+
+        }
+
+        List<FacilioField> whereFields = new ArrayList<>();
+        whereFields.add(fieldsMap.get("id"));
+        whereFields.add(fieldsMap.get("flowId"));
+
+        List<FacilioField> updateField = new ArrayList<>();
+        updateField.add(fieldsMap.get("connectedFrom"));
+
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .fields(updateField)
+                .table(ModuleFactory.getFlowTransitionModule().getTableName());
+        builder.batchUpdate(whereFields, updateBatch);
+
+    }
+
     public static void addOrUpdateParametersUsingParamName(List<ParameterContext> payLoadParameters,long flowId) throws Exception {
         if(CollectionUtils.isEmpty(payLoadParameters)){
             return;

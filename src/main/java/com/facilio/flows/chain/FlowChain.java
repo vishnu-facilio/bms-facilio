@@ -84,4 +84,10 @@ public class FlowChain {
         chain.addCommand(new GetFlowOperatorsCommand());
         return chain;
     }
+    public static FacilioChain getCloneFlowChain(){
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        chain.addCommand(new CloneFlowCommand());
+        return chain;
+    }
+
 }

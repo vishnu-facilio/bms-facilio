@@ -165,5 +165,16 @@ public class FlowAction extends FacilioAction {
         setResult("operators",context.get("operatorsMap"));
         return SUCCESS;
     }
+    public String cloneFlow() throws Exception {
+        FacilioChain chain = FlowChain.getCloneFlowChain();
+        FacilioContext context = chain.getContext();
+
+        context.put(FacilioConstants.ContextNames.FLOW_ID, flowId);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.FLOW, context.get(FacilioConstants.ContextNames.FLOW));
+
+        return SUCCESS;
+    }
 
 }

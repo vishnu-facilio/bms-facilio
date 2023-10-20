@@ -2944,7 +2944,16 @@
     <request path="/api/v1/setup/flows/operators" method="GET">
     </request>
 
-
+    <request path="/api/v2/flows/clone" method="GET">
+        <urlparams>
+            <property name="flowId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/flows/clone" method="GET">
+        <urlparams>
+            <property name="flowId" type="number"/>
+        </urlparams>
+    </request>
 
     <!-- Flow Transition-->
     <request path="/api/v2/flowTransition/addOrUpdate" method="POST">
