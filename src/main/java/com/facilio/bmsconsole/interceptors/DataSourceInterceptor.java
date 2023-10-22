@@ -108,6 +108,7 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 			Organization organization = null;
 
 			AppDomain appDomain = IAMAppUtil.getAppDomain(request.getServerName());
+			boolean isSandboxDomain = SandboxAPI.isSandboxSubDomain(request.getServerName());
 			AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("App name => {0}", appDomain == null ? "null app domain" : appDomain.getDomain() ), request);
 			if (iamAccount != null) {
 				String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
@@ -115,14 +116,14 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 					currentOrgDomain = request.getHeader("X-Current-Org"); 
 				}
 				//the third check can be removed..It is added now for sutherland demo (894 is the custom domain id for org 343 in production). That's added to allow multiple orgs with that custom domain
-				if(appDomain != null && appDomain.getOrgId() > 0 && (!FacilioProperties.isProduction() || appDomain.getId() != 894l)) {
+				if(appDomain != null && appDomain.getOrgId() > 0 && !isSandboxDomain && (!FacilioProperties.isProduction() || appDomain.getId() != 894l)) {
 					organization = IAMOrgUtil.getOrg(appDomain.getOrgId());
 				}
 				else if (StringUtils.isNotBlank(currentOrgDomain)) {
 					organization = IAMUserUtil.getOrg(currentOrgDomain, iamAccount.getUser().getUid());
 				}
 				else {
-					organization = IAMUserUtil.getDefaultOrg(iamAccount.getUser().getUid());
+					organization = IAMUserUtil.getDefaultOrg(iamAccount.getUser().getUid(), isSandboxDomain ? Organization.OrgType.SANDBOX : Organization.OrgType.PRODUCTION);
 				}
 				iamAccount.setOrg(organization);
 				AuthInterceptor.checkIfPuppeteerRequestAndLog(this.getClass().getSimpleName(), MessageFormat.format("Setting IAM account org in normal auth => {0}", iamAccount.getOrg() == null ? -1 : iamAccount.getOrg().getId()), request);
@@ -143,9 +144,7 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 			Span.current().setAttribute("enduser.orgid", String.valueOf(iamAccount.getOrg().getOrgId()));
 			AppDomain appdomainObj = null;
 			try {
-				if (SandboxAPI.isSandboxSubDomain(request.getServerName())) {
-					appdomainObj = IAMAppUtil.getAppDomain(request.getServerName(), iamAccount.getOrg().getOrgId());
-				} else {
+				if (!SandboxAPI.isSandboxSubDomain(request.getServerName())) {
 					appdomainObj = IAMAppUtil.getAppDomain(request.getServerName());
 				}
 			} catch (Exception e) {

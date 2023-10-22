@@ -20,6 +20,7 @@ import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.identity.client.IdentityClient;
 import com.facilio.identity.client.dto.Brand;
+import com.facilio.identity.client.dto.BrandLink;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -921,43 +922,91 @@ public class AccountUtil {
 		return null;
 	}
 
-	public static JSONObject getBrandingJson(String domain) {
+	public static JSONObject getBrandingJson(String domain) throws Exception {
+		Brand brand = null;
 		try {
 			if (StringUtils.isNotEmpty(FacilioProperties.getIdentityServerURL())) { // if identity service is configured
-				Brand brand = (Brand) LRUCache.getAppDomainBrandingCache().get("appDomainBrandingCache_"+domain);
+				brand = (Brand) LRUCache.getAppDomainBrandingCache().get("appDomainBrandingCache_"+domain);
 				if (brand == null) {
 					brand = IdentityClient.getDefaultInstance().getAppDomainBean().getAppDomainBrand(domain);
 					if (brand != null) {
 						LRUCache.getAppDomainBrandingCache().put("appDomainBrandingCache_"+domain, brand);
 					}
 				}
-				if (brand != null) {
-					JSONObject brandingJson = new JSONObject();
-					brandingJson.put("name", brand.getName());
-					brandingJson.put("legalName", brand.getLegalName());
-					brandingJson.put("logo", brand.getLogo());
-					brandingJson.put("logoLight", brand.getLogoLight());
-					brandingJson.put("poweredByLogo", brand.getPoweredByLogo());
-					brandingJson.put("showLogoInPDF", brand.isShowLogoInPDF());
-					brandingJson.put("favicon", brand.getFavicon());
-					brandingJson.put("website", brand.getWebsite());
-					brandingJson.put("copyright", brand.getCopyright());
-					return brandingJson;
-				}
 			}
 		} catch (Exception e) {
 			LOGGER.warn("Exception in fetching the branding for app domain. domain: "+domain, e);
 		}
-		JSONObject brandingJson = new JSONObject();
-		brandingJson.put("name", FacilioProperties.getConfig("rebrand.brand", "Facilio"));
-		brandingJson.put("legalName", FacilioProperties.getConfig("rebrand.copyright.name", "Facilio Inc"));
-		brandingJson.put("logo", FacilioProperties.getConfig("rebrand.logo", "https://static.facilio.com/common/facilio-dark-logo.svg"));
-		brandingJson.put("logoLight", FacilioProperties.getConfig("rebrand.logoLight", "https://static.facilio.com/common/facilio-light-logo.svg"));
-		brandingJson.put("poweredByLogo", null);
-		brandingJson.put("showLogoInPDF", true);
-		brandingJson.put("favicon", FacilioProperties.getConfig("rebrand.favicon", "https://static.facilio.com/common/favicon.png"));
-		brandingJson.put("website", FacilioProperties.getConfig("rebrand.website", "www.facilio.com"));
-		brandingJson.put("copyright", FacilioProperties.getConfig("rebrand.copyright.name", "Facilio Inc") + " &copy; " + java.time.Year.now().getValue());
-		return brandingJson;
+		if (brand == null) {
+			brand = new Brand();
+			brand.setName(FacilioProperties.getConfig("rebrand.brand", "Facilio"));
+			brand.setLegalName(FacilioProperties.getConfig("rebrand.copyright.name", "Facilio Inc"));
+			brand.setLogo(FacilioProperties.getConfig("rebrand.logo", "https://static.facilio.com/common/facilio-dark-logo.svg"));
+			brand.setLogoLight(FacilioProperties.getConfig("rebrand.logoLight", "https://static.facilio.com/common/facilio-light-logo.svg"));
+			brand.setPoweredByLogo(null);
+			brand.setShowLogoInPDF(true);
+			brand.setFavicon(FacilioProperties.getConfig("rebrand.favicon", "https://static.facilio.com/common/favicon.png"));
+			brand.setWebsite(FacilioProperties.getConfig("rebrand.website", "www.facilio.com"));
+
+			List<BrandLink> defaultBrandLinks = new ArrayList<>();
+			BrandLink privacyPolicy = new BrandLink();
+			privacyPolicy.setName("Privacy policy");
+			privacyPolicy.setLinkType(BrandLink.LinkType.PRIVACY_POLICY);
+			privacyPolicy.setIsExternalURL(true);
+			privacyPolicy.setExternalURL(FacilioProperties.getPrivacyPolicyURL());
+			privacyPolicy.setShowInMenu(true);
+			defaultBrandLinks.add(privacyPolicy);
+
+			BrandLink termsOfService = new BrandLink();
+			termsOfService.setName("Terms of service");
+			termsOfService.setLinkType(BrandLink.LinkType.TERMS_OF_USE);
+			termsOfService.setIsExternalURL(true);
+			termsOfService.setExternalURL(FacilioProperties.getTermsOfServiceURL());
+			termsOfService.setShowInMenu(true);
+			defaultBrandLinks.add(termsOfService);
+
+			BrandLink iosApp = new BrandLink();
+			iosApp.setName("App Store");
+			iosApp.setLinkType(BrandLink.LinkType.IOS_APP);
+			iosApp.setIsExternalURL(true);
+			iosApp.setExternalURL(FacilioProperties.getFacilioIosURL());
+			iosApp.setShowInMenu(true);
+			defaultBrandLinks.add(iosApp);
+
+			BrandLink androidApp = new BrandLink();
+			androidApp.setName("Play Store");
+			androidApp.setLinkType(BrandLink.LinkType.ANDROID_APP);
+			androidApp.setIsExternalURL(true);
+			androidApp.setExternalURL(FacilioProperties.getFacilioAndroidURL());
+			androidApp.setShowInMenu(true);
+			defaultBrandLinks.add(androidApp);
+
+			BrandLink about = new BrandLink();
+			about.setName("About");
+			about.setLinkType(BrandLink.LinkType.ABOUT);
+			about.setIsExternalURL(true);
+			about.setExternalURL(FacilioProperties.getConfig("rebrand.about", "https://facilio.com/about/"));
+			about.setShowInMenu(true);
+			defaultBrandLinks.add(about);
+
+			BrandLink blog = new BrandLink();
+			blog.setName("Blog");
+			blog.setLinkType(BrandLink.LinkType.BLOG);
+			blog.setIsExternalURL(true);
+			about.setExternalURL(FacilioProperties.getConfig("rebrand.blog", "https://facilio.com/blog/"));
+			blog.setShowInMenu(true);
+			defaultBrandLinks.add(blog);
+
+			BrandLink help = new BrandLink();
+			help.setName("Help");
+			help.setLinkType(BrandLink.LinkType.HELP);
+			help.setIsExternalURL(true);
+			about.setExternalURL(FacilioProperties.getConfig("rebrand.help", "https://facilio.com/help/"));
+			help.setShowInMenu(true);
+			defaultBrandLinks.add(help);
+
+			brand.setLinks(defaultBrandLinks);
+		}
+		return FieldUtil.getAsJSON(brand);
 	}
 }

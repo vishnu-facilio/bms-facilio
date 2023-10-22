@@ -217,13 +217,25 @@ public class ScopeInterceptor extends AbstractInterceptor {
                 Map<String, Object> userSession = IAMUserUtil.getUserSession(iamAccount.getUserSessionId());
                 boolean isProxySession = userSession == null ? false : (boolean) userSession.getOrDefault("isProxySession", false);
                 if (isProxySession) {
-                    String proxySessionToken = FacilioCookie.getUserCookie(request,"fc.idToken.proxy");
-                    String proxyUserToken = request.getHeader("X-Proxy-Token");
-                    if(proxyUserToken!=null && proxyUserToken.trim().length() > 0){
-                        proxySessionToken = request.getHeader("X-Proxy-Token").replace("Bearer ", "");
+                    try {
+                        JSONObject sessionInfo = (JSONObject) new JSONParser().parse((String) userSession.getOrDefault("sessionInfo", "{}"));
+                        if (sessionInfo != null && sessionInfo.containsKey("proxyAccessBy")) {
+                            // new IAM
+                            account.getUser().setProxy((String) sessionInfo.get("proxyAccessBy"));
+                        }
+                        else {
+                            // old IAM
+                            String proxySessionToken = FacilioCookie.getUserCookie(request, "fc.idToken.proxy");
+                            String proxyUserToken = request.getHeader("X-Proxy-Token");
+                            if (proxyUserToken != null && proxyUserToken.trim().length() > 0) {
+                                proxySessionToken = request.getHeader("X-Proxy-Token").replace("Bearer ", "");
+                            }
+                            Map<String, Object> proxySession = IAMUserUtil.getProxySession(proxySessionToken);
+                            account.getUser().setProxy((String) proxySession.get("email"));
+                        }
+                    } catch (Exception e) {
+                        LOGGER.warn("Error in proxy token parse: ", e);
                     }
-                    Map<String, Object> proxySession = IAMUserUtil.getProxySession(proxySessionToken);
-                    account.getUser().setProxy((String) proxySession.get("email"));
                 }
                 AccountUtil.cleanCurrentAccount();
                 AccountUtil.setCurrentAccount(account);
