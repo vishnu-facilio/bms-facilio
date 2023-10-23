@@ -8,9 +8,11 @@ import com.facilio.multiImport.context.ImportDataDetails;
 import com.facilio.multiImport.context.ImportFieldMappingContext;
 import com.facilio.multiImport.context.ImportFileSheetsContext;
 import com.facilio.multiImport.enums.ImportDataStatus;
+import com.facilio.multiImport.enums.ImportFieldMappingType;
 import com.facilio.multiImport.enums.MultiImportSetting;
 import com.facilio.multiImport.util.MultiImportApi;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +36,7 @@ public class ImportFieldsMappingCommand extends FacilioCommand {
             importFieldMapping.forEach(fieldMapping -> {
                 fieldMapping.setImportSheetId(sheetId);
             });
+            setImportFieldMappingType(importFieldMapping,importFileSheet.getModuleName());
         }
 
         MultiImportApi.deleteImportSheetsFieldMapping(Arrays.asList(sheetId));
@@ -71,6 +74,30 @@ public class ImportFieldsMappingCommand extends FacilioCommand {
 
         }
 
+    }
+    private void setImportFieldMappingType(List<ImportFieldMappingContext> importFieldMapping,String moduleName) throws Exception{
+        Map<Long,FacilioField> fieldMap = FieldFactory.getAsIdMap(Constants.getModBean().getAllFields(moduleName));
+        for(ImportFieldMappingContext fieldMappingContext : importFieldMapping){
+
+            long fieldId = fieldMappingContext.getFieldId();
+            String fieldName = fieldMappingContext.getFieldName();
+            long relMappingId = fieldMappingContext.getRelMappingId();
+            long parentLookupFieldId = fieldMappingContext.getParentLookupFieldId();
+
+            if(relMappingId!=-1l){
+                fieldMappingContext.setType(ImportFieldMappingType.RELATIONSHIP);
+            }
+            else if(fieldId!=-1l && parentLookupFieldId!=-1l){
+                fieldMappingContext.setType(ImportFieldMappingType.ONE_LEVEL);
+            }else if(fieldId!=-1l && !fieldMap.containsKey(fieldId)){
+                fieldMappingContext.setType(ImportFieldMappingType.UNIQUE_FIELD);
+            }
+            else if(fieldId!=-1l || StringUtils.isNotEmpty(fieldName)){
+                fieldMappingContext.setType(ImportFieldMappingType.NORMAL);
+            }else {
+                throw new IllegalArgumentException("Invalid import field mapping type");
+            }
+        }
     }
 
     private static List<FacilioField> getUpdateFields() {

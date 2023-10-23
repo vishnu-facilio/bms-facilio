@@ -1,6 +1,5 @@
 package com.facilio.multiImport.command;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -19,6 +18,7 @@ import com.facilio.multiImport.context.ImportDataDetails;
 import com.facilio.multiImport.context.ImportFieldMappingContext;
 import com.facilio.multiImport.context.ImportFileSheetsContext;
 import com.facilio.multiImport.context.ImportRowContext;
+import com.facilio.multiImport.enums.ImportFieldMappingType;
 import com.facilio.multiImport.enums.MultiImportSetting;
 import com.facilio.multiImport.util.MultiImportApi;
 import com.facilio.v3.context.Constants;
@@ -26,7 +26,6 @@ import com.facilio.v3.context.V3Context;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.PredicateUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -34,7 +33,7 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class FilterMultiImportDataCommand extends FacilioCommand {
+public class V4FilterMultiImportDataCommand extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(FilterMultiImportDataCommand.class.getName());
 
     ImportDataDetails importDataDetails = null;
@@ -43,20 +42,34 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
     List<FacilioField> requiredFields = null;
     String moduleName = null;
     Class beanClass = null;
+    Map<ImportFieldMappingType,List<ImportFieldMappingContext>> typeVsFieldMappings;
+    Context context;
+    Map<String, FacilioField> fieldNameVsFacilioFieldMap = null;
+    Map<Long, FacilioField> fieldIdVsFacilioFieldMap = null;
+    List<FacilioField> mappedFields ;
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        LOGGER.info("FilterMultiImportDataCommand started time:"+System.currentTimeMillis());
+        LOGGER.info("V4FilterMultiImportDataCommand started time:"+System.currentTimeMillis());
         List<ImportRowContext> allRows = ImportConstants.getRowContextList(context);
 
+        this.context = context;
         importDataDetails = ImportConstants.getImportDataDetails(context);
         importId = (Long) context.get(FacilioConstants.ContextNames.IMPORT_ID);
         importSheet = (ImportFileSheetsContext) context.get(FacilioConstants.ContextNames.IMPORT_SHEET);
         beanClass = (Class) context.get(Constants.BEAN_CLASS);
 
-        Long importSheetId = importSheet.getId();
+        //type vs import field mapping
+        typeVsFieldMappings = importSheet.getTypeVsFieldMappings();
+
+        //FacilioFields info
+        List<FacilioField> fields = MultiImportApi.getImportFields(context, importSheet.getModuleName());
+        fieldNameVsFacilioFieldMap = FieldFactory.getAsMap(fields);
+        fieldIdVsFacilioFieldMap = FieldFactory.getAsIdMap(fields);
+        mappedFields = MultiImportApi.getMappedFields(typeVsFieldMappings.get(ImportFieldMappingType.NORMAL),
+                fieldIdVsFacilioFieldMap,fieldNameVsFacilioFieldMap);
+
         moduleName = importSheet.getModuleName();
-        ModuleBean modBean = Constants.getModBean();
         MultiImportSetting setting = importSheet.getImportSettingEnum();
         FacilioModule module = importSheet.getModule();
         requiredFields = (List<FacilioField>) context.get(ImportAPI.ImportProcessConstants.REQUIRED_FIELDS);
@@ -78,9 +91,9 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
 
             List<String> insertBySheetColumNames = importSheet.getInsertByFieldsList();
 
-            List<FacilioField> criteriaFields = getFieldsBySheetColumnNames(importSheet,insertBySheetColumNames,context);
+            List<FacilioField> criteriaFields = getFieldsBySheetColumnNames(insertBySheetColumNames);
 
-            List<FacilioField> dbSelectableFields = getDBSelectableFields(setting,context);
+            List<FacilioField> dbSelectableFields = getDBSelectableFields(setting);
 
             for (Pair<Long, Map<String, Object>> datum : rawInputs) {
                 long logId = datum.getLeft();
@@ -92,7 +105,7 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
                     importRowContext.setRowStatus(ImportRowContext.RowStatus.ADDED);
                 }
                 else{
-                   importRowContext.setRowStatus(ImportRowContext.RowStatus.SKIPPED);
+                    importRowContext.setRowStatus(ImportRowContext.RowStatus.SKIPPED);
                 }
                 int skipRecordsCount = rawInputs.size()- newRawInputs.size();
                 context.put(ImportConstants.SKIP_RECORDS_COUNT,skipRecordsCount);
@@ -100,17 +113,17 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
 
             ImportConstants.setInsertRecords(context, newRawInputs);
         }
-       else if (setting == MultiImportSetting.UPDATE ||
+        else if (setting == MultiImportSetting.UPDATE ||
                 setting == MultiImportSetting.UPDATE_NOT_NULL) {
             // get data and update
 
             List<String> updateBySheetColumNames = importSheet.getUpdateByFieldsList();
 
-            List<FacilioField> criteriaFields = getFieldsBySheetColumnNames(importSheet,updateBySheetColumNames,context);
+            List<FacilioField> criteriaFields = getFieldsBySheetColumnNames(updateBySheetColumNames);
 
             List<Pair<Long, Map<String, Object>>> newRawInputs = new ArrayList<>();
 
-            List<FacilioField> dbSelectableFields = getDBSelectableFields(setting,context);
+            List<FacilioField> dbSelectableFields = getDBSelectableFields(setting);
 
             Map<Long,V3Context> oldRecords = new LinkedHashMap<>();
             for (Pair<Long, Map<String, Object>> datum : rawInputs) {
@@ -136,8 +149,7 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
 
             }
 
-            List<FacilioField> patchFields = getPatchFields(importSheet,context);
-            context.put(Constants.PATCH_FIELDS,patchFields);
+            context.put(Constants.PATCH_FIELDS,mappedFields);
             ImportConstants.setUpdateRecords(context,newRawInputs);
             ImportConstants.setOldRecordsMap(context,oldRecords);
 
@@ -149,13 +161,13 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
 
             List<String> updateBySheetColumNames = importSheet.getUpdateByFieldsList();
 
-            List<FacilioField> criteriaFields = getFieldsBySheetColumnNames(importSheet,updateBySheetColumNames,context);
+            List<FacilioField> criteriaFields = getFieldsBySheetColumnNames(updateBySheetColumNames);
 
             List<Pair<Long, Map<String, Object>>> updateInputs = new ArrayList<>();
             List<Pair<Long, Map<String, Object>>> newCreateInputs = new ArrayList<>();
             Map<Long,V3Context> oldRecords = new LinkedHashMap<>();
 
-            List<FacilioField> dbSelectableFields = getDBSelectableFields(setting,context);
+            List<FacilioField> dbSelectableFields = getDBSelectableFields(setting);
 
             for (Pair<Long, Map<String, Object>> datum : rawInputs) {
                 long logId = datum.getLeft();
@@ -179,8 +191,8 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
                 }
             }
 
-            List<FacilioField> patchFields = getPatchFields(importSheet,context);
-            context.put(Constants.PATCH_FIELDS,patchFields);
+
+            context.put(Constants.PATCH_FIELDS,mappedFields);
 
             ImportConstants.setInsertRecords(context, newCreateInputs);
             ImportConstants.setUpdateRecords(context,updateInputs);
@@ -188,39 +200,19 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
 
         }
 
-        LOGGER.info("FilterMultiImportDataCommand completed time:"+System.currentTimeMillis());
+        LOGGER.info("V4FilterMultiImportDataCommand completed time:"+System.currentTimeMillis());
 
         return false;
     }
 
-    private static List<FacilioField> getFieldsBySheetColumnNames(ImportFileSheetsContext importSheet,List<String> sheetColumnNames,Context context) throws Exception {
+    private  List<FacilioField> getFieldsBySheetColumnNames(List<String> sheetColumnNames) throws Exception {
         List<FacilioField> fields = new ArrayList<>();
-        String moduleName = importSheet.getModuleName();
-        Map<String, ImportFieldMappingContext> sheetColumnNameVsFieldMapping =importSheet.getSheetColumnNameVsFieldMapping();
-
-        List<FacilioField>  allFields = MultiImportApi.getImportFields(context,moduleName);
-
-        Map<Long, FacilioField> fieldIdVsFacilioFieldMap = FieldFactory.getAsIdMap(allFields);
-        Map<String, FacilioField> fieldNameVsFacilioFieldMap = FieldFactory.getAsMap(allFields);
 
         for (String sheetColumnName : sheetColumnNames) {
-            ImportFieldMappingContext fieldMappingContext = sheetColumnNameVsFieldMapping.get(sheetColumnName);
-
-            long fieldId = fieldMappingContext.getFieldId();
-            String fieldName = fieldMappingContext.getFieldName();
-
-            if(fieldId != -1L && fieldIdVsFacilioFieldMap.get(fieldId) != null) {
-                fields.add(fieldIdVsFacilioFieldMap.get(fieldId));
-            }
-            else if (StringUtils.isNotEmpty(fieldName) && fieldNameVsFacilioFieldMap.get(fieldName)!=null) {
-                fields.add(fieldNameVsFacilioFieldMap.get(fieldName));
-            }
+           fields.add(MultiImportApi.getFacilioFieldFromSheetColumnName(sheetColumnName,importSheet,
+                   fieldIdVsFacilioFieldMap,fieldNameVsFacilioFieldMap));
         }
         return fields;
-    }
-    private static List<FacilioField> getPatchFields(ImportFileSheetsContext importSheet,Context context) throws Exception {
-        List<String> sheetColumnNames = new ArrayList<>(importSheet.getSheetColumnNameVsFieldMapping().keySet());
-        return getFieldsBySheetColumnNames(importSheet,sheetColumnNames,context);
     }
 
     private V3Context getDBRecord(FacilioModule module, List<FacilioField> selectableFields, List<FacilioField> criteriaFields, Map<String, Object> datum) throws Exception {
@@ -229,13 +221,6 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
                 .select(selectableFields)
                 .beanClass(beanClass)
                 .limit(1);
-        List<SupplementRecord> supplements = new ArrayList<>();
-        for (FacilioField field : selectableFields) {
-            if (field.getDataTypeEnum().isRelRecordField()) {
-                supplements.add((SupplementRecord) field);
-            }
-        }
-        builder.fetchSupplements(supplements);
 
         Criteria criteria = buildCriteria(criteriaFields, datum);
         if (!criteria.isEmpty()) {
@@ -312,24 +297,17 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
         }
         return true;
     }
-    private List<FacilioField> getDBSelectableFields(MultiImportSetting setting,Context context) throws Exception {
+    private List<FacilioField> getDBSelectableFields(MultiImportSetting setting) throws Exception {
         List<FacilioField> dbSelectableFields = new ArrayList<>();
 
         switch (setting){
             case INSERT_SKIP:
-                dbSelectableFields.add(FieldFactory.getIdField(importSheet.getModule()));
-                return dbSelectableFields;
             case UPDATE:
             case UPDATE_NOT_NULL:
             case BOTH:
             case BOTH_NOT_NULL:
-               /* List<FacilioField> patchFields = getPatchFields(importSheet,context);
-                Map<String,FacilioField> patchFieldMap = FieldFactory.getAsMap(patchFields);
-                if(!patchFieldMap.containsKey("id")){
-                    dbSelectableFields.add(FieldFactory.getIdField(importSheet.getModule()));
-                }*/
                 dbSelectableFields.add(FieldFactory.getIdField(importSheet.getModule()));
-                return dbSelectableFields;
+                break;
         }
         return dbSelectableFields;
     }

@@ -3753,12 +3753,14 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField("sheetColumnName","SHEET_COLUMN_NAME",module));
         fields.add(getNumberField("importSheetId","IMPORT_SHEET_ID",module));
         fields.add(getNumberField("fieldId","FIELDID",module));
+        fields.add(getNumberField("parentLookupFieldId","PARENT_LOOKUP_FIELDID",module));
         fields.add(getStringField("fieldName","FIELD_NAME",module));
         fields.add(getNumberField("unitId","UNIT_ID",module));
         fields.add(getBooleanField("mandatory", "IS_MANDATORY", module));
         fields.add(getStringField("dateFormat","DATE_FORMAT",module));
         fields.add(getNumberField("lookupIdentifier","LOOKUP_IDENTIFIER",module));
         fields.add(getNumberField("relMappingId","RELATION_MAPPING_ID",module));
+        fields.add(getNumberField("type","TYPE",module));
         return fields;
     }
     public static List<FacilioField> getMultiImportProcessLogFields(){

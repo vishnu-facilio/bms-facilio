@@ -1,15 +1,17 @@
 package com.facilio.multiImport.util;
 
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.multiImport.annotations.ImportModule;
 import com.facilio.multiImport.annotations.RowFunction;
 import com.facilio.multiImport.command.*;
 import com.facilio.multiImport.config.*;
 import com.facilio.multiImport.enums.MultiImportSetting;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.commands.AddMultiSelectFieldsCommand;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.context.CustomModuleDataV3;
@@ -23,10 +25,7 @@ import org.reflections.util.ClasspathHelper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class MultiImportChainUtil {
@@ -146,7 +145,14 @@ public class MultiImportChainUtil {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new ImportInItCommand());
         addIfNotNull(chain, beforeImportCommand);
-        chain.addCommand(new V3ProcessMultiImportCommand());
+
+
+        if(useV3Import()){
+            chain.addCommand(new V3ProcessMultiImportCommand());
+        }else {
+            chain.addCommand(new V4MultiImportProcessCommand());
+        }
+
         addIfNotNull(chain,afterDataProcessCommand);
         chain.addCommand(new UpdateRowStatusCommand());
         addIfNotNull(chain, afterImportCommand);
@@ -162,7 +168,11 @@ public class MultiImportChainUtil {
     }
     public static FacilioChain getImportChain(String moduleName, MultiImportSetting setting) throws Exception {
         FacilioChain chain = getDefaultChain();
-        chain.addCommand(new FilterMultiImportDataCommand());
+        if(useV3Import()){
+            chain.addCommand(new FilterMultiImportDataCommand());
+        }else{
+            chain.addCommand(new V4FilterMultiImportDataCommand());
+        }
         addCreateAndPatchChainsBySettings(chain,setting,moduleName);
         return chain;
     }
@@ -280,5 +290,19 @@ public class MultiImportChainUtil {
             }
         }
         return beanClass;
+    }
+    private static boolean useV3Import()  {
+        try{
+            long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
+            Map<String,Object> map = CommonCommandUtil.getOrgInfo(orgId,"useV3Import");
+            if(map!=null){
+                Object value = map.getOrDefault("value",false);
+                return FacilioUtil.parseBoolean(value);
+            }
+        }catch (Exception e){
+
+        }
+        return false;
+
     }
 }

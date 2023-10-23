@@ -1,5 +1,6 @@
 package com.facilio.multiImport.context;
 
+import com.facilio.multiImport.enums.ImportFieldMappingType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +20,8 @@ public class ImportFieldMappingContext implements Serializable {
     private String dateFormat;
     private LookupIdentifierEnum lookupIdentifier;
     private long relMappingId = -1l;
+    private long parentLookupFieldId = -1l;
+    private ImportFieldMappingType type;
 
     public int getLookupIdentifier() {
         if(lookupIdentifier!=null){
@@ -41,4 +44,24 @@ public class ImportFieldMappingContext implements Serializable {
            throw new IllegalArgumentException("Invalid lookupIdentifier:"+lookupIdentifier);
         }
     }
+    public ImportFieldMappingType getTypeEnum() {
+       return type;
+    }
+    public int getType() {
+        if(type!=null){
+            return type.getIndex();
+        }
+        return -1;
+    }
+
+    public void setType(int type) {
+        this.type = ImportFieldMappingType.getImportFieldType(type);
+        if(this.type==null){
+            throw new IllegalArgumentException("Unsupported import field mapping type:"+type);
+        }
+    }
+    public void setType(ImportFieldMappingType type) {
+        this.type = type;
+    }
+
 }

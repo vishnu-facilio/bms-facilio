@@ -3,7 +3,6 @@ package com.facilio.multiImport.util;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -17,6 +16,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.multiImport.context.*;
 import com.facilio.multiImport.enums.MultiImportSetting;
@@ -25,7 +25,6 @@ import com.facilio.multiImport.importFileReader.CSVFileReader;
 import com.facilio.multiImport.importFileReader.XLFileReader;
 import com.facilio.multiImport.multiImportExceptions.ImportFieldValueMissingException;
 import com.facilio.multiImport.multiImportExceptions.ImportMandatoryFieldsException;
-import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
@@ -40,11 +39,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.CellValue;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -841,7 +835,24 @@ public class MultiImportApi {
         }
         return sheetColumnName;
     }
-    public static FacilioField getFacilioFieldFromSheetColumnName(ImportFileSheetsContext importSheet,String sheetColumnName) throws Exception {
+    public static String getSheetColumnNameFromFacilioField(Map<Long, String> fieldIdVsSheetColumnNameMap,
+                                                            Map<String, String> fieldNameVsSheetColumnNameMap,
+                                                            FacilioField field) {
+        Long fieldId = field.getFieldId();
+        String fieldName = field.getName();
+
+        if (fieldIdVsSheetColumnNameMap != null && fieldId!=-1l && fieldIdVsSheetColumnNameMap.containsKey(fieldId)) {
+            return fieldIdVsSheetColumnNameMap.get(fieldId);
+        }
+        if (fieldNameVsSheetColumnNameMap != null && fieldNameVsSheetColumnNameMap.containsKey(fieldName)) {
+            return fieldNameVsSheetColumnNameMap.get(fieldName);
+        }
+        return null;
+    }
+    public static FacilioField getFacilioFieldFromSheetColumnName(String sheetColumnName,
+                                                                  ImportFileSheetsContext importSheet,
+                                                                  Map<Long, FacilioField> fieldIdVsFacilioFieldMap,
+                                                                  Map<String, FacilioField> fieldNameVsFacilioFieldMap) throws Exception {
         Map<String,ImportFieldMappingContext> sheetColumnNameVsFieldMapping =importSheet.getSheetColumnNameVsFieldMapping();
 
         ImportFieldMappingContext fieldMappingContext = sheetColumnNameVsFieldMapping.get(sheetColumnName);
@@ -849,22 +860,7 @@ public class MultiImportApi {
         if(fieldMappingContext == null){
             return null;
         }
-
-        long fieldId = fieldMappingContext.getFieldId();
-        String fieldName = fieldMappingContext.getFieldName();
-
-        List<FacilioField> fields = Constants.getModBean().getAllFields(importSheet.getModuleName());
-        Map<Long, FacilioField> fieldIdVsFacilioFieldMap = FieldFactory.getAsIdMap(fields);
-        Map<String, FacilioField> fieldNameVsFacilioFieldMap = FieldFactory.getAsMap(fields);
-
-        if(fieldId != -1L) {
-            return fieldIdVsFacilioFieldMap.get(fieldId);
-        }
-        else if (StringUtils.isNotEmpty(fieldName)) {
-            return fieldNameVsFacilioFieldMap.get(fieldName);
-        }
-
-        return null;
+        return getFacilioField(fieldMappingContext,fieldIdVsFacilioFieldMap,fieldNameVsFacilioFieldMap);
     }
 
     public static String getFileType(ImportFileContext importFile) {
@@ -971,6 +967,29 @@ public class MultiImportApi {
         }
         fields.add(FieldFactory.getIdField(Constants.getModBean().getModule(moduleName)));
         return fields;
+    }
+    public static FacilioField getFacilioField(ImportFieldMappingContext importFieldMappingContext,
+                                               Map<Long, FacilioField> fieldIdVsFacilioFieldMap,
+                                               Map<String, FacilioField> fieldNameVsFacilioFieldMap){
+        Long fieldId = importFieldMappingContext.getFieldId();
+        String fieldName = importFieldMappingContext.getFieldName();
+
+        if(fieldIdVsFacilioFieldMap != null && fieldId!=-1l && fieldIdVsFacilioFieldMap.containsKey(fieldId)){
+            return fieldIdVsFacilioFieldMap.get(fieldId);
+        }
+        if(StringUtils.isNotEmpty(fieldName) && fieldNameVsFacilioFieldMap.containsKey(fieldName)){
+            return fieldNameVsFacilioFieldMap.get(fieldName);
+        }
+        return null;
+    }
+    public static List<FacilioField> getMappedFields(List<ImportFieldMappingContext> fieldMappings,
+                                                     Map<Long, FacilioField> fieldIdVsFacilioFieldMap,
+                                                     Map<String, FacilioField> fieldNameVsFacilioFieldMap){
+        List<FacilioField> mappedFields = new ArrayList<>();
+        for(ImportFieldMappingContext fieldMappingContext : fieldMappings){
+            mappedFields.add(getFacilioField(fieldMappingContext,fieldIdVsFacilioFieldMap,fieldNameVsFacilioFieldMap));
+        }
+        return mappedFields;
     }
     public static void sendMultiImportProgressToClient(ImportDataDetails importDataDetails) throws Exception {
         sendMultiImportProgressToClient(importDataDetails,null);
@@ -1080,6 +1099,7 @@ public class MultiImportApi {
         List<MultiImportField> multiImportFields = new ArrayList<>();
 
         List<String> mandatoryFieldsNames = getMandatoryFieldNames(module);
+        List<String> oneLevelSupportedModuleNames = getOneLevelSupportedModuleNames();
         for(FacilioField facilioField : facilioFields){
             String fieldName = facilioField.getName();
             MultiImportField importField =  new MultiImportField();
@@ -1090,6 +1110,14 @@ public class MultiImportApi {
                 }
             }else if(facilioField.isRequired()){
                 importField.setMandatory(true);
+            }
+
+            if(facilioField.getDataTypeEnum() == FieldType.LOOKUP ){
+               FacilioModule lookupModule = ((BaseLookupField)facilioField).getLookupModule();
+               if(oneLevelSupportedModuleNames.contains(lookupModule.getName())){
+                   importField.setOneLevelSupportedField(true);
+                   importField.setLookupModuleFields(modBean.getAllFields(lookupModule.getName()));
+               }
             }
             multiImportFields.add(importField);
         }
@@ -1154,6 +1182,11 @@ public class MultiImportApi {
             default:
                 return null;
         }
+    }
+    public static List<String> getOneLevelSupportedModuleNames(){
+        List<String> oneLevelSupportedModuleNames = new ArrayList<>();
+        oneLevelSupportedModuleNames.add(FacilioConstants.ContextNames.LOCATION);
+        return oneLevelSupportedModuleNames;
     }
     public static ArrayList<FacilioField> getRequiredFields(String moduleName) throws Exception {
         ArrayList<FacilioField> mandatoryFields = new ArrayList<FacilioField>();
@@ -1231,6 +1264,12 @@ public class MultiImportApi {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
         return duplicateIdentifiers;
+    }
+    public static boolean isEmpty(Object cellValue) {
+        if (cellValue == null || cellValue.toString().equals("") || (cellValue.toString().equals("n/a"))) {
+            return true;
+        }
+        return false;
     }
     public static class ImportProcessConstants {
         public static final String UNIQUE_FUNCTION = "uniqueFunction";

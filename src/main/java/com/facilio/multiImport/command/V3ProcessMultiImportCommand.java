@@ -604,7 +604,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 }
                 NumberField numberField = (NumberField) field;
                 ImportFieldMappingContext importFieldMapping = sheetColumnNameVsFieldMapping.get(sheetColumnName);
-                if(numberField.getMetric()!=-1 && numberField.getUnitId()!=-1 && importFieldMapping.getUnitId()!=-1){
+                if(numberField.getMetric()!=-1 && numberField.getMetricEnum()!=null && importFieldMapping.getUnitId()!=-1){
                     props.put(field.getName()+"Unit",importFieldMapping.getUnitId());
                 }
                 break;
@@ -621,7 +621,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                 }
                 NumberField decimalField = (NumberField) field;
                 ImportFieldMappingContext importFieldMapping = sheetColumnNameVsFieldMapping.get(sheetColumnName);
-                if(decimalField.getMetric()!=-1 && decimalField.getUnitId()!=-1 && importFieldMapping.getUnitId()!=-1){
+                if(decimalField.getMetric()!=-1 && decimalField.getMetricEnum()!=null && importFieldMapping.getUnitId()!=-1){
                     props.put(field.getName()+"Unit",importFieldMapping.getUnitId());
                 }
                 break;

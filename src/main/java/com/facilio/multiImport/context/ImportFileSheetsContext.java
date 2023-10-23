@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.multiImport.enums.ImportDataStatus;
+import com.facilio.multiImport.enums.ImportFieldMappingType;
 import com.facilio.multiImport.enums.MultiImportSetting;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -43,6 +44,7 @@ public class ImportFileSheetsContext implements Serializable {
     private long insertCount,skipCount,updateCount,failCount;
     private MultiImportSetting importSetting;
     private List<ImportFieldMappingContext> relationFieldMapping;
+    private Map<ImportFieldMappingType,List<ImportFieldMappingContext>> typeVsFieldMappings;
     public void setImportSetting(int importSetting) {
         this.importSetting = MultiImportSetting.valueOf(importSetting);
     }
@@ -152,6 +154,15 @@ public class ImportFileSheetsContext implements Serializable {
         return fieldIdVsSheetColumnName;
     }
     @JsonIgnore
+    @JSON(serialize = false)
+    public Map<ImportFieldMappingType, List<ImportFieldMappingContext>> getTypeVsFieldMappings() {
+        if(CollectionUtils.isNotEmpty(fieldMapping) && MapUtils.isEmpty(typeVsFieldMappings)){
+            typeVsFieldMappings = fieldMapping.stream().collect(Collectors.groupingBy(ImportFieldMappingContext::getTypeEnum));
+        }
+        return typeVsFieldMappings;
+    }
+
+    @JsonIgnore
     public Map<String,String> getFieldNameVsSheetColumnNameMap(){
         if(CollectionUtils.isNotEmpty(fieldMapping)&& MapUtils.isEmpty(fieldNameVsSheetColumnName)){
             fieldNameVsSheetColumnName=new HashMap<>();
@@ -186,7 +197,7 @@ public class ImportFileSheetsContext implements Serializable {
     @JSON(serialize = false)
     public List<ImportFieldMappingContext> getRelationFieldMapping() {
         if(CollectionUtils.isNotEmpty(fieldMapping)&& CollectionUtils.isEmpty(relationFieldMapping)){
-            relationFieldMapping=fieldMapping.stream().filter(p->p.getRelMappingId()!=-1).collect(Collectors.toList());
+            relationFieldMapping=fieldMapping.stream().filter(p->p.getTypeEnum()==ImportFieldMappingType.RELATIONSHIP).collect(Collectors.toList());
         }
         return relationFieldMapping;
     }
