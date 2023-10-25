@@ -51,7 +51,7 @@ public class CommonConnectedSummaryAPI {
                 .addSection("workOrderDetails", null, null)
                 .addWidget("associatedWorkOrders", "Associated Work Orders", PageWidget.WidgetType.RULE_ASSOCIATED_WORK_ORDERS, "webRuleAssociatedWorkOrders_3_6", 0, 0, null, null)
                 .widgetDone()
-                .addWidget("ruleWorkOrderDuration", "Associated Work Orders", PageWidget.WidgetType.RULE_WORK_ORDER_DURATION, "webRuleWorkOrderDuration_3_6", 6, 0, null, null)
+                .addWidget("ruleWorkOrderDuration", "Response and Resolution Metrics", PageWidget.WidgetType.RULE_WORK_ORDER_DURATION, "webRuleWorkOrderDuration_3_6", 6, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

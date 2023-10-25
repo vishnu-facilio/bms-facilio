@@ -58,7 +58,7 @@ public class FetchRcaReadingsCommand extends FacilioCommand {
                     alarmIds.add(reading.getParentId());
                 });
                 // alarm id vs alarm context
-                Map<Long, BaseAlarmContext> alarmsMap = NewAlarmAPI.getAlarms(new ArrayList<>(alarmIds))
+                Map<Long, BaseAlarmContext> alarmsMap = NewAlarmAPI.getAlarms(new ArrayList<>(alarmIds), FacilioConstants.ContextNames.NEW_READING_ALARM)
                         .stream()
                         .collect(Collectors.toMap(ModuleBaseWithCustomFields::getId, alarm -> alarm));
 
