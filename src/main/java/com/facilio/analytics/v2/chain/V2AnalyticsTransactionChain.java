@@ -2,6 +2,7 @@ package com.facilio.analytics.v2.chain;
 
 import com.facilio.analytics.v2.command.*;
 import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsoleV3.commands.meter.GetUtilityTypeReadingsCommand;
 import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDeleteCommand;
 import com.facilio.chain.FacilioChain;
 
@@ -83,11 +84,17 @@ public class V2AnalyticsTransactionChain
         chain.addCommand(new V2AnalyticsReportListCommand());
         return chain;
     }
-    public static FacilioChain getReadingsFromCategoryChain()throws Exception
+    public static FacilioChain getReadingsFromCategoryChain(String type)throws Exception
     {
         FacilioChain chain = getDefaultChain();
+        if(type != null && type.equals("asset")) {
+            chain.addCommand(new GetCategoryReadingsCommand());
+        }else if(type != null && type.equals("meter")) {
+            chain.addCommand(new GetUtilityTypeReadingsCommand());
+        }
         chain.addCommand(new V2GetReadingsFromCategoryCommand());
         return chain;
     }
+
 }
 

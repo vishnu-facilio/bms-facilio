@@ -6,8 +6,9 @@ import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.report.context.ReadingAnalysisContext;
+import com.facilio.modules.FieldType;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import org.apache.commons.chain.Context;
@@ -50,7 +51,13 @@ public class V2GetAnalyticReportCommand extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.REPORT_USER_FILTER_VALUE, db_filter.getDb_user_filter());
             }
         }
-
+        for(ReportDataPointContext dataPoint : report.getDataPoints())
+        {
+            if ((dataPoint.getxAxis() != null && (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE)) && (dataPoint.getyAxis() != null && (dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getDataTypeEnum() == FieldType.ENUM))) {
+                dataPoint.getyAxis().setAggr(null);
+                dataPoint.setHandleEnum(true);
+            }
+        }
         return false;
     }
 }
