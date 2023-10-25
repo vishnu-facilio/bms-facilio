@@ -1,5 +1,7 @@
 package com.facilio.report.module.v2.command;
 
+import com.facilio.analytics.v2.V2AnalyticsOldUtil;
+import com.facilio.analytics.v2.context.V2AnalyticsMeasureContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -47,6 +49,14 @@ public class V2AddNewModuleReportCommand extends FacilioCommand {
                 .fields(FieldFactory.getV2ReportModuleFields());
         Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
         insertBuilder.insert(props);
+
+        List<V2AnalyticsMeasureContext> context_list = V2AnalyticsOldUtil.getV2ModuleMeasureContexts(reportContext.getMeasures(), reportContext.getReportId());
+        if(context_list.size() > 0) {
+            List<Map<String, Object>> measures_list = FieldUtil.getAsMapList(context_list, V2AnalyticsMeasureContext.class);
+            for(Map<String,Object> measure_prop : measures_list) {
+                V2AnalyticsOldUtil.addReportMeasures(measure_prop);
+            }
+        }
     }
     private void updateNewReportV2(V2ModuleReportContext reportContext) throws Exception
     {
@@ -56,6 +66,10 @@ public class V2AddNewModuleReportCommand extends FacilioCommand {
                 .andCondition(CriteriaAPI.getCondition("ID", "reportId", reportContext.getReportId()+"", NumberOperators.EQUALS));
         Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
         updateBuilder.update(props);
+
+        if (reportContext.getReportId() > 0){
+            V2AnalyticsOldUtil.updateModuleReportMeasures(reportContext);
+        }
     }
     private V2ModuleReportContext getV2Report(Long reportId)throws Exception
     {

@@ -33,10 +33,9 @@ public class V2GetAnalyticReportCommand extends FacilioCommand {
             Integer offset = v2_reportContext.getTimeFilter().getOffset();
             if(db_filter != null && db_filter.getTimeFilter() != null && db_filter.getTimeFilter().getStartTime() > 0 && db_filter.getTimeFilter().getEndTime() > 0)
             {
-                v2_reportContext.getTimeFilter().setStartTime(db_filter.getTimeFilter().getStartTime());
-                v2_reportContext.getTimeFilter().setEndTime(db_filter.getTimeFilter().getEndTime());
+                report.setDateRange(new DateRange(db_filter.getTimeFilter().getStartTime(), db_filter.getTimeFilter().getEndTime()));
             }
-            else if(dateOperators != null && !(dateOperators == DateOperators.BETWEEN || dateOperators == DateOperators.NOT_BETWEEN))
+            if(dateOperators != null && !(dateOperators == DateOperators.BETWEEN || dateOperators == DateOperators.NOT_BETWEEN))
             {
                 DateRange range = dateOperators.getRange(offset != null && offset >= 0 ? offset.toString() : null);
                 if(range == null){

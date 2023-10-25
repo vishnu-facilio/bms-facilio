@@ -17,6 +17,7 @@ import java.util.Map;
 @Getter
 public class V2MeasuresContext {
 
+    public long id;
     public Long fieldId;
     public String name;
     public String unit;
@@ -24,7 +25,7 @@ public class V2MeasuresContext {
     public String parentModuleName;
     public Long category;
     public String displayName;
-
+    public Long parent_lookup_fieldId;
     /**
      *  dataType key is used to calcluate aggrgation baseed on datatype
      */

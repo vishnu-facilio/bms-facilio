@@ -2,11 +2,13 @@ package com.facilio.analytics.v2;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.analytics.v2.context.V2AnalyticsMeasureContext;
 import com.facilio.analytics.v2.context.V2AnalyticsReportResponseContext;
 import com.facilio.analytics.v2.context.V2MeasuresContext;
 import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.ModuleSettingContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.constants.FacilioConstants;
@@ -27,6 +29,7 @@ import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.report.context.*;
+import com.facilio.report.module.v2.context.V2ModuleMeasureContext;
 import com.facilio.report.module.v2.context.V2ModuleReportContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
@@ -40,6 +43,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class V2AnalyticsOldUtil {
+    private static final List<String> MEASURE_KEYS = Arrays.asList("relationship_id" ,"fieldId","parent_lookup_fieldId", "criteriaId");
     private static final List<ReadingAnalysisContext.ReportMode> SUPPORTED_PORTFOLIO_MODES = Arrays.asList(
             ReadingAnalysisContext.ReportMode.TIME_CONSOLIDATED,
             ReadingAnalysisContext.ReportMode.SITE,
@@ -173,15 +177,90 @@ public class V2AnalyticsOldUtil {
                 .fields(FieldFactory.getV2ReportModuleFields());
         Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
         insertBuilder.insert(props);
+
+        List<V2AnalyticsMeasureContext> context_list =V2AnalyticsOldUtil.getV2AnalyticsMeasureContexts(reportContext.getMeasures(), reportContext.getReportId());
+        if(context_list.size() > 0) {
+            List<Map<String, Object>> measures_list = FieldUtil.getAsMapList(context_list, V2AnalyticsMeasureContext.class);
+            for(Map<String,Object> measure_prop : measures_list) {
+                V2AnalyticsOldUtil.addReportMeasures(measure_prop);
+            }
+        }
+    }
+    public static List<V2AnalyticsMeasureContext> getV2AnalyticsMeasureContexts(List<V2MeasuresContext> measures, Long reportId) throws Exception
+    {
+        List<V2AnalyticsMeasureContext> context_list = new ArrayList<>();
+        V2AnalyticsMeasureContext measure_context = null;
+        for(V2MeasuresContext measure : measures)
+        {
+            JSONObject measure_json = FieldUtil.getAsJSON(measure);
+            measure_json.keySet().removeAll(MEASURE_KEYS);
+            measure_context = new V2AnalyticsMeasureContext();
+            measure_context.setReportId(reportId);
+            measure_context.setMeasure_field_id(measure.getFieldId());
+            measure_context.setParent_lookup_field_id(measure.getParent_lookup_fieldId());
+            measure_context.setCriteria_id(measure.getCriteriaId());
+            measure_context.setMeasure_props(measure_json != null ? measure_json.toJSONString() : null);
+            context_list.add(measure_context);
+        }
+        return context_list;
+    }
+    public static List<V2AnalyticsMeasureContext> getV2ModuleMeasureContexts(List<V2ModuleMeasureContext> measures, Long reportId) throws Exception
+    {
+        List<V2AnalyticsMeasureContext> context_list = new ArrayList<>();
+        V2AnalyticsMeasureContext measure_context = null;
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        for(V2ModuleMeasureContext measure : measures)
+        {
+            FacilioField measureField = modBean.getField(measure.getFieldName(),measure.getModuleName());
+            if(measureField.getId() < 0){
+                measureField = FieldFactory.getIdField(modBean.getModule(measure.getModuleName()));
+            }
+            JSONObject measure_json = FieldUtil.getAsJSON(measure);
+            measure_json.keySet().removeAll(MEASURE_KEYS);
+            measure_context = new V2AnalyticsMeasureContext();
+            measure_context.setReportId(reportId);
+            measure_context.setMeasure_field_id(measureField.getFieldId());
+            measure_context.setCriteria_id(measure.getCriteriaId());
+            measure_context.setMeasure_props(measure_json != null ? measure_json.toJSONString() : null);
+            context_list.add(measure_context);
+        }
+        return context_list;
+    }
+    public static void addReportMeasures(Map<String, Object> props)throws Exception
+    {
+        GenericInsertRecordBuilder insert_builder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getReportV2MeasureModule().getTableName())
+                .fields(FieldFactory.getV2ReportMeasureFields());
+        insert_builder.insert(props);
+    }
+    public static void updateReportMeasures(V2ReportContext report)throws Exception
+    {
+        new GenericDeleteRecordBuilder().table(ModuleFactory.getReportV2MeasureModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", report.getReportId() + "", NumberOperators.EQUALS))
+                .delete();
+
+        List<V2AnalyticsMeasureContext> context_list = V2AnalyticsOldUtil.getV2AnalyticsMeasureContexts(report.getMeasures(), report.getReportId());
+        if(context_list.size() > 0)
+        {
+            List<Map<String, Object>> measures_list = FieldUtil.getAsMapList(context_list, V2AnalyticsMeasureContext.class);
+            for(Map<String,Object> measure_prop : measures_list) {
+                V2AnalyticsOldUtil.addReportMeasures(measure_prop);
+            }
+        }
     }
     public static void updateNewReportV2(V2ReportContext reportContext) throws Exception
     {
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getV2ReportModule().getTableName())
                 .fields(FieldFactory.getV2ReportModuleFields())
-                .andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", reportContext.getReportId()+"", NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", reportContext.getReportId() + "", NumberOperators.EQUALS));
         Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
         updateBuilder.update(props);
+
+        if (reportContext.getReportId() > 0){
+            V2AnalyticsOldUtil.updateReportMeasures(reportContext);
+        }
+
     }
     public static void deleteNewReportV2(V2ReportContext reportContext) throws Exception
     {
@@ -223,9 +302,58 @@ public class V2AnalyticsOldUtil {
         List<Map<String, Object>> props = select.get();
         if (props != null && !props.isEmpty())
         {
-            return FieldUtil.getAsBeanFromMap(props.get(0), V2ReportContext.class);
+            V2ReportContext v2_report = FieldUtil.getAsBeanFromMap(props.get(0), V2ReportContext.class);
+            GenericSelectRecordBuilder select_measure = new GenericSelectRecordBuilder()
+                    .select(FieldFactory.getV2ReportMeasureFields())
+                    .table(ModuleFactory.getReportV2MeasureModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", reportId.toString(), NumberOperators.EQUALS));
+
+            List<Map<String, Object>> measure_props = select_measure.get();
+            if (measure_props != null && !measure_props.isEmpty())
+            {
+                List<V2AnalyticsMeasureContext> measures = FieldUtil.getAsBeanListFromMapList(measure_props, V2AnalyticsMeasureContext.class);
+                List<V2MeasuresContext> v2_measure_list = new ArrayList<>();
+                JSONParser parser = new JSONParser();
+                for(V2AnalyticsMeasureContext measure : measures)
+                {
+                    String measure_json_str = measure.getMeasure_props();
+                    JSONObject measure_json = (JSONObject) parser.parse(measure_json_str);
+                    if(measure_json != null)
+                    {
+                        measure_json.put(MEASURE_KEYS.get(0), measure.getRelationship_id());
+                        measure_json.put(MEASURE_KEYS.get(1), measure.getMeasure_field_id());
+                        measure_json.put(MEASURE_KEYS.get(2), measure.getParent_lookup_field_id());
+                        measure_json.put(MEASURE_KEYS.get(3), measure.getCriteria_id());
+                        V2MeasuresContext measure_context = FieldUtil.getAsBeanFromJson(measure_json, V2MeasuresContext.class);
+                        if(measure.getCriteria_id() != null && measure.getCriteria_id() > 0){
+                            measure_context.setCriteria(CriteriaAPI.getCriteria(measure.getCriteria_id()));
+                        }
+                        v2_measure_list.add(measure_context);
+                    }
+                }
+                if(v2_measure_list.size() > 0) {
+                    v2_report.setMeasures(v2_measure_list);
+                }
+                return v2_report;
+            }
         }
+
         return null;
+    }
+    public static void updateModuleReportMeasures(V2ModuleReportContext report)throws Exception
+    {
+        new GenericDeleteRecordBuilder().table(ModuleFactory.getReportV2MeasureModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", report.getReportId() + "", NumberOperators.EQUALS))
+                .delete();
+
+        List<V2AnalyticsMeasureContext> context_list = V2AnalyticsOldUtil.getV2ModuleMeasureContexts(report.getMeasures(), report.getReportId());
+        if(context_list.size() > 0)
+        {
+            List<Map<String, Object>> measures_list = FieldUtil.getAsMapList(context_list, V2AnalyticsMeasureContext.class);
+            for(Map<String,Object> measure_prop : measures_list) {
+                V2AnalyticsOldUtil.addReportMeasures(measure_prop);
+            }
+        }
     }
     public static V2ModuleReportContext getV2ModuleReport(Long reportId)throws Exception
     {
@@ -237,7 +365,42 @@ public class V2AnalyticsOldUtil {
         List<Map<String, Object>> props = select.get();
         if (props != null && !props.isEmpty())
         {
-            return FieldUtil.getAsBeanFromMap(props.get(0), V2ModuleReportContext.class);
+            V2ModuleReportContext v2_report = FieldUtil.getAsBeanFromMap(props.get(0), V2ModuleReportContext.class);
+            GenericSelectRecordBuilder select_measure = new GenericSelectRecordBuilder()
+                    .select(FieldFactory.getV2ReportMeasureFields())
+                    .table(ModuleFactory.getReportV2MeasureModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", reportId.toString(), NumberOperators.EQUALS));
+
+            List<Map<String, Object>> measure_props = select_measure.get();
+            if (measure_props != null && !measure_props.isEmpty())
+            {
+                List<V2AnalyticsMeasureContext> measures = FieldUtil.getAsBeanListFromMapList(measure_props, V2AnalyticsMeasureContext.class);
+                List<V2ModuleMeasureContext> v2_measure_list = new ArrayList<>();
+                JSONParser parser = new JSONParser();
+                for(V2AnalyticsMeasureContext measure : measures)
+                {
+                    String measure_json_str = measure.getMeasure_props();
+                    JSONObject measure_json = (JSONObject) parser.parse(measure_json_str);
+                    if(measure_json != null)
+                    {
+                        Long fieldId = measure.getMeasure_field_id();
+                        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                        if(fieldId != null && fieldId > 0){
+                            FacilioField field = modBean.getField(fieldId);
+                            measure_json.put("fieldName",field.getName());
+                        }
+                        V2ModuleMeasureContext measure_context = FieldUtil.getAsBeanFromJson(measure_json, V2ModuleMeasureContext.class);
+                        if(measure.getCriteria_id() != null && measure.getCriteria_id() > 0){
+                            measure_context.setCriteria(CriteriaAPI.getCriteria(measure.getCriteria_id()).toString());
+                        }
+                        v2_measure_list.add(measure_context);
+                    }
+                }
+                if(v2_measure_list.size() > 0) {
+                    v2_report.setMeasures(v2_measure_list);
+                }
+                return v2_report;
+            }
         }
         return null;
     }
@@ -350,6 +513,7 @@ public class V2AnalyticsOldUtil {
         selected_fields.add(fieldMap.get("createdBy"));
         selected_fields.add(fieldMap.get("modifiedBy"));
         selected_fields.add(fieldMap.get("appId"));
+        selected_fields.add(fieldMap.get("type"));
         return selected_fields;
     }
     public static void calculateBaseLineRange(ReportContext report)

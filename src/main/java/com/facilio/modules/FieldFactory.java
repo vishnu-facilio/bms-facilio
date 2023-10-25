@@ -8772,10 +8772,24 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
         fields.add(getField("dimensionsJson", "DIMENSIONS", module, FieldType.STRING));
-        fields.add(getField("measuresJson", "MEASURES", module, FieldType.STRING));
+//        fields.add(getField("measuresJson", "MEASURES", module, FieldType.STRING));
         fields.add(getField("timeFilterJson", "TIMELINE_FILTER", module, FieldType.STRING));
         fields.add(getField("groupByJson", "GROUP_BY", module, FieldType.STRING));
 
+        return fields;
+    }
+    public static List<FacilioField> getV2ReportMeasureFields()throws Exception
+    {
+        FacilioModule module = ModuleFactory.getReportV2MeasureModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+
+        fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
+        fields.add(getField("measure_props", "MEASURE_PROPS", module, FieldType.STRING));
+        fields.add(getField("relationship_id", "RELATIONSHIP_ID", module, FieldType.NUMBER));
+        fields.add(getField("measure_field_id", "MEASURE_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("parent_lookup_field_id", "PARENT_LOOKUP_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("criteria_id", "CRITERIA_ID", module, FieldType.NUMBER));
         return fields;
     }
 //	public static List<FacilioField> getModulesFields(){

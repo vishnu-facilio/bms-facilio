@@ -5925,6 +5925,14 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setTableName("Report1_V2");
 		return module;
 	}
+	public static FacilioModule getReportV2MeasureModule()throws Exception
+	{
+		FacilioModule module = new FacilioModule();
+		module.setName("report1_measures");
+		module.setDisplayName("Report1 Measure");
+		module.setTableName("Report1_Measures");
+		return module;
+	}
 
 	public static FacilioModule getPDFTemplatesModule() {
 		FacilioModule pdfTemplatesModule = new FacilioModule();

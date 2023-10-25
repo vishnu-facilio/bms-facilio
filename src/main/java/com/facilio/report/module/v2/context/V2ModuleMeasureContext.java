@@ -8,12 +8,15 @@ import lombok.Setter;
 @Setter
 public class V2ModuleMeasureContext {
 
+    public long id;
     private String fieldName;
     private String moduleName;
     private String moduleDisplayName;
     private int sortOrder;
     private int limit;
     private AggregateOperator aggr;
+    public String criteria;
+    public long criteriaId;
 
     public int getAggr() {
         return aggr!= null ? aggr.getValue() : -1;

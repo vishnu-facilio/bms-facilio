@@ -18,4 +18,5 @@ public class V2AnalyticsReportResponseContext{
     public Long createdBy;
     public Long modifiedBy;
     public Long reportFolderId;
+    public Integer type;
 }
